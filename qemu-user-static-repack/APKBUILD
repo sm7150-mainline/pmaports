@@ -1,0 +1,53 @@
+pkgname=qemu-user-static-repack
+pkgver=2.8
+_debver=${pkgver}+dfsg-5+b1_amd64
+pkgrel=5
+pkgdesc="QEMU user mode emulation binaries (static version)"
+arch=x86_64
+url="https://wiki.debian.org/DebianKernel/ARMMP"
+license="GPL2"
+source="https://ftp.us.debian.org/debian/pool/main/q/qemu/qemu-user-static_${_debver}.deb"
+makedepends="tar xz"
+subpackages="$pkgname-doc $pkgname-binfmt:binfmt:noarch"
+options="!check"
+
+unpack() {
+	cd "$srcdir"
+	for i in $source; do
+		case $i in
+			*.deb) ar x ${i##*/} || return 1 ;;
+		esac
+	done
+	
+	# postinst in this archive contains the binfmt information
+	tar -xf "$srcdir/control.tar.gz" || return 1
+}
+
+package() {
+	mkdir -p "$pkgdir"
+	tar -xJf "$srcdir"/data.tar.xz -C $pkgdir || return 1
+	return 0
+}
+
+_binfmtout="$srcdir/qemu-user-binfmt.txt"
+build() {
+	cd "$srcdir"
+	for line in \
+		"# Non-standard file format with grepped binfmt information" \
+		"# from Debians postinst script. Used in pmbootstrap."
+	do
+		echo "$line" >> $_binfmtout || return 1
+	done
+	
+	for suffix in mask magic; do
+		grep "_${suffix}=" postinst >> $_binfmtout || return 1
+	done
+}
+
+binfmt() {	
+	mkdir -p "$pkgdir-binfmt"
+	install -Dm644 $_binfmtout \
+		"$pkgdir-binfmt/usr/share/qemu-user-binfmt.txt" || return 1
+}
+
+sha512sums="4dd4aab9a8c1040d93d0846b419b2b5b206c18cc92ec6e292ba0b8ffd347dd66ec76065e6737b4dd7c3504439d9332e1cda3865bdcd03f470330990d6cb1b6e6  qemu-user-static_2.8+dfsg-5+b1_amd64.deb"

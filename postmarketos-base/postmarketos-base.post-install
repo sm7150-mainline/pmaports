@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Enable OpenRC services
+for service in devfs dmesg; do
+	rc-update -q add $service sysinit
+done
+for service in hwclock modules sysctl hostname bootmisc wpa_supplicant wifi-handler; do
+	rc-update -q add $service boot
+done
+for service in haveged sshd udev; do
+	rc-update -q add $service default
+done
+for service in mount-ro killprocs savecache; do
+	rc-update -q add $service shutdown
+done
+
+# Add user account
+adduser -u 1000 -D -h /home/user -G users user 2>/dev/null
+
+# Autologin on tty1, disable tty 3-5
+autologin="root"
+for i in 1 3 4 5 6; do
+	old="^tty$i::respawn:/sbin/getty 38400 tty$i"
+	new="# tty$i::respawn:/sbin/getty 38400 tty$i"
+	[ "$i" == "1" ] && new="tty1::respawn:/bin/login -f $autologin"
+	sed -i -e "s.$old.$new.g" /etc/inittab
+done

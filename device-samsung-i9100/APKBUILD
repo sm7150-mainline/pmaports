@@ -1,0 +1,27 @@
+pkgname=device-samsung-i9100
+pkgver=1
+pkgrel=2
+pkgdesc="Samsung Galaxy SII"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="FIXME"
+depends="linux-samsung-i9100"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo 90-android.rules"
+options="!check"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir"/90-android.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android.rules
+}
+
+sha512sums="f2dfe6b848ab751eea2d3aad82c214985b7910865a2911a7be843e44c5479299cb66c768925b4452e8dbdd84efd6bd8b69eb2e2dc49cfa27fc8a3e189ddf68a5  deviceinfo
+8aead706ddb118a44de7d049f07d10a27e727d17724058d132e4ec4fa73fed29c9ccfe03f02aca459c922ec0fbba24e171fe3c76e33f7c5462631e3dd5506e36  90-android.rules"

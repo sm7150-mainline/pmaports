@@ -1,0 +1,37 @@
+#!/bin/sh
+. ./init_functions.sh
+
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+/bin/busybox --install -s
+
+# kernel modules
+modprobe -a @MODULES@
+
+# mdev
+mount -t proc -o nodev,noexec,nosuid proc /proc
+mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+
+# subpartitions
+mount_subpartitions
+
+# hooks
+for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do
+	[ -e "$hook" ] || continue
+	sh "$hook"
+done
+show_splash /splash1.ppm.gz
+
+# unlock root partition
+unlock_root_partition
+
+# switch root
+show_splash /splash2.ppm.gz
+killall telnetd mdev 2&> /dev/null
+mount -w -t ext4 /dev/mapper/root /sysroot
+umount /proc
+umount /sys
+umount /dev/pts
+umount /dev
+exec switch_root /sysroot /sbin/init

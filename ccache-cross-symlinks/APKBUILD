@@ -1,0 +1,27 @@
+# Maintainer: Oliver Smith <ollieparanoid@bitmessage.ch>
+# NOTE: This could probably be upstreamed to the official ccache aport.
+
+pkgname=ccache-cross-symlinks
+pkgver=1
+pkgrel=2
+pkgdesc="Enable ccache for cross-compilers with symlinks"
+url="https://ccache.samba.org/"
+arch="noarch"
+license="GPL3+"
+depends="ccache"
+makedepends=""
+source=""
+options="!check"
+
+package() {
+	local _archs="armhf aarch64"
+	local _bins="c++ cc cpp g++ gcc"
+	mkdir -p "$pkgdir/usr/lib/ccache/bin"
+	cd "$pkgdir/usr/lib/ccache/bin"
+	for _arch in $_archs; do
+		_hostspec="$(arch_to_hostspec $_arch)"
+		for _bin in $_bins; do
+			ln -v -s /usr/bin/ccache ${_hostspec}-${_bin} || return 1
+		done
+	done
+}

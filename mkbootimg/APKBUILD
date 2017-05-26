@@ -1,0 +1,22 @@
+pkgname=mkbootimg
+pkgver="7.1.2_r6"
+pkgrel=1
+pkgdesc="Android bootimg (zimage + initramfs) creation tool"
+url="https://android.googlesource.com"
+arch="noarch"
+license="APACHE2"
+depends="python3"
+subpackages=""
+source="$pkgname-$pkgver.py.base64::https://android.googlesource.com/platform/system/core/+/android-${pkgver}/${pkgname}/${pkgname}?format=TEXT"
+options="!check"
+
+build() {
+	base64 -d $srcdir/$pkgname-$pkgver.py.base64 > $srcdir/$pkgname
+	sed -i -e 's./usr/bin/env python./usr/bin/env python3.' $srcdir/$pkgname
+}
+
+package() {
+	install -Dm755 $srcdir/$pkgname $pkgdir/usr/bin/$pkgname
+}
+
+sha512sums="7aac61bf55e0c3627e71a1247ebd5636bc475919b50e34e289639745a051a4e1b31de273bfc75aaecc2e059007721e729c277199b4b4cec514541865a59e3312  mkbootimg-7.1.2_r6.py.base64"

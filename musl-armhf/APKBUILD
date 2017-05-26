@@ -1,0 +1,50 @@
+# Automatically generated aport, do not edit!
+# Generator: pmbootstrap aportgen musl-armhf
+
+pkgname=musl-armhf
+pkgver=1.1.16
+pkgrel=9
+subpackages="musl-dev-armhf:package_dev"
+
+_arch="armhf"
+_mirror="https://mirror1.hs-esslingen.de/pub/Mirrors/alpine/"
+
+url="https://musl-libc.org"
+license="MIT"
+arch="all"
+options="!check !strip"
+pkgdesc="the musl library (lib c) implementation for $_arch"
+
+_target="$(arch_to_hostspec $_arch)"
+
+source="
+    musl-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-$pkgver-r$pkgrel.apk
+    musl-dev-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-dev-$pkgver-r$pkgrel.apk
+"
+
+package() {
+    mkdir -p "$pkgdir/usr/$_target"
+    cd "$pkgdir/usr/$_target"
+    tar -xf $srcdir/musl-$pkgver-r$pkgrel-$_arch.apk
+    rm .PKGINFO .SIGN.*
+}
+package_dev() {
+    mkdir -p "$subpkgdir/usr/$_target"
+    cd "$subpkgdir/usr/$_target"
+    tar -xf $srcdir/musl-dev-$pkgver-r$pkgrel-$_arch.apk
+    rm .PKGINFO .SIGN.*
+
+    # symlink everything from /usr/$_target/usr/* to /usr/$_target/*
+    # so the cross-compiler gcc does not fail to build.
+    for _dir in include lib; do
+        mkdir -p "$subpkgdir/usr/$_target/$_dir"
+        cd "$subpkgdir/usr/$_target/usr/$_dir"
+        for i in *; do
+            cd "$subpkgdir/usr/$_target/$_dir"
+            ln -s /usr/$_target/usr/$_dir/$i $i
+        done
+    done
+}
+
+sha512sums="865478e9ed9b97e8cedbe18cecb72611fd777c0fa45eebc67eae818084d0a3a5a85c6f37be5a874f48a8dcbb8c51ed4ceef6b33257215358e30ecddbb415c4b8  musl-1.1.16-r9-armhf.apk
+b6db9a9697b7bca35052cf5a247f2250d4e134f259584d98a48157c996c319e1e3d682b0cd68b90a86f5ea04eff4c2134f79be7aaff3d1b077934d4e45164e1d  musl-dev-1.1.16-r9-armhf.apk"
