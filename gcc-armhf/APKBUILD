@@ -372,6 +372,7 @@ package() {
 
 	local gdblib=${_target:+$CTARGET/}lib
 	mkdir -p "$pkgdir"/usr/share/gdb/python/auto-load/usr/$gdblib
+	mv "$pkgdir"/usr/$gdblib/*-gdb.py \
 		"$pkgdir"/usr/share/gdb/python/auto-load/usr/$gdblib/
 
 	paxmark -pmrs "$pkgdir"/$_gcclibexec/cc1
