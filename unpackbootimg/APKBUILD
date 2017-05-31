@@ -1,0 +1,21 @@
+pkgname=unpackbootimg
+pkgver="14.1"
+pkgrel=1
+pkgdesc="Android bootimg (zimage + initramfs) extraction tool"
+url="https://github.com/LineageOS/android_system_core"
+arch="noarch"
+license="APACHE2"
+depends="python3"
+source="$pkgname-$pkgver.py::https://raw.githubusercontent.com/LineageOS/android_system_core/cm-${pkgver}/mkbootimg/${pkgname}"
+options="!check"
+
+build() {
+	cp "$srcdir"/"$pkgname"-"$pkgver".py "$srcdir"/"$pkgname"
+	sed -i -e 's./usr/bin/env python./usr/bin/env python3.' "$srcdir"/"$pkgname"
+}
+
+package() {
+	install -Dm755 "$srcdir"/"$pkgname" "$pkgdir"/usr/bin/"$pkgname"
+}
+
+sha512sums="b86022b3f16a6a35c68a7dd00b0ce2dcac667162f11581090bdb07d50a3ea93a74c2f493405d3d6751d40bf463c022216738ad8bcafc457dfc55e08aa5c2ed0e  unpackbootimg-14.1.py"
