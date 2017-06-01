@@ -1,7 +1,7 @@
 pkgname=qemu-user-static-repack
 pkgver=2.8
-_debver=${pkgver}+dfsg-5+b1_amd64
-pkgrel=5
+_debver=${pkgver}+dfsg-6_amd64
+pkgrel=6
 pkgdesc="QEMU user mode emulation binaries (static version)"
 arch=x86_64
 url="https://wiki.debian.org/DebianKernel/ARMMP"
@@ -18,7 +18,7 @@ unpack() {
 			*.deb) ar x ${i##*/} || return 1 ;;
 		esac
 	done
-	
+
 	# postinst in this archive contains the binfmt information
 	tar -xf "$srcdir/control.tar.gz" || return 1
 }
@@ -38,16 +38,16 @@ build() {
 	do
 		echo "$line" >> $_binfmtout || return 1
 	done
-	
+
 	for suffix in mask magic; do
 		grep "_${suffix}=" postinst >> $_binfmtout || return 1
 	done
 }
 
-binfmt() {	
+binfmt() {
 	mkdir -p "$pkgdir-binfmt"
 	install -Dm644 $_binfmtout \
 		"$pkgdir-binfmt/usr/share/qemu-user-binfmt.txt" || return 1
 }
 
-sha512sums="4dd4aab9a8c1040d93d0846b419b2b5b206c18cc92ec6e292ba0b8ffd347dd66ec76065e6737b4dd7c3504439d9332e1cda3865bdcd03f470330990d6cb1b6e6  qemu-user-static_2.8+dfsg-5+b1_amd64.deb"
+sha512sums="fb3f2f711b7ee393b0f3ef34f6b7157483a240112d88906e13116a91c583377afae1a297b7d158c31b2e7de38a104db34dc3532e64edae5b063c5531eb56bac9  qemu-user-static_2.8+dfsg-6_amd64.deb"
