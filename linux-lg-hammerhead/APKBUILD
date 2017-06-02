@@ -1,0 +1,108 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - package: just install zimage and kernel.release, because the kernel config
+#	does not generate modules or dtb files
+# - do not create -dev subpackage (makes no sense without module support)
+#
+# Kernel config based on: arch/arm/configs/lineageos_mako_defconfig
+# Changes:
+# - enable devtmpfs (needed for udev -> touch support in weston)
+
+_vendor=lg
+_flavor=lg-hammerhead
+_hash="1dae34efb7d2399073ca371c953aafd2ed503849"
+_config="hammerhead_defconfig"
+
+pkgname=linux-${_flavor}
+pkgver=3.4.0
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=3
+arch="armhf"
+pkgdesc="LineageOS kernel for Nexus 5 hammerhead"
+url="https://github.com/LineageOS/android_kernel_lge_hammerhead"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	https://github.com/LineageOS/android_kernel_lge_hammerhead/archive/${_hash}.zip
+	compiler-gcc6.h
+	aeea3592a13bf12861943e44fc48f1f270941f8d.patch
+	gpu-msm-fix-gcc5-compile.patch
+	devtmpfs.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_lge_hammerhead-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+
+	mkdir -p "$srcdir"/build
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" CONFIG_NO_ERROR_ON_MISMATCH=y HOSTCC="$HOSTCC" CROSS_COMPILE=arm-linux-gnueabi- \
+		 ${_config}
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		|| return 1
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="882ec7d4ce3eadb372c1279f53fab18c5c7f18109d3df2c8c4005ec5d06e6244c2c788c3183defa4d4aaf493a5c1bf905d8bd2aeb554e4b0680b0e1b45de6742  1dae34efb7d2399073ca371c953aafd2ed503849.zip
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  aeea3592a13bf12861943e44fc48f1f270941f8d.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  gpu-msm-fix-gcc5-compile.patch
+71fb635ddac4faee90a2454231e50ac4ba9c273447f3e4c373034e6bce1414fd987bcfc8f7592751debe88230c4e164da7cfe339273510ec3d8f934120ab00f3  devtmpfs.patch"
