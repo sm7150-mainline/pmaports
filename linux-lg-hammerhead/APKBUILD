@@ -94,10 +94,10 @@ build() {
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
 		|| return 1
-	#echo "--[ Build modules ]--"
-	#make ARCH="$_carch" CC="${CC:-gcc}" \
-	#	KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-	#	modules || return 1
+	echo "--[ Build modules ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		modules || return 1
 }
 
 package() {
@@ -107,17 +107,17 @@ package() {
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-	#cd "$srcdir"/build
-	#unset LDFLAGS
-	#echo "--[ Installing modules ]--"
-	#make ARCH="$_carch" CC="${CC:-gcc}" \
-	#	KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-	#	INSTALL_MOD_PATH="$pkgdir" modules_install \
-	#	|| return 1
+	cd "$srcdir"/build
+	unset LDFLAGS
+	echo "--[ Installing modules ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		INSTALL_MOD_PATH="$pkgdir" modules_install \
+		|| return 1
 }
 
 sha512sums="882ec7d4ce3eadb372c1279f53fab18c5c7f18109d3df2c8c4005ec5d06e6244c2c788c3183defa4d4aaf493a5c1bf905d8bd2aeb554e4b0680b0e1b45de6742  1dae34efb7d2399073ca371c953aafd2ed503849.zip
-9e6c0bfc684fc271598208bdbf11e445df388166e6038271d6663ef863bcea10237ef435654db085cb64d669609382f58291aca0e0fbc4b302f540f916f4bfc0  config-lg-hammerhead.armhf
+5060692fa56afce6e9c7dd42c6a6ee684ee59358563385f62c5d39f52d51344abb4fd1635b4ef6f8e1d37ca869632d10881b25a50882e1fabed5cd7625a8c143  config-lg-hammerhead.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  aeea3592a13bf12861943e44fc48f1f270941f8d.patch
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  gpu-msm-fix-gcc5-compile.patch"
