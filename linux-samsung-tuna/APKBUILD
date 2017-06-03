@@ -1,0 +1,109 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - package: just install zimage and kernel.release, because the kernel config
+#	does not generate modules or dtb files
+# - do not create -dev subpackage (makes no sense without module support)
+#
+# Kernel config based on: arch/arm/configs/lineageos_mako_defconfig
+# Changes:
+# - enable devtmpfs (needed for udev -> touch support in weston)
+
+_vendor=samsung
+_flavor=samsung_tuna
+_hash="e14e5fe679a63eef92346cde874175d8b62b6a4a"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-samsung-tuna
+pkgver=3.4.0
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=3
+arch="armhf"
+pkgdesc="Nexus 4 kernel from LineageOS"
+url="https://github.com/LineageOS/android_kernel_samsung_tuna"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	https://github.com/LineageOS/android_kernel_${_flavor}/archive/${_hash}.zip
+	$_config
+	compiler-gcc6.h
+	android_paranoid_network.patch
+	fix_old_perl_code.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_${_flavor}-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		|| return 1
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="c048b4f195ac6083e1884e41a7fc77c111edb555e6d53ee391d6220f308138c76389edaeb6b166c6f132fa33e8588f03734ed70397440a738b8e3f1c0068fbab  e14e5fe679a63eef92346cde874175d8b62b6a4a.zip
+c6235a1db9a48cf2ba371ffcff50254095fe32c7982d7899a93773edb5fb18cb94e7a257146884f27aac34711ce8cfa9fd2fcc62f4a3fc5869e23a3f286c0128  config-samsung_tuna.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+d8cdc1137e6a4ad78a3a31acc40f0c98f4db272eaf5b90ee850abb83b80916c4ff3c18a0a181e94eebead44213f6314e3363d0c4b91d95ee1adafbcad6dc57ab  android_paranoid_network.patch
+65eb11dca6645073885228af6aae6efa40b6f063fd04157b501acf40368bf331dd701f746ed187659f654a9354ddf304aaefca8ffc9ea2b00c145c61162e1189  fix_old_perl_code.patch"
