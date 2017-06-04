@@ -1,21 +1,13 @@
-# Based on linux-lg-mako. Changes:
-# - add findutils makedepend (necessary for the initramfs)
-# - it builds an initramfs - do not use ramdisk.cpio and
-#	ramdisk-recovery-device.cpio, in there, always use the
-#	initramfs from the recovery partition ("isorec")
-# - directly boot to that initramfs, not only when the recovery
-#	key combination was pressed.
-# - use Alpine's busybox-static instead of the pre-compiled
-#	binary, that comes with the source
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - package: just install zimage and kernel.release, because the kernel config
+#      does not generate modules or dtb files
+# - do not create -dev subpackage (makes no sense without module support)
 #
-# Kernel config changes, based on: arch/arm/configs/i9100_defconfig
+# Kernel config changes, based on: arch/arm/configs/titan_defconfig
+# Changes:
 # - enable devtmpfs (needed for udev -> touch support in weston)
-# - change compression from CONFIG_KERNEL_LZMA=y to
-#	CONFIG_KERNEL_GZIP=y (so it works with busybox)
-
-# This must be built in the target chroot, so busybox.static can
-# be used.
-_pmb_build_in_native_chroot="false"
 
 _vendor=motorola
 _flavor=motorola-titan
@@ -23,25 +15,26 @@ _hash="09cff47d6b79b73ecc3461e227abf09faaa9e754"
 _config="config-${_flavor}.armhf"
 
 pkgname=linux-${_flavor}
-pkgver=3.0.101
+pkgver=3.4.113
 case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=5
+pkgrel=0
 arch="armhf"
 pkgdesc="Motorola Moto G 2014 kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_motorola_msm8226"
 depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
-findutils busybox-static"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.zip::https://github.com/LineageOS/android_kernel_motorola_msm8226/archive/${_hash}.zip
-	$_config
-	compiler-gcc6.h
-	init
+    $pkgname-$_hash.zip::https://github.com/LineageOS/android_kernel_motorola_msm8226/archive/${_hash}.zip
+    $_config
+    compiler-gcc6.h
+    changes1.patch
+    gcc5-compile.patch
+    Wno-error.patch
 "
 subpackages=""
 license="GPL2"
@@ -75,20 +68,6 @@ prepare() {
 		cat failed
 		return 1
 	fi
-
-	# Use Alpine's busybox.static instead of the pre-compiled busybox shipped
-	# with the source
-	cp -v /bin/busybox.static "$ksrcdir"/usr/galaxys2_initramfs_files/busybox
-
-	# do not use ramdisk.cpio and ramdisk-recovery-device.cpio, always use
-	# the initramfs from the recovery partition ("isorec"), so we can build
-	# it later and independently from the kernel. also directly boot that
-	# partition, not only when the recovery key combination was used.
-	cd "$ksrcdir"/usr/
-	mv galaxys2_initramfs.list galaxys2_initramfs.list_old
-	grep -v "../../ramdisk" galaxys2_initramfs.list_old > galaxys2_initramfs.list \
-		|| return 1
-	cp -v "$srcdir"/init "$ksrcdir"/usr/galaxys2_initramfs_files/init || return 1
 
 	# gcc6 support
 	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
@@ -126,6 +105,7 @@ package() {
 }
 
 sha512sums="1a5599b1fe0d36a9804b2379cfc69f07ebd6f2fa472c7a7e4ae070131728c46db5f2b9766af282fd64ea075772f700c3b816ca7b7c90d24e21e9da289317ca37  linux-motorola-titan-09cff47d6b79b73ecc3461e227abf09faaa9e754.zip
-19128ea4d34631eb019de39a3721f5a2fdcbc54a27a8ba7d34468c39066cd35ded8134e64d5f7e1724eaec42a252afbf403bdc82120b19cb2d3a5dc6492e0839  config-motorola-titan.armhf
+80857bddbd9fcb93cec4e178c2fd377d39b1bd85454330c02866628942be826f2c1f77e0df3b77f41e893d3d04ee6e18b27fcfc6cda637fafc733916f2f5340d  config-motorola-titan.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+f949e35a9a57cd23c4bfd6c9fed06db30e7af30be4a0931ab3f00e371d75b07623ea7fdbff11d6011271c19a839470c9acba5521f45dc664a925ba42688ed861  changes1.diff
 dd4094d5f4ec281d32f12af88cb22a782e497c8e52f69cf60b73ac7d6171fc95f1f8040b3d0ad2ff3f016d22ac1d91c5b522e5d03203534a76742bc55a082af5  init"

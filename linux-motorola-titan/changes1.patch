@@ -1,0 +1,25 @@
+--- arch/arm/include/asm/ftrace.h
++++ ftrace2.h
+@@ -45,7 +45,7 @@
+ 
+ #else
+ 
+-extern inline void *return_address(unsigned int level)
++static inline void *return_address(unsigned int level)
+ {
+    return NULL;
+ }
+--- arch/arm/kernel/return_address.c
++++ ret_address.c
+@@ -58,11 +58,6 @@
+ 
+ #else /* if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND) */
+ 
+-void *return_address(unsigned int level)
+-{
+-	return NULL;
+-}
+-
+ #endif /* if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND) / else */
+ 
+ EXPORT_SYMBOL_GPL(return_address);
