@@ -9,7 +9,7 @@ depends="linux-lg-hammerhead"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo"
+source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules profile.sh"
 options="!check"
 
 build() {
@@ -19,6 +19,15 @@ build() {
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -D -m644 "$srcdir"/profile.sh \
+		"$pkgdir"/etc/profile.d/00-$pkgname.sh
 }
 
-sha512sums="d9b34cde62f1de25a8635012ce1cc3a623a238ffb2237c997b74645d4e0df98f98f589c1f9c9f8d2519718d9345dee24b969b6efaa3533e5928a69272d9d997f  deviceinfo"
+sha512sums="d9b34cde62f1de25a8635012ce1cc3a623a238ffb2237c997b74645d4e0df98f98f589c1f9c9f8d2519718d9345dee24b969b6efaa3533e5928a69272d9d997f  deviceinfo
+8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
+ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e28d2db4b81c0f50b905639911276da40321d2b6cca7f797df  90-android-touch-dev.rules
+c3d0182161c33047e0af4fd7cc557037e10380896a771446f055a13813e50e4e6c9d5992de7b275a8373a053cca02cb96bcb50c732709a2e9909f903b5fba249  profile.sh"
