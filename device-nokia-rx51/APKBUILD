@@ -1,0 +1,30 @@
+pkgname=device-nokia-rx51
+pkgver=1
+pkgrel=1
+pkgdesc="Nokia N900"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-nokia-rx51"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo initfs-hook.sh profile.sh"
+options="!check"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/profile.sh \
+		"$pkgdir"/etc/profile.d/00-$pkgname.sh
+}
+
+sha512sums="d9b34cde62f1de25a8635012ce1cc3a623a238ffb2237c997b74645d4e0df98f98f589c1f9c9f8d2519718d9345dee24b969b6efaa3533e5928a69272d9d997f  deviceinfo
+8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
+c3d0182161c33047e0af4fd7cc557037e10380896a771446f055a13813e50e4e6c9d5992de7b275a8373a053cca02cb96bcb50c732709a2e9909f903b5fba249  profile.sh"
