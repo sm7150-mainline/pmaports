@@ -1,5 +1,5 @@
 #!/bin/sh
-IP=192.168.2.15
+IP=172.16.42.1
 TELNET_PORT=23
 
 usb_setup_android() {
@@ -23,8 +23,8 @@ dhcpcd_start()
 
 	# create /etc/udhcpd.conf
 	{
-		echo "start 192.168.2.20"
-		echo "end 192.168.2.90"
+		echo "start 172.16.42.2"
+		echo "end 172.16.42.254"
 		echo "lease_file /var/udhcpd.leases"
 		echo "interface $INTERFACE"
 		echo "option subnet 255.255.255.0"

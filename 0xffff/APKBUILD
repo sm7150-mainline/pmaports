@@ -1,0 +1,25 @@
+pkgname=0xffff
+pkgver=0.7
+pkgrel=1
+pkgdesc="Flasher for Maemo devices"
+url="https://github.com/pali/0xFFFF"
+arch="all"
+license="GPL3"
+depends="libusb-compat"
+makedepends="linux-headers libusb-compat-dev libusb-dev"
+subpackages="$pkgname-doc"
+source="https://github.com/pali/0xFFFF/releases/download/${pkgver}/0xffff_${pkgver}.orig.tar.gz"
+options="!check"
+
+builddir="$srcdir"/"$pkgname"-"$pkgver"
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	make PREFIX=/usr DESTDIR="$pkgdir"/ install
+}
+
+sha512sums="d9ff0d05c2806068169216474c7ba211d180769d6ec6d67559f5918a8294ca7e755da9760a6f56fcb77407c926f12d67fe313e1c181fedfe362a5dfa5e0ac045  0xffff_0.7.orig.tar.gz"

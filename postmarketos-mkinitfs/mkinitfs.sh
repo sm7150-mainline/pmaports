@@ -100,7 +100,7 @@ get_modules()
 # Get the paths to all binaries and their dependencies
 get_binaries()
 {
-	BINARIES="/bin/busybox /sbin/cryptsetup /usr/sbin/telnetd /sbin/kpartx"
+	BINARIES="/bin/busybox /bin/busybox-extras /sbin/cryptsetup /usr/sbin/telnetd /sbin/kpartx"
 	lddtree -l $BINARIES | sort -u
 }
 
