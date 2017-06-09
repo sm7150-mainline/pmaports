@@ -25,7 +25,7 @@ arch="armhf"
 pkgdesc="Mainline Linux for the Nokia N900"
 url="https://github.com/pali/linux-n900"
 depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev uboot-tools"
 options="!strip !check !tracedeps"
 install=
 source="
@@ -90,12 +90,23 @@ build() {
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+	cd "$srcdir/build/arch/arm/boot"
+	
+	cat zImage dts/omap3-n900.dtb > zImage-dtb
+	mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n postmarketos -d zImage-dtb uImage
+
+	install -Dm644 "$srcdir/build/arch/arm/boot/uImage" \
+		"$pkgdir/boot/uImage"
+
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+		"$pkgdir/boot/zImage-dtb"
+
+	install -Dm644 "$srcdir/build/arch/arm/boot/dts/omap3-n900.dtb" \
+		"$pkgdir/boot/omap3-n900.dtb"
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
 sha512sums="ad1288233893ce3de9c81f4672f4f2439c8d6665a0a0289f5cbe826fd08c69292de02a2fd9856dcd6d91c7f6930273319e1888bf0a146aee3a4e1ff50f6f7b19  linux-nokia-rx51-7b6fbfd899b4133e4f789843e5967beb139ec4d2.tar.gz
-6bdc31f83806cb1398bf9304755a3c35dd60be35d424149118ddbe72c78ad4ffa7296a9d5f141a1c68865e673aa2d9ba370223b0460b4ea202a476cb7ed99771  config-nokia-rx51.armhf"
+6b9ef5266bf95314b76c6973036b8e66cfa3b27efee84524f8c9a4316cbc29e289b1d56c99d8bcdf5516bdc743ab1a2bea4b277d3cff88d0e07de4b514d65e77  config-nokia-rx51.armhf"
