@@ -9,7 +9,7 @@ depends="linux-nokia-rx51 uboot-tools"
 makedepends="uboot-tools"
 install=""
 subpackages=""
-source="deviceinfo initfs-hook.sh profile.sh uboot-script.cmd"
+source="deviceinfo uboot-script.cmd"
 options="!check"
 
 build() {
@@ -20,15 +20,9 @@ build() {
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/initfs-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
-	install -D -m644 "$srcdir"/profile.sh \
-		"$pkgdir"/etc/profile.d/00-$pkgname.sh
-	#install -D -m644 "$srcdir"/boot.scr \
-	#	"$pkgdir"/boot/boot.scr
+	install -D -m644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
 }
 
-sha512sums="52ae4fc3317774fc6e668188857e9eb2c80a4612fc92b895b2bf78d2d377a6f6fe387be5f003cf98ac14c31aaf4a2677713b01f3cddac03cf34ce5c2b83e0b72  deviceinfo
-8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
-c3d0182161c33047e0af4fd7cc557037e10380896a771446f055a13813e50e4e6c9d5992de7b275a8373a053cca02cb96bcb50c732709a2e9909f903b5fba249  profile.sh
+sha512sums="314b4241c4f081006b7dc126d3d088ceb1c57b69791c13c7d7e1393dd3627bf01ad29a2f9fda475631a857900d6e90524d54f43c3efc7bf77a0e435975e1d0e8  deviceinfo
 011e85537f497c2888f876a63bec13e3a2853a5047a0692515d6108cee2a2b90e70fb234f9c0e67a11d64abd3a15cade0864d725548722df910d6d1cbb1216e4  uboot-script.cmd"
