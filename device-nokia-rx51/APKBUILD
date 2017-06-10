@@ -9,7 +9,7 @@ depends="linux-nokia-rx51 uboot-tools"
 makedepends="uboot-tools"
 install=""
 subpackages=""
-source="deviceinfo uboot-script.cmd"
+source="deviceinfo uboot-script.cmd backlight-enable.sh"
 options="!check"
 
 build() {
@@ -22,7 +22,10 @@ package() {
 		"$pkgdir"/etc/deviceinfo
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
+	install -D -m644 "$srcdir"/backlight-enable.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}-backlight.sh
 }
 
 sha512sums="314b4241c4f081006b7dc126d3d088ceb1c57b69791c13c7d7e1393dd3627bf01ad29a2f9fda475631a857900d6e90524d54f43c3efc7bf77a0e435975e1d0e8  deviceinfo
-011e85537f497c2888f876a63bec13e3a2853a5047a0692515d6108cee2a2b90e70fb234f9c0e67a11d64abd3a15cade0864d725548722df910d6d1cbb1216e4  uboot-script.cmd"
+011e85537f497c2888f876a63bec13e3a2853a5047a0692515d6108cee2a2b90e70fb234f9c0e67a11d64abd3a15cade0864d725548722df910d6d1cbb1216e4  uboot-script.cmd
+3d55e34b95791636e44a5f41754f3d0de039dbba41f7a556d43a95c9e64afcfa930046b4b96b40020b6f196096ffba93514682927e32fa4488686fdd19c6da5a  backlight-enable.sh"
