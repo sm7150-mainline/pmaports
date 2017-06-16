@@ -7,7 +7,7 @@
 pkgname=weston
 pkgver=9999
 _pkgver=2.0.0
-pkgrel=0
+pkgrel=1
 _libname=lib$pkgname
 _libdir=$_libname-${_pkgver%%.*}
 pkgdesc="The reference Wayland server"
@@ -31,7 +31,7 @@ subpackages="$pkgname-dev $pkgname-doc $subpackages
 	$pkgname-clients $_libname-desktop:_libd $_libname:libs
 	$pkgname-xwayland $pkgname-desktop-x11:_x11:noarch
 	"
-source="http://wayland.freedesktop.org/releases/$pkgname-$_pkgver.tar.xz no_0hz_refresh_rate.patch"
+source="http://wayland.freedesktop.org/releases/$pkgname-$_pkgver.tar.xz no_0hz_refresh_rate.patch compositor-fbdev-Added-parameter-pixman-type.patch"
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
@@ -129,4 +129,5 @@ _sub() {
 }
 
 sha512sums="085a0ba278932d41b50edd6e89db5df31cd6a1179c6cfe9a8ac5ac64e63b25cfc3da1ad8c587259273c3812593029b803867195e2d82b12b5cdd2588ac59acc6  weston-2.0.0.tar.xz
-68d8485eed6a536924a8ebef7e0b45738330c38326fe659443c26d674f9538ec1c66033f83a7971914dcd72bc52333e3f55486c5a01e067e3f5fee8f5b489728  no_0hz_refresh_rate.patch"
+68d8485eed6a536924a8ebef7e0b45738330c38326fe659443c26d674f9538ec1c66033f83a7971914dcd72bc52333e3f55486c5a01e067e3f5fee8f5b489728  no_0hz_refresh_rate.patch
+07d5a41344fe78e41eafd69757c23563d1436283c474402ca892c4129e1d2ca8deb4b27b3261473226848d27e1cfa4192fd7a706d1d9113f1bf855bf8993654d  compositor-fbdev-Added-parameter-pixman-type.patch"
