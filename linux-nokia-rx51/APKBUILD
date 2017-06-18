@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 arch="armhf"
 pkgdesc="Mainline Linux for the Nokia N900"
 url="https://github.com/pali/linux-n900"
@@ -106,6 +106,12 @@ package() {
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir"/build
+	make -j1 modules_install firmware_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		|| return 1
 }
 
 sha512sums="ad1288233893ce3de9c81f4672f4f2439c8d6665a0a0289f5cbe826fd08c69292de02a2fd9856dcd6d91c7f6930273319e1888bf0a146aee3a4e1ff50f6f7b19  linux-nokia-rx51-7b6fbfd899b4133e4f789843e5967beb139ec4d2.tar.gz
