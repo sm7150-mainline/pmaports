@@ -85,6 +85,7 @@ build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		CFLAGS_MODULE=-fno-pic \
 		zImage modules omap3-n900.dtb \
 		|| return 1
 }
