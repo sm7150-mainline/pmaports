@@ -30,7 +30,7 @@ unlock_root_partition
 # switch root
 show_splash /splash2.ppm.gz
 killall telnetd mdev 2&> /dev/null
-mount -w -t ext4 /dev/mapper/root /sysroot
+mount -w -t ext4 $(find_root_partition) /sysroot
 umount /proc
 umount /sys
 umount /dev/pts
