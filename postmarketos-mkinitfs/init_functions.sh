@@ -19,11 +19,15 @@ mount_subpartitions()
 
 find_root_partition()
 {
-	for i in /dev/mapper/* /dev/mmcblk*; do
-		cryptsetup isLuks "$i" || continue
-		echo "$i"
-		break
-	done
+	DEVICE=$(blkid | grep "crypto_LUKS" | tail -1 | cut -d ":" -f 1)
+
+	if [ -z "$DEVICE" ]; then
+		DEVICE=$(blkid | grep "pmOS_root" | tail -1 | cut -d ":" -f 1)
+	fi
+
+	log "info" "root partition is $DEVICE"
+
+	echo $DEVICE
 }
 
 unlock_root_partition()
