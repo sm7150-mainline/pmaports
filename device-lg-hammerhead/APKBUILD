@@ -9,7 +9,13 @@ depends="linux-lg-hammerhead"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules profile.sh"
+source="
+	deviceinfo
+	initfs-hook.sh
+	90-android-touch-dev.rules
+	profile.sh
+	bcmdhd.cal
+"
 options="!check"
 
 build() {
@@ -25,9 +31,12 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/profile.sh \
 		"$pkgdir"/etc/profile.d/00-$pkgname.sh
+	install -D -m644 "$srcdir"/bcmdhd.cal \
+		"$pkgdir"/etc/wifi/bcmdhd.cal
 }
 
 sha512sums="01a20f5286444b5d9616ddc541a84bc32a7c7f51a4b56e1015adcea5b238197c95863f68b783e06f83f423be2aeaff73f70ccc041da85b8a7987591cf97b94f4  deviceinfo
 8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
 ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e28d2db4b81c0f50b905639911276da40321d2b6cca7f797df  90-android-touch-dev.rules
-c3d0182161c33047e0af4fd7cc557037e10380896a771446f055a13813e50e4e6c9d5992de7b275a8373a053cca02cb96bcb50c732709a2e9909f903b5fba249  profile.sh"
+c3d0182161c33047e0af4fd7cc557037e10380896a771446f055a13813e50e4e6c9d5992de7b275a8373a053cca02cb96bcb50c732709a2e9909f903b5fba249  profile.sh
+32652ef366694f34dec31f316a38aca96700e3a5a3eac1f8d192e3c5de7b91e480b1c0fcd8e7c80a51692dc3737020ebbb2e5d3779436e82fb18822089c63055  bcmdhd.cal"
