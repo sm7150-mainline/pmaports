@@ -4,13 +4,11 @@
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 /bin/busybox --install -s
 /bin/busybox-extras --install -s
-setup_log
 
-# Kernel modules
-[ -d /lib/modules ] && modprobe -a @MODULES@
-
-# Mount everything, set up mdev
+# Mount everything, set up logging, modules, mdev
 mount_proc_sys_dev
+setup_log
+[ -d /lib/modules ] && modprobe -a @MODULES@
 setup_mdev
 mount_subpartitions
 
