@@ -1,13 +1,16 @@
 # APKBUILD based on linux-vanilla aport. Changes:
 # - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#      does not generate modules or dtb files
+# - added !check !tracedeps
+# - package: just install zImage-dtb and kernel.release
 # - do not create -dev subpackage (makes no sense without module support)
 #
 # Kernel config changes, based on: arch/arm/configs/titan_defconfig
 # Changes:
+# - apply patches to compile with gcc6
+# - disable -Werror-implicit-function-declaration and -Wno-error,
+#      otherwise the kernel would not compile
 # - enable devtmpfs (needed for udev -> touch support in weston)
+# - disable xz compression
 
 _vendor=motorola
 _flavor=motorola-titan

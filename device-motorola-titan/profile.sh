@@ -3,7 +3,7 @@
 # Dirty hacks, necessary to get a working demo...
 if [ -e /etc/xdg/weston/weston.ini ]; then
 	rm /etc/xdg/weston/weston.ini
-	echo "WARNING: xwayland does not work yet on lg-mako (probably"
+	echo "WARNING: xwayland does not work yet on motorola-titan (probably)"
 	echo "because of bad framebuffer drivers)"
 	echo "=> Deleted /etc/xdg/weston/weston.ini as workaround"
 fi
