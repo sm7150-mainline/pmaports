@@ -1,0 +1,115 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - added !check !tracedeps
+# - package: just install zImage-dtb and kernel.release
+# - do not create -dev subpackage (makes no sense without module support)
+#
+# Kernel config changes, based on: arch/arm/configs/titan_defconfig
+# Changes:
+# - apply patches to compile with gcc6
+# - disable -Werror-implicit-function-declaration and -Wno-error,
+#      otherwise the kernel would not compile
+# - enable devtmpfs (needed for udev -> touch support in weston)
+# - disable xz compression
+
+_vendor=motorola
+_flavor=motorola-titan
+_hash="09cff47d6b79b73ecc3461e227abf09faaa9e754"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.4.113
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=1
+arch="armhf"
+pkgdesc="Motorola Moto G 2014 kernel from LineageOS"
+url="https://github.com/LineageOS/android_kernel_motorola_msm8226"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
+options="!strip !check !tracedeps"
+install=
+source="
+    $pkgname-$_hash.zip::https://github.com/LineageOS/android_kernel_motorola_msm8226/archive/${_hash}.zip
+    $_config
+    compiler-gcc6.h
+    changes1.patch
+    gcc5-compile.patch
+    Wno-error.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_motorola_msm8226-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		|| return 1
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="1a5599b1fe0d36a9804b2379cfc69f07ebd6f2fa472c7a7e4ae070131728c46db5f2b9766af282fd64ea075772f700c3b816ca7b7c90d24e21e9da289317ca37  linux-motorola-titan-09cff47d6b79b73ecc3461e227abf09faaa9e754.zip
+9975a82511dc20ef0c771a84e1021e9358575a3c50847750567d03d3bccef088b099bcfa7145d5358f6c49c22dbbf401f49da3e60f87dc6486a1394119e77f3a  config-motorola-titan.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+00bd2504cb922204c3b6a9ce243918f44d12f08e12f64535b9ec9f91d827160c4d5da85c3b84788a5f92d9eca63552265a203916505918367e2d397edbe148a8  changes1.patch
+4c13711fdcdce3ac0c4d30b79da7a331a9f32d46ad0b9572419b82d58db6eed76f728a340848d66a6378702749c56247439abb26fc1df0d3f5cfd1ef5b53acf9  gcc5-compile.patch
+d77966385f1aeb17fad6c3989766e874fea9d5818433d0c92c106dfd9aa3065102f018afb38678b0d741192d9efa4ede0ac4278802bf0878e3dec62dec64f50c  Wno-error.patch"
