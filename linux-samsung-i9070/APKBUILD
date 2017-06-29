@@ -1,0 +1,138 @@
+# Based on linux-lg-mako. Changes:
+# - add findutils makedepend (necessary for the initramfs)
+# - it builds an initramfs - do not use ramdisk.cpio and
+#	ramdisk-recovery.cpio, in there, always use the
+#	initramfs from the kernel2 partition ("isorec")
+# - directly boot to that initramfs, not only when the recovery
+#	key combination was pressed.
+# - use Alpine's busybox-static instead of the pre-compiled
+#	binary, that comes with the source
+# - reduce lzo compression because Alpine's busybox doesn't
+#	support high compression
+#
+# Kernel config changes, based on: arch/arm/configs/janice_defconfig
+# - enable devtmpfs (needed for udev -> touch support in weston)
+
+# This must be built in the target chroot, so busybox.static can
+# be used.
+_pmb_build_in_native_chroot="false"
+
+_vendor=samsung
+_flavor=samsung-i9070
+_hash="ac7219c4b8dcec7bc5a598d42c6be0db4aa36332"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.0.101
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=1
+arch="armhf"
+pkgdesc="Samsung Galaxy S Advance kernel from Epirex"
+url="https://github.com/Epirex/Samsung_STE_Kernel"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
+findutils busybox-static"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_hash.zip::https://github.com/Epirex/Samsung_STE_Kernel/archive/${_hash}.zip
+	$_config
+	compiler-gcc6.h
+	fix_return_address.patch
+	init
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/Samsung_STE_Kernel-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# Use Alpine's busybox.static instead of the pre-compiled busybox shipped
+	# with the source
+	cp -v /bin/busybox.static "$ksrcdir"/usr/u8500_initramfs_files/busybox
+
+	# do not use ramdisk.cpio and ramdisk-recovery.cpio, always use
+	# the initramfs from the kernel2 partition ("isorec"), so we can build
+	# it later and independently from the kernel. also directly boot that
+	# partition, not only when the recovery key combination was used.
+	cd "$ksrcdir"/usr/
+	mv u8500_initramfs.list u8500_initramfs.list_old
+	grep -v "../../ramdisk" u8500_initramfs.list_old > u8500_initramfs.list \
+		|| return 1
+	cp -v "$srcdir"/init "$ksrcdir"/usr/u8500_initramfs_files/init || return 1
+
+	# Reduce lzo compression because Alpine's busybox doesn't support high 
+	# compression
+	sed -i -e 's/lzop -9/lzop -6/g' "$ksrcdir"/scripts/Makefile.lib || return 1
+	sed -i -e 's/lzop -9/lzop -6/g' "$ksrcdir"/scripts/gen_initramfs_list.sh || return 1
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		|| return 1
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="ea4e0f56efadd12c3dab18f15214973c708f777097aecac2fb7be4118472ba6e61e2660579eec7a2b57398c3a78107c965b59a108ddf1178d481a4e353a68077  linux-samsung-i9070-ac7219c4b8dcec7bc5a598d42c6be0db4aa36332.zip
+8789a6b50cb4f438aa581003a54419d70e36f7077bb0107aeaaa237bb2d603d9fc67a25e47460068547c1dcc296c64752b3b448629bd4b64645e619d314ab9bf  config-samsung-i9070.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  fix_return_address.patch
+ef01c51c138239a49c1d00ae0074a07fed267d64934cf3d436a8ff057b91692ee2d040a45eacbb0dc62d5017a708c4dca2fadc282c850fa72aeebcfa787e2cbc  init"
