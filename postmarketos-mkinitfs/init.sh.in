@@ -12,17 +12,17 @@ setup_log
 setup_mdev
 mount_subpartitions
 
-# Always run dhcp daemon/usb networking for now (later this should only
-# be enabled, when having the usb-shell hook installed for debugging,
-# or get activated after the initramfs is done with an OpenRC service).
-setup_usb_network
-start_udhcpd
-
 # Hooks
 for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do
 	[ -e "$hook" ] || continue
 	sh "$hook"
 done
+
+# Always run dhcp daemon/usb networking for now (later this should only
+# be enabled, when having the usb-shell hook installed for debugging,
+# or get activated after the initramfs is done with an OpenRC service).
+setup_usb_network
+start_udhcpd
 
 # Unlock root partition
 unlock_root_partition
