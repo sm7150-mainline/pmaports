@@ -134,6 +134,33 @@ create_cpio_image()
 		| gzip -1 > "$outfile"
 }
 
+# Legacy u-boot images
+create_uinitrd()
+{
+	[ "${deviceinfo_generate_legacy_uboot_initfs}" == "true" ] || return
+	echo "==> initramfs: creating uInitrd"
+	mkimage -A arm -T ramdisk -C none -n uInitrd -d "$outfile" "${outfile/initramfs-/uInitrd-}"
+}
+
+# Android devices
+create_bootimg()
+{
+	[ "${deviceinfo_generate_bootimg}" == "true" ] || return
+	echo "==> initramfs: creating boot.img"
+	mkbootimg \
+		--kernel "${outfile/initramfs-/vmlinuz-}" \
+		--ramdisk "$outfile" \
+		--second_offset "${deviceinfo_flash_offset_second}" \
+		--cmdline "${deviceinfo_kernel_cmdline}" \
+		--base "${deviceinfo_flash_offset_base}" \
+		--kernel_offset "${deviceinfo_flash_offset_kernel}" \
+		--ramdisk_offset "${deviceinfo_flash_offset_ramdisk}" \
+		--tags_offset "${deviceinfo_flash_offset_tags}" \
+		--pagesize "${deviceinfo_flash_pagesize}" \
+		-o "${outfile/initramfs-/boot.img-}"
+}
+
+
 # initialize
 source_deviceinfo
 parse_commandline $1 $2 $3
@@ -159,12 +186,8 @@ done
 # finish up
 replace_init_variables
 create_cpio_image
-
-# create uInitrd if the device uses legacy u-boot images
-if [ "${deviceinfo_generate_legacy_uboot_initfs}" == "true" ]; then
-    echo "==> initramfs: creating uInitrd"
-    mkimage -A arm -T ramdisk -C none -n uInitrd -d "$outfile" $(dirname "$outfile")/uInitrd
-fi
+create_uinitrd
+create_bootimg
 
 rm -rf "$tmpdir"
 exit 0
