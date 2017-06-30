@@ -1,0 +1,27 @@
+pkgname=device-sony-amami
+pkgver=1
+pkgrel=2
+pkgdesc="Sony Xperia Z1 Compact"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-sony-amami"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo 90-android.rules"
+options="!check"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir"/90-android.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android.rules
+}
+
+sha512sums="7e27dd0f239b421e09692ef8fbdb73179971fbc24e769d3a8b5f32ea76bee96bc3c21b0eeb2445d2d5f3e20453ad5bcdb7c4090ecae924eeefa240677ec680f1  deviceinfo
+d1c9feee9ca5f667a7f4e99654b9535ec41bde4684c3c7c5eeef530c95958af8b198d4f7c0adbf1a58e8072ad95beeb6c644d2aed5047c5b0c3f5fc7287bfe7b  90-android.rules"
