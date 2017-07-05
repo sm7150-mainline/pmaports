@@ -25,3 +25,24 @@ for i in 1 2 3 4 5 6; do
 	[ "$i" == "1" ] && new="tty1::respawn:/bin/login -f $autologin"
 	sed -i -e "s.$old.$new.g" /etc/inittab
 done
+
+# Adjust welcome messages /etc (unless the files have been modified)
+if ! apk audit /etc | grep -q etc/issue; then
+	{
+		echo 'Welcome to postmarketOS'
+		echo 'Kernel \r on an \m (\l)'
+	} >/etc/issue
+fi
+if ! apk audit /etc | grep -q etc/motd; then
+	{
+		echo 'Welcome to postmarketOS!'
+		echo ''
+		echo 'This distribution is based on Alpine Linux.'
+		echo 'Read both our wikis to find a large amount of how-to guides and'
+		echo 'general information about administrating and development.'
+		echo 'See <https://postmarketos.org/wiki> and <https://wiki.alpinelinux.org>.'
+		echo ''
+		echo 'You may change this message by editing /etc/motd.'
+		echo ''
+	} >/etc/motd
+fi
