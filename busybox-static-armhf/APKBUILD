@@ -1,0 +1,29 @@
+# Automatically generated aport, do not edit!
+# Generator: pmbootstrap aportgen busybox-static-armhf
+
+pkgname=busybox-static-armhf
+pkgver=1.26.2
+pkgrel=8
+
+_arch="armhf"
+_mirror="https://nl.alpinelinux.org/alpine/"
+
+url="http://busybox.net"
+license="GPL2"
+arch="all"
+options="!check !strip"
+pkgdesc="Statically linked Busybox for $_arch"
+_target="$(arch_to_hostspec $_arch)"
+
+source="
+    busybox-static-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/busybox-static-$pkgver-r$pkgrel.apk
+"
+
+package() {
+    mkdir -p "$pkgdir/usr/$_target"
+    cd "$pkgdir/usr/$_target"
+    tar -xf $srcdir/busybox-static-$pkgver-r$pkgrel-$_arch.apk
+    rm .PKGINFO .SIGN.*
+}
+
+sha512sums="099c47767ed7f86f6a106afaa8b6e8dc33af4c7c7803d84a576f6640370bc52c995d1a65c5734337882e3452f2c79ebe0809b3120a7582f529f3d036f44c0b65  busybox-static-1.26.2-r8-armhf.apk"
