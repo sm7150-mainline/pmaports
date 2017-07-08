@@ -1,4 +1,4 @@
-# Based on linux-lg-mako. Changes:
+# APKBUILD based on linux-vanilla aport. Changes:
 # - add findutils makedepend (necessary for the initramfs)
 # - it builds an initramfs - do not use ramdisk.cpio and
 #	ramdisk-recovery.cpio, in there, always use the
@@ -9,6 +9,8 @@
 #	binary, that comes with the source
 # - reduce lzo compression because Alpine's busybox doesn't
 #	support high compression
+# - add kernel modules installation
+# - add wifi firmware from vendor files
 #
 # Kernel config changes, based on: arch/arm/configs/janice_defconfig
 # - enable devtmpfs (needed for udev -> touch support in weston)
@@ -16,7 +18,10 @@
 _vendor=samsung
 _flavor=samsung-i9070
 _hash="ac7219c4b8dcec7bc5a598d42c6be0db4aa36332"
+_hash_vendor_files="e24d9687e7fda4f94fc6652d137ed8e703930c3a"
 _config="config-${_flavor}.armhf"
+_src_zip="linux-${_flavor}-${_hash}.zip"
+_vendor_files_zip="vendor-files-${_flavor}-${_hash_vendor_files}.zip"
 
 pkgname=linux-${_flavor}
 pkgver=3.0.101
@@ -24,20 +29,24 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=2
+pkgrel=3
 arch="armhf"
 pkgdesc="Samsung Galaxy S Advance kernel from Epirex"
 url="https://github.com/Epirex/Samsung_STE_Kernel"
 depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
-findutils busybox-static-armhf"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev busybox-static-armhf"
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.zip::https://github.com/Epirex/Samsung_STE_Kernel/archive/${_hash}.zip
+	$_src_zip::https://github.com/Epirex/Samsung_STE_Kernel/archive/${_hash}.zip
+	$_vendor_files_zip::https://github.com/Epirex/android_vendor_samsung_u8500/archive/${_hash_vendor_files}.zip
 	$_config
+	00_fix_return_address.patch
+	01_remove_ramdisks_from_initramfs.patch
+	02_reduce_lzo_compression.patch
+	03_change_modules_install_dir.patch
+	04_change_dhd_firmware_dir.patch
 	compiler-gcc6.h
-	fix_return_address.patch
 	init
 "
 subpackages=""
@@ -49,6 +58,13 @@ HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 ksrcdir="$srcdir/Samsung_STE_Kernel-${_hash}"
+vsrcdir="$srcdir/android_vendor_samsung_u8500-${_hash_vendor_files}"
+
+unpack() {
+	cd "$srcdir"
+	unzip -q $_src_zip
+	unzip -q $_vendor_files_zip
+}
 
 prepare() {
 	local _patch_failed=
@@ -78,20 +94,9 @@ prepare() {
 	cp -v /usr/$(arch_to_hostspec $arch)/bin/busybox.static \
 		"$ksrcdir"/usr/u8500_initramfs_files/busybox
 
-	# do not use ramdisk.cpio and ramdisk-recovery.cpio, always use
-	# the initramfs from the kernel2 partition ("isorec"), so we can build
-	# it later and independently from the kernel. also directly boot that
-	# partition, not only when the recovery key combination was used.
-	cd "$ksrcdir"/usr/
-	mv u8500_initramfs.list u8500_initramfs.list_old
-	grep -v "../../ramdisk" u8500_initramfs.list_old > u8500_initramfs.list \
-		|| return 1
+	# use custom init script in the initramfs which loads the initramfs from 
+	# the kernel2 partition ("isorec")
 	cp -v "$srcdir"/init "$ksrcdir"/usr/u8500_initramfs_files/init || return 1
-
-	# Reduce lzo compression because Alpine's busybox doesn't support high 
-	# compression
-	sed -i -e 's/lzop -9/lzop -6/g' "$ksrcdir"/scripts/Makefile.lib || return 1
-	sed -i -e 's/lzop -9/lzop -6/g' "$ksrcdir"/scripts/gen_initramfs_list.sh || return 1
 
 	# gcc6 support
 	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
@@ -102,11 +107,10 @@ prepare() {
 		silentoldconfig
 }
 
-
-
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
 	cd "$srcdir"/build || return 1
+	echo "--[ menuconfig ]--"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
@@ -115,21 +119,51 @@ build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
 
+	echo "--[ Build kernel ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" \
 		|| return 1
+
+	echo "--[ Build modules ]--"
+	# the 'no-pic' flag is necessary to avoid the 
+	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
+	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		modules || return 1
 }
 
 package() {
+	echo "--[ Installing kernel ]--"
 	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	echo "--[ Installing modules ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		INSTALL_MOD_PATH="$pkgdir" modules_install \
+		|| return 1
+
+	echo "--[ Installing vendor files ]--"
+	# install wifi firmware
+	install -Dm644 "$vsrcdir/janice/system/etc/wifi/bcmdhd_sta.bin" \
+		"$pkgdir/lib/firmware/postmarketos/bcmdhd_sta.bin"
+	install -Dm644 "$vsrcdir/janice/system/etc/wifi/nvram_net.txt" \
+		"$pkgdir/lib/firmware/postmarketos/nvram_net.txt"
 }
 
 sha512sums="ea4e0f56efadd12c3dab18f15214973c708f777097aecac2fb7be4118472ba6e61e2660579eec7a2b57398c3a78107c965b59a108ddf1178d481a4e353a68077  linux-samsung-i9070-ac7219c4b8dcec7bc5a598d42c6be0db4aa36332.zip
-8789a6b50cb4f438aa581003a54419d70e36f7077bb0107aeaaa237bb2d603d9fc67a25e47460068547c1dcc296c64752b3b448629bd4b64645e619d314ab9bf  config-samsung-i9070.armhf
+387ac9d18e36bfe6e0a38afc708d573b9167bd95aaeb90268142339c252d037eec816cab345e9b9aa0cabc641988823b9ca1477bdded6c5f4a7945f351d6cac0  vendor-files-samsung-i9070-e24d9687e7fda4f94fc6652d137ed8e703930c3a.zip
+65ac788fc01180b803d8110333cbd0e30e742801647d6d4d813aaa6eca0c3d216f5daef0fc9583aef5a1ea2475d48567896da8e443781a1f08ff10ff8d6ea0a6  config-samsung-i9070.armhf
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+c8f12ecf578be0c4600563134079b980a1079b08ac868302af8821022befe873aa94c67b9690ba87f5967f0a48939d15e871dc2d2862bed7b6a1d0c9a95cfd8f  01_remove_ramdisks_from_initramfs.patch
+ef5b912c26fea4ab882592bdf7487942c64b123de8d25d08d976f29743f311742ee2f773bf2d110ddb5095f254dbb0bd4487c5cfce77311929082599199e7ebd  02_reduce_lzo_compression.patch
+27bba6d070db6f499d030680c020906fc3238dc60d90a9b2f0f3a355ef15beb227c1cf48b7858156264fe10f7943772ed00a837be36ba4b80de8199f0383e688  03_change_modules_install_dir.patch
+47533412cc91d2ead046039c90180ebc459e157017be85dca69cd882a183963448beb973f2cb7eaccbcd35354b0ed6a668131cd39ea30393dd52fd93b7e26815  04_change_dhd_firmware_dir.patch
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  fix_return_address.patch
 ef01c51c138239a49c1d00ae0074a07fed267d64934cf3d436a8ff057b91692ee2d040a45eacbb0dc62d5017a708c4dca2fadc282c850fa72aeebcfa787e2cbc  init"
