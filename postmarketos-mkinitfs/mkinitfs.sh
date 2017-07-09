@@ -152,7 +152,6 @@ create_bootimg()
 		--ramdisk "$outfile" \
 		--second_offset "${deviceinfo_flash_offset_second}" \
 		--cmdline "${deviceinfo_kernel_cmdline}" \
-		--base "${deviceinfo_flash_offset_base}" \
 		--kernel_offset "${deviceinfo_flash_offset_kernel}" \
 		--ramdisk_offset "${deviceinfo_flash_offset_ramdisk}" \
 		--tags_offset "${deviceinfo_flash_offset_tags}" \
