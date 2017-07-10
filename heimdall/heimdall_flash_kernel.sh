@@ -3,31 +3,38 @@ set -e
 
 usage()
 {
-	echo "Flash an initramfs file to the recovery partition, and flash a kernel."
+	echo "Flash initramfs and kernel to separate partitions."
 	echo "The kernel needs to have its own minimal initramfs, that loads the"
-	echo "real initramfs from the recovery partition (\"isorec\")."
+	echo "real initramfs from the other partition (\"isorec\")."
 	echo ""
-	echo "Usage: $(basename "$0") <initramfs> <kernel>"
+	echo "Usage: $(basename "$0") <initfs> <initfs partition> <kernel> <kernel partition>"
 	exit 1
 }
 
 # Sanity checks
-[ "$#" != 2 ] && usage
-INITRAMFS="$1"
-KERNEL="$2"
-for file in "$INITRAMFS" "$KERNEL"; do
+[ "$#" != 4 ] && usage
+INITFS="$1"
+INITFS_PARTITION="$2"
+KERNEL="$3"
+KERNEL_PARTITION="$4"
+for file in "$INITFS" "$KERNEL"; do
 	[ -e "$file" ] && continue
 	echo "ERROR: File $file does not exist!"
 	exit 1
 done
 
-echo "(1/2) flash initramfs to recovery partition (isorec-style)"
+echo "(1/2) Flash initramfs to the '$INITFS_PARTITION' partition (isorec-style)"
 heimdall_wait_for_device.sh
-gunzip -c "$INITRAMFS" | lzop > /tmp/initramfs.lzo
-heimdall flash --RECOVERY /tmp/initramfs.lzo
+gunzip -c "$INITFS" | lzop > /tmp/initramfs.lzo
+heimdall flash --"$INITFS_PARTITION" /tmp/initramfs.lzo
 rm /tmp/initramfs.lzo
 
+# Sleeping is necessary here, because when directly connecting again, the
+# flashing of the kernel has always failed (at least on the i9100).
+echo "Sleeping for 20 seconds..."
 sleep 20
-echo "(2/2) flash kernel (hit ^C if you only wanted to flash initramfs)"
+
+echo "(2/2) Flash kernel to the '$KERNEL_PARTITION' partition"
+echo "NOTE: Press ^C if you only wanted to flash the initramfs."
 heimdall_wait_for_device.sh
-heimdall flash --KERNEL "$KERNEL"
+heimdall flash --"$KERNEL_PARTITION" "$KERNEL"
