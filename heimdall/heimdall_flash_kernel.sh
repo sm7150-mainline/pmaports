@@ -3,31 +3,29 @@ set -e
 
 usage()
 {
-	echo "Flash an initramfs file to the recovery partition, and flash a kernel."
+	echo "Flash initramfs and kernel to separate partitions."
 	echo "The kernel needs to have its own minimal initramfs, that loads the"
-	echo "real initramfs from the recovery partition (\"isorec\")."
+	echo "real initramfs from the other partition (\"isorec\")."
 	echo ""
-	echo "Usage: $(basename "$0") <initramfs> <kernel>"
+	echo "Usage: $(basename "$0") <initfs> <initfs partition> <kernel> <kernel partition>"
 	exit 1
 }
 
 # Sanity checks
-[ "$#" != 2 ] && usage
-INITRAMFS="$1"
-KERNEL="$2"
-for file in "$INITRAMFS" "$KERNEL"; do
+[ "$#" != 4 ] && usage
+INITFS="$1"
+INITFS_PARTITION="$2"
+KERNEL="$3"
+KERNEL_PARTITION="$4"
+for file in "$INITFS" "$KERNEL"; do
 	[ -e "$file" ] && continue
 	echo "ERROR: File $file does not exist!"
 	exit 1
 done
 
-echo "(1/2) flash initramfs to recovery partition (isorec-style)"
+echo "Flash initramfs to the '$INITFS_PARTITION' partition (isorec-style) and"
+echo "kernel to the '$KERNEL_PARTITION' partition"
 heimdall_wait_for_device.sh
-gunzip -c "$INITRAMFS" | lzop > /tmp/initramfs.lzo
-heimdall flash --RECOVERY /tmp/initramfs.lzo
+gunzip -c "$INITFS" | lzop > /tmp/initramfs.lzo
+heimdall flash --"$INITFS_PARTITION" /tmp/initramfs.lzo --"$KERNEL_PARTITION" "$KERNEL"
 rm /tmp/initramfs.lzo
-
-sleep 20
-echo "(2/2) flash kernel (hit ^C if you only wanted to flash initramfs)"
-heimdall_wait_for_device.sh
-heimdall flash --KERNEL "$KERNEL"
