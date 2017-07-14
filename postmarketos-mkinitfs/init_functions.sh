@@ -25,6 +25,9 @@ mount_proc_sys_dev() {
 	mount -t proc -o nodev,noexec,nosuid proc /proc
 	mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
 
+	mkdir /config
+	mount -t configfs -o nodev,noexec,nosuid configfs /config
+
 	# /dev/pts (needed for telnet)
 	mkdir -p /dev/pts
 	mount -t devpts devpts /dev/pts
@@ -102,6 +105,26 @@ setup_usb_network_android() {
 	printf "%s" "1" >"$SYS/enable"
 }
 
+setup_usb_network_configfs() {
+	CONFIGFS=/config/usb_gadget
+	[ -e "$CONFIGFS" ] || return
+
+	mkdir $CONFIGFS/g1
+	printf "%s" "18D1" >"$CONFIGFS/g1/idVendor"
+	printf "%s" "D001" >"$CONFIGFS/g1/idProduct"
+
+	mkdir $CONFIGFS/g1/strings/0x409
+
+	mkdir $CONFIGFS/g1/functions/rndis.usb0
+
+	mkdir $CONFIGFS/g1/configs/c.1
+	mkdir $CONFIGFS/g1/configs/c.1/strings/0x409
+	printf "%s" "rndis" > $CONFIGFS/g1/configs/c.1/strings/0x409/configuration
+
+	ln -s $CONFIGFS/g1/functions/rndis.usb0 $CONFIGFS/g1/configs/c.1
+	echo "$(ls /sys/class/udc)" > $CONFIGFS/g1/UDC
+}
+
 setup_usb_network() {
 	# Only run once
 	_marker="/tmp/_setup_usb_network"
@@ -110,6 +133,7 @@ setup_usb_network() {
 
 	# Run all usb network setup functions (add more below!)
 	setup_usb_network_android
+	setup_usb_network_configfs
 }
 
 start_udhcpd() {
