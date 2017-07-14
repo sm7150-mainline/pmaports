@@ -23,18 +23,9 @@ for file in "$INITFS" "$KERNEL"; do
 	exit 1
 done
 
-echo "(1/2) Flash initramfs to the '$INITFS_PARTITION' partition (isorec-style)"
+echo "Flash initramfs to the '$INITFS_PARTITION' partition (isorec-style) and"
+echo "kernel to the '$KERNEL_PARTITION' partition"
 heimdall_wait_for_device.sh
 gunzip -c "$INITFS" | lzop > /tmp/initramfs.lzo
-heimdall flash --"$INITFS_PARTITION" /tmp/initramfs.lzo
+heimdall flash --"$INITFS_PARTITION" /tmp/initramfs.lzo --"$KERNEL_PARTITION" "$KERNEL"
 rm /tmp/initramfs.lzo
-
-# Sleeping is necessary here, because when directly connecting again, the
-# flashing of the kernel has always failed (at least on the i9100).
-echo "Sleeping for 20 seconds..."
-sleep 20
-
-echo "(2/2) Flash kernel to the '$KERNEL_PARTITION' partition"
-echo "NOTE: Press ^C if you only wanted to flash the initramfs."
-heimdall_wait_for_device.sh
-heimdall flash --"$KERNEL_PARTITION" "$KERNEL"
