@@ -15,12 +15,13 @@ _hash="7b6fbfd899b4133e4f789843e5967beb139ec4d2"
 _config="config-${_flavor}.armhf"
 
 pkgname=linux-${_flavor}
-pkgver=4.6
+
+pkgver=4.12.2
 case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=2
+pkgrel=1
 arch="armhf"
 pkgdesc="Mainline Linux for the Nokia N900"
 url="https://github.com/pali/linux-n900"
@@ -29,7 +30,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev u
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.tar.gz::https://github.com/pali/linux-n900/archive/${_hash}.tar.gz
+	https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-"$pkgver".tar.xz
 	$_config
 "
 subpackages=""
@@ -40,7 +41,7 @@ _carch="arm"
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-ksrcdir="$srcdir/linux-n900-${_hash}"
+ksrcdir="$srcdir/linux-$pkgver"
 
 prepare() {
 	local _patch_failed=
@@ -115,5 +116,5 @@ package() {
 		|| return 1
 }
 
-sha512sums="ad1288233893ce3de9c81f4672f4f2439c8d6665a0a0289f5cbe826fd08c69292de02a2fd9856dcd6d91c7f6930273319e1888bf0a146aee3a4e1ff50f6f7b19  linux-nokia-rx51-7b6fbfd899b4133e4f789843e5967beb139ec4d2.tar.gz
-6b9ef5266bf95314b76c6973036b8e66cfa3b27efee84524f8c9a4316cbc29e289b1d56c99d8bcdf5516bdc743ab1a2bea4b277d3cff88d0e07de4b514d65e77  config-nokia-rx51.armhf"
+sha512sums="683ff447607e1f10af81a539aae8620964173f61fc9fc69b8e108bfdfd49358cc1f5b04a5bd31efcb299f66fac9df2750f92a18ea1b9264a9f0e76d2759b66e9  linux-4.12.2.tar.xz
+1343375a4709076080022899a7bb5fd7a583c3a7327b438c1fbec90c6005ceaca9591e8d8f83ea78130d53fda08392c7f19037063caa8f25f79a7166ce45cec3  config-nokia-rx51.armhf"
