@@ -22,6 +22,7 @@ case $pkgver in
 	*.*) _kernver=$pkgver;;
 esac
 pkgrel=1
+
 arch="armhf"
 pkgdesc="Mainline Linux for the Nokia N900"
 url="https://github.com/pali/linux-n900"
@@ -110,7 +111,7 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
 	cd "$srcdir"/build
-	make -j1 modules_install firmware_install \
+	make -j1 modules_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
 		|| return 1
