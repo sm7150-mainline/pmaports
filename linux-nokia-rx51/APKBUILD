@@ -21,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 
 arch="armhf"
 pkgdesc="Mainline Linux for the Nokia N900"
@@ -99,7 +99,7 @@ package() {
 	mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n postmarketos -d zImage-dtb uImage
 
 	install -Dm644 "$srcdir/build/arch/arm/boot/uImage" \
-		"$pkgdir/boot/uImage"
+		"$pkgdir/boot/uImage-$_flavor"
 
 	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
