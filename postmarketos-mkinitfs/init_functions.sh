@@ -188,3 +188,9 @@ show_splash() {
 	gzip -c -d "$1" >/tmp/splash.ppm
 	fbsplash -s /tmp/splash.ppm
 }
+
+echo_connect_ssh_message() {
+    echo "Your root partition has been decrypted successfully!"
+    echo "You can connect to your device using SSH in a few seconds:"
+    echo "ssh user@$IP"
+}

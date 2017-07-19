@@ -19,6 +19,7 @@ start_usb_unlock() {
 		echo '#!/bin/sh'
 		echo '. /init_functions.sh'
 		echo 'unlock_root_partition'
+		echo 'echo_connect_ssh_message'
 		echo 'killall cryptsetup telnetd'
 	} >/telnet_connect.sh
 	chmod +x /telnet_connect.sh
