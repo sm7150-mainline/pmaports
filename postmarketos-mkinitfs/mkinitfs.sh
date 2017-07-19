@@ -147,9 +147,12 @@ create_bootimg()
 {
 	[ "${deviceinfo_generate_bootimg}" == "true" ] || return
 	echo "==> initramfs: creating boot.img"
+	_base="${deviceinfo_flash_offset_base}"
+	[ -z "$_base" ] && _base="0x10000000"
 	mkbootimg \
 		--kernel "${outfile/initramfs-/vmlinuz-}" \
 		--ramdisk "$outfile" \
+		--base "${_base}" \
 		--second_offset "${deviceinfo_flash_offset_second}" \
 		--cmdline "${deviceinfo_kernel_cmdline}" \
 		--kernel_offset "${deviceinfo_flash_offset_kernel}" \
