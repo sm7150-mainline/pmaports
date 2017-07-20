@@ -1,0 +1,30 @@
+pkgname=device-asus-grouper
+pkgver=1
+pkgrel=2
+pkgdesc="Asus Nexus 7 2012 Wifi"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-asus-grouper mkbootimg"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules"
+options="!check"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+sha512sums="dcd9e938578d34f9fba7a18bbc7cc6a8707bdf0f08caa82d70a4ff0421e4035a99892d329ea7eed7cd048eb9fa4dc000bbb6c61d551ae29f14f7008a8dfc01e1  deviceinfo
+8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
+05f938784e8f30cdbe9923a5f3e34ce7c539060d3a621741206bc5ed02afd7cbf480b02fbe48a70968e7182f885ab9bfe57c4d1e7c6eefca54a6f7188d2849f2  90-android-touch-dev.rules"

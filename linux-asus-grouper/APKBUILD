@@ -1,0 +1,108 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - package: just install zimage and kernel.release, because the kernel config
+#	does not generate modules or dtb files
+# - do not create -dev subpackage (makes no sense without module support)
+#
+# Kernel config based on: arch/arm/configs/lineageos_grouper_defconfig
+# Changes:
+# - enable devtmpfs (needed for udev -> touch support in weston)
+
+_vendor=asus
+_flavor=asus-grouper
+_hash="953e26f2709dfe0c185c3c99c50b0c9d56d473a4"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.4.0
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=3
+arch="armhf"
+pkgdesc="Nexus 7 (2012) kernel from LineageOS"
+url="https://github.com/LineageOS/android_kernel_asus_grouper"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_hash.zip::https://github.com/LineageOS/android_kernel_asus_grouper/archive/${_hash}.zip
+	$_config
+	compiler-gcc6.h
+	duplicate-return-address-definition.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+#ksrcdir="$srcdir/${_vendor}-kernel-grouper-${_hash}"
+ksrcdir="$srcdir/android_kernel_asus_grouper-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		|| return 1
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="03d7c2073e6998d4c414267956691300fbd4a1d8b6ea8a773ea906ba306329269aaa47734fc91f65069861f07a4d5b9f63b8f1160c671aa21445ae4196cdec27  linux-asus-grouper-953e26f2709dfe0c185c3c99c50b0c9d56d473a4.zip
+3a655e00e4820f123010de8a6bbe7b757b53d352d0e51eef5de4565bd8f473a6735d5bb7961f5abd9fc4de9b0312f303d1819986756a7c603e2e69aa806ab144  config-asus-grouper.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+9b15bf1f6cb66f54c785b0af6c9db8a7d63257e6fa3eeb0cbf47284334166aa6a7ff93e1b64ab69206c8047d64641199c0f5fcbc257bbe039263252fff45118e  duplicate-return-address-definition.patch"
