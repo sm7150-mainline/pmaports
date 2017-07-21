@@ -1,12 +1,5 @@
 #!/bin/sh
 
-# Dirty hacks, necessary to get a working demo...
-if [ -e /etc/xdg/weston/weston.ini ]; then
-	rm /etc/xdg/weston/weston.ini
-	echo "WARNING: xwayland does not work yet on lg-mako (probably"
-	echo "because of bad framebuffer drivers)"
-	echo "=> Deleted /etc/xdg/weston/weston.ini as workaround"
-fi
 if [ -e /lib/udev/v4l_id ]; then
 	mv /lib/udev/v4l_id /lib/udev/v4l_id_
 	echo "WARNING: v4l_id hangs with the current kernel."
