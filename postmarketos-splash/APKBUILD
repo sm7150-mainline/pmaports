@@ -1,0 +1,26 @@
+pkgname=postmarketos-splash
+pkgver=1
+pkgrel=0
+pkgdesc="Splash screen for postmarketOS"
+url="https://github.com/postmarketos"
+arch="all"
+license="mit"
+depends="ttf-dejavu py3-pillow"
+makedepends=""
+install=""
+subpackages=""
+source="make-splash.py config.ini"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m755 "$srcdir"/make-splash.py \
+                "$pkgdir"/usr/bin/pmos-make-splash
+	install -D -m644 "$srcdir"/config.ini \
+		"$pkgdir"/etc/postmarketos/splash.ini
+}
+
+sha512sums="5a89cdaeec572262ae48248a0c92721bd53e40ddf83167be3ede6fef656e540f6f3cf8eac3d17ae9755ab523a69f760732d05b0de436347ed91272ca732ac938  make-splash.py
+b5f7b6268119d835bded30acd1a57d171be2c9dde21f2566f7f231de88490d91576ec97f60a17f7fbfc1aa0e2310030b2d056117c8ebbba84caae02be46610fb  config.ini"
