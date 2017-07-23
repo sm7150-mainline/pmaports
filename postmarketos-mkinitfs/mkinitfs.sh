@@ -162,6 +162,21 @@ create_bootimg()
 		-o "${outfile/initramfs-/boot.img-}"
 }
 
+# Create splash screens
+generate_splash_screens()
+{
+	width=${deviceinfo_screen_width:-720}
+	height=${deviceinfo_screen_height:-1280}
+
+	pmos-make-splash --text="On-screen keyboard is not implemented yet, plug in a USB cable and run on your PC:\ntelnet 172.16.42.1" \
+		--config /etc/postmarketos/splash.ini $width $height "${tmpdir}/splash1.ppm"
+
+	pmos-make-splash --text="Loading..." --center \
+		--config /etc/postmarketos/splash.ini $width $height "${tmpdir}/splash2.ppm"
+
+	gzip "${tmpdir}/splash1.ppm"
+	gzip "${tmpdir}/splash2.ppm"
+}
 
 # initialize
 source_deviceinfo
@@ -181,11 +196,8 @@ install -Dm755 "/usr/share/postmarketos-mkinitfs/init.sh.in" \
 install -Dm755 "/usr/share/postmarketos-mkinitfs/init_functions.sh" \
 	"$tmpdir/init_functions.sh"
 
-for i in /usr/share/postmarketos-mkinitfs/splash*.ppm.gz; do
-	install -Dm644 "$i" "$tmpdir"/"$(basename $i)"
-done
-
 # finish up
+generate_splash_screens
 replace_init_variables
 create_cpio_image
 create_uinitrd

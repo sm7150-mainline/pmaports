@@ -1,12 +1,12 @@
 pkgname=postmarketos-mkinitfs
-pkgver=0.1.7
+pkgver=0.1.8
 pkgrel=0
 pkgdesc="Tool to generate initramfs images for postmarketOS"
 url="https://github.com/postmarketOS"
 # multipath-tools: kpartx
-depends="busybox-extras lddtree cryptsetup kmod multipath-tools"
+depends="busybox-extras lddtree cryptsetup kmod multipath-tools postmarketos-splash"
 triggers="$pkgname.trigger=/etc/postmarketos-mkinitfs/hooks:/usr/share/kernel/*"
-source="init.sh.in init_functions.sh mkinitfs.sh 10-usb-unlock.sh splash1.ppm.gz splash2.ppm.gz"
+source="init.sh.in init_functions.sh mkinitfs.sh 10-usb-unlock.sh"
 arch="noarch"
 license="GPL2"
 provides="mkinitfs=0.0.1"
@@ -17,7 +17,7 @@ build() {
 
 package() {
 	mkdir -p "$pkgdir/usr/share/postmarketos-mkinitfs/"
-	for file in init.sh.in init_functions.sh splash*.ppm.gz; do
+	for file in init.sh.in init_functions.sh; do
 		install -Dm644 "$srcdir/$file" \
 			"$pkgdir/usr/share/postmarketos-mkinitfs/$file"
 	done
@@ -29,7 +29,5 @@ package() {
 }
 sha512sums="22418d8869448b456a775f03b18d7b4e13f3cac1129233ced42caf67c3aea4abcc6488fcba2acb5e20dd72f2a6da6419938ac44751a5ba175f02eab586573c43  init.sh.in
 6d130be59507ad6c755ce8dfe345335e54b3891ca484e7865246ce69fe9d4e6441247acf6d17cc2ff414aaa0aca13fc28c8956b90f1626b784429adc3b5bf866  init_functions.sh
-ba56182262803fa18c85bdd5b80d7c61f098e528dfda17a8876db267770bb9aee7308d48f921ba60e14fbd95d18daa66781738a925f2515dca123d1e74b051d7  mkinitfs.sh
-8129300894f0b91ba669c12df2e51fb8dd9a9366da26496523047782026714444f40037b88d3e56dc28e3049901c32bf2a4959390883dfbbff8cfa19bb82045f  10-usb-unlock.sh
-35a8eabad947347afec7e3f5860d31ab9e3534972c0960ccf553c7e1cc9262316bfdddb8d61d3588db1ee2261077597617806080b9956798b3e5088d6f9b596b  splash1.ppm.gz
-bf11d8b3a50db984cfbb2cafe6687de327242c1f6f56c6fdd02ca579b05213f9c886aa1c0527530fdec21b16e65e68962e40a600c4ce155819df2f610b435087  splash2.ppm.gz"
+76abcc7b206126c82f500556187174915aa11d67ccabee90228fb426bf77d3a6e28f512c117f93d5e579dd878f343c55d27124c402be777c7ab9499d7f40fc7c  mkinitfs.sh
+8129300894f0b91ba669c12df2e51fb8dd9a9366da26496523047782026714444f40037b88d3e56dc28e3049901c32bf2a4959390883dfbbff8cfa19bb82045f  10-usb-unlock.sh"
