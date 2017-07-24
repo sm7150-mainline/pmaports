@@ -1,0 +1,39 @@
+#!/bin/sh
+
+. /etc/deviceinfo
+
+# This section generates weston.ini with options from /etc/deviceinfo (if present)
+
+weston_config="/etc/xdg/weston/weston.ini"
+
+mkdir -p /etc/xdg/weston
+
+# If weston.ini exists, no modifications to it will be made
+if [ ! -f $weston_config ]; then
+
+        ### [Core]
+        echo "[core]" >> $weston_config
+        # modules
+        # Note: Default to loading NO modules if none specified
+        if [ -n "$deviceinfo_weston_core_modules" ]; then
+                echo "modules=$deviceinfo_weston_core_modules" >> $weston_config
+        fi
+        # backend
+        if [ -n "$deviceinfo_weston_core_backend" ]; then
+                echo "backend=$deviceinfo_weston_core_backend" >> $weston_config
+        else
+                # Default backend for PMOS, if none specified
+                echo "backend=fbdev-backend.so" >> $weston_config
+        fi
+
+        ### [Keyboard]
+        echo "[keyboard]" >> $weston_config
+        # keymap_rules
+        if [ -n "$deviceinfo_weston_keymap_rules" ]; then
+                echo "keymap_rules=$deviceinfo_weston_keymap_rules" >> $weston_config
+        fi
+        # keymap_model
+        if [ -n "$deviceinfo_weston_keymap_model" ]; then
+                echo "keymap_model=$deviceinfo_weston_keymap_model" >> $weston_config
+        fi
+fi

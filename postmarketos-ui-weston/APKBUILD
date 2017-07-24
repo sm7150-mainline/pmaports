@@ -1,0 +1,21 @@
+pkgname=postmarketos-ui-weston
+pkgver=1
+pkgrel=1
+pkgdesc="Meta package for weston"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="GPL3+"
+depends="weston-clients weston weston-shell-desktop weston-backend-fbdev
+        weston-backend-drm weston-backend-x11 weston-terminal
+        weston-xwayland xorg-server-xwayland postmarketos-demos"
+makedepends=""
+install="$pkgname.post-install"
+subpackages=""
+source="start_weston.sh"
+options="!check"
+
+package() {
+	install -D -m644 "$srcdir"/start_weston.sh \
+		"$pkgdir"/etc/profile.d/start_weston.sh || return 1
+}
+sha512sums="c58547a8e3f184f97aabb746b6b2d4e84292809d00c2fbd16e4051f142246798cdf26a7a5861d632afaf2c103d47045aa3ba7b740157c2f0f9c2a404716252b0  start_weston.sh"
