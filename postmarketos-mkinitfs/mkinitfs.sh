@@ -135,11 +135,18 @@ create_cpio_image()
 }
 
 # Legacy u-boot images
-create_uinitrd()
+create_uboot_files()
 {
 	[ "${deviceinfo_generate_legacy_uboot_initfs}" == "true" ] || return
 	echo "==> initramfs: creating uInitrd"
 	mkimage -A arm -T ramdisk -C none -n uInitrd -d "$outfile" "${outfile/initramfs-/uInitrd-}"
+
+	echo "==> kernel: creating uImage"
+	kernelfile="${outfile/initramfs-/vmlinuz-}"
+	if [ -n "${deviceinfo_dtb}" ]; then
+		kernelfile="${kernelfile}-dtb"
+	fi
+	mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n postmarketos -d $kernelfile "${outfile/initramfs-/uImage-}"
 }
 
 # Android devices
@@ -149,8 +156,13 @@ create_bootimg()
 	echo "==> initramfs: creating boot.img"
 	_base="${deviceinfo_flash_offset_base}"
 	[ -z "$_base" ] && _base="0x10000000"
+
+	kernelfile="${outfile/initramfs-/vmlinuz-}"
+	if [ -n "${deviceinfo_dtb}" ]; then
+		kernelfile="${kernelfile}-dtb"
+	fi
 	mkbootimg \
-		--kernel "${outfile/initramfs-/vmlinuz-}" \
+		--kernel "${kernelfile}" \
 		--ramdisk "$outfile" \
 		--base "${_base}" \
 		--second_offset "${deviceinfo_flash_offset_second}" \
@@ -178,6 +190,16 @@ generate_splash_screens()
 	gzip "${tmpdir}/splash2.ppm"
 }
 
+# Append the correct device tree to the linux image file
+append_device_tree()
+{
+	[ -n "${deviceinfo_dtb}" ] || return
+	dtb="/usr/share/dtb/${deviceinfo_dtb}.dtb"
+	kernel="${outfile/initramfs-/vmlinuz-}"
+	echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
+	cat $kernel $dtb > "${kernel}-dtb"
+}
+
 # initialize
 source_deviceinfo
 parse_commandline $1 $2 $3
@@ -200,7 +222,8 @@ install -Dm755 "/usr/share/postmarketos-mkinitfs/init_functions.sh" \
 generate_splash_screens
 replace_init_variables
 create_cpio_image
-create_uinitrd
+append_device_tree
+create_uboot_files
 create_bootimg
 
 rm -rf "$tmpdir"

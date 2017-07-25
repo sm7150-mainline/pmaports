@@ -1,0 +1,23 @@
+pkgname=device-qemu-amd64
+pkgver=1
+pkgrel=1
+pkgdesc="Simulated device in qemu with an x86 platform"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-postmarketos"
+makedepends=""
+subpackages=""
+source="deviceinfo"
+options="!check"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+}
+
+sha512sums="6d8c51d5b3d8e59640bdb4272fcd70fb8d262d6233133725b49e3e832ee713710377761456684223d9f4d311c2285bf41e92d88b68ce01963fe5c8ca132117db  deviceinfo"
