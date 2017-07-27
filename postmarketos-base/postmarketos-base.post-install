@@ -6,7 +6,7 @@
 for service in devfs dmesg; do
 	rc-update -q add $service sysinit
 done
-for service in hwclock modules sysctl hostname bootmisc wpa_supplicant wifi-handler; do
+for service in hwclock modules sysctl hostname bootmisc wpa_supplicant wifi-handler syslog; do
 	rc-update -q add $service boot
 done
 for service in haveged sshd udev; do
@@ -48,3 +48,6 @@ if ! apk audit /etc | grep -q etc/motd; then
 		echo ''
 	} >/etc/motd
 fi
+
+# Enable syslog to SHM. Note: size is 4048KiB, which *should* be More Than Enough(TM) for all but the most chattiest of devices.
+sed s/=\"/=\""-C4048 "/  -i /etc/conf.d/syslog
