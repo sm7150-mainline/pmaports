@@ -1,0 +1,34 @@
+pkgname=device-htc-ace
+pkgver=1
+pkgrel=2
+pkgdesc="HTC Desire HD"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-htc-ace mkbootimg linux-firmware"
+makedepends=""
+install=""
+subpackages=""
+source="
+	deviceinfo
+	initfs-hook.sh
+	90-android-touch-dev.rules
+"
+options="!check"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rule
+}
+
+sha512sums="204eb01c5cc29d14ccccfebda6ea6a4ad4ad8296cfcdc517456de6afcbaf8072790a5a398a27e0f93a8ac3f4a1b55226f65be4cd3b4734aee4b536445ea85ecf  deviceinfo
+3ce2d134aa59677e25a160b5985c552fbf048b237169bbeb85e2b8824f734627064b51c097036db10eee0254064d45d804d17372dffcd1ba246938968fe1e225  initfs-hook.sh
+ab8fb357bb45ba44723f1ecb01a10db26f8f74b605499673e1ba90c69a9b11a1555983ce90235e3b636d75461c81c81eea0f8318ded06b72dad17f924d8b9901  90-android-touch-dev.rules"
