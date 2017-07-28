@@ -1,6 +1,7 @@
 #!/bin/sh
 # This file will be in /init_functions.sh inside the initramfs.
 IP=172.16.42.1
+TELNET_PORT=23
 
 # Redirect stdout and stderr to logfile
 setup_log() {
@@ -92,6 +93,31 @@ find_root_partition() {
 	echo "$DEVICE"
 }
 
+find_boot_partition() {
+	findfs LABEL="pmOS_boot"
+}
+
+mount_boot_partition() {
+	partition=$(find_boot_partition)
+	if [ -z "$partition" ]; then
+		echo "ERROR: boot partition not found!"
+		show_splash /splash-noboot.ppm.gz
+		loop_forever
+	fi
+	mount -r -t ext2 "$partition" /boot
+}
+
+# $1: initramfs-extra path
+extract_initramfs_extra() {
+	initramfs_extra="$1"
+	if [ ! -e "$initramfs_extra" ]; then
+		echo "ERROR: initramfs-extra not found!"
+		show_splash /splash-noinitramfsextra.ppm.gz
+		loop_forever
+	fi
+	gzip -d -c "$initramfs_extra" | cpio -i
+}
+
 setup_usb_network_android() {
 	# Only run, when we have the android usb driver
 	SYS=/sys/class/android_usb/android0
@@ -122,7 +148,7 @@ setup_usb_network_configfs() {
 	printf "%s" "rndis" > $CONFIGFS/g1/configs/c.1/strings/0x409/configuration
 
 	ln -s $CONFIGFS/g1/functions/rndis.usb0 $CONFIGFS/g1/configs/c.1
-	echo "$(ls /sys/class/udc)" > $CONFIGFS/g1/UDC
+	ls /sys/class/udc > $CONFIGFS/g1/UDC
 }
 
 setup_usb_network() {
@@ -160,16 +186,43 @@ start_udhcpd() {
 	udhcpd
 }
 
+start_usb_unlock() {
+	# Only run once
+	_marker="/tmp/_start_usb_unlock"
+	[ -e "$_marker" ] && return
+	touch "$_marker"
+
+	# Set up networking
+	setup_usb_network
+	start_udhcpd
+
+	# Telnet splash
+	show_splash /splash-telnet.ppm.gz
+
+	# Start the telnet daemon
+	{
+		echo '#!/bin/sh'
+		echo '. /init_functions.sh'
+		echo 'unlock_root_partition'
+		echo 'echo_connect_ssh_message'
+		echo 'killall cryptsetup telnetd'
+	} >/telnet_connect.sh
+	chmod +x /telnet_connect.sh
+	telnetd -b "${IP}:${TELNET_PORT}" -l /telnet_connect.sh
+}
+
 unlock_root_partition() {
 	# Wait for the root partition (and unlock it if it is encrypted)
 	while ! [ -e /sysroot/usr ]; do
 		partition="$(find_root_partition)"
 		if [ -z "$partition" ]; then
+			show_splash /splash-nosystem.ppm.gz
 			echo "Could not find the root partition."
 			echo "Maybe you need to insert the sdcard, if your device has"
 			echo "any? Trying again in one second..."
 			sleep 1
 		elif cryptsetup isLuks "$partition"; then
+			start_usb_unlock
 			cryptsetup luksOpen "$partition" root || continue
 			partition="/dev/mapper/root"
 			break
@@ -190,7 +243,13 @@ show_splash() {
 }
 
 echo_connect_ssh_message() {
-    echo "Your root partition has been decrypted successfully!"
-    echo "You can connect to your device using SSH in a few seconds:"
-    echo "ssh user@$IP"
+	echo "Your root partition has been decrypted successfully!"
+	echo "You can connect to your device using SSH in a few seconds:"
+	echo "ssh user@$IP"
+}
+
+loop_forever() {
+	while true; do
+		sleep 1
+	done
 }

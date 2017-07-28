@@ -16,11 +16,12 @@ parse_commandline()
 {
 	if [ "$1" != "-o" ]; then
 		echo "postmarketos-mkinitfs"
-		echo "usage: $(basename $0) -o OUTFILE KERNELVERSION"
+		echo "usage: $(basename "$0") -o OUTFILE KERNELVERSION"
 		exit 1
 	fi
 
 	outfile=$2
+	outfile_extra=$2-extra
 	kernel=$3
 	modules_path="/lib/modules/${kernel}"
 
@@ -33,7 +34,7 @@ parse_commandline()
 create_folders()
 {
 	for dir in /bin /sbin /usr/bin /usr/sbin /proc /sys /dev /tmp /lib \
-		/sysroot; do
+		/boot /sysroot; do
 		mkdir -p "$tmpdir$dir"
 	done
 }
@@ -67,9 +68,9 @@ get_modules_by_globs()
 	for glob in $globs; do
 		for file in /lib/modules/$kernel/$glob; do
 			if [ -d "$file" ]; then
-				find $file -type f
+				find "$file" -type f
 			elif [ -e "$file" ]; then
-				echo $file
+				echo "$file"
 			fi
 		done
 	done
@@ -100,38 +101,61 @@ get_modules()
 # Get the paths to all binaries and their dependencies
 get_binaries()
 {
-	BINARIES="/bin/busybox /bin/busybox-extras /sbin/cryptsetup /usr/sbin/telnetd /sbin/kpartx"
+	BINARIES="/bin/busybox /bin/busybox-extras /usr/sbin/telnetd /sbin/kpartx"
 	lddtree -l $BINARIES | sort -u
 }
 
-# Copy files to the same destination in the initramfs
+get_binaries_extra()
+{
+	BINARIES_EXTRA="
+		/sbin/cryptsetup
+		/sbin/dmsetup
+		/usr/sbin/parted
+		/sbin/e2fsck
+		/usr/sbin/resize2fs
+	"
+	tmp1=$(mktemp /tmp/mkinitfs.XXXXXX)
+	get_binaries > "$tmp1"
+	tmp2=$(mktemp /tmp/mkinitfs.XXXXXX)
+	lddtree -l $BINARIES_EXTRA | sort -u > "$tmp2"
+	ret=$(comm -13 "$tmp1" "$tmp2")
+	rm "$tmp1" "$tmp2"
+	echo "${ret}"
+}
+
+# Copy files to the destination specified
 # FIXME: this is a performance bottleneck
 # $1: files
+# $2: destination
 copy_files()
 {
 	for file in $1; do
-		install -Dm755 $file $tmpdir$file
+		install -Dm755 "$file" "$2$file"
 	done
 }
 
 create_device_nodes()
 {
-	mknod -m 666 $tmpdir/dev/null c 1 3
-	mknod -m 644 $tmpdir/dev/random c 1 8
-	mknod -m 644 $tmpdir/dev/urandom c 1 9
+	mknod -m 666 "$tmpdir/dev/null" c 1 3
+	mknod -m 644 "$tmpdir/dev/random" c 1 8
+	mknod -m 644 "$tmpdir/dev/urandom" c 1 9
 }
 
 replace_init_variables()
 {
-	sed -i "s:@MODULES@:${deviceinfo_modules_initfs} ext4:g" $tmpdir/init
+	sed -i "s:@MODULES@:${deviceinfo_modules_initfs} ext4:g" "$tmpdir/init"
+	sed -i "s:@INITRAMFS_EXTRA@:${outfile_extra}:g" "$tmpdir/init"
 }
 
+# Create a cpio image of the specified folder
+# $1: folder
+# $2: outfile
 create_cpio_image()
 {
-	cd "$tmpdir"
+	cd "$1"
 	find . -print0 \
 		| cpio --quiet -o -H newc \
-		| gzip -1 > "$outfile"
+		| gzip -1 > "$2"
 }
 
 # Legacy u-boot images
@@ -181,13 +205,24 @@ generate_splash_screens()
 	height=${deviceinfo_screen_height:-1280}
 
 	pmos-make-splash --text="On-screen keyboard is not implemented yet, plug in a USB cable and run on your PC:\ntelnet 172.16.42.1" \
-		--config /etc/postmarketos/splash.ini $width $height "${tmpdir}/splash1.ppm"
+		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-telnet.ppm"
+	gzip "${tmpdir}/splash-telnet.ppm"
 
 	pmos-make-splash --text="Loading..." --center \
-		--config /etc/postmarketos/splash.ini $width $height "${tmpdir}/splash2.ppm"
+		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-loading.ppm"
+	gzip "${tmpdir}/splash-loading.ppm"
 
-	gzip "${tmpdir}/splash1.ppm"
-	gzip "${tmpdir}/splash2.ppm"
+	pmos-make-splash --text="boot partition not found\nhttps://postmarketos.org/troubleshooting" --center \
+		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-noboot.ppm"
+	gzip "${tmpdir}/splash-noboot.ppm"
+
+	pmos-make-splash --text="initramfs-extra not found\nhttps://postmarketos.org/troubleshooting" --center \
+		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-noinitramfsextra.ppm"
+	gzip "${tmpdir}/splash-noinitramfsextra.ppm"
+
+	pmos-make-splash --text="system partition not found\nhttps://postmarketos.org/troubleshooting" --center \
+		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-nosystem.ppm"
+	gzip "${tmpdir}/splash-nosystem.ppm"
 }
 
 # Append the correct device tree to the linux image file
@@ -202,15 +237,15 @@ append_device_tree()
 
 # initialize
 source_deviceinfo
-parse_commandline $1 $2 $3
+parse_commandline "$1" "$2" "$3"
 echo "==> initramfs: creating $outfile"
 tmpdir=$(mktemp -d /tmp/mkinitfs.XXXXXX)
 
 # set up initfs in temp folder
 create_folders
-copy_files "$(get_modules)"
-copy_files "$(get_binaries)"
-copy_files "/etc/postmarketos-mkinitfs/hooks/*.sh"
+copy_files "$(get_modules)" "$tmpdir"
+copy_files "$(get_binaries)" "$tmpdir"
+copy_files "/etc/postmarketos-mkinitfs/hooks/*.sh" "$tmpdir"
 create_device_nodes
 ln -s "/bin/busybox" "$tmpdir/bin/sh"
 install -Dm755 "/usr/share/postmarketos-mkinitfs/init.sh.in" \
@@ -221,10 +256,24 @@ install -Dm755 "/usr/share/postmarketos-mkinitfs/init_functions.sh" \
 # finish up
 generate_splash_screens
 replace_init_variables
-create_cpio_image
+create_cpio_image "$tmpdir" "$outfile"
 append_device_tree
 create_uboot_files
 create_bootimg
 
 rm -rf "$tmpdir"
+
+# initialize initramfs-extra
+echo "==> initramfs: creating $outfile_extra"
+tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
+
+# set up initfs-extra in temp folder
+mkdir -p "$tmpdir_extra"
+copy_files "$(get_binaries_extra)" "$tmpdir_extra"
+
+# finish up
+create_cpio_image "$tmpdir_extra" "$outfile_extra"
+
+rm -rf "$tmpdir_extra"
+
 exit 0
