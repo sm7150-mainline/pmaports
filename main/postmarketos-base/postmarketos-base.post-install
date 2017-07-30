@@ -6,10 +6,10 @@
 for service in devfs dmesg; do
 	rc-update -q add $service sysinit
 done
-for service in hwclock modules sysctl hostname bootmisc wpa_supplicant wifi-handler syslog; do
+for service in hwclock modules sysctl hostname bootmisc syslog; do
 	rc-update -q add $service boot
 done
-for service in haveged sshd udev; do
+for service in haveged sshd udev wpa_supplicant; do
 	rc-update -q add $service default
 done
 for service in mount-ro killprocs savecache; do
