@@ -1,0 +1,115 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - package: just install zimage and kernel.release, because the kernel config
+#	does not generate modules or dtb files
+# - do not create -dev subpackage (makes no sense without module support)
+#
+# Kernel config based on: arch/arm/configs/cyanogenmod_n7100_defconfig
+# Changes:
+# - enable devtmpfs (needed for udev -> touch support in weston)
+# Patches:
+# extdsp_inline.patch: Fix for extern and inline errors on compile
+# fimc_lite.patch: Fix for inline error
+# timeconst_fix.patch: Removed condition for depricated feature in Perl (bug present in Linux 3.9 and under)
+
+
+_vendor=samsung
+_flavor=samsung-n7100
+_hash="5790cd7defee9cb6f9b392af4e3569e51230917a"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.0.64
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=3
+arch="armhf"
+pkgdesc="Samsung Galaxy Note II (GSM) Kernel from ParanoidNote"
+url="https://github.com/bigbiff/android_kernel_samsung_smdk4412"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_hash.tar.gz::https://github.com/bigbiff/android_kernel_samsung_smdk4412/archive/${_hash}.tar.gz
+	$_config
+	compiler-gcc6.h
+	timeconst_fix.patch
+	fimc_lite.patch
+	extdsp_inline.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_samsung_smdk4412-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -k -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		|| return 1
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+sha512sums="98aa9aa7c6e832919e270eece68619921ea8eb0419ed9201d3e07fa3543f032077e82100837005bcc052d69a45380888b465bec4e88fddfba3e868aa4971fa5a  linux-samsung-n7100-5790cd7defee9cb6f9b392af4e3569e51230917a.tar.gz
+cfb7b61cca9333b728155d411e99b62709454d44d5f7cdb595e36e6abb5f7b1a40103901ceb094565b793a0979545abcefaf709cb6251a20d4559a75bdab8170  config-samsung-n7100.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+7191d532df8f6a8bf64b5b5bcaa7343c8d1b844c891a67fc6d29f421903ddd46c3e779a6f5a5833a6a8f635d1582f5224fa795b3912b8b211a90ee561ad31469  timeconst_fix.patch
+fe682960d8d8534e14712a4d2bf9e41abed34ec3a29dcaace0fc1115cda08f6bc4c83cd130413d92cda2091be711e3ded91767c30f080a6d9cf7952f068f052c  fimc_lite.patch
+54b345e988b20078260c859d047fc67eec4de0a82cc4c7a19537dac3a797cfc7adbcd41f2af51814d7a6b5d93c5825078381aa7207b5db0cc2b671e495682140  extdsp_inline.patch"
