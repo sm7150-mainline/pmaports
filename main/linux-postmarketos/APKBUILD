@@ -15,7 +15,7 @@ pkgname=linux-${_flavor}
 
 pkgver=4.12.4
 _kernver=${pkgver}
-pkgrel=1
+pkgrel=2
 
 arch="all"
 pkgdesc="Mainline Linux for pmOS supported chipsets (OMAP)"
@@ -113,12 +113,8 @@ package() {
 	make -j1 $_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb" \
 		|| return 1
-
-	if [ -d "$pkgdir/arch/${_carch}/boot/dts" ]; then
-		mv "$pkgdir/arch/${_carch}/boot/dts" "$pkgdir/usr/share"
-	fi
 }
 
 
