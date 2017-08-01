@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=3
+pkgrel=4
 arch="armhf"
 pkgdesc="Nexus 4 kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_samsung_tuna"
@@ -29,7 +29,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
 options="!strip !check !tracedeps"
 install=
 source="
-	https://github.com/LineageOS/android_kernel_${_flavor}/archive/${_hash}.zip
+	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_${_flavor}/archive/${_hash}.tar.gz
 	$_config
 	compiler-gcc6.h
 	android_paranoid_network.patch
@@ -102,7 +102,7 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="c048b4f195ac6083e1884e41a7fc77c111edb555e6d53ee391d6220f308138c76389edaeb6b166c6f132fa33e8588f03734ed70397440a738b8e3f1c0068fbab  e14e5fe679a63eef92346cde874175d8b62b6a4a.zip
+sha512sums="02216efe8944ca9c5bb16b3b803c0200cffb2e8beab7da18a6cbeeff81cd44aadacb3721f835ecf86b73e274a5338b11595c9ce1dc7c18ae8d57075443885495  linux-samsung-tuna-e14e5fe679a63eef92346cde874175d8b62b6a4a.tar.gz
 c6235a1db9a48cf2ba371ffcff50254095fe32c7982d7899a93773edb5fb18cb94e7a257146884f27aac34711ce8cfa9fd2fcc62f4a3fc5869e23a3f286c0128  config-samsung_tuna.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 d8cdc1137e6a4ad78a3a31acc40f0c98f4db272eaf5b90ee850abb83b80916c4ff3c18a0a181e94eebead44213f6314e3363d0c4b91d95ee1adafbcad6dc57ab  android_paranoid_network.patch

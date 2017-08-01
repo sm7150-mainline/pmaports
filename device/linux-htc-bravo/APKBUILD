@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 arch="armhf"
 pkgdesc="HTC Desire kernel from spezi77"
 url="https://github.com/spezi77/android_kernel_htc_qsd8k_3.0"
@@ -29,7 +29,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev x
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.zip::https://github.com/spezi77/android_kernel_htc_qsd8k_3.0/archive/${_hash}.zip
+	$pkgname-$_hash.tar.gz::https://github.com/spezi77/android_kernel_htc_qsd8k_3.0/archive/${_hash}.tar.gz
 	$_config
 	compiler-gcc6.h
 "
@@ -104,6 +104,6 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="f66f850a4abafc1290c09403e27cee530f37e54474532f9cf13c031df30490003c762df9075b2dd29a3b02fe46913be23b4286b0ed16fc320fe9786f0799fb32  linux-htc-bravo-4bc19919f805777947c243e6c2ed41ece530488b.zip
+sha512sums="4abb6444181ac280a095f226e7789f16ec2060b6b5050c00a28c025a570edecf44a9f25c86775db6d21c572bded00b2fe14461666a8fb06a2672e09195b9e40a  linux-htc-bravo-4bc19919f805777947c243e6c2ed41ece530488b.tar.gz
 27ec53afdd9898495ae296b8e98b05401aae3a0bf390ba276f6a878d6bf1ccf3f59da78a5ee50ba4ee0744e4768f71aab53b782511c4f8ad22fefc821a2c815c  config-htc-bravo.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
