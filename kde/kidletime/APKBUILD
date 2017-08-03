@@ -1,0 +1,31 @@
+pkgname=kidletime
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Monitoring user activity'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="qt5-x11extras"
+makedepends="extra-cmake-modules mesa-dev doxygen qt5-qttools-dev qt5-x11extras-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="a3b1ec1eb3a6a883a715ff069174b447a3b92faa2400f4107786e033a771593e1e8315bbc947982e6ac73290d9c338ef9cb7775b7a80219f1c21122d8d41fbee  kidletime-5.36.0.tar.xz"

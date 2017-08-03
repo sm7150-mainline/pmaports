@@ -1,0 +1,32 @@
+pkgname=plasma-framework
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Plasma library and runtime components based upon KF5 and Qt5'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="qt5-qtquickcontrols kactivities kdeclarative kwayland kio"
+makedepends="extra-cmake-modules qt5-qttools-dev kdoctools python doxygen kactivities kdeclarative knotifications qt5-qtdeclarative-dev qt5-qtsvg-dev kio-dev kwayland"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="8d2007967cb058782c2c7ce188a6901a7f28bf2fa50ef77d2925d82542f538cf5b751d2fff3f812bf3d6cf96e744f1744844b89e0e68927c0bbbc9fbd1d9c156  plasma-framework-5.36.0.tar.xz"

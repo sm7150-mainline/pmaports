@@ -1,0 +1,32 @@
+pkgname=kguiaddons
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Addons to QtGui'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="qt5-x11extras"
+makedepends="extra-cmake-modules mesa-dev clang py3-qt5 doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+
+sha512sums="851836700fc18f595c8c10a745e645a8d14951e307ebb474f68e481a23ecba9e15755da89ec4b53ee98164201a0ab6180125d0626348c47bb3187b9d13b8d413  kguiaddons-5.36.0.tar.xz"

@@ -1,0 +1,31 @@
+pkgname=kactivitymanagerd
+pkgver=5.10.4
+pkgrel=1
+pkgdesc="System service to manage user's activities and track the usage patterns"
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="LGPL"
+depends="kio"
+makedepends="extra-cmake-modules boost-dev python kio-dev"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/$pkgname-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="37966071b703ee5fc98075fc78975388e1b8df5f5ce64dad54ee3ad9add50d1c87319467292fbdc5bbba5f7c8853d7dcfd8c6623d5c1bb162c75ae9499b3860f  kactivitymanagerd-5.10.4.tar.xz"

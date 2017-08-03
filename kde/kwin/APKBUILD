@@ -1,0 +1,43 @@
+pkgname=kwin
+pkgver=5.10.4
+pkgrel=1
+pkgdesc='An easy to use, but flexible, composited Window Manager'
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="LGPL"
+depends="xcb-util-cursor xcb-util-keysyms hicolor-icon-theme plasma-framework libinput
+		 consolekit2"
+makedepends="extra-cmake-modules qt5-qttools-dev kdoctools kdecoration
+			 libxkbcommon-dev libepoxy-dev libinput-dev kcmutils kscreenlocker
+			 breeze xcb-util-cursor-dev qt5-qtdeclarative-dev qt5-qtscript-dev
+			 plasma-framework kinit kio-dev xcb-util-keysyms-dev"
+# qt5-qtvirtualkeyboard: optional for virtual keyboard support
+source="https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz
+		D6291.patch"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+
+	cd $srcdir/$pkgname-$pkgver
+	patch -p1 < $srcdir/D6291.patch
+}
+
+build() {
+	cd $srcdir/build
+	cmake $srcdir/$pkgname-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DLIBC_IS_GLIBC=0
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="54f61e01a7e4dfd980440c0b80da54494d6f9d0f0180dedf82d7de923033d5aae11d8af35b78260b7c8977ed6b78dbdd32a40706e3c05420cdbcbe4277120d2b  kwin-5.10.4.tar.xz
+c693354311a0fe4064746633a30b205a22bf90f69cae648d1ed5eef98f55062c06e6821c3f646e227b589f4a291b4a23892f8943b2171e10e39ab7f84d24bafb  D6291.patch"

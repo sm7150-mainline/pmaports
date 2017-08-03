@@ -1,0 +1,35 @@
+pkgname=baloo
+pkgver=5.36.0
+pkgrel=1
+pkgdesc="A framework for searching and managing metadata"
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="kfilemetadata kio lmdb hicolor-icon-theme"
+makedepends="extra-cmake-modules kdoctools python doxygen
+			 qt5-qttools-dev kfilemetadata lmdb-dev kidletime kcrash solid
+			 kdbusaddons kcoreaddons kconfig kio-dev"
+provides="baloo-frameworks"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/$pkgname-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="6c9125f038f845945fa5727e252757de2aa90be932766d445cb5666b7dc3c9406ac2678bf48b4f5db15d99dd038bae5c1e67e948b10bf585ea91f60c55093a52  baloo-5.36.0.tar.xz"

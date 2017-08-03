@@ -1,0 +1,28 @@
+pkgname=extra-cmake-modules
+pkgver=5.36.0
+pkgrel=0
+pkgdesc="Extra CMake modules"
+url="https://projects.kde.org/projects/kdesupport/extra-cmake-modules"
+arch="noarch"
+license="custom"
+depends="cmake"
+makedepends="cmake"
+subpackages="${pkgname}-doc"
+source="http://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
+builddir="$srcdir"/${pkgname}-${pkgver}/build
+
+build() {
+	mkdir -p "$builddir" && cd "$builddir"
+	cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=OFF || return 1
+	make || return 1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install/fast || return 1
+
+	install -Dm644 ../COPYING-CMAKE-SCRIPTS \
+		"$pkgdir"/usr/share/licenses/$pkgname/COPYING
+}
+
+sha512sums="27af106097a92901131b73ce31a9410f392272fe6a12436d7fb673f628e4046ca8a93854ccc3119c2237979b58e89179c973c5d1c9daf2744e2c7b2bf033eaa2  extra-cmake-modules-5.36.0.tar.xz"

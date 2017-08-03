@@ -1,0 +1,29 @@
+pkgname=breeze-icons
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Breeze icon themes'
+arch="noarch"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+makedepends="extra-cmake-modules qt5-qtbase-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DBINARY_ICONS_RESOURCE=ON \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="150f2fc27f53f3fc4bbade640ba4d500e5bd12538bf5ecc059ee05fff4657e1fd6b03e57a653f947d28f620b88e2604cc3235396f7ef5aafa623af530fa820b9  breeze-icons-5.36.0.tar.xz"

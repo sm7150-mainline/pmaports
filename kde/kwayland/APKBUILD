@@ -1,0 +1,33 @@
+pkgname=kwayland
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Qt-style Client and Server library wrapper for the Wayland libraries'
+arch="all"
+url='https://www.kde.org'
+license="LGPL"
+depends="qt5-qtbase wayland"
+makedepends="extra-cmake-modules doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="a9ab05d5b6558aa3b4b8b6be5445c2298fad6980823daf5412dadc48ae959a8315338aabd8d0227d21f0da88edd22e7c4c05e3cab36f5c84da12113640ffdc16  kwayland-5.36.0.tar.xz"

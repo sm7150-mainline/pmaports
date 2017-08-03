@@ -1,0 +1,32 @@
+pkgname=kpeople
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='A library that provides access to all contacts and the people who hold them'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license=LGPL
+depends="kservice kwidgetsaddons kitemviews qt5-qtdeclarative"
+makedepends="extra-cmake-modules python mesa-dev doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() { 
+	cd $srcdir/build
+	cmake "$srcdir"/$pkgname-$pkgver \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="4b16114accc3169e5edafb89fcf3eaf76863b221e6ea00f0718cc31f84fba23297545540ad365e10ec6ccd18d9c713a3b5a565faf3eaab5c5da798c6ed980e69  kpeople-5.36.0.tar.xz"

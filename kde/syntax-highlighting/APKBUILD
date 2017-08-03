@@ -1,0 +1,38 @@
+pkgname=syntax-highlighting
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Syntax highlighting engine for structured text and code'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="GPL2"
+depends="qt5-qtbase"
+makedepends="extra-cmake-modules qt5-qtxmlpatterns-dev qt5-qttools-dev doxygen"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz
+        apkbuild-syntax-highlight.patch"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+
+	# Add APKBUILD syntax highlighting
+	cd "$srcdir"/$pkgname-$pkgver
+	patch -p1 -i ../apkbuild-syntax-highlight.patch
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/$pkgname-$pkgver \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="fc17871758b397093f38886a384fb70c6e13daa164386397a71edfa8484613f3084a508abf9ff80086905346b809b79000c785ecd3bc2649d8ebda09d400f459  syntax-highlighting-5.36.0.tar.xz
+7666a951ffb682e6b4ff8cf20f15abdbc3904b42b5752a3208c9222dad9d349de42d3e11566de0379900e23b617cd6fd5a0420c64056b55507e507159168e3fc  apkbuild-syntax-highlight.patch"

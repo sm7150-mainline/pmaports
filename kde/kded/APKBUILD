@@ -1,0 +1,31 @@
+pkgname=kded
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Extensible deamon for providing system level services'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="kinit"
+makedepends="extra-cmake-modules kdoctools kinit"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="b18da578d10a132e79591795e05bef7cdaceabacbf96f85325848048e1e076fbd4bb6bdcfc212fdba47d95c2e90b17d5738763f59d16e41eaca4ed902477938e  kded-5.36.0.tar.xz"

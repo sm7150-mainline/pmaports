@@ -1,0 +1,33 @@
+pkgname=kwindowsystem
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Access to the windowing system'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="qt5-x11extras libxfixes"
+makedepends="extra-cmake-modules qt5-qttools-dev doxygen qt5-x11extras-dev libxrender-dev xcb-util-keysyms-dev"
+groups="kf5"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {  
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+
+sha512sums="c4e0e617f4378f4f77d1d03308895adc5890618b05c03ccf9a7cb9b0a0026937f7d0ab3823edce6fa4276a67a1f12357d9ade6d7a3126cfe5b10190a5b0c2f16  kwindowsystem-5.36.0.tar.xz"

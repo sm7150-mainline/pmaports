@@ -1,0 +1,36 @@
+pkgname=plasma-phone-components
+pkgver=682.b79bb13
+pkgrel=1
+pkgdesc="Modules providing phone functionality for Plasma"
+arch="all"
+url="https://community.kde.org/Plasma/Mobile"
+license="GPL3"
+depends="plasma-workspace kpeople telepathy-qt qt5-qtgraphicaleffects"
+makedepends="kpeople telepathy-qt"
+source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/master.tar.gz
+		$install"
+install="$pkgname.post-install
+		 $pkgname.post-upgrade
+		 $pkgname.post-deinstall"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake $srcdir/$pkgname-master \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DBUILD_TESTING=OFF \
+		-DLIB_INSTALL_DIR=lib \
+		-DLIBEXEC_INSTALL_DIR=lib \
+		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
+		-DCMAKE_BUILD_TYPE=Release
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="abf94dc5c0801b333b434ba408952a1be45e3c58896204689bc62a8fde5605137ed6b69f7684f47a2834dc3d1e042bb00282501f2482434871acc92e084eddd8  plasma-phone-components-682.b79bb13.tar.gz"

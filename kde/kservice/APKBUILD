@@ -1,0 +1,33 @@
+pkgname=kservice
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Advanced plugin and service introspection'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="ki18n kconfig kcrash kdbusaddons"
+makedepends="extra-cmake-modules kdoctools python doxygen qt5-qttools-dev kcrash kconfig kdbusaddons ki18n flex-dev bison"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+
+sha512sums="3c618288d1e4343fc326229b17529d61b4f2a0265128bc7e4721887d6ea426da7b035d6f354e78c9372da6632e8e255589208b8ed564af939e1c1879ab5f059f  kservice-5.36.0.tar.xz"

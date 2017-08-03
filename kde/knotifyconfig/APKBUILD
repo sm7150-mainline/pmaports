@@ -1,0 +1,32 @@
+pkgname=knotifyconfig
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Configuration system for KNotify'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="kio"
+makedepends="extra-cmake-modules python doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="2b8ffd39c0714568ea4fe5cf30c1ca7a45122b4926b6043a023ee86f54e3e415c75b7d3a139f202dd1e09a14bf7baa522c7bfdcf6728365d0f13bcd480b0fd24  knotifyconfig-5.36.0.tar.xz"

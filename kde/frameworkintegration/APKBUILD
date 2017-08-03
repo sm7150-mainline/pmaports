@@ -1,0 +1,31 @@
+pkgname=frameworkintegration
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Framework providing components to allow applications to integrate with a KDE Workspace'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="kpackage knewstuff"
+makedepends="extra-cmake-modules python kconfigwidgets kiconthemes knotifications kpackage knewstuff qt5-x11extras-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake $srcdir/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="38b13cae84e7a5758b729c267722dc06ab3a2c6ff7c0b288a7fc8ad55b4af9d928671da91baf82b47cff3923c87572ec341cfe9499eb937f323430706ee77267  frameworkintegration-5.36.0.tar.xz"

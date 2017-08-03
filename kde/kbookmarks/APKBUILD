@@ -1,0 +1,31 @@
+pkgname=kbookmarks
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Support for bookmarks and the XBEL format'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="kxmlgui"
+makedepends="extra-cmake-modules qt5-qttools-dev python doxygen kcodecs kconfig kconfigwidgets kiconthemes kxmlgui"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="2264ee930fd03d0399b940bf8a8abc00d556a55e91cd9a9a89a8745eb93ca01a9bdf5ca14106edc8f40da9964aafc2879f2f0c245e609e8b8cff64b217002c41  kbookmarks-5.36.0.tar.xz"

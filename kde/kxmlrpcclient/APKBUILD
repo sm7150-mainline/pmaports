@@ -1,0 +1,32 @@
+pkgname=kxmlrpcclient
+pkgver=5.36.0
+pkgrel=1
+pkgdesc="XML-RPC client library for KDE"
+arch="all"
+url="https://projects.kde.org/projects/kde/pim/kxmlrpcclient"
+license="LGPL"
+depends="kio"
+makedepends="extra-cmake-modules python doxygen qt5-qttools-dev kio-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/$pkgname-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="b4c78407c30a85209c9c8cb6fa8c66984fbae6809a278930eb38e0f5a1f04ef235ed4bd42df0e4c1918ae298321674e2258f62b1f59c103e299559363f25aeb2  kxmlrpcclient-5.36.0.tar.xz"

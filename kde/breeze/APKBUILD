@@ -1,0 +1,32 @@
+pkgname=breeze
+pkgver=5.10.4
+pkgrel=1
+pkgdesc='Artwork, styles and assets for the Breeze visual style for the Plasma Desktop'
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="LGPL"
+depends="frameworkintegration kdecoration kwayland"
+makedepends="extra-cmake-modules frameworkintegration
+             automoc4 kdecoration plasma-framework python kcmutils breeze-icons"
+source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="b309bdeecc5f40f9afe0222e6b81ae1a656c8fa31758551d55b61615f642b7e0972efac5aa0d63044acc27881e62dbc6a949faa51212eb53acf08d0699ef30b7  breeze-5.10.4.tar.xz"

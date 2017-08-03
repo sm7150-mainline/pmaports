@@ -1,0 +1,29 @@
+pkgname=media-player-info
+pkgver=22
+pkgrel=1
+pkgdesc="Data files describing media player capabilities, for post-HAL systems"
+arch="noarch"
+license="BSD"
+url="http://cgit.freedesktop.org/media-player-info/"
+depends="eudev"
+makedepends="python3 eudev-dev"
+source="http://www.freedesktop.org/software/media-player-info/$pkgname-$pkgver.tar.gz
+		$pkgname.post-install"
+install="$pkgname.post-install"
+
+build() {
+	./configure --prefix=/usr \
+		--with-udevdir=/usr/lib/udev
+	LANG="en_US.UTF-8" make
+}
+
+package() {
+	cd "$srcdir/$pkgname-$pkgver"
+	make DESTDIR="$pkgdir" install
+
+	install -d "$pkgdir/usr/share/licenses/$pkgname"
+	install -m644 COPYING "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+sha512sums="7686aadb559b5a2cd2b969b9aadcf4c2b35037702e6fef4db66c6b8c0860d400c9f46a3b46150b9ce573d4f1fca53a5302fa7c1cdf888942a6489613c4d3c071  media-player-info-22.tar.gz
+db7416b230070782172b5999ae28d0e2e867f6c0cce1b40567c63ea39ca991fe4fadcb975aa3b2980a7df883dcf19bbb5a5f43706f8ca2b127204ce47bc4d949  media-player-info.post-install"

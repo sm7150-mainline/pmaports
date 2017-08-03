@@ -1,0 +1,33 @@
+pkgname=kwidgetsaddons
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Addons to QtWidgets'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="qt5-qtbase"
+makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 doxygen"
+groups="kf5"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+
+sha512sums="f1b5d2bd98217b8db995977f2cba186a19c3ad9f7fcbff3952507fe2fcfe0ca4c6774249e0e3fa7b048d55f797916ecb09f74b3c22f6306ef281452ee3287ff3  kwidgetsaddons-5.36.0.tar.xz"

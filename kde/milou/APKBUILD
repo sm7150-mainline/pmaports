@@ -1,0 +1,31 @@
+pkgname=milou
+pkgver=5.10.4
+pkgrel=1
+pkgdesc="A dedicated search application built on top of Baloo"
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="LGPL"
+depends="krunner"
+makedepends="extra-cmake-modules kdoctools python krunner"
+source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+prepare() {
+  mkdir -p $srcdir/build
+}
+
+build() {
+  cd $srcdir/build
+  cmake "$srcdir"/${pkgname}-${pkgver} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DBUILD_TESTING=OFF
+  make
+}
+
+package() {
+  cd $srcdir/build
+  make DESTDIR="${pkgdir}" install
+}
+sha512sums="f30cf9370cf5d9df4c2c2a824578dfb7a6f8d552c019dab22296ee231679be998d803e4093cb6549020ba163c92333fe66aeed6d21026a7900a5587643037943  milou-5.10.4.tar.xz"

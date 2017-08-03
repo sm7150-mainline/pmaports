@@ -1,0 +1,36 @@
+pkgname=ksysguard
+pkgver=5.10.4
+pkgrel=1
+pkgdesc='Track and control the processes running in your system'
+arch="all"
+url='https://userbase.kde.org/KSysGuard'
+license="LGPL"
+depends="lm_sensors hicolor-icon-theme"
+makedepends="extra-cmake-modules kdoctools python knewstuff libksysguard libksysguard-dev kinit"
+source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz
+		 D6631.patch"
+subpackages="$pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+	
+	cd "$srcdir"/$pkgname-$pkgver
+	patch -p1 < ../D6631.patch
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="3bcb4730ffca30cadf8838ef196b3ebc40e40460d86d1ba28b1778f7c4dc6bb72a875f9ddc28e4211fa232fbddbad90b6742d6ec88471e907dff8fd9e01a2bab  ksysguard-5.10.4.tar.xz
+9125d313335d82a6eaa206b1dcf053be380854978592e1f3cd9cf9977e4d78d105893d9c456d9f79665dd6922d8bd9801e593afe392c4629713949b342093153  D6631.patch"

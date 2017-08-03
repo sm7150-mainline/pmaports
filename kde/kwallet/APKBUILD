@@ -1,0 +1,32 @@
+pkgname=kwallet
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Secure and unified container for user passwords'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="knotifications kiconthemes kservice gpgme"
+makedepends="extra-cmake-modules python kdoctools boost doxygen qt5-qttools-dev gpgme-dev libgcrypt-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="42b6e24ee83d246bdec92c752750b69bec98598c22b939f1a7f40a14b386ee1002a1af8e249f218d67f3ebbe44222ec4f639b8d5aa78dc39b01c4dd5e9018a54  kwallet-5.36.0.tar.xz"

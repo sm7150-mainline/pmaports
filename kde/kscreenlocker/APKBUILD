@@ -1,0 +1,33 @@
+pkgname=kscreenlocker
+pkgver=5.10.4
+pkgrel=1
+pkgdesc='Library and components for secure lock screen architecture'
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="LGPL"
+depends="kidletime kwayland kdeclarative"
+makedepends="extra-cmake-modules python kdoctools kcmutils libxcursor linux-pam-dev kidletime kwayland kdeclarative"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/$pkgname-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=/usr/lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="5fcae9f35c0f180e18861e8a60ca772d209c423a81bee09ac90e143d51fdab4b55025c007128a8353b9b4132616b04c2a4211df46525ab543fba1300adb6f5ee  kscreenlocker-5.10.4.tar.xz"

@@ -1,0 +1,30 @@
+pkgname=karchive
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Qt 5 addon providing access to numerous types of archives'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="qt5-qtbase"
+makedepends="extra-cmake-modules doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="73041d36ea970793674b3da4bc7d464bde238c8697478d881a6407bbd86cf6243add6328f62cfe152552785dd1532e9d5db0fe401835c0306f1c078072c04eb1  karchive-5.36.0.tar.xz"

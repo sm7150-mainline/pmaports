@@ -1,0 +1,44 @@
+pkgname=plasma-workspace
+pkgver=5.10.4
+pkgrel=0
+pkgdesc='KDE Plasma Workspace'
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="LGPL"
+depends="kjsembed knotifyconfig libxdamage qt5-qttools xrdb xsetroot
+		 kactivitymanagerd xprop milou kwin kdelibs4support kxmlgui
+		 kdesu iso-codes qt5-qtwayland"
+makedepends="extra-cmake-modules kdoctools gpsd krunner kdesignerplugin
+			 kxmlrpcclient kdelibs4support plasma-framework knotifyconfig kjsembed	
+			 baloo libxtst-dev kcmutils kdesu kwallet ksysguard kwin networkmanager-qt
+			 kxmlrpcclient ktexteditor kparts phonon qt5-qtwayland"
+source="https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz
+		kde.pam"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+
+	cmake $srcdir/$pkgname-$pkgver \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
+
+	install -Dm644 "$srcdir"/kde.pam "$pkgdir"/etc/pam.d/kde
+
+	install -Dm644 plasmawayland.desktop "$pkgdir"/usr/share/wayland-sessions/plasmawayland.desktop
+}
+sha512sums="4bfcb18f73c4df0b4342e00b94ca375cc0ec1968e0f30ca8e14366dae5723ba9491fd073fc4408a9ae64c2efa52e72efd7e474e15b0cc4c65e1d42f1fe57170a  plasma-workspace-5.10.4.tar.xz
+39c114084b224131d80a77742865c448b54ac1877426ec5591e58f142bbe77fe85d1717c82fe7c8d09b1aa77f7833664e406fbae04254b4e974f09a32486fa31  kde.pam"

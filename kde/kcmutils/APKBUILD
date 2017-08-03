@@ -1,0 +1,32 @@
+pkgname=kcmutils
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Utilities for interacting with KCModules'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="kdeclarative"
+makedepends="extra-cmake-modules python doxygen qt5-qttools-dev kdeclarative"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="68a4e08b1b263b6aea754a28b46344d0604449f66e0157ef1be30aa81860a85680ce9c3c1fcdad699a887dce75018332f54043facf73c84b8325076be93e6b0d  kcmutils-5.36.0.tar.xz"

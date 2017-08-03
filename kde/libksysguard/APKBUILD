@@ -1,0 +1,32 @@
+pkgname=libksysguard
+pkgver=5.10.4
+pkgrel=1
+pkgdesc='Libksysguard'
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="LGPL"
+depends="libxres kwindowsystem kconfigwidgets"
+# qt5-qtwebkit
+makedepends="extra-cmake-modules kdoctools python plasma-framework"
+source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="ca59f1d72deebe9e65500e6d5ee61efb66370999c93dce18497389627c7ba773b4c0a418714345409320abb4660539da2cd372e80ba3466b5380a617ce9f9714  libksysguard-5.10.4.tar.xz"

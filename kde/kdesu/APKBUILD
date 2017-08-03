@@ -1,0 +1,39 @@
+pkgname=kdesu
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Integration with su for elevated privileges'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="kservice kpty"
+makedepends="extra-cmake-modules python doxygen qt5-qttools-dev kpty"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+
+	chmod 0644 $pkgdir/usr/lib/kf5/kdesud # remove suid bit as it's disallowed by Alpine standards due to being a security risk
+
+	# See https://bugs.archlinux.org/task/44277
+	#chown :nobody "${pkgdir}"/usr/lib/kf5/kdesud
+	#chmod g+s "${pkgdir}"/usr/lib/kf5/kdesud
+}
+sha512sums="160104fb47450b78100a4b3a70b832fd54530bab975a10694d5fa5915c9713fc1e3cc13efa52859387c52d4e0262edd825a790f445de993b72e377a02df59720  kdesu-5.36.0.tar.xz"

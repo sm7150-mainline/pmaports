@@ -1,0 +1,135 @@
+diff --git a/ksysguardd/Command.c b/ksysguardd/Command.c
+--- a/ksysguardd/Command.c
++++ b/ksysguardd/Command.c
+@@ -19,6 +19,7 @@
+ 
+ */
+ 
++#define _POSIX_C_SOURCE /* sig.*set */
+ #include <signal.h>
+ #include <stdarg.h>
+ #include <stdio.h>
+diff --git a/ksysguardd/Linux/ProcessList.c b/ksysguardd/Linux/ProcessList.c
+--- a/ksysguardd/Linux/ProcessList.c
++++ b/ksysguardd/Linux/ProcessList.c
+@@ -18,6 +18,9 @@
+ 
+ */
+ 
++#define _BSD_SOURCE /* kill, syscall */
++#define _DEFAULT_SOURCE /* Eliminate warning from prev */
++
+ #include <ctype.h>
+ #include <dirent.h>
+ #include <errno.h>
+@@ -29,6 +32,7 @@
+ #include <sys/resource.h>
+ #include <time.h>
+ #include <unistd.h>
++#include <sys/syscall.h>
+ #include <sys/ptrace.h>
+ #include <asm/unistd.h>
+ 
+diff --git a/ksysguardd/Linux/diskstat.c b/ksysguardd/Linux/diskstat.c
+--- a/ksysguardd/Linux/diskstat.c
++++ b/ksysguardd/Linux/diskstat.c
+@@ -20,6 +20,8 @@
+ 
+ #include <config-workspace.h>
+ 
++#define _XOPEN_SOURCE /* isascii */
++
+ #include <mntent.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -63,8 +65,10 @@
+     memset( device, 0, sizeof( device ) );
+     sscanf( cmd, "partitions%1024s", device );
+ 
+-    ptr = (char*)rindex( device, '/' );
+-    *ptr = '\0';
++    ptr = strrchr( device, '/' );
++    if( ptr ) {
++        *ptr = '\0';
++    }
+ 
+     return (char*)device;
+ }
+diff --git a/ksysguardd/Linux/netstat.c b/ksysguardd/Linux/netstat.c
+--- a/ksysguardd/Linux/netstat.c
++++ b/ksysguardd/Linux/netstat.c
+@@ -20,8 +20,11 @@
+ 
+ #include <config-workspace.h>
+ 
++#define _POSIX_SOURCE /* expose old gethostbyaddr(3) call */
+ #include <arpa/inet.h>
+ #include <netdb.h>
++#include <sys/types.h>
++#include <sys/socket.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -264,10 +267,10 @@
+ {
+ 	FILE *netstat;
+ 	char buffer[1024];
+-	uint local_addr, local_port;
+-	uint remote_addr, remote_port;
++	unsigned local_addr, local_port;
++	unsigned remote_addr, remote_port;
+ 	int uid;
+-	uint state;
++	unsigned state;
+ 	SocketInfo *socket_info;
+ 
+ 	if (strstr(cmd, "tcp")) {
+diff --git a/ksysguardd/Linux/softraid.c b/ksysguardd/Linux/softraid.c
+--- a/ksysguardd/Linux/softraid.c
++++ b/ksysguardd/Linux/softraid.c
+@@ -21,6 +21,7 @@
+ #include "ksysguardd.h"
+ #include "softraid.h"
+ 
++#define _POSIX_C_SOURCE 200809L /* strndup */
+ #include <string.h> /* for strlen, strcat and strcmp */
+ #include <stdio.h> /* for sprintf */
+ #include <sys/types.h> /* for open */
+diff --git a/ksysguardd/PWUIDCache.c b/ksysguardd/PWUIDCache.c
+--- a/ksysguardd/PWUIDCache.c
++++ b/ksysguardd/PWUIDCache.c
+@@ -18,6 +18,8 @@
+ 
+ */
+ 
++#define _POSIX_C_SOURCE 200809L /* strdup */
++
+ #include <pwd.h>
+ #include <stdlib.h>
+ #include <string.h>
+diff --git a/ksysguardd/conf.c b/ksysguardd/conf.c
+--- a/ksysguardd/conf.c
++++ b/ksysguardd/conf.c
+@@ -20,6 +20,7 @@
+ 
+ #include "config-ksysguardd.h"
+ 
++#define _POSIX_C_SOURCE 200809L /* strdup */
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+diff --git a/ksysguardd/ksysguardd.c b/ksysguardd/ksysguardd.c
+--- a/ksysguardd/ksysguardd.c
++++ b/ksysguardd/ksysguardd.c
+@@ -22,6 +22,9 @@
+ 
+ */
+ 
++/* strdup, fileno, fdopen */
++#define _POSIX_C_SOURCE 200809L
++
+ #include <config-workspace.h>
+ #include <ctype.h>
+ #include <fcntl.h>
+
+

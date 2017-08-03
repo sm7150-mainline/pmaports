@@ -1,0 +1,32 @@
+pkgname=kemoticons
+pkgver=5.36.0
+pkgrel=1
+pkgdesc='Support for emoticons and emoticons themes'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="LGPL"
+depends="karchive kservice"
+makedepends="extra-cmake-modules python mesa-dev doxygen qt5-qttools-dev karchive kconfig kservice"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-doc"
+
+prepare() {
+	mkdir -p $srcdir/build
+}
+
+build() {
+	cd $srcdir/build
+	cmake "$srcdir"/${pkgname}-${pkgver} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd $srcdir/build
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="9fbd084442bf7bc0ba7a7b719816c9895141a1870bde288bd3533b3e6c6cbb0aa28c167aae647cfc7f4fd9cc79a1b7b7cbbbc5bd7bf967a4851c29f710f17435  kemoticons-5.36.0.tar.xz"
