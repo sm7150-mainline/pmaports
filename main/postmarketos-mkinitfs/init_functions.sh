@@ -43,7 +43,7 @@ mount_subpartitions() {
 	for i in /dev/mmcblk*; do
 		case "$(kpartx -l "$i" 2>/dev/null | wc -l)" in
 			2)
-				echo "mount subpartitions of $i"
+				echo "Mount subpartitions of $i"
 				kpartx -afs "$i"
 				break
 				;;
@@ -104,6 +104,7 @@ mount_boot_partition() {
 		show_splash /splash-noboot.ppm.gz
 		loop_forever
 	fi
+	echo "Mount boot partition ($partition)"
 	mount -r -t ext2 "$partition" /boot
 }
 
@@ -115,7 +116,72 @@ extract_initramfs_extra() {
 		show_splash /splash-noinitramfsextra.ppm.gz
 		loop_forever
 	fi
+	echo "Extract $initramfs_extra"
 	gzip -d -c "$initramfs_extra" | cpio -i
+}
+
+wait_root_partition() {
+	while [ -z "$(find_root_partition)" ]; do
+		show_splash /splash-nosystem.ppm.gz
+		echo "Could not find the root partition."
+		echo "Maybe you need to insert the sdcard, if your device has"
+		echo "any? Trying again in one second..."
+		sleep 1
+	done
+}
+
+resize_root_partition() {
+	partition=$(find_root_partition)
+	# Only resize the partition if it's inside the device-mapper, which means
+	# that the partition is stored as a subpartition inside another one.
+	# In this case we want to resize it to use all the unused space of the 
+	# external partition.
+	if [ -z "${partition##"/dev/mapper/"*}" ]; then
+		# Get physical device
+		partition_dev=$(dmsetup deps -o devname "$partition" | \
+			awk -F "[()]" '{print "/dev/"$2}')
+		# Check if there is unallocated space at the end of the device
+		if parted -s "$partition_dev" print free | tail -n2 | \
+			head -n1 | grep -qi "free space"; then
+			echo "Resize root partition ($partition)"
+			# unmount subpartition, resize and remount it
+			kpartx -d "$partition"
+			parted -s "$partition_dev" resizepart 2 100%
+			kpartx -afs "$partition_dev"
+		fi
+	fi
+}
+
+unlock_root_partition() {
+	partition="$(find_root_partition)"
+	if cryptsetup isLuks "$partition"; then
+		until cryptsetup status root | grep -qwi active; do
+			start_usb_unlock
+			cryptsetup luksOpen "$partition" root || continue
+		done
+		# Show again the loading splashscreen
+		show_splash /splash-loading.ppm.gz
+	fi
+}
+
+resize_root_filesystem() {
+	partition="$(find_root_partition)"
+	touch /etc/mtab # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=673323
+	echo "Check/repair root filesystem ($partition)"
+	e2fsck -f -y "$partition"
+	echo "Resize root filesystem ($partition)"
+	resize2fs -f "$partition"
+}
+
+mount_root_partition() {
+	partition="$(find_root_partition)"
+	echo "Mount root partition ($partition)"
+	mount -w -t ext4 "$partition" /sysroot
+	if ! [ -e /sysroot/usr ]; then
+		echo "ERROR: unable to mount root partition!"
+		show_splash /splash-mounterror.ppm.gz
+		loop_forever
+	fi
 }
 
 setup_usb_network_android() {
@@ -156,7 +222,7 @@ setup_usb_network() {
 	_marker="/tmp/_setup_usb_network"
 	[ -e "$_marker" ] && return
 	touch "$_marker"
-
+	echo "Setup usb network"
 	# Run all usb network setup functions (add more below!)
 	setup_usb_network_android
 	setup_usb_network_configfs
@@ -182,7 +248,7 @@ start_udhcpd() {
 		echo "option subnet 255.255.255.0"
 	} >/etc/udhcpd.conf
 
-	# Start the dhcpcd daemon (forks into background)
+	echo "Start the dhcpcd daemon (forks into background)"
 	udhcpd
 }
 
@@ -199,41 +265,17 @@ start_usb_unlock() {
 	# Telnet splash
 	show_splash /splash-telnet.ppm.gz
 
-	# Start the telnet daemon
+	echo "Start the telnet daemon (unlock encrypted partition)"
 	{
 		echo '#!/bin/sh'
 		echo '. /init_functions.sh'
 		echo 'unlock_root_partition'
 		echo 'echo_connect_ssh_message'
-		echo 'killall cryptsetup telnetd'
+		echo 'killall cryptsetup'
+		echo "pkill -f telnetd.*:${TELNET_PORT}"
 	} >/telnet_connect.sh
 	chmod +x /telnet_connect.sh
 	telnetd -b "${IP}:${TELNET_PORT}" -l /telnet_connect.sh
-}
-
-unlock_root_partition() {
-	# Wait for the root partition (and unlock it if it is encrypted)
-	while ! [ -e /sysroot/usr ]; do
-		partition="$(find_root_partition)"
-		if [ -z "$partition" ]; then
-			show_splash /splash-nosystem.ppm.gz
-			echo "Could not find the root partition."
-			echo "Maybe you need to insert the sdcard, if your device has"
-			echo "any? Trying again in one second..."
-			sleep 1
-		elif cryptsetup isLuks "$partition"; then
-			start_usb_unlock
-			cryptsetup luksOpen "$partition" root || continue
-			partition="/dev/mapper/root"
-			break
-		else
-			# Unencrypted
-			break
-		fi
-	done
-
-	# Mount the root partition
-	[ -e /sysroot/usr ] || mount -w -t ext4 "$partition" /sysroot
 }
 
 # $1: path to ppm.gz file

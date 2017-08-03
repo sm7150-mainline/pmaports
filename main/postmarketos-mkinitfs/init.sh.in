@@ -18,6 +18,8 @@ for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do
 	sh "$hook"
 done
 
+show_splash /splash-loading.ppm.gz
+
 # Always run dhcp daemon/usb networking for now (later this should only
 # be enabled, when having the usb-shell hook installed for debugging,
 # or get activated after the initramfs is done with an OpenRC service).
@@ -26,10 +28,13 @@ start_udhcpd
 
 mount_boot_partition
 extract_initramfs_extra @INITRAMFS_EXTRA@
+wait_root_partition
+resize_root_partition
 unlock_root_partition
+resize_root_filesystem
+mount_root_partition
 
 # Switch root
-show_splash /splash-loading.ppm.gz
 killall telnetd mdev 2>/dev/null
 umount /boot
 umount /proc

@@ -223,6 +223,10 @@ generate_splash_screens()
 	pmos-make-splash --text="system partition not found\nhttps://postmarketos.org/troubleshooting" --center \
 		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-nosystem.ppm"
 	gzip "${tmpdir}/splash-nosystem.ppm"
+
+	pmos-make-splash --text="unable to mount root partition\nhttps://postmarketos.org/troubleshooting" --center \
+		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-mounterror.ppm"
+	gzip "${tmpdir}/splash-mounterror.ppm"
 }
 
 # Append the correct device tree to the linux image file
