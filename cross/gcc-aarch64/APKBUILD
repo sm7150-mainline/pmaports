@@ -321,6 +321,26 @@ build() {
 }
 
 package() {
+            # Repack the *.a files to be reproducible (see #64)
+            _temp="$_builddir"/_reproducible-patch
+            cd "$_builddir"
+            for f in $(find -name '*.a'); do
+                # Copy to a temporary folder
+                echo "Repack $f to be reproducible"
+                mkdir -p "$_temp"
+                cd "$_temp"
+                cp "$_builddir"/"$f" .
+
+                # Repack with a sorted file order
+                ar x *.a
+                rm *.a
+                ar r sorted.a $(find -name '*.o' | sort)
+
+                # Copy back and clean up
+                cp -v sorted.a "$_builddir"/"$f"
+                cd ..
+                rm -r "$_temp"
+            done
 	cd "$_builddir"
 	make -j1 DESTDIR="${pkgdir}" install
 
