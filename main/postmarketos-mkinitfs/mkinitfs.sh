@@ -130,6 +130,7 @@ get_binaries_extra()
 copy_files()
 {
 	for file in $1; do
+		[ -e "$file" ] || continue
 		install -Dm755 "$file" "$2$file"
 	done
 }
