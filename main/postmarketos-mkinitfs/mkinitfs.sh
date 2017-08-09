@@ -196,6 +196,7 @@ create_bootimg()
 		--ramdisk_offset "${deviceinfo_flash_offset_ramdisk}" \
 		--tags_offset "${deviceinfo_flash_offset_tags}" \
 		--pagesize "${deviceinfo_flash_pagesize}" \
+		${deviceinfo_bootimg_qcdt:+ --dt /boot/dt.img} \
 		-o "${outfile/initramfs-/boot.img-}"
 }
 

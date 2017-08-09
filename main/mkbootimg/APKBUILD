@@ -1,17 +1,16 @@
 pkgname=mkbootimg
-pkgver="7.1.2_r6"
+pkgver=14.1
 pkgrel=1
 pkgdesc="Android bootimg (zimage + initramfs) creation tool"
-url="https://android.googlesource.com"
+url="https://github.com/LineageOS/android_system_core/blob/cm-14.1/mkbootimg/mkbootimg"
 arch="noarch"
 license="APACHE2"
 depends="python3"
 subpackages=""
-source="$pkgname-$pkgver.py.base64::https://android.googlesource.com/platform/system/core/+/android-${pkgver}/${pkgname}/${pkgname}?format=TEXT"
+source="$pkgname::https://raw.githubusercontent.com/LineageOS/android_system_core/cm-14.1/mkbootimg/mkbootimg"
 options="!check"
 
 build() {
-	base64 -d $srcdir/$pkgname-$pkgver.py.base64 > $srcdir/$pkgname
 	sed -i -e 's./usr/bin/env python./usr/bin/env python3.' $srcdir/$pkgname
 }
 
@@ -19,4 +18,4 @@ package() {
 	install -Dm755 $srcdir/$pkgname $pkgdir/usr/bin/$pkgname
 }
 
-sha512sums="7aac61bf55e0c3627e71a1247ebd5636bc475919b50e34e289639745a051a4e1b31de273bfc75aaecc2e059007721e729c277199b4b4cec514541865a59e3312  mkbootimg-7.1.2_r6.py.base64"
+sha512sums="71ab9b6dfe19096bf6b33a8c46148dbe2b8b71fd693dcaf8cdba7a932e19bb7d29c3c245148a4b27119a6b883fc8f0ba04f5f815da0c40410b2b11d9fa1b7cd7  mkbootimg"
