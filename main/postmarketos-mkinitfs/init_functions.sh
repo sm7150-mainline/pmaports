@@ -214,7 +214,10 @@ setup_usb_network_configfs() {
 	printf "%s" "rndis" > $CONFIGFS/g1/configs/c.1/strings/0x409/configuration
 
 	ln -s $CONFIGFS/g1/functions/rndis.usb0 $CONFIGFS/g1/configs/c.1
-	ls /sys/class/udc > $CONFIGFS/g1/UDC
+
+	# See also: #338
+	# shellcheck disable=SC2005
+	echo "$(ls /sys/class/udc)" > $CONFIGFS/g1/UDC
 }
 
 setup_usb_network() {
