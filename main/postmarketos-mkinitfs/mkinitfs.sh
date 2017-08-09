@@ -34,7 +34,7 @@ parse_commandline()
 create_folders()
 {
 	for dir in /bin /sbin /usr/bin /usr/sbin /proc /sys /dev /tmp /lib \
-		/boot /sysroot; do
+		/boot /sysroot /etc; do
 		mkdir -p "$tmpdir$dir"
 	done
 }
