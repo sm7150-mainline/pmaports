@@ -1,17 +1,17 @@
 pkgname=plasma-phone-components
 pkgver=682.b79bb13
-pkgrel=1
+pkgrel=2
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
 license="GPL3"
 depends="plasma-workspace kpeople telepathy-qt qt5-qtgraphicaleffects"
 makedepends="kpeople telepathy-qt"
-source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/master.tar.gz
-		$install"
 install="$pkgname.post-install
 		 $pkgname.post-upgrade
 		 $pkgname.post-deinstall"
+source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/master.tar.gz
+		$install"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -33,4 +33,7 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="abf94dc5c0801b333b434ba408952a1be45e3c58896204689bc62a8fde5605137ed6b69f7684f47a2834dc3d1e042bb00282501f2482434871acc92e084eddd8  plasma-phone-components-682.b79bb13.tar.gz"
+sha512sums="abf94dc5c0801b333b434ba408952a1be45e3c58896204689bc62a8fde5605137ed6b69f7684f47a2834dc3d1e042bb00282501f2482434871acc92e084eddd8  plasma-phone-components-682.b79bb13.tar.gz
+43046f7a0526986ca8453929c88bd1f05dfd255ba809d339a395935c7fb65ef562531a1770d3a0d7c07d6f3b9a3bbf9ea7791d12581f64d4b3dd0ccb83c945b5  plasma-phone-components.post-install
+43046f7a0526986ca8453929c88bd1f05dfd255ba809d339a395935c7fb65ef562531a1770d3a0d7c07d6f3b9a3bbf9ea7791d12581f64d4b3dd0ccb83c945b5  plasma-phone-components.post-upgrade
+43046f7a0526986ca8453929c88bd1f05dfd255ba809d339a395935c7fb65ef562531a1770d3a0d7c07d6f3b9a3bbf9ea7791d12581f64d4b3dd0ccb83c945b5  plasma-phone-components.post-deinstall"
