@@ -1,0 +1,111 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - package: just install zImage-dtb and kernel.release, because the kernel config
+#	does not generate modules or dtb files
+# - do not create -dev subpackage (makes no sense without module support)
+#
+# Kernel config changes, based on: arch/arm/configs/aosp_rhine_amami_defconfig
+# - enable devtmpfs (needed for udev -> touch support in weston)
+# - change compression from CONFIG_KERNEL_LZMA=y to
+#	CONFIG_KERNEL_GZIP=y (so it works with busybox)
+# - disable proprietary graphics driver
+
+_vendor=sony
+_flavor=sony-castor-windy
+_branch=wifi-fixes
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=4.3
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=1
+arch="armhf"
+pkgdesc="Sony Xperia Z2 Tablet kernel"
+url="https://github.com/opendata26"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel  bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_branch.tar.gz::https://github.com/opendata26/kernel/archive/${_branch}.tar.gz
+	$_config
+	compiler-gcc6.h
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/kernel-${_branch}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		|| return 1
+}
+
+package() {
+    cat "$srcdir/build/arch/arm/boot/zImage" \
+	"$srcdir/build/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dtb" > \
+	"$srcdir/build/arch/arm/boot/zImage-dtb"
+
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+sha512sums="d27a8850e6412c2edb2752433600c9b46e3a83a319b3d175dfeaff447ddc2213c4bbfcdb3688eed76743dc89ac1679a40ec95e8b334f30b4e463ae42facdfcc5  linux-sony-castor-windy-wifi-fixes.tar.gz
+6505f6371153bc741d48bd9f9e15001c8ccd7feb96ce6bb3a6ab7cb3b2012e7b61439edbbac5b1377e11b3af1cb4e2b3878b54b4fdc00729f0a6b2272f64591f  config-sony-castor-windy.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
