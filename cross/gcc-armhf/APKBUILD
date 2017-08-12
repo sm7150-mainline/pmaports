@@ -12,6 +12,41 @@ LANG_FORTRAN=false
 LANG_ADA=false
 options="!strip !tracedeps"
 
+# Wrap the package function, to make the resulting package
+# lazy-reproducible
+package() {
+    # Repack the *.a files to be reproducible (see #64)
+    _temp="$_builddir"/_reproducible-patch
+    cd "$_builddir"
+    for f in $(find -name '*.a'); do
+        # Copy to a temporary folder
+        echo "Repack $f to be reproducible"
+        mkdir -p "$_temp"
+        cd "$_temp"
+        cp "$_builddir"/"$f" .
+
+        # Repack with a sorted file order
+        ar x *.a
+        rm *.a
+        ar r sorted.a $(find -name '*.o' | sort)
+
+        # Copy back and clean up
+        cp -v sorted.a "$_builddir"/"$f"
+        cd ..
+        rm -r "$_temp"
+    done
+
+    # Unmodified package function from the gcc APKBUILD
+    _package
+
+    # Workaround for: postmarketOS/binary-package-repo#1
+    echo "Replacing hardlinks with symlinks"
+    rm -v "$pkgdir"/usr/bin/"$CTARGET"-c++
+    ln -s -v /usr/bin/"$CTARGET"-g++ "$pkgdir"/usr/bin/"$CTARGET"-c++
+    rm -v "$pkgdir"/usr/bin/"$CTARGET"-gcc-"$pkgver"
+    ln -s -v /usr/bin/"$CTARGET"-gcc "$pkgdir"/usr/bin/"$CTARGET"-gcc-"$pkgver"
+}
+
 pkgname="gcc-armhf"
 pkgver=6.4.0
 [ "$BOOTSTRAP" = "nolibc" ] && pkgname="gcc-pass2"
@@ -320,27 +355,7 @@ build() {
 	make
 }
 
-package() {
-            # Repack the *.a files to be reproducible (see #64)
-            _temp="$_builddir"/_reproducible-patch
-            cd "$_builddir"
-            for f in $(find -name '*.a'); do
-                # Copy to a temporary folder
-                echo "Repack $f to be reproducible"
-                mkdir -p "$_temp"
-                cd "$_temp"
-                cp "$_builddir"/"$f" .
-
-                # Repack with a sorted file order
-                ar x *.a
-                rm *.a
-                ar r sorted.a $(find -name '*.o' | sort)
-
-                # Copy back and clean up
-                cp -v sorted.a "$_builddir"/"$f"
-                cd ..
-                rm -r "$_temp"
-            done
+_package() {
 	cd "$_builddir"
 	make -j1 DESTDIR="${pkgdir}" install
 
