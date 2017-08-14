@@ -1,14 +1,14 @@
 pkgname=kpackage
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Framework that lets applications manage user installable packages of non-binary assets'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="karchive ki18n"
-makedepends="extra-cmake-modules qt5-qttools-dev python kdoctools doxygen kcoreaddons"
+makedepends="extra-cmake-modules qt5-qttools-dev python kdoctools-dev kcoreaddons-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc $pkgname-lang"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -31,4 +31,4 @@ package() {
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="550c1662c4a717b1d0b7ad0b33566d8f6c73cd2577c16cca90d19664cce733dfcea3ac913656aa5f61d423867fd7af22c27d11c88537413409cee1ec141d1e04  kpackage-5.36.0.tar.xz"
+sha512sums="a96121acecf77b3c849415264baf382dcf8d9c518b92c5f8c70e909cefcc820c1c8d63b3e2203a95d1817322c785d327aec48f3a52ff2680c7407b5918c566b4  kpackage-5.37.0.tar.xz"

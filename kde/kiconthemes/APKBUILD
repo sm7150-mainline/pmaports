@@ -1,13 +1,15 @@
 pkgname=kiconthemes
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Support for icon themes'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="qt5-qtsvg kconfigwidgets kitemviews karchive"
-makedepends="extra-cmake-modules python mesa-dev doxygen qt5-qttools-dev qt5-qtsvg-dev kitemviews kconfigwidgets"
+makedepends="extra-cmake-modules python mesa-dev doxygen qt5-qttools-dev qt5-qtsvg-dev
+			 kitemviews-dev kconfigwidgets-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -29,4 +31,4 @@ package() {
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="5a52ceef4581c31365255ac4eb7f6cc53dac51cf52531a1aa5f96fd6e721eb09056191fab984edc436bebd29035e44c22778866d919d271e159d3ece4f0c3f14  kiconthemes-5.36.0.tar.xz"
+sha512sums="a5c19393d40055eafb5c7ed67c7a2b6563786a3191c3192c02d328004d14b33c7e9db936745e45a853b75264864d062d7697b1dc44b7c0056a2a350acae91204  kiconthemes-5.37.0.tar.xz"

@@ -1,14 +1,16 @@
 pkgname=plasma-framework
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Plasma library and runtime components based upon KF5 and Qt5'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
-depends="qt5-qtquickcontrols kactivities kdeclarative kwayland kio"
-makedepends="extra-cmake-modules qt5-qttools-dev kdoctools python doxygen kactivities kdeclarative knotifications qt5-qtdeclarative-dev qt5-qtsvg-dev kio-dev kwayland"
+depends="qt5-qtquickcontrols kactivities-dev kdeclarative-dev kwayland-dev kio-dev"
+makedepends="extra-cmake-modules qt5-qttools-dev kdoctools python kactivities
+			 kdeclarative-dev knotifications-dev qt5-qtdeclarative-dev qt5-qtsvg-dev
+			 kio-dev kwayland-dev kdbusaddons-dev qt5-x11extras-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
-subpackages="$pkgname-doc $pkgname-lang"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -29,4 +31,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="8d2007967cb058782c2c7ce188a6901a7f28bf2fa50ef77d2925d82542f538cf5b751d2fff3f812bf3d6cf96e744f1744844b89e0e68927c0bbbc9fbd1d9c156  plasma-framework-5.36.0.tar.xz"
+sha512sums="35210f11a06b12ae45ec80d11b251883c1fd993c5a7bd8604f115a3d8ca8d13c269a88c37d0336b79baab402d070017286efa1e918c6768dcc7c9e7831a366cc  plasma-framework-5.37.0.tar.xz"

@@ -1,14 +1,14 @@
 pkgname=kfilemetadata
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc="A library for extracting file metadata"
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="ki18n karchive exiv2 poppler-qt5 taglib ffmpeg"
-makedepends="extra-cmake-modules python doxygen qt5-qttools-dev attr-dev ki18n"
+makedepends="extra-cmake-modules python qt5-qttools-dev attr-dev doxygen ki18n-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc $pkgname-lang"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir $srcdir/build
@@ -30,4 +30,4 @@ package() {
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="1d90af90b5f3cc735214183d101a3b2aeab178edac36acadfdea34146e50e34f5870290139a0f3e6057c883ed38f006667f9eaaf279b78903199db8d1c1cd0eb  kfilemetadata-5.36.0.tar.xz"
+sha512sums="78143c82b858f53e63e35e11e144ccb474574885bd772ff27131c0568d5033618f8ff75844b02e3e3acbffd5d8901300f26f5b4e9d5556f2400f3666183b2899  kfilemetadata-5.37.0.tar.xz"

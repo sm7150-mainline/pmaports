@@ -1,15 +1,15 @@
 pkgname=kinit
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Process launcher to speed up launching KDE applications'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="kio"
-makedepends="extra-cmake-modules kdoctools python kio-dev"
+makedepends="extra-cmake-modules kdoctools python kio-dev kservice-dev kcrash-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz
 		D6598.patch"
-subpackages="$pkgname-doc"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -36,5 +36,5 @@ package() {
 
 	chmod 0644 $pkgdir/usr/lib/kf5/start_kdeinit # remove suid bit as it's disallowed by Alpine standards due to being a security risk
 }
-sha512sums="d38279b474a049548d0abb5f6b50f2ecabd9a2eeaaa0d3987154fc8cdc0b0af8f04eea504912d704f75aac706a5adfacf4af26db31d583d4ad10944cfabe7e28  kinit-5.36.0.tar.xz
+sha512sums="c12157a88eb708b5838ba381f31460f21adf190a9f1ca58f2f32824c10901f5c716a251af7a24493e0715605c6c0fc480a361bf2fd656a6f38763f0de99dc576  kinit-5.37.0.tar.xz
 1a12deb6cebcedb2ee2ae5edfedc48473e7f464d5d8ba84c2130c567fb564d1f4ef87f6b0b7500104f893075348bb86f243b25e8710a286fc67828a50c44a628  D6598.patch"

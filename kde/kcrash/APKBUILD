@@ -1,13 +1,14 @@
 pkgname=kcrash
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Support for application crash analysis and bug report from apps'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="kcoreaddons kwindowsystem"
-makedepends="extra-cmake-modules mesa-dev doxygen qt5-qttools-dev kcoreaddons kwindowsystem-dev"
+makedepends="extra-cmake-modules mesa-dev doxygen qt5-qttools-dev kcoreaddons-dev kwindowsystem-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc"
 
 prepare() {
 	mkdir $srcdir/build
@@ -29,4 +30,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="63d584764a41f7cc663770cb4f13ff7a5f66602f894d8166d3de0de85d29951225b72a92ddd9879354f95984fcb9e99182a9c48e49e54ceeb86bdfeecf927478  kcrash-5.36.0.tar.xz"
+sha512sums="d7a312c820c3d4353bbf30313623d9931c8151206446bc3d59856bdf5824c5a82655a649ddaa94ff3a868151cd792fd03a274c8d87fbf052efff547c49963cbf  kcrash-5.37.0.tar.xz"

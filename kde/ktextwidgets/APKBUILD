@@ -1,13 +1,15 @@
 pkgname=ktextwidgets
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Advanced text editing widgets'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="kcompletion kservice kiconthemes sonnet"
-makedepends="extra-cmake-modules python doxygen qt5-qttools-dev kcompletion sonnet kiconthemes kservice"
+makedepends="extra-cmake-modules python doxygen qt5-qttools-dev kcompletion sonnet-dev
+			 kiconthemes-dev kservice-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -28,4 +30,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="33d471601b76424331d23a0bdd1afcdccc2c999acdfc8faad45d50932405b09b680939bae4274182399bd90cc0553ec576b5e4e963714e504b9cd498d331ef55  ktextwidgets-5.36.0.tar.xz"
+sha512sums="f9004dc952705bd9e4f4859b1cbde3a9e64bea28f1578e93eda37c80e13b36c43473eb33e954365ab85b259486d929c406333c8cda59af5c3c8c119e70d0da7e  ktextwidgets-5.37.0.tar.xz"

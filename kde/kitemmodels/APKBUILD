@@ -1,14 +1,14 @@
 pkgname=kitemmodels
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Models for Qt Model/View system'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="qt5-qtbase"
-makedepends="extra-cmake-modules py3-qt5 clang doxygen qt5-qttools-dev"
+makedepends="extra-cmake-modules py3-qt5 clang qt5-qttools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc"
+subpackages="$pkgname-dev $pkgname-doc"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -29,4 +29,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="a1ded2f47c03ebd8395a7bc9fcae53d44c0654fd8b0229283e8ec78e222e2b2aace0b119055d76d54a7df5d491e6ca58011b274c7843808e185e15c5b916ee42  kitemmodels-5.36.0.tar.xz"
+sha512sums="09fce62011f4519b91d64c3b85428dd1ed8003cfa5c455fed813eb21e047985669b34b67885aaf95b4fa48d803f5ead479b77f4509863de8a0963c060e47ccb3  kitemmodels-5.37.0.tar.xz"

@@ -1,25 +1,22 @@
 pkgname=kio
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Resource and network access abstraction'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="solid kjobwidgets libxslt desktop-file-utils knotifications"
-makedepends="extra-cmake-modules kdoctools python doxygen qt5-qttools-dev kconfig kdbusaddons kservice solid kbookmarks kjobwidgets knotifications"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz
-		D6597.patch"
-subpackages="$pkgname-doc $pkgname-dev"
+makedepends="extra-cmake-modules kdoctools python doxygen qt5-qttools-dev kconfig-dev
+			 kdbusaddons-dev kservice-dev solid-dev kbookmarks-dev kjobwidgets-dev knotifications-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
-	mkdir -p $srcdir/build
-
-	cd "$srcdir"/$pkgname-$pkgver
-	patch -p1 < ../D6597.patch
+	mkdir -p "$srcdir"/build
 }
 
 build() {
-	cd $srcdir/build
+	cd "$srcdir"/build
 	cmake "$srcdir"/${pkgname}-${pkgver} \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
@@ -31,8 +28,7 @@ build() {
 }
 
 package() {
-	cd $srcdir/build
+	cd "$srcdir"/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="d156a0b907bae38bcde63be847f96199fc926d24cd4a2d3c7a3bb963e2d1fe8db3c2bf3b4c32eb90017349b6eefb633c6c54313427f657c2b79e2b2970af8c72  kio-5.36.0.tar.xz
-142824de5d0c8f93fa8ea145679b5185e736ab4a71053884ac560cfb5f7e4e3a5cc9b939576faa8b6820c9f7920de0e50e344ffacb607cfeb2a3c4828ed7e4e4  D6597.patch"
+sha512sums="42b2cbf6cbc414a0b69fdb36984d13574b1aee033170761dc55835cace44abead82f387f8afb35d8a82ee93a1909854ef43cff29d45c5881c4b13ca8862d2a64  kio-5.37.0.tar.xz"

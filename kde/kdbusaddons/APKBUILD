@@ -1,5 +1,5 @@
 pkgname=kdbusaddons
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Addons to QtDBus'
 arch="all"
@@ -8,6 +8,7 @@ license="LGPL"
 depends="qt5-x11extras"
 makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -28,4 +29,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="6582424a547754d6f993031971cbaca059b1a6c5c7dcf9ec4196ca58dfaf407ddbf799d6207b938e1efa8f9ab3d9f3d78e8f0c3bbc81784baf45a422838be4a1  kdbusaddons-5.36.0.tar.xz"
+sha512sums="a581366eae4e8ceaa9bc544adf951d734a3feddc19287bf2cb5818cff71f46ed59976bc9fc1487b3578c896bd1ac3fdff57d08510951007596b3907116025f39  kdbusaddons-5.37.0.tar.xz"

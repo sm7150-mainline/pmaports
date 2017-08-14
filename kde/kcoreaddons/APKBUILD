@@ -1,5 +1,5 @@
 pkgname=kcoreaddons
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Addons to QtCore'
 arch="all"
@@ -8,13 +8,14 @@ license="LGPL"
 depends="qt5-qtbase shared-mime-info"
 makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
-	mkdir -p $srcdir/build
+	mkdir -p "$srcdir"/build
 }
 
 build() {
-	cd build
+	cd "$srcdir"/build
 	cmake "$srcdir"/${pkgname}-${pkgver} \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
@@ -22,12 +23,10 @@ build() {
 		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 		make
-
-	# -D_KDE4_DEFAULT_HOME_POSTFIX=4 \
 }
 
 package() {
-	cd $srcdir/build
+	cd "$srcdir"/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="2500c8df07254e601535edfe296aed82b08897e2fb663ea2c13ad37ae838180ec41603629ea5fc79a3c55fc0f466f5d0e8a498c42ab4132d7d509a24ed1b3d42  kcoreaddons-5.36.0.tar.xz"
+sha512sums="533183a0302bba4ed78ab5ce5563007e45ab8788fa64b8e012d16bf072f4e5f9dce6172db927389111db56aea2c7b26e19a00628628178cffcf8c5ffd8b7271e  kcoreaddons-5.37.0.tar.xz"

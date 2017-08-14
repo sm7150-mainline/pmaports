@@ -1,14 +1,15 @@
 pkgname=kparts
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Document centric plugin system'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="kio"
-makedepends="extra-cmake-modules python doxygen qt5-qttools-dev kio"
+makedepends="extra-cmake-modules python qt5-qttools-dev kio-dev kiconthemes-dev ktextwidgets-dev
+			 sonnet-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc $pkgname-lang"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -29,4 +30,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="a13efcaa20a28356ea7258f0d2155c92a74691047d3cce67022edb2542b9fbba7c7adc407e42549d8d828e55aebbb3f196e963fd8a228d44fae33c6389acd377  kparts-5.36.0.tar.xz"
+sha512sums="4c1bf3f0a44e7149ee02331de527965a9b241d4e15631ee99d4d0c93beb399ab6a454991a2dfae4124e94db0f1ef06068bb68fc3bab7fdbcf9295aa41eb59b59  kparts-5.37.0.tar.xz"

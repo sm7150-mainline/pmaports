@@ -1,15 +1,15 @@
 pkgname=kactivities
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 arch="all"
 pkgdesc="Core components for the KDE's Activities"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="kcoreaddons kconfig kwindowsystem qt5-qtdeclarative kio"
-makedepends="extra-cmake-modules boost python doxygen qt5-qttools-dev kconfig kcoreaddons qt5-qtdeclarative-dev kio-dev boost-dev"
-provides="kactivities-frameworks"
+makedepends="extra-cmake-modules boost python doxygen qt5-qttools-dev kcoreaddons-dev kconfig-dev
+			 kwindowsystem-dev qt5-qtdeclarative-dev kio-dev boost-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
-subpackages="$pkgname-doc"
+subpackages="$pkgname-dev $pkgname-doc"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -31,4 +31,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="1fdbf1b55cf8525dc53454f6c1d9eacb4eb502b68cb08267e2baf03ac721048b316fc7af253d23258274200971dd840c8f79507c28662b2740e12993a5dd7b96  kactivities-5.36.0.tar.xz"
+sha512sums="c226d2d0027253f3507a8f9aa5c4b5755ddfe2d20e512658fe64b263cee1120355af19207db1cc6afef8b65a6b41439672bae7867539961b783742425baa8e45  kactivities-5.37.0.tar.xz"

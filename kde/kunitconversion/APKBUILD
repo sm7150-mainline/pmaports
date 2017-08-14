@@ -1,14 +1,14 @@
 pkgname=kunitconversion
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Support for unit conversion'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="ki18n"
-makedepends="extra-cmake-modules python doxygen qt5-qttools-dev ki18n"
+makedepends="extra-cmake-modules python qt5-qttools-dev ki18n-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc $pkgname-lang"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -30,4 +30,4 @@ package() {
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="10c7cf215cb0c02c22aaa1721e996103712adca770daa2d8da8ddd20c5c78ae3bb847f8e42079afce566d0a807b5aafa45cbb140e3d989ef8e5e6af63936291f  kunitconversion-5.36.0.tar.xz"
+sha512sums="50a4c6efca7d8f218756b9b15f2655bc56fa320178d11291bd3bc4be84ba625a6e8dfa9f2e6320c0c6e8b9f80e80b1125b2e0d1d8e0c86b3e0a1fb9521a4ca5e  kunitconversion-5.37.0.tar.xz"

@@ -1,14 +1,15 @@
 pkgname=kdesignerplugin
-pkgver=5.36.0
-pkgrel=0
+pkgver=5.37.0
+pkgrel=1
 pkgdesc='Integration of Frameworks widgets in Qt Designer/Creator'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="kio kplotting"
-makedepends="extra-cmake-modules qt5-qttools-dev kdoctools python kio kplotting"
+makedepends="extra-cmake-modules qt5-qttools-dev python kdoctools-dev kio-dev kplotting-dev
+			 kcoreaddons-dev kconfig-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
-subpackages="$pkgname-doc $pkgname-lang"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -30,4 +31,4 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="d5573c6e3166ffbfdc95fce9ce7387ceada92923c07193dac10cb30573bae6c1ca8e6533030348737f776061aa998a497b1ae7cdf98412e3020e66b343451fb7  kdesignerplugin-5.36.0.tar.xz"
+sha512sums="e68ec94d9e7b52c90e4b7a8ba70e8b3dcdf95365f5237285e681c7b6ea2e763876a25be787fa3e154cf535f0dff8f28246376206b11f6cfa7670383800bd67cb  kdesignerplugin-5.37.0.tar.xz"

@@ -1,14 +1,16 @@
 pkgname=krunner
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Framework for providing different actions given a string query'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="GPL"
 depends="plasma-framework threadweaver"
-makedepends="extra-cmake-modules kdoctools python doxygen qt5-qttools-dev plasma-framework threadweaver"
+makedepends="extra-cmake-modules kdoctools-dev python qt5-qttools-dev plasma-framework threadweaver-dev
+			 kactivities-dev kbookmarks-dev kcompletion-dev kjobwidgets-dev solid-dev kxmlgui-dev
+			 plasma-framework-dev kpackage-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc"
+subpackages="$pkgname-dev $pkgname-doc"
 
 prepare() {
 	mkdir $srcdir/build
@@ -29,4 +31,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="12d5c25fa3802bfcf2212b7d0c38cd4447e26593331526b87a87771ae8b9dd27706844a89e4cf736fbf2528103608154f70e8a86a562a4604b1694147f2263fe  krunner-5.36.0.tar.xz"
+sha512sums="68e046bd62258d8ea55598959d6a0e9aa8f3686f9e2e023cec1c848b7683a001d0f2c09bc88bd3f86283868ed90c2d984a000899ad86348f96c1dda7559677dc  krunner-5.37.0.tar.xz"

@@ -1,14 +1,16 @@
 pkgname=ktexteditor
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Advanced embeddable text editor'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="libgit2"
-makedepends="extra-cmake-modules python doxygen qt5-qttools-dev qt5-qtxmlpatterns-dev syntax-highlighting kparts"
+makedepends="extra-cmake-modules python qt5-qttools-dev qt5-qtxmlpatterns-dev syntax-highlighting
+			 qt5-qtscript-dev kparts-dev karchive-dev kguiaddons-dev ktextwidgets-dev sonnet-dev
+			 syntax-highlighting-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc $pkgname-lang"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -29,4 +31,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="3f5a7b44eda5cc97cd5f3a365d3240344203d7bf4033317e70ad4aca5e988f882b0f624d4282a9fc33028d3ffc291239f5089e604a90f36a493262722d5beb40  ktexteditor-5.36.0.tar.xz"
+sha512sums="02b2ba273845deb11d9be69f4e212618d62319f30c5e5b999473d1392ee8c402d104aad0856a168b845abaf529d6d0a30e090f70e69d133bfa847ae3f6bb6b27  ktexteditor-5.37.0.tar.xz"

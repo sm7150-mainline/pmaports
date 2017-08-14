@@ -1,5 +1,5 @@
 pkgname=kglobalaccel
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Add support for global workspace shortcuts'
 arch="all"
@@ -8,6 +8,7 @@ license="LGPL"
 depends="kdbusaddons kconfig kcrash"
 makedepends="extra-cmake-modules doxygen qt5-qttools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -28,4 +29,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="6a0916af3d2d5378fd97d93dcd4fe1f11ee0b4e8797a8f191aa424c1ea28c8c5844618e65128c9d9f3a3ddc8a4cd6e3bd83dd18d36603eb8c45eca69f4be8e3c  kglobalaccel-5.36.0.tar.xz"
+sha512sums="115fb5359d7eccc12b9772d79c189bb8e46bf47b0aed46dda019b29a16f5db73ed9b1bc490648f44fa404385411b8471406c0288c275d18ce3ca8ed0156820dc  kglobalaccel-5.37.0.tar.xz"

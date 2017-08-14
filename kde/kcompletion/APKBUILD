@@ -1,14 +1,14 @@
 pkgname=kcompletion
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Text completion helpers and widgets'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="kwidgetsaddons kconfig"
-makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 doxygen"
+makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 doxygen kwidgetsaddons-dev kconfig-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
-subpackages="$pkgname-doc"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -29,4 +29,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="fa475b5daf7545b3e95d09eacbb8922fb07412238faceb3d30d5a903277618f1912c002454feb0004ba6d224596129467a05294a14a634fa6c1962a57dd1289f  kcompletion-5.36.0.tar.xz"
+sha512sums="99cf1346f4048134d5219d451250122ca848d49c6ec26ab9e36562d2e654c18f3415ddd1b11e7a2459ce6b473c22cddb01135de9c773e8f0ae2f1c8d2f4d5ea4  kcompletion-5.37.0.tar.xz"

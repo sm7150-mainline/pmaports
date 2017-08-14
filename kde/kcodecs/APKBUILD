@@ -1,5 +1,5 @@
 pkgname=kcodecs
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Provide a collection of methods to manipulate strings using various encodings'
 arch="all"
@@ -8,6 +8,7 @@ license="LGPL"
 depends="qt5-qtbase"
 makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 gperf doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -28,4 +29,4 @@ package() {
 	cd $srcdir/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="d81b1ea2f1f9da4666d94e0a6c5998f7af59347c609435b7052635ce1ff3f7b2418d72253b200031de9355bfc09594ee5fc501d099023622a79b6ae482dcc9d2  kcodecs-5.36.0.tar.xz"
+sha512sums="eacf5414e903f8241b4dca7330defe041d4897ce55403b85e2792984bc314efa7f17ffbbdbabb9264ea17c8d7d69cde0037f9fdc72545c3cc40cd151684ddd40  kcodecs-5.37.0.tar.xz"

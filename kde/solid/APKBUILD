@@ -1,24 +1,21 @@
 pkgname=solid
-pkgver=5.36.0
+pkgver=5.37.0
 pkgrel=1
 pkgdesc='Hardware integration and detection'
 arch="all"
 url='https://community.kde.org/Frameworks'
 license="LGPL"
 depends="qt5-qtdeclarative media-player-info upower eudev"
-makedepends="extra-cmake-modules qt5-qttools-dev doxygen eudev-dev flex bison"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz
-		D6596.patch"
+makedepends="extra-cmake-modules qt5-qttools-dev doxygen eudev-dev flex-dev bison"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
-	mkdir -p $srcdir/build
-
-	cd "$srcdir"/$pkgname-$pkgver
-	patch -p1 < ../D6596.patch
+	mkdir -p "$srcdir"/build
 }
 
 build() {
-	cd $srcdir/build
+	cd "$srcdir"/build
 	cmake "$srcdir"/${pkgname}-${pkgver} \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
@@ -29,8 +26,7 @@ build() {
 }
 
 package() {
-	cd $srcdir/build
+	cd "$srcdir"/build
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="49b7889cd2cedd1e4d19966e8244db662a9084fe295dc55d5831a3af3ccb86b0ca33f2ffab8662f2ab19f711573fdf58519396dac93cf2f994275b62bf6eb5f2  solid-5.36.0.tar.xz
-2c84fe1addfc573f27e9f2b57a85b79a7965e03ac3b0f064c448c01fd5736481b1b1593bc5e92f9c057b5f2a8ed17d1194ed6b6129e6624c155b196ddbda116f  D6596.patch"
+sha512sums="11cebe83b19f488804fc2608c1dd5c8a3da8ba63f10ccfe445f3c9ca19de2252857791c520f55d08edc87dfc9459d340ea81fc598b10fea2b1080cb03a24d18d  solid-5.37.0.tar.xz"
