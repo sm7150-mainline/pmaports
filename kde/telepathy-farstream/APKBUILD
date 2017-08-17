@@ -6,8 +6,11 @@ arch="all"
 url="https://telepathy.freedesktop.org/components/telepathy-farstream/"
 license="LGPL2.1"
 depends="telepathy-glib farstream"
-makedepends="dbus-glib gobject-introspection-dev python2 telepathy-glib farstream-dev farstream gtk-doc autoconf automake"
+makedepends="dbus-glib-dev file python2 telepathy-glib-dev farstream-dev farstream gtk-doc
+			 autoconf automake libtool gobject-introspection-dev"
 source="https://github.com/TelepathyIM/$pkgname/archive/$pkgname-$pkgver.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc"
+
 
 prepare() {
 	cd "$srcdir"/$pkgname-$pkgname-$pkgver # why would somebody use this naming scheme?!
@@ -16,6 +19,7 @@ prepare() {
 
 build() {
 	cd "$srcdir"/$pkgname-$pkgname-$pkgver
+	NOCONFIGURE=1 ./autogen.sh
 	./configure --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib/telepathy \
 		--disable-static --enable-gtk-doc
 	sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool

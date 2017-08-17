@@ -6,14 +6,14 @@ arch="all"
 url="http://telepathy.freedesktop.org"
 license="LGPL2.1"
 depends="dbus-glib"
-makedepends="libxslt vala gobject-introspection python2 diffutils"
+makedepends="libxslt python2 diffutils dbus-glib-dev"
 source="https://telepathy.freedesktop.org/releases/$pkgname/$pkgname-$pkgver.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-libs"
 
 build() {
 	cd $srcdir/$pkgname-$pkgver
 	PYTHON=/usr/bin/python2 ./configure --prefix=/usr \
 		--libexecdir=/usr/lib/telepathy \
-		--enable-vala-bindings \
 		--enable-static=no
 	make
 }

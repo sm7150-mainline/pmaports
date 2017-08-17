@@ -5,8 +5,12 @@ pkgdesc="Modules providing phone functionality for Plasma"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
 license="GPL3"
-depends="plasma-workspace kpeople telepathy-qt qt5-qtgraphicaleffects"
-makedepends="kpeople telepathy-qt"
+depends="plasma-workspace qt5-qtgraphicaleffects"
+makedepends="extra-cmake-modules kpeople-dev telepathy-qt5-dev qt5-qtdeclarative-dev kpeople-dev
+			 plasma-framework-dev kservice-dev kdeclarative-dev ki18n-dev kio-dev kcoreaddons-dev
+			 kconfig-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev
+			 kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev
+			 kpackage-dev kwindowsystem-dev kdbusaddons-dev knotifications-dev kwayland-dev"
 install="$pkgname.post-install
 		 $pkgname.post-upgrade
 		 $pkgname.post-deinstall"
@@ -14,12 +18,12 @@ source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/master.
 		$install"
 
 prepare() {
-	mkdir -p $srcdir/build
+	mkdir -p "$srcdir"/build
 }
 
 build() {
-	cd $srcdir/build
-	cmake $srcdir/$pkgname-master \
+	cd "$srcdir"/build
+	cmake "$srcdir"/$pkgname-master \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DBUILD_TESTING=OFF \
 		-DLIB_INSTALL_DIR=lib \
@@ -30,7 +34,7 @@ build() {
 }
 
 package() {
-	cd $srcdir/build
+	cd "$srcdir"/build
 	make DESTDIR="$pkgdir/" install
 }
 sha512sums="abf94dc5c0801b333b434ba408952a1be45e3c58896204689bc62a8fde5605137ed6b69f7684f47a2834dc3d1e042bb00282501f2482434871acc92e084eddd8  plasma-phone-components-682.b79bb13.tar.gz

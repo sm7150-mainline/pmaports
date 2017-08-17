@@ -1,4 +1,4 @@
-pkgname=telepathy-qt
+pkgname=telepathy-qt5
 pkgver=0.9.7
 pkgrel=1
 arch="all"
@@ -6,11 +6,9 @@ url="http://telepathy.freedesktop.org/wiki/"
 license="LGPL"
 pkgdesc="A library for Qt-based Telepathy clients"
 depends="qt5-qtbase telepathy-farstream"
-makedepends="cmake doxygen python2 qt5-qttools-dev telepathy-farstream"
-conflicts="telepathy-qt5"
-provides="telepathy-qt5"
-replaces="telepathy-qt5"
-source="https://telepathy.freedesktop.org/releases/$pkgname/$pkgname-$pkgver.tar.gz"
+makedepends="cmake doxygen python2 qt5-qttools-dev telepathy-farstream dbus-glib-dev"
+source="https://telepathy.freedesktop.org/releases/${pkgname/qt5/qt}/${pkgname/qt5/qt}-$pkgver.tar.gz"
+subpackages="$pkgname-dev"
 
 prepare() {
 	mkdir -p $srcdir/build
@@ -18,7 +16,7 @@ prepare() {
 
 build() {
 	cd $srcdir/build
-	cmake $srcdir/$pkgname-$pkgver \
+	cmake $srcdir/${pkgname/qt5/qt}-$pkgver \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DPYTHON_EXECUTABLE=/usr/bin/python2 \

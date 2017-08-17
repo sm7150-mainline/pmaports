@@ -6,9 +6,10 @@ arch="all"
 url='https://community.kde.org/Frameworks'
 license="GPL2"
 depends="qt5-qtbase"
-makedepends="extra-cmake-modules qt5-qtxmlpatterns-dev qt5-qttools-dev"
+makedepends="extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz
-        apkbuild-syntax-highlight.patch"
+        apkbuild-syntax-highlight.patch
+		remove-broken-regex.patch"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 prepare() {
@@ -17,6 +18,7 @@ prepare() {
 	# Add APKBUILD syntax highlighting
 	cd "$srcdir"/$pkgname-$pkgver
 	patch -p1 -i ../apkbuild-syntax-highlight.patch
+	patch -p1 -i ../remove-broken-regex.patch
 }
 
 build() {
@@ -35,4 +37,5 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 sha512sums="d49f62934283c07c1b6e8fad11b9fa469b21bb55f35ddbc6c28ab29bd79b7cba67a93d0b46abb8b3d86ee7ba7a90ea50a98553aac7bdfe396bc2b010611c24c2  syntax-highlighting-5.37.0.tar.xz
-0722d3c44c52f70eae5636c7f912e8e53491a728c96968705c14621fb38749583d855ffdf07ea84cecfcfce0e6c295fe500a06190f7bc82082d67986d879f66e  apkbuild-syntax-highlight.patch"
+0722d3c44c52f70eae5636c7f912e8e53491a728c96968705c14621fb38749583d855ffdf07ea84cecfcfce0e6c295fe500a06190f7bc82082d67986d879f66e  apkbuild-syntax-highlight.patch
+8a94d1c88736d8b3783588637e255a6ec81064fd9d6716eb5ace63161e29b986d58829f83c08816c652aa0a34974ad83f3a91c6cadb7974c6e19e160734e8052  remove-broken-regex.patch"

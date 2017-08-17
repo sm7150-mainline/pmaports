@@ -6,10 +6,15 @@ arch="all"
 url='https://userbase.kde.org/KSysGuard'
 license="LGPL"
 depends="lm_sensors hicolor-icon-theme"
-makedepends="extra-cmake-modules kdoctools python knewstuff libksysguard libksysguard-dev kinit"
+makedepends="extra-cmake-modules kdoctools-dev python libksysguard-dev attica-qt5-dev
+			 kinit-dev kxmlgui-dev kconfig-dev kcoreaddons-dev kdbusaddons-dev ki18n-dev
+			 kiconthemes-dev kitemviews-dev kio-dev knotifications-dev kservice-dev
+			 kio-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kjobwidgets-dev
+			 solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kwindowsystem-dev
+			 knewstuff-dev"
 source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz
 		 D6631.patch"
-subpackages="$pkgname-lang"
+subpackages="$pkgname-doc $pkgname-lang"
 
 prepare() {
 	mkdir -p $srcdir/build
