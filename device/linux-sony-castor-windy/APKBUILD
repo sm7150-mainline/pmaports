@@ -13,7 +13,7 @@
 
 _vendor=sony
 _flavor=sony-castor-windy
-_branch=wifi-fixes
+_branch=next
 _config="config-${_flavor}.armhf"
 
 pkgname=linux-${_flavor}
@@ -25,14 +25,15 @@ esac
 pkgrel=1
 arch="armhf"
 pkgdesc="Sony Xperia Z2 Tablet kernel"
-url="https://github.com/opendata26"
+url="https://github.com/andersson"
 depends="postmarketos-mkinitfs"
 makedepends="perl sed installkernel  bash gmp-dev bc linux-headers elfutils-dev"
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_branch.tar.gz::https://github.com/opendata26/kernel/archive/${_branch}.tar.gz
+	$pkgname-$_branch.tar.gz::https://github.com/andersson/kernel/archive/${_branch}.tar.gz
 	$_config
+	mmc-wifi-fix.patch
 	compiler-gcc6.h
 "
 subpackages=""
@@ -91,8 +92,9 @@ build() {
 	unset LDFLAGS
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
-		|| return 1
+               KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+               CFLAGS_MODULE=-fno-pic \
+               || return 1
 }
 
 package() {
@@ -105,7 +107,15 @@ package() {
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir/build"
+        make -j1 modules_install \
+                ARCH="$_carch" \
+                INSTALL_MOD_PATH="$pkgdir" \
+                || return 1
 }
-sha512sums="d27a8850e6412c2edb2752433600c9b46e3a83a319b3d175dfeaff447ddc2213c4bbfcdb3688eed76743dc89ac1679a40ec95e8b334f30b4e463ae42facdfcc5  linux-sony-castor-windy-wifi-fixes.tar.gz
-6505f6371153bc741d48bd9f9e15001c8ccd7feb96ce6bb3a6ab7cb3b2012e7b61439edbbac5b1377e11b3af1cb4e2b3878b54b4fdc00729f0a6b2272f64591f  config-sony-castor-windy.armhf
+
+sha512sums="42e3d7ea75a2e69a7589e74409fe43f2abdee0f4cc1fcea1b138622e3845524145e4c41343abc57d71236b1e2f59715f719845fcf5e628a6c343e9b10d06942a  linux-sony-castor-windy-next.tar.gz
+7a39cb11eba808c1c8450925b2a865192f02572bc2c64de362ba9d26098852f8f7ce602ba2a3c418a1b12d2359d6e5fd6d3463bb338ba3071b0c72ba7f43aad4  config-sony-castor-windy.armhf
+a13b17a151f732c2842df963019079cab07118fcdcdb2f2dfdfbd18571c7e2bd95a94734dc3a4eef1dae970e698f46047973efba6f355b26bf553fa6c2ac895d  mmc-wifi-fix.patch
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
