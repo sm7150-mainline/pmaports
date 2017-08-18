@@ -19,15 +19,6 @@ done
 # Add user account
 adduser -u 1000 -D -h /home/user -G users user 2>/dev/null
 
-# Autologin on tty1, let busybox autoconfigure 2-6
-autologin="root"
-for i in 1 2 3 4 5 6; do
-	old="^tty$i::respawn:/sbin/getty 38400 tty$i"
-	new="# tty$i::respawn:/sbin/getty 38400 tty$i"
-	[ "$i" == "1" ] && new="tty1::respawn:/bin/login -f $autologin"
-	sed -i -e "s.$old.$new.g" /etc/inittab
-done
-
 # Adjust welcome messages /etc (unless the files have been modified)
 if ! apk audit /etc | grep -q etc/issue; then
 	{
