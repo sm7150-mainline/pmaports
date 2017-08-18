@@ -150,6 +150,12 @@ resize_root_partition() {
 			kpartx -afs "$partition_dev"
 		fi
 	fi
+	# Detect and resize root partition on QEMU
+	if [ -z "${partition##"/dev/hda"*}" ]; then
+		echo "Resize root partition ($partition)"
+		parted -s /dev/hda resizepart 2 100%
+		partprobe
+	fi
 }
 
 unlock_root_partition() {
