@@ -1,0 +1,29 @@
+_hash="debd421f276bbad1d0973ba97c69a771c08fe9f4"
+
+pkgname=osk-sdl
+pkgver=1
+pkgrel=4
+pkgdesc="Onscreen Keyboard for Framebuffer"
+url="https://github.com/postmarketOS/osk-sdl"
+arch="all"
+license="MIT"
+depends="sdl2_image sdl2 sdl2_ttf cryptsetup-libs mesa-gl directfb"
+makedepends="linux-headers sdl2-dev sdl2_image-dev sdl2_ttf-dev cryptsetup-dev"
+subpackages=""
+
+source="$pkgname-$_hash.tar.gz::https://github.com/postmarketos/${pkgname}/archive/${_hash}.tar.gz"
+
+options="!strip"
+
+build() {
+    cd "${srcdir}/${pkgname}-${_hash}"
+    make
+}
+
+package() {
+    install -D -m755 "${srcdir}/${pkgname}-${_hash}"/osk-sdl \
+        "$pkgdir"/usr/bin/osk-sdl
+    install -D -m755 "${srcdir}/${pkgname}-${_hash}"/osk.conf \
+        "$pkgdir"/osk.conf
+}
+sha512sums="d0f1f6d277427c664d9f8c1210661ee58bd41b6076ef8871cb5fc35f5362f5e91015adf5e07dce409b3c92436db2af724ffc78880de04277f61122a6632f6ea6  osk-sdl-debd421f276bbad1d0973ba97c69a771c08fe9f4.tar.gz"
