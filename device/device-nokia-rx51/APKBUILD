@@ -1,19 +1,31 @@
 pkgname=device-nokia-rx51
 pkgver=1
-pkgrel=13
+pkgrel=14
 pkgdesc="Nokia N900"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-postmarketos uboot-tools linux-firmware"
-makedepends="uboot-tools"
+depends="linux-postmarketos uboot-tools linux-firmware kbd kbd-bkeymaps"
+makedepends="uboot-tools kbd kbd-bkeymaps"
 install="$pkgname.post-install"
 subpackages=""
-source="deviceinfo uboot-script.cmd backlight-enable.sh 90-touchscreen-dev.rules acpi_handler.sh acpi.map $install"
+source="
+	deviceinfo
+	uboot-script.cmd
+	backlight-enable.sh
+	90-touchscreen-dev.rules
+	acpi_handler.sh
+	acpi.map
+	keymaps/rx51_us.map
+	$install
+"
 options="!check"
 
 build() {
 	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+	mkdir "$srcdir"/keymaps
+	loadkeys -b "$srcdir"/rx51_us.map > "$srcdir"/keymaps/rx51_us.bmap
+	gzip "$srcdir"/keymaps/rx51_us.bmap
 	return 0
 }
 
@@ -31,12 +43,15 @@ package() {
                 "$pkgdir"/etc/acpi/handler.sh
         install -D -m644 "$srcdir"/acpi.map\
                 "$pkgdir"/etc/acpi.map
+        install -D -m644 "$srcdir"/keymaps/rx51_us.bmap.gz\
+                "$pkgdir"/usr/share/bkeymaps/us/rx51_us.bmap.gz
 }
 
-sha512sums="4efa28cfb35b0ceb783f15fbcf05d7302690d2d767ec7b87578741ccd52988fdc2095baf2a5ce66b964fb0cb151d05238f223a60a9a52c3670bd7b20ead2862a  deviceinfo
+sha512sums="cecba9a4a5ba6ddd736e4a46eecac20865d6c4d7a2d95efbbc33d1e8cacf9e3583aa80118fd5044da6ee08997d9d2c59af4f896692859b6e2e39e55fa515b566  deviceinfo
 a6d1c097bdc06f6d93527487d3779e20d16e290421615de5fa13a3b41bc318f44a35ec9058acd107290ce407f99f74f7dbfcf48b363c9f580c394cec4ba50e77  uboot-script.cmd
 3d55e34b95791636e44a5f41754f3d0de039dbba41f7a556d43a95c9e64afcfa930046b4b96b40020b6f196096ffba93514682927e32fa4488686fdd19c6da5a  backlight-enable.sh
 98c554a709d6e8da5835bd792d833355d830fca1cfea12ec7fe4f41d1d1126389c51a8a392a7f94093473c19263cc6846cc40d7e179c2facf12db2d68ff923f9  90-touchscreen-dev.rules
 df5dcae9a32d04ba2fed8b4dbb8722f8d56d063a288dfbaeca37806bdbb8ba4de639b392859b9f24040a1032456d5dcd754f51314e3ab66515b91ae1e03c93a7  acpi_handler.sh
 7761aec6e6e219245b006e7bdc1d19812e9c5915cf3e64bb3dd46bb4b5570c1715650b53a1fc1007cb814076b5d81be0a66ba7ebf06d9a1fa4e364725c3ee633  acpi.map
+c9ff8b5968fe94007e1139db5ae76f3ee6c214356bff297b9672276c6adb332ba2342b6ca54cf7992d6556f3c68a13ef49ae5e61abe86154935514034170e228  rx51_us.map
 f5be149afc242543e4683532a703d7451e1b934e6c23363ea3bd38df307ae7cf657ac875cfb36152ad82f2dc056885fae8e65082eb8e3c73bd01ae44ed2224e8  device-nokia-rx51.post-install"
