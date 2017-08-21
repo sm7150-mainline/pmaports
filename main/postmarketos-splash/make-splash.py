@@ -6,7 +6,7 @@ import sys
 
 
 def make_splash(width, height, filename, landscape=False, text="", config_file=None, center=False):
-    print("Creating {}x{} splashscreen".format(width, height))
+    print("Creating ({}x{}) splashscreen {}".format(width, height, os.path.basename(filename)))
 
     config = configparser.ConfigParser()
     if config_file is not None:

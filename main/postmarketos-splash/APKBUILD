@@ -1,6 +1,6 @@
 pkgname=postmarketos-splash
 pkgver=1
-pkgrel=2
+pkgrel=3
 pkgdesc="Splash screen for postmarketOS"
 url="https://github.com/postmarketos"
 arch="noarch"
@@ -22,5 +22,5 @@ package() {
 		"$pkgdir"/etc/postmarketos/splash.ini
 }
 
-sha512sums="5a89cdaeec572262ae48248a0c92721bd53e40ddf83167be3ede6fef656e540f6f3cf8eac3d17ae9755ab523a69f760732d05b0de436347ed91272ca732ac938  make-splash.py
+sha512sums="cd3593579d357bb16fd9c6754e66eb8702e7d6199c5e9f7024735f410d5365ff3d1a7199b8075aa7b502785c2de0f9302f8d492d3e005688e4f93883d344c3ac  make-splash.py
 82234147a5e907203edb8f8531aba63d96156b600b148a8d986b1978ce2641ebf875880f4075709e8b5e8f92948598319f5157473ddcc14cf00be004255e44bc  config.ini"

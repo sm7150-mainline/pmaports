@@ -24,11 +24,6 @@ parse_commandline()
 	outfile_extra=$2-extra
 	kernel=$3
 	modules_path="/lib/modules/${kernel}"
-
-	if [ ! -d ${abi_path} ]; then
-		echo "ERROR: Modules path not found: ${modules_path}"
-		exit 1
-	fi
 }
 
 create_folders()
