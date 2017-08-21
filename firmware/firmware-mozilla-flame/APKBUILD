@@ -1,0 +1,24 @@
+pkgname=firmware-mozilla-flame
+pkgver=1
+pkgrel=1
+pkgdesc="Mozilla Flame Firmware"
+url="https://github.com/yuvadm/mozilla-flame-firmware"
+arch="armhf"
+license="proprietary"
+depends=""
+makedepends=""
+install=""
+subpackages=""
+_hash=503a4052a8bfdc3b4c06533f2d08fe4d6a923842
+source=$pkgname-$_hash.zip::$url"/archive/${_hash}.zip"
+options="!check !strip"
+
+package() {
+	mkdir -p "$pkgdir/lib/firmware/postmarketos"
+	for fw in $(find "${srcdir}/mozilla-flame-firmware-${_hash}/" -type f)
+	do
+		install -m644 $fw "$pkgdir/lib/firmware/postmarketos/"
+	done
+}
+
+sha512sums="dc9253f5891a488874879fbe94d9d3e59807f33c91958d9b93fc0b07fe31ca664b9929a98857831be07900280ce4c04c4231ab3951e4f02f81b66dd034354560  firmware-mozilla-flame-503a4052a8bfdc3b4c06533f2d08fe4d6a923842.zip"

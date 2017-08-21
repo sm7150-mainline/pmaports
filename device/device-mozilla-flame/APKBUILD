@@ -1,15 +1,15 @@
 pkgname=device-mozilla-flame
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Mozilla Flame"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-mozilla-flame mkbootimg"
+depends="linux-mozilla-flame firmware-mozilla-flame mkbootimg"
 makedepends=""
-install=""
+install="$pkgname.post-install"
 subpackages=""
-source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules"
+source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules $install"
 options="!check"
 
 build() {
@@ -25,6 +25,7 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
 
-sha512sums="e1491537517787e7828ca88e749fefba7aafdc14062ce292e4e39d0cfc215ba79c79a64c5be9f4e65e092aabb060a051472c476d49105ed2e048dda88a0f9edd  deviceinfo
-8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
-ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e28d2db4b81c0f50b905639911276da40321d2b6cca7f797df  90-android-touch-dev.rules"
+sha512sums="6fed912ef5850ba75e4b8f5e8dd36141965978faab011c1556a02c6e2ae42d02710b9a9f0e53f08e9c63d95eafce7c748c37928741157fa321d9f4c1ed6bac4a  deviceinfo
+29f7be2df62a48604cfbb48bc2192ac309b36b0bf0f02819fdbb240868ff382c0cf17baf1ad8c84361474a2218ec34bdb28ae3ccd940b2560d1b1e281449c48d  initfs-hook.sh
+ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e28d2db4b81c0f50b905639911276da40321d2b6cca7f797df  90-android-touch-dev.rules
+0a301a723f2a6ad8285fa8c016a73b0d05ae9811a8c96cd73f6db274e85676f7b3d427ede46484665fd613b67ef42330f0b69413328c04c3f489db86c5aa9038  device-mozilla-flame.post-install"

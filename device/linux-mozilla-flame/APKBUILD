@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=4
+pkgrel=5
 arch="armhf"
 pkgdesc="Mozilla flame kernel"
 url="https://github.com/mozilla-b2g/codeaurora_kernel_msm"
@@ -78,9 +78,6 @@ prepare() {
 		silentoldconfig
 }
 
-
-
-# this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
 	cd "$srcdir"/build || return 1
 	make ARCH="$_carch" menuconfig
@@ -95,10 +92,6 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y DTC_FLAGS="-p 1024" \
 		|| return 1
 
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y modules \
-		|| return 1
-
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }
 
@@ -108,18 +101,7 @@ package() {
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="${pkgdir}" modules_install
-
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
 		INSTALL_MOD_PATH="${pkgdir}" firmware_install
-
-	rm "${pkgdir}/lib/modules/${pkgver}/build"
-	install -Dm644 "${srcdir}"/build/Module.symvers "${pkgdir}/lib/modules/${pkgver}/build/Module.symvers"
-	install -Dm644 "${srcdir}"/build/System.map "${pkgdir}/lib/modules/${pkgver}/build/System.map"
-	install -Dm644 "${srcdir}"/build/modules.builtin "${pkgdir}/lib/modules/${pkgver}/build/modules.builtin"
-	install -Dm644 "${srcdir}"/build/modules.order "${pkgdir}/lib/modules/${pkgver}/build/modules.order"
-	cd ../..
 
 	mkdir -p "$pkgdir/usr/lib/linux-mozilla-flame"
 	for dtb in $(find "$srcdir/build/arch/arm/boot" -name "*.dtb")
@@ -130,7 +112,7 @@ package() {
 	install -Dm644 "$srcdir/build/arch/arm/boot/dt.img" \
 		"$pkgdir/boot/dt.img"
 
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
 	install -D "$srcdir/build/include/config/kernel.release" \
