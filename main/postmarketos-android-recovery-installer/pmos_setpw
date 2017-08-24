@@ -1,0 +1,29 @@
+#!/sbin/ash -e
+
+# Copyright 2017 Attila Szöllősi
+#
+# This file is part of postmarketos-android-recovery-installer.
+#
+# postmarketos-android-recovery-installer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# postmarketos-android-recovery-installer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with postmarketos-android-recovery-installer.  If not, see <http://www.gnu.org/licenses/>.
+
+# shellcheck source=pmos_install_functions
+. /tmp/postmarketos/bin/pmos_install_functions
+
+extract_partition_table
+set_subpartitions
+echo "Set the password of the encrypted rootfs!"
+cryptsetup luksAddKey -d "$WORKING_DIR"/lukskey "$ROOT_PARTITION"
+# Remove temporary keyfile
+cryptsetup luksRemoveKey "$ROOT_PARTITION" "$WORKING_DIR"/lukskey
+echo "Successfully added key to the LUKS device."

@@ -105,7 +105,7 @@ mount_boot_partition() {
 		loop_forever
 	fi
 	echo "Mount boot partition ($partition)"
-	mount -r -t ext2 "$partition" /boot
+	mount -r "$partition" /boot
 }
 
 # $1: initramfs-extra path

@@ -1,0 +1,98 @@
+#!/sbin/ash
+
+# Copyright 2017 Attila Szöllősi
+#
+# This file is part of postmarketos-android-recovery-installer.
+#
+# postmarketos-android-recovery-installer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# postmarketos-android-recovery-installer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with postmarketos-android-recovery-installer.  If not, see <http://www.gnu.org/licenses/>.
+
+export OUTFD=$1
+export ZIP=$2
+export WORKING_DIR="/tmp/postmarketos"
+export PATH=$PATH:"$WORKING_DIR"/bin
+
+# shellcheck source=/dev/null
+. "$WORKING_DIR"/install_options
+
+# taken from https://github.com/Debuffer-XDA/Gov-Tuner/blob/master/META-INF/com/google/android/update-binary
+# Copyright (c) 2016 - 2017 Debuffer
+ui_print() {
+	echo -n -e "ui_print $1\n" > /proc/self/fd/"$OUTFD"
+	echo -n -e "ui_print\n" > /proc/self/fd/"$OUTFD"
+}
+
+extract_partition_table() {
+	case "$INSTALL_PARTITION" in
+		"system")
+			# We need to resolve symlinks, to make set_subpartitions() work.
+			_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/system/ {print $3}' /etc/recovery.fstab)")
+			;;
+		"external_sd")
+			_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/external_sd/ {print $4}' /etc/recovery.fstab)")
+			;;
+		*)
+			echo "No support for flashing $INSTALL_PARTITION."
+			return 1
+			;;
+	esac
+	if [ ! -z "$_INSTALL_DEVICE" ]
+	then
+		echo "install device found at $_INSTALL_DEVICE"
+		export INSTALL_DEVICE=$_INSTALL_DEVICE
+	else
+		echo "Couldn't find /$INSTALL_PARTITION/ in fstab."
+		return 1
+	fi
+	_BOOT=$(awk '/^\/boot/ {print $3}' /etc/recovery.fstab)
+	if [ ! -z "$_BOOT" ]
+	then
+		echo "boot partition found at $_BOOT"
+		export BOOT=$_BOOT
+	else
+		echo "Couldn't find /boot/ in fstab."
+		return 1
+	fi
+}
+
+partition_install_device() {
+	for command in "mktable msdos" \
+		"mkpart primary ext2 2048s 100M" \
+		"mkpart primary 100M 100%" \
+		"set 1 boot on"
+	do
+		parted -s "$INSTALL_DEVICE" "$command"
+	done
+	partprobe
+	if [ "$INSTALL_PARTITION" = "system" ]
+	then
+		kpartx -afs "$INSTALL_DEVICE"
+		ln -s /dev/mapper/* /dev/block/
+	fi
+	set_subpartitions
+}
+
+set_subpartitions() {
+	export PMOS_BOOT="$INSTALL_DEVICE"p1
+	export ROOT_PARTITION="$INSTALL_DEVICE"p2
+}
+
+umount_install_partition() {
+	if mountpoint -q "/$INSTALL_PARTITION/"
+	then
+		umount /"$INSTALL_PARTITION"/
+	else
+		echo 'Continuing...'
+		return 0
+	fi
+}

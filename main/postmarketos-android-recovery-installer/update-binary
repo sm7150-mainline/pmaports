@@ -1,0 +1,31 @@
+#!/sbin/ash
+
+# Copyright 2017 Attila Szöllősi
+#
+# This file is part of postmarketos-android-recovery-installer.
+#
+# postmarketos-android-recovery-installer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# postmarketos-android-recovery-installer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with postmarketos-android-recovery-installer.  If not, see <http://www.gnu.org/licenses/>.
+
+# Print fail information
+OUTFD=$2
+fail_info() {
+	FAIL_MSG="Failed. Check /tmp/postmarketos/pmos.log for more info!"
+	echo -n -e "ui_print $FAIL_MSG\n" > /proc/self/fd/"$OUTFD"
+	echo -n -e "ui_print\n" > /proc/self/fd/"$OUTFD"
+}
+# Create working directory
+mkdir /tmp/postmarketos/
+# Extract and start the installer script
+unzip "$3" "bin/pmos_install" "bin/pmos_install_functions" "install_options" -d /tmp/postmarketos/
+/tmp/postmarketos/bin/pmos_install "$2" "$3" || { fail_info ; exit 1 ; }
