@@ -1,0 +1,126 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - add generation of master DTB with dtbTool
+#
+# Kernel config based on: arch/arm/configs/msm8610_defconfig
+# Changes:
+# - apply patches to compile with gcc6
+# - enable devtmpfs (needed for udev -> touch support in weston)
+# - disable input mouse driver
+# - enable generation of dtb
+
+_vendor=huawei
+_flavor=huawei-y530
+_config="config-${_flavor}.armhf"
+_hash="7ad8c6b4ff458fa50a06d3a50cf5909b93d585a2"
+
+pkgname=linux-${_flavor}
+pkgver=3.4.0
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=1
+arch="armhf"
+pkgdesc="Soulfire v1 Kernel for Huawei Y530"
+url="https://github.com/EfranDev/android_kernel_huawei_Soulfire"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_hash.tar.gz::${url}/archive/${_hash}.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_fix_return_address.patch
+	01_timeconst_fix.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+	03_avoid_rpmb_read_during_boot.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_huawei_Soulfire-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+	make mrproper
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	echo "--[ menuconfig ]--"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	echo "--[ Build kernel ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		|| return 1
+
+	echo "--[ Generate master DTB ]--"
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	echo "--[ Installing kernel ]--"
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	echo "--[ Installing master DTB ]--"
+	install -Dm644 "$srcdir/build/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="a19787f1e9d6862bd9cf5827a18e34749831c79561714003814e8814458d69fc0ba21e0d167c01228dcd455056940a7f80153f82665a3ada2f49a9bd948b2741  linux-huawei-y530-7ad8c6b4ff458fa50a06d3a50cf5909b93d585a2.tar.gz
+29e29c8acba4991735aafe368922088e49ba97f2de8fc75c84eb7114848b8e0eaaa80a97395afea7f6f44e454fc53f1a3260137b7008fcf1f3e76c54eeb12f67  config-huawei-y530.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
+03a271e09c981c0379382763921ff127566c8f1d3c009e66718bdb3d6e1a0a3e56d68cab2676186899fb6d21236c7207d4f1c94f39c372c535468c7a322e479a  03_avoid_rpmb_read_during_boot.patch"
