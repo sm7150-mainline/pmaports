@@ -1,4 +1,5 @@
 #!/bin/ash
+# shellcheck shell=dash
 
 # Copyright 2017 Attila Szöllősi
 #
