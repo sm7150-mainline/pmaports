@@ -9,8 +9,8 @@
 # Changes:
 # - enable devtmpfs (needed for udev -> touch support in weston)
 
-_vendor=mozilla
-_flavor=mozilla-flame
+_vendor=t2m
+_flavor=t2m-flame
 _hash="03396c93577aafae7ca3603de1c74eafd30e7d54"
 _config="config-${_flavor}.armhf"
 
@@ -22,7 +22,7 @@ case $pkgver in
 esac
 pkgrel=5
 arch="armhf"
-pkgdesc="Mozilla flame kernel"
+pkgdesc="T2M flame kernel"
 url="https://github.com/mozilla-b2g/codeaurora_kernel_msm"
 depends="postmarketos-mkinitfs"
 makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
@@ -103,10 +103,10 @@ package() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
 		INSTALL_MOD_PATH="${pkgdir}" firmware_install
 
-	mkdir -p "$pkgdir/usr/lib/linux-mozilla-flame"
+	mkdir -p "$pkgdir/usr/lib/linux-t2m-flame"
 	for dtb in $(find "$srcdir/build/arch/arm/boot" -name "*.dtb")
 	do
-		install -m644 $dtb "$pkgdir/usr/lib/linux-mozilla-flame/"
+		install -m644 $dtb "$pkgdir/usr/lib/linux-t2m-flame/"
 	done
 
 	install -Dm644 "$srcdir/build/arch/arm/boot/dt.img" \
@@ -119,8 +119,8 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="03532b82159d31e406594203f318f78aace500f997325149d161e1691c93c3bc54e903602d54d52dc8fbfe370828da3442f06f4a78b84b8370fa0ef5d9a05bef  linux-mozilla-flame-03396c93577aafae7ca3603de1c74eafd30e7d54.zip
-28d4f4d0e1f0f55d06d05ad2a62560aa611f9611084b6653df9dd381323509c534227d1058acfad2c7bf014289b4f2a253ce47847c6fe5423688ec0998fb6056  config-mozilla-flame.armhf
+sha512sums="03532b82159d31e406594203f318f78aace500f997325149d161e1691c93c3bc54e903602d54d52dc8fbfe370828da3442f06f4a78b84b8370fa0ef5d9a05bef  linux-t2m-flame-03396c93577aafae7ca3603de1c74eafd30e7d54.zip
+28d4f4d0e1f0f55d06d05ad2a62560aa611f9611084b6653df9dd381323509c534227d1058acfad2c7bf014289b4f2a253ce47847c6fe5423688ec0998fb6056  config-t2m-flame.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  gpu-msm-fix-gcc5-compile.patch
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  aeea3592a13bf12861943e44fc48f1f270941f8d.patch
