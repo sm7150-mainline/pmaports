@@ -1,0 +1,33 @@
+pkgname=device-lg-lenok
+pkgver=1
+pkgrel=2
+pkgdesc="LG G Watch R"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-lg-lenok mkbootimg"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules fb_fix.sh"
+options="!check"
+
+build() {
+	return 0
+}
+
+package() {
+	install -D -m644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -D -m644 "$srcdir"/fb_fix.sh \
+		"$pkgdir"/etc/profile.d/fb_fix.sh
+}
+
+sha512sums="9dba843fba4f942587e858631939c6a08f30c23a08e29028a8739d5ac0a8c5e67e6df18758c3f2e75f48eab9181300438ec604ce259b5d7342ce6a1d0a5e2a66  deviceinfo
+e2b0a6c02a0073094439aa7014139fa567b8375b442eaad00d6c1b90a1fd2d9bc73bf4546137fe2dd5c9de03a6ec383173d1b4ad3ab975850484c4e1342cfb74  initfs-hook.sh
+a36ba9017df3b4be233783096c303abafa873dcdf50f6357b82f3c5526fd161a1914dafe143377cb5982955108b987890638b51911d0dd339172554e39a82d9f  90-android-touch-dev.rules
+f623da68a750ba5dd367d131841aca182b5041292c800e0c919d25187305546e9e42b876cadadc2f56b73e0e6b718a9149a817f5d571e015f7c9467f7387aa61  fb_fix.sh"

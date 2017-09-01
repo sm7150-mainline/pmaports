@@ -1,0 +1,109 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - disabled module installation
+# - add !check !tracedeps
+# - package: just install zimage and kernel.release, because the kernel config
+#	does not generate modules or dtb files
+# - do not create -dev subpackage (makes no sense without module support)
+#
+# Changes:
+# - enable devtmpfs (needed for udev -> touch support in weston)
+# - enabled CONFIG_VT (needed for weston to work)
+# - Added ata2001's refresh rate fix for 60hz (otherwise screen is stuck at 15hz)
+# - Enable generation of dtb
+
+_vendor=lge
+_flavor=lg-lenok
+_hash="f383838578f56e03687c81ac7d6de12eafbd85f4"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.10.105
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=4
+arch="armhf"
+pkgdesc="G Watch R kernel"
+url="https://github.com/Tsunamical/kernel_lge_bass-lenok"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_hash.tar.gz::${url}/archive/${_hash}.tar.gz
+	$_config
+	compiler-gcc6.h
+	refresh_rate.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/kernel_lge_bass-lenok-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		|| return 1
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="4b639fcb5baf60ddc16bca43450d8d7dead6fdfdfab5da13ab2ffc8ae25056610de1aee0abc57737f3d4ac7417685bcefd2303c34b110ce749e1d65abbcf8bee  linux-lg-lenok-f383838578f56e03687c81ac7d6de12eafbd85f4.tar.gz
+2ca943fca8eefeacb0e8677ed3db5c0e27b0a643cb4b54afa0750df1f9accd23a9bd194905cf1cac6a8d1fae3aa480edd24ff737ad7e230de351c30a9400e592  config-lg-lenok.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+2ab69ffa7940611fbaeba3f5ccca89e53530ea4603c815b329f137e717c2812e1049e29996d74f963d7d67166d1529589f6272367e77ee1e467e437661be1d12  refresh_rate.patch"
