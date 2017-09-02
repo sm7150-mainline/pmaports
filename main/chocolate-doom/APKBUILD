@@ -1,0 +1,25 @@
+pkgname=chocolate-doom
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="Historically-accurate Doom, Heretic, Hexen, and Strife ports."
+url="http://www.chocolate-doom.org/"
+arch="all"
+license="GPL2"
+depends="libpng libsamplerate sdl"
+makedepends="python sdl-dev sdl_net sdl_mixer-dev"
+subpackages="chocolate-doom-doc"
+source="http://chocolate-doom.org/downloads/${pkgver}/${pkgname}-${pkgver}.tar.gz"
+builddir="$srcdir/${pkgname}-${pkgver}"
+
+build(){
+	cd "$builddir"
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="43353875f76432123336ac7f8a37d00c447286f5bf17c2a12f6307568fe2533370ca8e5e0f76fa475e353f20dfdea79e3948c47ea8b079ef5dd9d0a53c305bfc  chocolate-doom-2.3.0.tar.gz"
