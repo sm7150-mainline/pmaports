@@ -1,6 +1,6 @@
 pkgname=device-qemu-vexpress
 pkgver=1
-pkgrel=8
+pkgrel=9
 pkgdesc="Simulated device in qemu with vexpress soc"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -8,7 +8,7 @@ license="MIT"
 depends="linux-postmarketos"
 makedepends=""
 subpackages=""
-source="deviceinfo"
+source="deviceinfo interfaces"
 options="!check"
 
 build() {
@@ -18,6 +18,9 @@ build() {
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/interfaces \
+		"$pkgdir"/etc/network/interfaces
 }
 
-sha512sums="a18ab789c19d8802be6a9e9c842f4c304f267bd78f46b096b4ba6609430d1544e0a9eca9bc22db67a0728efae3aad6c2def9f7e64157d31aeb31b4bb839076d5  deviceinfo"
+sha512sums="a18ab789c19d8802be6a9e9c842f4c304f267bd78f46b096b4ba6609430d1544e0a9eca9bc22db67a0728efae3aad6c2def9f7e64157d31aeb31b4bb839076d5  deviceinfo
+d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  interfaces"
