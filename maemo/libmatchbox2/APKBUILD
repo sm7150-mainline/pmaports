@@ -1,0 +1,35 @@
+pkgname=libmatchbox2
+pkgver=0.2.92
+pkgrel=1
+_rev=e9c043acdd7a1659dc7fec003123548f309726ce
+pkgdesc="Library for Matchbox Project applications"
+arch="all"
+url="https://github.com/fremantle-gtk2/libmatchbox2"
+license="GPL"
+depends="gtk+2.0-maemo pango libpng libxext clutter"
+depends_dev="libxcomposite-dev libxext-dev libxdamage-dev"
+makedepends="autoconf automake libtool
+    gtk+2.0-maemo-dev pango-dev clutter-dev libpng-dev $depends_dev"
+subpackages="$pkgname-dev"
+source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/libmatchbox2/archive/$_rev.tar.gz"
+
+builddir="$srcdir/libmatchbox2-$_rev"
+
+prepare() {
+    cd "$builddir"
+    sed -i -e 's/libpng12/libpng/g' configure.ac
+    sed -i -e 's/png_ptr->jmpbuf/png_jmpbuf(png_ptr)/g' matchbox/theme-engines/mb-wm-theme-png.c
+}
+
+build() {
+    cd "$builddir"
+    autoreconf -i -f
+    ./configure --prefix=/usr --enable-png-theme --with-pango CFLAGS="${CFLAGS} -Wno-error=unused-result -Wno-error=deprecated-declarations"
+    make
+}
+
+package() {
+    cd "$builddir"
+    make DESTDIR="$pkgdir/" install
+}
+sha512sums="eb3710ec32acdf8bfdf96605b711243d50ff4cbee856599dda7855b26109593476cac92218f4396c8beb247b72421bffe7a8ab7372f8070a899e6c03920b61a9  libmatchbox2-e9c043acdd7a1659dc7fec003123548f309726ce.tar.gz"

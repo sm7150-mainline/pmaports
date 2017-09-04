@@ -1,0 +1,34 @@
+pkgname=hildon-desktop
+pkgver=2.2.155
+pkgrel=1
+_rev=c178acc6e7aa3524f962be6442335da8b89fc808
+pkgdesc="Hildon desktop for Fremantle"
+arch="all"
+url="https://github.com/fremantle-gtk2/hildon-desktop"
+license="GPL"
+depends="libhildon libmatchbox2 libhildondesktop clutter gnome-menus2 profiled"
+makedepends="mce-headers profiled-dev libmatchbox2-dev gnome-menus2-dev libhildondesktop-dev"
+source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/hildon-desktop/archive/$_rev.tar.gz"
+
+builddir="$srcdir/hildon-desktop-$_rev"
+
+prepare() {
+	cd "$builddir"
+    sed -i -e 's/libpng12/libpng/g' configure.ac
+    sed -i -e 's/g_return_if_fail (!render_manager->priv->zoomed);//g' src/home/hd-render-manager.c
+    # Temp workaround for top-left button to appear in QEMU x86_64
+    sed -i -e 's/MB_WM_OBJECT_TYPE(c)==HD_TYPE_TITLE_BAR/G_TYPE_CHECK_INSTANCE_TYPE(c, HD_TYPE_TITLE_BAR)/g' src/home/hd-title-bar.h
+}
+
+build() {
+	cd "$builddir"
+    ./autogen.sh
+    ./configure --prefix=/usr
+    make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="277724771169b94ffba5836ce7010e0330b93c76b9d3c1ebbe192c3e834b9c9e873a9802642d3ab6166ef99ad0d5eb822965b816bba9e87294db7c1d8a069c29  hildon-desktop-c178acc6e7aa3524f962be6442335da8b89fc808.tar.gz"

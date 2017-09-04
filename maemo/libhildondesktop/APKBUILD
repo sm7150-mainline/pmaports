@@ -1,0 +1,26 @@
+pkgname=libhildondesktop
+pkgver=2.1.43
+pkgrel=1
+_rev=813b16391359cccb1f100338dbb1530831e58784
+pkgdesc="Hildon Desktop library"
+arch="all"
+url="https://github.com/fremantle-gtk2/libhildondesktop"
+license="GPL"
+depends="libhildon iphbd dbus-glib"
+makedepends="libhildon-dev iphbd-dev dbus-glib-dev"
+subpackages="$pkgname-dev"
+source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/libhildondesktop/archive/$_rev.tar.gz"
+
+builddir="$srcdir/libhildondesktop-$_rev"
+
+build() {
+	cd "$builddir"
+    ./autogen.sh --prefix=/usr CFLAGS="${CFLAGS} -Wno-error=unused-but-set-variable"
+    make
+}
+
+package() {
+	cd "$builddir"
+    make DESTDIR="$pkgdir/" install
+}
+sha512sums="e6eb19fada805e3f5e19833f9d4f46d6677a9337287dd15bc0f186d70858cdfcb3e2b6713d18bbc54f61f8dc607f89dad13bcb17168918a16a23b149a0d35b3c  libhildondesktop-813b16391359cccb1f100338dbb1530831e58784.tar.gz"

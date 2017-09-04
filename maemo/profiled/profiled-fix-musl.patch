@@ -1,0 +1,21 @@
+diff --git a/profiled_config.h b/profiled_config.h
+index 931aa9e..b4df46f 100644
+--- a/profiled_config.h
++++ b/profiled_config.h
+@@ -42,6 +42,16 @@ extern "C" {
+ } /* fool JED indentation ... */
+ #endif
+ 
++/* taken from glibc unistd.h and fixes musl */
++#ifndef TEMP_FAILURE_RETRY
++#define TEMP_FAILURE_RETRY(expression) \
++  (__extension__                                                              \
++    ({ long int __result;                                                     \
++       do __result = (long int) (expression);                                 \
++       while (__result == -1L && errno == EINTR);                             \
++       __result; }))
++#endif
++
+ #ifdef __cplusplus
+ };
+ #endif

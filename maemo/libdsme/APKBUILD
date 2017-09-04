@@ -1,0 +1,31 @@
+pkgname=libdsme
+pkgver=0.60.30
+pkgrel=1
+pkgdesc="Libraries for programs that communicate with the Device State Management Entity"
+arch="all"
+url="https://github.com/fremantle-gtk2/libdsme"
+license="GPL"
+depends="dbus glib"
+depends_dev="glib-dev"
+makedepends="bash glib-dev"
+subpackages="$pkgname-dev"
+_rev=3b90fe5a1c6be37ba507d036686649d687cb39ae
+source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/libdsme/archive/$_rev.tar.gz"
+
+_builddir="$srcdir/libdsme-$_rev"
+
+prepare() {
+	cd "$_builddir"
+	sed -i -e "s|<sys/un.h>|<sys/uio.h>\n#include <sys/un.h>|g" ./protocol.c
+}
+
+build() {
+	cd "$_builddir"
+	make
+}
+
+package() {
+	cd "$_builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="ce3e6c8ef6543c317d7c5713b6f37b726b757de5e698757a26e308867d102c93a46c5a3900635ab2bff6e72b0ad884195b92d7aa53ec01263861afc876907eb2  libdsme-3b90fe5a1c6be37ba507d036686649d687cb39ae.tar.gz"

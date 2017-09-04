@@ -1,0 +1,26 @@
+pkgname=mce-headers
+pkgver=1.8.19
+pkgrel=1
+pkgdesc="Development files for mce"
+arch="noarch"
+url="https://github.com/fremantle-gtk2/mce-dev"
+license="LGPL-2.1"
+makedepends="coreutils doxygen"
+subpackages="$pkgname-doc"
+_rev=4a1896a43d176b32ec2ea1248128be4f2ad720d0
+source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/mce-dev/archive/$_rev.tar.gz"
+
+builddir="$srcdir/mce-dev-$_rev"
+
+build() {
+    cd "$builddir"
+    mkdir doc
+}
+
+package() {
+    cd "$builddir"
+    make DESTDIR="$pkgdir/" install
+    install -d $pkgdir/usr/share/doc/mce-doc/html/
+    install -m 644 doc/html/* $pkgdir/usr/share/doc/mce-doc/html/
+}
+sha512sums="5413c2dd407d2f90a791c6b423a90673b4aff6a2c8a4e7f7f7b3a3ab37f7a95003c10d1a215343a6d697b31766dc81eeba44a2bd32df7f03ced9bb9aa0918852  mce-headers-4a1896a43d176b32ec2ea1248128be4f2ad720d0.tar.gz"

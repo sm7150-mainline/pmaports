@@ -1,0 +1,31 @@
+pkgname=libhildon
+pkgver=2.2.25
+pkgrel=1
+pkgdesc="Hildon libraries"
+arch="all"
+url="https://github.com/fremantle-gtk2/hildon"
+license="GPL"
+depends="gtk+2.0-maemo gconf libcanberra maemo-l10n pango"
+depends_dev="gtk+2.0-maemo-dev libcanberra-dev gconf-dev"
+makedepends="autoconf automake libtool gtk-doc $depends_dev"
+_rev=954ebe8abe02e0b0e72db328ca1fed6a505be158
+subpackages="$pkgname-dev"
+source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/hildon/archive/$_rev.tar.gz
+    hildon-non-glibc.patch"
+
+builddir="$srcdir/hildon-$_rev"
+
+build() {
+	cd "$builddir"
+    ./autogen.sh --prefix=/usr
+    make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+	# Prevent conflict with maemo-l10n
+	rm -rf "$pkgdir/usr/share/locale"
+}
+sha512sums="02a1f96b10c0547d96dab73d53c657803ea70a378a9fbdb93f30840180bbdc81c3320a3f6e24892da9a6acf5eda16eb6042d0758dfc921271e567bc0a66af82f  libhildon-954ebe8abe02e0b0e72db328ca1fed6a505be158.tar.gz
+5cc6578d513794276ed46292de9ecb72400477ffafa560ebbef2028c214e1a7c8e371f5179941cbfcb1865d2fc2db71e4f50f81e95a5173f247ec4412e312d12  hildon-non-glibc.patch"

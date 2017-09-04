@@ -1,0 +1,145 @@
+pkgname=gtk+2.0-maemo
+pkgver=2.24.31
+pkgrel=0
+subpkg=gtk-update-icon-cache
+pkgdesc="The GTK+ Toolkit (v2)"
+url="http://www.gtk.org/"
+install="$pkgname.post-install $pkgname.post-upgrade $pkgname.post-deinstall"
+triggers="$subpkg.trigger=/usr/share/icons/*"
+arch="all"
+license="LGPL"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang $subpkg:icon_cache"
+depends="shared-mime-info gtk-update-icon-cache"
+
+replaces="gtk+ gtk+-dev gtk+-doc"
+provides="gtk+2.0=$pkgver gtk+2.0-dev=$pkgver gtk+2.0-doc=$pkgver"
+
+depends_dev="
+	atk-dev
+	cairo-dev
+	intltool
+	libxdamage-dev
+	pango-dev
+	"
+# we add hicolor-icon-theme because the subpackage gtk-update-icon-cache
+# needs it. We need to force hicolor-icon-cache to be built before gtk+.2.0
+makedepends="
+	autoconf automake libtool
+	$depends_dev
+	cups-dev
+	expat-dev
+	gdk-pixbuf-dev
+	gettext-dev
+	glib-dev
+	gnutls-dev
+	gobject-introspection-dev
+	gtk-doc
+	hicolor-icon-theme
+	libice-dev
+	libx11-dev
+	libxcomposite-dev
+	libxcursor-dev
+	libxext-dev
+	libxfixes-dev
+	libxrandr-dev
+	libxi-dev
+	zlib-dev"
+source="http://ftp.gnome.org/pub/gnome/sources/gtk+/${pkgver%.*}/gtk+-$pkgver.tar.xz
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gdk-window.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-container.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-dialog.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-entry.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-enums.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-iconview.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-imcontext.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-menu.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-rbtree.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-textview.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-widget.diff
+	https://raw.githubusercontent.com/fremantle-gtk2/gtk/2.24.25-3m7%2Bmaemo/debian/patches/hildonize-gtk-window.diff
+	xid-collision-debug.patch
+	gtk2-fixdso.patch
+	hildonize-gtk-treeview.diff
+	$install"
+
+
+_builddir="$srcdir"/gtk+-$pkgver
+prepare() {
+	local i
+	local filename
+
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+			*.patch | *.diff)
+				filename=`basename "$i"`
+				msg $filename
+				patch -p1 -i "$srcdir/$filename" || return 1
+			;;
+		esac
+	done
+
+	libtoolize --force \
+		&& aclocal -I m4 \
+		&& autoconf \
+		&& automake --add-missing
+}
+
+build() {
+	cd "$_builddir"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--with-xinput=yes \
+		--without-libjasper \
+		--with-included-loaders=png \
+		|| return 1
+	# https://bugzilla.gnome.org/show_bug.cgi?id=655517
+	sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool || return 1
+	make || return 1
+}
+
+package() {
+	cd "$_builddir"
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+dev() {
+	mkdir -p "$subpkgdir"/usr/bin "$subpkgdir"/usr/share/
+	mv "$pkgdir"/usr/share/gtk-2.0 "$subpkgdir"/usr/share/ || return 1
+	default_dev
+	replaces="gtk+2.0"
+	mv "$pkgdir"/usr/bin/gtk-builder-convert \
+		"$pkgdir"/usr/bin/gtk-demo \
+		"$subpkgdir"/usr/bin || return 1
+}
+
+icon_cache() {
+	depends="hicolor-icon-theme"
+
+	mkdir -p "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/"$subpkg" "$subpkgdir"/usr/bin || return 1
+}
+
+sha512sums="75b846661308d94b5236e7e1c367deabf57753792ca87e92f9769822dd5ec90e00cd8d5574adcc12162e3702e1ae6dc152278a1d218f9bd9e4d1c8dc1dd520c1  gtk+-2.24.31.tar.xz
+f838b74958b4f5f1f37fb2831c07dfb7ea051fd62c74f17d8848736e1bbd5671b9a8a66e5a34ce131669a05b2e99312fa43a91ef1d456a914f2d308c09412681  hildonize-gdk-window.diff
+809135f8921bf42c0684be6183eb626ec21db87ead3cb3efbfb59d1b6c57f6d2bc61f23cdf54ed6521de1a74c606ed69cb9991332edb938b076baecd805154b2  hildonize-gtk-container.diff
+77c37f91e989b9e6326b9b2c1bf32f5feaa7b81ec5742f5fb1c5b6db07de4efcc9753beadb9517fe8e04983e11d122b5dfd94897bc8bdb2d68cf7dfffdb1b46e  hildonize-gtk-dialog.diff
+29ea967378c84e907f7a102bcf6cd893c12c25586c95b2a2994e92dd1f1e82996bfb1416cef47a17ff6b8a225a222cd545b2080d45d190d9061a0f1ecf2baf37  hildonize-gtk-entry.diff
+a65dc9a3f5e2967d382d8f13781bf446441bea23d84740eaf43e4ce7ee14b3592b7f105f4b89b7246c42f5be9a9e1e9ae93ac23bc6b62ae9c09b45a0eb6a273d  hildonize-gtk-enums.diff
+44ba4adcd50c589990af195d3b25baed8098ef8f7f191d841b9ce86bf7e65a48c4e8222a755eca1373eaabe6a79db9c3721f0fa690cca5e5e31fd9b4c3fc69bb  hildonize-gtk-iconview.diff
+ece16de21b19ccb7b08bad78880fa83765bb562973cf73249a9b2b617e0918e231d54bf64ee82648901c7f6c4af4220b06547dc9a17bbb77fab9e83c08cdcfe7  hildonize-gtk-imcontext.diff
+44cd0f71316f38da52ad0e9db3681bf4fbf83c9175b98bb9241d0bedf3f66ed6923c8aa6c9c26264ee4d7b5f8abb15f2ab7cd9f1eaf037273bf94ec50ff4ea41  hildonize-gtk-menu.diff
+d664555b7e7a98a567548d403e3df0d0534312ba6947d422a0d68dddbaa786806a842a25dcb5f4a0e1235a2f64d6920f67bf93b4574540d4af2337e1d5b68f2c  hildonize-gtk-rbtree.diff
+f4c1978b1cbd00cc28779f1cda99434f2f5aec53fd6564282d7d2c5ac5d4869207d38a31ad971bfa09eefe5a78030b3c4c169cbdbd7f5e3b2f7c42bed7f58e56  hildonize-gtk-textview.diff
+aa3100404b4fe4509ec52c79384e5e59585d482947e394ad26f9c83ad11c9a19f2b0f66112ba9c74feb7a0c7d1b5ec54c64fac34ec0c03666b3ecb62160db8b6  hildonize-gtk-widget.diff
+7622b5ff6cd1c0705eee7ad5789c675055a79a4b0aaf2f25fdab4a6fdf883e6fbdef22145d2f2ce4ada3015bd7a8424f61a325a8d00c80e26bf1b507c7949318  hildonize-gtk-window.diff
+89e3223c86731a76b12d39245f1ec4cf8b4860ab1d11d74a10e5deb0db302f20b4bb5d9034da1d8aeb96369dbdeddcdd2f28943270dc501476c694562b960159  xid-collision-debug.patch
+95f28633a5164a2a9fec45ee1aa80bd1c07e0c5a7ac8d770b9c74af0909b7286b823eb634aa384cad609dc8799d2e6c9e8392c2732b9093076fdf94b4f6878b7  gtk2-fixdso.patch
+87bdabbbbf41469abf67f53afd77edbe69ce41638c1bc3cfb049864e5105fc565dfdbacd0f95381f2a9e2225d18b1c57a5a1e2c77846c3aca1a09e6dea334b8d  hildonize-gtk-treeview.diff
+3f2a85b13e98a4a3afd39ca619a5236f3b3961c8923fc75dce70ad6e1517557557b1eeba172631d248268fce5859ae03b5906a4f8fdcea62c01ccdd1d6d2f1ab  gtk+2.0-maemo.post-install
+3f2a85b13e98a4a3afd39ca619a5236f3b3961c8923fc75dce70ad6e1517557557b1eeba172631d248268fce5859ae03b5906a4f8fdcea62c01ccdd1d6d2f1ab  gtk+2.0-maemo.post-upgrade
+eb2cd05d410b2710f70c7a84b2ee429b104564f5812d29bb4dfed23447a9fe4505b92f096af120e1804b55f73c8f5fcfd26f4d209700783a80f00361d7f1681b  gtk+2.0-maemo.post-deinstall"

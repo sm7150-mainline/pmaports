@@ -1,0 +1,27 @@
+pkgname=profiled
+pkgver=1.0.4
+pkgrel=1
+_rev=77ca133bb1755f556a431b1338c342ffbafba700
+pkgdesc="Maemo profile daemon, manages user settings"
+arch="all"
+url="https://github.com/fremantle-gtk2/profiled"
+license="BSD"
+depends="dbus dbus-glib"
+makedepends="doxygen dbus-dev dbus-glib-dev"
+subpackages="$pkgname-dev $pkgname-doc"
+source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/profiled/archive/$_rev.tar.gz
+	profiled-fix-musl.patch"
+
+builddir="$srcdir/profiled-$_rev"
+
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	make ROOT="$pkgdir/" install
+}
+sha512sums="42dd82dc5d6aa825698fd425ecf3fc5eab11aa9d89e03d576179e321be39f2a0041775f3270e9cba5139ff87c7585aa519970404f787867bb59b2eb7c6da1a67  profiled-77ca133bb1755f556a431b1338c342ffbafba700.tar.gz
+21d0bd943c165de35223fc7003da8438eb77f7450810ce0a4ba8d0ae918c3af36f286503d568fe97e534e9a52463cd657b00277cc7ff010869e43453b6142328  profiled-fix-musl.patch"
