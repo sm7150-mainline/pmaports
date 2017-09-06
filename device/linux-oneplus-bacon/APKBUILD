@@ -1,0 +1,127 @@
+# APKBUILD based on linux-vanilla aport. Changes:
+# - add !check !tracedeps
+# - do not create -dev subpackage
+#
+# Kernel config based on: arch/arm/configs/lineageos_bacon_defconfig
+# Changes:
+# - enable loadable module support
+# - enable devtmpfs (needed for udev -> touch support in weston)
+
+_vendor=oneplus
+_flavor=oneplus-bacon
+_version="lineage-15.0"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.4.113
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=1
+arch="armhf"
+pkgdesc="LineageOS kernel for OnePlus One"
+url="https://github.com/LineageOS/android_kernel_oneplus_msm8974"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev python2 xz dtbtool"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_version.tar.gz::https://github.com/LineageOS/android_kernel_oneplus_msm8974/archive/${_version}.tar.gz
+	${_config}
+	compiler-gcc6.h
+	gpu-msm-fix-gcc5-compile.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_oneplus_msm8974-${_version}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir"/compiler-gcc6.h "$ksrcdir"/include/linux/
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+
+	echo "--[ silentoldconfig ]--"
+	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		oldconfig
+}
+
+# this is so we can do `abuild menuconfig` to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+
+	echo "--[ menuconfig ]--"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		|| return 1
+
+	echo "--[ Build modules ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		modules || return 1
+
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	install -Dm644 "$srcdir"/build/arch/arm/boot/dt.img \
+		"$pkgdir"/boot/dt.img
+
+	install -Dm644 "$srcdir"/build/arch/arm/boot/zImage-dtb \
+		"$pkgdir"/boot/vmlinuz-$_flavor
+
+	install -D "$srcdir"/build/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	echo "--[ Installing modules ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		INSTALL_MOD_PATH="$pkgdir" modules_install \
+		|| return 1
+}
+
+sha512sums="3f2a599435799e8722ff20295dc438c1c8a303142ec73daf4f549dea1ed202271cf64d9bff9f781aaa0bebf6662a7e4061c2e9653d45c7936d2337c46a0f0789  linux-oneplus-bacon-lineage-15.0.tar.gz
+2939fdd0d54b56d9198b5b2527c2a3c647c74f658221c60b457bb68b5f5b1c3949876ae511ef5278766cf268d69fad8b25ca30d3fb807a8221b8d11769dfcf4a  config-oneplus-bacon.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  gpu-msm-fix-gcc5-compile.patch"
