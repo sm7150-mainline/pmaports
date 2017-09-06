@@ -31,7 +31,9 @@ static void activate(GtkApplication *app, gpointer user_data)
 		"GTK3 Demo",
 			"gtk3-demo &",
 		"Restart Weston",
-			"killall weston &"
+			"killall weston &",
+		"Shutdown",
+			"poweroff &"
 	};
 
 	for(int i=0;i<(sizeof(programs) / sizeof(const char*));i+=2)
@@ -40,7 +42,7 @@ static void activate(GtkApplication *app, gpointer user_data)
 		const char *command = programs[i+1];
 
 		GtkWidget *button = gtk_button_new_with_label(title);
-		gtk_widget_set_size_request(button, 200, 80);
+		gtk_widget_set_size_request(button, 200, 70);
 		g_signal_connect(button, "clicked", G_CALLBACK (onclick),
 				(void*)command);
 		gtk_container_add(GTK_CONTAINER(button_box), button);
