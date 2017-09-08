@@ -1,11 +1,11 @@
 pkgname=postmarketos-demos
 pkgver=4
-pkgrel=4
+pkgrel=5
 pkgdesc="Simple touch menu for a few demo programs"
 url="https://github.com/postmarketOS"
 arch="all"
 license="GPL3+"
-depends="weston-xwayland"
+depends="weston-xwayland dbus"
 makedepends="gtk+3.0-dev"
 subpackages=""
 source="main.c Makefile"
