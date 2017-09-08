@@ -9,12 +9,15 @@ depends="linux-huawei-y530 mkbootimg"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo"
+source="deviceinfo initfs-hook.sh"
 options="!check"
 
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 }
 
-sha512sums="0de28cde3a1fcb1bf2d6ef9ca116d2fdc14b50afece907486ebd97c661261558ec6b3aba227424568a0374fc4833b9dbb89ce89239248789bcbefcf962d76114  deviceinfo"
+sha512sums="3d75ec32c6021bfe52239ab279899660553ebfcc81305a02750c91b7c3952f02cf9576fbed9f59ed03e5b0513c16924e4382b6fc176a2b359961892468290fb7  deviceinfo
+8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh"
