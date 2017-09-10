@@ -1,0 +1,42 @@
+_hash="1ebeb393252ab5aeed62e34bc439b6728444f06e"
+
+pkgname=abootimg
+pkgver=0.6_git20150325
+pkgrel=0
+arch="x86_64"
+license="GPL2"
+pkgdesc="A tool to read/write/update android boot images"
+url="https://gitlab.com/ajs124/abootimg"
+depends=""
+makedepends="linux-headers util-linux-dev"
+subpackages="$pkgname-doc"
+source="${pkgname}-${_hash}.tar.bz2::https://gitlab.com/ajs124/${pkgname}/repository/${_hash}/archive.tar.bz2"
+options="!check"
+
+builddir="${srcdir}/abootimg-${_hash}-${_hash}"
+
+prepare() {
+	# Makefile tries to run git otherwise
+	echo "#define VERSION_STR \"$pkgver-$_hash\"" > "$builddir"/version.h
+}
+
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	install -Dm755 "${builddir}/abootimg" "${pkgdir}/usr/bin/abootimg"
+	install -Dm755 "${builddir}/abootimg-pack-initrd" "${pkgdir}/usr/bin/abootimg-pack-initrd"
+	install -Dm755 "${builddir}/abootimg-unpack-initrd" "${pkgdir}/usr/bin/abootimg-unpack-initrd"
+}
+
+doc() {
+	gzip "$builddir"/debian/abootimg.1
+	install -Dm644 "$builddir"/debian/abootimg.1.gz \
+		"$subpkgdir"/usr/share/man/man1/abootimg.1.gz
+}
+
+
+sha512sums="8b281d48ad33873ecdc95fdaecb0efee62377d06671dfb1ee2c5cd58edf41e39a1639c74e786ca9490938875ef334161a3a3a29b34412ee479f8786e9bb1bf2e  abootimg-1ebeb393252ab5aeed62e34bc439b6728444f06e.tar.bz2"
