@@ -1,0 +1,37 @@
+_files="
+	bcmdhd_apsta.bin
+	bcmdhd_mfg.bin
+	bcmdhd_p2p.bin
+	bcmdhd_sta.bin
+	nvram_mfg.txt
+	nvram_mfg.txt_murata
+	nvram_net.txt
+	nvram_net.txt_murata
+"
+
+pkgname=firmware-samsung-i9100
+pkgver=1
+pkgrel=0
+pkgdesc="Samsung Galaxy S II Firmware"
+url="https://github.com/TheMuppets/proprietary_vendor_samsung"
+arch="noarch"
+license="proprietary"
+depends=""
+makedepends=""
+install=""
+subpackages=""
+for _i in $_files; do source="$source https://github.com/TheMuppets/proprietary_vendor_samsung/raw/cm-14.1/i9100/proprietary/system/etc/wifi/$_i"; done
+options="!check"
+
+package() {
+	mkdir -p $pkgdir/lib/firmware/postmarketos
+	for _i in $_files; do install -D -m644 "$srcdir/$_i" "$pkgdir/lib/firmware/postmarketos/$_i"; done
+}
+sha512sums="71ae0d6b87e2541b614fe2d964db239a2d0d158a89b2a96b508195977d7c348ce892717a8b836d5b4cd173430171b81a04b4346968331da1b0eb37cc962de4f3  bcmdhd_apsta.bin
+df1a56ce3b4c3e069eaa57251d5e288e330af0525eb0e36e7375e0b675a040995ca2804103446cb0135cc4952eec449dc0a6398ab1fd01c59533484688186873  bcmdhd_mfg.bin
+a6d602a768e8748c44b5debf2b7388d42c909919fb2b73c0f511ac2bceadac7d7208c6ba94c2df9aa900c9fb446f35f670b0adc552689f8567fa87ded754a947  bcmdhd_p2p.bin
+a6d602a768e8748c44b5debf2b7388d42c909919fb2b73c0f511ac2bceadac7d7208c6ba94c2df9aa900c9fb446f35f670b0adc552689f8567fa87ded754a947  bcmdhd_sta.bin
+f8d8ad3c91d5f25cb5b17717d9f27f44b16b20ebe2e41fce1987f48f49f22edbcc7afb0aba2fc0c698538f940507a8156d403c2ac6a6fb6e77ef22264c7ce9cf  nvram_mfg.txt
+cefb1d2f68594dbfab7ecbef5972e477a6c92c411ea919855276963e5f0870f5a1006d81e8fb235cc9f146959512fd9afecfde74d9720451f94a4409839d40b2  nvram_mfg.txt_murata
+4a473740dfb3202e77fdd07c0bfe59c3cd2ea30e3388b7a09c38484408d9253b7e83a96558995e1fce87e00d6a071eec49ee5a10d68c0e05ab6b6a3dd873604e  nvram_net.txt
+b883699dfdb9d5820f65c79cbef1389ad8f648ef37b3d3d537c067cfe8ea6f6f76e95541c338e046988ce33269692274fae3469142c5ec7e0dc1b35e09deb0b1  nvram_net.txt_murata"
