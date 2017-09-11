@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=5
+pkgrel=6
 arch="armhf"
 pkgdesc="T2M flame kernel"
 url="https://github.com/mozilla-b2g/codeaurora_kernel_msm"
@@ -29,11 +29,11 @@ makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfuti
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.zip::https://github.com/mozilla-b2g/codeaurora_kernel_msm/archive/${_hash}.zip
+	$pkgname-$_hash.tar.gz::https://github.com/mozilla-b2g/codeaurora_kernel_msm/archive/${_hash}.tar.gz
 	$_config
 	compiler-gcc6.h
-        gpu-msm-fix-gcc5-compile.patch
-        aeea3592a13bf12861943e44fc48f1f270941f8d.patch
+        00_fix_return_address.patch
+        02_gpu-msm-fix-gcc5-compile.patch
         add-missing-dtbs.patch
 "
 subpackages=""
@@ -119,9 +119,9 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="03532b82159d31e406594203f318f78aace500f997325149d161e1691c93c3bc54e903602d54d52dc8fbfe370828da3442f06f4a78b84b8370fa0ef5d9a05bef  linux-t2m-flame-03396c93577aafae7ca3603de1c74eafd30e7d54.zip
+sha512sums="76288c37192c92c7dfd7d9a7e1f8fb299f4e6fdc09e5ab9049efc5c1b67475b135821995999e1f96a13baba4605cf53908c5d29cf860ed4e94c9733add169a56  linux-t2m-flame-03396c93577aafae7ca3603de1c74eafd30e7d54.tar.gz
 28d4f4d0e1f0f55d06d05ad2a62560aa611f9611084b6653df9dd381323509c534227d1058acfad2c7bf014289b4f2a253ce47847c6fe5423688ec0998fb6056  config-t2m-flame.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  gpu-msm-fix-gcc5-compile.patch
-ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  aeea3592a13bf12861943e44fc48f1f270941f8d.patch
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
 ee53d221cad0970316f16ff52927b9a133a2297b61a61976bd75c07b735b4c87d0a7e6b37d9a849460ec57f6da097801c9ae110b95f33756ca23a148ef86a1d2  add-missing-dtbs.patch"

@@ -1,6 +1,6 @@
 pkgname=device-lg-mako
 pkgver=2
-pkgrel=8
+pkgrel=9
 pkgdesc="Google Nexus 4"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -9,7 +9,7 @@ depends="linux-lg-mako mkbootimg"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules profile.sh"
+source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules profile.sh udev-v4l-hack.sh"
 options="!check"
 
 build() {
@@ -25,9 +25,12 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/profile.sh \
 		"$pkgdir"/etc/profile.d/00-$pkgname.sh
+	install -D -m644 "$srcdir"/udev-v4l-hack.sh \
+		"$pkgdir"/etc/profile.d/00-udev-v4l-hack.sh
 }
 
 sha512sums="cbfc1af79cd91bd62adccf22cbfa00f1d6edf35a9e6893a90e09852c014224b2593523ef3eeacd2c05a7a711f0c88c48dc09a7665aaac71e5abe632c71c607aa  deviceinfo
 8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
 ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e28d2db4b81c0f50b905639911276da40321d2b6cca7f797df  90-android-touch-dev.rules
-2f7cdf558a6bff56fd343d29a1ca6c27e75715bedfad661700dfcfb01acd1bdfcfecdfccf619f1e56c1e6331be146f8882a14d3a2cd33830e9d00bb6118971a3  profile.sh"
+d04013c17caf77a87ebea167dbe48f7efa9c9d3123c5743d359f3ea8ccc6b268fa021535a4bf8291eb4a352f0c92f6eb527da0db340421f53bc1cc439a453306  profile.sh
+4f528656c4febb18742e89552dfe7fdc824ed4ad6ad2777d20b4f55040edd93d8e3ea657baabcdbe77bd0fb4bd3d23e5e0b2dae574f0df6723b2e26216ee81e1  udev-v4l-hack.sh"

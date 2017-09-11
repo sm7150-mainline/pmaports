@@ -1,6 +1,6 @@
 pkgname=device-sony-aries
 pkgver=1
-pkgrel=8
+pkgrel=9
 pkgdesc="Sony Xperia Z3 Compact"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -9,7 +9,7 @@ depends="linux-sony-aries mkbootimg"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android.rules fb-workaround.sh"
+source="deviceinfo 90-android-touch-dev.rules fb-workaround.sh"
 options="!check"
 
 build() {
@@ -19,12 +19,12 @@ build() {
 package() {
 	install -D -m644 "$srcdir/deviceinfo" \
 		"$pkgdir/etc/deviceinfo"
-	install -D -m644 "$srcdir"/90-android.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android.rules
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/fb-workaround.sh \
 		"$pkgdir"/etc/profile.d/fb-workaround.sh
 }
 
 sha512sums="f8d6a912d39b5d30c0364b6bceb39c079e6438352c91ed5acfe3c7835115d83954633659b0264ae9752b930ddcb09b2297634448dfdd488008b85309b0ad1c50  deviceinfo
-1dd1196aa9abe0308a0841147e7e5c6eb50da742cfc3194b90ef22a62d034b43ddade70384b78ab38fa0177da5a822f2a40f1386f4ecd591e2ecc80cb679133a  90-android.rules
+1dd1196aa9abe0308a0841147e7e5c6eb50da742cfc3194b90ef22a62d034b43ddade70384b78ab38fa0177da5a822f2a40f1386f4ecd591e2ecc80cb679133a  90-android-touch-dev.rules
 13f36f33cfae5e759b3889bc4e308324fd9bcf1cc7b097bbbe3646f1243b3bc06e1b1594cc8578c52c304a2b5006babd978c5b3f258769892e80552457889f99  fb-workaround.sh"

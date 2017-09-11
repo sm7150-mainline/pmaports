@@ -1,6 +1,6 @@
 pkgname=device-sony-amami
 pkgver=1
-pkgrel=9
+pkgrel=10
 pkgdesc="Sony Xperia Z1 Compact"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -9,7 +9,7 @@ depends="linux-sony-amami mkbootimg"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android.rules fb-workaround.sh udev-hack.sh"
+source="deviceinfo 90-android-touch-dev.rules fb-workaround.sh udev-v4l-hack.sh"
 options="!check"
 
 build() {
@@ -19,15 +19,15 @@ build() {
 package() {
 	install -D -m644 "$srcdir/deviceinfo" \
 		"$pkgdir/etc/deviceinfo"
-	install -D -m644 "$srcdir"/90-android.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android.rules
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/fb-workaround.sh \
 		"$pkgdir"/etc/profile.d/fb-workaround.sh
-	install -D -m644 "$srcdir"/udev-hack.sh \
-		"$pkgdir"/etc/profile.d/00-udev-hack.sh
+	install -D -m644 "$srcdir"/udev-v4l-hack.sh \
+		"$pkgdir"/etc/profile.d/00-udev-v4l-hack.sh
 }
 
 sha512sums="75fbe457b65025aaa5b1c5ef9b3ecf796556c88f4c44add878c1a36400c6bbd2433238563b0cb14044a5b7ccaf0c217344f653bb9d0227cfe51fc1b55f9d5d87  deviceinfo
-1dd1196aa9abe0308a0841147e7e5c6eb50da742cfc3194b90ef22a62d034b43ddade70384b78ab38fa0177da5a822f2a40f1386f4ecd591e2ecc80cb679133a  90-android.rules
+1dd1196aa9abe0308a0841147e7e5c6eb50da742cfc3194b90ef22a62d034b43ddade70384b78ab38fa0177da5a822f2a40f1386f4ecd591e2ecc80cb679133a  90-android-touch-dev.rules
 281937447a73c18e8eec195cbf485fcd513aec20b8df559c26b89fbefa5872c41865cba2440e2cc8a9cc76801bca9ab61f9562c536c6f5f10c925e3ca7f372f3  fb-workaround.sh
-4f528656c4febb18742e89552dfe7fdc824ed4ad6ad2777d20b4f55040edd93d8e3ea657baabcdbe77bd0fb4bd3d23e5e0b2dae574f0df6723b2e26216ee81e1  udev-hack.sh"
+4f528656c4febb18742e89552dfe7fdc824ed4ad6ad2777d20b4f55040edd93d8e3ea657baabcdbe77bd0fb4bd3d23e5e0b2dae574f0df6723b2e26216ee81e1  udev-v4l-hack.sh"

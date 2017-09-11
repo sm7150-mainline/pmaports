@@ -24,7 +24,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=3
+pkgrel=4
 arch="armhf"
 pkgdesc="Motorola Moto G 2014 kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_motorola_msm8226"
@@ -36,10 +36,10 @@ source="
     $pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_motorola_msm8226/archive/${_hash}.tar.gz
     $_config
     compiler-gcc6.h
-    changes1.patch
-    gcc5-compile.patch
+    00_fix_return_address.patch
+    02_mdss_fb_refresh_rate.patch
+    multiple-fixes-gcc-5.patch
     Wno-error.patch
-    mdss_fb_refresh_rate.patch
 "
 subpackages=""
 license="GPL2"
@@ -112,7 +112,7 @@ package() {
 sha512sums="565d1e2f7fe5fa62f9b8273ebdfec56457d36f05ad09fc4fed3ad4e4d00ff6079af59acad65e3e43d3fcde1b1f5105e2fc98518131f1262cd846f3288294f8b8  linux-motorola-titan-09cff47d6b79b73ecc3461e227abf09faaa9e754.tar.gz
 9975a82511dc20ef0c771a84e1021e9358575a3c50847750567d03d3bccef088b099bcfa7145d5358f6c49c22dbbf401f49da3e60f87dc6486a1394119e77f3a  config-motorola-titan.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-00bd2504cb922204c3b6a9ce243918f44d12f08e12f64535b9ec9f91d827160c4d5da85c3b84788a5f92d9eca63552265a203916505918367e2d397edbe148a8  changes1.patch
-4c13711fdcdce3ac0c4d30b79da7a331a9f32d46ad0b9572419b82d58db6eed76f728a340848d66a6378702749c56247439abb26fc1df0d3f5cfd1ef5b53acf9  gcc5-compile.patch
-d77966385f1aeb17fad6c3989766e874fea9d5818433d0c92c106dfd9aa3065102f018afb38678b0d741192d9efa4ede0ac4278802bf0878e3dec62dec64f50c  Wno-error.patch
-a8c955bf718f155011e980f3d0948be98e1fee5649f418299a4851780543019daf7afa406aa7b0829375645107e4e6fbf241026b0cabe2b2ac895a47df83d2d8  mdss_fb_refresh_rate.patch"
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+a8c955bf718f155011e980f3d0948be98e1fee5649f418299a4851780543019daf7afa406aa7b0829375645107e4e6fbf241026b0cabe2b2ac895a47df83d2d8  02_mdss_fb_refresh_rate.patch
+4c13711fdcdce3ac0c4d30b79da7a331a9f32d46ad0b9572419b82d58db6eed76f728a340848d66a6378702749c56247439abb26fc1df0d3f5cfd1ef5b53acf9  multiple-fixes-gcc-5.patch
+d77966385f1aeb17fad6c3989766e874fea9d5818433d0c92c106dfd9aa3065102f018afb38678b0d741192d9efa4ede0ac4278802bf0878e3dec62dec64f50c  Wno-error.patch"

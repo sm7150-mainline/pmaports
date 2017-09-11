@@ -1,6 +1,6 @@
 pkgname=device-huawei-angler
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Huawei Nexus 6P"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -9,7 +9,7 @@ depends="linux-huawei-angler mkbootimg"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android.rules"
+source="deviceinfo 90-android-touch-dev.rules"
 options="!check"
 
 build() {
@@ -19,9 +19,9 @@ build() {
 package() {
 	install -D -m644 "$srcdir/deviceinfo" \
 		"$pkgdir/etc/deviceinfo"
-	install -D -m644 "$srcdir"/90-android.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android.rules
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
 
 sha512sums="3bb53698b5fbfdd0522aaaf56966ea228cd79bea05c9af14d988604b1294d93a3a991107d5483845fc0064cf44d9f9ef54f9cbc517959f0327318b1902b9ee86  deviceinfo
-155aa9c8bd0e202917c7f55312eaaa189114864d89bbf7fdbdcc4fe146af3c7c781a6e76b0030046383dee823465a994d6954408248cc2f43e48af40869d6b25  90-android.rules"
+155aa9c8bd0e202917c7f55312eaaa189114864d89bbf7fdbdcc4fe146af3c7c781a6e76b0030046383dee823465a994d6954408248cc2f43e48af40869d6b25  90-android-touch-dev.rules"

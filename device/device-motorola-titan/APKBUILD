@@ -1,6 +1,6 @@
 pkgname=device-motorola-titan
 pkgver=1
-pkgrel=10
+pkgrel=11
 pkgdesc="Motorola Moto G 2014"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -9,7 +9,7 @@ depends="linux-motorola-titan mkbootimg"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android-touch-dev.rules initfs-hook.sh profile.sh"
+source="deviceinfo 90-android-touch-dev.rules initfs-hook.sh profile.sh udev-v4l-hack.sh"
 options="!check"
 
 build() {
@@ -25,9 +25,12 @@ package() {
 		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 	install -D -m644 "$srcdir"/profile.sh \
 		"$pkgdir"/etc/profile.d/00-$pkgname.sh
+	install -D -m644 "$srcdir"/udev-v4l-hack.sh \
+		"$pkgdir"/etc/profile.d/00-udev-v4l-hack.sh
 }
 
 sha512sums="09abd5f4681d9479650cfa64fcbc58528827017757539c3faf142ca92e8537691f9fb88f5d84ece086af7f23be2ac03e196f49ae708a832f1331f40cc96bab29  deviceinfo
 f37e6324abf0b0fc8a3d360d6d11bb0648090a438a55ca7f04a9d494719e687ce445ae107ace642edf293afb6ca82615bcb5d0ddb6c46c1a7f8ee3c213b7c5c4  90-android-touch-dev.rules
 8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
-2f7cdf558a6bff56fd343d29a1ca6c27e75715bedfad661700dfcfb01acd1bdfcfecdfccf619f1e56c1e6331be146f8882a14d3a2cd33830e9d00bb6118971a3  profile.sh"
+d04013c17caf77a87ebea167dbe48f7efa9c9d3123c5743d359f3ea8ccc6b268fa021535a4bf8291eb4a352f0c92f6eb527da0db340421f53bc1cc439a453306  profile.sh
+4f528656c4febb18742e89552dfe7fdc824ed4ad6ad2777d20b4f55040edd93d8e3ea657baabcdbe77bd0fb4bd3d23e5e0b2dae574f0df6723b2e26216ee81e1  udev-v4l-hack.sh"
