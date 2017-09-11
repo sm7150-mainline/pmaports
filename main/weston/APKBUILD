@@ -6,8 +6,8 @@
 #   https://github.com/alpinelinux/aports/pull/1689
 pkgname=weston
 pkgver=9999
-_pkgver=2.0.0
-pkgrel=2
+_pkgver=3.0.0
+pkgrel=5
 _libname=lib$pkgname
 _libdir=$_libname-${_pkgver%%.*}
 pkgdesc="The reference Wayland server"
@@ -15,7 +15,7 @@ url="http://wayland.freedesktop.org"
 arch="all"
 license="MIT"
 depends=""
-makedepends="wayland-protocols libxkbcommon-dev xkeyboard-config libinput-dev libunwind-dev mtdev-dev libxcursor-dev glu-dev pango-dev colord-dev freerdp-dev libwebp-dev libva-dev dbus-dev"
+makedepends="wayland-protocols libxkbcommon-dev xkeyboard-config libinput-dev libunwind-dev mtdev-dev libxcursor-dev glu-dev pango-dev colord-dev freerdp-dev libwebp-dev libva-dev dbus-dev linux-pam-dev"
 _cms="cms-colord cms-static"
 _shell="shell-desktop shell-fullscreen shell-ivi"
 _client="info terminal wcap-decode"
@@ -30,14 +30,16 @@ done
 subpackages="$pkgname-dev $pkgname-doc $subpackages
 	$pkgname-clients $_libname-desktop:_libd $_libname:libs
 	$pkgname-xwayland $pkgname-desktop-x11:_x11:noarch
-	"
+"
 source="
-    http://wayland.freedesktop.org/releases/$pkgname-$_pkgver.tar.xz
-    no_0hz_refresh_rate.patch
-    0001-compositor-fbdev-Added-parameter-pixman-type.patch
-    0002-compositor-fbdev-Add-support-for-ABGR.patch
-    0003-compositor-fbdev-print-the-pixman-type-guessed-in-ca.patch
-    "
+	http://wayland.freedesktop.org/releases/$pkgname-$_pkgver.tar.xz
+	0001-compositor-fbdev-Added-parameter-pixman-type.patch
+	0002-compositor-fbdev-Add-support-for-ABGR.patch
+	0003-compositor-fbdev-print-the-pixman-type-guessed-in-ca.patch
+	0004-musl-weston-launcher.patch
+	0005-timespec.patch
+	0006-compositor-fbdev-fix-start-up-assertion.patch
+"
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
@@ -55,9 +57,7 @@ build() {
 		--enable-vaapi-recorder \
 		--enable-clients \
 		--enable-demo-clients-install \
-		--disable-weston-launch \
-		--disable-setuid-install \
-		|| return 1
+		--disable-setuid-install
 	make
 }
 
@@ -133,8 +133,10 @@ _sub() {
 	mkdir -p "$subpkgdir"/$path || return 1
 	mv "$pkgdir"/$path/$name "$subpkgdir"/$path
 }
-sha512sums="085a0ba278932d41b50edd6e89db5df31cd6a1179c6cfe9a8ac5ac64e63b25cfc3da1ad8c587259273c3812593029b803867195e2d82b12b5cdd2588ac59acc6  weston-2.0.0.tar.xz
-68d8485eed6a536924a8ebef7e0b45738330c38326fe659443c26d674f9538ec1c66033f83a7971914dcd72bc52333e3f55486c5a01e067e3f5fee8f5b489728  no_0hz_refresh_rate.patch
+sha512sums="b824c39f2a884f6d50d607613f447090621f684c96f7d905f25f6e500dabd03ecb2b1cd1030babc193c3417223cb220103abb792437e1a5ead7229a76b5c7a58  weston-3.0.0.tar.xz
 2daa68ee19f4e123d7f3148517c2afcd4df0f065815a0e28db38f301260cd833b7170060c46127e65a25021e2d814afb40fc0f2987cbb3ab5cd4f9dae778bc98  0001-compositor-fbdev-Added-parameter-pixman-type.patch
 fa1099258aaef38f228de2e9ca3e2ae5e9e21ed10891f8686f5abd16d7f6bc6c57e43e0bfc3175ed70f32bb80d98f6ec009e663cd4f8724e29dea13c7fcc12fb  0002-compositor-fbdev-Add-support-for-ABGR.patch
-b5eb741ea8b6fcbd9de95e773fe0bf4ae6588ef57564f97a65aefc6c7ec29f1a01de9764a25672fd7c76c8ff514b497743cbaf279818123041c161c7a1e62bb6  0003-compositor-fbdev-print-the-pixman-type-guessed-in-ca.patch"
+b5eb741ea8b6fcbd9de95e773fe0bf4ae6588ef57564f97a65aefc6c7ec29f1a01de9764a25672fd7c76c8ff514b497743cbaf279818123041c161c7a1e62bb6  0003-compositor-fbdev-print-the-pixman-type-guessed-in-ca.patch
+856a28a324cb9adf94b92bf5489ff43827d57e6acee0c7e0e558018357166b782126e086a4308c3e3499d068fa07f02862cc20cdfbc9a3d6af30ec823eb1b78f  0004-musl-weston-launcher.patch
+3e596af4bf0a6b06a5d28376043db111fe1c161ead04501fa6d2c667b5a21889cca3354d1bdc4ac794841bef68ed5e1a7a84e44e7d510e947e3673195706caed  0005-timespec.patch
+5d356bc8534c5486b0c5daf727fb8d2cd8409f7f964e3f391c225a2b21b9f293e36d10344f55f0e6566bfbde415c990a72d57fe5db6081acd3c788106cda319f  0006-compositor-fbdev-fix-start-up-assertion.patch"
