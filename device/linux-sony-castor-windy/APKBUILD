@@ -1,5 +1,4 @@
 # APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
 # - add !check !tracedeps
 # - package: just install zImage-dtb and kernel.release, because the kernel config
 #	does not generate modules or dtb files
@@ -22,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 arch="armhf"
 pkgdesc="Sony Xperia Z2 Tablet kernel"
 url="https://github.com/andersson"
@@ -92,13 +91,13 @@ build() {
 	unset LDFLAGS
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-               KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
-               CFLAGS_MODULE=-fno-pic \
-               || return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		CFLAGS_MODULE=-fno-pic \
+		|| return 1
 }
 
 package() {
-    cat "$srcdir/build/arch/arm/boot/zImage" \
+	cat "$srcdir/build/arch/arm/boot/zImage" \
 	"$srcdir/build/arch/arm/boot/dts/qcom-msm8974-sony-xperia-castor.dtb" > \
 	"$srcdir/build/arch/arm/boot/zImage-dtb"
 
@@ -109,10 +108,11 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
 	cd "$srcdir/build"
-        make -j1 modules_install \
-                ARCH="$_carch" \
-                INSTALL_MOD_PATH="$pkgdir" \
-                || return 1
+	make -j1 modules_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_MOD_PATH="$pkgdir" \
+		|| return 1
 }
 
 sha512sums="42e3d7ea75a2e69a7589e74409fe43f2abdee0f4cc1fcea1b138622e3845524145e4c41343abc57d71236b1e2f59715f719845fcf5e628a6c343e9b10d06942a  linux-sony-castor-windy-next.tar.gz

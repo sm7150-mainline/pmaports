@@ -1,5 +1,4 @@
 # APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
 # - add !check !tracedeps
 # - package: just install zimage and kernel.release, because the kernel config
 #	does not generate modules or dtb files
@@ -20,7 +19,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=7
+pkgrel=8
 arch="armhf"
 pkgdesc="LineageOS kernel for Nexus 5 hammerhead"
 url="https://github.com/LineageOS/android_kernel_lge_hammerhead"
@@ -112,11 +111,11 @@ package() {
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" modules_install \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install \
 		|| return 1
 }
 
-sha512sums="06efc786722f904c5e37657c96b96fb3e6b005837aac3c63a75751a80d7ff5800af072e3095bbdf32f3ac602125f98ad6f99f82892d19668fe320874b720f543  linux-lg-hammerhead-1dae34efb7d2399073ca371c953aafd2ed503849.tar.gz
+sha512sums="f02667fcdbec30f222e0be537a68de39adaee54790a7870dd406e97613f416492713c43f97685e69802acbc0628c1cb3201bb2213899988178600d6e14a4a928  linux-lg-hammerhead-1dae34efb7d2399073ca371c953aafd2ed503849.tar.gz
 a1ab65fcababe36e181a15f904a57a3958781d9b7f39b0376592130771037a539fcb58801051358ac7f9e5651e8316959f2bf508444b5e415df8b6672aafa16e  config-lg-hammerhead.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch

@@ -26,7 +26,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=5
+pkgrel=6
 arch="armhf"
 pkgdesc="Samsung Galaxy S Advance kernel from Epirex"
 url="https://github.com/Epirex/Samsung_STE_Kernel"
@@ -135,11 +135,11 @@ package() {
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" modules_install \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install \
 		|| return 1
 }
 
-sha512sums="5e9309a4329280f0cfbac6e5aae6465143a36197217ea72957e624b06ff724f4117b1309c5a535432ef008733723a605c90285d5740f7b798becd0130f2c0996  linux-samsung-i9070-ac7219c4b8dcec7bc5a598d42c6be0db4aa36332.tar.gz
+sha512sums="bb8218d803ec27f983449a43d14df75122311609a39e5b57095f4e8933752a2699fa0d4df1674aeee7d6e3a439551dacc9af3cab26b6e3e71f0441a4f16693df  linux-samsung-i9070-ac7219c4b8dcec7bc5a598d42c6be0db4aa36332.tar.gz
 65ac788fc01180b803d8110333cbd0e30e742801647d6d4d813aaa6eca0c3d216f5daef0fc9583aef5a1ea2475d48567896da8e443781a1f08ff10ff8d6ea0a6  config-samsung-i9070.armhf
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 c8f12ecf578be0c4600563134079b980a1079b08ac868302af8821022befe873aa94c67b9690ba87f5967f0a48939d15e871dc2d2862bed7b6a1d0c9a95cfd8f  01_remove_ramdisks_from_initramfs.patch
