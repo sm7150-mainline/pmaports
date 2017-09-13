@@ -1,0 +1,42 @@
+pkgname=ofono
+pkgver=1.20
+pkgrel=1
+pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications"
+url="https://01.org/ofono"
+arch="all"
+license="GPL2"
+depends="bluez mobile-broadband-provider-info"
+makedepends="glib-dev dbus-dev eudev-dev libc-dev
+	linux-headers bsd-compat-headers libexecinfo-dev
+	mobile-broadband-provider-info"
+options="!check"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$pkgver.tar.xz
+	$pkgname.initd
+	0001-udevng-detect-non-usb.patch
+	0002-udevng-remove-unneeded-prop.patch
+	0003-isimodem-fix-sim-state-resp-cb.patch"
+builddir="$srcdir"/$pkgname-$pkgver
+
+build() {
+	cd "$builddir"
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--sbindir=/usr/sbin
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+	install -Dm644 "$srcdir/$pkgname-${pkgver}/plugins/ofono.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono.rules"
+}
+
+sha512sums="8dc86654ae8a1dc1761c95df5f0de55566db20012e523f11bcd5ab5e1540f4cd9fc7bd6bf1665dcbeb31f2925f9322c21fd05fb00034e408b5d85b265e2fe840  ofono-1.20.tar.xz
+7f17143545e1a229254b34da76a449d2c1dea238ee988d606de1a12a54fe691cd946f73e446ae786624abbcdc539338334c1d3b0d1e49fdd8ba8ba6aa51b15ff  ofono.initd
+a10f60e0b3b026fcd8e8bba9282c84c7b04f97621c23cdd92a8474cd0d7cd958e4e49433c454dd478b6aaf2b5b0fc5e3d8b1b87ebfef23430acdee408b76e959  0001-udevng-detect-non-usb.patch
+ec8b24be9ad5db6ad3a29fb17bcc4ecd0cfc2e41131973ad03037bc5dbd3202504f6b26531f78252d99c24c816a24940dbed1a28347c1361a874eebb1fc91979  0002-udevng-remove-unneeded-prop.patch
+18e9be5324babc08a986d56eb896b5bec8c35a37a0ad40c5812f226507f50379da89e469fc7cc0328be8fe49f37fc40ea0b61d053c25e469631538afeb1589cc  0003-isimodem-fix-sim-state-resp-cb.patch"
