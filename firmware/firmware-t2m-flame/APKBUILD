@@ -1,6 +1,6 @@
 pkgname=firmware-t2m-flame
 pkgver=1
-pkgrel=2
+pkgrel=3
 pkgdesc="Mozilla Flame Firmware"
 url="https://github.com/yuvadm/mozilla-flame-firmware"
 arch="noarch"
@@ -15,7 +15,7 @@ options="!check !strip !archcheck"
 
 package() {
 	mkdir -p "$pkgdir/lib/firmware/postmarketos"
-	for fw in $(find "${srcdir}/t2m-flame-firmware-${_hash}/" -type f)
+	for fw in $(find "${srcdir}/mozilla-flame-firmware-${_hash}/" -type f)
 	do
 		install -m644 $fw "$pkgdir/lib/firmware/postmarketos/"
 	done
