@@ -1,5 +1,4 @@
 # APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
 # - add !check !tracedeps
 # - add generation of master DTB with dtbTool
 #
@@ -106,6 +105,13 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
 		|| return 1
 
+	echo "--[ Build modules ]--"
+	# the 'no-pic' flag is necessary to avoid the 
+	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
+	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		modules || return 1
+
 	echo "--[ Generate master DTB ]--"
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }
@@ -121,6 +127,15 @@ package() {
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	echo "--[ Installing modules ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install \
+		|| return 1
 }
 
 sha512sums="b88fe4981fb35d289977c9a7ca6b041ec8d09380250485d7b3f3e1e1ef51ba500db2e1aecd222aa8c140a3b9ec5ed2fa638b68ddf446efe81f278aa8b8e7871f  linux-huawei-y530-1880463bf10c4c2d2b348698614a613902184e22.tar.gz
