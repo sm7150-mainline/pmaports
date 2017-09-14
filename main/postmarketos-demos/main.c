@@ -16,6 +16,12 @@ static void activate(GtkApplication *app, gpointer user_data)
 	gtk_container_add(GTK_CONTAINER (window), button_box);
 
 	const char *programs[] = {
+		"Shutdown",
+			"poweroff &",
+		"GTK3 Demo",
+			"gtk3-demo &",
+		"Firefox (XWayland)",
+			"firefox &",
 		"weston-presentation-shm (Animation)",
 			"weston-presentation-shm &",
 		"weston-simple-damage (Animation)",
@@ -25,15 +31,9 @@ static void activate(GtkApplication *app, gpointer user_data)
 		"weston-editor (Touch)",
 			"weston-editor &",
 		"htop (Terminal)",
-			"weston-terminal --shell=/usr/bin/htop &",
-		"Firefox (XWayland)",
-			"firefox &",
-		"GTK3 Demo",
-			"gtk3-demo &",
+			"weston-terminal -f --shell=/usr/bin/htop &",
 		"Restart Weston",
 			"killall weston &",
-		"Shutdown",
-			"poweroff &"
 	};
 
 	for(int i=0;i<(sizeof(programs) / sizeof(const char*));i+=2)
