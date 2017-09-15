@@ -42,3 +42,10 @@ fi
 
 # Enable syslog to SHM. Note: size is 4048KiB, which *should* be More Than Enough(TM) for all but the most chattiest of devices.
 sed s/=\"/=\""-C4048 "/  -i /etc/conf.d/syslog
+
+# Enable wext, nl80211 & dbus control for wpa_supplicant
+if ! grep -q Dwext /etc/conf.d/wpa_supplicant; then
+        sed -i 's/wpa_supplicant_args=\"/wpa_supplicant_args=\" -u -Dwext,nl80211 ' /etc/conf.d/wpa_supplicant
+fi
+touch /etc/wpa_supplicant/wpa_supplicant.conf
+
