@@ -1,6 +1,6 @@
 pkgname=device-oneplus-bacon
 pkgver=1
-pkgrel=2
+pkgrel=3
 pkgdesc="OnePlus One"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -9,7 +9,7 @@ depends="linux-oneplus-bacon linux-firmware mkbootimg"
 makedepends=""
 install=""
 subpackages=""
-source="90-android-touch-dev.rules deviceinfo"
+source="deviceinfo 90-android-touch-dev.rules"
 options="!check"
 
 build() {
@@ -17,11 +17,11 @@ build() {
 }
 
 package() {
-	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
 
-sha512sums="155aa9c8bd0e202917c7f55312eaaa189114864d89bbf7fdbdcc4fe146af3c7c781a6e76b0030046383dee823465a994d6954408248cc2f43e48af40869d6b25  90-android-touch-dev.rules
-54c9a25dfbfff8381009f1e49e8b22bb89bd1decf3f9900e67f4f2c9e6b25db4715d4b72e7d9d9791d7d637971e0ac40086746d29c324ffe009b02b06a0b8a30  deviceinfo"
+sha512sums="96fb5b0c88b54e755d4065bafe5ac220294234b846a0b90810aedd6ee2fef544c9382c8277b757b4108e6bb05dcca4f1c90c5290a77d9d6c730f3c542066ca69  deviceinfo
+480b88b2dff7083659a524880c15c9a921d49057fce8f9d6ea876ead31d1aa61b7e5c44fd6866dcfdac7dacb98f882f426dbf6f8822f6727670fbd603f4da865  90-android-touch-dev.rules"

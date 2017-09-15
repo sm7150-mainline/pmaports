@@ -1,26 +1,29 @@
 # APKBUILD based on linux-vanilla aport. Changes:
 # - add !check !tracedeps
 # - do not create -dev subpackage
+# - add 'xz' and 'dtbtool' as build dependencies
+# - add `dtbTool` build hook to generate separate 'dt.img'
 #
 # Kernel config based on: arch/arm/configs/lineageos_bacon_defconfig
 # Changes:
 # - enable loadable module support
 # - enable devtmpfs (needed for udev -> touch support in weston)
+# - enable virtual terminal
 
 _vendor=oneplus
 _flavor=oneplus-bacon
-_version="lineage-15.0"
+_version="dd65620ba04a8c6ba0e30553c9c95388daefae02"
 _config="config-${_flavor}.armhf"
 
 pkgname=linux-${_flavor}
 pkgver=3.4.113
 case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
+	*.*.*) _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=3
+pkgrel=4
 arch="armhf"
-pkgdesc="LineageOS kernel for OnePlus One"
+pkgdesc="LineageOS 14.1 kernel for OnePlus One (bacon)"
 url="https://github.com/LineageOS/android_kernel_oneplus_msm8974"
 depends="postmarketos-mkinitfs"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev python2 xz dtbtool"
@@ -121,7 +124,7 @@ package() {
 		|| return 1
 }
 
-sha512sums="3ff5e3607a9035f24f010f1ae3d30635e5eed00eeeb2b51762a1dfe48be7d245fcb13a88b045d55da136af2153648bec2ed57ee715a21b33acd3af2994deb111  linux-oneplus-bacon-lineage-15.0.tar.gz
-2939fdd0d54b56d9198b5b2527c2a3c647c74f658221c60b457bb68b5f5b1c3949876ae511ef5278766cf268d69fad8b25ca30d3fb807a8221b8d11769dfcf4a  config-oneplus-bacon.armhf
+sha512sums="94d0048439e70b11637a7a122e8652d4e997ee413d6e54ea0aed7f2c68e137fcc19b6784dcc0dedf0b80240ba16060634b517d5865ec6c7222e4dea44d3c059a  linux-oneplus-bacon-dd65620ba04a8c6ba0e30553c9c95388daefae02.tar.gz
+2225f3e2f82a6294a371d5a7355470c3397aa3d31d02505623087cb8365a273388abc7771cf00a602e472e7512ff8a3c90f394f7f6900f941d9b245dc7fbf632  config-oneplus-bacon.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"
