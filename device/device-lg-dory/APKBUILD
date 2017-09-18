@@ -1,0 +1,23 @@
+pkgname=device-lg-dory
+pkgver=1
+pkgrel=0
+pkgdesc="LG G Watch"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-lg-dory mkbootimg msm-fb-refresher"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo 90-touchscreen-dev.rules"
+options="!check"
+
+package() {
+	install -D -m644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/90-touchscreen-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-touchscreen-dev.rules
+}
+
+sha512sums="68eedb9699db7e4abbcfa010271cac6b9b1b32bde170a7c3cfd598cfe51dc2c96837986175ddfb9c096521ca406f7b5c911afbafc41fb820c2d7333f34959b20  deviceinfo
+4bd58ba3633d926fe8d1b1869b01173b44c5a66c75e8cc9220decf0bd395e1c20c746adf8f5f6761d67752e4b307cb65957bfaa01a631e42bf0860bebffbf347  90-touchscreen-dev.rules"
