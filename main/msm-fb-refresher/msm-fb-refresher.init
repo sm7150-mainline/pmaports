@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+
+cmd=/usr/sbin/msm-fb-refresher
+cmd_args="--loop"
+pid=/run/msm-fb-refresher.pid
+
+depend() {
+	after bootmisc
+}
+
+start() {
+	ebegin "Starting msm-fb-refresher"
+	start-stop-daemon --start --exec $cmd --background \
+		--pidfile $pid --make-pidfile -- $cmd_args
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping msm-fb-refresher"
+	start-stop-daemon --stop --exec $cmd
+	eend $?
+}
+
+restart() {
+	stop
+	start
+}

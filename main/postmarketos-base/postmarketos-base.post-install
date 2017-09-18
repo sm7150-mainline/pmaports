@@ -15,6 +15,9 @@ done
 for service in mount-ro killprocs savecache; do
 	rc-update -q add $service shutdown
 done
+if [ "${deviceinfo_msm_refresher}" = "true" ]; then
+	rc-update -q add msm-fb-refresher boot
+fi
 
 # Add user account
 adduser -u 1000 -D -h /home/user -G users user 2>/dev/null

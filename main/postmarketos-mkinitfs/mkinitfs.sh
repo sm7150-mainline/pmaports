@@ -97,6 +97,9 @@ get_modules()
 get_binaries()
 {
 	BINARIES="/bin/busybox /bin/busybox-extras /usr/sbin/telnetd /sbin/kpartx"
+	if [ "${deviceinfo_msm_refresher}" == "true" ]; then
+		BINARIES="${BINARIES} /usr/sbin/msm-fb-refresher"
+	fi
 	lddtree -l $BINARIES | sort -u
 }
 
@@ -242,6 +245,12 @@ source_deviceinfo
 parse_commandline "$1" "$2" "$3"
 echo "==> initramfs: creating $outfile"
 tmpdir=$(mktemp -d /tmp/mkinitfs.XXXXXX)
+
+if [ "${deviceinfo_msm_refresher}" == "true" ] && ! [ -e /usr/sbin/msm-fb-refresher ]; then
+	echo "ERROR: Please add msm-fb-refresher as dependency to your device package,"
+	echo "or set msm_refresher to false in your deviceinfo!"
+	exit 1
+fi
 
 # set up initfs in temp folder
 create_folders

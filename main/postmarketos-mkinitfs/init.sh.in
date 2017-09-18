@@ -15,6 +15,9 @@ setup_log
 setup_mdev
 mount_subpartitions
 
+# Start msm-fb-refresher workaround for qualcomm devices
+start_msm_refresher
+
 # Hooks
 for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do
 	[ -e "$hook" ] || continue
@@ -38,7 +41,7 @@ resize_root_filesystem
 mount_root_partition
 
 # Switch root
-killall telnetd mdev 2>/dev/null
+killall telnetd mdev msm-fb-refresher 2>/dev/null
 umount /boot
 umount /proc
 umount /sys

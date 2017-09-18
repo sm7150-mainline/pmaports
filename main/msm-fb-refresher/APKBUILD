@@ -1,0 +1,28 @@
+pkgname=msm-fb-refresher
+pkgver=0.1
+pkgrel=0
+pkgdesc="Display refresher for Qualcomm devices"
+arch="all"
+url="https://github.com/AsteroidOS/msm-fb-refresher"
+license="GPL2"
+makedepends="linux-headers"
+source="
+	${pkgname}-${pkgver}.tar.gz::https://github.com/AsteroidOS/msm-fb-refresher/archive/v${pkgver}.tar.gz
+	msm-fb-refresher.init
+"
+
+builddir="${srcdir}/${pkgname}-${pkgver}"
+
+build() {
+	gcc refresher.c -o refresher.o -c
+	gcc refresher.o -o msm-fb-refresher
+}
+
+package() {
+	install -Dm755 "${builddir}/msm-fb-refresher" \
+		"${pkgdir}/usr/sbin/msm-fb-refresher"
+	install -Dm755 "${srcdir}/msm-fb-refresher.init" \
+		"${pkgdir}/etc/init.d/msm-fb-refresher"
+}
+sha512sums="6c39f2a2eccf5c4b4dc89e91b69385ad89cfd3fdef3121d32e88f2811b3a6df1ca15c5f8df8df7eced7133e99abdf54034bc82e9d871f40bfc4271b9a0474e15  msm-fb-refresher-0.1.tar.gz
+5820e02dcb1cd927bcd6c8548307936a12f0dde1b92f15a931134b8d4a41f4b5e8811c6969d9b11a6a31d40da218b24ee274614936f6e50bcd6e794346f99c13  msm-fb-refresher.init"

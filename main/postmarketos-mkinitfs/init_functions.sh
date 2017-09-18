@@ -299,6 +299,13 @@ echo_connect_ssh_message() {
 	echo "ssh user@$IP"
 }
 
+start_msm_refresher() {
+	# shellcheck disable=SC2154,SC2086
+	if [ "${deviceinfo_msm_refresher}" = "true" ]; then
+		/usr/sbin/msm-fb-refresher --loop &
+	fi
+}
+
 loop_forever() {
 	while true; do
 		sleep 1
