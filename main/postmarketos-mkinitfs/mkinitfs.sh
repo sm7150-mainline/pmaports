@@ -125,13 +125,11 @@ get_binaries_extra()
 # FIXME: this is a performance bottleneck
 # $1: files
 # $2: destination
-# $3: file mode bits (as in chmod), default: 755
 copy_files()
 {
-	mode="${3:-755}"
 	for file in $1; do
 		[ -e "$file" ] || continue
-		install -Dm$mode "$file" "$2$file"
+		cp -a --parents "$file" "$2"
 	done
 }
 
@@ -256,7 +254,7 @@ fi
 create_folders
 copy_files "$(get_modules)" "$tmpdir"
 copy_files "$(get_binaries)" "$tmpdir"
-copy_files "/etc/deviceinfo" "$tmpdir" "644"
+copy_files "/etc/deviceinfo" "$tmpdir"
 copy_files "/etc/postmarketos-mkinitfs/hooks/*.sh" "$tmpdir"
 create_device_nodes
 ln -s "/bin/busybox" "$tmpdir/bin/sh"
