@@ -28,11 +28,6 @@ fi
 if [ -z "$(grep /boot /etc/fstab)" ]; then
         echo "/dev/dm-0 /boot   ext2    defaults        0       0" >> /etc/fstab
 fi
-# Add swap to fstab & enable swap on device startup
-if [ -z "$(grep /dev/mmcblk1p3 /etc/fstab)" ]; then
-        echo "/dev/mmcblk1p3    none    swap    defaults        0       0" >> /etc/fstab
-fi
-rc-update add swap default
 
 # Set RTC device for hwclock
 if [ -z "$(grep /dev/rtc0 /etc/conf.d/hwclock)" ]; then
