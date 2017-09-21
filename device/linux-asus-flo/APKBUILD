@@ -1,0 +1,79 @@
+_vendor=asus
+_flavor=asus-flo
+_hash="942488347d69700cb84ad79290b7e60d124ac8d5"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=4.11
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=0
+arch="armhf"
+pkgdesc="Nexus 7 2013 WIFI mainline kernel"
+url="https://git.linaro.org/people/john.stultz/flo.git/log/?h=flo-WIP"
+
+depends="postmarketos-mkinitfs"
+makedepends="xz perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_hash.tar.gz::https://git.linaro.org/people/john.stultz/flo.git/snapshot/flo-$_hash.tar.gz
+	$_config
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/flo-$_hash"
+
+prepare() {
+	default_prepare
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+	silentoldconfig
+}
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build || return 1
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		CFLAGS_MODULE=-fno-pic \
+		zImage modules qcom-apq8064-asus-nexus7-flo.dtb \
+		|| return 1
+}
+
+package() {
+	cd "$srcdir/build/arch/arm/boot"
+	cat zImage dts/qcom-apq8064-asus-nexus7-flo.dtb > zImage-dtb
+	
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	
+	cd "$srcdir"/build
+	make -j1 modules_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		|| return 1
+}
+sha512sums="b3d3186bf86bcfe6a39690e1c13751aefed2d876b646b93631c1e76c70a56a23adcb2e50fd8d031dfb6e7111919cf116bd9a12a91c26cb5a5042a9e4cffc4bc4  linux-asus-flo-942488347d69700cb84ad79290b7e60d124ac8d5.tar.gz
+cb66045ad6253ba0092d9e39b9d8d5be5615ec257890edbe007173051433301855b9e20dee530944d16b4538ace8876073f3ba9093b29c653369e7bc750dd7ca  config-asus-flo.armhf"

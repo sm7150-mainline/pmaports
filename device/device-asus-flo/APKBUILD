@@ -1,0 +1,22 @@
+pkgname=device-asus-flo
+pkgver=0
+pkgrel=0
+pkgdesc="Google Nexus 7 2013 flo"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-asus-flo mkbootimg"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo 90-android-touch-dev.rules"
+options="!check"
+
+package() {
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir/90-android-touch-dev.rules" \
+		"$pkgdir/lib/udev/rules.d/90-android-touch-dev.rules"
+}
+sha512sums="8a46d52cf77c3be4f81b28ce680bf7c3382eadf35998876ba348337f73ef6c90e1a0d16d0bf6369113c243467a978ef3f7912ad026dc49ab9ac95df00e2e9a71  deviceinfo
+0232207365549afb92c485ea71badb9da3e7a05095485c67a823f6abc0d120e103691647bd640250bb12f1d1aec5a91053088b05e8259df65ec1a6b48cbd6f42  90-android-touch-dev.rules"
