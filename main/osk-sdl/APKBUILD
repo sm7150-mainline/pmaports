@@ -1,29 +1,26 @@
-_hash="debd421f276bbad1d0973ba97c69a771c08fe9f4"
-
 pkgname=osk-sdl
-pkgver=1
-pkgrel=4
-pkgdesc="Onscreen Keyboard for Framebuffer"
+pkgver=0.48
+pkgrel=0
+pkgdesc="Onscreen keyboard for unlocking LUKS devices"
 url="https://github.com/postmarketOS/osk-sdl"
 arch="all"
-license="MIT"
-depends="sdl2_image sdl2 sdl2_ttf cryptsetup-libs mesa-gl directfb"
-makedepends="linux-headers sdl2-dev sdl2_image-dev sdl2_ttf-dev cryptsetup-dev"
+license="GPL3"
+depends="sdl2 sdl2_ttf cryptsetup-libs mesa-gl directfb"
+makedepends="linux-headers sdl2-dev sdl2_ttf-dev cryptsetup-dev"
 subpackages=""
 
-source="$pkgname-$_hash.tar.gz::https://github.com/postmarketos/${pkgname}/archive/${_hash}.tar.gz"
+source="${pkgname}-${pkgver}-${pkgrel}.tar.gz::https://github.com/postmarketOS/osk-sdl/archive/${pkgver}.tar.gz"
 
 options="!strip"
 
 build() {
-    cd "${srcdir}/${pkgname}-${_hash}"
     make
 }
 
 package() {
-    install -D -m755 "${srcdir}/${pkgname}-${_hash}"/osk-sdl \
+    install -D -m755 "${srcdir}/${pkgname}-${pkgver}"/osk-sdl \
         "$pkgdir"/usr/bin/osk-sdl
-    install -D -m755 "${srcdir}/${pkgname}-${_hash}"/osk.conf \
-        "$pkgdir"/osk.conf
+    install -D -m755 "${srcdir}/${pkgname}-${pkgver}"/osk.conf \
+        "$pkgdir"/etc/osk.conf
 }
-sha512sums="d0f1f6d277427c664d9f8c1210661ee58bd41b6076ef8871cb5fc35f5362f5e91015adf5e07dce409b3c92436db2af724ffc78880de04277f61122a6632f6ea6  osk-sdl-debd421f276bbad1d0973ba97c69a771c08fe9f4.tar.gz"
+sha512sums="ff484fd333fb420f123e8c5dd79941e390f6facfee9846fa935a0c9ea14e4ed070b28b68d9067a85277c3384e326fddc06a8defed732b58b559caedf28dad494  osk-sdl-0.48-0.tar.gz"
