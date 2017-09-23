@@ -251,7 +251,10 @@ start_udhcpd() {
 	# Create /etc/udhcpd.conf
 	{
 		echo "start 172.16.42.2"
-		echo "end 172.16.42.254"
+		echo "end 172.16.42.2"
+		echo "auto_time 0"
+		echo "decline_time 0"
+		echo "conflict_time 0"
 		echo "lease_file /var/udhcpd.leases"
 		echo "interface $INTERFACE"
 		echo "option subnet 255.255.255.0"
