@@ -198,34 +198,66 @@ create_bootimg()
 }
 
 # Create splash screens
+# $1: "false" to skip clearing the cache if one image is missing
 generate_splash_screens()
 {
-	width=${deviceinfo_screen_width:-720}
-	height=${deviceinfo_screen_height:-1280}
+	[ "$1" != "false" ] && clean="true" || clean="false"
 
-	pmos-make-splash --text="On-screen keyboard is not implemented yet, plug in a USB cable and run on your PC:\ntelnet 172.16.42.1" \
-		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-telnet.ppm"
-	gzip "${tmpdir}/splash-telnet.ppm"
+	splash_version=$(apk info -v | grep postmarketos-splash)
+	splash_config="/etc/postmarketos/splash.ini"
+	splash_config_hash=$(md5sum "$splash_config")
+	splash_width=${deviceinfo_screen_width:-720}
+	splash_height=${deviceinfo_screen_height:-1280}
+	splash_cache_dir="/var/cache/postmarketos-splashes"
 
-	pmos-make-splash --text="Loading..." --center \
-		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-loading.ppm"
-	gzip "${tmpdir}/splash-loading.ppm"
+	# Overwrite $@ to easily iterate over the splash screens. Format:
+	# $1: splash_name
+	# $2: text
+	# $3: arguments
+	set -- "splash-telnet"           "On-screen keyboard is not implemented yet, plug in a USB cable and run on your PC:\\ntelnet 172.16.42.1" "" \
+	       "splash-loading"          "Loading..." "--center" \
+	       "splash-noboot"           "boot partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
+	       "splash-noinitramfsextra" "initramfs-extra not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
+	       "splash-nosystem"         "system partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
+	       "splash-mounterror"       "unable to mount root partition\\nhttps://postmarketos.org/troubleshooting" "--center"
 
-	pmos-make-splash --text="boot partition not found\nhttps://postmarketos.org/troubleshooting" --center \
-		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-noboot.ppm"
-	gzip "${tmpdir}/splash-noboot.ppm"
+	# Ensure cache folder exists
+	mkdir -p "${splash_cache_dir}"
 
-	pmos-make-splash --text="initramfs-extra not found\nhttps://postmarketos.org/troubleshooting" --center \
-		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-noinitramfsextra.ppm"
-	gzip "${tmpdir}/splash-noinitramfsextra.ppm"
+	# Loop through the splash screens definitions
+	while [ $# -gt 2 ]
+	do
+		splash_name=$1
+		splash_text=$2
+		splash_args=$3
+		
+		# Compute hash using the following values concatenated:
+		# - postmarketos-splash package version
+		# - splash config file
+		# - device resolution
+		# - text to be displayed
+		splash_hash_string="${splash_version}#${splash_config_hash}#${splash_width}#${splash_height}#${splash_text}"
+		splash_hash="$(echo "${splash_hash_string}" | md5sum | awk '{ print $1 }')"
 
-	pmos-make-splash --text="system partition not found\nhttps://postmarketos.org/troubleshooting" --center \
-		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-nosystem.ppm"
-	gzip "${tmpdir}/splash-nosystem.ppm"
+		if ! [ -e "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm.gz" ]; then
 
-	pmos-make-splash --text="unable to mount root partition\nhttps://postmarketos.org/troubleshooting" --center \
-		--config /etc/postmarketos/splash.ini "$width" "$height" "${tmpdir}/splash-mounterror.ppm"
-	gzip "${tmpdir}/splash-mounterror.ppm"
+			# If a cached file is missing, clear the whole cache and start again skipping this step
+			if [ "$clean" = "true" ]; then
+				rm -f ${splash_cache_dir}/*
+				generate_splash_screens false
+				return
+			fi
+
+			# shellcheck disable=SC2086
+			pmos-make-splash --text="${splash_text}" $splash_args --config "${splash_config}" \
+					"$splash_width" "$splash_height" "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm"
+			gzip "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm"
+		fi
+
+		cp "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm.gz" "${tmpdir}/${splash_name}.ppm.gz"
+
+		shift 3 # move to the next 3 arguments
+	done
 }
 
 # Append the correct device tree to the linux image file
