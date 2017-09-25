@@ -1,22 +1,26 @@
 pkgname=device-asus-flo
 pkgver=0
-pkgrel=1
+pkgrel=2
 pkgdesc="Google Nexus 7 2013 flo"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-asus-flo mkbootimg"
+depends="linux-asus-flo mkbootimg firmware-asus-flo mesa mesa-dri-freedreno"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android-touch-dev.rules"
+source="deviceinfo 90-android-touch-dev.rules wpa_supplicant.conf"
+
 options="!check"
 
 package() {
 	install -D -m644 "$srcdir/deviceinfo" \
 		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir/wpa_supplicant.conf" \
+		"$pkgdir/etc/wpa_supplicant/wpa_supplicant.conf"
 	install -D -m644 "$srcdir/90-android-touch-dev.rules" \
 		"$pkgdir/lib/udev/rules.d/90-android-touch-dev.rules"
 }
-sha512sums="8a46d52cf77c3be4f81b28ce680bf7c3382eadf35998876ba348337f73ef6c90e1a0d16d0bf6369113c243467a978ef3f7912ad026dc49ab9ac95df00e2e9a71  deviceinfo
-a02db4e1bdb622cc4616b750dc5c3248081f5124cc49ef18f25b430c921c80004eff9f6a9b84a76ce04785c256e71776ff90e0f60140e4cce6860ba8d80cf4d2  90-android-touch-dev.rules"
+sha512sums="8e66731d71e703a92d57df154623946fbe1d01457fa0ff32a223c8a6c30148f9b2123071377ddab6ceae292fab11439ada0355121009a67ba780cab8edf44c93  deviceinfo
+a02db4e1bdb622cc4616b750dc5c3248081f5124cc49ef18f25b430c921c80004eff9f6a9b84a76ce04785c256e71776ff90e0f60140e4cce6860ba8d80cf4d2  90-android-touch-dev.rules
+3278921cc1617d10fdd13dfbeaf213cda0078d069e727acd8cfac10bd8ade6f373be1e22fd1e4b50ae71cd2eae09f7d6aad5de42338d9ea9f8c1a34f0b60cb69  wpa_supplicant.conf"
