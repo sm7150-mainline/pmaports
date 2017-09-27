@@ -1,15 +1,24 @@
 pkgname=device-huawei-angler
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Huawei Nexus 6P"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-huawei-angler mkbootimg"
+depends="linux-huawei-angler mkbootimg firmware-aosp-broadcom-wlan msm-fb-refresher"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android-touch-dev.rules"
+source="
+	deviceinfo
+	90-android-touch-dev.rules
+	initfs-hook.sh
+	bcmdhd.cal
+"
+
+# Note: bcmdhd.cal is from https://github.com/LineageOS/android_device_huawei_angler/blob/752aaf664ab079f4ce9cbdeae6978f615d39b783/bcmdhd.cal
+# TODO: this calibration file isn't valid for all variants of this device
+# See https://github.com/LineageOS/android_device_huawei_angler/blob/cm-14.1/init.angler.rc#L450
 options="!check"
 
 build() {
@@ -21,7 +30,13 @@ package() {
 		"$pkgdir/etc/deviceinfo"
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/bcmdhd.cal \
+		"$pkgdir"/etc/wifi/bcmdhd.cal
 }
 
-sha512sums="3bb53698b5fbfdd0522aaaf56966ea228cd79bea05c9af14d988604b1294d93a3a991107d5483845fc0064cf44d9f9ef54f9cbc517959f0327318b1902b9ee86  deviceinfo
-155aa9c8bd0e202917c7f55312eaaa189114864d89bbf7fdbdcc4fe146af3c7c781a6e76b0030046383dee823465a994d6954408248cc2f43e48af40869d6b25  90-android-touch-dev.rules"
+sha512sums="255a6f15a30f41e3db02be591cf41e62f7ac80c1b4dae6ecc174b4f81968a54ffeec8088ded5d44ce36d8a21b4013c79090bed6ed7e115b39ada20975649212b  deviceinfo
+e3472238341e5bdf7249a75e8f38019b145ea3e7a6137a49206945e6829fe8918c876a9caf2b0013357be9bff56d9f23c08900c80de4be93986246239e1b4fc7  90-android-touch-dev.rules
+8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
+61fe1f91d7b0b570b77fcca76503373cbac2515ca3dcc2f2543b910dfaeb1e935a11975f824f6a72001df4e63329356a6aff2d016e9b4f5d8f7b739fee065c4e  bcmdhd.cal"
