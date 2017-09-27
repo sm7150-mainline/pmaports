@@ -19,7 +19,8 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 
 		udevadm trigger
 		udevadm settle
-		(sleep 2; postmarketos-demos) &
+		# Workaround! See #633 for discussing a proper fix
+		(sleep 3; postmarketos-demos) &
 		weston ${WESTON_OPTS} >/tmp/weston.log 2>&1
 
 		# In case of failure, restart after 1s
