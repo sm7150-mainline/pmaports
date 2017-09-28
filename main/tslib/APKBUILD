@@ -1,23 +1,30 @@
+# Contributor: Clayton Craft <clayton@craftyguy.net>
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=tslib
-pkgver=1.11
+pkgver=1.13
 pkgrel=0
 pkgdesc="Touchscreen Access Library"
 arch="all"
 url="https://github.com/kergoth/tslib"
 license="GPL2"
 makedepends="autoconf automake libtool linux-headers"
-source="https://github.com/kergoth/tslib/releases/download/$pkgver/$pkgname-$pkgver.tar.xz"
+source="https://github.com/kergoth/tslib/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
+builddir="${srcdir}/${pkgname}-${pkgver}"
 
 build() {
-    cd $srcdir/$pkgname-$pkgver
     ./autogen.sh
     ./configure --prefix=/usr --sysconfdir=/etc
     make
 }
 
-package() {
-    cd $srcdir/$pkgname-$pkgver
-    make DESTDIR="$pkgdir" install
+check() {
+    cd "${builddir}"
+    make check
 }
-sha512sums="c4826fc0b3e13ed8714e6d7f09e4b047fd4c2568426aac2a70e9812b9b472086a5a9a8f9e2ba80905e2f3fe75cdc1a09c8e7349d10a016808c74a09d82a0a874  tslib-1.11.tar.xz"
+
+package() {
+    cd "${builddir}"
+    make DESTDIR="${pkgdir}" install
+}
+sha512sums="d96756576f2ffbc075bbe450a7a616cea9b0de97ef6ccb7868a237e7da6855af3eb47e13afd1ad4d82cf165628d5c3c45def7e07ae606a561bee5e7445cf5366  tslib-1.13.tar.xz"
