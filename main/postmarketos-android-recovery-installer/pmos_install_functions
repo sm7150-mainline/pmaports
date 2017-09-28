@@ -23,6 +23,10 @@ export ZIP=$2
 export WORKING_DIR="/tmp/postmarketos"
 export PATH=$PATH:"$WORKING_DIR"/bin
 
+# Use findfs from util-linux
+# shellcheck disable=SC2139
+alias findfs="$WORKING_DIR/bin/findfs"
+
 # shellcheck source=/dev/null
 . "$WORKING_DIR"/install_options
 
@@ -36,11 +40,12 @@ ui_print() {
 extract_partition_table() {
 	case "$INSTALL_PARTITION" in
 		"system")
-			# We need to resolve symlinks, to make set_subpartitions() work.
-			_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/system/ {print $3}' /etc/recovery.fstab)")
+			_INSTALL_DEVICE=$(findfs PARTLABEL="$SYSTEM_PARTLABEL") || \
+				# We need to resolve symlinks, to make set_subpartitions() work.
+				_INSTALL_DEVICE=$(busybox readlink -fn "$(awk '/^\/system/ {print $3}' /etc/recovery.fstab)")
 			;;
 		"external_sd")
-			_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/external_sd/ {print $4}' /etc/recovery.fstab)")
+			_INSTALL_DEVICE=$(busybox readlink -fn "$(awk '/^\/external_sd/ {print $4}' /etc/recovery.fstab)")
 			;;
 		*)
 			echo "No support for flashing $INSTALL_PARTITION."
@@ -52,17 +57,26 @@ extract_partition_table() {
 		echo "install device found at $_INSTALL_DEVICE"
 		export INSTALL_DEVICE=$_INSTALL_DEVICE
 	else
-		echo "Couldn't find /$INSTALL_PARTITION/ in fstab."
+		echo "Couldn't find $INSTALL_PARTITION partition."
 		return 1
 	fi
-	_BOOT=$(awk '/^\/boot/ {print $3}' /etc/recovery.fstab)
-	if [ ! -z "$_BOOT" ]
+	if [ "$ISOREC" = "true" ]
 	then
-		echo "boot partition found at $_BOOT"
-		export BOOT=$_BOOT
+		export KERNEL_PARTITION
+		KERNEL_PARTITION=$(findfs PARTLABEL="$KERNEL_PARTLABEL")
+		export INITFS_PARTITION
+		INITFS_PARTITION=$(findfs PARTLABEL="$INITFS_PARTLABEL")
 	else
-		echo "Couldn't find /boot/ in fstab."
-		return 1
+		_BOOT_PARTITION=$(findfs PARTLABEL="boot") || \
+			_BOOT_PARTITION=$(awk '/^\/boot/ {print $3}' /etc/recovery.fstab)
+		if [ ! -z "$_BOOT_PARTITION" ]
+		then
+			echo "boot partition found at $_BOOT_PARTITION"
+			export BOOT_PARTITION=$_BOOT_PARTITION
+		else
+			echo "Couldn't find boot partition."
+			return 1
+		fi
 	fi
 }
 
@@ -78,18 +92,19 @@ partition_install_device() {
 	if [ "$INSTALL_PARTITION" = "system" ]
 	then
 		kpartx -afs "$INSTALL_DEVICE"
-		ln -s /dev/mapper/* /dev/block/
 	fi
 	set_subpartitions
 }
 
 set_subpartitions() {
-	export PMOS_BOOT="$INSTALL_DEVICE"p1
-	export ROOT_PARTITION="$INSTALL_DEVICE"p2
+	export PMOS_BOOT
+	PMOS_BOOT=/dev/mapper/"$(busybox basename "$INSTALL_DEVICE")"p1
+	export ROOT_PARTITION
+	ROOT_PARTITION=/dev/mapper/"$(busybox basename "$INSTALL_DEVICE")"p2
 }
 
 umount_install_partition() {
-	if mountpoint -q "/$INSTALL_PARTITION/"
+	if busybox mountpoint -q "/$INSTALL_PARTITION/"
 	then
 		umount /"$INSTALL_PARTITION"/
 	else

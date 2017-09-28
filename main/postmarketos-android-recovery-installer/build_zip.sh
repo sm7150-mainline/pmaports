@@ -43,7 +43,7 @@ check_whether_exists()
 # shellcheck disable=SC1091
 . ./install_options
 
-BINARIES="/sbin/cryptsetup /sbin/kpartx /usr/sbin/parted /usr/sbin/partprobe"
+BINARIES="/sbin/cryptsetup /sbin/kpartx /usr/sbin/parted /usr/sbin/partprobe /sbin/findfs"
 # shellcheck disable=SC2086
 LIBRARIES=$(lddtree -l $BINARIES | awk '/lib/ {print}' | sort -u)
 copy_files "$BINARIES" bin/

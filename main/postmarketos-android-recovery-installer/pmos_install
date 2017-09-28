@@ -52,15 +52,17 @@ ui_print "                                         "
 ui_print "postmarketOS recovery installer          "
 ui_print "                                         "
 
-ui_print "Extracting partition info from fstab..."
-extract_partition_table
 ui_print "Entering working directory..."
 cd "$WORKING_DIR"
 ui_print "Extracting files..."
-unzip -o "$ZIP"
+busybox unzip -o "$ZIP"
 mkdir /lib
 ui_print "Symlinking .so files to /lib/..."
 ln -s "$WORKING_DIR"/lib/* /lib/
+ui_print "Symlinking block devices..."
+ln -s /dev/block/* /dev/
+ui_print "Extracting partition table..."
+extract_partition_table
 ui_print "Unmounting /$INSTALL_PARTITION..."
 umount_install_partition
 ui_print "Creating partition table on $INSTALL_DEVICE..."
@@ -69,7 +71,7 @@ partition_install_device || :
 if [ "$FDE" = "true" ]
 then
 	ui_print "Generating temporary keyfile with random data..."
-	dd bs=512 count=4 if=/dev/urandom of="$WORKING_DIR"/lukskey
+	busybox dd bs=512 count=4 if=/dev/urandom of="$WORKING_DIR"/lukskey
 	ui_print "Initializing LUKS device..."
 	cryptsetup luksFormat --use-urandom -c "$CIPHER" -q "$ROOT_PARTITION" "$WORKING_DIR"/lukskey
 	ui_print "Opening LUKS partition..."
@@ -96,10 +98,19 @@ mount -t ext2 -rw "$PMOS_BOOT" /"$INSTALL_PARTITION"/boot || {
 }
 ui_print "Installing rootfs..."
 tar -xf rootfs.tar.gz -C /"$INSTALL_PARTITION"
-if [ "$FLASH_BOOTIMG" = "true" ]
+if [ "$FLASH_KERNEL" = "true" ]
 then
-	ui_print "Flashing boot.img..."
-	dd if=boot.img of="$BOOT"
+	if [ "$ISOREC" = "true" ]
+	then
+		ui_print "Flashing kernel..."
+		busybox dd if=/"$INSTALL_PARTITION"/boot/vmlinuz-"$FLAVOR" of="$KERNEL_PARTITION"
+		ui_print "Flashing initfs..."
+		busybox gunzip -c /"$INSTALL_PARTITION"/boot/initramfs-"$FLAVOR" | busybox lzop \
+			> "$INITFS_PARTITION"
+	else
+		ui_print "Flashing boot.img..."
+		busybox dd if=/"$INSTALL_PARTITION"/boot/boot.img-"$FLAVOR" of="$BOOT_PARTITION"
+	fi
 fi
 if [ "$FDE" = "true" ]
 then
