@@ -309,6 +309,15 @@ start_msm_refresher() {
 	fi
 }
 
+set_framebuffer_mode() {
+	[ -e "/sys/class/graphics/fb0/modes" ] || return
+	[ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
+
+	_mode="$(cat /sys/class/graphics/fb0/modes)"
+	echo "Setting framebuffer mode to: $_mode"
+	echo "$_mode" > /sys/class/graphics/fb0/mode
+}
+
 loop_forever() {
 	while true; do
 		sleep 1

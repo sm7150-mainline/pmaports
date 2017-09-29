@@ -24,6 +24,9 @@ for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do
 	sh "$hook"
 done
 
+# Fix for framebuffer drivers, which do not have a default mode
+set_framebuffer_mode
+
 show_splash /splash-loading.ppm.gz
 
 # Always run dhcp daemon/usb networking for now (later this should only

@@ -1,6 +1,6 @@
 pkgname=device-huawei-y530
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Huawei Ascend Y530"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -11,7 +11,6 @@ install=""
 subpackages=""
 source="
 	deviceinfo
-	initfs-hook.sh
 	90-touchscreen-dev.rules
 "
 options="!check"
@@ -19,12 +18,9 @@ options="!check"
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/initfs-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 	install -D -m644 "$srcdir"/90-touchscreen-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-touchscreen-dev.rules
 }
 
 sha512sums="3d75ec32c6021bfe52239ab279899660553ebfcc81305a02750c91b7c3952f02cf9576fbed9f59ed03e5b0513c16924e4382b6fc176a2b359961892468290fb7  deviceinfo
-8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
 23414d84cbad63472372986c6ce7db0d98a56ab4c060434b62aef420ed3d6259a968fbbdbd4400663f712e33e6bb81a8424ec7667f9959a089b29b93e15156ea  90-touchscreen-dev.rules"

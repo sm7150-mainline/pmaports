@@ -1,6 +1,6 @@
 pkgname=device-fairphone-fp2
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Fairphone 2"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -11,7 +11,6 @@ install=""
 subpackages=""
 source="
 	deviceinfo
-	initfs-hook.sh
 	90-android-touch-dev.rules
 	bcmdhd.cal
 "
@@ -24,8 +23,6 @@ build() {
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/initfs-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/bcmdhd.cal \
@@ -33,6 +30,5 @@ package() {
 }
 
 sha512sums="2048492ab05df7b1414dc082414e2c82c451c76b037e436fbf8df4059e95d56306c3239aee2eb0f336c7f7dd59a6b0e9ffccd7b1b0757e6f6d8f9e9aa122ba91  deviceinfo
-8590967fa10388a890fdfafdb1070b9ab22dc89e06a3a8834806c772191e3b67de7b914b0d68e5ddf581cee715cb90f3f24abcb8762c415ff328c6da23e55d52  initfs-hook.sh
 4e6c0b87872f278de5603d821a1e9dab8363db285d1d7fd56e900b33e8533eecb79b1fb6359e58e112e69e714a4f2aee06157b1d6f8d3e26274cd29c93cd659b  90-android-touch-dev.rules
 32652ef366694f34dec31f316a38aca96700e3a5a3eac1f8d192e3c5de7b91e480b1c0fcd8e7c80a51692dc3737020ebbb2e5d3779436e82fb18822089c63055  bcmdhd.cal"
