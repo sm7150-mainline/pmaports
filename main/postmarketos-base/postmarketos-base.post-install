@@ -40,12 +40,13 @@ write_unless_modified() {
 	echo 'LABEL="pmOS_root"	/	ext4	relatime,data=ordered	0	1'
 	echo 'LABEL="pmOS_boot"	/boot	auto	defaults		0	2'
 } | write_unless_modified /etc/fstab
-
-# Adjust welcome messages in /etc
-{
+# Set /etc/issue
+  {
 	echo 'Welcome to postmarketOS'
 	echo 'Kernel \r on an \m (\l)'
-} | write_unless_modified /etc/issue
+	echo 'setterm -blank 5 -powersave on'
+  } | write_unless_modified /etc/issue
+# Set /etc/motd
 {
 	echo 'Welcome to postmarketOS!'
 	echo ''
