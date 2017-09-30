@@ -26,26 +26,37 @@ fi
 # Add user account
 adduser -u 1000 -D -h /home/user -G users user 2>/dev/null
 
-# Adjust welcome messages /etc (unless the files have been modified)
-if ! apk audit /etc | grep -q etc/issue; then
-	{
-		echo 'Welcome to postmarketOS'
-		echo 'Kernel \r on an \m (\l)'
-	} >/etc/issue
-fi
-if ! apk audit /etc | grep -q etc/motd; then
-	{
-		echo 'Welcome to postmarketOS!'
-		echo ''
-		echo 'This distribution is based on Alpine Linux.'
-		echo 'Read both our wikis to find a large amount of how-to guides and'
-		echo 'general information about administrating and development.'
-		echo 'See <https://wiki.postmarketos.org> and <https://wiki.alpinelinux.org>.'
-		echo ''
-		echo 'You may change this message by editing /etc/motd.'
-		echo ''
-	} >/etc/motd
-fi
+write_unless_modified() {
+	# Redirect the stdin to the file unless it has been modified
+	# $1: file path
+	if ! apk audit "$(dirname "$1")" | grep -q "${1:1}"; then
+		cat > "$1"
+	fi
+}
+
+# Install /etc/fstab
+{
+	echo '# <file system> <mount point>   <type>  <options>               <dump>  <pass>'
+	echo 'LABEL="pmOS_root"	/	ext4	relatime,data=ordered	0	1'
+	echo 'LABEL="pmOS_boot"	/boot	auto	defaults		0	2'
+} | write_unless_modified /etc/fstab
+
+# Adjust welcome messages in /etc
+{
+	echo 'Welcome to postmarketOS'
+	echo 'Kernel \r on an \m (\l)'
+} | write_unless_modified /etc/issue
+{
+	echo 'Welcome to postmarketOS!'
+	echo ''
+	echo 'This distribution is based on Alpine Linux.'
+	echo 'Read both our wikis to find a large amount of how-to guides and'
+	echo 'general information about administrating and development.'
+	echo 'See <https://wiki.postmarketos.org> and <https://wiki.alpinelinux.org>.'
+	echo ''
+	echo 'You may change this message by editing /etc/motd.'
+	echo ''
+} | write_unless_modified /etc/motd
 
 # Enable syslog to SHM. Note: size is 4048KiB, which *should* be More Than Enough(TM) for all but the most chattiest of devices.
 sed s/=\"/=\""-C4048 "/  -i /etc/conf.d/syslog

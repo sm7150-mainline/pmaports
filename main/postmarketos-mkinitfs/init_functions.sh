@@ -182,7 +182,7 @@ resize_root_filesystem() {
 mount_root_partition() {
 	partition="$(find_root_partition)"
 	echo "Mount root partition ($partition)"
-	mount -w -t ext4 "$partition" /sysroot
+	mount -t ext4 -o ro "$partition" /sysroot
 	if ! [ -e /sysroot/usr ]; then
 		echo "ERROR: unable to mount root partition!"
 		show_splash /splash-mounterror.ppm.gz

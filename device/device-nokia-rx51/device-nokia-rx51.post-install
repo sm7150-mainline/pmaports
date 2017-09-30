@@ -20,11 +20,6 @@ if [ ! -f $NMC ] || [ -z "$(grep nokia-modem $NMC)" ]; then
 	echo "nokia-modem" >> /etc/modules-load.d/nokia-modem.conf
 fi
 
-# Add /boot mount point in fstab
-if [ -z "$(grep /boot /etc/fstab)" ]; then
-        echo "/dev/dm-0 /boot   ext2    defaults        0       0" >> /etc/fstab
-fi
-
 # Set RTC device for hwclock
 if [ -z "$(grep /dev/rtc0 /etc/conf.d/hwclock)" ]; then
         sed -i 's/clock_args=\"/clock_args=\" -f \/dev\/rtc/' /etc/conf.d/hwclock
