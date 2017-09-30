@@ -55,7 +55,7 @@ ui_print "                                         "
 ui_print "Entering working directory..."
 cd "$WORKING_DIR"
 ui_print "Extracting files..."
-busybox unzip -o "$ZIP"
+busybox unzip -o "$ZIP" -x rootfs.tar.gz
 mkdir /lib
 ui_print "Symlinking .so files to /lib/..."
 ln -s "$WORKING_DIR"/lib/* /lib/
@@ -97,7 +97,7 @@ mount -t ext2 -rw "$PMOS_BOOT" /"$INSTALL_PARTITION"/boot || {
 	mount -t ext4 -rw "$PMOS_BOOT" /"$INSTALL_PARTITION"/boot
 }
 ui_print "Installing rootfs..."
-tar -xf rootfs.tar.gz -C /"$INSTALL_PARTITION"
+busybox unzip -p "$ZIP" rootfs.tar.gz | busybox tar -xz -C /"$INSTALL_PARTITION"
 if [ "$FLASH_KERNEL" = "true" ]
 then
 	if [ "$ISOREC" = "true" ]
