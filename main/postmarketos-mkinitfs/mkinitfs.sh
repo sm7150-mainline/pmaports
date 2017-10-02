@@ -204,6 +204,10 @@ generate_splash_screens()
 	[ "$1" != "false" ] && clean="true" || clean="false"
 
 	splash_version=$(apk info -v | grep postmarketos-splash)
+	if [ -z "$splash_version" ]; then
+		# If package is not installed yet, use latest version from repository
+		splash_version=$(apk search -x postmarketos-splash)
+	fi
 	splash_config="/etc/postmarketos/splash.ini"
 	splash_config_hash=$(md5sum "$splash_config")
 	splash_width=${deviceinfo_screen_width:-720}
