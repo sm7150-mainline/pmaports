@@ -44,7 +44,8 @@ write_unless_modified() {
   {
 	echo 'Welcome to postmarketOS'
 	echo 'Kernel \r on an \m (\l)'
-	echo 'setterm -blank 5 -powersave on'
+	# setterm -powersave on -blank 5
+	echo -ne "\033[9;5]"
   } | write_unless_modified /etc/issue
 # Set /etc/motd
 {
