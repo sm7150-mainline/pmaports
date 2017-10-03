@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
 pkgver=3
-pkgrel=7
+pkgrel=4
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -40,6 +40,8 @@ package() {
 	install -D -m755 "$srcdir"/firmwareload.sh \
 		"$pkgdir"/usr/lib/firmwareload.sh
 
+	install -d -m755 "$pkgdir"/etc/skel
+
 	# Install swapfile
 	install -Dm755 "$srcdir"/swapfile \
 		"$pkgdir"/sbin/swapfile
@@ -55,4 +57,4 @@ sha512sums="c6de3b44bc45b9f9c641a7e34c69a481ee39b99ac0251cd28f2b3aae49c1a8d1ca44
 3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  swapfile
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  swapfile.init
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  swapfile.conf
-7b364339d6de29aabdc25e667f346fc1f9db0e8ec32f40f8e7895616aa5843ac46fdf7c52355f1540648928479017b44abae023d1b217ab586b0b16be264d731  postmarketos-base.post-install"
+f24f68b945446e9472812d49cff8369111244450ea1c8136377f64867787b2b26844f3083d7a02acd09b98625646fb48e8300cdaf60dc79615e9a0869fe84b3f  postmarketos-base.post-install"
