@@ -1,0 +1,28 @@
+pkgname=device-samsung-i9305
+pkgver=1
+pkgrel=12
+pkgdesc="Samsung Galaxy SIII LTE"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-samsung-i9305 firmware-samsung-i9305 mkbootimg"
+makedepends=""
+install="$pkgname.post-install"
+subpackages=""
+source="
+	deviceinfo
+	90-android-touch-dev.rules
+	$install
+"
+options="!check"
+
+package() {
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+sha512sums="79d2ac3c0e6942074123d6b4a3a8fa1f11e816a9bfab4ddd43fb0fee639c11601e75e190c44834d876afb6ab89e0fa6dd9a0e9aaa0fdc0d991cea463f1cce8e6  deviceinfo
+dd1e84052f503e81cdd8c7b26429900319fb358a6ac2d9f6919382a3b230897e49c0557157518fc323e79a2f75c510a98b8949c0ffb2c15e104fe8ed20c6e3ed  90-android-touch-dev.rules
+03da52725e676bc7db371cbf4b60bff8689eca469dae96a02ca7d6c194ed9f8c4ec9d19d1ac9212eeba0b73384fd213e86f2b93da94f37e5abe4cc3339281205  device-samsung-i9305.post-install"
