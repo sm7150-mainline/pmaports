@@ -1,6 +1,6 @@
 pkgname=phonon
 pkgver=4.9.1
-pkgrel=1
+pkgrel=2
 pkgdesc="KDE multimedia backend"
 url="http://phonon.kde.org/"
 arch="all"
@@ -16,7 +16,7 @@ prepare() {
 	cd "$builddir"
 	for i in $source; do
 		case $i in
-		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i ;;
 		esac
 	done
 	mkdir -p "$builddir"/build
@@ -31,13 +31,13 @@ build() {
 		  -DPHONON_BUILD_PHONON4QT5=ON \
 	      -DDBUS_INTERFACES_INSTALL_DIR=/usr/share/dbus-1/interfaces \
 	      -Wno-dev \
-	      "$builddir" || return 1
-	make || return 1
+	      "$builddir"
+	make
 }
 
 package() {
 	cd "$builddir"/build
-	make DESTDIR="$pkgdir" install || return 1
+	make DESTDIR="$pkgdir" install
 }
 
 sha512sums="a1741765071a625d9b9073d9ad1571b91cf5bfce2223bd1b034828d02dc52624587a6ec5352f3702df79f6e4201007596843fbcb9f15c9b489a858200787d728  phonon-4.9.1.tar.xz"

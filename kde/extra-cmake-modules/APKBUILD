@@ -1,6 +1,6 @@
 pkgname=extra-cmake-modules
 pkgver=5.37.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Extra CMake modules"
 url="https://projects.kde.org/projects/kdesupport/extra-cmake-modules"
 arch="noarch"
@@ -13,13 +13,13 @@ builddir="$srcdir"/${pkgname}-${pkgver}/build
 
 build() {
 	mkdir -p "$builddir" && cd "$builddir"
-	cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=OFF || return 1
-	make || return 1
+	cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=OFF
+	make
 }
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" install/fast || return 1
+	make DESTDIR="$pkgdir" install/fast
 
 	install -Dm644 ../COPYING-CMAKE-SCRIPTS \
 		"$pkgdir"/usr/share/licenses/$pkgname/COPYING

@@ -18,7 +18,7 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=0
+pkgrel=1
 
 arch="all"
 pkgdesc="Mainline Linux for pmOS supported chipsets (OMAP)"
@@ -61,7 +61,7 @@ prepare() {
 	cd "$ksrcdir"
 	if [ "$_kernver" != "$pkgver" ]; then
 		msg "Applying patch-$pkgver.xz"
-		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N || return 1
+		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N
 	fi
 
 	# first apply patches in specified order
@@ -84,7 +84,7 @@ prepare() {
 	fi
 
 	mkdir -p "$srcdir"/build
-	cp -v "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp -v "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 		silentoldconfig
 }
@@ -93,7 +93,7 @@ prepare() {
 
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
@@ -108,7 +108,7 @@ build() {
 
 package() {
 	cd "$srcdir/build/arch/${_carch}/boot"
-	
+
 	if [ "$CARCH" == "aarch64" ]; then
 		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image" \
 			"$pkgdir/boot/vmlinuz-$_flavor"
@@ -131,8 +131,7 @@ package() {
 	make -j1 $_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb" \
-		|| return 1
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
 
@@ -175,7 +174,7 @@ dev() {
 		-o -path './scripts/*' -prune -o -type f \
 		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
 		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
-		-print | cpio -pdm "$dir" || return 1
+		-print | cpio -pdm "$dir"
 	cp -a scripts include "$dir"
 	find $(find arch -name include -type d -print) -type f \
 		| cpio -pdm "$dir"

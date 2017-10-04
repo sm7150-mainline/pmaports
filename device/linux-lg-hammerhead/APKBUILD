@@ -19,7 +19,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=8
+pkgrel=9
 arch="armhf"
 pkgdesc="LineageOS kernel for Nexus 5 hammerhead"
 url="https://github.com/LineageOS/android_kernel_lge_hammerhead"
@@ -71,7 +71,7 @@ prepare() {
 	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
         mkdir -p "$srcdir"/build
-        cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+        cp "$srcdir"/$_config "$srcdir"/build/.config
 	echo "--[ silentoldconfig ]--"
         yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
                 oldconfig
@@ -81,7 +81,7 @@ prepare() {
 
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	echo "--[ menuconfig ]--"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
@@ -91,12 +91,11 @@ build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		|| return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
 	echo "--[ Build modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules || return 1
+		modules
 }
 
 package() {
@@ -111,8 +110,7 @@ package() {
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install \
-		|| return 1
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install
 }
 
 sha512sums="f02667fcdbec30f222e0be537a68de39adaee54790a7870dd406e97613f416492713c43f97685e69802acbc0628c1cb3201bb2213899988178600d6e14a4a928  linux-lg-hammerhead-1dae34efb7d2399073ca371c953aafd2ed503849.tar.gz

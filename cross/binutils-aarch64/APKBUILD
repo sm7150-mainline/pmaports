@@ -5,7 +5,7 @@
 
 pkgname="binutils-aarch64"
 pkgver=2.28
-pkgrel=2
+pkgrel=3
 pkgdesc="Tools necessary to build programs for aarch64 targets"
 url="http://www.gnu.org/software/binutils/"
 depends=""
@@ -47,14 +47,13 @@ build() {
             --enable-deterministic-archives \
             --disable-multilib \
             --disable-werror \
-            --disable-nls \
-        || return 1
+            --disable-nls
         make
 }
 
 package() {
         cd "$builddir"
-        make install DESTDIR="$pkgdir" || return 1
+        make install DESTDIR="$pkgdir"
 
         # remove man, info folders
         rm -rf "$pkgdir"/usr/share

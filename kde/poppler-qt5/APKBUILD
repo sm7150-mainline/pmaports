@@ -1,7 +1,7 @@
 pkgname=poppler-qt5
 pkgdesc="Poppler Qt5 bindings"
 pkgver=0.57.0
-pkgrel=1
+pkgrel=2
 arch="all"
 license="GPL"
 depends="poppler"
@@ -26,8 +26,7 @@ build() {
 		--enable-zlib \
 		--enable-poppler-glib \
 		--disable-poppler-qt4 \
-		--enable-poppler-qt5 \
-		|| return 1
+		--enable-poppler-qt5
 
 	sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0 /g' libtool
 

@@ -1,6 +1,6 @@
 pkgname=gtk+2.0-maemo
 pkgver=2.24.31
-pkgrel=1
+pkgrel=2
 subpkg=gtk-update-icon-cache
 pkgdesc="The GTK+ Toolkit (v2)"
 url="http://www.gtk.org/"
@@ -75,7 +75,7 @@ prepare() {
 			*.patch | *.diff)
 				filename=`basename "$i"`
 				msg $filename
-				patch -p1 -i "$srcdir/$filename" || return 1
+				patch -p1 -i "$srcdir/$filename"
 			;;
 		esac
 	done
@@ -96,33 +96,32 @@ build() {
 		--localstatedir=/var \
 		--with-xinput=yes \
 		--without-libjasper \
-		--with-included-loaders=png \
-		|| return 1
+		--with-included-loaders=png
 	# https://bugzilla.gnome.org/show_bug.cgi?id=655517
-	sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool || return 1
-	make || return 1
+	sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+	make
 }
 
 package() {
 	cd "$_builddir"
-	make DESTDIR="$pkgdir" install || return 1
+	make DESTDIR="$pkgdir" install
 }
 
 dev() {
 	mkdir -p "$subpkgdir"/usr/bin "$subpkgdir"/usr/share/
-	mv "$pkgdir"/usr/share/gtk-2.0 "$subpkgdir"/usr/share/ || return 1
+	mv "$pkgdir"/usr/share/gtk-2.0 "$subpkgdir"/usr/share/
 	default_dev
 	replaces="gtk+2.0"
 	mv "$pkgdir"/usr/bin/gtk-builder-convert \
 		"$pkgdir"/usr/bin/gtk-demo \
-		"$subpkgdir"/usr/bin || return 1
+		"$subpkgdir"/usr/bin
 }
 
 icon_cache() {
 	depends="hicolor-icon-theme"
 
 	mkdir -p "$subpkgdir"/usr/bin
-	mv "$pkgdir"/usr/bin/"$subpkg" "$subpkgdir"/usr/bin || return 1
+	mv "$pkgdir"/usr/bin/"$subpkg" "$subpkgdir"/usr/bin
 }
 
 sha512sums="75b846661308d94b5236e7e1c367deabf57753792ca87e92f9769822dd5ec90e00cd8d5574adcc12162e3702e1ae6dc152278a1d218f9bd9e4d1c8dc1dd520c1  gtk+-2.24.31.tar.xz

@@ -21,7 +21,7 @@ case $pkgver in
 	*.*.*) _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=4
+pkgrel=5
 arch="armhf"
 pkgdesc="LineageOS 14.1 kernel for OnePlus One (bacon)"
 url="https://github.com/LineageOS/android_kernel_oneplus_msm8974"
@@ -72,7 +72,7 @@ prepare() {
 	cp -v "$srcdir"/compiler-gcc6.h "$ksrcdir"/include/linux/
 
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 
 	echo "--[ silentoldconfig ]--"
 	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
@@ -81,7 +81,7 @@ prepare() {
 
 # this is so we can do `abuild menuconfig` to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 
 	echo "--[ menuconfig ]--"
 	make ARCH="$_carch" menuconfig
@@ -93,13 +93,12 @@ build() {
 	unset LDFLAGS
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		|| return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
 
 	echo "--[ Build modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules || return 1
+		modules
 
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }
@@ -120,8 +119,7 @@ package() {
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install \
-		|| return 1
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install
 }
 
 sha512sums="94d0048439e70b11637a7a122e8652d4e997ee413d6e54ea0aed7f2c68e137fcc19b6784dcc0dedf0b80240ba16060634b517d5865ec6c7222e4dea44d3c059a  linux-oneplus-bacon-dd65620ba04a8c6ba0e30553c9c95388daefae02.tar.gz

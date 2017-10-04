@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=6
+pkgrel=7
 arch="armhf"
 pkgdesc="T2M flame kernel"
 url="https://github.com/mozilla-b2g/codeaurora_kernel_msm"
@@ -76,13 +76,13 @@ prepare() {
 	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 		silentoldconfig
 }
 
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
@@ -92,8 +92,8 @@ build() {
 	unset LDFLAGS
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y DTC_FLAGS="-p 1024" \
-		|| return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+    CONFIG_NO_ERROR_ON_MISMATCH=y DTC_FLAGS="-p 1024"
 
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }

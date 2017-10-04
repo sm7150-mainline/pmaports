@@ -22,7 +22,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=3
+pkgrel=4
 arch="armhf"
 pkgdesc="Sony Xperia Z3 Compact kernel"
 url="https://github.com/sonyxperiadev/kernel"
@@ -70,10 +70,10 @@ prepare() {
 	fi
 
 	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 		silentoldconfig
 }
@@ -82,7 +82,7 @@ prepare() {
 
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
@@ -92,8 +92,7 @@ build() {
 	unset LDFLAGS
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
-		|| return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
 }
 
 package() {

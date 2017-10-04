@@ -9,7 +9,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=2
+pkgrel=3
 arch="armhf"
 pkgdesc="Nexus 7 2013 WIFI mainline kernel"
 url="https://git.linaro.org/people/john.stultz/flo.git/log/?h=flo-v4.11"
@@ -36,14 +36,14 @@ prepare() {
 	default_prepare
 
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 	silentoldconfig
 }
 
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
@@ -55,25 +55,23 @@ build() {
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
 		CFLAGS_MODULE=-fno-pic \
-		zImage modules qcom-apq8064-asus-nexus7-flo.dtb \
-		|| return 1
+		zImage modules qcom-apq8064-asus-nexus7-flo.dtb
 }
 
 package() {
 	cd "$srcdir/build/arch/arm/boot"
 	cat zImage dts/qcom-apq8064-asus-nexus7-flo.dtb > zImage-dtb
-	
+
 	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-	
+
 	cd "$srcdir"/build
 	make -j1 modules_install \
 		ARCH="$_carch" \
-		INSTALL_MOD_PATH="$pkgdir" \
-		|| return 1
+		INSTALL_MOD_PATH="$pkgdir"
 }
 sha512sums="13c16e580a960c4c4ed4daf13f1939909617cb91455d1c61323ddf1b98a8f492161a6be6ddcf317dd16786c5ef4f98f77175c9972ce7aae99f7e6f0570a665b6  linux-asus-flo-26da7a1e84232d3f0fd89e2dae2e48e77db00873.tar.gz
 1c32a6190d0561f2144fc5922477f24a2390464773d9100da5cd00df57639dec3071dc5c7c94ed30435c00d372c41bc40933614ccd497e394fe1d14116735eb4  config-asus-flo.armhf"

@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 arch="armhf"
 pkgdesc="LineageOS kernel for Fairphone 2"
 url="https://github.com/LineageOS/android_kernel_fairphone_msm8974"
@@ -75,7 +75,7 @@ prepare() {
 	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 	echo "--[ silentoldconfig ]--"
 	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 		oldconfig
@@ -85,7 +85,7 @@ prepare() {
 
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	echo "--[ menuconfig ]--"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
@@ -95,12 +95,11 @@ build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		|| return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
 	echo "--[ Build modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules || return 1
+		modules
 
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }
@@ -120,8 +119,7 @@ package() {
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" modules_install \
-		|| return 1
+		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
 sha512sums="acddc069c3e8aa5b58c82eddc6e335946695e618fe5756e81a730cbcfbba0fd256b6e46024c46a66f8551d67608edd6d55b5a7cfa8ea98b064ca1ddaa1d7238d  8c73c363d1cd11624ddda9a1ef08b9dc7a5569e4.zip

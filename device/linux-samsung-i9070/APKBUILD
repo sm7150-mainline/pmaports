@@ -26,7 +26,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=6
+pkgrel=7
 arch="armhf"
 pkgdesc="Samsung Galaxy S Advance kernel from Epirex"
 url="https://github.com/Epirex/Samsung_STE_Kernel"
@@ -83,22 +83,22 @@ prepare() {
 	cp -v /usr/$(arch_to_hostspec $arch)/bin/busybox.static \
 		"$ksrcdir"/usr/u8500_initramfs_files/busybox
 
-	# use custom init script in the initramfs which loads the initramfs from 
+	# use custom init script in the initramfs which loads the initramfs from
 	# the kernel2 partition ("isorec")
-	cp -v "$srcdir"/init "$ksrcdir"/usr/u8500_initramfs_files/init || return 1
+	cp -v "$srcdir"/init "$ksrcdir"/usr/u8500_initramfs_files/init
 
 	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 		silentoldconfig
 }
 
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	echo "--[ menuconfig ]--"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
@@ -110,15 +110,14 @@ build() {
 
 	echo "--[ Build kernel ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" \
-		|| return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine"
 
 	echo "--[ Build modules ]--"
-	# the 'no-pic' flag is necessary to avoid the 
+	# the 'no-pic' flag is necessary to avoid the
 	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
 	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules || return 1
+		modules
 }
 
 package() {
@@ -135,8 +134,7 @@ package() {
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install \
-		|| return 1
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install
 }
 
 sha512sums="bb8218d803ec27f983449a43d14df75122311609a39e5b57095f4e8933752a2699fa0d4df1674aeee7d6e3a439551dacc9af3cab26b6e3e71f0441a4f16693df  linux-samsung-i9070-ac7219c4b8dcec7bc5a598d42c6be0db4aa36332.tar.gz

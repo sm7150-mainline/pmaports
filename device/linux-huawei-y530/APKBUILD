@@ -21,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 arch="armhf"
 pkgdesc="Kernel for Huawei MSM8x1x devices"
 url="https://github.com/PieroV/${_repository}"
@@ -78,10 +78,10 @@ prepare() {
 	fi
 
 	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/" || return 1
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 		silentoldconfig
 }
@@ -90,7 +90,7 @@ prepare() {
 
 # this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build || return 1
+	cd "$srcdir"/build
 	echo "--[ menuconfig ]--"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
@@ -102,15 +102,14 @@ build() {
 
 	echo "--[ Build kernel ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		|| return 1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
 
 	echo "--[ Build modules ]--"
-	# the 'no-pic' flag is necessary to avoid the 
+	# the 'no-pic' flag is necessary to avoid the
 	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
 	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules || return 1
+		modules
 
 	echo "--[ Generate master DTB ]--"
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
@@ -134,8 +133,7 @@ package() {
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install \
-		|| return 1
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install
 }
 
 sha512sums="b88fe4981fb35d289977c9a7ca6b041ec8d09380250485d7b3f3e1e1ef51ba500db2e1aecd222aa8c140a3b9ec5ed2fa638b68ddf446efe81f278aa8b8e7871f  linux-huawei-y530-1880463bf10c4c2d2b348698614a613902184e22.tar.gz
