@@ -46,16 +46,6 @@ get_modules_by_globs()
 		kernel/arch/*/crypto/*
 		kernel/drivers/md/dm-crypt.ko
 
-		# kms.modules
-		kernel/drivers/char/agp
-		kernel/drivers/gpu
-		kernel/drivers/i2c
-		kernel/drivers/video
-		kernel/arch/x86/video/fbdev.ko
-
-		# mmc.modules
-		kernel/drivers/mmc
-
 		# required for modprobe
 		modules.*
 	"
