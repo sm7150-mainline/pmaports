@@ -1,0 +1,34 @@
+pkgname=postmarketos-ui-hildon
+pkgver=1
+pkgrel=0
+pkgdesc="Lightweight desktop, optimized for single-touch touchscreen devices"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="GPL3+"
+depends="
+	dbus-x11
+	hildon-desktop
+	hildon-theme-alpha
+	mesa
+	xorg-server
+"
+makedepends=""
+install="$pkgname.post-install"
+subpackages=""
+source="start_hildon.sh xinitrc_hildon.sh $install"
+options="!check"
+
+package() {
+	# Default theme
+	mkdir -p "$pkgdir"/usr/share/themes
+	ln -s /usr/share/themes/alpha "$pkgdir"/usr/share/themes/default
+
+	# Autostart via autologin on TTY0 (until we have a display manager #656)
+	install -D -m644 "$srcdir"/start_hildon.sh \
+		"$pkgdir"/etc/profile.d/start_hildon.sh
+	install -D -m644 "$srcdir"/xinitrc_hildon.sh \
+		"$pkgdir"/etc/postmarketos-ui/xinitrc_hildon.sh
+}
+sha512sums="e50c2bd90ef7915278eb5071d3f3ce26794e620617a6d9b2c49a7a1df1da2809437e6d20387bbb61f2ae471c5610ad1e1a30db0d5272f081980764a7c06c221f  start_hildon.sh
+5ef5710bee7bde99e1f240eb8873239c452b55c6dc943930e181d091835824094cf56bf29ae1b34d792ba0ce27f76e30ea69f3c125dda3bf286eaaaba8c8e6ae  xinitrc_hildon.sh
+a091157afccf19d25dd86d52edf819435da01bb8933f45f5a207e4085b044b80e1790b5e2bb02dbd8f479fdf9d54b06d388a1a1a2995adf9da7d3000449a7f7f  postmarketos-ui-hildon.post-install"
