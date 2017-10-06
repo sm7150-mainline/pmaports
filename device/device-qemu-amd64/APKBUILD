@@ -1,13 +1,13 @@
 pkgname=device-qemu-amd64
 pkgver=1
-pkgrel=5
+pkgrel=6
 pkgdesc="Simulated device in qemu with an x86 platform"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
 depends="linux-postmarketos"
 makedepends=""
-subpackages=""
+subpackages="$pkgname-mesa $pkgname-x11"
 source="deviceinfo interfaces"
 options="!check"
 
@@ -16,6 +16,18 @@ package() {
 		"$pkgdir"/etc/deviceinfo
 	install -D -m644 "$srcdir"/interfaces \
 		"$pkgdir"/etc/network/interfaces
+}
+
+mesa() {
+	install_if="$pkgname mesa-glapi"
+	depends="mesa-dri-swrast"
+	mkdir "$subpkgdir"
+}
+
+x11() {
+	install_if="$pkgname xorg-server"
+	depends="xf86-video-qxl"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="511fe8d2f1e4cf90d96a321568220ecf98bffd44b96339b200633a4f3c45b6b58e646c0971f82fbcd9829e4b66e62942a6ecc55ea03dd228ab76984b0ff0b92d  deviceinfo
