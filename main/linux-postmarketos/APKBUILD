@@ -18,7 +18,7 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=0
+pkgrel=1
 
 arch="all"
 pkgdesc="Mainline Linux for pmOS supported chipsets (OMAP)"
@@ -86,7 +86,7 @@ prepare() {
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+		olddefconfig
 }
 
 
@@ -152,7 +152,7 @@ dev() {
 	mkdir -p "$dir"
 	cp "$srcdir"/$_config "$dir"/.config
 	make -j1 -C "$srcdir"/linux-$_kernver O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig prepare modules_prepare scripts
+		olddefconfig prepare modules_prepare scripts
 
 	# needed for 3rd party modules
 	# https://bugzilla.kernel.org/show_bug.cgi?id=11143
