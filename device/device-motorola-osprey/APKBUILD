@@ -1,0 +1,29 @@
+pkgname=device-motorola-osprey
+pkgver=1
+pkgrel=0
+pkgdesc="Motorola Moto G 3rd gen. (2015)"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-motorola-osprey mkbootimg"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules fb-workaround.sh"
+options="!check"
+
+package() {
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -D -m644 "$srcdir"/fb-workaround.sh \
+		"$pkgdir"/etc/profile.d/00-fb-workaround.sh
+}
+
+sha512sums="4ccdaad16c5619218d76c4790a2a2baca8af04ac45da58b4ca399196a9f942f248312718c696fc89278703143a991a17c058cb7839f4ab200401f132146135f7  deviceinfo
+3e9d6bf1bd45328104b91b724472ac0e39cb595fb87f84b6793527019477a73234ae37d33e99419bc5810c018402ea6e68e76c26ace112ee11efc416ac0a7398  initfs-hook.sh
+0a0d4ec3561ae87fc0f4f9c60645762ce2cf20262cab2ff6e120664157363282dec47f018e2d3e9f4c23c1a0d5a49eb64c0c977c2c6521b6b5058b9349e4e19d  90-android-touch-dev.rules
+857da7bfe3a44d960ca1c05f8646eedd16140fa339f3b0421353f6cdb4b42f8e5c6457522e70c2eb2f76717404c688c0d92525b9d1e99895f3febb5ae3687420  fb-workaround.sh"
