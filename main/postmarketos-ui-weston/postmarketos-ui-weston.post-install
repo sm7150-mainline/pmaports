@@ -39,7 +39,7 @@ if [ ! -f $weston_config ]; then
 fi
 
 # Autologin on tty1, let busybox autoconfigure 2-6
-autologin="root"
+autologin="user"
 for i in 1 2 3 4 5 6; do
 	old="^tty$i::respawn:/sbin/getty 38400 tty$i"
 	new="# tty$i::respawn:/sbin/getty 38400 tty$i"
@@ -47,4 +47,6 @@ for i in 1 2 3 4 5 6; do
 	sed -i -e "s.$old.$new.g" /etc/inittab
 done
 
-
+# Create weston-launch group and add user to it
+[ $(getent group weston-launch) ] || groupadd weston-launch
+usermod -a -G weston-launch user

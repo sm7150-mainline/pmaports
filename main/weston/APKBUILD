@@ -7,7 +7,7 @@
 pkgname=weston
 pkgver=9999
 _pkgver=3.0.0
-pkgrel=6
+pkgrel=7
 _libname=lib$pkgname
 _libdir=$_libname-${_pkgver%%.*}
 pkgdesc="The reference Wayland server"
@@ -22,7 +22,7 @@ _client="info terminal wcap-decode"
 _backend="backend-drm backend-fbdev backend-headless
 	backend-rdp backend-x11 backend-wayland
 	"
-options="!check"
+options="!check suid"
 
 for _sub in $_cms $_shell $_client $_backend; do
 	subpackages="$subpackages $pkgname-$_sub:_sub"
@@ -85,6 +85,9 @@ clients() {
 	pkgdesc="Weston example clients"
 	mkdir -p "$subpkgdir"/usr/bin
 	mv "$pkgdir"/usr/bin/$pkgname-* "$subpkgdir"/usr/bin
+
+	# Set SUID bit to run it with proper credentials
+	chmod +s "$subpkgdir"/usr/bin/weston-launch
 }
 
 xwayland() {
