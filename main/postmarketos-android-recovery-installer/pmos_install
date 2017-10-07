@@ -77,12 +77,12 @@ then
 	ui_print "Opening LUKS partition..."
 	cryptsetup luksOpen -d "$WORKING_DIR"/lukskey "$ROOT_PARTITION" pm_crypt
 	ui_print "Formatting LUKS partition..."
-	make_ext4fs -L 'pmOS_root' /dev/mapper/pm_crypt
+	mkfs.ext4 -L 'pmOS_root' /dev/mapper/pm_crypt
 	ui_print "Mounting LUKS partition..."
 	mount -t ext4 -rw /dev/mapper/pm_crypt /"$INSTALL_PARTITION"
 else
 	ui_print "Formatting root partition..."
-	make_ext4fs -L 'pmOS_root' "$ROOT_PARTITION"
+	mkfs.ext4 -L 'pmOS_root' "$ROOT_PARTITION"
 	ui_print "Mounting root partition..."
 	mount -t ext4 -rw "$ROOT_PARTITION" /"$INSTALL_PARTITION"
 fi
@@ -93,7 +93,7 @@ mkdir /"$INSTALL_PARTITION"/boot
 mount -t ext2 -rw "$PMOS_BOOT" /"$INSTALL_PARTITION"/boot || {
 	ui_print "Failed to format/mount ext2 partition."
 	ui_print "Trying ext4..."
-	make_ext4fs -L 'pmOS_boot' "$PMOS_BOOT"
+	mkfs.ext4 -L 'pmOS_boot' "$PMOS_BOOT"
 	mount -t ext4 -rw "$PMOS_BOOT" /"$INSTALL_PARTITION"/boot
 }
 ui_print "Installing rootfs..."
