@@ -23,6 +23,10 @@ if [ "${deviceinfo_msm_refresher}" = "true" ]; then
 	rc-update -q add msm-fb-refresher boot
 fi
 
+# Prime swclock with a reasonable date/time on first boot
+mkdir -p /run/openrc
+touch /run/openrc/shutdowntime
+
 write_unless_modified() {
 	# Redirect the stdin to the file unless it has been modified
 	# $1: file path
