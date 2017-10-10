@@ -27,7 +27,7 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 		) &
 
 
-		weston-launch ${WESTON_OPTS} >/tmp/weston.log 2>&1
+		weston-launch -- ${WESTON_OPTS} >/tmp/weston.log 2>&1
 
 		# In case of failure, restart after 1s
 		sleep 1
