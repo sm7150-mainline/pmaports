@@ -8,6 +8,7 @@
 # - apply patches to compile with gcc6
 # - enable devtmpfs (needed for udev -> touch support in weston)
 # - enable udev required options (https://wiki.gentoo.org/wiki/Udev#Kernel)
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=htc
 _flavor=htc-bravo
@@ -20,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=5
+pkgrel=6
 arch="armhf"
 pkgdesc="HTC Desire kernel from spezi77"
 url="https://github.com/spezi77/android_kernel_htc_qsd8k_3.0"
@@ -104,5 +105,5 @@ package() {
 }
 
 sha512sums="94929945d6fcb4428f320325ced207a9888cd758357766ef914c4ca2d5cea4b9cced77275463dac316591ba942e6e1514fec8c1f8e11c8324155116785ffb277  linux-htc-bravo-4bc19919f805777947c243e6c2ed41ece530488b.tar.gz
-192662dc5793b5c5b8c6c4dceb00eaf9d890bdec824319221540df8af855b7c5dae13b1b8285ae4ae8b1eae213b41d6dbb48bff246966e55ff116fdd08869d64  config-htc-bravo.armhf
+742a9ebbc2ba0fae46e2c8a185b4b68b1f14b3c3c15f42813836afb0be7607967ce56c35137c0c6731b9444299306f3c86683463b6b904171d33b08dd8263780  config-htc-bravo.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"

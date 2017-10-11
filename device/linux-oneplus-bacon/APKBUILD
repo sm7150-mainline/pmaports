@@ -9,6 +9,7 @@
 # - enable loadable module support
 # - enable devtmpfs (needed for udev -> touch support in weston)
 # - enable virtual terminal
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=oneplus
 _flavor=oneplus-bacon
@@ -21,7 +22,7 @@ case $pkgver in
 	*.*.*) _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=5
+pkgrel=6
 arch="armhf"
 pkgdesc="LineageOS 14.1 kernel for OnePlus One (bacon)"
 url="https://github.com/LineageOS/android_kernel_oneplus_msm8974"
@@ -123,6 +124,6 @@ package() {
 }
 
 sha512sums="94d0048439e70b11637a7a122e8652d4e997ee413d6e54ea0aed7f2c68e137fcc19b6784dcc0dedf0b80240ba16060634b517d5865ec6c7222e4dea44d3c059a  linux-oneplus-bacon-dd65620ba04a8c6ba0e30553c9c95388daefae02.tar.gz
-2225f3e2f82a6294a371d5a7355470c3397aa3d31d02505623087cb8365a273388abc7771cf00a602e472e7512ff8a3c90f394f7f6900f941d9b245dc7fbf632  config-oneplus-bacon.armhf
+dd618982134004dd8a97465b187094feb9ea8ac2d01d917ba553950809889dd14c1c513dcd408f9fa78c33401b20d9c6a26a47d30feb55f8a3415dc3ec300f56  config-oneplus-bacon.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"

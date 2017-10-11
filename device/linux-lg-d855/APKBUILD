@@ -8,6 +8,7 @@
 # Kernel config based on: arch/arm/configs/lineageos_d855_defconfig
 # Changes:
 # - enable devtmpfs (needed for udev -> touch support in weston)
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=lge
 _flavor=lg-d855
@@ -20,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=6
+pkgrel=7
 arch="armhf"
 pkgdesc="LG G3 kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_lge_g3"
@@ -101,6 +102,6 @@ package() {
 }
 
 sha512sums="a2e7c0575a677846f734804a462729ca97505101e9090231aeeae5c863b9d1a65d227f04a302157ee9579336be4f8b589f77cb7916ee7d8fc8b8d7fb97295374  linux-lg-d855-efce7b0879c76224f5bf37d8a1025eaed99192b0.tar.gz
-d99b0ce33d5a4e7cba98c6503d1199139f169dde5269f806873d809629ac4f0897dc88dafa18b0fd32771631e0ebb37dc7289b06e7a7515394c283c726e3081e  config-lg-d855.armhf
+89931df9f955d4d0e9a1ab5e7d9324b5c6f3ced74265f9477a2d891757e01a1825908a7c3ada86bcd82f3cf427a27f82371752cdf2bb8d82da4d8ae62b9e4573  config-lg-d855.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"

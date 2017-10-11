@@ -2,6 +2,7 @@
 # Kernel config based on: arch/arm/configs/lineageos_w55ds_defconfig
 # Changes:
 # - enable devtmpfs (needed for udev -> touch support in weston)
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=lg
 _flavor=lg-d285
@@ -14,7 +15,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=0
+pkgrel=1
 arch="armhf"
 pkgdesc="LineageOS kernel for LG L65"
 url="https://github.com/LineageOS/android_kernel_lge_msm8226"
@@ -111,7 +112,7 @@ package() {
 }
 
 sha512sums="d201e20557edea08947f10be1465560d292522f07099e2f8927164766da57e4f8a2c3fcd3e3ed427e856a86afe4fb3a4233753e19d4b7cb96b8258c6355be9f0  linux-lg-d285-75a583b12772acf3a6e7422cf781ddd7a9e9a5c5.tar.gz
-a2f53fc21d81f788e35da40482143ef746b7cbc0b45614c489c06736b58acc9f0c6426677f43c2c533ccf98a993228c709b5ba4b782c86d0ff40cf36da4675cd  config-lg-d285.armhf
+bcc9fd9f48a1eab07d2a928241860d032edf44cf019834b8ccf24adf604cbcebcd66b73326830b7ab970a25b723b3a708e0baecd308374496f90491919a64266  config-lg-d285.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"

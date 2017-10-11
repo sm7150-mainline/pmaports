@@ -8,6 +8,7 @@
 # Kernel config changes, based on: arch/arm/configs/fusion3_yuga_defconfig
 # - enable devtmpfs (needed for udev -> touch support in weston)
 # - set CONFIG_USB_ETH=y and CONFIG_USB_ETH_RNDIS=y (needed for ethernet over USB (rndis))
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=sony
 _flavor=sony-yuga
@@ -20,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=3
+pkgrel=4
 arch="armhf"
 pkgdesc="Sony Xperia Z kernel"
 url="https://github.com/LineageOS/android_kernel_sony_apq8064"
@@ -105,7 +106,7 @@ package() {
 }
 
 sha512sums="a20ab3f27b43999287ebef5ee150b1652ebc4996a2670079ff86a9ca07bd69555dbd1efb564ff767fb2bf22673dd609817aaded4731b09383d74c68887f545f4  linux-sony-yuga-f164c6d1016cb34ac90c053acbebe6e47fdd400f.tar.gz
-fdb80d0b4c45fbd5e492abb9946752d834a4238e341aa57323e0b28f4a77fdbe5801ad8511c38c8b81ec6b364859f40496060dcca7e7306a0e95e522dcffbb94  config-sony-yuga.armhf
+4a38b0e6828311095401a9337ff22b290b95865e07fd7c321e1e54c343659ee0fb01606a66beb603994c5a7701628682dbda6c92e02fad437d5f1d4f5a55efe8  config-sony-yuga.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 f7e31cfe422696922aec52002e56c58103183966edee3bb8e1995d33f8d37b07c32280a8ecc213874e358a6ff367418556a4542fba7e3c17e4b8e82e05c3a543  psmouse_base.patch

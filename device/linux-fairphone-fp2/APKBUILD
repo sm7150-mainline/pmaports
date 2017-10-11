@@ -8,6 +8,7 @@
 # Kernel config based on: arch/arm/configs/fairphone-perf_defconfig
 # Changes:
 # - enable devtmpfs (needed for udev -> touch support in weston)
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=fairphone
 _flavor=fairphone-fp2
@@ -20,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=2
+pkgrel=3
 arch="armhf"
 pkgdesc="LineageOS kernel for Fairphone 2"
 url="https://github.com/LineageOS/android_kernel_fairphone_msm8974"
@@ -123,7 +124,7 @@ package() {
 }
 
 sha512sums="acddc069c3e8aa5b58c82eddc6e335946695e618fe5756e81a730cbcfbba0fd256b6e46024c46a66f8551d67608edd6d55b5a7cfa8ea98b064ca1ddaa1d7238d  8c73c363d1cd11624ddda9a1ef08b9dc7a5569e4.zip
-f54d39a033b0841f5c4f17352eeae37839ac3d271914ef1ce8553f96144ab9169f2a14eff7537aeb49ce39dfd975cebd51193f419dbb74244a6bbdfa8b5cd301  config-fairphone-fp2.armhf
+dab9edc5993187ac2421c299d2c1cea8bf149373dfc6bd6523aa13c48f0fd0b487b4a4d49f9cf6fad39f8d5f30444de925740e426821fbe1da402d1ad3fa37ef  config-fairphone-fp2.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 5c49f6ff6773a7dc3067d2b1359648fe7a9f758b6c068d6fa69d9aaf24a291ba8022c960317d926aabc11d020a71b20c4e81a6fcf9b21ef66d9b6d065bae23e9  00_Input-lifebook-use-static-inline-instead-of-inline-i.patch

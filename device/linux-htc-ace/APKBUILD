@@ -7,6 +7,7 @@
 # Changes:
 # - apply patches to compile
 # - enable devtmpfs (needed for udev -> touch support in weston)
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=htc
 _flavor=htc-ace
@@ -19,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=4
+pkgrel=5
 arch="armhf"
 pkgdesc="HTC Desire kernel from OpenDesireProject"
 url="https://github.com/OpenDesireProject/android_kernel_htc_msm7x30"
@@ -104,6 +105,6 @@ package() {
 }
 
 sha512sums="72fc35e1c7fe848ae5c1139176d4c45ef042d494403ab38e5fa98e3620fce3253ffc4bf7151738c7dd47967f2ad96b034a9365dc68f1c025aef87e985d5b1776  linux-htc-ace-887cd64b8361ac89ac56810460947a537112bdc9.tar.gz
-7c9e04eb5873b39b1b398cb9c5e29dc4e6c0a80f1cf83abe5cc403e278ae5c850921c2d783b09d21cd46652a581dc4fd9924efdeae4a1add35e803d78f7de6a5  config-htc-ace.armhf
+cc88a2ececb2875ea3c6190e7fbaa280da78090909c897fc89118ca2f4f0320fb024ae8851f001cd8ef2769c3b0353d71fb8f1d4533f54e0655f7c3b9f496c82  config-htc-ace.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 2962e853aea3bec3cfea762584a6722023c5c9041994065a7ee75b6c4584121890d6dd1ac74317a2bb8069bff49583a9cccd73cca539665a76713465e05a2cf6  02_gpu-msm-fix-gcc5-compile.patch"

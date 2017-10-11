@@ -8,6 +8,7 @@
 # - enable devtmpfs (needed for udev -> touch support in weston)
 # - disable input mouse driver
 # - enable generation of dtb
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=huawei
 _flavor=huawei-y530
@@ -21,7 +22,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=2
+pkgrel=3
 arch="armhf"
 pkgdesc="Kernel for Huawei MSM8x1x devices"
 url="https://github.com/PieroV/${_repository}"
@@ -137,7 +138,7 @@ package() {
 }
 
 sha512sums="b88fe4981fb35d289977c9a7ca6b041ec8d09380250485d7b3f3e1e1ef51ba500db2e1aecd222aa8c140a3b9ec5ed2fa638b68ddf446efe81f278aa8b8e7871f  linux-huawei-y530-1880463bf10c4c2d2b348698614a613902184e22.tar.gz
-cd782099e7174fc132aa35b96e9ffa5ee25f12821eaaecbcfafbd79d8a954ee2ae6d98caf4a6838de64e1f64253eebeacd6176c0478f517f9956d6fa9279c809  config-huawei-y530.armhf
+101504dfdbb13cc9acdce816ecdd6566bb03d1411896dba02495c9fe78bf89f6c36d8703922923b52c99866d020832a91206b3e3baa778570789cad6780d437d  config-huawei-y530.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch
