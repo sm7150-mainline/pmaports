@@ -12,6 +12,7 @@
 # - enable devtmpfs (needed for udev -> touch support in weston)
 # - change compression from CONFIG_KERNEL_LZMA=y to
 #	CONFIG_KERNEL_GZIP=y (so it works with busybox)
+# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
 _vendor=samsung
 _flavor=samsung-i9100
@@ -24,7 +25,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=9
+pkgrel=10
 arch="armhf"
 pkgdesc="Samsung Galaxy SII kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_samsung_smdk4412"
