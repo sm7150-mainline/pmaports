@@ -70,5 +70,9 @@ if ! grep -q Dwext /etc/conf.d/wpa_supplicant; then
 fi
 touch /etc/wpa_supplicant/wpa_supplicant.conf
 
+# Enable the 'wheel' group
+sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
+
 # Add user to video group for proper framebuffer permissions
-usermod -a -G video user
+username="$(getent passwd 1000 | cut -d ":" -f 1)"
+usermod -a -G video "$username"

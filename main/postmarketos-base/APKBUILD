@@ -24,7 +24,6 @@ makedepends=""
 install="$pkgname.post-install"
 subpackages="$pkgname-x11"
 source="
-	sudoers
 	firmwareload.sh
 	50-firmware.rules
 	swapfile/swapfile
@@ -34,8 +33,6 @@ source="
 options="!check"
 
 package() {
-	install -D -m644 "$srcdir"/sudoers \
-		"$pkgdir"/etc/sudoers.d/postmarketos
 	install -D -m644 "$srcdir"/50-firmware.rules \
 		"$pkgdir"/etc/udev/rules.d/50-firmware.rules
 	install -D -m755 "$srcdir"/firmwareload.sh \
@@ -65,10 +62,9 @@ x11() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="c6de3b44bc45b9f9c641a7e34c69a481ee39b99ac0251cd28f2b3aae49c1a8d1ca448f4936b7942b1a8b8f7c18a5415c938098765ed8cf08456543800160e64b  sudoers
-38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  firmwareload.sh
+sha512sums="38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  firmwareload.sh
 0b098828080055d3646ea54891cb0e1b578cbc30f5e16f7284f2814c08192f18079a38fb686d192715ae6a3d2cd6625d9e3cf99f234a6f0d94088bb0cb2ce43d  50-firmware.rules
 3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  swapfile
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  swapfile.init
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  swapfile.conf
-8b022c5b45d02cbce64137e085838e7d7748b2f3c563faa1a1b02f91472cef96ad254f3f5ee35d80c982d80bd5959ceab0f8127534f7742134ca07a3d595be34  postmarketos-base.post-install"
+4f00ad8ce8533fb884b083c094adada26ef845718a229e3ae94986997997297d9bec073babbe8829c29d28aaf31a01ebf28c041395ae7d8631be574b88059e34  postmarketos-base.post-install"

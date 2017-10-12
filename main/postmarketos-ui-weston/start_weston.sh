@@ -12,7 +12,7 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 
 	# Weston autostart on tty1 (Autologin on tty1 is enabled in
 	# /etc/inittab by postmarketos-base post-install.hook)
-	if [ "$(id -u)" = "12345" ] && [ $(tty) = "/dev/tty1" ]; then
+	if [ "$(id -u)" = "1000" ] && [ $(tty) = "/dev/tty1" ]; then
         if test -n "${deviceinfo_weston_pixman_type}"; then
             WESTON_OPTS=" --pixman-type=${deviceinfo_weston_pixman_type}"
         fi
