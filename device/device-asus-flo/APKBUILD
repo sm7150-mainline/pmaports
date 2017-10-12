@@ -1,26 +1,29 @@
 pkgname=device-asus-flo
 pkgver=0
-pkgrel=4
+pkgrel=5
 pkgdesc="Google Nexus 7 2013 flo"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-asus-flo mkbootimg firmware-asus-flo mesa mesa-dri-freedreno"
+depends="linux-asus-flo mkbootimg firmware-asus-flo mesa mesa-egl mesa-dri-freedreno"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android-touch-dev.rules wpa_supplicant.conf"
+source="deviceinfo 90-android-touch-dev.rules wpa_supplicant.conf pointercal"
 
 options="!check"
 
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
-	install -D -m644 "$srcdir/wpa_supplicant.conf" \
-		"$pkgdir/etc/wpa_supplicant/wpa_supplicant.conf"
-	install -D -m644 "$srcdir/90-android-touch-dev.rules" \
-		"$pkgdir/lib/udev/rules.d/90-android-touch-dev.rules"
+	install -D -m644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -D -m644 "$srcdir"/wpa_supplicant.conf \
+		"$pkgdir"/etc/wpa_supplicant/wpa_supplicant.conf
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -D -m644 "$srcdir"/pointercal \
+		"$pkgdir"/etc/pointercal
 }
 sha512sums="df489865a244af0d776897a5b13b609afbd6d3a28ed4e4c07ccfec5620379443cb6cea01807d74ab8a1c5d96e23dd64b8028a6954eea771aedc1b111509eaa8f  deviceinfo
-a02db4e1bdb622cc4616b750dc5c3248081f5124cc49ef18f25b430c921c80004eff9f6a9b84a76ce04785c256e71776ff90e0f60140e4cce6860ba8d80cf4d2  90-android-touch-dev.rules
-3278921cc1617d10fdd13dfbeaf213cda0078d069e727acd8cfac10bd8ade6f373be1e22fd1e4b50ae71cd2eae09f7d6aad5de42338d9ea9f8c1a34f0b60cb69  wpa_supplicant.conf"
+d175ff532edaebffd18b6e3ba8e9f5e627c737ba3350d10b51d08f8c6daf7f8b858c907a4cb30750517c6a6134969790e400653f132214123334189dd310be68  90-android-touch-dev.rules
+3278921cc1617d10fdd13dfbeaf213cda0078d069e727acd8cfac10bd8ade6f373be1e22fd1e4b50ae71cd2eae09f7d6aad5de42338d9ea9f8c1a34f0b60cb69  wpa_supplicant.conf
+cf913217b41a3dde8bc2a16a5bc82013c85679de0e81db1cfc36f2409ea034fec430082ddcb207c16746453601cf8381300b049cd2fb131f1916dc7dbcc247e3  pointercal"
