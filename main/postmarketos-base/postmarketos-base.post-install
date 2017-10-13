@@ -13,7 +13,7 @@ done
 for service in hwclock modules sysctl hostname bootmisc swclock syslog; do
 	rc-update -q add $service boot
 done
-for service in dbus haveged sshd swapfile wpa_supplicant; do
+for service in dbus haveged sshd swapfile wpa_supplicant chronyd; do
 	rc-update -q add $service default
 done
 for service in mount-ro killprocs savecache; do
@@ -76,3 +76,8 @@ sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
 # Add user to video group for proper framebuffer permissions
 username="$(getent passwd 1000 | cut -d ":" -f 1)"
 usermod -a -G video "$username"
+
+# Set chrony to quickly correct system time on first boot, if necessary
+if ! grep -q "makestep" /etc/chrony/chrony.conf; then
+	echo "makestep 1 -1" >> /etc/chrony/chrony.conf
+fi
