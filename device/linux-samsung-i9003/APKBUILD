@@ -1,0 +1,136 @@
+# Based on linux-lg-mako. Changes:
+# - add findutils makedepend (necessary for the initramfs)
+# - it builds an initramfs - do not use ramdisk.cpio and
+#	ramdisk-recovery-device.cpio, in there, always use the
+#	initramfs from the recovery partition ("isorec")
+# - directly boot to that initramfs, not only when the recovery
+#	key combination was pressed.
+# - use Alpine's busybox-static instead of the pre-compiled
+#	binary, that comes with the source
+#
+# Kernel config changes, based on: arch/arm/configs/latona_defconfig
+# - enable devtmpfs (needed for udev -> touch support in weston)
+# - change compression from CONFIG_KERNEL_LZMA=y to
+#	CONFIG_KERNEL_GZIP=y (so it works with busybox)
+
+_vendor=samsung
+_flavor=samsung-i9003
+_hash="7b8d73dd32e6cd21107f9a963a32a5ed237a6e78"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.0.101
+case $pkgver in
+	*.*.*)  _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=9
+arch="armhf"
+pkgdesc="Samsung Galaxy SI SLC kernel"
+url="https://github.com/dhiru1602/android_kernel_samsung_latona"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
+findutils busybox-static-armhf"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_hash.tar.gz::https://github.com/dhiru1602/android_kernel_samsung_latona/archive/${_hash}.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_return_address.patch
+	01_twl_power_init.patch
+	02_mfd_driver_fix.patch
+	init
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_samsung_latona-${_hash}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+
+
+	mkdir "$ksrcdir"/usr/latona_initramfs_files/
+
+	# Use Alpine's busybox.static instead of the pre-compiled busybox shipped
+	# with the source
+	cp -v /usr/$(arch_to_hostspec $arch)/bin/busybox.static \
+		"$ksrcdir"/usr/latona_initramfs_files/busybox
+
+	# use custom init script in the initramfs which loads the initramfs from
+	# the kernel2 partition ("isorec")
+	cp -v "$srcdir"/init "$ksrcdir"/usr/latona_initramfs_files/init
+
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		silentoldconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build
+	make ARCH="$_carch" menuconfig
+	#ARCH="$_carch" "$ksrcdir"/scripts/kconfig/merge_config.sh "$ksrcdir"/arch/arm/config/latona_defconfig "$ksrcdir"/android/configs/android-base.cfg "$ksrcdir"/android/configs/android-recommended.cfg
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+}
+
+package() {
+	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="b7ca46b856a0c160ae36a98da39147deb85c054e902447ab68bcd4a011986eee486fb681d0bb832b9b57797aca35332483e99379b792bd467b1f030328bd83c7  linux-samsung-i9003-7b8d73dd32e6cd21107f9a963a32a5ed237a6e78.tar.gz
+ac6d9fd10aca7a9460d26bd78d70a6aacfdc9ca28ec10a04210211f748724dbb0018c6388d407327c8736f896c956b0d8ba4b3c72f05e65cd664a8261381a9a9  config-samsung-i9003.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+c40eaa11547f5bc2b1ff965506bdfe3015ff16e4b5ad9ccb3b8134ceafd1d32407c4ef2b213e02e036ce1e9bdcbfe768dff7d4b054bec77705a176c1f783b6f5  00_return_address.patch
+1972a2b5c429d6bf5fa1423e8805bb89bbd80c4efe6d235cb2037de6ba4d15c01e90239392161d6e5a0802eafaab6e8b468a49a12dc5b66469a111262cde2047  01_twl_power_init.patch
+5b951a2ab60a89fbc3ca209960987035001a6f9147f8ab5c05a6b49ec6dee75d0b6d053bef28df37e583bfc903599beed16692e25ee363e6200e14839d0dda65  02_mfd_driver_fix.patch
+dd4094d5f4ec281d32f12af88cb22a782e497c8e52f69cf60b73ac7d6171fc95f1f8040b3d0ad2ff3f016d22ac1d91c5b522e5d03203534a76742bc55a082af5  init"
