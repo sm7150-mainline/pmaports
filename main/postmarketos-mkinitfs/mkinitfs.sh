@@ -93,6 +93,24 @@ get_binaries()
 	lddtree -l $BINARIES | sort -u
 }
 
+# Collect non-binary files for osk-sdl and its dependencies
+# This gets called as $(get_osk_config), so the exit code can be checked/handled.
+get_osk_config()
+{
+	fontpath=$(awk '/^keyboard-font/{print $3}' /etc/osk.conf)
+	if [ ! -f $fontpath ]; then
+		exit 1
+	fi
+	ret="
+		/etc/osk.conf
+		/etc/ts.conf
+		/etc/pointercal
+		/etc/fb.modes
+		$fontpath
+	"
+	echo "${ret}"
+}
+
 get_binaries_extra()
 {
 	BINARIES_EXTRA="
@@ -101,6 +119,12 @@ get_binaries_extra()
 		/usr/sbin/parted
 		/sbin/e2fsck
 		/usr/sbin/resize2fs
+		/usr/bin/osk-sdl
+		/usr/lib/libGL.so.1
+		/usr/lib/ts/*
+		/usr/lib/libts*
+		$(find /usr/lib/directfb-* -name '*.so')
+		/lib/libz.so.1
 	"
 	tmp1=$(mktemp /tmp/mkinitfs.XXXXXX)
 	get_binaries > "$tmp1"
@@ -208,8 +232,7 @@ generate_splash_screens()
 	# $1: splash_name
 	# $2: text
 	# $3: arguments
-	set -- "splash-telnet"           "On-screen keyboard is not implemented yet, plug in a USB cable and run on your PC:\\ntelnet 172.16.42.1" "" \
-	       "splash-loading"          "Loading..." "--center" \
+	set -- "splash-loading"          "Loading..." "--center" \
 	       "splash-noboot"           "boot partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
 	       "splash-noinitramfsextra" "initramfs-extra not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
 	       "splash-nosystem"         "system partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
@@ -224,7 +247,7 @@ generate_splash_screens()
 		splash_name=$1
 		splash_text=$2
 		splash_args=$3
-		
+
 		# Compute hash using the following values concatenated:
 		# - postmarketos-splash package version
 		# - splash config file
@@ -306,6 +329,12 @@ tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
 # set up initfs-extra in temp folder
 mkdir -p "$tmpdir_extra"
 copy_files "$(get_binaries_extra)" "$tmpdir_extra"
+osk_conf="$(get_osk_config)"
+if [ $? -eq 1 ]; then
+	echo "ERROR: Font specified in /etc/osk.conf does not exist!"
+	exit 1
+fi
+copy_files "$osk_conf" "$tmpdir_extra"
 
 # finish up
 create_cpio_image "$tmpdir_extra" "$outfile_extra"

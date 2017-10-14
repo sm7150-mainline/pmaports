@@ -1,7 +1,6 @@
 #!/bin/sh
 # This file will be in /init_functions.sh inside the initramfs.
 IP=172.16.42.1
-TELNET_PORT=23
 
 # Redirect stdout and stderr to logfile
 setup_log() {
@@ -72,15 +71,17 @@ find_root_partition() {
 	# what we want.
 	#
 	# To deal with the side-effect, we use the partitions from
-	# /dev/mapper first, and then fall back to partitions with all paths
-	# (in case the user inserted an SD card after mount_subpartitions()
-	# ran!).
+	# /dev/mapper and /dev/dm-* first, and then fall back to partitions
+	# with all paths (in case the user inserted an SD card after
+	# mount_subpartitions() ran!).
 
-	# Try the partitions in /dev/mapper first.
+	# Try partitions in /dev/mapper and /dev/dm-* first
 	for id in pmOS_root crypto_LUKS; do
-		DEVICE="$(blkid | grep /dev/mapper | grep "$id" \
-			| cut -d ":" -f 1)"
-		[ -z "$DEVICE" ] || break
+		for path in /dev/mapper /dev/dm; do
+			DEVICE="$(blkid | grep "$path" | grep "$id" \
+				| cut -d ":" -f 1)"
+			[ -z "$DEVICE" ] || break 2
+		done
 	done
 
 	# Then try all devices
@@ -162,8 +163,7 @@ unlock_root_partition() {
 	partition="$(find_root_partition)"
 	if cryptsetup isLuks "$partition"; then
 		until cryptsetup status root | grep -qwi active; do
-			start_usb_unlock
-			cryptsetup luksOpen "$partition" root || continue
+			start_onscreen_keyboard
 		done
 		# Show again the loading splashscreen
 		show_splash /splash-loading.ppm.gz
@@ -264,30 +264,18 @@ start_udhcpd() {
 	udhcpd
 }
 
-start_usb_unlock() {
-	# Only run once
-	_marker="/tmp/_start_usb_unlock"
-	[ -e "$_marker" ] && return
-	touch "$_marker"
-
-	# Set up networking
-	setup_usb_network
-	start_udhcpd
-
-	# Telnet splash
-	show_splash /splash-telnet.ppm.gz
-
-	echo "Start the telnet daemon (unlock encrypted partition)"
-	{
-		echo '#!/bin/sh'
-		echo '. /init_functions.sh'
-		echo 'unlock_root_partition'
-		echo 'echo_connect_ssh_message'
-		echo 'killall cryptsetup'
-		echo "pkill -f telnetd.*:${TELNET_PORT}"
-	} >/telnet_connect.sh
-	chmod +x /telnet_connect.sh
-	telnetd -b "${IP}:${TELNET_PORT}" -l /telnet_connect.sh
+start_onscreen_keyboard(){
+	# Set up directfb and tslib for osk-sdl
+	# Note: linux_input module is disabled since it will try to take over
+	# the touchscreen device from tslib (e.g. on the N900)
+	export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input"
+	# shellcheck disable=SC2154
+	if [ ! -z "$deviceinfo_dev_touchscreen" ]; then
+		export TSLIB_TSDEVICE="$deviceinfo_dev_touchscreen"
+	fi
+	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
+	unset DFBARGS
+	unset TSLIB_TSDEVICE
 }
 
 # $1: path to ppm.gz file
