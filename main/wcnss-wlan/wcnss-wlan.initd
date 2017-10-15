@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+description="Initialize wcnss wlan driver"
+
+depend()
+{
+	need udev
+	before wpa_supplicant
+}
+
+start()
+{
+	ebegin "Enabling wlan driver"
+	echo 1 > /dev/wcnss_wlan 2>/dev/null
+	echo sta > /sys/module/wlan/parameters/fwpath
+}
