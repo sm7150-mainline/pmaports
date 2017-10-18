@@ -23,9 +23,11 @@ export ZIP=$2
 export WORKING_DIR="/tmp/postmarketos"
 export PATH=$PATH:"$WORKING_DIR"/bin
 
-# Use findfs from util-linux
+# Use findfs and umount from util-linux
 # shellcheck disable=SC2139
 alias findfs="$WORKING_DIR/bin/findfs"
+# shellcheck disable=SC2139
+alias umount="$WORKING_DIR/bin/umount"
 
 # shellcheck source=/dev/null
 . "$WORKING_DIR"/install_options
@@ -106,7 +108,7 @@ set_subpartitions() {
 umount_install_partition() {
 	if busybox mountpoint -q "/$INSTALL_PARTITION/"
 	then
-		umount /"$INSTALL_PARTITION"/
+		umount -R /"$INSTALL_PARTITION"/
 	else
 		echo 'Continuing...'
 		return 0

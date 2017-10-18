@@ -56,11 +56,11 @@ ui_print "Entering working directory..."
 cd "$WORKING_DIR"
 ui_print "Extracting files..."
 busybox unzip -o "$ZIP" -x rootfs.tar.gz
-mkdir /lib
+mkdir -p /lib
 ui_print "Symlinking .so files to /lib/..."
-ln -s "$WORKING_DIR"/lib/* /lib/
+ln -sf "$WORKING_DIR"/lib/* /lib/
 ui_print "Symlinking block devices..."
-ln -s /dev/block/* /dev/
+ln -sf /dev/block/* /dev/
 ui_print "Extracting partition table..."
 extract_partition_table
 ui_print "Unmounting /$INSTALL_PARTITION..."
@@ -70,6 +70,7 @@ ui_print "Creating partition table on $INSTALL_DEVICE..."
 partition_install_device || :
 if [ "$FDE" = "true" ]
 then
+	[ -e /dev/mapper/pm_crypt ] && cryptsetup close pm_crypt
 	ui_print "Generating temporary keyfile with random data..."
 	busybox dd bs=512 count=4 if=/dev/urandom of="$WORKING_DIR"/lukskey
 	ui_print "Initializing LUKS device..."
@@ -115,7 +116,7 @@ fi
 if [ "$FDE" = "true" ]
 then
 	ui_print "Creating a symlink for password setting script in /sbin/..."
-	ln -s "$WORKING_DIR"/bin/pmos_setpw /sbin/
+	ln -sf "$WORKING_DIR"/bin/pmos_setpw /sbin/
 	ui_print "Do not forget to add a password to the LUKS partition!"
 	ui_print "Run the command: pmos_setpw from the terminal/adb shell!"
 fi
