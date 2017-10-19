@@ -1,27 +1,23 @@
 pkgname=firmware-samsung-i9305
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy SIII LTE Firmware"
 url="https://github.com/Androguide/android_vendor_samsung"
 arch="noarch"
 license="proprietary"
-depends=""
-makedepends=""
-install=""
-subpackages=""
-_hash="d5a8735a6ad1fff3091f100383ac004f411d7528"
-source=$pkgname-$_hash.tar.gz::$url"/archive/${_hash}.tar.gz"
 options="!check !strip"
 
-vsrcdir="$srcdir/android_vendor_samsung-${_hash}"
+# Source
+_commit="d5a8735a6ad1fff3091f100383ac004f411d7528"
+source=$pkgname-$_commit.tar.gz::$url"/archive/${_commit}.tar.gz"
 
 package() {
-	mkdir -p "$pkgdir/lib/firmware/postmarketos"
+	cd "$srcdir/android_vendor_samsung-${_commit}/smdk4412-common/proprietary/system/"
 
-	# install wifi firmware
-	install -Dm644 "$vsrcdir/smdk4412-common/proprietary/system/etc/wifi/bcmdhd_sta.bin_b2" \
+	# Wifi
+	install -Dm644 "etc/wifi/bcmdhd_sta.bin_b2" \
 		"$pkgdir/lib/firmware/postmarketos/bcmdhd_sta.bin_b2"
-	install -Dm644 "$vsrcdir/smdk4412-common/proprietary/system/etc/wifi/nvram_net.txt" \
+	install -Dm644 "etc/wifi/nvram_net.txt" \
 		"$pkgdir/lib/firmware/postmarketos/nvram_net.txt"
 }
 

@@ -1,25 +1,22 @@
 pkgname=firmware-aosp-broadcom-wlan
 pkgver=1
-pkgrel=0
-pkgdesc="Broadcom Wi-Fi firmware from AOSP: https://android.googlesource.com/platform/hardware/broadcom/wlan/+/android-8.0.0_r12"
-url="https://github.com/zhuowei/android_hardware_broadcom_wlan"
+pkgrel=1
+pkgdesc="Broadcom Wi-Fi firmware from AOSP"
+url="https://android.googlesource.com/platform/hardware/broadcom/wlan/+/android-8.0.0_r12"
 arch="noarch"
 license="proprietary"
-depends=""
-makedepends=""
-install=""
-subpackages=""
-# tag: android-8.0.0_r12
-_hash=6c8ef5b600cec5d36a54a0276fe8c97b9ab8d6bb
-source=$pkgname-$_hash.tar.gz::$url"/archive/${_hash}.tar.gz"
 options="!check !strip !archcheck"
 
+# Sources
+_commit=6c8ef5b600cec5d36a54a0276fe8c97b9ab8d6bb
+_url="https://github.com/zhuowei/android_hardware_broadcom_wlan"
+source=$pkgname-$_commit.tar.gz::$_url"/archive/${_commit}.tar.gz"
+
 package() {
-	for fw in $(find "${srcdir}/android_hardware_broadcom_wlan-${_hash}/bcmdhd/firmware" -type f -name "*.bin")
-	do
-		dir=$(basename $(dirname $fw))
-		mkdir -p "$pkgdir/lib/firmware/postmarketos/bcmdhd/$dir"
-		install -m644 $fw "$pkgdir/lib/firmware/postmarketos/bcmdhd/$dir"
+	cd "$srcdir/android_hardware_broadcom_wlan-$_commit/bcmdhd/firmware"
+	for _i in */*.bin; do
+		install -Dm644 "$_i" \
+			"$pkgdir/lib/firmware/postmarketos/bcmdhd/$_i"
 	done
 }
 

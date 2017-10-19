@@ -1,43 +1,35 @@
-_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 wcnss.b07 wcnss.b08 wcnss.b09 wcnss.mdt"
-_files1="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin WCNSS_hw_wlan_nv.bin"
-
 pkgname=firmware-huawei-y530
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware files for Huawei Ascend Y530"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="proprietary"
 depends="wcnss-wlan"
-makedepends=""
-install=""
-subpackages=""
-source=""
-for _i in $_files
-do
-	source="$source https://github.com/drebrez/vendor_huawei_y530/raw/master/wifi/$_i"
-done
-for _i in $_files1
-do
-	source="$source https://github.com/drebrez/vendor_huawei_y530/raw/master/wifi/wlan/prima/$_i"
-done
 options="!strip !check !archcheck"
 
+# Source
+_commit="86bf384e1c37ee328988b9ec8769f6d321f931de"
+_url="https://github.com/drebrez/vendor_huawei_y530"
+source="$pkgname-$_commit.tar.gz::$_url/archive/${_commit}.tar.gz"
+
 package() {
-	mkdir -p $pkgdir/lib/firmware/postmarketos
-	for _i in $_files; do install -D -m644 "$srcdir/$_i" "$pkgdir/lib/firmware/postmarketos/$_i"; done
-	for _i in $_files1; do install -D -m644 "$srcdir/$_i" "$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"; done
+	cd "$srcdir/vendor_huawei_y530-$_commit/wifi"
+
+	# /lib/firmware/postmarketos
+	_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 wcnss.b07
+		wcnss.b08 wcnss.b09 wcnss.mdt"
+	for _i in $_files; do
+		install -D -m644 "$_i" "$pkgdir/lib/firmware/postmarketos/$_i"
+	done
+
+	# /lib/firmware/postmarketos/wlan/prima
+	_files="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin
+		WCNSS_hw_wlan_nv.bin"
+	for _i in $_files; do
+		install -D -m644 "wlan/prima/$_i" \
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
+	done
 }
-sha512sums="5aa75c4b464d41a04934290b4775497c0866057f28fe94ab1e8c83b417eda38ebdd3fde1c5e72a35f2b76351729580878683415f0095fe2049af2b0deed50dba  wcnss.b00
-2f49d5415b7b2ed8eee4da67119077a08b00b5dfee173d152da0ee2e9a29f8a9f0b9fb03f32738ca925dd6ffa4fe264282df832ad2789ad5aeb259592c0d176a  wcnss.b01
-69a85f26b14096f1a9ac40ba8f14a990c103ae0ddcfb072739236f67ab81ebb584ca6e5baf890074c11a2ba558965b2340a9d25f09408062db2a9b8159f9848d  wcnss.b02
-28cc6eace5c82d0092c9de31abc90b0f50dc30e7e2a007107bea2a7c3306e84565482e6df6293bb30bfd229d96d2af32067b6b66179cf3be54756f8368cb44b2  wcnss.b04
-066455af7422068f2e3d61d3ae568f52ff4c58a0759b213efb943fbf09368a367b943d52665d4110bd34e884030191b14f1bf544f620de44dc0904885355dca0  wcnss.b06
-0b6cbac838dfe7f47ea1bd0df00ec282fdf45510c92161072ccfb84035390c4da743d9c3b954eaa1b0f86fc9861b23cc6c8667ab232c11c686432ebb5c8c3f27  wcnss.b07
-5361df62589fc7c16c18a29a9145aeeb6a29055c000c12709330663b9522ed17cb8c2276ac9a3a24d02b6a4c9d99227daf95311966c816738e831c7eb72441f1  wcnss.b08
-af71139bcf4d1865d59db3617fadd98fdda6912922c9503a481b05615a73d0481fcb962ff907fd88ece596db3c5079ed19790955a06f0d29026ce3c16d5b6326  wcnss.b09
-d3cf41dd6366fa3e860b0769511d762b6599329a2504eb6e1d5e7e5e7068e24e038d94118e966518fd3e00684929af4519d866861cc67132827c8b109a263703  wcnss.mdt
-efb2c90b7a9101c603ceb1bbe3cbf81159b11c2518ad2b0eadf90d7e080f2c7224fe8613fb4ac09088c8d6958d0b88cf23039df3053c9e08fbc94307e4921be5  WCNSS_cfg.dat
-76fef203edbee916d10ebb67e12ec68274e7e8c0d7af43b78dbc5a14aa9a04ac4ce924daf0322fcf67b04dd2b8e41d494d1abf0a576c1f73326f0384f33da343  WCNSS_qcom_cfg.ini
-dc0f0b13859f789196e151b4d87bdca77aae78542df0ac505c06687bf63c5b2943e9adc9f7dabd78731ef49e05a99aa3f6b8578e40ebec63de1ad93a0aaefdf0  WCNSS_qcom_wlan_nv.bin
-dc0f0b13859f789196e151b4d87bdca77aae78542df0ac505c06687bf63c5b2943e9adc9f7dabd78731ef49e05a99aa3f6b8578e40ebec63de1ad93a0aaefdf0  WCNSS_hw_wlan_nv.bin"
+
+sha512sums="b21d719ad6abe178ef1e846d13a8fad24fa83b191e66dd041953409aa95f8f9be620c507ea9e9fd12b847deafd66d0b7986f6cb9c5c4e0fb272a7fcf88eb15cc  firmware-huawei-y530-86bf384e1c37ee328988b9ec8769f6d321f931de.tar.gz"
