@@ -1,6 +1,6 @@
 pkgname=device-sony-castor-windy
 pkgver=1
-pkgrel=8
+pkgrel=9
 pkgdesc="Sony Xperia Z2 Tablet WIFI"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -13,16 +13,16 @@ source="modules-load.conf deviceinfo 90-android-touch-dev.rules brcmfmac4339-sdi
 options="!check"
 
 package() {
-        install -D -m644 "$srcdir/deviceinfo" \
-            "$pkgdir/etc/deviceinfo"
-        install -D -m644 "$srcdir/brcmfmac4339-sdio.txt" \
-            "$pkgdir/lib/firmware/brcm/brcmfmac4339-sdio.txt"
-        install -D -m644 "$srcdir/90-android-touch-dev.rules" \
-            "$pkgdir/etc/udev/rules.d/90-android-touch-dev.rules"
-        install -D -m644 "$srcdir"/modules-load.conf \
-            "$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir/brcmfmac4339-sdio.txt" \
+		"$pkgdir/lib/firmware/brcm/brcmfmac4339-sdio.txt"
+	install -D -m644 "$srcdir/90-android-touch-dev.rules" \
+		"$pkgdir/etc/udev/rules.d/90-android-touch-dev.rules"
+	install -D -m644 "$srcdir"/modules-load.conf \
+		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
 }
 sha512sums="d8ce60ea7acaabf627ddca2f0887a4cda46f313b7aaf7934bef2fef8a6e0798ccefab849e4571e4e3fcd06ae34c1a6efe3b58b401e2e443416f6200e6d4ea769  modules-load.conf
-050c5ec58629a0af80b43d5e1724875f7085fa41e61cb264ba56cf9f19526cc1dc47a8838120e5cc8a84265f9de63061b17f8e213c8a1ac8475bf928ab67a0bf  deviceinfo
+a18b694fb62097935bb419e6b6d387a4b7d03f6c7014503a123b2af05d10fbd9f35161cda008e8f748386b366eb0f117470a0437d9fa02e8476fcfbb15896f46  deviceinfo
 fa0d8b7a17509f5882424e67e66f5f562705a076a12e8d9dd9363215c858d7801216520cf25373110671958b1e1589080b097170c760d18e621849b0b9090e05  90-android-touch-dev.rules
 b99a1bc0d430a261b6ab0b5ea12f2e996ab24ece6fe40ff57357697f4db976394c655a7c7a63e7c985f6356126a6b1d920eb0077817cb65ae18250f404282a68  brcmfmac4339-sdio.txt"

@@ -29,7 +29,7 @@ source="
 	compiler-gcc6.h
 	00_fix_return_address.patch
 	02_gpu-msm-fix-gcc5-compile.patch
-        03_mdss_fb_refresh_rate.patch
+	03_mdss_fb_refresh_rate.patch
 "
 subpackages=""
 license="GPL2"
@@ -67,11 +67,11 @@ prepare() {
 	# gcc6 support
 	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
-        mkdir -p "$srcdir"/build
-        cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
 	echo "--[ silentoldconfig ]--"
-        yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-                oldconfig
+	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		oldconfig
 }
 
 

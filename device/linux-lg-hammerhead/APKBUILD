@@ -71,11 +71,11 @@ prepare() {
 	# gcc6 support
 	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
 
-        mkdir -p "$srcdir"/build
-        cp "$srcdir"/$_config "$srcdir"/build/.config
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config
 	echo "--[ silentoldconfig ]--"
-        yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-                oldconfig
+	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		oldconfig
 }
 
 

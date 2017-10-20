@@ -33,12 +33,12 @@ source="
 	$pkgname-$_hash.tar.gz::https://github.com/mozilla-b2g/codeaurora_kernel_msm/archive/${_hash}.tar.gz
 	$_config
 	compiler-gcc6.h
-        00_fix_return_address.patch
-        02_gpu-msm-fix-gcc5-compile.patch
-        03_add-missing-dtbs.patch
-        04_fix-fb-imgtype.patch
-        05_fix-mdp3-ctrl-off.patch
-        06_fix-clock.patch
+	00_fix_return_address.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+	03_add-missing-dtbs.patch
+	04_fix-fb-imgtype.patch
+	05_fix-mdp3-ctrl-off.patch
+	06_fix-clock.patch
 "
 subpackages=""
 license="GPL2"
@@ -94,7 +94,7 @@ build() {
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
-    CONFIG_NO_ERROR_ON_MISMATCH=y DTC_FLAGS="-p 1024"
+		CONFIG_NO_ERROR_ON_MISMATCH=y DTC_FLAGS="-p 1024"
 
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }

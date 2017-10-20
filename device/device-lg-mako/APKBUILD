@@ -1,6 +1,6 @@
 pkgname=device-lg-mako
 pkgver=2
-pkgrel=12
+pkgrel=13
 pkgdesc="Google Nexus 4"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -8,21 +8,27 @@ license="MIT"
 depends="linux-lg-mako mkbootimg"
 makedepends=""
 install=""
-subpackages=""
-source="deviceinfo 90-android-touch-dev.rules profile.sh udev-v4l-hack.sh pointercal fb.modes"
+subpackages="$pkgname-weston"
+source="deviceinfo 90-android-touch-dev.rules profile.sh udev-v4l-hack.sh pointercal fb.modes weston.ini"
 options="!check"
 
 package() {
-	install -D -m644 "$srcdir"/deviceinfo \
+	install -Dm644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-	install -D -m644 "$srcdir"/profile.sh \
+	install -Dm644 "$srcdir"/profile.sh \
 		"$pkgdir"/etc/profile.d/00-$pkgname.sh
-	install -D -m644 "$srcdir"/pointercal \
+	install -Dm644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
-	install -D -m644 "$srcdir"/fb.modes \
+	install -Dm644 "$srcdir"/fb.modes \
 		"$pkgdir"/etc/fb.modes
+}
+
+weston() {
+	install_if="$pkgname weston"
+	install -Dm644 "$srcdir"/weston.ini \
+		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
 sha512sums="6d1bdf9037a8b19475e315c637b65d8f6785b8b57e05d61c1c088fb57cbd6bf1be2aa0c538ed64c582f49b4e2e16b848db58ac062159a2812221a6d9c1e0b6d7  deviceinfo
@@ -30,4 +36,5 @@ ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e2
 d04013c17caf77a87ebea167dbe48f7efa9c9d3123c5743d359f3ea8ccc6b268fa021535a4bf8291eb4a352f0c92f6eb527da0db340421f53bc1cc439a453306  profile.sh
 4f528656c4febb18742e89552dfe7fdc824ed4ad6ad2777d20b4f55040edd93d8e3ea657baabcdbe77bd0fb4bd3d23e5e0b2dae574f0df6723b2e26216ee81e1  udev-v4l-hack.sh
 52b1465c75c51e2dc2e351a0609220af04b939b9edf7fca844cc00bb9eeb4e71f53e34817ba094e477fc43bf15101fcfd07963c791a36be5c52f199bba6a6d9d  pointercal
-217bdf692ade75d57968299e29e9379ffcfc97addf735663b3e1e7dfce049f9d13b26347b4405ac724ae5fac2946012dcc58014b23b8df357e225b6718dbc0a6  fb.modes"
+217bdf692ade75d57968299e29e9379ffcfc97addf735663b3e1e7dfce049f9d13b26347b4405ac724ae5fac2946012dcc58014b23b8df357e225b6718dbc0a6  fb.modes
+4f321242005b4da012322a8e9bce14a3734281d6ab410f60e7c9c28a6df905876ccce65c3b914233f351118718ccd81b9be41724ee2099ca36d40b4cfff46b93  weston.ini"

@@ -1,14 +1,14 @@
 pkgname=device-qemu-amd64
 pkgver=1
-pkgrel=6
+pkgrel=7
 pkgdesc="Simulated device in qemu with an x86 platform"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
 depends="linux-postmarketos"
 makedepends=""
-subpackages="$pkgname-mesa $pkgname-x11"
-source="deviceinfo interfaces"
+subpackages="$pkgname-mesa $pkgname-x11 $pkgname-weston"
+source="deviceinfo interfaces weston.ini"
 options="!check"
 
 package() {
@@ -30,5 +30,12 @@ x11() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="511fe8d2f1e4cf90d96a321568220ecf98bffd44b96339b200633a4f3c45b6b58e646c0971f82fbcd9829e4b66e62942a6ecc55ea03dd228ab76984b0ff0b92d  deviceinfo
-d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  interfaces"
+weston() {
+	install_if="$pkgname weston"
+	install -Dm644 "$srcdir"/weston.ini \
+		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+sha512sums="7b190af151bf7b91eebb10902fc815b591b54d3fda5c917957538660baf72dd522782b5d8eaf8ce708a71130d7a8680e4834a0cd89c6c271f9a8dd76f37e5514  deviceinfo
+d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  interfaces
+df0fe900693e5f176076c59f5379e56aaa96c3df16a4120448f15b71f530170730b43e5fe32733c40c118a00ca3581043231a062a8a1eb0a930bfbfbb6c52a47  weston.ini"
