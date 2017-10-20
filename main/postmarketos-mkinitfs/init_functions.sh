@@ -39,6 +39,10 @@ setup_mdev() {
 }
 
 mount_subpartitions() {
+	# Do not create subpartition mappings if pmOS_boot
+	# already exists (e.g. installed on an sdcard)
+	blkid |grep -q "pmOS_boot"  && return
+
 	for i in /dev/mmcblk*; do
 		case "$(kpartx -l "$i" 2>/dev/null | wc -l)" in
 			2)
@@ -61,19 +65,6 @@ find_root_partition() {
 	#
 	# mount_subpartitions() must get executed before calling
 	# find_root_partition(), so partitions from b) also get found.
-	#
-	# However, after executing mount_subpartitions(), the partitions
-	# from a) get mounted to /dev/mapper - and then you can only use
-	# the ones from /dev/mapper, not the original partition paths (they
-	# will appear as busy when trying to mount them). This is an
-	# unwanted side-effect, that we must deal with.
-	# The subpartitions from b) get mounted to /dev/mapper, and this is
-	# what we want.
-	#
-	# To deal with the side-effect, we use the partitions from
-	# /dev/mapper and /dev/dm-* first, and then fall back to partitions
-	# with all paths (in case the user inserted an SD card after
-	# mount_subpartitions() ran!).
 
 	# Try partitions in /dev/mapper and /dev/dm-* first
 	for id in pmOS_root crypto_LUKS; do
