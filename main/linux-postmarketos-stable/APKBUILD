@@ -1,13 +1,4 @@
-# APKBUILD loosely based on linux-vanilla aport. Changes:
-#
-# - Use new kernel config for the postmarketos device support
-# - Package the device tree files
-#
-# Kernel config based on: arch/arm/configs/lineageos_mako_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-
-_flavor=postmarketos
+_flavor=postmarketos-stable
 _hash="7b6fbfd899b4133e4f789843e5967beb139ec4d2"
 _config="config-${_flavor}.${CARCH}"
 
@@ -21,7 +12,7 @@ esac
 pkgrel=0
 
 arch="all"
-pkgdesc="Mainline Linux for pmOS supported chipsets (OMAP)"
+pkgdesc="Linux for pmOS supported chipsets (stable)"
 url="https://kernel.org/"
 depends="postmarketos-mkinitfs"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
@@ -188,8 +179,8 @@ dev() {
 }
 
 sha512sums="a557c2f0303ae618910b7106ff63d9978afddf470f03cb72aa748213e099a0ecd5f3119aea6cbd7b61df30ca6ef3ec57044d524b7babbaabddf8b08b8bafa7d2  linux-4.13.tar.xz
-2dbcf4eae8297b8a3bf2e886bcdba350918b2f7575a3ff8d7789f2729784c2002273acc559adff7f0577c18d8470ed1a11f67ea8a134971bc9cd63e312d9866f  config-postmarketos.armhf
-d49d5d01adb7f314d5649cf8d7e917eeca9ec286eff2687c6865a7fac46e18227e278ca8965ad29bd99320a676e167256dc1b4212c5702f819e4cd2cf40c33c9  config-postmarketos.aarch64
-c1dc9a02bbe5bb047051ee4cda2454fab3c4c06a05abc86107948dd63da7b6c90dc35f48c27f04338673a49b246246f67c7b19ac942354a73058cc4088744120  config-postmarketos.x86_64
+2dbcf4eae8297b8a3bf2e886bcdba350918b2f7575a3ff8d7789f2729784c2002273acc559adff7f0577c18d8470ed1a11f67ea8a134971bc9cd63e312d9866f  config-postmarketos-stable.armhf
+d49d5d01adb7f314d5649cf8d7e917eeca9ec286eff2687c6865a7fac46e18227e278ca8965ad29bd99320a676e167256dc1b4212c5702f819e4cd2cf40c33c9  config-postmarketos-stable.aarch64
+c1dc9a02bbe5bb047051ee4cda2454fab3c4c06a05abc86107948dd63da7b6c90dc35f48c27f04338673a49b246246f67c7b19ac942354a73058cc4088744120  config-postmarketos-stable.x86_64
 17c48bb7b4218297bd2be6faa5b6570ce1560a33385237a9962c0884d782c9a722a25a30077b6721d2943a9b98c29dcad6adfef718b0163c559c19a79519319b  0001-rx51-drm-regression-workaround.patch
 3046ee2ef416e0f75908063192eae076d9018cba3f87b9eb1734df6a0f0d12fe79b6bda5d7713c3d663c8f418d3db1bdb64fb88f76660345911dcb2d857f41f7  patch-4.13.9.xz"
