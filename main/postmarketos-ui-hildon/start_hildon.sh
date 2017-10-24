@@ -6,7 +6,8 @@
 # display manager in the long run (#656).
 if [ "$(id -u)" = "1000" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# Start X11 with Hildon
-	startx /etc/postmarketos-ui/xinitrc_hildon.sh > ~/x11.log 2>&1
+	startx /etc/postmarketos-ui/xinitrc_hildon.sh 2>&1 | logger -t "$(whoami):x11"
+
 
 	# In case of failure, restart after 1s
 	sleep 1
