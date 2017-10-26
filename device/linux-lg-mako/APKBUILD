@@ -1,107 +1,64 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
 # Kernel config based on: arch/arm/configs/lineageos_mako_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_vendor=lge
-_flavor=lg-mako
-_hash="1495bfcf93f9e0e896331f29e1850387c31d6714"
-_config="config-${_flavor}.armhf"
-
-pkgname=linux-${_flavor}
+pkgname="linux-lg-mako"
 pkgver=3.4.0
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
 pkgrel=8
-arch="armhf"
 pkgdesc="Nexus 4 kernel from LineageOS"
-url="https://github.com/LineageOS/lge-kernel-mako"
-depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
-options="!strip !check !tracedeps"
-install=
-source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/${_vendor}-kernel-mako/archive/${_hash}.tar.gz
-	$_config
-	compiler-gcc6.h
-	02_gpu-msm-fix-gcc5-compile.patch
-"
-subpackages=""
-license="GPL2"
-
-_abi_release=${pkgver}
+arch="armhf"
 _carch="arm"
+_flavor="lg-mako"
+url="https://github.com/LineageOS/lge-kernel-mako"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-ksrcdir="$srcdir/${_vendor}-kernel-mako-${_hash}"
+# Source
+_repository="lge-kernel-mako"
+_commit="1495bfcf93f9e0e896331f29e1850387c31d6714"
+_config="config-${_flavor}.armhf"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_msm-fix-perf_trace_counters.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
+	default_prepare
 
 	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
 
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+	cp "$srcdir"/$_config "$builddir"/.config
+	make ARCH="$_carch" HOSTCC="$HOSTCC" silentoldconfig
 }
 
-
-
-# this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build
+	cd "$builddir"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+	install -Dm644 "$builddir/arch/arm/boot/zImage" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
-	install -D "$srcdir/build/include/config/kernel.release" \
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
 sha512sums="41d6b4446dbccf8a8b0e362ad0875341fb17b2a2e95c5be0450f419b838bd5b65de27dda5cce2d9d51c97d45884343f2ecf2a1323671926a82815ea2b5c13294  linux-lg-mako-1495bfcf93f9e0e896331f29e1850387c31d6714.tar.gz
 898d5e7c3c5f5d4c8c899345a56876bc55f0d45aa8d5833bbf1571d10714712066248e2b0c9b21660e0c7491af84bee1788dc240bf40f93e2c6712039aa2e98a  config-lg-mako.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+f85ced49ee2f2461adea68dac0a10452aa809a7d41d869092d94eb085344919a9a385dec0c48011f4601ca4f441700f7fe49075c7eca4fb2d66b01f7d413ccb7  01_msm-fix-perf_trace_counters.patch
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"
