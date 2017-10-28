@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-bq-chaozu"
+pkgdesc="Aquaris U"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-bq-chaozu mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="9a62ce0495473d2993c41fc1d531402006fc252c8324a816864a1aba10960f61975c780cb6476508519368832a12cc54e9dce17a47f4e6ccf115726846fe1a2d  deviceinfo"
