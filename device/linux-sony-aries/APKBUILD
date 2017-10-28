@@ -1,106 +1,58 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zImage-dtb and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
-# Kernel config changes, based on: arch/arm/configs/aosp_shinano_aries_defconfig
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - change compression from CONFIG_KERNEL_LZMA=y to
-#	CONFIG_KERNEL_GZIP=y (so it works with busybox)
-# - disable proprietary graphics driver
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
+# Kernel config based on: arch/arm/configs/aosp_shinano_aries_defconfig
 
-_vendor=sony
-_flavor=sony-aries
-_hash="b1ceda7b02ea29c526d329884db1e9f2694ab394"
-_config="config-${_flavor}.armhf"
-
-pkgname=linux-${_flavor}
+pkgname="linux-sony-aries"
 pkgver=3.10.84
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=6
-arch="armhf"
+pkgrel=7
 pkgdesc="Sony Xperia Z3 Compact kernel"
+arch="armhf"
+_carch="arm"
+_flavor=sony-aries
 url="https://github.com/sonyxperiadev/kernel"
-depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+license="GPL2"
 options="!strip !check !tracedeps"
-install=
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="kernel"
+_commit="b1ceda7b02ea29c526d329884db1e9f2694ab394"
+_config="config-${_flavor}.armhf"
 source="
-	$pkgname-$_hash.tar.gz::https://github.com/sonyxperiadev/kernel/archive/${_hash}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/sonyxperiadev/${_repository}/archive/${_commit}.tar.gz
 	$_config
 	compiler-gcc6.h
 	02_mdss_fb_refresh_rate.patch
 "
-subpackages=""
-license="GPL2"
-
-_abi_release=${pkgver}
-_carch="arm"
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
-ksrcdir="$srcdir/kernel-${_hash}"
+builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
+	default_prepare
 
 	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
 
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+	cp "$srcdir"/$_config "$builddir"/.config
+	make ARCH="$_carch" HOSTCC="$HOSTCC" silentoldconfig
 }
 
-
-
-# this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build
+	cd "$builddir"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
+	install -Dm644 "$builddir/arch/arm/boot/zImage-dtb" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
-	install -D "$srcdir/build/include/config/kernel.release" \
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 

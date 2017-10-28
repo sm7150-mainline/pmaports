@@ -1,106 +1,57 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - add xz package (necessary to build)
-#
 # Kernel config based on: arch/arm/configs/bravo_defconfig
-# Changes:
-# - apply patches to compile with gcc6
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - enable udev required options (https://wiki.gentoo.org/wiki/Udev#Kernel)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_vendor=htc
-_flavor=htc-bravo
-_config="config-${_flavor}.armhf"
-_hash="4bc19919f805777947c243e6c2ed41ece530488b"
-
-pkgname=linux-${_flavor}
+pkgname="linux-htc-bravo"
 pkgver=3.0.16
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=7
-arch="armhf"
+pkgrel=8
 pkgdesc="HTC Desire kernel from spezi77"
-url="https://github.com/spezi77/android_kernel_htc_qsd8k_3.0"
-depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
-options="!strip !check !tracedeps"
-install=
-source="
-	$pkgname-$_hash.tar.gz::https://github.com/spezi77/android_kernel_htc_qsd8k_3.0/archive/${_hash}.tar.gz
-	$_config
-	compiler-gcc6.h
-"
-subpackages=""
-license="GPL2"
-
-_abi_release=${pkgver}
+arch="armhf"
 _carch="arm"
+_flavor="htc-bravo"
+url="https://github.com/spezi77/android_kernel_htc_qsd8k_3.0"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-ksrcdir="$srcdir/android_kernel_htc_qsd8k_3.0-${_hash}"
+# Source
+_repository="android_kernel_htc_qsd8k_3.0"
+_commit="4bc19919f805777947c243e6c2ed41ece530488b"
+_config="config-${_flavor}.armhf"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/spezi77/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+"
+builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
+	default_prepare
 
 	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
 
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		oldconfig
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
 }
 
-
-
-# this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$srcdir"/build
-	echo "--[ menuconfig ]--"
+	cd "$builddir"
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-
-	echo "--[ Build kernel + modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
 }
 
 package() {
-	echo "--[ Installing kernel ]--"
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+	install -Dm644 "$builddir/arch/arm/boot/zImage" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
-	install -D "$srcdir/build/include/config/kernel.release" \
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
