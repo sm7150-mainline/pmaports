@@ -1,0 +1,30 @@
+pkgname=device-amazon-thor
+pkgver=1
+pkgrel=0
+pkgdesc="Amazon KFHDX 7inch 2013"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-amazon-thor mkbootimg msm-fb-refresher"
+makedepends=""
+install="$pkgname.post-install"
+subpackages=""
+source="
+	deviceinfo
+	90-android-touch-dev.rules
+	fb.modes
+"
+options="!check"
+
+package() {
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -Dm644 "$srcdir"/fb.modes \
+		"$pkgdir"/etc/fb.modes
+}
+
+sha512sums="6db52d237b3a4890e5fe94fd2019074ab6a4cc6c48c54a57b1376028543ce1deb489ab999841721267787622c58a4a82c2212836fe57cd98ace147e5d8d69f68  deviceinfo
+7ed015f42c445cbfa34a26ec33da8d72bcba818eecd3fae91fb418132472e739edaeed021e942d30f7d64593ffe17b61bc75e89fd45ffc44c2cdf0d1827942cb  90-android-touch-dev.rules
+762d712485f581113dd70bf2a4e0602f8b9ac8c05cf519ffc2d9a4a5c7bdb387c150cee087e7523e90f598c0cde3dce89975dadc2d651b770f7f80e480848ed4  fb.modes"
