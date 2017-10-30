@@ -28,7 +28,7 @@ case $METHOD in
 		echo "Flashing initramfs..."
 		gunzip -c /boot/initramfs-"$FLAVOR" | lzop | dd of="$INITFS_PARTITION" bs=1M
 		;;
-	0xFFFF)
+	0xffff)
 		echo -n "No need to use this utility, since uboot loads the kernel directly from"
 		echo " the boot partition. Your kernel should be updated already."
 		exit 1
