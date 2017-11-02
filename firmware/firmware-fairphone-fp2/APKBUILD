@@ -1,0 +1,34 @@
+pkgname=firmware-fairphone-fp2
+pkgver=17.09.3
+pkgrel=0
+pkgdesc="Firmware for Fairphone 2"
+url="https://github.com/FairBlobs/firmware"
+arch="noarch"
+license="proprietary"
+depends="wcnss-wlan"
+options="!check !strip !archcheck"
+
+# Sources
+_commit=6785087409c73b046d11a5c88225d4177e172a1d
+_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 wcnss.b07 wcnss.b08 wcnss.b09 wcnss.mdt"
+_wififiles="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
+source="$pkgname-$pkgver.tar.gz::https://github.com/FairBlobs/firmware/archive/$pkgver.tar.gz"
+for _i in $_wififiles; do
+	source="$source $pkgname-$_commit-$_i::https://raw.githubusercontent.com/LineageOS/android_device_fairphone_FP2/$_commit/wifi/$_i";
+done
+
+
+package() {
+	for _i in $_files; do
+		install -Dm644 "$srcdir/firmware-$pkgver/$_i" \
+			"$pkgdir/lib/firmware/postmarketos/$_i"
+	done
+	for _i in $_wififiles; do
+		install -Dm644 "$srcdir/$pkgname-$_commit-$_i" \
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
+	done
+}
+sha512sums="c7101c0a7477acc04938294e915643fdc3e0d40c6ffab11abb89ae24fee52b0778ae6463668d3b91f8630de96203e4e916a268f4384600c4190e22d638d6a9eb  firmware-fairphone-fp2-17.09.3.tar.gz
+619df454e0dc65ab62894b7f328c015729e8261919032ee9096bb4f983ddd6f7b98dd14f593b4c6b75cf86c09f090a9cde7674f4c8197cda927a2ac47111cd2e  firmware-fairphone-fp2-6785087409c73b046d11a5c88225d4177e172a1d-WCNSS_cfg.dat
+50625167fd5d3de8b834327a518714299972de3bd3077cb10d4317fb8135b52eb2f0d89f696f48e0530ac8d7a20e76ad01e30ebabec405ef241dc8b1cd52d94c  firmware-fairphone-fp2-6785087409c73b046d11a5c88225d4177e172a1d-WCNSS_qcom_cfg.ini
+d29aaefa6e42bd4a2146b79ee0f0fb6698dae34978bf9bebee9cfa96795c0329be1f7e896cf707f121dab35872d4ce9540b3c79c43bdfd98c75c16d2d875ab3c  firmware-fairphone-fp2-6785087409c73b046d11a5c88225d4177e172a1d-WCNSS_qcom_wlan_nv.bin"
