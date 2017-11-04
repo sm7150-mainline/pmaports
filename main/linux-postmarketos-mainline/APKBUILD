@@ -3,8 +3,9 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=4.14-rc6
-_kernver=${pkgver%-rc*}
+pkgver=4.14_rc7
+_pkgver=${pkgver/_/-}
+_kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
@@ -20,7 +21,7 @@ install=
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v$_mainver.x/linux-$_basever.tar.xz
 	linux-v$_basever-v$_kernver-rc1.patch::https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/rawdiff/?id=v$_kernver-rc1&id2=v$_basever
-	linux-v$_kernver-rc1-v$pkgver.patch::https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/rawdiff/?id=v$pkgver&id2=v$_kernver-rc1
+	linux-v$_kernver-rc1-v$_pkgver.patch::https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/rawdiff/?id=v$_pkgver&id2=v$_kernver-rc1
 	config-${_flavor}.armhf
 	config-${_flavor}.aarch64
 	config-${_flavor}.x86_64
@@ -30,7 +31,7 @@ source="
 subpackages="$pkgname-dev::$CBUILD_ARCH"
 
 license="GPL2"
-_abi_release=${pkgver}
+_abi_release=$_pkgver
 _carch=${CARCH}
 case "$_carch" in
 aarch64*) _carch="arm64" ;;
@@ -172,7 +173,7 @@ dev() {
 }
 sha512sums="a557c2f0303ae618910b7106ff63d9978afddf470f03cb72aa748213e099a0ecd5f3119aea6cbd7b61df30ca6ef3ec57044d524b7babbaabddf8b08b8bafa7d2  linux-4.13.tar.xz
 ec42158f59f105995a3ccde025085343b5e6ba60de778c14cacf9aa34c40ae2e23058a03a1e6545f174c694620bbb0e423947f784c43e1474adfdcb7f866b3b6  linux-v4.13-v4.14-rc1.patch
-7e6034f6375f4e592e535c6bbb8a833ff444c2ae3281adb72a801a9eb2ea9d7e65151d9e06594607f04790eb08d05fb0d4c244c54d95b09396069cb1a4279aac  linux-v4.14-rc1-v4.14-rc6.patch
+f120fc30e759c5c1dfd391c13bfdfa05675fbef02afdad3dce0fd22f02455f4d2ed545c1d4bddf2ada26827f5d54adc6813e2f927df3ebe18cd78ad1c99e0098  linux-v4.14-rc1-v4.14-rc7.patch
 a75225750193cf31c8b6c15e7748699f842ecadc9ed573f0b10f42bb5343b4e092bcb65b359d170a42a102a4ddfe09d63c1d67550f4b99c29295fa22e1d7b995  config-postmarketos-mainline.armhf
 6310035a0a4c028cc98cab92919cca54be9b79ee9fe63211e7a05876d7befdbd8506a2f80548e228e014e99b0f91f63946352789d8d2f2134c66914163f66ab3  config-postmarketos-mainline.aarch64
 3d42c60061d12a436d19ffdf00623ea71ca31f16f690ae82ebf872d35177c283b4038cd5e270f4e610d6cf6861cef73ac63c995f1f4cfe9d6f2a4a8648ba28fb  config-postmarketos-mainline.x86_64

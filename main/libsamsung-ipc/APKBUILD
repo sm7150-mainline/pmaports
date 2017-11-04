@@ -1,5 +1,6 @@
 pkgname=libsamsung-ipc
-pkgver=6.0-0002
+pkgver=6.0_0002
+_pkgver=${pkgver/_/-}
 pkgrel=1
 pkgdesc="Implementation of Samsung modem protocol"
 url="https://redmine.replicant.us/projects/replicant/wiki/Libsamsung-ipc"
@@ -9,12 +10,12 @@ depends=""
 makedepends="autoconf automake libtool libressl-dev linux-headers"
 subpackages=""
 source="
-	$pkgname-$pkgver.tar.gz::https://git.replicant.us/replicant/external_libsamsung-ipc/snapshot/external_libsamsung-ipc-replicant-${pkgver}.tar.gz
+	$pkgname-$_pkgver.tar.gz::https://git.replicant.us/replicant/external_libsamsung-ipc/snapshot/external_libsamsung-ipc-replicant-${_pkgver}.tar.gz
 	0001-i9100-modem-firmware-device-path.patch
 "
 options="!check"
 
-builddir="$srcdir"/external_libsamsung-ipc-replicant-$pkgver
+builddir="$srcdir"/external_libsamsung-ipc-replicant-$_pkgver
 build() {
 	cd "$builddir"
 	./autogen.sh CFLAGS=-Dloff_t=off_t --prefix=/usr --sysconfdir=/etc
