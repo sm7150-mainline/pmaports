@@ -1,0 +1,12 @@
+diff --git a/drivers/input/touchscreen/synaptics_driver_s3508.c b/drivers/input/touchscreen/synaptics_driver_s3508.c
+index dfc8927b656..8ed66423ef6 100644
+--- a/drivers/input/touchscreen/synaptics_driver_s3508.c
++++ b/drivers/input/touchscreen/synaptics_driver_s3508.c
+@@ -3475,6 +3475,7 @@ static int	synaptics_input_init(struct synaptics_ts_data *ts)
+ #endif
+ 
+ 	/* For multi touch */
++	input_set_abs_params(ts->input_dev, ABS_MT_WIDTH_MAJOR, 0, 16, 0, 0);
+ 	input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
+ 		input_set_abs_params(ts->input_dev, ABS_MT_POSITION_X, 0, ts->max_x, 0, 0);
+ 		input_set_abs_params(ts->input_dev, ABS_MT_POSITION_Y, 0, ts->max_y, 0, 0);

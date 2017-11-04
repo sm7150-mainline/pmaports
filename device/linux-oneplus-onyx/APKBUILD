@@ -1,0 +1,134 @@
+#****
+# This kernel doesn't work properly!
+# The kernel will panic whenever you attempt to use the framebuffer (and probably other things).
+# Note that this seems to be a gcc6/pmOS toolchain issue - as applying 00_mt_width_major_params.patch and using 
+# config-oneplus-onyx.armhf with this kernel source in the Lineage toolchain will build & work fine.
+# See https://github.com/postmarketOS/pmbootstrap/issues/848.
+#****
+
+
+# APKBUILD based on linux-oneplus-bacon aport (devices are closely related). Changes:
+# - add extra patches to support GCC 6
+# - Add 00_dontpanic.patch to prevent device from entering a download mode upon panic (reboot instead). CONFIG_MSM_DLOAD_MODE was also disabled.
+# - 00_mt_width_major_params.patch - Fixes touchscreen being rejected by libinput/weston because of params not being set.
+# - 
+#
+# Kernel config based on: arch/arm/configs/lineageos_onyx_defconfig
+# Changes:
+# - Enable devtempfs
+# - Disable MSM 3d graphics driver (MSM_KGSL).
+# - Enable Virtual Terminal
+# - Disable ANDROID_PARANOID_NETWORK
+# - Enable SYSVIPC.
+
+_vendor=oneplus
+_flavor=oneplus-onyx
+_version="c83d4835d228f8330da7e33846eec33c64608349"
+_config="config-${_flavor}.armhf"
+
+pkgname=linux-${_flavor}
+pkgver=3.4.0
+case $pkgver in
+	*.*.*) _kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=0
+arch="armhf"
+pkgdesc="LineageOS 14.1 kernel for OnePlus X (onyx)"
+url="https://github.com/LineageOS/android_kernel_oneplus_onyx"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev python2 xz dtbtool"
+options="!strip !check !tracedeps"
+install=
+source="
+	$pkgname-$_version.tar.gz::https://github.com/LineageOS/android_kernel_oneplus_onyx/archive/${_version}.tar.gz
+	${_config}
+	compiler-gcc6.h
+	00_dontpanic.patch
+	00_fix_return_address.patch
+	00_mt_width_major_params.patch
+	00_Input-sentelic-use-static-inline-instead-of-inline.patch
+	00_Input-lifebook-use-static-inline-instead-of-inline-i.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+"
+subpackages=""
+license="GPL2"
+
+_abi_release=${pkgver}
+_carch="arm"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/android_kernel_oneplus_onyx-${_version}"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	# gcc6 support
+	cp -v "$srcdir"/compiler-gcc6.h "$ksrcdir"/include/linux/
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$srcdir"/build/.config
+
+	echo "--[ silentoldconfig ]--"
+	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		oldconfig
+}
+
+# this is so we can do `abuild menuconfig` to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build
+
+	echo "--[ menuconfig ]--"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
+
+}
+
+package() {
+	install -Dm644 "$srcdir"/build/arch/arm/boot/zImage-dtb \
+		"$pkgdir"/boot/vmlinuz-$_flavor
+
+	install -D "$srcdir"/build/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+}
+
+sha512sums="32557bab4b1526179fcd2303c836dfcf65afcd3172cf1c158cfa13d3a6bd958d55845d4f555510fe85885fc10e93efbbc405a9a741d4f5e2ce15466093159e24  linux-oneplus-onyx-c83d4835d228f8330da7e33846eec33c64608349.tar.gz
+dfd6ae95d814e11713e95e4eec50e25e33477c892fbd84394d8239aae127cdad9e275183ab642f80ba7b0aca975e11c6c2582607a22c0bcfb0aa63db4ec7a838  config-oneplus-onyx.armhf
+22031601ef1c5655232096d06c36ede0d7d92fa5e09e27d7a739f9be1021eb400e9811405fd51a0eee8a71faddaf46cfac7b33d8c161f4c7e1a2b7c495840dce  compiler-gcc6.h
+4930be0f01cb771c63c9464ec34fb738e9ebe3872a626841908eb026adc29aba19799d5d1374730e8130a0d755796d08c9002d1369c3a94b44ee5117a16ac586  00_dontpanic.patch
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+35f4ef7f1c7fbda31224741126416c805736bd0ea6157eb1048ba53cdf68ea2221776686cd5b956bff91e6a64bef809a52db3d3152f5c3cfe11ded9a5caec98d  00_mt_width_major_params.patch
+2d77d90b501aa8afbf81629e73fc0a2055b373942975f58277e43f398d0835b3dbbff4a1118137ec82873ba90a254fea87c1d73ba7708578f1779bd0b4c6ff2d  00_Input-sentelic-use-static-inline-instead-of-inline.patch
+5c49f6ff6773a7dc3067d2b1359648fe7a9f758b6c068d6fa69d9aaf24a291ba8022c960317d926aabc11d020a71b20c4e81a6fcf9b21ef66d9b6d065bae23e9  00_Input-lifebook-use-static-inline-instead-of-inline-i.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"

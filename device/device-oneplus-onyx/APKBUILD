@@ -1,0 +1,26 @@
+pkgname=device-oneplus-onyx
+pkgver=1
+pkgrel=0
+pkgdesc="OnePlus X"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="linux-oneplus-onyx linux-firmware mkbootimg msm-fb-refresher"
+makedepends=""
+install=""
+source="deviceinfo 90-android-touch-dev.rules fb.modes"
+options="!check"
+
+package() {
+	install -Dm644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -Dm644 "$srcdir"/fb.modes \
+		"$pkgdir"/etc/fb.modes
+
+}
+
+sha512sums="73d7778d8e34c65b0ef04c4d0931af3280dee9ac5bb70941313d666a7ccea71a3c250db110c5203a37d1597681c0cbcbb0adba455934be3a7bdebbcb544a8f18  deviceinfo
+73963817cab7b798642f91894eb17975212a323d0e8bf8ce4f477fe33ace90b0050180877cbb605a074d07871d640c654cd581f0359532b9edb072013e6346a5  90-android-touch-dev.rules
+1452360bab1146643d8c6e0c881bfc145030cd5e3704765fc17f701dcec3f3e890a93db77e1b6afd6884d48b790e7dfc1013bbeedd619ae798baccaeab118847  fb.modes"
