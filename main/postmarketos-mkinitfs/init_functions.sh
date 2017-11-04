@@ -142,10 +142,12 @@ resize_root_partition() {
 			kpartx -afs "$partition_dev"
 		fi
 	fi
-	# Detect and resize root partition on QEMU
-	if [ -z "${partition##"/dev/hda"*}" ]; then
+	# Resize the root partition (non-subpartitions). Usually we do not want this,
+	# except for QEMU devices (where PMOS_FORCE_PARTITION_RESIZE gets passed as
+	# kernel parameter).
+	if grep -q PMOS_FORCE_PARTITION_RESIZE /proc/cmdline; then
 		echo "Resize root partition ($partition)"
-		parted -s /dev/hda resizepart 2 100%
+		parted -s "$(echo "$partition" | sed -E 's/p?2$//')" resizepart 2 100%
 		partprobe
 	fi
 }
