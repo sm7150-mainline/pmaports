@@ -1,13 +1,13 @@
 pkgname=device-qemu-amd64
 pkgver=1
-pkgrel=10
+pkgrel=11
 pkgdesc="Simulated device in qemu with an x86 platform"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
 depends="linux-postmarketos-stable"
 makedepends=""
-subpackages="$pkgname-mesa $pkgname-x11 $pkgname-weston"
+subpackages="$pkgname-x11 $pkgname-weston"
 source="deviceinfo interfaces weston.ini"
 options="!check"
 
@@ -18,15 +18,9 @@ package() {
 		"$pkgdir"/etc/network/interfaces
 }
 
-mesa() {
-	install_if="$pkgname mesa-glapi"
-	depends="mesa-dri-swrast"
-	mkdir "$subpkgdir"
-}
-
 x11() {
 	install_if="$pkgname xorg-server"
-	depends="xf86-video-qxl mesa-egl"
+	depends="xf86-video-qxl"
 	mkdir "$subpkgdir"
 }
 
