@@ -1,17 +1,16 @@
 pkgname=device-samsung-maguro
 pkgver=2
-pkgrel=12
+pkgrel=13
 pkgdesc="Google Galaxy Nexus (GSM)"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-firmware linux-samsung-maguro mkbootimg"
+depends="linux-samsung-maguro mkbootimg firmware-samsung-maguro"
 makedepends=""
 install=""
 subpackages=""
 source="
 	deviceinfo
-	bcmdhd.cal
 	90-android-touch-dev.rules
 "
 options="!check"
@@ -19,12 +18,9 @@ options="!check"
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/bcmdhd.cal \
-		"$pkgdir"/etc/wifi/bcmdhd.cal
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
 
 sha512sums="56f67205541eba307c333fbccd8510d9d972699be35bade8762028fc18f0c3c6f904eadc4fced783f042c1eeb57adc684915b8bd90f954cfb6560af662526928  deviceinfo
-27e89ef3102a89e99065ea12cd36d8ebe1c7e95f2f7082c0e7e3e280fcd2473aa197538bae18ac8995ddf3a7dd962622a56a6f0c037ad193fa9bba95bbb7ee9c  bcmdhd.cal
 f8c85b0ffcee751ee30d5f1fd8ed8e8413d9599875839fbc9bcfd85f08dbf203fecbd171fc3fe4e2742c5b8243132f6110142ff41193d6ad7df29b411516e199  90-android-touch-dev.rules"
