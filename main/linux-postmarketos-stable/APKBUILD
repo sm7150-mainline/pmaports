@@ -4,12 +4,12 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=4.13.12
+pkgver=4.14
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=0
 
 arch="all"
 pkgdesc="Linux for pmOS supported chipsets (stable)"
@@ -23,7 +23,6 @@ source="
 	config-${_flavor}.armhf
 	config-${_flavor}.aarch64
 	config-${_flavor}.x86_64
-       0001-rx51-drm-regression-workaround.patch
 "
 
 if [ "${pkgver%.0}" = "$pkgver" ]; then
@@ -178,9 +177,8 @@ dev() {
 		"$subpkgdir"/lib/modules/${_abi_release}/build
 }
 
-sha512sums="a557c2f0303ae618910b7106ff63d9978afddf470f03cb72aa748213e099a0ecd5f3119aea6cbd7b61df30ca6ef3ec57044d524b7babbaabddf8b08b8bafa7d2  linux-4.13.tar.xz
-e5d49d01241ff535e23e69b57dfaf76e5efdd1abb47e549ef136bd2ef4739f45d9ac132d519747bb628a5be2ce9b94adde4cfc2c0efe8dbfcadba7560b556970  config-postmarketos-stable.armhf
-be4737b72bdf1f79f1713f465275bc8465b08fac351a4f3e92e05605fa280b0b41a1449defec07653e11837df82a17b1e8b93a279a7c8c03412817fd6ac1c7d7  config-postmarketos-stable.aarch64
-3cc4620dee3fe91214e2bcb24b2df69b6fba187b6574b06365f59de1af6a2b45ac4d4978413d38bc82a74fa31422096687b9288c226ebb7433c2ff13866213b6  config-postmarketos-stable.x86_64
-17c48bb7b4218297bd2be6faa5b6570ce1560a33385237a9962c0884d782c9a722a25a30077b6721d2943a9b98c29dcad6adfef718b0163c559c19a79519319b  0001-rx51-drm-regression-workaround.patch
-6ae0b61bcd62b2e90b8ef3e1030fa874aba95317ec559d6e72cbd83a21b3894c05210d2da137f7b4db063d7de52193260b2364ceb43538ab8cd1db78070efb34  patch-4.13.12.xz"
+sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
+7de482169eb64cca001c298091471d803421dfef5835fa9a693840bd96083bdc42bc12a5217ececb5780ac285cf23674f2bd008183e651b81a7fc2882b819f01  config-postmarketos-stable.armhf
+f7dcf05c3c3042c6105748bcbe60ff8c02fac91c7de260a51b568c983df7f2a69c2bde6ebc3ddc4b7283e4aba7e1a8b0e9e4baff6ab863553dc3767679f54f62  config-postmarketos-stable.aarch64
+d1e6ca8faee80641a2e882b3b9b0009b05a73adee8e939ace17be7879f8a87f4f2e7cb7bbbb9590e9b6c1491ed076505dbef599c0dc9e71fe71a8d451a7b635e  config-postmarketos-stable.x86_64
+c53f69c827d0816fe460c111daee8e88f8355fda219af28639a622e7b093c3cd33b2da9152ee2eaec78d974dcefb8379fa51115a63f8d75496a73ce1d04af4cb  patch-4.14.xz"
