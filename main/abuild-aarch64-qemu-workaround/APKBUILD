@@ -1,0 +1,25 @@
+pkgname=abuild-aarch64-qemu-workaround
+pkgver=3.1.0
+pkgrel=0
+pkgdesc="Patched abuild-tar that works with Qemu"
+url="https://github.com/postmarketOS/pmbootstrap/issues/546"
+arch="aarch64"
+license="GPL2"
+depends=""
+install="$pkgname.post-install"
+options="!check"
+source="abuild-$pkgver.tar.gz::https://github.com/alpinelinux/abuild/archive/v$pkgver.tar.gz write-check-count.patch"
+makedepends="libressl-dev"
+
+builddir="$srcdir/abuild-$pkgver"
+build() {
+	make VERSION="$pkgver-r$pkgrel" abuild-tar
+}
+
+package() {
+	cd "$builddir"
+	install -Dm755 abuild-tar "$pkgdir"/usr/bin/abuild-tar-patched
+}
+
+sha512sums="fcdbef96b06a908148d6df41981fca19fe1767274b283efbb3f1adaefc074a4daa7b8eea8d49c533858c464e45b3954f97cd3d0185f0ed7e464244f9802001f5  abuild-3.1.0.tar.gz
+a80c55fe6cb6cc410ca409558c1e1ab8edec9a675031c404cec84c19b4b8460fbbba92db5c1401c0027f8fc0f5be4b82177ec2fad9d734cbc50ca24bfe6e149f  write-check-count.patch"

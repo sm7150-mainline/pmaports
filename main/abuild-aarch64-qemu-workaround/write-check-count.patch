@@ -1,0 +1,13 @@
+--- a/abuild-tar.c
++++ b/abuild-tar.c
+@@ -156,7 +156,9 @@ static ssize_t full_write(int fd, const void *buf, size_t count)
+ 		count -= n;
+ 	} while (1);
+ 
+-	if (total == 0 && n < 0)
++	// Workaround for Qemu bug: also check for count:
++	// <https://github.com/postmarketOS/pmbootstrap/issues/546>
++	if (total == 0 && n < 0 && count)
+ 		return -errno;
+ 
+ 	return total;
