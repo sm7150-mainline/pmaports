@@ -1,7 +1,6 @@
-#!/bin/ash
-# shellcheck shell=dash
+#!/bin/sh
 
-# Copyright 2017 Attila Szöllősi
+# Copyright 2017 Attila Szollosi
 #
 # This file is part of postmarketos-android-recovery-installer.
 #
@@ -19,6 +18,8 @@
 # along with postmarketos-android-recovery-installer.  If not, see <http://www.gnu.org/licenses/>.
 
 set -e
+
+DEVICE="$1"
 
 # Copy files to the destination specified
 # $1: files
@@ -40,14 +41,11 @@ check_whether_exists()
 	fi
 }
 
-# shellcheck disable=SC1091
-. ./install_options
-
-BINARIES="/bin/umount /sbin/cryptsetup /sbin/findfs /sbin/kpartx /sbin/mkfs.ext2 /sbin/mkfs.ext4 /usr/sbin/parted /usr/sbin/partprobe"
+BINARIES="/bin/busybox /bin/umount /sbin/cryptsetup /sbin/findfs /sbin/kpartx /sbin/mkfs.ext2 /sbin/mkfs.ext4 \
+	/usr/sbin/parted /usr/sbin/partprobe"
 # shellcheck disable=SC2086
 LIBRARIES=$(lddtree -l $BINARIES | awk '/lib/ {print}' | sort -u)
-copy_files "$BINARIES" bin/
-copy_files "$LIBRARIES" lib/
+copy_files "$BINARIES" chroot/bin/
+copy_files "$LIBRARIES" chroot/lib/
 check_whether_exists rootfs.tar.gz
-[ "$FLASH_BOOT" = "true" ] && check_whether_exists boot.img
 zip -0 -r "pmos-$DEVICE.zip" .

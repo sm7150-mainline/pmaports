@@ -1,0 +1,44 @@
+#!/sbin/sh
+exec > /tmp/postmarketos/pmos_chroot.log 2>&1
+set -ex
+
+export CHROOT='/tmp/postmarketos/chroot'
+
+# Extract chroot
+unzip -o "$ZIP" chroot/* -d /tmp/postmarketos
+
+# shellcheck source=/dev/null
+. "$CHROOT"/install_options
+if [ "$FDE" = 'true' ]
+then
+	# Install password setting script
+	{
+		echo '#!/sbin/sh'
+		echo "chroot $CHROOT /bin/pmos_setpw"
+	} > /sbin/pmos_setpw
+	chmod 755 /sbin/pmos_setpw
+fi
+
+# Mount pmos.zip so we can access it inside the chroot
+{ umount "$CHROOT"/pmos.zip ; rm "$CHROOT"/pmos.zip ; } || :
+touch "$CHROOT"/pmos.zip
+mount --bind "$ZIP" "$CHROOT"/pmos.zip
+
+# Create copy of fstab file provided by the recovery
+cp /etc/recovery.fstab "$CHROOT"/recovery.fstab || {
+	[ "$?" = '255' ] && echo 'recovery.fstab not found, continuing...' || exit "$?" ; }
+
+# Mount necessary filesystems for the chroot
+for mountpoint in "/dev" "/proc" "/sys"
+do
+	mkdir -p "$CHROOT""$mountpoint"
+	mount --bind "$mountpoint" "$CHROOT""$mountpoint"
+done
+
+# Set permissions and start the installation script
+chmod 755 "$CHROOT"/bin/*
+chroot "$CHROOT" /bin/pmos_install || {
+	echo 'Installation script failed.'
+	echo 'Check /tmp/postmarketos/chroot/pmos.log for more information.'
+	exit 1
+}

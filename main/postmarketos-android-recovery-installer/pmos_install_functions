@@ -1,7 +1,6 @@
-#!/sbin/ash
-# shellcheck shell=dash
+#!/bin/sh
 
-# Copyright 2017 Attila Szöllősi
+# Copyright 2017 Attila Szollosi
 #
 # This file is part of postmarketos-android-recovery-installer.
 #
@@ -18,25 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with postmarketos-android-recovery-installer.  If not, see <http://www.gnu.org/licenses/>.
 
-export OUTFD=$1
-export ZIP=$2
-export WORKING_DIR="/tmp/postmarketos"
-export PATH=$PATH:"$WORKING_DIR"/bin
-
-# Use findfs and umount from util-linux
-# shellcheck disable=SC2139
-alias findfs="$WORKING_DIR/bin/findfs"
-# shellcheck disable=SC2139
-alias umount="$WORKING_DIR/bin/umount"
+export PATH="/bin"
+export LD_LIBRARY_PATH="/lib"
 
 # shellcheck source=/dev/null
-. "$WORKING_DIR"/install_options
+. /install_options
 
 # taken from https://github.com/Debuffer-XDA/Gov-Tuner/blob/master/META-INF/com/google/android/update-binary
 # Copyright (c) 2016 - 2017 Debuffer
 ui_print() {
-	echo -n -e "ui_print $1\n" > /proc/self/fd/"$OUTFD"
-	echo -n -e "ui_print\n" > /proc/self/fd/"$OUTFD"
+	echo "ui_print $1" > /proc/self/fd/"$OUTFD"
+	echo "ui_print" > /proc/self/fd/"$OUTFD"
 }
 
 extract_partition_table() {
@@ -44,10 +35,10 @@ extract_partition_table() {
 		"system")
 			_INSTALL_DEVICE=$(findfs PARTLABEL="$SYSTEM_PARTLABEL") || \
 				# We need to resolve symlinks, to make set_subpartitions() work.
-				_INSTALL_DEVICE=$(busybox readlink -fn "$(awk '/^\/system/ {print $3}' /etc/recovery.fstab)")
+				_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/system/ {print $3}' /recovery.fstab)")
 			;;
 		"external_sd")
-			_INSTALL_DEVICE=$(busybox readlink -fn "$(awk '/^\/external_sd/ {print $4}' /etc/recovery.fstab)")
+			_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/external_sd/ {print $4}' /recovery.fstab)")
 			;;
 		*)
 			echo "No support for flashing $INSTALL_PARTITION."
@@ -70,7 +61,7 @@ extract_partition_table() {
 		INITFS_PARTITION=$(findfs PARTLABEL="$INITFS_PARTLABEL")
 	else
 		_BOOT_PARTITION=$(findfs PARTLABEL="boot") || \
-			_BOOT_PARTITION=$(awk '/^\/boot/ {print $3}' /etc/recovery.fstab)
+			_BOOT_PARTITION=$(awk '/^\/boot/ {print $3}' /recovery.fstab)
 		if [ ! -z "$_BOOT_PARTITION" ]
 		then
 			echo "boot partition found at $_BOOT_PARTITION"
@@ -100,17 +91,16 @@ partition_install_device() {
 
 set_subpartitions() {
 	export PMOS_BOOT
-	PMOS_BOOT=/dev/mapper/"$(busybox basename "$INSTALL_DEVICE")"p1
+	PMOS_BOOT=/dev/mapper/"$(basename "$INSTALL_DEVICE")"p1
 	export ROOT_PARTITION
-	ROOT_PARTITION=/dev/mapper/"$(busybox basename "$INSTALL_DEVICE")"p2
+	ROOT_PARTITION=/dev/mapper/"$(basename "$INSTALL_DEVICE")"p2
 }
 
 umount_install_partition() {
-	if busybox mountpoint -q "/$INSTALL_PARTITION/"
+	if [ -n "$(awk '$1 == install_part' install_part="$INSTALL_DEVICE" /proc/mounts)" ]
 	then
-		umount -R /"$INSTALL_PARTITION"/
+		umount "$INSTALL_DEVICE"
 	else
-		echo 'Continuing...'
-		return 0
+		echo "$INSTALL_DEVICE is not mounted, continuing..."
 	fi
 }

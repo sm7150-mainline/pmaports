@@ -1,7 +1,6 @@
-#!/sbin/ash
-# shellcheck shell=dash
+#!/sbin/sh
 
-# Copyright 2017 Attila Szöllősi
+# Copyright 2017 Attila Szollosi
 #
 # This file is part of postmarketos-android-recovery-installer.
 #
@@ -18,15 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with postmarketos-android-recovery-installer.  If not, see <http://www.gnu.org/licenses/>.
 
+export OUTFD=$2
+export ZIP=$3
+
 # Print fail information
-OUTFD=$2
 fail_info() {
-	FAIL_MSG="Failed. Check /tmp/postmarketos/pmos.log for more info!"
-	echo -n -e "ui_print $FAIL_MSG\n" > /proc/self/fd/"$OUTFD"
-	echo -n -e "ui_print\n" > /proc/self/fd/"$OUTFD"
+	FAIL_MSG="Failed. Check /tmp/postmarketos/pmos_chroot.log for more info!"
+	echo "ui_print $FAIL_MSG" > /proc/self/fd/"$OUTFD"
+	echo "ui_print" > /proc/self/fd/"$OUTFD"
 }
+
 # Create working directory
 mkdir -p /tmp/postmarketos/
+
 # Extract and start the installer script
-busybox unzip -o "$3" "bin/pmos_install" "bin/pmos_install_functions" "install_options" -d /tmp/postmarketos/
-/tmp/postmarketos/bin/pmos_install "$2" "$3" || { fail_info ; exit 1 ; }
+unzip -o "$ZIP" "pmos_chroot" -d /tmp/postmarketos/
+chmod 755 /tmp/postmarketos/pmos_chroot
+/tmp/postmarketos/pmos_chroot || { fail_info ; exit 1 ; }

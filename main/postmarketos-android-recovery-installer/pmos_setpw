@@ -1,7 +1,6 @@
-#!/sbin/ash -e
-# shellcheck shell=dash
+#!/bin/sh
 
-# Copyright 2017 Attila Szöllősi
+# Copyright 2017 Attila Szollosi
 #
 # This file is part of postmarketos-android-recovery-installer.
 #
@@ -18,13 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with postmarketos-android-recovery-installer.  If not, see <http://www.gnu.org/licenses/>.
 
+set -e
+
 # shellcheck source=pmos_install_functions
-. /tmp/postmarketos/bin/pmos_install_functions
+. /bin/pmos_install_functions
 
 extract_partition_table
 set_subpartitions
-echo "Set the password of the encrypted rootfs!"
-cryptsetup luksAddKey -d "$WORKING_DIR"/lukskey "$ROOT_PARTITION"
+echo "Set the password of the encrypted rootfs."
+cryptsetup luksAddKey -d /lukskey "$ROOT_PARTITION"
 # Remove temporary keyfile
-cryptsetup luksRemoveKey "$ROOT_PARTITION" "$WORKING_DIR"/lukskey
+cryptsetup luksRemoveKey "$ROOT_PARTITION" /lukskey
 echo "Successfully added key to the LUKS device."
