@@ -1,0 +1,21 @@
+pkgname=mdss-fb-init-hack
+pkgver=0.1
+pkgrel=0
+pkgdesc="Workaround for buggy framebuffer driver (mdss-fb)"
+url="https://github.com/postmarketOS/pmbootstrap"
+arch="noarch"
+license="GPL3"
+depends="msm-fb-refresher"
+makedepends=""
+install="$pkgname.post-install"
+subpackages=""
+source="$pkgname.initd $pkgname.sh $install"
+options=""
+
+package() {
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+	install -Dm755 "$srcdir/$pkgname.sh" "$pkgdir/sbin/mdss-fb-hack"
+}
+sha512sums="dcda465ef62cd9d92d5e7c9f17e45982d5428950b1f6248b172408dce33d53eb866000a9290b63d41c61a8050547048f90ff9016d64f39c25f06fb6537ddc401  mdss-fb-init-hack.initd
+22cb037d51a74fd363748c7c0b84f313ac9fce04a32953da00c338befc3af58012a24b7cb92a011fc8fe55722d1ceae7d42173c477297e00094e45d58d2e5b82  mdss-fb-init-hack.sh
+b6f5a366a78a5ffb4d4243c8add3f2d4d6515f9d2abef832a98472b8aa9651c8e29bf97bef5284d5eb0b47e2cb229f736537401651836bf260f54ff2fcae5061  mdss-fb-init-hack.post-install"
