@@ -1,35 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwallet
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Secure and unified container for user passwords'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="knotifications kiconthemes kservice gpgme"
-makedepends="extra-cmake-modules python kdoctools-dev boost doxygen qt5-qttools-dev gpgme-dev
-			 libgcrypt-dev kwindowsystem-dev kconfig-dev kconfigwidgets-dev kauth-dev kcodecs-dev
-			 kdbusaddons-dev kiconthemes-dev knotifications-dev kcoreaddons-dev ki18n-dev kwidgetsaddons-dev
-			 kservice-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kservice-dev kwindowsystem-dev kconfig-dev kconfigwidgets-dev kauth-dev kcodecs-dev
+			kdbusaddons-dev kiconthemes-dev knotifications-dev kcoreaddons-dev ki18n-dev kwidgetsaddons-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev boost doxygen qt5-qttools-dev libgcrypt-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
-prepare() {
-	mkdir -p $srcdir/build
-}
-
 build() {
-	cd $srcdir/build
 	cmake "$srcdir"/${pkgname}-${pkgver} \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="2b15caca7459e367f07d2aad98859db08f9e6bd337348ab63abd671dc45a434bf305e18e044b469a981c12661ce4dac2407af8b2dac7c3d0588a7b6f907548af  kwallet-5.37.0.tar.xz"
+sha512sums="a162d5ed1901fe3c8675f715ddb9a32640d7b563bf0755a7add885208a8f55465d9082d2abb9553d411018d3a5a4856b17efc94789dbd5993ac6f11a8a0c71c8  kwallet-5.40.0.tar.xz"

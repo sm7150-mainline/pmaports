@@ -1,0 +1,29 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=qmltermwidget
+pkgver=0.1.0_git20170914
+pkgrel=0
+_commit=fb525b7185acf3b91ba58051c337ae33294a7da7
+arch="all"
+url='https://github.com/notmart/qmltermwidget'
+license="GPL-2.0"
+pkgdesc='QML port of qtermwidget'
+depends=""
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtquickcontrols2-dev"
+source="https://github.com/notmart/$pkgname/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DBUILD_QCH=ON
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="08c0c344cd1d6354cd51fd272a400a28e0b447f12a588d534ec85ea25db74cff585570bbc8cacdfb460bec7c8eba0649f7813a3d8edc9cb6d69e3307aaefafce  fb525b7185acf3b91ba58051c337ae33294a7da7.tar.gz"

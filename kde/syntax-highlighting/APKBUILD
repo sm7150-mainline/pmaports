@@ -1,41 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=syntax-highlighting
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Syntax highlighting engine for structured text and code'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="GPL2"
-depends="qt5-qtbase"
-makedepends="extra-cmake-modules qt5-qttools-dev doxygen"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz
-        apkbuild-syntax-highlight.patch
-		remove-broken-regex.patch"
+        apkbuild-syntax-highlight.patch"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
-prepare() {
-	mkdir -p $srcdir/build
-
-	# Add APKBUILD syntax highlighting
-	cd "$srcdir"/$pkgname-$pkgver
-	patch -p1 -i ../apkbuild-syntax-highlight.patch
-	patch -p1 -i ../remove-broken-regex.patch
-}
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/$pkgname-$pkgver \
+	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="d49f62934283c07c1b6e8fad11b9fa469b21bb55f35ddbc6c28ab29bd79b7cba67a93d0b46abb8b3d86ee7ba7a90ea50a98553aac7bdfe396bc2b010611c24c2  syntax-highlighting-5.37.0.tar.xz
-0722d3c44c52f70eae5636c7f912e8e53491a728c96968705c14621fb38749583d855ffdf07ea84cecfcfce0e6c295fe500a06190f7bc82082d67986d879f66e  apkbuild-syntax-highlight.patch
-8a94d1c88736d8b3783588637e255a6ec81064fd9d6716eb5ace63161e29b986d58829f83c08816c652aa0a34974ad83f3a91c6cadb7974c6e19e160734e8052  remove-broken-regex.patch"
+sha512sums="4e7868ae64e18b7734d7d5b778187951ae01fdd2d2dfaa1a78f8d9c0b9d5c435e30f4bc333dac3ed18f864f3458991144e870bd6a2c5b17c8ee49b61a82c0ccb  syntax-highlighting-5.40.0.tar.xz
+0722d3c44c52f70eae5636c7f912e8e53491a728c96968705c14621fb38749583d855ffdf07ea84cecfcfce0e6c295fe500a06190f7bc82082d67986d879f66e  apkbuild-syntax-highlight.patch"

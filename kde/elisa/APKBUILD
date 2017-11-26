@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=elisa
+pkgver=0_git20171123
+pkgrel=0
+_commit="6804d87cb13e25d807ef8f1faa61337a6d847015"
+pkgdesc='Elisa Music Player'
+arch="all"
+url='https://github/com/kde/elisa'
+license="LGPL-3"
+depends=""
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtmultimedia-dev
+	qt5-qtsvg-dev ki18n-dev kdeclarative-dev baloo-dev kfilemetadata-dev kxmlgui-dev
+	kconfig-dev kcmutils-dev kpackage-dev"
+source="https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
+options="!check" # Fails for unknown reasons
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="9454112364ae23933939196078555c4f21f5b1158fb9695b2a055061ba257ae203ee37743fd25481d65a6e0a56ecefc6e70f97a0c88bb269c02c0ab15df59ede  6804d87cb13e25d807ef8f1faa61337a6d847015.tar.gz"

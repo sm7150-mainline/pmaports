@@ -1,12 +1,13 @@
 pkgname=plasma-phone-components
-pkgver=682.b79bb13
-pkgrel=2
+pkgver=0_git20171123
+pkgrel=0
+_commit=15c3acdc61ac6f3ff37b3ed75ec2d73ccea0fdb4
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
 license="GPL3"
-depends="plasma-workspace qt5-qtgraphicaleffects"
-makedepends="extra-cmake-modules kpeople-dev telepathy-qt5-dev qt5-qtdeclarative-dev kpeople-dev
+depends="desktop-file-utils qt5-qtgraphicaleffects kactivities qt5-qtquickcontrols2 qt5-qtquickcontrols"
+makedepends="extra-cmake-modules kpeople-dev qt5-qtdeclarative-dev kactivities-dev
 			 plasma-framework-dev kservice-dev kdeclarative-dev ki18n-dev kio-dev kcoreaddons-dev
 			 kconfig-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev
 			 kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev
@@ -14,18 +15,13 @@ makedepends="extra-cmake-modules kpeople-dev telepathy-qt5-dev qt5-qtdeclarative
 install="$pkgname.post-install
 		 $pkgname.post-upgrade
 		 $pkgname.post-deinstall"
-source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/master.tar.gz
-		$install"
-
-prepare() {
-	mkdir -p "$srcdir"/build
-}
+source="$pkgname-$pkgver.tar.gz::https://github.com/kde/$pkgname/archive/$_commit.tar.gz
+		unset-telepathy-dep.patch"
+builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cd "$srcdir"/build
-	cmake "$srcdir"/$pkgname-master \
+	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DBUILD_TESTING=OFF \
 		-DLIB_INSTALL_DIR=lib \
 		-DLIBEXEC_INSTALL_DIR=lib \
 		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
@@ -33,11 +29,15 @@ build() {
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd "$srcdir"/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="d130760c9acc4dfeae1f75d9a8a2ed0b11efe13c8850ecf779b11592023d7af4a9d903e79607b18ba2412984d1bafef2e26e4129d6f1f8cd3ada05ab6081d8cc  plasma-phone-components-682.b79bb13.tar.gz
-43046f7a0526986ca8453929c88bd1f05dfd255ba809d339a395935c7fb65ef562531a1770d3a0d7c07d6f3b9a3bbf9ea7791d12581f64d4b3dd0ccb83c945b5  plasma-phone-components.post-install
-43046f7a0526986ca8453929c88bd1f05dfd255ba809d339a395935c7fb65ef562531a1770d3a0d7c07d6f3b9a3bbf9ea7791d12581f64d4b3dd0ccb83c945b5  plasma-phone-components.post-upgrade
-43046f7a0526986ca8453929c88bd1f05dfd255ba809d339a395935c7fb65ef562531a1770d3a0d7c07d6f3b9a3bbf9ea7791d12581f64d4b3dd0ccb83c945b5  plasma-phone-components.post-deinstall"
+
+sha512sums="8d295cf3727bea6e5f31b09e15516dccd8e31b8c5055ce42400458142be12e5c61a1397ff1cecf7b548b89fb7049b35d3d557265b75c86f82e80ea862f4e6626  plasma-phone-components-0_git20171123.tar.gz
+deba478c29403c04e44a3007e64927fedaaf21e9207b834cd4c8574714d86f2e4f4bce0e6694d74eb151f11c4a8164b9a2e21c864aa823394a026395582dbccf  unset-telepathy-dep.patch"

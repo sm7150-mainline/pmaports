@@ -1,0 +1,43 @@
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+
+pkgname=kactivities-stats
+pkgver=5.40.0
+pkgrel=0
+arch="all"
+pkgdesc="A library for accessing the usage data collected by the activities system"
+url='https://community.kde.org/Frameworks'
+license='LGPL-2.1'
+depends=""
+depends_dev="boost-dev qt5-qtbase-dev kconfig-dev kactivities-dev
+			graphviz-dev qt5-qttools-dev qt5-qtdeclarative-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc"
+builddir="$srcdir/build"
+
+prepare() {
+	mkdir "$builddir"
+}
+
+build() {
+	cd "$builddir"
+
+	cmake "$srcdir"/$pkgname-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="1c5285038247dd778579daef2b4bc4663b67a18364670ef953c52311931e0f1c5147bba2f699a316be52a41d641ee7b9db4fd78c6f96db47883c95a442ecd907  kactivities-stats-5.40.0.tar.xz"

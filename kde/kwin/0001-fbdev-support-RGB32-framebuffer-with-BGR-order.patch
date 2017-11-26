@@ -1,0 +1,33 @@
+From 1a65555608971fcee5de89ea35c51e726a5e9abb Mon Sep 17 00:00:00 2001
+From: Zhuowei Zhang <zhuoweizhang@yahoo.com>
+Date: Sun, 8 Oct 2017 01:56:22 -0400
+Subject: [PATCH] fbdev: support RGB32 framebuffer with BGR order
+
+---
+ plugins/platforms/fbdev/fb_backend.cpp | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/plugins/platforms/fbdev/fb_backend.cpp b/plugins/platforms/fbdev/fb_backend.cpp
+index 7955b36..ec09bb9 100644
+--- a/plugins/platforms/fbdev/fb_backend.cpp
++++ b/plugins/platforms/fbdev/fb_backend.cpp
+@@ -213,6 +213,16 @@ void FramebufferBackend::initImageFormat()
+             m_red.offset == 11) {
+         qCDebug(KWIN_FB) << "Framebuffer Format is RGB16";
+         m_imageFormat = QImage::Format_RGB16;
++    } else if (m_bitsPerPixel == 32 &&
++            m_red.length == 8 &&
++            m_green.length == 8 &&
++            m_blue.length == 8 &&
++            m_blue.offset == 16 &&
++            m_green.offset == 8 &&
++            m_red.offset == 0) {
++        qCDebug(KWIN_FB) << "Framebuffer format is RGB32 with BGR";
++        m_bgr = true;
++        m_imageFormat = QImage::Format_RGB32;
+     }
+     qCWarning(KWIN_FB) << "Framebuffer format is unknown";
+ }
+-- 
+1.9.1
+

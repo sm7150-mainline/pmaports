@@ -1,35 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kxmlrpcclient
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc="XML-RPC client library for KDE"
 arch="all"
 url="https://projects.kde.org/projects/kde/pim/kxmlrpcclient"
-license="LGPL"
-depends="kio"
-makedepends="extra-cmake-modules python qt5-qttools-dev kio-dev kservice-dev kbookmarks-dev
-			 kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kconfig-dev
-			 kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev ki18n-dev kcoreaddons-dev
-			 doxygen"
+license="BSD-2"
+depends=""
+depends_dev="kio-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev
+			kjobwidgets-dev solid-dev kconfig-dev kxmlgui-dev kconfigwidgets-dev kauth-dev
+			kcodecs-dev ki18n-dev kcoreaddons-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
-prepare() {
-	mkdir -p $srcdir/build
-}
-
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/$pkgname-$pkgver \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="5bf9569a1bad444898c8616171ef2b0c72cebbd43ec758ff8f705b0b16cafbd0993c76f79baa772c57338139ddc89193b250d9f83a4914a69507bbbfae800bd5  kxmlrpcclient-5.37.0.tar.xz"
+sha512sums="e35410b53dc39940b5487bae385167d86f8b2cb82248953aca246cdb8bf21db65749f3179940156e302d43aac03756a2085217cf66716718dfd6765caafc7294  kxmlrpcclient-5.40.0.tar.xz"

@@ -1,32 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kitemmodels
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Models for Qt Model/View system'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="qt5-qtbase"
-makedepends="extra-cmake-modules py3-qt5 clang qt5-qttools-dev doxygen"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="09fce62011f4519b91d64c3b85428dd1ed8003cfa5c455fed813eb21e047985669b34b67885aaf95b4fa48d803f5ead479b77f4509863de8a0963c060e47ccb3  kitemmodels-5.37.0.tar.xz"
+sha512sums="17f78419b5860b6423a555d5ab529f68e7589e76b1f0c32f5ff0f581991a480cd9424d86d1384a85c221bb3037491a8fa4a0bf1e20ee7ed046d9be8c76e74446  kitemmodels-5.40.0.tar.xz"

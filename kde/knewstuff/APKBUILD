@@ -1,36 +1,38 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=knewstuff
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Support for downloading application assets from the network'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kio"
-makedepends="extra-cmake-modules python doxygen qt5-qttools-dev attica-qt5 karchive-dev
-			 kio-dev kservice-dev kbookmarks-dev kjobwidgets-dev solid-dev kxmlgui-dev
-			 qt5-qtdeclarative-dev qt5-qtquickcontrols kcompletion-dev kcoreaddons-dev ki18n-dev
-			 kiconthemes-dev kitemviews-dev kconfigwidgets-dev kauth-dev kcodecs-dev ktextwidgets-dev
-			 sonnet-dev attica-qt5-dev kconfig-dev kwidgetsaddons-dev"
+license="LGPL-2.1"
+depends="qt5-qtquickcontrols2"
+depends_dev="karchive-dev kio-dev kservice-dev kbookmarks-dev kjobwidgets-dev solid-dev kxmlgui-dev
+			qt5-qtdeclarative-dev kcompletion-dev kcoreaddons-dev ki18n-dev kiconthemes-dev
+			kitemviews-dev kconfigwidgets-dev kauth-dev kcodecs-dev ktextwidgets-dev sonnet-dev
+			attica-qt-dev kconfig-dev kwidgetsaddons-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="e67084ed5b6e54345daf125bbdb45c1c82a9cd4450de9a9c98d1aa76410234f8fe0f0f284418c46c55f6dfab23ba7521c2390998479c3a94f827ba8104bffe03  knewstuff-5.37.0.tar.xz"
+sha512sums="496feafb526ee7ae835e5e590f691c86b22bffb2c446de151a6d582662c856f0df755bbbe91fec06c2e06bc5577181972bb95a3f1afcf9aabca1f055e56c42ff  knewstuff-5.40.0.tar.xz"

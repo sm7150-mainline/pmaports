@@ -1,0 +1,32 @@
+pkgname=phonon-qt5
+pkgver=4.9.1
+pkgrel=0
+pkgdesc="KDE multimedia backend"
+url="http://phonon.kde.org/"
+arch="all"
+license="LGPL"
+depends=
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev glib-dev"
+makedepends="$depends_dev extra-cmake-modules cmake automoc4"
+install=""
+subpackages="$pkgname-dev"
+source="http://download.kde.org/stable/phonon/$pkgver/${pkgname/-qt5/}-$pkgver.tar.xz"
+builddir="$srcdir/${pkgname/-qt5/}-$pkgver"
+
+build() {
+	cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DPHONON_INSTALL_QT_EXTENSIONS_INTO_SYSTEM_QT=FALSE \
+		-DPHONON_BUILD_PHONON4QT5=ON \
+		-DDBUS_INTERFACES_INSTALL_DIR=/usr/share/dbus-1/interfaces
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="a1741765071a625d9b9073d9ad1571b91cf5bfce2223bd1b034828d02dc52624587a6ec5352f3702df79f6e4201007596843fbcb9f15c9b489a858200787d728  phonon-4.9.1.tar.xz"

@@ -1,52 +1,50 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-workspace
-pkgver=5.10.4
+pkgver=5.11.2
 pkgrel=0
 pkgdesc='KDE Plasma Workspace'
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
-license="LGPL"
-depends="kjsembed knotifyconfig libxdamage qt5-qttools xrdb xsetroot
-		 kactivitymanagerd xprop kwin kdelibs4support kxmlgui
-		 kdesu iso-codes qt5-qtwayland"
-makedepends="extra-cmake-modules kdoctools-dev gpsd krunner-dev kdesignerplugin kdesignerplugin-dev
-			 kxmlrpcclient-dev kdelibs4support-dev plasma-framework-dev knotifyconfig-dev
-			 libxtst-dev kcmutils-dev kdesu-dev kwallet-dev ksysguard kwin-dev kguiaddons-dev
-			 qt5-qtwayland kjsembed-dev knewstuff-dev libxrender-dev qt5-x11extras-dev
-			 kwallet-dev attica-qt5-dev kitemmodels-dev kscreenlocker-dev libksysguard-dev
-			 xcb-util-image-dev qt5-qtscript-dev karchive-dev kcrash-dev kpackage-dev
-			 kdeclarative-dev kpty-dev kjs-dev ktextwidgets-dev sonnet-dev kauth-dev
-			 kconfigwidgets-dev ki18n-dev kcodecs-dev kwidgetsaddons-dev kservice-dev
-			 kxmlgui-dev kwindowsystem-dev kcoreaddons-dev kconfig-dev kemoticons-dev
-			 kiconthemes-dev kinit-dev knotifications-dev kio-dev kbookmarks-dev kparts-dev
-			 kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kunitconversion-dev
-			 kdbusaddons-dev kidletime-dev kglobalaccel-dev phonon-dev kwayland-dev kactivities-dev"
-source="https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz
-		kde.pam"
-subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+license="GPL-2.0"
+depends="kwin iso-codes qt5-qtwayland kactivitymanagerd kinit milou consolekit2"
+depends_dev="krunner-dev kdesignerplugin-dev kdesignerplugin qt5-qtwayland-dev qt5-qtdeclarative-dev
+			kxmlrpcclient-dev kdelibs4support-dev plasma-framework-dev knotifyconfig-dev
+			kcmutils-dev kdesu-dev kwallet-dev ksysguard kwin-dev kguiaddons-dev
+			kjsembed-dev knewstuff-dev qt5-x11extras-dev ktexteditor-dev libksysguard-dev
+			kwallet-dev attica-qt-dev kitemmodels-dev kscreenlocker-dev
+			qt5-qtscript-dev karchive-dev kcrash-dev kpackage-dev kactivities-dev
+			kdeclarative-dev kpty-dev kjs-dev ktextwidgets-dev sonnet-dev kauth-dev
+			kconfigwidgets-dev ki18n-dev kcodecs-dev kwidgetsaddons-dev kservice-dev
+			kxmlgui-dev kwindowsystem-dev kcoreaddons-dev kconfig-dev kemoticons-dev
+			kiconthemes-dev kinit-dev knotifications-dev kio-dev kbookmarks-dev kparts-dev
+			kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kunitconversion-dev
+			kdbusaddons-dev kidletime-dev kglobalaccel-dev phonon-qt5-dev kwayland-dev
+			baloo-dev prison-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev gpsd iso-codes-dev libxtst-dev
+			xcb-util-image-dev libxrender-dev"
+source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-
-	cmake $srcdir/$pkgname-$pkgver \
+	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib \
-		-DBUILD_TESTING=OFF
+		-DKDE_INSTALL_LIBEXECDIR=lib
 	make
 }
 
-package() {
-	cd $srcdir/build
-	make DESTDIR="$pkgdir" install
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
 
-	install -Dm644 "$srcdir"/kde.pam "$pkgdir"/etc/pam.d/kde
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
 
 	install -Dm644 plasmawayland.desktop "$pkgdir"/usr/share/wayland-sessions/plasmawayland.desktop
 }
-sha512sums="4bfcb18f73c4df0b4342e00b94ca375cc0ec1968e0f30ca8e14366dae5723ba9491fd073fc4408a9ae64c2efa52e72efd7e474e15b0cc4c65e1d42f1fe57170a  plasma-workspace-5.10.4.tar.xz
-39c114084b224131d80a77742865c448b54ac1877426ec5591e58f142bbe77fe85d1717c82fe7c8d09b1aa77f7833664e406fbae04254b4e974f09a32486fa31  kde.pam"
+sha512sums="0538b18e0991e7aad4a3713e5fc0559e75b2929b8d2c2f3a44ea9ed5c236362956f4ec0ce2697ea337ca7cea29af0030d6b5c0dbd01771253b38dde7d81f6c35  plasma-workspace-5.11.2.tar.xz"

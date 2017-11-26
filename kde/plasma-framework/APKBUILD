@@ -1,38 +1,40 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-framework
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Plasma library and runtime components based upon KF5 and Qt5'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="qt5-qtquickcontrols"
-makedepends="extra-cmake-modules qt5-qttools-dev doxygen kdoctools-dev python kactivities-dev
+license="GPL-2.0"
+depends=""
+depends_dev="kdoctools-dev kactivities-dev kwindowsystem-dev ki18n-dev kiconthemes-dev kpackage-dev
 			 kdeclarative-dev knotifications-dev qt5-qtdeclarative-dev qt5-qtsvg-dev kio-dev
 			 kwayland-dev kdbusaddons-dev qt5-x11extras-dev karchive-dev kguiaddons-dev
 			 kservice-dev kbookmarks-dev kcompletion-dev kitemviews-dev kjobwidgets-dev
 			 solid-dev kxmlgui-dev kglobalaccel-dev kconfig-dev kconfigwidgets-dev kauth-dev
-			 kcoreaddons-dev kcodecs-dev kwidgetsaddons-dev kpackage-dev ki18n-dev kiconthemes-dev
-			 kwindowsystem-dev"
+			 kcoreaddons-dev kcodecs-dev kwidgetsaddons-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="35210f11a06b12ae45ec80d11b251883c1fd993c5a7bd8604f115a3d8ca8d13c269a88c37d0336b79baab402d070017286efa1e918c6768dcc7c9e7831a366cc  plasma-framework-5.37.0.tar.xz"
+sha512sums="0718ff2fa45d6e793aec947ea42c7264ec379014a6286606eb7bc2577a64f236621f67f20b5223794c1d9b65989a2ebaa6f77f2c11f48fafd0f992dc03e01189  plasma-framework-5.40.0.tar.xz"

@@ -1,33 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kpeople
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='A library that provides access to all contacts and the people who hold them'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license=LGPL
-depends="kservice kwidgetsaddons kitemviews qt5-qtdeclarative"
-makedepends="extra-cmake-modules python mesa-dev qt5-qttools-dev qt5-qtdeclarative-dev kcoreaddons-dev
-			 kwidgetsaddons-dev ki18n-dev kitemviews-dev kservice-dev kconfig-dev doxygen"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtdeclarative-dev kcoreaddons-dev kwidgetsaddons-dev ki18n-dev kitemviews-dev
+			kservice-dev kconfig-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Not sure
 
 build() { 
-	cd $srcdir/build
-	cmake "$srcdir"/$pkgname-$pkgver \
+	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="9b39cb0b08a079a9d142875c73cbcb2ce990df69756d8d39648e1beea81e3c74b21db9ca579682e7e469feb51d0b1697a302286f79eba3a12127955511b68857  kpeople-5.37.0.tar.xz"
+sha512sums="18b57e846bc614371c65c63662238b806c7dfd999be97695eeff1d1b4e4edb92ec3b7363e5876ec1bb9f9ff9335f6d7e8bd0140cf488f180fa660db20baab665  kpeople-5.40.0.tar.xz"

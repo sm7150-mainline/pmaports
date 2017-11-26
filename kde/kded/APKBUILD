@@ -1,32 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kded
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Extensible deamon for providing system level services'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kinit"
-makedepends="extra-cmake-modules kdoctools-dev kinit-dev kcrash-dev kdbusaddons-dev kconfig-dev
-			 kcoreaddons-dev kservice-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kinit-dev kcrash-dev kdbusaddons-dev kcoreaddons-dev kservice-dev qt5-qtbase-dev
+			kconfig-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
 
-prepare() {
-	mkdir -p $srcdir/build
-}
-
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF
+		-DKDE_INSTALL_LIBDIR=lib
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="2a420cf97f55858ec6cac4a74bdf97f367b32fc07529714b494576f7828261ae52650972b9f8b80e5e12cd854f66e7bc4d2d2cd339d7ce8a71ab29ebd41e76fa  kded-5.37.0.tar.xz"
+sha512sums="559cc4bff3d18104326fdcdb35eca16e36b06c6a8547e77ac78833931f32f22c8497e4db08434bf889a7cdfaf72affaff342487e2387748705b49b6feb9e30a8  kded-5.40.0.tar.xz"

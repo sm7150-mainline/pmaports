@@ -1,35 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=breeze
-pkgver=5.10.4
-pkgrel=1
+pkgver=5.11.2
+pkgrel=0
 pkgdesc='Artwork, styles and assets for the Breeze visual style for the Plasma Desktop'
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
-license="LGPL"
-depends="frameworkintegration kdecoration kwayland"
-makedepends="extra-cmake-modules frameworkintegration-dev kcoreaddons-dev kguiaddons-dev
-             automoc4 kdecoration-dev plasma-framework-dev python kcmutils-dev breeze-icons 
-			 kconfigwidgets-dev kauth-dev kcodecs-dev kconfig-dev kwidgetsaddons-dev
-			 kwindowsystem-dev ki18n-dev qt5-x11extras-dev qt5-qtdeclarative-dev
-			 kpackage-dev kservice-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kcoreaddons-dev kguiaddons-dev kwayland-dev kservice-dev kdecoration-dev
+			plasma-framework-dev kcmutils-dev breeze-icons kconfigwidgets-dev kauth-dev
+			kcodecs-dev kconfig-dev kwidgetsaddons-dev kwindowsystem-dev ki18n-dev
+			qt5-x11extras-dev qt5-qtdeclarative-dev kpackage-dev"
+makedepends="$depends_dev extra-cmake-modules automoc4"
 source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
 
-prepare() {
-	mkdir -p $srcdir/build
-}
-
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF
+		-DKDE_INSTALL_LIBDIR=lib
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="b309bdeecc5f40f9afe0222e6b81ae1a656c8fa31758551d55b61615f642b7e0972efac5aa0d63044acc27881e62dbc6a949faa51212eb53acf08d0699ef30b7  breeze-5.10.4.tar.xz"
+sha512sums="715353c69c1dd1def9b6fb0b04846a20cbbeb2f057d5935dbeaf55c1a03d92046f1f7ee017e5ee3d12bbba97a6319d36022b04acb6b93e839415733768cb8cf9  breeze-5.11.2.tar.xz"

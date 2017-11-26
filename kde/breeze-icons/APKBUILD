@@ -1,29 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=breeze-icons
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Breeze icon themes'
 arch="noarch"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-makedepends="extra-cmake-modules qt5-qtbase-dev"
+license="LGPL-3.0"
+depends_dev="qt5-qtbase-dev"
+makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 
-prepare() {
-	mkdir -p $srcdir/build
-}
-
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DBINARY_ICONS_RESOURCE=ON \
-		-DBUILD_TESTING=OFF
+		-DBINARY_ICONS_RESOURCE=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E dupe
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="f026bb2ae5626faf082d6f1220023551ca8b1e2665a29707cf26176d33449fd9be0954ee1b01248bc1618211541ea62e91b5423450dbc87eced847a7d8839861  breeze-icons-5.37.0.tar.xz"
+sha512sums="d24fe6eb77bbb4a37c128cc31a2a30c7257304ffa2fc48130fe4bfb5d117108f08510113b0328cc0b5edc5de9bb3fffd4f63431583bdc62513249c9096421263  breeze-icons-5.40.0.tar.xz"

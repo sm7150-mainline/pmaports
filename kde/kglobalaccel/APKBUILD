@@ -1,33 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kglobalaccel
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Add support for global workspace shortcuts'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kdbusaddons kconfig kcrash"
-makedepends="extra-cmake-modules doxygen qt5-qttools-dev kconfig-dev kcoreaddons-dev kcrash-dev
-			 kdbusaddons-dev kwindowsystem-dev qt5-x11extras-dev xcb-util-keysyms-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kconfig-dev kcoreaddons-dev kcrash-dev kdbusaddons-dev kwindowsystem-dev qt5-x11extras-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev xcb-util-keysyms-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="115fb5359d7eccc12b9772d79c189bb8e46bf47b0aed46dda019b29a16f5db73ed9b1bc490648f44fa404385411b8471406c0288c275d18ce3ca8ed0156820dc  kglobalaccel-5.37.0.tar.xz"
+sha512sums="5b4a5d557338eb149257448cbabd7df9d7969ce2d977e13a4d104fe4c21d262b952f820614aad9012f6d4c2d28898f4d77daa4dadece39275383e35b6a84e9bb  kglobalaccel-5.40.0.tar.xz"

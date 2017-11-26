@@ -1,31 +1,22 @@
 pkgname=ksysguard
-pkgver=5.10.4
+pkgver=5.11.2
 pkgrel=1
 pkgdesc='Track and control the processes running in your system'
 arch="all"
 url='https://userbase.kde.org/KSysGuard'
-license="LGPL"
-depends="lm_sensors hicolor-icon-theme"
-makedepends="extra-cmake-modules kdoctools-dev python libksysguard-dev attica-qt5-dev
-			 kinit-dev kxmlgui-dev kconfig-dev kcoreaddons-dev kdbusaddons-dev ki18n-dev
-			 kiconthemes-dev kitemviews-dev kio-dev knotifications-dev kservice-dev
-			 kio-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kjobwidgets-dev
-			 solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kwindowsystem-dev
-			 knewstuff-dev"
-source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz
-		 D6631.patch"
+license="GPL-2.0"
+depends=""
+depends_dev="libksysguard-dev attica-qt-dev kinit-dev kxmlgui-dev kconfig-dev kcoreaddons-dev
+			kdbusaddons-dev ki18n-dev kiconthemes-dev kitemviews-dev kio-dev knotifications-dev
+			kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kjobwidgets-dev
+			qt5-qtbase-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev
+			kwindowsystem-dev knewstuff-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
+source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-doc $pkgname-lang"
 
-prepare() {
-	mkdir -p $srcdir/build
-	
-	cd "$srcdir"/$pkgname-$pkgver
-	patch -p1 < ../D6631.patch
-}
-
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
@@ -33,9 +24,13 @@ build() {
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="3bcb4730ffca30cadf8838ef196b3ebc40e40460d86d1ba28b1778f7c4dc6bb72a875f9ddc28e4211fa232fbddbad90b6742d6ec88471e907dff8fd9e01a2bab  ksysguard-5.10.4.tar.xz
-9125d313335d82a6eaa206b1dcf053be380854978592e1f3cd9cf9977e4d78d105893d9c456d9f79665dd6922d8bd9801e593afe392c4629713949b342093153  D6631.patch"
+sha512sums="8288cbfe8fe86998a688ab4b874792561091e2774de48837de0fae8528705134302ba4dc3bfbbfcf57f5a6b36ec5fe438e59827b00fc82eaaf5a637704205ac7  ksysguard-5.11.2.tar.xz"

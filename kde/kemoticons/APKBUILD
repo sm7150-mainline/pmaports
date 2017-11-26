@@ -1,33 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kemoticons
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Support for emoticons and emoticons themes'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="karchive kservice"
-makedepends="extra-cmake-modules python mesa-dev doxygen qt5-qttools-dev karchive-dev kconfig-dev
-			 kservice-dev kcoreaddons-dev"
+license="GPL-2.0"
+depends=""
+depends_dev="karchive-dev kconfig-dev kservice-dev kcoreaddons-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="1a506ef73bc6893f92f9c274403e8415818dfa2a8c9a4ea3c72b7cf95142a759fc86b49c7e25daf94689a5c214bd6ac15839ef88ebb54902e3df5756e7369756  kemoticons-5.37.0.tar.xz"
+sha512sums="47dc8f65f29d297a3229fba0a63d5f0eb959fe072e44dfc831f33b4a778cfae1f267abe6cbf264a69d3ea677a8cd2d94898ba9f7e0852bfcb7573b368cb1c289  kemoticons-5.40.0.tar.xz"

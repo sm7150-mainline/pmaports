@@ -1,32 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kdbusaddons
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Addons to QtDBus'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="qt5-x11extras"
-makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 doxygen"
+license="LGPL-2.1"
+depends=""
+makedepends="extra-cmake-modules qt5-qttools-dev clang doxygen shared-mime-info"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Requires running dbus-daemon
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="a581366eae4e8ceaa9bc544adf951d734a3feddc19287bf2cb5818cff71f46ed59976bc9fc1487b3578c896bd1ac3fdff57d08510951007596b3907116025f39  kdbusaddons-5.37.0.tar.xz"
+sha512sums="439c0baa9531ae93606e24dcdbc1fbda4a04032ccdcb2c218c0e12f97c34a0b9522bde377f0763d800f8b17ca41b6893f3854d7e8c494ad2809f493023368a7a  kdbusaddons-5.40.0.tar.xz"

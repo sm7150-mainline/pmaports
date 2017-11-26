@@ -1,34 +1,39 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ktexteditor
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Advanced embeddable text editor'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="libgit2"
-makedepends="extra-cmake-modules python qt5-qttools-dev qt5-qtxmlpatterns-dev syntax-highlighting
-			 qt5-qtscript-dev kparts-dev karchive-dev kguiaddons-dev ktextwidgets-dev sonnet-dev
-			 syntax-highlighting-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtxmlpatterns-dev qt5-qtdeclarative-dev qt5-qtscript-dev kparts-dev karchive-dev
+			kguiaddons-dev ktextwidgets-dev sonnet-dev kconfig-dev ki18n-dev kio-dev kcoreaddons-dev
+			kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev
+			kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kiconthemes-dev
+			syntax-highlighting-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="02b2ba273845deb11d9be69f4e212618d62319f30c5e5b999473d1392ee8c402d104aad0856a168b845abaf529d6d0a30e090f70e69d133bfa847ae3f6bb6b27  ktexteditor-5.37.0.tar.xz"
+sha512sums="933b1a65e3d4bcc5347f35b7ed5d67c07a4060dd8fb755275e2aeeb40b3107b09b361faf7d95fb33991a9c36ed49f4c5e08ea9887b98a6096dd8ae0dbf48b208  ktexteditor-5.40.0.tar.xz"

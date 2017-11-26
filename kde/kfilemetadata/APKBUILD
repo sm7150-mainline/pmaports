@@ -1,33 +1,38 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kfilemetadata
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc="A library for extracting file metadata"
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="ki18n karchive exiv2 poppler-qt5 taglib ffmpeg"
-makedepends="extra-cmake-modules python qt5-qttools-dev attr-dev doxygen ki18n-dev"
+license="LGPL-3.0"
+depends=""
+depends_dev="ki18n-dev karchive-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev attr-dev doxygen ffmpeg-dev
+			exiv2-dev taglib-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir $srcdir/build
-}
+options="!check" # armhf problems
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="78143c82b858f53e63e35e11e144ccb474574885bd772ff27131c0568d5033618f8ff75844b02e3e3acbffd5d8901300f26f5b4e9d5556f2400f3666183b2899  kfilemetadata-5.37.0.tar.xz"
+sha512sums="b3f632af0847dd3bed8bf0214e3786fe72ffbdc90454d7a2117e8b30023c43b594a27c5811a6e77d1e46a68261e950a5dc016b9ae6f80f3db539c29eaa53297d  kfilemetadata-5.40.0.tar.xz"

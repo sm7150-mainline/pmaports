@@ -1,34 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwindowsystem
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Access to the windowing system'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="qt5-x11extras libxfixes"
-makedepends="extra-cmake-modules qt5-qttools-dev doxygen qt5-x11extras-dev libxrender-dev xcb-util-keysyms-dev"
-groups="kf5"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-x11extras-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen libxrender-dev xcb-util-keysyms-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {  
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="136b772820e8f8b7cd4e0e5e04b4f61495fe6adb56fc5e025efd60dc0293c88632ece19fcdcda4cffcb8c04e3515aca5fbcc80309e6f01d727e56a45c81dc744  kwindowsystem-5.37.0.tar.xz"
+sha512sums="e07531098de25d96168efb2820b209b47cc5fd0ea5a9a38e3c7c86b079619427e1e597e7b07fd92ea1a64ad6f031afe037ccc73c64bc59e3e5143ab54fff530a  kwindowsystem-5.40.0.tar.xz"

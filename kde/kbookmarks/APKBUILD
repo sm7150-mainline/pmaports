@@ -1,33 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kbookmarks
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Support for bookmarks and the XBEL format'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kxmlgui"
-makedepends="extra-cmake-modules qt5-qttools-dev python doxygen kcodecs-dev kconfig-dev kconfigwidgets-dev
-			 kiconthemes-dev kxmlgui-dev kcoreaddons-dev kauth-dev kwidgetsaddons-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kcodecs-dev kconfig-dev kconfigwidgets-dev kiconthemes-dev kxmlgui-dev kcoreaddons-dev
+			kauth-dev kwidgetsaddons-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="cac12f6936c680f9018a162fa9b7bc2f7591fec6ae2c955473fe391941736ff21a60a24dd8d741681743dc864746081548c5311f4ba5f7a308154e573af28b67  kbookmarks-5.37.0.tar.xz"
+sha512sums="b9adaab77f3104ffb0f470ccae25db75b1e73f54bbf49a5b8bdb7bf1271911c8a296cf68d1dc17a0b3e44e9fccc11e44ef2c90d2f03bd504488e2b6a832c097d  kbookmarks-5.40.0.tar.xz"

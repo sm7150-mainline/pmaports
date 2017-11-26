@@ -1,0 +1,43 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=powerdevil
+pkgver=5.11.2
+pkgrel=0
+pkgdesc='Manages the power consumption settings of a Plasma Shell'
+arch="all"
+url='https://www.kde.org/workspaces/plasmadesktop/'
+license="GPL-2.0"
+depends="plasma-workspace"
+depends_dev="qt5-qtbase-dev qt5-x11extras-dev kdesignerplugin-dev kdesignerplugin
+			kactivities-dev kauth-dev kidletime-dev kconfig-dev kdbusaddons-dev
+			solid-dev ki18n-dev kglobalaccel-dev kio-dev knotifyconfig-dev kwayland-dev
+			kcoreaddons-dev kdelibs4support-dev karchive-dev kconfigwidgets-dev
+			kcodecs-dev kwidgetsaddons-dev kcrash-dev kservice-dev kbookmarks-dev
+			kcompletion-dev kitemviews-dev kjobwidgets-dev kxmlgui-dev kdoctools-dev
+			kemoticons-dev kguiaddons-dev kiconthemes-dev kitemmodels-dev kinit-dev
+			knotifications-dev kparts-dev ktextwidgets-dev sonnet-dev kunitconversion-dev
+			kwindowsystem-dev libkscreen-dev plasma-workspace-dev"
+makedepends="$depends_dev extra-cmake-modules eudev-dev"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBEXECDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="1253d87d8e5c88a58f6bd0244bc230d4310fcb7cdbc01b6cec2818227d0f9b0fbac9277d02f90a79bf5a36280ba2637ed44b6212a3a3913093941d03c6df4d4c  powerdevil-5.11.2.tar.xz"

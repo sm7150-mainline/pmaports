@@ -1,40 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kdesu
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Integration with su for elevated privileges'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kservice kpty"
-makedepends="extra-cmake-modules python qt5-qttools-dev kpty-dev kservice-dev kconfig-dev kcoreaddons-dev
-			 ki18n-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+license="LGPL-2.1"
+depends=""
+depends_dev="kpty-dev kservice-dev kconfig-dev kcoreaddons-dev ki18n-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="suid"
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DKDE_INSTALL_LIBEXECDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
-package() {
-	cd $srcdir/build
-	make DESTDIR="${pkgdir}" install
-
-	chmod 0644 $pkgdir/usr/lib/kf5/kdesud # remove suid bit as it's disallowed by Alpine standards due to being a security risk
-
-	# See https://bugs.archlinux.org/task/44277
-	#chown :nobody "${pkgdir}"/usr/lib/kf5/kdesud
-	#chmod g+s "${pkgdir}"/usr/lib/kf5/kdesud
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
-sha512sums="6b3b6c51637220a5f80115e81f82a551a596465916fefe707b7dad23b423d1198a760c5da8392f8da482ae59e05fb9d2bca360859bde7c20d4928c49eccb896d  kdesu-5.37.0.tar.xz"
+
+package() {
+	cd "$builddir"
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="53ecfc0388a8246ec6b29de63ddb580071eaca33f7b1806e77b1200d79bbccb2bef38e4b482f0dd53e4767c873dc64d8cceb03d9ae75be41e8fe5a56ec90ebf1  kdesu-5.40.0.tar.xz"

@@ -1,0 +1,42 @@
+pkgname=plasma-settings
+pkgver=0_git20171031
+pkgrel=0
+_commit=79d8f48a5ad8be41ebd7183a3c740cff4db7d501
+pkgdesc="Plasma Settings"
+arch="all"
+url="https://community.kde.org/Plasma/Mobile"
+license="GPL-2.0"
+depends="kirigami2 kded"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kwindowsystem-dev kcoreaddons-dev
+	solid-dev kconfig-dev kauth-dev kdbusaddons-dev ki18n-dev kdeclarative-dev
+	kio-dev kdelibs4support-dev karchive-dev kservice-dev kpackage-dev kconfigwidgets-dev
+	kbookmarks-dev kcrash-dev kcompletion-dev kdesignerplugin-dev kdesignerplugin
+	kjobwidgets-dev kdoctools-dev kemoticons-dev kguiaddons-dev kitemmodels-dev
+	kinit-dev knotifications-dev kparts-dev kunitconversion-dev plasma-framework-dev"
+source="https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/build"
+
+prepare() {
+	mkdir "$builddir"
+}
+
+build() {
+	cd "$builddir"
+	cmake "$srcdir"/$pkgname-$_commit \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
+		-DCMAKE_BUILD_TYPE=Release
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="bb45b3c1f0cc851e68b7fceab2d58d95c0ed75287a61fdaa3605f2248e6d20e0585ed2ee398364cb1c4a15fedcdd764e2e2839702763c53116fdf3e61c2cc0a7  79d8f48a5ad8be41ebd7183a3c740cff4db7d501.tar.gz"

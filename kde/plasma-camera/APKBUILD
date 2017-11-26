@@ -1,0 +1,37 @@
+pkgname=plasma-camera
+pkgver=0_git20150717
+pkgrel=0
+_commit=0a68cd2b1954cca245f857a7dc72aef577b37fdb
+pkgdesc="Simple camera application for mobile devices"
+arch="all"
+url="https://community.kde.org/Plasma/Mobile"
+license="GPL-2.0"
+depends=""
+makedepends="extra-cmake-modules qt5-qtbase-dev kpackage-dev kcoreaddons-dev"
+source="https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/build"
+
+prepare() {
+	mkdir "$builddir"
+}
+
+build() {
+	cd "$builddir"
+	cmake "$srcdir"/$pkgname-$_commit \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
+		-DCMAKE_BUILD_TYPE=Release
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="f3a6b362fb2fff50c36bfaf5f939a8a80964d1132524c43e1e5cc12143a5a3ef3f4c04cb19ad18a8039c704f793c326865f02b082eaa9dc48499b0ce69059880  0a68cd2b1954cca245f857a7dc72aef577b37fdb.tar.gz"

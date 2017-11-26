@@ -1,34 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libksysguard
-pkgver=5.10.4
-pkgrel=1
+pkgver=5.11.2
+pkgrel=0
 pkgdesc='Libksysguard'
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
-license="LGPL"
-depends="libxres kwindowsystem kconfigwidgets"
-makedepends="extra-cmake-modules kdoctools kwindowsystem-dev python plasma-framework-dev
-			 qt5-qtscript-dev qt5-x11extras-dev kcoreaddons-dev kconfig-dev ki18n-dev
-			 kcompletion-dev kauth-dev kwidgetsaddons-dev kiconthemes-dev kconfigwidgets-dev
-			 kservice-dev kcodecs-dev plasma-framework kpackage-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kwindowsystem-dev plasma-framework-dev qt5-qtscript-dev qt5-x11extras-dev
+			kcoreaddons-dev kconfig-dev ki18n-dev kcompletion-dev kauth-dev kwidgetsaddons-dev
+			kiconthemes-dev kconfigwidgets-dev kservice-dev kcodecs-dev plasma-framework
+			kpackage-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools"
 source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF
+		-DKDE_INSTALL_LIBDIR=lib
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="ca59f1d72deebe9e65500e6d5ee61efb66370999c93dce18497389627c7ba773b4c0a418714345409320abb4660539da2cd372e80ba3466b5380a617ce9f9714  libksysguard-5.10.4.tar.xz"
+sha512sums="256de172b8b6c860b631bb1390b9901fc3a78862a005893b228b035e89044ca09161f9573ad786e6e12801e84f231281f14917c039d396c6919ff33caf668747  libksysguard-5.11.2.tar.xz"

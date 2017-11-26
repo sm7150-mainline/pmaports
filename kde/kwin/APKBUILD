@@ -1,47 +1,46 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwin
-pkgver=5.10.4
-pkgrel=1
+pkgver=5.11.2
+pkgrel=0
 pkgdesc='An easy to use, but flexible, composited Window Manager'
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
-license="LGPL"
-depends="xcb-util-cursor xcb-util-keysyms hicolor-icon-theme plasma-framework libinput
-		 consolekit2 xorg-server-xwayland breeze"
-makedepends="extra-cmake-modules qt5-qttools-dev kdoctools-dev kdecoration-dev kjobwidgets-dev
-			 libxkbcommon-dev libepoxy-dev libinput-dev kcmutils-dev kscreenlocker-dev
-			 breeze-dev xcb-util-cursor-dev qt5-qtdeclarative-dev qt5-qtscript-dev kcompletion-dev
-			 plasma-framework-dev kinit-dev kio-dev xcb-util-keysyms-dev qt5-x11extras-dev
-			 kcrash-dev kglobalaccel-dev knotifications-dev kiconthemes-dev kconfig-dev
-			 kconfigwidgets-dev kcoreaddons-dev ki18n-dev kpackage-dev kwidgetsaddons-dev
-			 kwindowsystem-dev kidletime-dev kauth-dev kcodecs-dev ktextwidgets-dev
-			 knewstuff-dev kservice-dev kxmlgui-dev kbookmarks-dev kwayland-dev attica-qt5-dev
-			 sonnet-dev kitemviews-dev solid-dev kdeclarative-dev"
+license="GPL-2.0"
+depends="xorg-server-xwayland qt5-qtmultimedia"
+depends_dev="kdecoration-dev kjobwidgets-dev kcmutils-dev kscreenlocker-dev breeze-dev
+			qt5-qtdeclarative-dev qt5-qtscript-dev kcompletion-dev plasma-framework-dev 
+			kinit-dev kio-dev xcb-util-keysyms-dev qt5-x11extras-dev kcrash-dev kglobalaccel-dev
+			knotifications-dev kiconthemes-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev
+			ki18n-dev kpackage-dev kwidgetsaddons-dev kwindowsystem-dev kidletime-dev
+			kauth-dev kcodecs-dev ktextwidgets-dev knewstuff-dev kservice-dev kxmlgui-dev
+			kbookmarks-dev kwayland-dev attica-qt-dev sonnet-dev kitemviews-dev solid-dev
+			kdeclarative-dev kactivities-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev libxkbcommon-dev
+			libepoxy-dev libinput-dev xcb-util-cursor-dev libdrm-dev eudev-dev xcb-util-wm-dev"
 source="https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz
-		D6291.patch"
+		0001-fbdev-support-RGB32-framebuffer-with-BGR-order.patch"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-
-	cd $srcdir/$pkgname-$pkgver
-	patch -p1 < $srcdir/D6291.patch
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake $srcdir/$pkgname-$pkgver \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DKDE_INSTALL_LIBEXECDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DLIBC_IS_GLIBC=0
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="54f61e01a7e4dfd980440c0b80da54494d6f9d0f0180dedf82d7de923033d5aae11d8af35b78260b7c8977ed6b78dbdd32a40706e3c05420cdbcbe4277120d2b  kwin-5.10.4.tar.xz
-c693354311a0fe4064746633a30b205a22bf90f69cae648d1ed5eef98f55062c06e6821c3f646e227b589f4a291b4a23892f8943b2171e10e39ab7f84d24bafb  D6291.patch"
+sha512sums="2d92676268b2d16eb27e8a44e6ac7b3f2a9126e92f6ec714e6ff64ba25e5ae732f3af126e69c98657af07140de5eb8e499358b58b98cd47a0b730c2a8bca6394  kwin-5.11.2.tar.xz
+5c35ff9526eb5a239e384025d20840ef159ad1f82922a49bb92ebd251c61410361495da9b03a5e185a26c6ad587ece68a20bd7973cad05cbb4f6cd490a4cbf37  0001-fbdev-support-RGB32-framebuffer-with-BGR-order.patch"

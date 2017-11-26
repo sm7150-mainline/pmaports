@@ -1,34 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwayland
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Qt-style Client and Server library wrapper for the Wayland libraries'
 arch="all"
 url='https://www.kde.org'
-license="LGPL"
-depends="qt5-qtbase wayland"
-makedepends="extra-cmake-modules doxygen qt5-qttools-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev wayland-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running Wayland compositor
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DKDE_INSTALL_LIBEXECDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="764ae59472b29a7a8066bb8bae87580a5d68b2aa8f29f284999d2e77e7b32f0c2d80d318fcb820a577138785d8b302c1c6d86b36b5b34a37a13ab80c628f6fa8  kwayland-5.37.0.tar.xz"
+sha512sums="3bbf49ee8a7cbf613d29fec59ac1444be1e89946792fc265a6c889fb32cb2ac93aca16ddd0e636daa8fda556ad01210e4bdd6b6ef4783ca95de5b0834baaa403  kwayland-5.40.0.tar.xz"

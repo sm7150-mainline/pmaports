@@ -1,35 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kpackage
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Framework that lets applications manage user installable packages of non-binary assets'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="karchive ki18n"
-makedepends="extra-cmake-modules qt5-qttools-dev python kdoctools-dev kcoreaddons-dev karchive-dev
-			 ki18n-dev doxygen"
+license="LGPL-2.1"
+depends=""
+depends_dev="kcoreaddons-dev karchive-dev ki18n-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring installed Plasma, which causes a circular dependency
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DKDE_INSTALL_LIBEXECDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="a96121acecf77b3c849415264baf382dcf8d9c518b92c5f8c70e909cefcc820c1c8d63b3e2203a95d1817322c785d327aec48f3a52ff2680c7407b5918c566b4  kpackage-5.37.0.tar.xz"
+sha512sums="969250d2bfeabbb9e69d940156adde87d3819182bd71a36f4b02a7145023e39442b18785dc3ac58f44bd5dd865cc8dad88b731afb7def38f0c6e333553452870  kpackage-5.40.0.tar.xz"

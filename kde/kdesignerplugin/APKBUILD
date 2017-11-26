@@ -1,34 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kdesignerplugin
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Integration of Frameworks widgets in Qt Designer/Creator'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kio kplotting"
-makedepends="extra-cmake-modules qt5-qttools-dev python kdoctools-dev kio-dev kcoreaddons-dev
-			 kconfig-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kcoreaddons-dev kconfig-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/$pkgname-$pkgver \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DKF5WebKit_FOUND=OFF
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="e68ec94d9e7b52c90e4b7a8ba70e8b3dcdf95365f5237285e681c7b6ea2e763876a25be787fa3e154cf535f0dff8f28246376206b11f6cfa7670383800bd67cb  kdesignerplugin-5.37.0.tar.xz"
+sha512sums="e9874339ac1d694f249a20fe86504b776959b4e225b5377ba27df8cea14ffd35a42516308cb2daef0a9595c0f57ecb1328c35778d00fa05add19f7e5cce4dd99  kdesignerplugin-5.40.0.tar.xz"

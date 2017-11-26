@@ -1,0 +1,36 @@
+pkgname=khtml
+pkgver=5.40.0
+pkgrel=1
+pkgdesc='KHTML APIs'
+arch="all"
+url='https://community.kde.org/Frameworks'
+license="GPL-3.0"
+depends=""
+depends_dev="qt5-qtbase-dev karchive-dev kcodecs-dev kglobalaccel-dev ki18n-dev kiconthemes-dev kio-dev
+			kcoreaddons-dev kconfig-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev
+			kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kjs-dev kwallet-dev
+			knotifications-dev kparts-dev ktextwidgets-dev sonnet-dev kwindowsystem-dev qt5-x11extras-dev
+			phonon-qt5-dev giflib-dev libjpeg-turbo-dev"
+makedepends="$depends_dev extra-cmake-modules gperf"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/portingAids/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Fails due to requiring running X11
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="${pkgdir}" install
+}
+sha512sums="e64cc9c32944c6cd1f45c745f4e653ca1b6023061ede3ed87886e3ed95e9d2d7a7753b396631d256b7f1a4c34b788e9a9b80253f151f73b3fdec3f862f8adcef  khtml-5.40.0.tar.xz"

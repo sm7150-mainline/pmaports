@@ -1,35 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=knotifyconfig
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Configuration system for KNotify'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kio"
-makedepends="extra-cmake-modules python qt5-qttools-dev kcompletion-dev ki18n-dev kio-dev
-			 kcoreaddons-dev kservice-dev kbookmarks-dev kitemviews-dev kjobwidgets-dev solid-dev
-			 kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kconfig-dev kwidgetsaddons-dev
-			 doxygen"
+license="LGPL-2.1"
+depends=""
+depends_dev="kcompletion-dev ki18n-dev kcoreaddons-dev kservice-dev kbookmarks-dev kitemviews-dev
+			kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kconfig-dev 
+			kwidgetsaddons-dev kio-dev knotifications-dev phonon-qt5-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
-prepare() {
-	mkdir -p $srcdir/build
-}
-
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="29b8216415161980f21d6459c7877d42a4b489870eb70aee15f2d2ec7380c7cdb985f59b917ff34328b8a9128a440b785256b1044e285bd31c80cca5eb1474c7  knotifyconfig-5.37.0.tar.xz"
+sha512sums="0a368e63c5a4af2344293300e2acbf29ee3e07a101e318f883ffa97725b5f05d6bd563ed0f832b59d2052faa3f023be25235a473ad92b0b07456c65f2737536c  knotifyconfig-5.40.0.tar.xz"

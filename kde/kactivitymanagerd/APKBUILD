@@ -1,35 +1,42 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kactivitymanagerd
-pkgver=5.10.4
-pkgrel=1
+pkgver=5.11.2
+pkgrel=0
 pkgdesc="System service to manage user's activities and track the usage patterns"
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
-license="LGPL"
-depends="kio"
-makedepends="extra-cmake-modules boost-dev python kio-dev kdbusaddons-dev ki18n-dev
-			 kconfig-dev kcoreaddons-dev kwindowsystem-dev kglobalaccel-dev kxmlgui-dev
-			 kconfigwidgets-dev kauth-dev kcodecs-dev kwidgetsaddons-dev kservice-dev
-			 kbookmarks-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev
-			 qt5-qtbase-dev"
+license="GPL-2.0"
+depends=""
+depends_dev="kio-dev kdbusaddons-dev ki18n-dev
+			kconfig-dev kcoreaddons-dev kwindowsystem-dev kglobalaccel-dev kxmlgui-dev
+			kconfigwidgets-dev kauth-dev kcodecs-dev kwidgetsaddons-dev kservice-dev
+			kbookmarks-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev
+			qt5-qtbase-dev"
+makedepends="$depends_dev extra-cmake-modules boost-dev"
 source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-lang"
 
 prepare() {
-	mkdir -p $srcdir/build
+	mkdir "$srcdir"/build
 }
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/$pkgname-$pkgver \
+	cd "$srcdir"/build
+	cmake "$builddir" \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF
+		-DKDE_INSTALL_LIBDIR=lib
 	make
 }
 
+check() {
+	cd "$srcdir"/build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$srcdir"/build
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="37966071b703ee5fc98075fc78975388e1b8df5f5ce64dad54ee3ad9add50d1c87319467292fbdc5bbba5f7c8853d7dcfd8c6623d5c1bb162c75ae9499b3860f  kactivitymanagerd-5.10.4.tar.xz"
+sha512sums="e2c85a5b2d8470ae8740adfb1bc872e7a7eafd3a210a37cc2450a99941a29eb0edb454d627915f865831d298faade4793c95d78ec2ff748b7abd9a1802022a86  kactivitymanagerd-5.11.2.tar.xz"

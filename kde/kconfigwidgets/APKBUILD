@@ -1,33 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kconfigwidgets
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Widgets for KConfig'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kauth kcodecs kguiaddons ki18n kwidgetsaddons"
-makedepends="extra-cmake-modules kdoctools python mesa-dev clang py3-qt5 doxygen qt5-qttools-dev
-			 kauth-dev kguiaddons-dev kwidgetsaddons-dev kcodecs-dev kconfig-dev ki18n-dev kcoreaddons-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kcoreaddons-dev kauth-dev kguiaddons-dev kwidgetsaddons-dev kcodecs-dev kconfig-dev 
+			ki18n-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev doxygen qt5-qttools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="46c6fae07d42d5b7ef9882453b0224d9b0e30cc90d5fd8a9a23a50508b34485a7055d751cf6773f8e89897aa1e0a856a2aaa6f71a9a72194f8939c34ca6dabe5  kconfigwidgets-5.37.0.tar.xz"
+sha512sums="af8cb1aaddb69e21e6b0dcaff0caeb5f0e81d3b6db9b34216011f82872fe129cc5029b84fa90a54194d2c4270e35f868b24326e86a2a776e9e73b985fcdb09c3  kconfigwidgets-5.40.0.tar.xz"

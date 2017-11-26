@@ -1,32 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kcompletion
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Text completion helpers and widgets'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="kwidgetsaddons kconfig"
-makedepends="extra-cmake-modules qt5-qttools-dev clang py3-qt5 doxygen kwidgetsaddons-dev kconfig-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="kwidgetsaddons-dev kconfig-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-
-prepare() {
-	mkdir -p $srcdir/build
-}
+options="!check" # Fails due to requiring running X11
 
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF \
 		-DBUILD_QCH=ON
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="99cf1346f4048134d5219d451250122ca848d49c6ec26ab9e36562d2e654c18f3415ddd1b11e7a2459ce6b473c22cddb01135de9c773e8f0ae2f1c8d2f4d5ea4  kcompletion-5.37.0.tar.xz"
+sha512sums="ffd59f3a9803856f43e2c9e7c125f789fe4ef5d261daf05e02c4f95df121b5854a1ac57d1249e734180ee205b49a742a717aee9572f5a69eb104a11aaa839b64  kcompletion-5.40.0.tar.xz"

@@ -1,31 +1,33 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kjsembed
-pkgver=5.37.0
-pkgrel=1
+pkgver=5.40.0
+pkgrel=0
 pkgdesc='Embedded JS'
 arch="all"
 url='https://community.kde.org/Frameworks'
-license="LGPL"
-depends="qt5-qtsvg ki18n kjs"
-makedepends="extra-cmake-modules qt5-qttools-dev kdoctools-dev python qt5-qtsvg-dev kjs-dev ki18n-dev"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtsvg-dev kjs-dev ki18n-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/portingAids/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
-prepare() {
-	mkdir -p $srcdir/build
-}
-
 build() {
-	cd $srcdir/build
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF
+		-DKDE_INSTALL_LIBDIR=lib
 	make
 }
 
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd $srcdir/build
+	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="b2a46546a2a06e912634159c6c37a0a7fb617efbef592c94afa7d6c30b116cfdd8d419d42012bc7890a5f846ff3c4dee113687cb7877fbbb0aa599d3cfedba8b  kjsembed-5.37.0.tar.xz"
+sha512sums="4b14d85bf5d67f61eea08eba31e4c3891c418f9bd7af931c6c643672b765ad0714b39da23f8ec57e2d752cabcd04db5647cf1a088f8bdc06be5f606d93297078  kjsembed-5.40.0.tar.xz"
