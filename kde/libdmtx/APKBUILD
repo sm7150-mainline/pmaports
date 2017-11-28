@@ -2,13 +2,19 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libdmtx
 pkgver=0.7.4
-pkgrel=6
+pkgrel=7
 pkgdesc="A software for reading and writing Data Matrix 2D barcodes"
 url="https://libdmtx.sourceforge.net/"
 arch="all"
 license="BSD-2"
 source="https://downloads.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.bz2"
 subpackages="$pkgname-dev $pkgname-libs $pkgname-doc"
+
+prepare() {
+	default_prepare
+	update_config_sub
+	update_config_guess
+}
 
 build() {
 	./configure --prefix=/usr
