@@ -1,0 +1,33 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d803418..1c6a9ea 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -52,7 +52,7 @@ pkg_check_modules(GLESV2 glesv2 REQUIRED)
+ pkg_check_modules(WAYLAND_CLIENT wayland-client REQUIRED)
+ pkg_check_modules(WAYLAND_SERVER wayland-server REQUIRED)
+ 
+-pkg_check_modules(SYSTEMD libsystemd REQUIRED)
++pkg_check_modules(SYSTEMD libsystemd OPTIONAL)
+ pkg_check_modules(GLIB2 glib-2.0 REQUIRED)
+ pkg_check_modules(LUNA_SYSMGR_COMMON LunaSysMgrCommon REQUIRED)
+ pkg_check_modules(LUNA_SYSMGR_IPC_MESSAGES LunaSysMgrIpcMessages REQUIRED)
+diff --git a/src/main.cpp b/src/main.cpp
+index d20eca4..0bb47f2 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -33,7 +33,6 @@
+ 
+ #include <glib.h>
+ 
+-#include <systemd/sd-daemon.h>
+ #include <Settings.h>
+ 
+ #include "shellapplication.h"
+@@ -132,7 +131,6 @@ int main(int argc, char *argv[])
+     if (!app.create(shellName))
+         exit(1);
+ 
+-    sd_notify(0, "READY=1");
+ 
+     return app.exec();
+ }

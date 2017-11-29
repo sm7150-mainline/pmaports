@@ -1,0 +1,38 @@
+pkgname=luna-next
+pkgver=2.6.0_git20170922
+pkgrel=0
+_commit=428a337f922691b00534f041193ee7dca8defcc2
+pkgdesc="The new webOS UI of the webOS ports project."
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="qt5-qtbase qt5-qtdeclarative qt5-qtwayland luna-prefs luna-sysmgr-common json-c nyx-lib luna-prefs"
+makedepends="extra-cmake-modules cmake-modules-webos qt5-qtbase-dev qt5-qtdeclarative-dev wayland-dev qt5-qtwayland-dev json-c-dev luna-sysmgr-common-dev nyx-lib-dev luna-prefs-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-next/archive/$_commit.tar.gz
+	remove-systemd-harddep.patch compile.patch"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DWEBOS_INSTALL_ROOT=/ \
+		-DOE_QMAKE_PATH_QML=/usr/lib/qt5/qml/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="37147471d8ea99321558aa8a824a76a6bc23d85cea666ea2c789585e7d398e46312da7488f2019826912addd28ae796552438f9a103ac6fec6572407ce6efb9b  luna-next-428a337f922691b00534f041193ee7dca8defcc2.tar.gz
+f6dc58db48bdd1ec4126245aaeb3cf364dfb761cf0aae172ff19eda885fe0601c249fcfc5e89c1cbfb91e857d5c57bac24495bab62a4c03dff7711e7dad2a9f8  remove-systemd-harddep.patch
+f749ed8a4b2ebd2f8baea6772888772cd9769a71fab667c6bb76338324a4692a9adaa3f6aae04199af74286d00b045c3c7c9cc0c57a293b8fdf04e5af75dca71  compile.patch"

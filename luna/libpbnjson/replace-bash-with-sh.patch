@@ -1,0 +1,24 @@
+diff --git a/src/pbnjson_c/validation/apply_lemon.sh b/src/pbnjson_c/validation/apply_lemon.sh
+index 0d445cf..7f08034 100755
+--- a/src/pbnjson_c/validation/apply_lemon.sh
++++ b/src/pbnjson_c/validation/apply_lemon.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # @@@LICENSE
+ #
+@@ -34,13 +34,11 @@ token_keywords=`grep TOKEN $source_dir/schema_keywords.gperf | grep -o "TOKEN_${
+ 
+ if [ "$found_keywords" != "$all_keywords" ]; then
+ 	echo >&2 "any_object_key doesn't contain all the keywords"
+-	diff <(echo "$found_keywords") <(echo "$all_keywords")
+ 	exit 1
+ fi
+ 
+ if [ "$expected_tokens" != "$token_keywords" ]; then
+ 	echo >&2 "schema_keywords.gperf doesn't contain all the keywords"
+-	diff <(echo "$token_keywords") <(echo "$expected_tokens")
+ 	exit 1
+ fi
+ 

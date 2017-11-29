@@ -1,0 +1,32 @@
+pkgname=luna-next-cardshell
+pkgver=4.4.0_git20171115
+pkgrel=0
+_commit=77659074d7f82732766904c413cbece0501f399c
+pkgdesc="The default shell used for luna-next."
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="luna-next qt5-qtbase qt5-qtdeclarative qt5-qtmultimedia"
+makedepends="cmake-modules-webos"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-next-cardshell/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="352fae17e397ee6377cc198235e41fb51e0fd88476176405adcc421a5f56d4573ddaaa24ffaa15f22568f71b7e93d545dc305a4588cfbc5edfa154f3b427cdb6  luna-next-cardshell-77659074d7f82732766904c413cbece0501f399c.tar.gz"

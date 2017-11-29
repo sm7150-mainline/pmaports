@@ -1,0 +1,36 @@
+pkgname=luna-sysmgr-ipc-messages
+pkgver=2.0.0_git20121220
+pkgrel=0
+_commit=ecca30313037c6f8edced00f1cf98c1f594a4007
+pkgdesc="Provides message definitions for the IPC provided by luna-sysmgr."
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends="cmake-modules-webos"
+source="$pkgname-$_commit.tar.gz::https://github.com/openwebos/luna-sysmgr-ipc-messages/archive/$_commit.tar.gz
+	mkpkgconfig.patch"
+subpackages="$pkgname-dev"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="84985fe0fa0fc78937b2cbc56250e664fef5652fa8c11b3c0aa99945461c570e6a5387d2488f5d57210d9071359e93b1e9e6e4f06fdf062c230ef8a2f7ce4a21  luna-sysmgr-ipc-messages-ecca30313037c6f8edced00f1cf98c1f594a4007.tar.gz
+d0c4a39449216adc792665c05dd2e11be6e75cf95bf04444c357006be31505b1550f3b276a9a58edb90b4ed5bbafe3b5a0e0dba4586b8794971f353d4a2a4c00  mkpkgconfig.patch"

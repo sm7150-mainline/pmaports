@@ -1,0 +1,35 @@
+pkgname=luna-prefs
+pkgver=7.0.0_git20141219
+pkgrel=0
+_commit=620394a1c4bd5b0c0ec0a7ee15aa5e8aa8c6d957
+pkgdesc="Retrieves system preferences values set and used by webOS"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="glib sqlite nyx-lib json-c luna-service2 pmloglib"
+makedepends="cmake-modules-webos glib-dev json-c-dev sqlite-dev pmloglib-dev nyx-lib-dev pmloglib-dev luna-service2-dev"
+depends_dev="json-c-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-prefs/archive/$_commit.tar.gz"
+subpackages="$pkgname-dev"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="ed514077b776f6a0901fc13e101ee1bccac05304d1b2bc56de6fd43558bd51587e049c2fd79618fc4190c4c2b92d2c591cb0ae2d7dfd89351a21f217ca2adcb1  luna-prefs-620394a1c4bd5b0c0ec0a7ee15aa5e8aa8c6d957.tar.gz"

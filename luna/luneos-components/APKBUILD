@@ -1,0 +1,30 @@
+pkgname=luneos-components
+pkgver=0.0.1_git20171118
+pkgrel=0
+_commit=305b2c8e2c4c5870fc737a0d2809799d5c58a2e1
+pkgdesc="LuneOS styled QtQuick Controls"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="qt5-qtbase luna-service2 qt5-qtgraphicaleffects qt5-qtdeclarative qt5-qtquickcontrols2 glib pmloglib"
+makedepends="cmake-modules-webos qt5-qtbase-dev qt5-qtdeclarative-dev glib-dev qt5-qtquickcontrols2-dev luna-service2-dev pmloglib-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luneos-components/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	export QMAKE_CXXFLAGS=" -isystem /usr/include/glib-2.0 -isystem /usr/lib/glib-2.0/include "
+	qmake-qt5 "$builddir"
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make install INSTALL_ROOT="$pkgdir"
+}
+sha512sums="a44031e07efabe46ec33beb4630ee264b8f5a136de060a56499b72403d7ff97648f84ea15ae96602d5e35dacabf33f609b0b72a84a896c66b001496dda1a5354  luneos-components-305b2c8e2c4c5870fc737a0d2809799d5c58a2e1.tar.gz"

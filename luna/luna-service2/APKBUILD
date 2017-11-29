@@ -1,0 +1,39 @@
+pkgname=luna-service2
+pkgver=3.2.0_git20170505
+pkgrel=0
+_commit=1e2e1a53c089003da333609946dddf063244ee34
+pkgdesc="Open webOS Luna System Bus library, daemon, and utilities"
+arch="all"
+url="https://github.com/webOS-ports/luna-service2"
+license="GPL-3.0+"
+depends="glib pmloglib libpbnjson"
+makedepends="cmake-modules-webos glib-dev libpbnjson-dev pmloglib-dev"
+depends_dev="glib-dev libpbnjson-dev pmloglib-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-service2/archive/$_commit.tar.gz
+		remove-systemd-harddep.patch remove-malloc-debug.patch"
+subpackages="$pkgname-dev"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/ \
+		-DMALLOC_DEBUG=1
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="862b04ad58a786b7ce810a9864a2580addd4d9757c1d8825f86f5a817a75daa83d360d4c3ceb26e512e868ba2379ba11e049e79fac84411f6758257cbe71909d  luna-service2-1e2e1a53c089003da333609946dddf063244ee34.tar.gz
+c8223795eebd9b0e7037f1ba130d6b4e58496483e886a50a76ed79ef61ed76ebc729f8d031ae9110d80f1ef029e4c8f9529edb483608bdc4aafb39a1bb5e8562  remove-systemd-harddep.patch
+2d35d056c445d25dc970fc176d1326fb93c682ebff0501a79ed2b41d5eda7fde36be0bed96e34776f234c59a95b1e29889e0ba5bec48c321e091f93db0220700  remove-malloc-debug.patch"

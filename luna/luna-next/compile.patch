@@ -1,0 +1,46 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index d20eca4..6e87dee 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -20,7 +20,6 @@
+ 
+ #include <string.h>
+ #include <errno.h>
+-#include <error.h>
+ #include <unistd.h>
+ #include <stdio.h>
+ #include <sys/types.h>
+diff --git a/plugins/compositor/CMakeLists.txt b/plugins/compositor/CMakeLists.txt
+index dae2cb3..fe80c4c 100644
+--- a/plugins/compositor/CMakeLists.txt
++++ b/plugins/compositor/CMakeLists.txt
+@@ -1,10 +1,14 @@
+ add_definitions(-DQT_COMPOSITOR_QUICK)
+ 
++#Qt5WaylandCompositor's private include dirs includes *other* private include dirs, but not it's own.
++set(QTWAYLAND_REAL_PRIVATE_INCLUDES "/usr/include/QtWaylandCompositor/${Qt5WaylandCompositor_VERSION}")
++
+ include_directories(
+     ${CMAKE_CURRENT_SOURCE_DIR}
+     ${CMAKE_CURRENT_BINARY_DIR}
+     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+     ${Qt5WaylandCompositor_PRIVATE_INCLUDE_DIRS}
++    ${QTWAYLAND_REAL_PRIVATE_INCLUDES}
+     ${WAYLAND_SERVER_INCLUDE_DIRS}
+     ${CMAKE_CURRENT_SOURCE_DIR}/compositor)
+ 
+diff --git a/plugins/compositor/compositor.cpp b/plugins/compositor/compositor.cpp
+index 4e437ea..d174c5d 100644
+--- a/plugins/compositor/compositor.cpp
++++ b/plugins/compositor/compositor.cpp
+@@ -246,6 +246,10 @@ void Compositor::onSurfaceDestroyed()
+     }
+ }
+ 
++void Compositor::onSurfaceAboutToBeDestroyed(QWaylandSurface *surface) 
++{
++}
++
+ void Compositor::onSurfaceRaised()
+ {
+     QtWayland::ExtendedSurface *extSurface = qobject_cast<QtWayland::ExtendedSurface*>(sender());

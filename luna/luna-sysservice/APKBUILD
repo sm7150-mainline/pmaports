@@ -1,0 +1,34 @@
+pkgname=luna-sysservice
+pkgver=4.0.0_git20160926
+pkgrel=0
+_commit=3e52044fc17511842e86fd05a0588fd015e28b3b
+pkgdesc="Provides image manipulation, preference, timezone and ringtone services for webOS components."
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="qt5-qtbase glib libxml2 sqlite json-c libpbnjson luna-service2 uriparser nyx-lib"
+makedepends="cmake-modules-webos pmloglib-dev qt5-qtbase-dev libxml2-dev glib-dev sqlite-dev json-c-dev libpbnjson-dev luna-service2-dev uriparser-dev nyx-lib-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-sysservice/archive/$_commit.tar.gz
+compile.patch"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$srcdir"/$pkgname-3e52044fc17511842e86fd05a0588fd015e28b3b \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="a1532f13df7d80abe22f89b8e582b4473165d3d02c8c6c6c043d190a278ffee64b599eb9d26250ba77b4f5153124b8f16727127c8d368209fa2d732c50823f58  luna-sysservice-3e52044fc17511842e86fd05a0588fd015e28b3b.tar.gz
+b822c26c542f7255d4dbc5a183aca18d3601c36e9218a579ea088eaf7dbe611fb349d08f43a21871231ada7db2825aaef9da21c7d17120c18e8276d73d9fdcbc  compile.patch"

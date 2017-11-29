@@ -1,0 +1,40 @@
+pkgname=librolegen
+pkgver=2.1.0_git20141026
+pkgrel=0
+pkgdesc="librolegen dynamically generates webOS system bus role files for webOS Javascript services"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends="cmake-modules-webos"
+_commit="b293a3f8b05f83b36b1b673c4e7dd1c18bfcf768"
+builddir="$srcdir/$pkgname-$_commit"
+
+# NOTE: Unlike the rest of the webOS ports repos, librolegen doesn't use 'master' as
+# their working branch, but 'webOS-ports/master'
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/librolegen/archive/$_commit.tar.gz
+	fix-fexists.patch"
+subpackages="$pkgname-dev"
+options="!check"
+
+prepare() {
+	default_prepare
+	# cmake does not allow in-source builds
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="937a18eff896db044fe4986d63f9a53745c31443c9bfad569b9f852e9d649bfef4a868ab357f2904132a15273be88444774a8938a64c98274dd49e828e17bb5d  librolegen-b293a3f8b05f83b36b1b673c4e7dd1c18bfcf768.tar.gz
+4aa60250ef7d01d3574fccf1427a399839d984e710782ad2753fbbbbfb5cfb652839be15a16e7b9ef11d595ecfad774ef0aed526413094694b0a5dd61969184c  fix-fexists.patch"

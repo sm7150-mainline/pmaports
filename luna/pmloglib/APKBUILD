@@ -1,0 +1,31 @@
+pkgname=pmloglib
+pkgver=3.2.0
+pkgrel=2
+pkgdesc="The Open webOS logging library"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends="cmake-modules-webos glib-dev libpbnjson-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/openwebos/pmloglib/archive/versions/3.2.0.tar.gz"
+subpackages="$pkgname-dev"
+options="!check"
+
+prepare() {
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$srcdir"/$pkgname-versions-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="ca8f1ffcfa3a366e677e7e80d6e8f8c8bbeefbf5cccb05b6e8cb2f7e307aeccbcda257ade0d55d4ce6ba6457d7681267d04c53e2f19f5647f8dcb1b56f100678  pmloglib-.tar.gz"

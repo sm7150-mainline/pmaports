@@ -1,0 +1,36 @@
+pkgname=luna-sysmgr-common
+pkgver=1.0.2_git20160628
+pkgrel=0
+_commit=c583bebb8d7fb8381a071730c5c636e95bf851fb
+pkgdesc="Provides header files and source code common to luna-sysmgr and webappmanager"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="luna-sysmgr-ipc luna-sysmgr-ipc-messages luna-prefs nyx-lib luna-service2 pmloglib libpbnjson"
+makedepends="cmake-modules-webos qt5-qtbase-dev luna-sysmgr-ipc-dev luna-sysmgr-ipc-messages luna-sysmgr-ipc-messages-dev luna-prefs-dev nyx-lib-dev luna-service2-dev json-c-dev pmloglib-dev libpbnjson-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-sysmgr-common/archive/$_commit.tar.gz
+	compile.patch"
+subpackages="$pkgname-dev"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="b8e4e72db36063fae472c38dfcb6e0d1cb3e10617fb80a56a54f495fac19102ece92c94b8bd5d499603f02d24b954aa185e906b034afe108f0566ffe6b4be794  luna-sysmgr-common-c583bebb8d7fb8381a071730c5c636e95bf851fb.tar.gz
+a682ac698055424d94f40c994a6d9a36b802f8dc604c94244722a3b466e7ec365870b7f6ef600df2d1719d397f2763c4cfb6fd6fe42c31fbdb48f3a0db1a0af6  compile.patch"

@@ -1,0 +1,25 @@
+diff --git a/Src/BackupManager.cpp b/Src/BackupManager.cpp
+index 2b34936..f90239f 100644
+--- a/Src/BackupManager.cpp
++++ b/Src/BackupManager.cpp
+@@ -19,6 +19,7 @@
+ #include <string>
+ 
+ //for basename()...
++#include <libgen.h>
+ #include <string.h>
+ #include <map>
+ #include "BackupManager.h"
+diff --git a/Src/BroadcastTimeHandler.cpp b/Src/BroadcastTimeHandler.cpp
+index a65f96a..4a75856 100644
+--- a/Src/BroadcastTimeHandler.cpp
++++ b/Src/BroadcastTimeHandler.cpp
+@@ -163,7 +163,7 @@ namespace {
+ 
+         localTm.tm_isdst = -1; // mktime should lookup TZ rules
+ 
+-        return timelocal(&localTm);
++        return mktime(&localTm);
+     }
+ 
+     time_t toTimeT(const pbnjson::JValue &value)

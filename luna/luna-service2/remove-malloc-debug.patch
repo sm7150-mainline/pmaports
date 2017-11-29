@@ -1,0 +1,80 @@
+diff --git a/src/libluna-service2/base.c b/src/libluna-service2/base.c
+index 8ee0d36..fb79753 100644
+--- a/src/libluna-service2/base.c
++++ b/src/libluna-service2/base.c
+@@ -169,7 +169,7 @@ LSDebugLogIncoming(const char *where, _LSTransportMessage *message)
+ }
+ 
+ #ifdef LSHANDLE_CHECK
+-inline void
++void
+ _lshandle_validate(LSHandle *sh)
+ {
+     if (sh && sh->history.magic_state_num != LSHANDLE_MAGIC_STATE_VALID)
+diff --git a/src/libluna-service2/base.h b/src/libluna-service2/base.h
+index 4d56c1f..9e57940 100644
+--- a/src/libluna-service2/base.h
++++ b/src/libluna-service2/base.h
+@@ -87,7 +87,7 @@ do {                                                                \
+ 
+ #define LSHANDLE_VALIDATE(sh) _lshandle_validate(sh)
+ 
+-inline void _lshandle_validate(LSHandle *sh);
++void _lshandle_validate(LSHandle *sh);
+ 
+ #define LSHANDLE_GET_RETURN_ADDR() (__builtin_return_address(0))
+ #define LSHANDLE_POISON(sh) memset(sh, 0xFF, offsetof(LSHandle, history))
+diff --git a/src/libluna-service2/debug_methods.h b/src/libluna-service2/debug_methods.h
+index 4c98ca9..3fab3a9 100644
+--- a/src/libluna-service2/debug_methods.h
++++ b/src/libluna-service2/debug_methods.h
+@@ -24,7 +24,6 @@
+ #include "base.h"
+ 
+ #define SUBSCRIPTION_DEBUG
+-#define MALLOC_DEBUG
+ #define INTROSPECTION_DEBUG
+ 
+ #ifdef SUBSCRIPTION_DEBUG
+diff --git a/src/libluna-service2/transport.c b/src/libluna-service2/transport.c
+index 9802ad3..f12f060 100644
+--- a/src/libluna-service2/transport.c
++++ b/src/libluna-service2/transport.c
+@@ -5291,7 +5291,7 @@ error:
+  * @retval  false otherwise
+  *******************************************************************************
+  */
+-inline bool
++bool
+ _LSTransportIsHub(void)
+ {
+     return s_is_hub;
+diff --git a/src/libluna-service2/transport.h b/src/libluna-service2/transport.h
+index 5b5e491..23cb899 100644
+--- a/src/libluna-service2/transport.h
++++ b/src/libluna-service2/transport.h
+@@ -186,7 +186,7 @@ void _LSTransportAddInitialWatches(_LSTransport *transport, GMainContext *contex
+ _LSTransportType _LSTransportGetTransportType(const _LSTransport *transport);
+ bool _LSTransportGetPrivileged(const _LSTransport *tansport);
+ 
+-inline bool _LSTransportIsHub(void);
++bool _LSTransportIsHub(void);
+ 
+ bool LSTransportSend(_LSTransport *transport, const char *service_name, const char *category, const char *method, const char *payload, const char* applicationId, LSMessageToken *token, LSError *lserror);
+ bool _LSTransportSendReply(const _LSTransportMessage *message, const char *payload, LSError *lserror);
+diff --git a/src/libluna-service2/transport_message.h b/src/libluna-service2/transport_message.h
+index d5ef0ba..d2986ef 100644
+--- a/src/libluna-service2/transport_message.h
++++ b/src/libluna-service2/transport_message.h
+@@ -29,9 +29,10 @@
+ #ifdef LUNA_SERVICE_UNIT_TEST
+ #define INLINE
+ #else
+-#define INLINE inline
++#define INLINE
+ #endif
+ 
++
+ /**
+  * @addtogroup LunaServiceTransportMessage
+  *

@@ -1,0 +1,28 @@
+pkgname=cmake-modules-webos
+pkgver=19
+pkgrel=1
+pkgdesc="CMake modules needed to build Open webOS components"
+url="https://github.com/openwebos/cmake-modules-webos"
+arch="noarch"
+license="custom"
+depends="cmake"
+makedepends="cmake"
+source="$pkgname-$pkgver.tar.gz::https://github.com/openwebos/cmake-modules-webos/archive/submissions/19.tar.gz"
+options="!check"
+
+prepare() {
+	mkdir "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$srcdir"/$pkgname-submissions-$pkgver \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="a8ebf0e05002b34a6a7dcf0fc8ea309eed4820d2af1275bf7523946d237238ee784db420f17530b0f043e9eadfac5760158a096651df1b415c9ec954f955dace  cmake-modules-webos-19.tar.gz"

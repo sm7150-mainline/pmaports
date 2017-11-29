@@ -1,0 +1,33 @@
+pkgname=lemon
+pkgver=3.21
+pkgrel=1
+pkgdesc="The Lemon Parser Generator"
+arch="all"
+url="https://www.hwaci.com/sw/lemon"
+license="custom"
+depends=""
+makedepends=""
+source="lemon-$pkgver.c::https://www.sqlite.org/src/raw?ci=branch-$pkgver&filename=tool/lemon.c
+lempar-$pkgver.c::https://www.sqlite.org/src/raw?ci=branch-$pkgver&filename=tool/lempar.c"
+options="!check"
+
+
+build() {
+	cd "$srcdir"
+	gcc lemon-$pkgver.c -c -o lemon.o
+	gcc lemon.o -o lemon
+}
+
+package() {
+	cd "$srcdir"
+	install -d "$pkgdir"/usr/bin/
+	install -m 0755 lemon "$pkgdir"/usr/bin/
+
+	# FIXME: lempar.c should not be in /usr/bin/! Consider upstreaming a
+	# patch into sqlite, that makes lemon look for it in /usr/share/lemon:
+	# <https://aur.archlinux.org/cgit/aur.git/tree/lemon_share.diff?h=lemon>
+
+	install -m 0644 "$srcdir"/lempar-$pkgver.c "$pkgdir"/usr/bin/lempar.c
+}
+sha512sums="17c5210e856a6eeb195b9c8c68b83407b7085596dd48e8e55059d644725ff84fb56a5cf223530723b9a69382f619383b4035fe46588300e2e5776228429ec5d4  lemon-3.21.c
+cbf78b843fdebadebff498db803fce545e5c1cb3dcf76da4989513f1f970a2a192d3f775430a4ae81e89b41477a06a530f01c83641ca36949a7c24452b4fba13  lempar-3.21.c"

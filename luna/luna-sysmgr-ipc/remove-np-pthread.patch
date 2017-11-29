@@ -1,0 +1,62 @@
+diff --git a/src/ipc/PIpcBuffer.cpp b/src/ipc/PIpcBuffer.cpp
+index 6b8bfc6..4a9a96e 100644
+--- a/src/ipc/PIpcBuffer.cpp
++++ b/src/ipc/PIpcBuffer.cpp
+@@ -94,7 +94,7 @@ PIpcBuffer* PIpcBuffer::create(int size)
+ 	pthread_mutexattr_t attr;
+ 	pthread_mutexattr_init (&attr);
+ 	pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+-	pthread_mutexattr_setrobust_np(&attr, PTHREAD_MUTEX_ROBUST_NP);
++	pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
+ 
+ 	// initialize the buffer lock mutex
+ 	pthread_mutex_t* mutex = (pthread_mutex_t*) &h->mutex;
+@@ -320,7 +320,7 @@ bool PIpcBuffer::trylock(pthread_mutex_t* mutex, int& lockCount)
+ 	//printf("PIpcBuffer::trylock: %d, %p, %d\n", m_key, mutex, ret);
+ 	if (ret != 0) {
+ 		if (ret == EOWNERDEAD)
+-			pthread_mutex_consistent_np(mutex);
++			pthread_mutex_consistent(mutex);
+ 		else if (ret == EBUSY) {
+ 			return false;
+ 		}
+@@ -347,7 +347,7 @@ bool PIpcBuffer::lock(pthread_mutex_t* mutex, int& lockCount)
+ 	//printf("PIpcBuffer::lock: %d, %p, %d\n", m_key, mutex, ret);
+ 	if (ret != 0) {
+ 		if (ret == EOWNERDEAD)
+-			pthread_mutex_consistent_np(mutex);
++			pthread_mutex_consistent(mutex);
+ 		else {
+ 			g_critical("%s: %s", __PRETTY_FUNCTION__, strerror(ret));
+ 			return false;
+diff --git a/src/ipc/PIpcMutex.cpp b/src/ipc/PIpcMutex.cpp
+index a80efed..c1c1c54 100644
+--- a/src/ipc/PIpcMutex.cpp
++++ b/src/ipc/PIpcMutex.cpp
+@@ -72,7 +72,7 @@ PIpcMutex* PIpcMutex::create()
+ 	pthread_mutexattr_t attr;
+ 	pthread_mutexattr_init (&attr);
+ 	pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+-	pthread_mutexattr_setrobust_np(&attr, PTHREAD_MUTEX_ROBUST_NP);
++	pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
+ 
+ 	pthread_mutex_t* mutex = (pthread_mutex_t*) &m->m_data->mutex;
+ 	pthread_mutex_init(mutex, &attr);
+@@ -124,7 +124,7 @@ bool PIpcMutex::lock()
+ 	int ret = pthread_mutex_lock(mutex);
+ 	if (ret != 0) {
+ 		if (ret == EOWNERDEAD)
+-			pthread_mutex_consistent_np(mutex);
++			pthread_mutex_consistent(mutex);
+ 		else {
+ 			g_critical("%s: %s", __PRETTY_FUNCTION__, strerror(ret));
+ 			return false;
+@@ -146,7 +146,7 @@ bool PIpcMutex::tryLock()
+ 	int ret = pthread_mutex_trylock(mutex);
+ 	if (ret != 0) {
+ 		if (ret == EOWNERDEAD)
+-			pthread_mutex_consistent_np(mutex);
++			pthread_mutex_consistent(mutex);
+ 		else if (ret == EBUSY)
+ 			return false;
+ 		else {

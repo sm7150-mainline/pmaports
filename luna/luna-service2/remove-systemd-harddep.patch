@@ -1,0 +1,64 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d004c9f..3ea9779 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -44,10 +44,6 @@ pkg_check_modules(PMLOGLIB REQUIRED PmLogLib>=3.0.2)
+ include_directories(${PMLOGLIB_INCLUDE_DIRS})
+ webos_add_compiler_flags(ALL ${PMLOGLIB_CFLAGS_OTHER})
+ 
+-pkg_check_modules(SYSTEMD_DAEMON REQUIRED libsystemd)
+-include_directories(${SYSTEMD_DAEMON_INCLUDE_DIRS})
+-webos_add_compiler_flags(ALL ${SYSTEMD_DAEMON_CFLAGS_OTHER})
+-
+ include(webOS/LegacyDefines)
+ 
+ set(LS2_PERMS "")
+diff --git a/src/ls-hubd/CMakeLists.txt b/src/ls-hubd/CMakeLists.txt
+index 9bea8cb..d91f800 100644
+--- a/src/ls-hubd/CMakeLists.txt
++++ b/src/ls-hubd/CMakeLists.txt
+@@ -35,7 +35,7 @@ add_definitions(-DDEFAULT_LOCAL_SOCKET_DIR="${WEBOS_INSTALL_RUNTIMEINFODIR}/ls2"
+ add_library(ls-hublib STATIC ${HUB_SOURCE_FILES})
+ 
+ add_executable(ls-hubd hub.c)
+-target_link_libraries(ls-hubd ls-hublib ${CMAKE_PROJECT_NAME} ${PMLOGLIB_LDFLAGS} ${SYSTEMD_DAEMON_LDFLAGS})
++target_link_libraries(ls-hubd ls-hublib ${CMAKE_PROJECT_NAME} ${PMLOGLIB_LDFLAGS})
+ webos_build_daemon(NAME ls-hubd LAUNCH ${CMAKE_SOURCE_DIR}/files/launch/ ${LS2_RESTRICTED})
+ 
+ if (WEBOS_CONFIG_BUILD_TESTS)
+diff --git a/src/ls-hubd/hub.c b/src/ls-hubd/hub.c
+index 78b56e8..7fc3112 100644
+--- a/src/ls-hubd/hub.c
++++ b/src/ls-hubd/hub.c
+@@ -30,7 +30,6 @@
+ #include <libgen.h>
+ #include <glib.h>
+ #include <pbnjson.h>
+-#include <systemd/sd-daemon.h>
+ 
+ #include "hub.h"
+ #include "conf.h"
+@@ -4487,11 +4486,6 @@ int main(int argc, char *argv[])
+             LOG_LS_ERROR(MSGID_LSHUB_UPSTART_ERROR, 0, "Unable to emit upstart event");
+         }
+     }
+-
+-    if (getenv("NOTIFY_SOCKET") != NULL)
+-    {
+-        sd_notify(0, "READY=1");
+-    }
+ #endif
+ 
+     if (boot_file_name)
+diff --git a/src/ls-hubd/test/CMakeLists.txt b/src/ls-hubd/test/CMakeLists.txt
+index 3d06cc4..d51893b 100644
+--- a/src/ls-hubd/test/CMakeLists.txt
++++ b/src/ls-hubd/test/CMakeLists.txt
+@@ -31,6 +31,6 @@ add_definitions(-DUNIT_TESTS)
+ 
+ foreach (TEST ${UNIT_TEST_SOURCES})
+     add_executable(${TEST} ${TEST}.c ../hub.c ../security.c)
+-    target_link_libraries(${TEST} ls-hublib ${CMAKE_PROJECT_NAME} ${TESTLIBNAME} ${PMLOGLIB_LDFLAGS} ${SYSTEMD_DAEMON_LDFLAGS})
++    target_link_libraries(${TEST} ls-hublib ${CMAKE_PROJECT_NAME} ${TESTLIBNAME} ${PMLOGLIB_LDFLAGS})
+     add_test(${TEST} ${TEST})
+ endforeach ()

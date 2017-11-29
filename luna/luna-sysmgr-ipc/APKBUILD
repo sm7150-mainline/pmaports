@@ -1,0 +1,36 @@
+pkgname=luna-sysmgr-ipc
+pkgver=2.0.0_git20121029
+pkgrel=0
+_commit=b51360839d2241717eae5fe8f9d360f68da267db
+pkgdesc="Provides headers for the IPC library used by luna-sysmgr"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="glib"
+makedepends="cmake-modules-webos glib-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-sysmgr-ipc/archive/$_commit.tar.gz
+	 remove-np-pthread.patch"
+subpackages="$pkgname-dev"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+}
+
+build() {
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="5c72eb88cfc27883ad4d1fea764b244c147c3f192d42bdc9df00833b041181f3fae5a45e6bb33fcfff8547b3e5934dcc3523749730db8a378c2e567d520a5ac4  luna-sysmgr-ipc-b51360839d2241717eae5fe8f9d360f68da267db.tar.gz
+0ef0e57540d07abd7de97fb6f66ce202d753fa2285f93b80e29bc0d8d9774b9b6b66d11d7ff7cd685eaca2f3c4fcadbd9eb9761725b00cfc0975838a6a69f5a8  remove-np-pthread.patch"

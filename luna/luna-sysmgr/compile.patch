@@ -1,0 +1,27 @@
+diff --git a/Src/Main.cpp b/Src/Main.cpp
+index 3ac9027..bf2f895 100644
+--- a/Src/Main.cpp
++++ b/Src/Main.cpp
+@@ -75,14 +75,6 @@
+ */
+ 
+ 
+-//#define PRINT_MALLOC_STATS
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-extern void malloc_stats(void);
+-#ifdef __cplusplus
+-};
+-#endif
+ 
+ static gchar* s_uiStr = NULL;
+ static gchar* s_appToLaunchStr = NULL;
+@@ -336,7 +328,6 @@ static gboolean mallocStatsCb(gpointer data)
+ 	fflush(stderr);
+ 	fprintf(stderr, "\nMALLOC STATS FOR PROCESS: \"%s\" (PID: %d) AT [%ld.%ld] %s", process_name, my_pid, ts.tv_sec, ts.tv_nsec, ctime_r(&cur_time, buf));
+ 	fflush(stderr);
+-	malloc_stats();
+ 	fprintf(stderr, "\n\n");
+ 	fflush(stderr);
+ 	fsync(STDERR_FILENO);

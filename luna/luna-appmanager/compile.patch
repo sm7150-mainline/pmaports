@@ -1,0 +1,128 @@
+diff --git a/Src/Main.cpp b/Src/Main.cpp
+index 8894f52..3eca6c4 100644
+--- a/Src/Main.cpp
++++ b/Src/Main.cpp
+@@ -79,7 +79,7 @@
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+-extern void malloc_stats(void);
++//extern void malloc_stats(void);
+ #ifdef __cplusplus
+ };
+ #endif
+@@ -336,7 +336,7 @@ static gboolean mallocStatsCb(gpointer data)
+ 	fflush(stderr);
+ 	fprintf(stderr, "\nMALLOC STATS FOR PROCESS: \"%s\" (PID: %d) AT [%ld.%ld] %s", process_name, my_pid, ts.tv_sec, ts.tv_nsec, ctime_r(&cur_time, buf));
+ 	fflush(stderr);
+-	malloc_stats();
++	//malloc_stats();
+ 	fprintf(stderr, "\n\n");
+ 	fflush(stderr);
+ 	fsync(STDERR_FILENO);
+diff --git a/Src/base/application/ApplicationInstaller.cpp b/Src/base/application/ApplicationInstaller.cpp
+index 937ca82..ec215ad 100644
+--- a/Src/base/application/ApplicationInstaller.cpp
++++ b/Src/base/application/ApplicationInstaller.cpp
+@@ -2766,7 +2766,7 @@ bool ApplicationInstaller::cbQueryInstallCapacity(LSHandle* lshandle,LSMessage *
+ 		goto Done;
+ 	}
+ 
+-	size = strtouq(strsize.c_str(),NULL,10);
++	size = strtoul(strsize.c_str(),NULL,10);
+ 	
+ 	if (size == 0)
+ 	{
+@@ -2780,7 +2780,7 @@ bool ApplicationInstaller::cbQueryInstallCapacity(LSHandle* lshandle,LSMessage *
+ 	}
+ 	else
+ 	{
+-		ucSize = strtouq(strucsize.c_str(),NULL,10);
++		ucSize = strtoul(strucsize.c_str(),NULL,10);
+ 	}
+ 		
+ 	queryCapacityResult = ApplicationInstaller::instance()->lunasvcQueryInstallCapacity(packageId, size, ucSize, spaceNeeded);
+diff --git a/Src/base/application/ApplicationManager.cpp b/Src/base/application/ApplicationManager.cpp
+index c360ec8..8acd373 100644
+--- a/Src/base/application/ApplicationManager.cpp
++++ b/Src/base/application/ApplicationManager.cpp
+@@ -691,7 +691,7 @@ void ApplicationManager::createOrUpdatePackageManifest(PackageDescription* packa
+ 						packageDesc->setPackageSize(ApplicationInstaller::getSizeOfPackageOnFsGenerateManifest("", packageDesc, NULL));
+ 					} else {
+ 						// set the size that's found
+-						uint64_t packageSize = strtouq(packageSizeStr.c_str(), NULL, 10);
++						uint64_t packageSize = strtoul(packageSizeStr.c_str(), NULL, 10);
+ 						g_debug("%s: [MANIFESTS]: manifest for %s blocksize = %s found total size = %llu...setting on package desc",__PRETTY_FUNCTION__, packageDesc->id().c_str(), bsizeStr.c_str(), packageSize);
+ 						packageDesc->setPackageSize(packageSize);
+ 					}
+diff --git a/Src/base/application/CmdResourceHandlers.cpp b/Src/base/application/CmdResourceHandlers.cpp
+index 2bd105c..758f370 100644
+--- a/Src/base/application/CmdResourceHandlers.cpp
++++ b/Src/base/application/CmdResourceHandlers.cpp
+@@ -39,6 +39,7 @@ RedirectHandler::RedirectHandler(const std::string& urlRe, const std::string& ap
+ 	if (!urlRe.empty() && 0 == regcomp(&m_urlReg, urlRe.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
+ 	}
+ 	else {
++		m_regexValid = false;
+ 		::memset(&m_urlReg, 0, sizeof(m_urlReg));
+ 	}
+ }
+@@ -50,6 +51,7 @@ RedirectHandler::RedirectHandler(const std::string& urlRe, const std::string& ap
+ 	if (!urlRe.empty() && 0 == regcomp(&m_urlReg, urlRe.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
+ 	}
+ 	else {
++		m_regexValid = false;
+ 		::memset(&m_urlReg, 0, sizeof(m_urlReg));
+ 	}
+ }
+@@ -65,8 +67,10 @@ RedirectHandler::RedirectHandler(const RedirectHandler& c)
+ 	m_verbs = c.m_verbs;
+ 	
+ 	if (!m_urlRe.empty() && 0 == regcomp(&m_urlReg, m_urlRe.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
++		m_regexValid = true;	
+ 	}
+ 	else {
++		m_regexValid = false;
+ 		::memset(&m_urlReg, 0, sizeof(m_urlReg));
+ 	}
+ 	
+@@ -89,8 +93,10 @@ RedirectHandler& RedirectHandler::operator=(const RedirectHandler& c)
+ 	m_verbs = c.m_verbs;
+ 	
+ 	if (!m_urlRe.empty() && 0 == regcomp(&m_urlReg, m_urlRe.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
++		m_regexValid = true;
+ 	}
+ 	else {
++		m_regexValid = false;
+ 		::memset(&m_urlReg, 0, sizeof(m_urlReg));
+ 	}
+ 	
+@@ -99,6 +105,7 @@ RedirectHandler& RedirectHandler::operator=(const RedirectHandler& c)
+ 
+ RedirectHandler::RedirectHandler() : m_valid(false), m_schemeForm(false), m_index(0)
+ {
++	m_regexValid = false;
+ 	::memset(&m_urlReg, 0, sizeof(m_urlReg));
+ }
+ 
+@@ -126,7 +133,7 @@ bool RedirectHandler::matches(const std::string& url) const
+  */
+ bool RedirectHandler::reValid() const
+ {
+-	return m_urlReg.buffer != NULL;
++	return m_regexValid;
+ }
+ 
+ bool RedirectHandler::addVerb(const std::string& verb,const std::string& jsonizedParams)
+diff --git a/Src/base/application/CmdResourceHandlers.h b/Src/base/application/CmdResourceHandlers.h
+index e6bf3a7..ae48e81 100644
+--- a/Src/base/application/CmdResourceHandlers.h
++++ b/Src/base/application/CmdResourceHandlers.h
+@@ -94,6 +94,7 @@ class RedirectHandler
+ 		regex_t m_urlReg; ///< The compiled URL regular expression
+ 		bool	m_valid;
+ 		bool	m_schemeForm;
++		bool m_regexValid = true;
+ 		std::string m_tag;
+ 		uint32_t m_index;
+ 		std::map<std::string,std::string>	m_verbs;				// < Verb , json-ized string of parameters >
