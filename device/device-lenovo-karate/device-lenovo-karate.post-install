@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Enable networking service (requires /etc/interfaces, which is configured below)
+rc-update add networking default
+
+# Create /etc/network/interfaces if this doesn't exist
+if [ ! -f /etc/network/interfaces ]; then
+        cat << EOF >> /etc/network/interfaces
+auto lo
+iface lo inet loopback
+auto wlan0
+iface wlan0 inet dhcp
+EOF
+
+fi
+
+exit 0

@@ -1,0 +1,21 @@
+pkgname="device-lenovo-karate"
+pkgdesc="Lenovo K6 Power"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-lenovo-karate firmware-lenovo-karate mkbootimg mdss-fb-init-hack"
+source="deviceinfo 90-android-touch-dev.rules"
+install="$pkgname.post-install"
+
+package() {
+	install -Dm644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -Dm755 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+sha512sums="4cf920b531e825adab6354b37157686c554c08cff867cd7fcaa477617ec81ccd4d96762d29c987e089c4bf809ebc73496b045306e60cf476ca256209868f0606  deviceinfo
+25086c95c67c27151112efac1dcf7792589c990cc0a93ee910654445a3f9cc66c4a5ab656b3256224b39c49fe104540757cc36abf9de19f47c28c4fa82c4f552  90-android-touch-dev.rules"
