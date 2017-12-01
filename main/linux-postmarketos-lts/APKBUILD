@@ -1,0 +1,183 @@
+_flavor=postmarketos-lts
+_config="config-${_flavor}.${CARCH}"
+
+pkgname=linux-${_flavor}
+
+pkgver=4.9.65
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+pkgrel=0
+
+arch="all"
+pkgdesc="Linux for pmOS supported chipsets (LTS)"
+url="https://kernel.org/"
+depends="postmarketos-mkinitfs"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps"
+install=
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	config-${_flavor}.armhf
+	config-${_flavor}.aarch64
+	config-${_flavor}.x86_64
+"
+
+if [ "${pkgver%.0}" = "$pkgver" ]; then
+	source="$source
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
+fi
+subpackages="$pkgname-dev::$CBUILD_ARCH"
+
+license="GPL2"
+_abi_release=${pkgver}
+_carch=${CARCH}
+case "$_carch" in
+aarch64*) _carch="arm64" ;;
+arm*) _carch="arm" ;;
+ppc*) _carch="powerpc" ;;
+s390*) _carch="s390" ;;
+esac
+
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+ksrcdir="$srcdir/linux-$_kernver"
+
+prepare() {
+	local _patch_failed=
+	cd "$ksrcdir"
+	if [ "$_kernver" != "$pkgver" ]; then
+		msg "Applying patch-$pkgver.xz"
+		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N
+	fi
+
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch)
+			msg "Applying $i..."
+			if ! patch -s -p1 -N -i "$srcdir"/$i; then
+				echo $i >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
+	done
+
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	mkdir -p "$srcdir"/build
+	cp -v "$srcdir"/$_config "$srcdir"/build/.config
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		olddefconfig
+}
+
+
+
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
+menuconfig() {
+	cd "$srcdir"/build
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		CFLAGS_MODULE=-fno-pic
+}
+
+package() {
+	cd "$srcdir/build/arch/${_carch}/boot"
+
+	if [ "$CARCH" == "aarch64" ]; then
+		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image" \
+			"$pkgdir/boot/vmlinuz-$_flavor"
+	else
+		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
+			"$pkgdir/boot/vmlinuz-$_flavor"
+	fi
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir"/build
+
+	local _install
+	case "$CARCH" in
+	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
+	*)		_install="modules_install" ;;
+	esac
+
+	make -j1 $_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+
+
+dev() {
+	# copy the only the parts that we really need for build 3rd party
+	# kernel modules and install those as /usr/src/linux-headers,
+	# simlar to what ubuntu does
+	#
+	# this way you dont need to install the 300-400 kernel sources to
+	# build a tiny kernel module
+	#
+	pkgdesc="Headers and script for third party modules for postmarketos kernel"
+	depends="gmp-dev bash perl"
+	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
+
+	# first we import config, run prepare to set up for building
+	# external modules, and create the scripts
+	mkdir -p "$dir"
+	cp "$srcdir"/$_config "$dir"/.config
+	make -j1 -C "$srcdir"/linux-$_kernver O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
+		olddefconfig prepare modules_prepare scripts
+
+	# needed for 3rd party modules
+	# https://bugzilla.kernel.org/show_bug.cgi?id=11143
+	case "$CARCH" in
+	ppc*) (cd "$dir" && make arch/powerpc/lib/crtsavres.o);;
+	esac
+
+	# remove the stuff that points to real sources. we want 3rd party
+	# modules to believe this is the soruces
+	rm "$dir"/Makefile "$dir"/source
+
+	# copy the needed stuff from real sources
+	#
+	# this is taken from ubuntu kernel build script
+	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
+
+	cd "$srcdir"/linux-$_kernver
+	find . -path './include/*' -prune \
+		-o -path './scripts/*' -prune -o -type f \
+		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
+		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
+		-print | cpio -pdm "$dir"
+	cp -a scripts include "$dir"
+	find $(find arch -name include -type d -print) -type f \
+		| cpio -pdm "$dir"
+
+	install -Dm644 "$srcdir"/build/Module.symvers \
+		"$dir"/Module.symvers
+
+	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
+	ln -sf /usr/src/linux-headers-${_abi_release} \
+		"$subpkgdir"/lib/modules/${_abi_release}/build
+}
+
+sha512sums="bf67ff812cc3cb7e5059e82cc5db0d9a7c5637f7ed9a42e4730c715bf7047c81ed3a571225f92a33ef0b6d65f35595bc32d773356646df2627da55e9bc7f1f1a  linux-4.9.tar.xz
+7de482169eb64cca001c298091471d803421dfef5835fa9a693840bd96083bdc42bc12a5217ececb5780ac285cf23674f2bd008183e651b81a7fc2882b819f01  config-postmarketos-lts.armhf
+f7dcf05c3c3042c6105748bcbe60ff8c02fac91c7de260a51b568c983df7f2a69c2bde6ebc3ddc4b7283e4aba7e1a8b0e9e4baff6ab863553dc3767679f54f62  config-postmarketos-lts.aarch64
+d1e6ca8faee80641a2e882b3b9b0009b05a73adee8e939ace17be7879f8a87f4f2e7cb7bbbb9590e9b6c1491ed076505dbef599c0dc9e71fe71a8d451a7b635e  config-postmarketos-lts.x86_64
+f22ec263901248adb0b660e5ea6f9c550f28f53dcd27d4a5148a932bce3b92f91cd921ff1d62096ac78c235e7abbeafa7ae33fc4f042e7d876e1fd58945554ce  patch-4.9.65.xz"
