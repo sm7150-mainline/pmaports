@@ -8,15 +8,20 @@ license="GPL3+"
 # dbus-x11 provides dbus-launch
 depends="plasma-phone-components dbus dbus-x11 qmltermwidget plasma-settings
 	breeze-icons postmarketos-demos kscreen qt5-qtvirtualkeyboard
-	plasma-camera elisa pulseaudio pulseaudio-utils consolekit2 kwin"
+	plasma-camera elisa pulseaudio pulseaudio-utils consolekit2 powerdevil
+	polkit-kde-agent"
 makedepends=""
 install="$pkgname.post-install"
 subpackages=""
-source="start_plasma.sh"
+source="start_plasma.sh kwinrc"
 options="!check"
 
 package() {
 	install -D -m644 "$srcdir"/start_plasma.sh \
 		"$pkgdir"/etc/profile.d/start_plasma.sh
+	
+	install -D -m644 "$srcdir"/kwinrc \
+		"$pkgdir"/etc/xdg/kwinrc
 }
-sha512sums="c8fc4dbd6e237a17d8b3d5bcad989d2ece0360c9cbbe58776a24f3100cb7981780db1cb25da8ef3733bc4e0c1bb5a0b610b90b74641709d0f404bc26d6faafa0  start_plasma.sh"
+sha512sums="535b0378767c4c55974f15314f128b421879606094c681db0f9230552d9da83bedc2ba3143368c973259ba5f7025ccdde38c80c558828e3f53f6c5ae26227fef  start_plasma.sh
+a95d3bbd1e8051c9b394ad7a26e4beb2d1be8d3c38189819da61fd42b1c7fd3948c4737bc9246eee23eaf5fd9451cd6362fb06442f3d8f967f930d3bcc5cfbe9  kwinrc"
