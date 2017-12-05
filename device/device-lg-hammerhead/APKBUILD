@@ -1,14 +1,14 @@
 pkgname=device-lg-hammerhead
 pkgver=1
-pkgrel=13
+pkgrel=14
 pkgdesc="Google Nexus 5"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-lg-hammerhead linux-firmware mkbootimg"
+depends="linux-lg-hammerhead linux-firmware mkbootimg msm-fb-refresher"
 makedepends=""
 install=""
-subpackages=""
+subpackages="$pkgname-weston $pkgname-x11"
 source="
 	deviceinfo
 	90-android-touch-dev.rules
@@ -16,6 +16,7 @@ source="
 	profile.sh
 	bcmdhd.cal
 	weston.ini
+	xorg.conf
 "
 options="!check"
 
@@ -32,15 +33,26 @@ package() {
 		"$pkgdir"/etc/wifi/bcmdhd.cal
 }
 
+x11() {
+	install_if="$pkgname xorg-server"
+	depends="
+		libinput
+		xf86-input-libinput
+		xf86-video-fbdev"
+	install -Dm644 "$srcdir"/xorg.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/10-hammerhead.conf
+}
+
 weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
-sha512sums="e954e4ad792932bb23acee1a0f864067d6bf5d50372fc8fd99e3faaf5bda1d57a4f29978649d106100cd80cdfc8a1fa496b396d6fa461e08769a75c23f8449af  deviceinfo
+sha512sums="f7ba9458043b6b00a5f1631750367c029f4d1362f96b359a6d330c8b1f318032c218b7fff526bd0ecf4b2cadb6f666bc62ed375cfc180edc7183b6c3e0002e39  deviceinfo
 ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e28d2db4b81c0f50b905639911276da40321d2b6cca7f797df  90-android-touch-dev.rules
 4f528656c4febb18742e89552dfe7fdc824ed4ad6ad2777d20b4f55040edd93d8e3ea657baabcdbe77bd0fb4bd3d23e5e0b2dae574f0df6723b2e26216ee81e1  udev-v4l-hack.sh
 d04013c17caf77a87ebea167dbe48f7efa9c9d3123c5743d359f3ea8ccc6b268fa021535a4bf8291eb4a352f0c92f6eb527da0db340421f53bc1cc439a453306  profile.sh
 32652ef366694f34dec31f316a38aca96700e3a5a3eac1f8d192e3c5de7b91e480b1c0fcd8e7c80a51692dc3737020ebbb2e5d3779436e82fb18822089c63055  bcmdhd.cal
-4f321242005b4da012322a8e9bce14a3734281d6ab410f60e7c9c28a6df905876ccce65c3b914233f351118718ccd81b9be41724ee2099ca36d40b4cfff46b93  weston.ini"
+4f321242005b4da012322a8e9bce14a3734281d6ab410f60e7c9c28a6df905876ccce65c3b914233f351118718ccd81b9be41724ee2099ca36d40b4cfff46b93  weston.ini
+f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf"
