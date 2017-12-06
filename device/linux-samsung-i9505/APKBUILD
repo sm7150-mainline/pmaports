@@ -1,0 +1,89 @@
+# Kernel config based on: arch/arm/configs/jf_defconfig
+
+pkgname="linux-samsung-i9505"
+pkgver=3.4.112
+pkgrel=0
+pkgdesc="Samsung Galaxy S4 International kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-i9505"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_jf"
+_commit="e8d93e03563e42d7c762d4e9a87d77115102b301"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_fix_return_address.patch
+	patch_lifebook_detect.patch
+	patch_fsp_detect.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+	gpu_msm2_fix_compile.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror-/-W/g'
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror//g'
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="7b73724636d9fb2a19e6405b1c6acd9f08020cb2d8c51f209eab2dea90616f15e88e96cdea62931864a6a3f6d4ad1c0b0b9b5cae3e3a690c20f5a9dcb4b33d82  linux-samsung-i9505-e8d93e03563e42d7c762d4e9a87d77115102b301.tar.gz
+c6058d928f5f98f3f52df573b1f401ca026309756d93ae664b946489a3c9bee328f078cf2ba5ee0bcc25db637aabe2332f2dba7e2340d236e03ca0e15345a4e7  config-samsung-i9505.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+36418ec3d31d1d6d9915afcf3d38d4549aeeb49c3825414b51b67db7a1ab6482f22d2723da3b258b671956809949278a51f6507df9b0052aec0bd0c59f56919a  patch_lifebook_detect.patch
+9da951bb0391564f33bdb0a97c339997eda7b15ec2f160da8af237cc87c233b8c3dcdc1a12759e04d69d075ae9b0afaf726101ef356e788d7f4606a03db2e248  patch_fsp_detect.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
+8ab0ed40315a22b046e6250df7ad0f7834ed011598c85d34500b6fc047f1c830b998f9fa3b1d5150d98ba34f3924cd62576e0e7d3d62fcc9832319eafc533c96  gpu_msm2_fix_compile.patch"

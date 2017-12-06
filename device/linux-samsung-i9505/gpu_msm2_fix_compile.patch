@@ -1,0 +1,23 @@
+fix undefined reference to `kgsl_iommu_sync_lock'
+diff --git a/drivers/gpu/msm2/kgsl_iommu.c b/drivers/gpu/msm2/kgsl_iommu.c
+index 5ad557f..9450041 100644
+--- a/drivers/gpu/msm2/kgsl_iommu.c
++++ b/drivers/gpu/msm2/kgsl_iommu.c
+@@ -1010,7 +1010,7 @@ static int kgsl_iommu_init_sync_lock(struct kgsl_mmu *mmu)
+  *
+  * Return - int - number of commands.
+  */
+-inline unsigned int kgsl_iommu_sync_lock(struct kgsl_mmu *mmu,
++static inline unsigned int kgsl_iommu_sync_lock(struct kgsl_mmu *mmu,
+ 						unsigned int *cmds)
+ {
+ 	struct kgsl_device *device = mmu->device;
+@@ -1080,7 +1080,7 @@ inline unsigned int kgsl_iommu_sync_lock(struct kgsl_mmu *mmu,
+  *
+  * Return - int - number of commands.
+  */
+-inline unsigned int kgsl_iommu_sync_unlock(struct kgsl_mmu *mmu,
++static inline unsigned int kgsl_iommu_sync_unlock(struct kgsl_mmu *mmu,
+ 					unsigned int *cmds)
+ {
+ 	struct kgsl_device *device = mmu->device;
