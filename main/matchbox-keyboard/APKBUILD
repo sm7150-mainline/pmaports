@@ -1,0 +1,25 @@
+# Contributor: drebrez <drebrez@gmail.com>
+# Maintainer: drebrez <drebrez@gmail.com>
+pkgname=matchbox-keyboard
+pkgver=0.1.1
+pkgrel=0
+pkgdesc="An on screen virtual keyboard"
+url="http://matchbox-project.org/"
+arch="all"
+license="GPL"
+depends="libfakekey libxft"
+makedepends="autoconf automake libtool libxft-dev libxtst-dev"
+source="$pkgname-$pkgver.tar.bz2::http://git.yoctoproject.org/cgit/cgit.cgi/matchbox-keyboard/snapshot/matchbox-keyboard-$pkgver.tar.bz2"
+
+build() {
+	./autogen.sh
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="388298370cd69155a8a11efb2198522fd2757b48861b110998eea38f31ded490d2ba0ee1a715d4a4f76a8e51411e5b3963229938d0be7d44a796e0543b8afa3e  matchbox-keyboard-0.1.1.tar.bz2"

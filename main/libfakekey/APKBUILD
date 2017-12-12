@@ -1,0 +1,31 @@
+# Contributor: drebrez <drebrez@gmail.com>
+# Maintainer: drebrez <drebrez@gmail.com>
+pkgname=libfakekey
+pkgver=0.1
+pkgrel=0
+pkgdesc="X virtual keyboard library"
+url="https://www.yoctoproject.org/tools-resources/projects/matchbox"
+arch="all"
+license="GPL"
+depends="libxtst"
+makedepends="autoconf automake libtool libxtst-dev"
+source="$pkgname-$pkgver.tar.bz2::https://downloads.yoctoproject.org/releases/matchbox/$pkgname/$pkgver/$pkgname-$pkgver.tar.bz2"
+options="!check"
+
+prepare() {
+	default_prepare
+	update_config_sub
+	update_config_guess
+}
+
+build() {
+	./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --disable-static
+	make AM_LDFLAGS=-lX11
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="1fda0548cf14657083a6602f8d6c08efae8cae2236de7ed17fc4058765156c6bb923956e3c7fd75f2db586399f1d8a3320ab5bbed71cc5a8b0d146590a14a808  libfakekey-0.1.tar.bz2"
