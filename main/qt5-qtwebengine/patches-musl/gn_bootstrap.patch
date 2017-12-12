@@ -1,0 +1,62 @@
+diff --git a/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py b/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
+index 43d252b..e74b23f 100755
+--- a/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
++++ b/src/3rdparty/chromium/tools/gn/bootstrap/bootstrap.py
+@@ -20,6 +20,7 @@ import errno
+ import logging
+ import optparse
+ import os
++import platform
+ import shutil
+ import subprocess
+ import sys
+@@ -31,6 +32,7 @@ SRC_ROOT = os.path.dirname(os.path.dirname(GN_ROOT))
+ 
+ is_win = sys.platform.startswith('win')
+ is_linux = sys.platform.startswith('linux')
++is_gnu_linux = is_linux and platform.libc_ver()[0].startswith('glibc')
+ is_mac = sys.platform.startswith('darwin')
+ is_posix = is_linux or is_mac
+ 
+@@ -168,7 +170,7 @@ def build_gn_with_ninja_manually(tempdir, options):
+   mkdir_p(root_gen_dir)
+ 
+   write_buildflag_header_manually(root_gen_dir, 'base/allocator/features.h',
+-      {'USE_EXPERIMENTAL_ALLOCATOR_SHIM': 'true' if is_linux else 'false'})
++      {'USE_EXPERIMENTAL_ALLOCATOR_SHIM': 'true' if is_gnu_linux else 'false'})
+ 
+   write_buildflag_header_manually(root_gen_dir, 'base/debug/debugging_flags.h',
+       {'ENABLE_PROFILING': 'false'})
+@@ -377,8 +379,6 @@ def write_gn_ninja(path, root_gen_dir, options):
+       'base/third_party/superfasthash/superfasthash.c',
+   ])
+   static_libraries['base']['sources'].extend([
+-      'base/allocator/allocator_check.cc',
+-      'base/allocator/allocator_extension.cc',
+       'base/at_exit.cc',
+       'base/base_paths.cc',
+       'base/base_switches.cc',
+@@ -421,6 +421,7 @@ def write_gn_ninja(path, root_gen_dir, options):
+       'base/metrics/histogram.cc',
+       'base/metrics/histogram_base.cc',
+       'base/metrics/histogram_samples.cc',
++      'base/metrics/histogram_snapshot_manager.cc',
+       'base/metrics/metrics_hashes.cc',
+       'base/metrics/persistent_histogram_allocator.cc',
+       'base/metrics/persistent_memory_allocator.cc',
+@@ -584,9 +585,13 @@ def write_gn_ninja(path, root_gen_dir, options):
+         ],
+         'tool': 'cxx',
+     }
++
++    if is_gnu_linux:
++        static_libraries['base']['sources'].extend([
++            'base/allocator/allocator_shim.cc',
++            'base/allocator/allocator_shim_default_dispatch_to_glibc.cc'
++        ])
+     static_libraries['base']['sources'].extend([
+-        'base/allocator/allocator_shim.cc',
+-        'base/allocator/allocator_shim_default_dispatch_to_glibc.cc',
+         'base/memory/shared_memory_posix.cc',
+         'base/nix/xdg_util.cc',
+         'base/process/internal_linux.cc',

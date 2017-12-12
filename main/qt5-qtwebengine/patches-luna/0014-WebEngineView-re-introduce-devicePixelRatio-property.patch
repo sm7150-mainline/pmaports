@@ -1,0 +1,74 @@
+From 023512168cf0a9ddf6443a847c13b6b467f648bf Mon Sep 17 00:00:00 2001
+From: Christophe Chapuis <chris.chapuis@gmail.com>
+Date: Sat, 22 Jul 2017 09:09:31 +0000
+Subject: [PATCH 14/18] WebEngineView: re-introduce devicePixelRatio property
+
+Signed-off-by: Christophe Chapuis <chris.chapuis@gmail.com>
+---
+ src/webengine/api/qquickwebengineview.cpp | 20 ++++++++++++++++++++
+ src/webengine/api/qquickwebengineview_p.h |  4 ++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/src/webengine/api/qquickwebengineview.cpp b/src/webengine/api/qquickwebengineview.cpp
+index 2805240..f1e1b6e 100644
+--- a/src/webengine/api/qquickwebengineview.cpp
++++ b/src/webengine/api/qquickwebengineview.cpp
+@@ -1059,6 +1059,26 @@ void QQuickWebEngineViewPrivate::setProfile(QQuickWebEngineProfile *profile)
+     }
+ }
+ 
++qreal QQuickWebEngineView::devicePixelRatio() const
++{
++    Q_D(const QQuickWebEngineView);
++    return d->devicePixelRatio;
++}
++
++void QQuickWebEngineView::setDevicePixelRatio(qreal devicePixelRatio)
++{
++    Q_D(QQuickWebEngineView);
++    // Valid range is [1, inf)
++    devicePixelRatio = qMax(qreal(1.0), devicePixelRatio);
++    if (d->devicePixelRatio == devicePixelRatio)
++        return;
++    d->setDevicePixelRatio(devicePixelRatio);
++    if (!d->adapter)
++        return;
++    d->adapter->dpiScaleChanged();
++    Q_EMIT devicePixelRatioChanged();
++}
++
+ #ifdef ENABLE_QML_TESTSUPPORT_API
+ QQuickWebEngineTestSupport *QQuickWebEngineView::testSupport() const
+ {
+diff --git a/src/webengine/api/qquickwebengineview_p.h b/src/webengine/api/qquickwebengineview_p.h
+index 8112c76..2d6f101 100644
+--- a/src/webengine/api/qquickwebengineview_p.h
++++ b/src/webengine/api/qquickwebengineview_p.h
+@@ -121,6 +121,7 @@ class Q_WEBENGINE_PRIVATE_EXPORT QQuickWebEngineView : public QQuickItem {
+     Q_PROPERTY(bool audioMuted READ isAudioMuted WRITE setAudioMuted NOTIFY audioMutedChanged FINAL REVISION 3)
+     Q_PROPERTY(bool recentlyAudible READ recentlyAudible NOTIFY recentlyAudibleChanged FINAL REVISION 3)
+     Q_PROPERTY(uint webChannelWorld READ webChannelWorld WRITE setWebChannelWorld NOTIFY webChannelWorldChanged REVISION 3 FINAL)
++    Q_PROPERTY(qreal devicePixelRatio READ devicePixelRatio WRITE setDevicePixelRatio NOTIFY devicePixelRatioChanged REVISION 4)
+ 
+ #ifdef ENABLE_QML_TESTSUPPORT_API
+     Q_PROPERTY(QQuickWebEngineTestSupport *testSupport READ testSupport WRITE setTestSupport NOTIFY testSupportChanged FINAL)
+@@ -448,6 +449,8 @@ public:
+     bool isAudioMuted() const;
+     void setAudioMuted(bool muted);
+     bool recentlyAudible() const;
++    qreal devicePixelRatio() const;
++    void setDevicePixelRatio(qreal);
+ 
+ #ifdef ENABLE_QML_TESTSUPPORT_API
+     QQuickWebEngineTestSupport *testSupport() const;
+@@ -510,6 +513,7 @@ Q_SIGNALS:
+     Q_REVISION(4) void colorDialogRequested(QQuickWebEngineColorDialogRequest *request);
+     Q_REVISION(4) void fileDialogRequested(QQuickWebEngineFileDialogRequest *request);
+     Q_REVISION(4) void formValidationMessageRequested(QQuickWebEngineFormValidationMessageRequest *request);
++    Q_REVISION(4) void devicePixelRatioChanged();
+     Q_REVISION(5) void pdfPrintingFinished(const QString &filePath, bool success);
+ 
+ #ifdef ENABLE_QML_TESTSUPPORT_API
+-- 
+2.7.4
+

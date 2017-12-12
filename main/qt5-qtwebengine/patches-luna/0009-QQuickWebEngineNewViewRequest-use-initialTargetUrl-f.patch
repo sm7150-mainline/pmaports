@@ -1,0 +1,97 @@
+From 65b63fdd3da0a11126c4fedc9f7d1c87f422707d Mon Sep 17 00:00:00 2001
+From: Christophe Chapuis <chris.chapuis@gmail.com>
+Date: Tue, 20 Oct 2015 20:32:08 +0200
+Subject: [PATCH 09/18] QQuickWebEngineNewViewRequest: use initialTargetUrl for
+ url()
+
+The initial target url is stored in the WebContentsView when the window creation is requested.
+
+Signed-off-by: Christophe Chapuis <chris.chapuis@gmail.com>
+---
+ src/core/web_contents_adapter.cpp                   | 11 +++++++++++
+ src/core/web_contents_adapter.h                     |  1 +
+ src/core/web_contents_view_qt.h                     |  4 ++++
+ src/webengine/api/qquickwebenginenewviewrequest.cpp |  4 ++--
+ 4 files changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/web_contents_adapter.cpp b/src/core/web_contents_adapter.cpp
+index 9c78d67..3761599 100644
+--- a/src/core/web_contents_adapter.cpp
++++ b/src/core/web_contents_adapter.cpp
+@@ -655,6 +655,17 @@ QUrl WebContentsAdapter::iconUrl() const
+     return QUrl();
+ }
+ 
++QUrl WebContentsAdapter::initialTargetUrl() const
++{
++    Q_D(const WebContentsAdapter);
++    content::WebContentsView *contentsView = static_cast<content::WebContentsImpl*>(d->webContents.get())->GetView();
++    if (contentsView) {
++        return toQt(contentsView->getInitialTargetURL());
++    }
++
++    return QUrl();
++}
++
+ QString WebContentsAdapter::pageTitle() const
+ {
+     Q_D(const WebContentsAdapter);
+diff --git a/src/core/web_contents_adapter.h b/src/core/web_contents_adapter.h
+index 46c8d26..bf5c969 100644
+--- a/src/core/web_contents_adapter.h
++++ b/src/core/web_contents_adapter.h
+@@ -94,6 +94,7 @@ public:
+     QString pageTitle() const;
+     QString selectedText() const;
+     QUrl iconUrl() const;
++    QUrl initialTargetUrl() const;
+ 
+     void undo();
+     void redo();
+diff --git a/src/core/web_contents_view_qt.h b/src/core/web_contents_view_qt.h
+index 5f19b84..181b735 100644
+--- a/src/core/web_contents_view_qt.h
++++ b/src/core/web_contents_view_qt.h
+@@ -45,6 +45,7 @@
+ #include "content/browser/web_contents/web_contents_view.h"
+ #include "content/public/browser/render_view_host.h"
+ #include "content/public/browser/render_widget_host.h"
++#include "url/gurl.h"
+ 
+ #include "qtwebenginecoreglobal_p.h"
+ #include "render_widget_host_view_qt.h"
+@@ -73,6 +74,8 @@ public:
+ 
+     virtual void setWindowAdditionalFeatures(const std::vector<base::string16> &additional_features) Q_DECL_OVERRIDE { m_additional_features = additional_features; }
+     virtual std::vector<base::string16> getWindowAdditionalFeatures() Q_DECL_OVERRIDE { return m_additional_features; }
++    virtual void setInitialTargetURL(const GURL &initialURL) Q_DECL_OVERRIDE { m_initialURL = initialURL; }
++    virtual GURL getInitialTargetURL() Q_DECL_OVERRIDE { return m_initialURL; }
+ 
+     content::RenderWidgetHostViewBase *CreateViewForWidget(content::RenderWidgetHost* render_widget_host, bool is_guest_view_hack) override;
+ 
+@@ -131,6 +134,7 @@ public:
+ #endif // defined(OS_MACOSX)
+ 
+ private:
++    GURL m_initialURL;
+     content::WebContents *m_webContents;
+     WebContentsAdapterClient *m_client;
+     WebContentsAdapterClient *m_factoryClient;
+diff --git a/src/webengine/api/qquickwebenginenewviewrequest.cpp b/src/webengine/api/qquickwebenginenewviewrequest.cpp
+index a369889..2272aa1 100644
+--- a/src/webengine/api/qquickwebenginenewviewrequest.cpp
++++ b/src/webengine/api/qquickwebenginenewviewrequest.cpp
+@@ -99,8 +99,8 @@ const QStringList &QQuickWebEngineNewViewRequest::additionalFeatures() const
+ 
+ QUrl QQuickWebEngineNewViewRequest::url() const
+ {
+-    if (!m_adapter) {
+-        return m_adapter->activeUrl();
++    if (m_adapter) {
++        return m_adapter->initialTargetUrl();
+     }
+     return QUrl();
+ }
+-- 
+2.7.4
+

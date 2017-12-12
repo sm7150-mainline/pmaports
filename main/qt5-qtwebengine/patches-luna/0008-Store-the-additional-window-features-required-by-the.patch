@@ -1,0 +1,36 @@
+From da88508d7cafe1f77c273c8c098eb310124a20f7 Mon Sep 17 00:00:00 2001
+From: Christophe Chapuis <chris.chapuis@gmail.com>
+Date: Sun, 18 Oct 2015 21:17:32 +0200
+Subject: [PATCH 08/18] Store the additional window features required by the
+ LuneOS apps in the WebContentsViewQt object
+
+Signed-off-by: Christophe Chapuis <chris.chapuis@gmail.com>
+---
+ src/core/web_contents_view_qt.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/core/web_contents_view_qt.h b/src/core/web_contents_view_qt.h
+index 5db4e28..5f19b84 100644
+--- a/src/core/web_contents_view_qt.h
++++ b/src/core/web_contents_view_qt.h
+@@ -71,6 +71,9 @@ public:
+     void initialize(WebContentsAdapterClient* client);
+     WebContentsAdapterClient *client() { return m_client; }
+ 
++    virtual void setWindowAdditionalFeatures(const std::vector<base::string16> &additional_features) Q_DECL_OVERRIDE { m_additional_features = additional_features; }
++    virtual std::vector<base::string16> getWindowAdditionalFeatures() Q_DECL_OVERRIDE { return m_additional_features; }
++
+     content::RenderWidgetHostViewBase *CreateViewForWidget(content::RenderWidgetHost* render_widget_host, bool is_guest_view_hack) override;
+ 
+     void CreateView(const gfx::Size& initial_size, gfx::NativeView context) override;
+@@ -132,6 +135,7 @@ private:
+     WebContentsAdapterClient *m_client;
+     WebContentsAdapterClient *m_factoryClient;
+     bool m_allowOtherViews;
++    std::vector<base::string16> m_additional_features;
+ };
+ 
+ } // namespace QtWebEngineCore
+-- 
+2.7.4
+
