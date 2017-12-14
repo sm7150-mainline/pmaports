@@ -1,0 +1,20 @@
+pkgname="devicepkg-dev"
+pkgver=0.1
+pkgrel=0
+pkgdesc="Provides default device package functions"
+url="https://github.com/postmarketOS"
+arch="all"
+license="MIT"
+source="
+	devicepkg_build.sh
+	devicepkg_package.sh
+"
+
+package() {
+	install -Dm755 "$srcdir/devicepkg_build.sh" \
+		"$pkgdir/usr/bin/devicepkg_build"
+	install -Dm755 "$srcdir/devicepkg_package.sh" \
+		"$pkgdir/usr/bin/devicepkg_package"
+}
+sha512sums="e6f96f8942fa8124ca7461bcf9c78879e08ef00da4a728735046503cae86548505594e078eb14056af74616b17332474f1473f72127299773e075bfd970af13b  devicepkg_build.sh
+c732792596f56860f6ab9ddd53b9a7a80224400dd20097b20cebe17a6e7330e9178783f09db16132a28a555f83e29ef3643bfe069638b62998912a9a7ffefdc0  devicepkg_package.sh"

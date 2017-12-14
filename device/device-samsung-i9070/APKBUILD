@@ -1,30 +1,32 @@
+# Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9070
 pkgver=1
-pkgrel=15
+pkgrel=16
 pkgdesc="Samsung Galaxy S Advance"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
 depends="linux-samsung-i9070 firmware-samsung-i9070"
-makedepends=""
+makedepends="devicepkg-dev"
 install=""
 subpackages="$pkgname-mesa"
 source="
 	deviceinfo
 	initfs-hook.sh
-	90-android-touch-dev.rules
 	modules-load.conf
 "
 options="!check"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
-	install -D -m644 "$srcdir"/initfs-hook.sh \
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/initfs-hook.sh \
 		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
-	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-	install -D -m644 "$srcdir"/modules-load.conf \
+	install -Dm644 "$srcdir"/modules-load.conf \
 		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
 }
 
@@ -36,5 +38,4 @@ mesa() {
 
 sha512sums="4aaa8192110e8480b2f674b81f5e850cf419bfb20675443dce63d7f631dc3a0084dd7354b2cf1352349dc5127548fb6940f1c4b2bc80c44595c53b55e80242e0  deviceinfo
 098187f6ab56d2542f98f1b5fbcf493431f665a4300db05e859357366e39b02a3d508bfd94c1d1bd7c669261e7ef0d4e1aef1fdbb15541fe34f3f48a6caa247f  initfs-hook.sh
-f913184639f9f367730a7c0476657133c673a07dbcbde1fc643595a1a6b99774c2e2f63955bf52cf6d6de343a60b52af8085da3aebbdf6a95b52812a3e3181ec  90-android-touch-dev.rules
 61e8becbf6fa7c1c6c42e481083f5981ae7af33a48cbc53e817d8ac2c6a8e4f67a54b32ae3b8f5f25f7b412165a849dc93a629110dc47b0d16927bf2a12eb7e1  modules-load.conf"
