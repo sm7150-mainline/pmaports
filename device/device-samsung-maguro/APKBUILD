@@ -1,26 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-maguro
 pkgver=2
-pkgrel=13
+pkgrel=14
 pkgdesc="Google Galaxy Nexus (GSM)"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
 depends="linux-samsung-maguro mkbootimg firmware-samsung-maguro"
-makedepends=""
+makedepends="devicepkg-dev"
 install=""
-subpackages=""
-source="
-	deviceinfo
-	90-android-touch-dev.rules
-"
+subpackages="$pkgname-mesa"
+source="deviceinfo"
 options="!check"
 
-package() {
-	install -D -m644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+build() {
+	devicepkg_build $startdir $pkgname
 }
 
-sha512sums="56f67205541eba307c333fbccd8510d9d972699be35bade8762028fc18f0c3c6f904eadc4fced783f042c1eeb57adc684915b8bd90f954cfb6560af662526928  deviceinfo
-f8c85b0ffcee751ee30d5f1fd8ed8e8413d9599875839fbc9bcfd85f08dbf203fecbd171fc3fe4e2742c5b8243132f6110142ff41193d6ad7df29b411516e199  90-android-touch-dev.rules"
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+mesa() {
+	install_if="$pkgname mesa"
+	depends="mesa-dri-swrast"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="dce64fc8cb993e62ffe3e4ad243ba18bf78dbde27f776f0e9dea9e426709cf5498df82eb049864471db6c3c2683a1f7563ab23b823cf96bf37cc6570b869a0b8  deviceinfo"
