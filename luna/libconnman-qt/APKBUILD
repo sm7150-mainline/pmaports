@@ -1,0 +1,27 @@
+pkgname=libconnman-qt
+pkgver=1.2.6
+pkgrel=0
+_commit=b2230677396fb27e3f8e47e4ce9792e578f5555c
+pkgdesc="QT interface to connman"
+arch="all"
+url="https://git.merproject.org/mer-core/libconnman-qt/"
+license="GPL-3.0+"
+depends="qt5-qtbase connman qt5-qtdeclarative qt5-qtquickcontrols2"
+makedepends="qt5-qtbase-dev connman-dev qt5-qtdeclarative-dev qt5-qtquickcontrols2-dev"
+source="$pkgname-$pkgver.tar.gz::https://git.merproject.org/mer-core/libconnman-qt/repository/archive.tar.gz?ref=$pkgver
+0001-Don-t-use-MeeGo-as-prefix-in-order-to-make-this-a-co.patch"
+builddir="$srcdir/$pkgname-$pkgver-$_commit"
+options="!check"
+subpackages="$pkgname-dev"
+
+build() {
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	make install INSTALL_ROOT="$pkgdir"
+}
+sha512sums="1a2b4308a5827e6cc25d639f55bea18272bda92f0d9cc225498ac1778d52f5a67fdc7bdd69efba8d9910c7766029ff4ffc0c795ff56a740aa6a0c2772e4713ef  libconnman-qt-1.2.6.tar.gz
+fbd2335342526561445b2b98aac7f5f3c83e0a76be8d0141fc88e95cf016bca873741d05cd487ce43d2aac906656259a8b0d3c1d6ca50b568d57739a64777a62  0001-Don-t-use-MeeGo-as-prefix-in-order-to-make-this-a-co.patch"

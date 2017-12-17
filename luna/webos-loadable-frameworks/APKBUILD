@@ -1,0 +1,27 @@
+pkgname=webos-loadable-frameworks
+pkgver=1.0.0_git20160228
+pkgrel=0
+_commit=746ad752f206fc2e7d050837946e34d5f29093dd
+pkgdesc="Webos core services javascript frameworks"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webos-ports/loadable-frameworks/archive/$_commit.tar.gz"
+builddir="$srcdir/loadable-frameworks-$_commit"
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/frameworks
+
+	for FRAMEWORK in `ls -d1 ./calendar* ./contacts* ./globalization ./phonenumberlib` ; do
+		FRAMEWORK_DIR=`basename $FRAMEWORK`
+		install -d "$pkgdir"/usr/palm/frameworks/$FRAMEWORK_DIR/version/1.0/
+		cp -vrf $FRAMEWORK/* "$pkgdir"/usr/palm/frameworks/$FRAMEWORK_DIR/version/1.0/
+		# remove test and jasminetest dirs
+		rm -vrf "$pkgdir"/usr/palm/frameworks/$FRAMEWORK_DIR/version/1.0/*test
+	done
+}
+sha512sums="94c6b55e27a3006b4301a994fabee5b427fecd6d0c85ff3a214e0d5c546647fc2cbd4cccc97e9e0961abd3b1d530a606608af8cf40efa744c70d3c0e4d2ed693  webos-loadable-frameworks-746ad752f206fc2e7d050837946e34d5f29093dd.tar.gz"

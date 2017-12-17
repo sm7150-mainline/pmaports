@@ -1,0 +1,30 @@
+pkgname=luna-firstuse
+pkgver=7.0.0_git20171102
+pkgrel=1
+_commit=5acfe2bd0c1b3435ed0cbf9b021945202d0d2f86
+pkgdesc="LuneOS first use application"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="qt5-qtquickcontrols2 qt5-qtquickcontrols"
+makedepends="cmake-modules-webos qt5-qtquickcontrols2-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/org.webosports.app.firstuse/archive/$_commit.tar.gz
+locale.patch"
+builddir="$srcdir/org.webosports.app.firstuse-$_commit"
+
+build() {
+	mkdir -p "$srcdir"/build
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="7d335910482e7cbba2798cfb62df73158ca178f2b663812d25e89d29606352898d8be40e7fb1fc44118b7f1f6763cd48d00353c489c660dcbce681fa696f0de7  luna-firstuse-5acfe2bd0c1b3435ed0cbf9b021945202d0d2f86.tar.gz
+d7e5a2b96dd6da82cd695ca88181d429ed6166a28f89f8dc6f69d41c4a095e0cb4b5dcaa4494f73c45be6a74aaa81bbe7dd28d719affc332856975b90ed36837  locale.patch"

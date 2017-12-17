@@ -1,0 +1,30 @@
+pkgname=nodejs-module-webos-dynaload
+pkgver=14.0.0_git20160531
+pkgrel=0
+_commit=4eedb88e6eea69c88d30f5519d91113419cb7e71
+pkgdesc="mojo library loader for node. Provides 'webos' node module."
+arch="all"
+url="https://github.com/webOS-ports/nodejs-module-webos-dynaload"
+license="GPL-3.0+"
+depends="boost nodejs nodejs-npm"
+makedepends="cmake-modules-webos boost-dev nodejs-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/webOS-ports/nodejs-module-webos-dynaload/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	# This package provides a cmake file, but it isn't useful on Alpine, as alpine doesn't package
+	# the pkgconfig files required to compile native node modules with the cmake script as written.
+	# So, we just use node-gyp instead.
+
+	cd "$builddir"
+	/usr/lib/node_modules/npm/bin/node-gyp-bin/node-gyp configure
+	/usr/lib/node_modules/npm/bin/node-gyp-bin/node-gyp build
+}
+
+package() {
+	install -d "$pkgdir"/usr/lib/node
+	install -m755 "$builddir"/build/Release/webos.node "$pkgdir"/usr/lib/node
+}
+
+sha512sums="3667e0d9ff3168c46f8407eda27b65a56dd36967774b7f443234ed89edd4ed9d9dae060ddfec0a39edb21d9093972f46850693f36f8751c3a2fa1cfc769139f8  nodejs-module-webos-dynaload-14.0.0_git20160531.tar.gz"

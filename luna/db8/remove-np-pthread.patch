@@ -1,0 +1,140 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3162e89..a3af42f 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -287,6 +287,6 @@ if (WEBOS_CONFIG_BUILD_TESTS)
+ 
+ endif()
+ add_subdirectory(tool/dbgen)
+-add_subdirectory(tool/sandwichmigrate)
++#add_subdirectory(tool/sandwichmigrate)
+ 
+ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure ${ctest_args})
+diff --git a/inc/core/MojOs.h b/inc/core/MojOs.h
+index c802f9f..57979c6 100755
+--- a/inc/core/MojOs.h
++++ b/inc/core/MojOs.h
+@@ -20,6 +20,8 @@
+ #ifndef MOJOS_H_
+ #define MOJOS_H_
+ 
++#include <fcntl.h>
++
+ #ifdef MOJ_HAVE_CTYPE_H
+ #	include <ctype.h>
+ #endif
+diff --git a/inc/core/MojUtil.h b/inc/core/MojUtil.h
+index 0a50b05..2019efc 100755
+--- a/inc/core/MojUtil.h
++++ b/inc/core/MojUtil.h
+@@ -56,7 +56,7 @@ template<class T>
+ MojSize MojBinarySearch(T key, const T* array, MojSize numElems);
+ 
+ template<class T, class COMP>
+-void MojQuickSort(T* array, MojSize numElems, const COMP& comp = COMP());
++void MojQuickSort(T* array, MojSize numElems, const COMP& comp);
+ template<class T>
+ void MojQuickSort(T* array, MojSize numElems);
+ 
+diff --git a/inc/core/internal/MojConfigLinux.h b/inc/core/internal/MojConfigLinux.h
+index 606de27..d9a6b97 100644
+--- a/inc/core/internal/MojConfigLinux.h
++++ b/inc/core/internal/MojConfigLinux.h
+@@ -25,8 +25,8 @@
+ #define MOJ_USE_READDIR
+ #define MOJ_USE_MEMRCHR
+ #define MOJ_USE_GNU_STRERROR_R
+-#define MOJ_USE_RANDOM_R
+-#define MOJ_USE_SRANDOM_R
++#define MOJ_USE_RANDOM
++#define MOJ_USE_SRANDOM
+ 
+ #define MOJ_NEED_ATOMIC_INIT
+ #define MOJ_NEED_ATOMIC_DESTROY
+diff --git a/inc/core/internal/MojOsInternal.h b/inc/core/internal/MojOsInternal.h
+index a44923b..c5d9286 100644
+--- a/inc/core/internal/MojOsInternal.h
++++ b/inc/core/internal/MojOsInternal.h
+@@ -58,20 +58,19 @@ inline MojErr MojErrno()
+ }
+ #endif /* MOJ_USE_ERRNO */
+ 
+-#ifdef MOJ_USE_GNU_STRERROR_R
++#if 0
+ inline const MojChar* MojStrError(int err, MojChar* buf, MojSize bufLen)
+ {
+ 	return strerror_r(err, buf, bufLen);
+ }
+ #endif /* MOJ_USE_GNU_STRERROR_R */
+ 
+-#ifdef MOJ_USE_POSIX_STRERROR_R
++
+ inline const MojChar* MojStrError(int err, MojChar* buf, MojSize bufLen)
+ {
+ 	strerror_r(err, buf, bufLen);
+ 	return buf;
+ }
+-#endif /* MOJ_USE_POSIX_STRERROR_R */
+ 
+ #ifdef MOJ_NEED_DEBUGBREAK
+ inline void MojDebugBreak()
+@@ -346,7 +345,7 @@ inline MojErr MojThreadYield()
+ #ifdef __USE_GNU
+ 	return (MojErr) pthread_yield();
+ #else
+- 	pthread_yield_np();
++ 	sched_yield();
+ 	return MojErrNone;
+ #endif
+ }
+diff --git a/inc/core/internal/MojUtilInternal.h b/inc/core/internal/MojUtilInternal.h
+index a7bd5a5..597ade4 100644
+--- a/inc/core/internal/MojUtilInternal.h
++++ b/inc/core/internal/MojUtilInternal.h
+@@ -165,7 +165,7 @@ void MojQuickSortImpl(T* array, MojSize left, MojSize right, const COMP& comp)
+ }
+ 
+ template<class T, class COMP>
+-inline void MojQuickSort(T* array, MojSize numElems, const COMP& comp = COMP())
++inline void MojQuickSort(T* array, MojSize numElems, const COMP& comp)
+ {
+ 	return MojQuickSortImpl<T, COMP>(array, 0, numElems, comp);
+ }
+diff --git a/inc/core/internal/MojVectorInternal.h b/inc/core/internal/MojVectorInternal.h
+index 94ae45a..ecbea9d 100644
+--- a/inc/core/internal/MojVectorInternal.h
++++ b/inc/core/internal/MojVectorInternal.h
+@@ -305,7 +305,7 @@ MojErr MojVector<T, EQ, COMP>::sort()
+ 	if (size() > 1) {
+ 		MojErr err = ensureWritable();
+ 		MojErrCheck(err);
+-		MojQuickSort<T, COMP>(m_begin, size());
++		MojQuickSort<T, COMP>(m_begin, size(), COMP());
+ 	}
+ 	return MojErrNone;
+ }
+diff --git a/src/core/MojLogEngine.cpp b/src/core/MojLogEngine.cpp
+index 3291d7e..5049694 100644
+--- a/src/core/MojLogEngine.cpp
++++ b/src/core/MojLogEngine.cpp
+@@ -20,6 +20,7 @@
+ #include "core/MojLogEngine.h"
+ #include "core/MojObject.h"
+ #include "core/MojTime.h"
++#include "core/MojOs.h"
+ 
+ #ifdef MOJ_HAVE_SYSLOG_H
+ #	include "syslog.h"
+diff --git a/src/db-luna/BackendBuildRules.cmake b/src/db-luna/BackendBuildRules.cmake
+index 5b480b9..29bd32d 100644
+--- a/src/db-luna/BackendBuildRules.cmake
++++ b/src/db-luna/BackendBuildRules.cmake
+@@ -24,7 +24,7 @@
+ # Optional variable:
+ # DB_BACKEND_WRAPPER_CFLAGS     - compiller flags
+ 
+-set(WEBOS_DB8_BACKEND "sandwich" CACHE STRING "Backend(s) to use with DB8")
++set(WEBOS_DB8_BACKEND "leveldb" CACHE STRING "Backend(s) to use with DB8")
+ 
+ foreach (backend ${WEBOS_DB8_BACKEND})
+ 	message (STATUS "Use database frontend: ${backend}")

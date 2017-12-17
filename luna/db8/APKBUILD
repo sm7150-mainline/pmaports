@@ -1,0 +1,34 @@
+pkgname=db8
+pkgver=149_git20170911
+pkgrel=1
+_commit=6bb08a67b2374affc08ce8a6c8866a93f0983fb6
+pkgdesc="The no-SQL database for webOS"
+arch="all"
+url="https://github.com/webOS-ports/db8"
+license="GPL-3.0+"
+depends="glib luna-service2 pmloglib icu db boost leveldb"
+makedepends="cmake-modules-webos glib-dev luna-service2-dev pmloglib-dev icu-dev db-dev db-c++ boost-dev leveldb-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/db8/archive/$_commit.tar.gz
+remove-np-pthread.patch"
+options="!check"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	mkdir -p "$srcdir"/build
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+	rm "$pkgdir"/usr/lib/db8/tests/dbgen
+	rmdir "$pkgdir"/usr/lib/db8/tests/
+}
+sha512sums="e62ae979ae287b73b04f914acc3074de089e12ca9de9e47f5ae05966d31ad76683fa8ba6335c1c5035a07e4e95ae02b7b9c670a8b93cc5656391344be7b4f707  db8-6bb08a67b2374affc08ce8a6c8866a93f0983fb6.tar.gz
+cf930a9dbcbcceb17dea47a5038551b7a21896da5caa56a50f26137c31c5fc27ac579f343298bb1bd72424b4b932d0e91b3585f02015e35dc1b2dabffa3bfb14  remove-np-pthread.patch"

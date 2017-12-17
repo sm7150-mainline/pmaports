@@ -1,0 +1,20 @@
+pkgname=luna-systemui
+pkgver=1.02_git20170904
+pkgrel=0
+_commit=c67aeffa8957919b3d78bdd6483f64c3ef6206d3
+pkgdesc="WebOS power menu and other system ui"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="enyo"
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/applications/com.palm.systemui
+	cp -vrf * "$pkgdir"/usr/palm/applications/com.palm.systemui
+}
+sha512sums="058e2d6be1826bf016b7da9003525dfe87691d95c89bac969dec0f4f5c90bfb07910d91678f577514208c67822512d15b890b641cb69929c53796abdb22d4ac3  luna-systemui-c67aeffa8957919b3d78bdd6483f64c3ef6206d3.tar.gz"

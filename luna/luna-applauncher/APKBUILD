@@ -1,0 +1,20 @@
+pkgname=luna-applauncher
+pkgver=0.90_git20171025
+pkgrel=0
+_commit=ada4aabfb5e0ffa127afab3957b4be2d84f76fe3
+pkgdesc="WebOS app launcher"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends="enyo webos-underscore mojoloader webos-foundation"
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/applications/com.palm.launcher
+	cp -vrf * "$pkgdir"/usr/palm/applications/com.palm.launcher
+}
+sha512sums="8191af9fb94eddde0c39df42c570369aafcf04e6d89b6a1a3f40ca090c8bfd9281394f71aa34bcf222ecbbcc98e6769f8c58f0df64c73a97b657eda41f5010b5  luna-applauncher-ada4aabfb5e0ffa127afab3957b4be2d84f76fe3.tar.gz"

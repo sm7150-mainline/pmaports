@@ -1,0 +1,30 @@
+pkgname=libwebos-application
+pkgver=3.0.0_git20140327
+pkgrel=0
+_commit=8d5ce985fec7a9fc5b514be306a74193b6139f5b
+pkgdesc="Implements lifecycle support for native webOS applications"
+arch="all"
+url="https://github.com/webOS-ports/luna-qml-launcher"
+license="GPL-3.0+"
+depends="glib luna-service2 libpbnjson"
+makedepends="cmake-modules-webos glib-dev luna-service2-dev libpbnjson-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/libwebos-application/archive/$_commit.tar.gz"
+options="!check"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	mkdir -p "$srcdir"/build
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="0e0b6a92e5c85f71e01521d31771123186788e3a1ef0e9990e565cf940f34cd42147e02e9ec9636ad1df2e0da7ece416c48bc181c33d536d43a785e82232729c  libwebos-application-8d5ce985fec7a9fc5b514be306a74193b6139f5b.tar.gz"

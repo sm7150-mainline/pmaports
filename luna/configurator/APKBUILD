@@ -1,0 +1,29 @@
+pkgname=configurator
+pkgver=59_git20160928
+pkgrel=0
+_commit=45fb8458100a90fd7700a759c10836ead4760e20
+pkgdesc="Creates the database schema for webOS Applications"
+arch="all"
+url="https://github.com/webOS-ports/configurator"
+license="GPL-3.0+"
+depends="glib luna-service2 db8 json-c pmloglib"
+makedepends="cmake-modules-webos glib-dev luna-service2-dev db8-dev json-c-dev pmloglib-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/configurator/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	mkdir -p "$srcdir"/build
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="4e606ad97e509bc0b58b0d835c03ae4f54ed4c3874cd00483948e0d145e74aaa38421f8625da902b53616f2974ae1851eea9609c0c3bf58cf3c6addd69ad1d79  configurator-45fb8458100a90fd7700a759c10836ead4760e20.tar.gz"

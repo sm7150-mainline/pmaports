@@ -1,0 +1,78 @@
+pkgname=luna-app-services
+pkgver=4.0.0_git20160804
+pkgrel=1
+_commit=9cbee99870d0edba0b30cb569514be16ccf1999c
+pkgdesc="Services used by coreapps."
+arch="all"
+url="https://github.com/webOS-ports/app-services"
+license="GPL-3.0+"
+depends="mojoservicelauncher"
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/app-services/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/app-services-$_commit"
+
+package() {
+	cd "$builddir"
+	install -d "$pkgdir"/usr/palm/services
+	install -d "$pkgdir"/etc/palm/db/kinds
+	install -d "$pkgdir"/etc/palm/db/permissions
+	install -d "$pkgdir"/etc/palm/mediadb/kinds
+	install -d "$pkgdir"/etc/palm/mediadb/permissions
+	install -d "$pkgdir"/etc/palm/activities
+	install -d "$pkgdir"/etc/palm/filecache_types
+	install -d "$pkgdir"/usr/share/dbus-1/services
+	install -d "$pkgdir"/usr/share/dbus-1/system-services
+	install -d "$pkgdir"/usr/share/ls2/roles/pub
+	install -d "$pkgdir"/usr/share/ls2/roles/prv
+	install -d "$pkgdir"/usr/share/ls2/services/pub
+	install -d "$pkgdir"/usr/share/ls2/services/prv
+	install -d "$pkgdir"/usr/share/ls2/roles/pub
+	install -d "$pkgdir"/usr/share/ls2/roles/prv
+	install -d "$pkgdir"/usr/share/ls2-dev/services/pub
+	install -d "$pkgdir"/usr/share/ls2-dev/services/prv
+	install -d "$pkgdir"/usr/share/ls2-dev/roles/pub
+	install -d "$pkgdir"/usr/share/ls2-dev/roles/prv
+	install -d "$pkgdir"/var/palm/data/com.palm.appInstallService
+	install -d "$pkgdir"/usr/palm/public/accounts
+	install -d "$pkgdir"/etc/palm/tempdb/kinds
+	install -d "$pkgdir"/etc/palm/tempdb/permissions
+	install -d "$pkgdir"/etc/palm/event.d
+	install -d "$pkgdir"/etc/palm/init
+
+    for SERVICE in $(ls -d1 ./com.palm.service.*); do
+        SERVICE_DIR=$(basename $SERVICE)
+        install -d "$pkgdir"/usr/palm/services/$SERVICE_DIR/
+        cp -vrf $SERVICE/* "$pkgdir"/usr/palm/services/$SERVICE_DIR/
+        # Copy db8 kinds, permissions and activities
+        cp -vrf $SERVICE/db/kinds/* "$pkgdir"/etc/palm/db/kinds 2> /dev/null || true
+        cp -vrf $SERVICE/db/permissions/* "$pkgdir"/etc/palm/db/permissions 2> /dev/null || true
+        cp -vrf $SERVICE/activities/* "$pkgdir"/etc/palm/activities 2> /dev/null || true
+        cp -vrf $SERVICE/filecache_types/* "$pkgdir"/etc/palm/filecache_types 2> /dev/null || true
+        # Copy services and roles files
+        cp -vrf $SERVICE/files/sysbus/*.json "$pkgdir"/usr/share/ls2/roles/pub 2> /dev/null || true
+        cp -vrf $SERVICE/files/sysbus/*.json "$pkgdir"/usr/share/ls2/roles/prv 2> /dev/null || true
+        cp -vrf $SERVICE/files/sysbus/*.service "$pkgdir"/usr/share/ls2/services/prv 2> /dev/null || true
+    done
+
+	# install account services files in public service directory.
+	cp -vrf ./com.palm.service.accounts/files/sysbus/*.service "$pkgdir"/usr/share/ls2/services/pub 2> /dev/null || true
+
+	# install account service desktop credentials db kind 
+	cp -vrf ./com.palm.service.accounts/desktop/com.palm.account.credentials "$pkgdir"/etc/palm/db/kinds 2> /dev/null || true
+
+	# install account templates.
+	cp -vrf ./account-templates/palmprofile/com.palm.palmprofile "$pkgdir"/usr/palm/public/accounts
+
+	# install temp db kinds and permissions
+	cp -vrf com.palm.service.accounts/tempdb/kinds/* "$pkgdir"/etc/palm/tempdb/kinds/
+	cp -vrf com.palm.service.accounts/tempdb/permissions/* "$pkgdir"/etc/palm/tempdb/permissions
+
+	# install account service upstart files
+	install -m 644 com.palm.service.accounts/files/etc/event.d/createLocalAccount "$pkgdir"/etc/palm/event.d/
+	install -m 644 com.palm.service.accounts/files/etc/init/createLocalAccount.conf "$pkgdir"/etc/palm/init/
+
+	# create folder for contact linker plugins
+	mkdir -p "$pkgdir"/etc/palm/contact_linker_plugins
+}
+sha512sums="0ff50759de3c52546bad213be544771f821a0c4fa6fe20a4953693510ebde2b3897f9e1bcb7026e5c7e36de080fa600863faa170d206f93447ad50efd6f99105  luna-app-services-9cbee99870d0edba0b30cb569514be16ccf1999c.tar.gz"

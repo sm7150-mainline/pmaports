@@ -1,0 +1,21 @@
+pkgname=mojoloader
+pkgver=1.1_git20161005
+pkgrel=0
+_commit=4eec67e2c941ab416aaced46c604c2ff3747c2fd
+pkgdesc="Javascript framework to handle loading webOS modules from browser or Node.JS"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/mojoloader/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/frameworks
+	cp -vf ./mojoloader.js "$pkgdir"/usr/palm/frameworks/
+}
+
+sha512sums="046edea14d5b7d2a9ffd5cf1710722ffba90ebf8c14ccbed5927502603785f30c3d67ba7741aac91f21cda03b682cd40066e3583eb411e75150c6093bb78a3a5  mojoloader-4eec67e2c941ab416aaced46c604c2ff3747c2fd.tar.gz"

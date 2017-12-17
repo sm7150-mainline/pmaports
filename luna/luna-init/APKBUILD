@@ -1,6 +1,6 @@
 pkgname=luna-init
 pkgver=5.0.0_git20171117
-pkgrel=0
+pkgrel=1
 _commit=5fff640fb0b9f3e973c13d1620889b2da4c11766
 pkgdesc="Initialization and font setup files used by luna-sysmgr."
 arch="all"
@@ -12,12 +12,8 @@ source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-init/archi
 options="!check"
 builddir="$srcdir/$pkgname-$_commit"
 
-prepare() {
-	default_prepare
-	mkdir -p "$srcdir"/build
-}
-
 build() {
+	mkdir -p "$srcdir"/build
 	cd "$srcdir"/build
 	cmake "$builddir" \
 		-DCMAKE_BUILD_TYPE=Release \
@@ -28,6 +24,16 @@ build() {
 
 package() {
 	cd "$srcdir"/build
+	# The cmake install file doesn't install everything in the right spot.
 	make DESTDIR="$pkgdir" install
+
+	install -d "$pkgdir"/etc/palm
+	install -v -m 644 "$builddir"/files/conf/locale.txt "$pkgdir"/etc/palm
+	install -v -m 644 "$builddir"/files/conf/defaultPreferences.txt "$pkgdir"/etc/palm
+	install -v -m 644 "$builddir"/src/mccInfo.json "$pkgdir"/etc/palm
+	install -v -m 644 "$builddir"/files/conf/default-dock-positions.json "$pkgdir"/etc/palm
+	install -v -m 644 "$builddir"/files/conf/default-launcher-page-layout.json "$pkgdir"/etc/palm
+	install -v -m 644 "$builddir"/files/conf/locale.txt "$pkgdir"/etc/palm
+
 }
 sha512sums="9278b53e8358230e0979d314958a02ada6d68a68b97e253d81ffc5132901cf7aa033c8d908530cbf36c422a161a3f80cc70f1ddb3e0e4b3fae86183c39d10b95  luna-init-5fff640fb0b9f3e973c13d1620889b2da4c11766.tar.gz"

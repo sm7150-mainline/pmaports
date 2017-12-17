@@ -1,0 +1,30 @@
+pkgname=activitymanager
+pkgver=124_git20160928
+pkgrel=0
+_commit=1e3e1f2a94bf57f9174b3e536b0b5c9b3a2b3d28
+pkgdesc="Open webOS component to manage all running activities"
+arch="all"
+url="https://github.com/webOS-ports/activitymanager"
+license="GPL-3.0+"
+depends="glib luna-service2 libressl db8 boost nyx-lib pmloglib"
+makedepends="cmake-modules-webos glib-dev luna-service2-dev libressl-dev db8-dev boost-dev nyx-lib-dev pmloglib-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/activitymanager/archive/$_commit.tar.gz compile.patch"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	mkdir -p "$srcdir"/build
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="7d552fce050f0acd24fbe97e470ecda697e2a13b41efc1cfb27cde6849ac5030d5200ca579ab459e11224292c22e72daa19e0ee115367309fe335f628513cd0a  activitymanager-1e3e1f2a94bf57f9174b3e536b0b5c9b3a2b3d28.tar.gz
+b5f56de1e3037730c85f348ee8da674ce3ac86a20614ac031fa412a3f0fc827ddc1ea459c069a1237eec8418167187b9ecb35dd2239a8f74289a93cf7a5f2e30  compile.patch"

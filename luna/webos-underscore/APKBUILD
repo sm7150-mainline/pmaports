@@ -1,0 +1,21 @@
+pkgname=webos-underscore
+pkgver=0.6.0_git20170830
+pkgrel=0
+_commit=d8b8a077be90b5edb9b44ef142625ba4743c8a47
+pkgdesc="webos packaged version of underscore.js"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/openwebos/underscore/archive/$_commit.tar.gz"
+builddir="$srcdir/underscore-$_commit"
+
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/frameworks/underscore/version/1.0
+	cp -vrf ./* "$pkgdir"/usr/palm/frameworks/underscore/version/1.0
+}
+sha512sums="8b2a02450566e9812814700f24c63ac297f9eb83f421e6032d0fc6d167a8f45a2207fe054d34eb757f9ad69f0fd07148faed866f037a134f1282ca8ffac4eb65  webos-underscore-d8b8a077be90b5edb9b44ef142625ba4743c8a47.tar.gz"

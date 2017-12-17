@@ -1,0 +1,22 @@
+pkgname=enyo
+pkgver=1.0_git20170811
+pkgrel=0
+_commit=6c4a64ddcf0b0f97cb1af58774c8f8b005540475
+pkgdesc="EnyoJS webapp framework"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/enyo-1.0/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-1.0-$_commit"
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/frameworks/enyo/0.10/framework
+	cp -vrf ./framework/* "$pkgdir"/usr/palm/frameworks/enyo/0.10/framework
+
+	ln -vs 0.10 "$pkgdir"/usr/palm/frameworks/enyo/1.0
+}
+sha512sums="2a41b37dacd510222d610575cc568effd95e8aeaa146a8d343f6c0c00603fe770542c78c71a036d021ae1182b94d0a23ec565368f0a83f77b35f2deb811fc606  enyo-6c4a64ddcf0b0f97cb1af58774c8f8b005540475.tar.gz"

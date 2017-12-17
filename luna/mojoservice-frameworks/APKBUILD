@@ -1,0 +1,27 @@
+pkgname=mojoservice-frameworks
+pkgver=1.0.0_git20140708
+pkgrel=0
+_commit=0baa0cd1bcd7c2182718a4927efcff9dbf901812
+pkgdesc="Webos core services javascript frameworks"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webos-ports/mojoservice-frameworks/archive/$_commit.tar.gz"
+builddir="$srcdir/mojoservice-frameworks-$_commit"
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/frameworks
+
+	for FRAMEWORK in $(ls -d1 ./mojoservice*); do
+		FRAMEWORK_DIR=$(basename $FRAMEWORK)
+		install -d "$pkgdir"/usr/palm/frameworks/$FRAMEWORK_DIR/version/1.0/
+		cp -vrf $FRAMEWORK/* "$pkgdir"/usr/palm/frameworks/$FRAMEWORK_DIR/version/1.0/
+		# remove test and jasminetest dirs
+		rm -vrf ${D}${webos_frameworksdir}/$FRAMEWORK_DIR/version/1.0/*test
+	done
+}
+sha512sums="1f7d65997ad388ecbfbf7ef60bdd97bc7fae9326699e07967aaf919d42a272369f354a2342ca91da4ab7b1edc310e2c528874309fa3bf0c42ff9032368d1eac7  mojoservice-frameworks-0baa0cd1bcd7c2182718a4927efcff9dbf901812.tar.gz"

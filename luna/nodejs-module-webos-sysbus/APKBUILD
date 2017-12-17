@@ -1,0 +1,34 @@
+pkgname=nodejs-module-webos-sysbus
+pkgver=31.0.0_git20160531
+pkgrel=0
+_commit=3a77f999b78b2f686e370ec0030097665d358169
+pkgdesc="Library to allow nodejs code to talk to palm sysbus."
+arch="all"
+url="https://github.com/webOS-ports/nodejs-module-webos-sysbus"
+license="GPL-3.0+"
+depends="luna-service2 glib nodejs nodejs-npm"
+makedepends="cmake-modules-webos glib-dev luna-service2-dev nodejs-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/webOS-ports/nodejs-module-webos-sysbus/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	# This package provides a cmake file, but it isn't useful on Alpine, as alpine doesn't package
+	# the pkgconfig files required to compile native node modules with the cmake script as written.
+	# So, we just use node-gyp instead.
+
+	cd "$builddir"
+	export CFLAGS=$(pkg-config --cflags luna-service2)
+	export CXXFLAGS=$(pkg-config --cflags luna-service2)
+	export LDFLAGS=$(pkg-config --libs luna-service2)	
+	/usr/lib/node_modules/npm/bin/node-gyp-bin/node-gyp configure
+	/usr/lib/node_modules/npm/bin/node-gyp-bin/node-gyp build
+}
+
+package() {
+	install -d "$pkgdir"/usr/lib/node
+	install -m755 "$builddir"/build/Release/webos-sysbus.node "$pkgdir"/usr/lib/node
+	install -m644 "$builddir"/src/palmbus.js "$pkgdir"/usr/lib/node
+}
+
+sha512sums="03ffdde3ce6a3ac1f72e71b0caae47d7f298b4e5a296ae0dea6627d90bc91eb30b250173d3a69fa40e6112dac408f27fda2d2418d37baa4865807197e1112ea8  nodejs-module-webos-sysbus-31.0.0_git20160531.tar.gz"

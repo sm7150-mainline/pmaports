@@ -1,0 +1,29 @@
+pkgname=mojoservicelauncher
+pkgver=0.0.1_git20160806
+pkgrel=0
+_commit=d7407a69e5acd1ac132ae25964e4db93b7685beb
+pkgdesc="OpenWebOS component to launch JavaScript services"
+arch="all"
+url="https://github.com/webOS-ports/mojoservicelauncher"
+license="GPL-3.0+"
+depends="libpbnjson boost nodejs mojoloader nodejs-module-webos-dynaload nodejs-module-webos-pmlog nodejs-module-webos-sysbus webos-loadable-frameworks webos-underscore mojoservice-frameworks webos-foundation"
+makedepends="cmake-modules-webos boost-dev libpbnjson-dev boost-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/mojoservicelauncher/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	mkdir -p "$srcdir"/build
+	cd "$srcdir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWEBOS_INSTALL_ROOT=/
+	make
+}
+
+package() {
+	cd "$srcdir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="3a07a952da5157ebbd2bd4f55ac5ba09979fb8160ca4ce4d76b67d06262fb3704349b170b6a1c78909c3edc326c01538d2c89b6a3873dee9a86dba7fcf0ad5b4  mojoservicelauncher-d7407a69e5acd1ac132ae25964e4db93b7685beb.tar.gz"

@@ -1,0 +1,27 @@
+pkgname=webos-foundation
+pkgver=1.0.0_git20160531
+pkgrel=0
+_commit=ec6e5bfdf9a7322f53c7d7b3bb32815cde957bea
+pkgdesc="Webos webapp javascript frameworks"
+arch="all"
+url="http://webos-ports.org"
+license="GPL-3.0+"
+depends=""
+makedepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/webos-ports/foundation-frameworks/archive/$_commit.tar.gz"
+builddir="$srcdir/foundation-frameworks-$_commit"
+
+package() {
+	cd "$builddir"
+
+	install -d "$pkgdir"/usr/palm/frameworks
+
+	for FRAMEWORK in `ls -d1 ./foundations*` ; do
+		FRAMEWORK_DIR=`basename $FRAMEWORK`
+		install -d "$pkgdir"/usr/palm/frameworks/$FRAMEWORK_DIR/version/1.0/
+		cp -vrf $FRAMEWORK/* "$pkgdir"/usr/palm/frameworks/$FRAMEWORK_DIR/version/1.0/
+		# remove test and jasminetest dirs
+		rm -vrf ${D}${webos_frameworksdir}/$FRAMEWORK_DIR/version/1.0/*test
+	done
+}
+sha512sums="d1adc31f6efdf8f936ca4ee9eadc4742769e9124117af3e38dcb2b967dfbf54684b20ab9ac5d744d136e30597535b6d5a1867b9fcd8c4e3ba35c699b80119568  webos-foundation-ec6e5bfdf9a7322f53c7d7b3bb32815cde957bea.tar.gz"

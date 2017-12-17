@@ -1,0 +1,44 @@
+pkgname=nodejs-module-webos-pmlog
+pkgver=18.0.0_git20150424
+pkgrel=0
+_commit=ca359ed90389c5be085e7eac0548236312743d6a
+pkgdesc="Library to allow nodejs code to talk to palm pmloglib."
+arch="all"
+url="https://github.com/webOS-ports/nodejs-module-webos-pmlog"
+license="GPL-3.0+"
+depends="pmloglib nodejs nodejs-npm"
+
+# vim is in makedepends because it provides xxd
+makedepends="cmake-modules-webos pmloglib-dev nodejs-dev vim python"
+source="$pkgname-$pkgver.tar.gz::https://github.com/webOS-ports/nodejs-module-webos-pmlog/archive/$_commit.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare	
+
+	# pmloglib.js is tranformed into a c-style header so that it can be interpreted/run within
+	# the native node module.
+	cd "$builddir"/src
+	xxd -i pmloglib.js > pmloglib.js.h
+}
+
+build() {
+	# This package provides a cmake file, but it isn't useful on Alpine, as alpine doesn't package
+	# the pkgconfig files required to compile native node modules with the cmake script as written.
+	# So, we just use node-gyp instead.
+
+	cd "$builddir"
+	export CFLAGS=$(pkg-config --cflags PmLogLib)
+	export CXXFLAGS=$(pkg-config --cflags PmLogLib)
+	export LDFLAGS=$(pkg-config --libs PmLogLib)
+	/usr/lib/node_modules/npm/bin/node-gyp-bin/node-gyp configure
+	/usr/lib/node_modules/npm/bin/node-gyp-bin/node-gyp build
+}
+
+package() {
+	install -d "$pkgdir"/usr/lib/node
+	install -m755 "$builddir"/build/Release/pmloglib.node "$pkgdir"/usr/lib/node
+}
+
+sha512sums="4356da2fa5b93b4a8573123d07ea8cd3717a408a531134953f08763ae7173350ace55b634171dd5bcfcef683d1e9b8e2cb3b73a6cf841d42846ae5c374be1e88  nodejs-module-webos-pmlog-18.0.0_git20150424.tar.gz"

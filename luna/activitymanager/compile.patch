@@ -1,0 +1,44 @@
+diff --git a/src/Activity.cpp b/src/Activity.cpp
+index b44f14f..01809e0 100644
+--- a/src/Activity.cpp
++++ b/src/Activity.cpp
+@@ -381,7 +381,7 @@ void Activity::ClearTrigger()
+ 
+ bool Activity::HasTrigger() const
+ {
+-	return m_trigger;
++	return !!m_trigger;
+ }
+ 
+ void Activity::Triggered(boost::shared_ptr<Trigger> trigger)
+@@ -417,7 +417,7 @@ boost::shared_ptr<Callback> Activity::GetCallback()
+ 
+ bool Activity::HasCallback() const
+ {
+-	return m_callback;
++	return !!m_callback;
+ }
+ 
+ void Activity::CallbackFailed(boost::shared_ptr<Callback> callback,
+@@ -983,7 +983,7 @@ boost::shared_ptr<PowerActivity> Activity::GetPowerActivity()
+ 
+ bool Activity::IsPowerActivity() const
+ {
+-	return m_powerActivity;
++	return !!m_powerActivity;
+ }
+ 
+ void Activity::PowerLockedNotification()
+diff --git a/src/MojoTriggerSubscription.cpp b/src/MojoTriggerSubscription.cpp
+index fada064..3fcd2a6 100644
+--- a/src/MojoTriggerSubscription.cpp
++++ b/src/MojoTriggerSubscription.cpp
+@@ -60,7 +60,7 @@ void MojoTriggerSubscription::Unsubscribe()
+ 
+ bool MojoTriggerSubscription::IsSubscribed() const
+ {
+-	return m_call;
++	return !!m_call;
+ }
+ 
+ void MojoTriggerSubscription::ProcessResponse(MojServiceMessage *msg,

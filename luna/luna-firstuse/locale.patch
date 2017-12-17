@@ -1,0 +1,17 @@
+diff --git a/qml/LocalePage.qml b/qml/LocalePage.qml
+index 68249d2..1967525 100644
+--- a/qml/LocalePage.qml
++++ b/qml/LocalePage.qml
+@@ -79,6 +79,12 @@ BasePage {
+                         currentLocale = response.locale;
+                         console.log("Current locale " + JSON.stringify(currentLocale));
+                     }
++                    else {
++                        currentLocale = {
++                            languageCode: 'un',
++                            countryCode: 'un'
++                        }
++                    }
+ 
+                     // now we can fetch all possible values and setup our model
+                     service.call("luna://com.palm.systemservice/getPreferenceValues", JSON.stringify({key: "locale"}), fetchLocalesSuccess, fetchLocalesFailure);
