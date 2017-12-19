@@ -1,13 +1,13 @@
 pkgname=qt5-qtwebengine
 pkgver=5.9.3
 pkgrel=0
-# Disabled for armhf, aarch64 (see #1008)
-arch="x86_64"
+# Disabled for aarch64 (see #1008)
+arch="x86_64 armhf"
 url='http://qt-project.org/'
 license="GPL3 LGPL3 FDL custom"
 pkgdesc='Provides communication between JS/HTML and Qt apps'
 depends="qt5-qtbase qt5-qtquickcontrols2 python2 fontconfig dbus-x11 libcap libdrm libxcomposite libxcursor libxi libxrandr libxscrnsaver libxtst alsa-lib ffmpeg libwebp opus icu-libs libevent libexecinfo qt5-qtwebchannel libjpeg-turbo libintl gettext dbus libpbnjson luna-service2"
-makedepends="qt5-qtbase-dev qt5-qtquickcontrols2-dev python2-dev bison flex gperf fontconfig-dev mesa-dev libcap-dev libdrm-dev libxcomposite-dev libxcursor-dev libxi-dev libxrandr-dev libxscrnsaver-dev libxtst-dev alsa-lib-dev ffmpeg-dev ffmpeg-libs jsoncpp-dev ninja libwebp-dev opus-dev icu-dev libevent-dev bsd-compat-headers libexecinfo-dev git qt5-qtwebchannel-dev libjpeg-turbo-dev gzip libintl gettext-dev yasm dbus-dev libpbnjson-dev luna-service2-dev"
+makedepends="qt5-qtbase-dev qt5-qtquickcontrols2-dev python2-dev bison flex gperf fontconfig-dev mesa-dev libcap-dev libdrm-dev libxcomposite-dev libxcursor-dev libxi-dev libxrandr-dev libxscrnsaver-dev libxtst-dev alsa-lib-dev ffmpeg-dev ffmpeg-libs jsoncpp-dev ninja libwebp-dev opus-dev icu-dev libevent-dev bsd-compat-headers libexecinfo-dev git qt5-qtwebchannel-dev libjpeg-turbo-dev gzip libintl gettext-dev yasm dbus-dev libpbnjson-dev luna-service2-dev binutils-gold"
 builddir="$srcdir/${pkgname/qt5-/}-opensource-src-$pkgver"
 source="http://download.qt.io/official_releases/qt/${pkgver%.*}/${pkgver}/submodules/${pkgname/qt5-/}-opensource-src-$pkgver.tar.xz
 patches-musl/0001-chromium-Change-false-to-FALSE-and-1-to-TRUE-FIX-qtw.patch
@@ -77,7 +77,7 @@ build() {
 	cd $srcdir/build
 
 	export QT_CONFIG=system-ffmpeg
-	qmake-qt5 WEBENGINE_CONFIG+=use_system_ffmpeg "$srcdir"/${pkgname/qt5-/}-opensource-src-$pkgver 
+	qmake-qt5 CONFIG+="use_gold_linker" WEBENGINE_CONFIG+="use_system_ffmpeg use_gold_linker" "$srcdir"/${pkgname/qt5-/}-opensource-src-$pkgver 
 	make
 }
 
