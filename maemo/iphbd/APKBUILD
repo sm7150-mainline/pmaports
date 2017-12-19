@@ -1,27 +1,26 @@
 pkgname=iphbd
-pkgver=0.0.17
-pkgrel=1
-_rev=17b3aadb542ef144969450a4939251ec78c82a7d
+pkgver=0.0.18
+pkgrel=2
 pkgdesc="IP heartbeat daemon"
 arch="all"
-url="https://github.com/fremantle-gtk2/iphbd"
+url="https://github.com/maemo-leste/iphbd"
 license="GPL2"
 depends="dbus dbus-glib"
 makedepends="autoconf automake libtool dbus-glib-dev"
 subpackages="$pkgname-dev"
-source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/iphbd/archive/$_rev.tar.gz"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/iphbd/archive/$pkgver.tar.gz"
 
-builddir="$srcdir/iphbd-$_rev"
+builddir="$srcdir/iphbd-$pkgver"
 
 build() {
 	cd "$builddir"
-    ./autogen.sh
-    ./configure --prefix=/usr
-    make
+	./autogen.sh
+	./configure --prefix=/usr
+	make
 }
 
 package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="2ee02896ee9c7c434e5065a19e482cc70eca933a63192943cd7ce8b2cdb8ed1c1291a22b2bbd69e42864f9d4cc011b97083c3b14d0ab750ba7794002c1675f08  iphbd-17b3aadb542ef144969450a4939251ec78c82a7d.tar.gz"
+sha512sums="ddf500be33892ec275444747da003bc5fea7bc2f4969bb7fde5626e5c0988d21362753eb02f256736f7aeadf09ded20fa211a7f91cd142259e34beb4b1a4540b  iphbd-0.0.18.tar.gz"

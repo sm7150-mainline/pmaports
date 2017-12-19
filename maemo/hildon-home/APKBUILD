@@ -1,0 +1,26 @@
+pkgname=hildon-home
+pkgver=0.3.71
+pkgrel=1
+pkgdesc="Hildon Home application"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="GPL"
+depends="libhildon"
+makedepends="libhildon-dev libhildondesktop-dev libosso-dev
+	hildon-thumbnail-dev libhildonfm-dev osso-bookmark-engine-dev
+	mce-headers sqlite-dev autoconf automake m4"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./autogen.sh --prefix=/usr CFLAGS="${CFLAGS} -Wno-error=deprecated-declarations -Wno-error=misleading-indentation"
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="2a7a9a2f6afa267b1d0e33aa95d2dd7afbdcc036cdf91572555f656d8cadc422f28dbe54ea2179b632ec180a3ac2bfa040f31192b23b8590d9e5ec7dbab3ab5d  hildon-home-0.3.71.tar.gz"

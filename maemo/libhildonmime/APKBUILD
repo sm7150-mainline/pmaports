@@ -1,0 +1,25 @@
+pkgname=libhildonmime
+pkgver=3.0.0
+pkgrel=1
+pkgdesc="Hildon MIME library"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="GPL"
+depends=
+makedepends="glib-dev dbus-glib-dev gtk-doc libxml2-dev libtool automake autoconf m4"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./autogen.sh --prefix=/usr CFLAGS="${CFLAGS} -Wno-error=unused-but-set-variable"
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="cbd8425a039531e2246880a725d1c913af654a89ce60b23afdee1c5aae30f1a17f764db4ba8f3fbc9a91d8f0b528f5d3961a9efd0d2a7cea80142fd81b03eee0  libhildonmime-3.0.0.tar.gz"

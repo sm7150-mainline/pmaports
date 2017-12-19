@@ -1,0 +1,24 @@
+pkgname=sapwood
+pkgver=3.1.1
+pkgrel=1
+pkgdesc="Maemo pixbuf-based theme for GTK+ 2.x"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="GPL"
+depends="gtk+2.0-maemo"
+makedepends="gtk+2.0-maemo-dev autoconf automake m4 libtool"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./autogen.sh --prefix=/usr --enable-abstract-sockets
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="6d0d0320b6b73e5ba3f3d1950e6cc542bb0f5195e7738661c0b815b63234057a06bb1757a046a71a49fd044fd5ba8c8c423b20af480f70d19d84e3ca25885f82  sapwood-3.1.1.tar.gz"

@@ -1,0 +1,28 @@
+pkgname=libosso
+pkgver=2.32
+pkgrel=1
+pkgdesc="Basic library for Maemo applications"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="LGPL-2.1"
+depends="dbus-glib"
+makedepends="mce-headers autoconf automake libtool dbus-glib-dev linux-headers"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz
+    libosso-mem-musl.patch"
+subpackages="$pkgname-dev"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./autogen.sh
+	./configure --prefix=/usr --sysconfdir=/etc --enable-stderr-logging
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="bebce3550fc9bcf925c5c507d7982f68154d5d196576c2d9600e01fa2c8f1ecc84ed72c35e3f31e8262207b637d9ffe7ddf6568278c977dffbd11212d6da4e9a  libosso-2.32.tar.gz
+cc4ea4ec285169ea848a8d2ca3c1a084b019c2ed93a39e2225389fffe893c0c5951ded49d4de4b13cf7d0e8fce884830b85d7382411a2973f132af8038106887  libosso-mem-musl.patch"

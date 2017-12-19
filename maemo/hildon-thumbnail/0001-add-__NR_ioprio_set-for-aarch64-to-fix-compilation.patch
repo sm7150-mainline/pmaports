@@ -1,0 +1,29 @@
+From afd005ab4485d00d4b3af486daafe39e6e85b07f Mon Sep 17 00:00:00 2001
+From: NeKit <nekit1000@gmail.com>
+Date: Sat, 16 Dec 2017 22:00:36 +0300
+Subject: [PATCH] Add __NR_ioprio_set for aarch64 to fix compilation
+
+initialize_priority is disabled though, so ioprio_set should be never called
+---
+ daemon/hildon-thumbnail-daemon.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/daemon/hildon-thumbnail-daemon.c b/daemon/hildon-thumbnail-daemon.c
+index 9751d8c..f1401b9 100644
+--- a/daemon/hildon-thumbnail-daemon.c
++++ b/daemon/hildon-thumbnail-daemon.c
+@@ -117,7 +117,10 @@ static gboolean do_shut_down_next_time = TRUE;
+ #elif defined(__arm__)
+ #define __NR_ioprio_set		314
+ #define __NR_ioprio_get		315
+-#else
++#elif defined(__aarch64__)
++#define __NR_ioprio_set		30
++#define __NR_ioprio_get		31
++#else
+ #error "Unsupported architecture!"
+ #endif
+ 
+-- 
+2.13.2
+

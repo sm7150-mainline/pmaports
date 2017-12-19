@@ -1,0 +1,27 @@
+pkgname=libhildonfm
+pkgver=2.28.22
+pkgrel=1
+pkgdesc="Hildon file management libraries"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="GPL"
+depends="libhildon"
+makedepends="gconf-dev gtk-doc mce-headers libhildon-dev libpng-dev libosso-dev
+	hildon-thumbnail-dev libhildonmime-dev
+	autoconf automake m4"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./autogen.sh --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="7462e3ded3a28eac811591665c7e345f77cb91ce26e65293a2810b74b9fa355b4346ab6947c25fe228556e1283fe1da5e281c87b6ba63fd22b1dd4e2327eee15  libhildonfm-2.28.22.tar.gz"

@@ -1,0 +1,26 @@
+pkgname=maemo-launcher
+pkgver=0.35
+pkgrel=1
+pkgdesc="Application startup accelerator for Maemo"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="GPL"
+depends="libhildon iphbd dbus-glib"
+makedepends="libhildon-dev iphbd-dev dbus-glib-dev autoconf automake m4"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	autoreconf -i -f
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="8ec24811973c13099589f53a41fa7feef7672b0106513db7230794bfe94be76c235c9ed523a0ef9004e5b71683538c43522ba75acb6a08014795ce62b3f89ef0  maemo-launcher-0.35.tar.gz"

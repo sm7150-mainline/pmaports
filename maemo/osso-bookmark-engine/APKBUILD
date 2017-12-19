@@ -1,0 +1,24 @@
+pkgname=osso-bookmark-engine
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="Bookmark engine for the Maemo Bookmark application"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="GPL"
+depends=
+makedepends="gconf-dev glib-dev libtool libxml2-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" install
+}
+sha512sums="f19cfd615c7658c9da7ada8d53c398f7f6ec9bd6ac5c99f6bb85551ec9db9f7865507a00a877f32ebf15924d69c4f85d5d444443b817a27ca9da4bb176bab323  osso-bookmark-engine-2.0.0.tar.gz"

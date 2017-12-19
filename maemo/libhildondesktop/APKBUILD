@@ -1,17 +1,16 @@
 pkgname=libhildondesktop
 pkgver=2.1.43
-pkgrel=2
-_rev=813b16391359cccb1f100338dbb1530831e58784
+pkgrel=3
 pkgdesc="Hildon Desktop library"
 arch="all"
-url="https://github.com/fremantle-gtk2/libhildondesktop"
+url="https://github.com/maemo-leste/libhildondesktop"
 license="GPL"
 depends="libhildon iphbd dbus-glib"
 makedepends="autoconf automake libhildon-dev iphbd-dev dbus-glib-dev"
-subpackages="$pkgname-dev"
-source="$pkgname-$_rev.tar.gz::https://github.com/fremantle-gtk2/libhildondesktop/archive/$_rev.tar.gz"
+subpackages="$pkgname-dev $pkgname-examples"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libhildondesktop/archive/$pkgver.tar.gz"
 
-builddir="$srcdir/libhildondesktop-$_rev"
+builddir="$srcdir/libhildondesktop-$pkgver"
 
 build() {
 	cd "$builddir"
@@ -23,4 +22,12 @@ package() {
 	cd "$builddir"
     make DESTDIR="$pkgdir/" install
 }
-sha512sums="e6eb19fada805e3f5e19833f9d4f46d6677a9337287dd15bc0f186d70858cdfcb3e2b6713d18bbc54f61f8dc607f89dad13bcb17168918a16a23b149a0d35b3c  libhildondesktop-813b16391359cccb1f100338dbb1530831e58784.tar.gz"
+
+examples() {
+	pkgdesc="Hildon Desktop examples"
+	mkdir -p "$subpkgdir/usr/lib"
+	mv "$pkgdir/usr/lib/hildon-desktop" "$subpkgdir/usr/lib/"
+	mv "$pkgdir/usr/share" "$subpkgdir/usr/"
+}
+
+sha512sums="5766cfc600a2711ecb88d55a67a95e92555608b54217d8d83b8191e9c1d14ea0c3150e5c7ac2251acf83d7e200e80bfcd877c66a993e509c353b76da1136450f  libhildondesktop-2.1.43.tar.gz"

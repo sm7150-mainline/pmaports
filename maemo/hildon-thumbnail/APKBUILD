@@ -1,0 +1,29 @@
+pkgname=hildon-thumbnail
+pkgver=3.0.51
+pkgrel=1
+pkgdesc="The Hildon Thumbnailer daemon"
+arch="all"
+url="https://github.com/maemo-leste/$pkgname"
+license="GPL"
+depends="libhildon"
+makedepends="libhildon-dev libosso-dev sqlite-dev libpng-dev libexif-dev libjpeg-turbo-dev gstreamer0.10-dev autoconf automake libtool"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/$pkgname/archive/$pkgver.tar.gz
+	0001-add-__NR_ioprio_set-for-aarch64-to-fix-compilation.patch"
+subpackages="$pkgname-dev"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./autogen.sh
+	./configure --prefix=/usr --sysconfdir=/etc
+	# Compilation fails with multiple threads
+	make -j1
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" -j1 install
+}
+sha512sums="d0fa7ad86460db4d08686783590c303884c1d114ed8bdc227aa5684ea962b2f883d68ecc7707b6c598c540962814d1aeb312926e5bc94ada6fddc95b3e01aba0  hildon-thumbnail-3.0.51.tar.gz
+21c7075e5f5fecc30c1b53071ebc5d7f03d15714209a79c3e9f2db39613afaf578a734b1911f5692bdc811d924ab561c08e9cfde97eb75e1753fbcd9c7e76348  0001-add-__NR_ioprio_set-for-aarch64-to-fix-compilation.patch"

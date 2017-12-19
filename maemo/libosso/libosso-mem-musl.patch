@@ -1,0 +1,52 @@
+diff --git a/src/osso-mem.c b/src/osso-mem.c
+index 17fd5e2..0c74e3e 100644
+--- a/src/osso-mem.c
++++ b/src/osso-mem.c
+@@ -287,6 +287,7 @@ static void setup_sys_values(void)
+ } /* setup_sys_values */
+ 
+ 
++#if defined(__GLIBC__)
+ /* ------------------------------------------------------------------------- *
+  * saw_malloc_hook - Malloc hook. Executed when osso_mem_saw_active is in
+  * place. Thread-safe (= slow in some cases).
+@@ -337,7 +338,7 @@ static void* saw_malloc_hook(size_t size, const void* caller)
+ 
+    return ptr;
+ } /* saw_malloc_hook */
+-
++#endif
+ 
+ /* ========================================================================= *
+  * Public methods.
+@@ -583,6 +584,7 @@ int osso_mem_saw_enable(size_t threshold,
+    /* If we're below the threshold, don't make things worse */
+    if(threshold > 0 && available > threshold)
+    {
++#if defined(__GLIBC__)
+       const struct mallinfo mi = mallinfo();
+ 
+       THREAD_LOCK();
+@@ -602,6 +604,7 @@ int osso_mem_saw_enable(size_t threshold,
+ 
+       ULOG_INFO_F("SAW hook installed: block size %u, maxheap %u (threshold %u)",
+                   saw_max_block_size, saw_max_heap_size, threshold);
++#endif
+ 
+       return 0;
+    }
+@@ -621,12 +624,14 @@ int osso_mem_saw_enable(size_t threshold,
+  * ------------------------------------------------------------------------- */
+ void osso_mem_saw_disable(void)
+ {
++#if defined(__GLIBC__)
+    THREAD_LOCK();
+    if(saw_malloc_hook == __malloc_hook)
+       __malloc_hook = saw_old_malloc_hook;
+    THREAD_UNLOCK();
+ 
+    ULOG_INFO_F("SAW hook removed!");
++#endif
+ } /* osso_mem_saw_disable */
+ 
+ 
