@@ -13,7 +13,7 @@ esac
 . /etc/deviceinfo
 
 FLAVOR=$1
-METHOD=${deviceinfo_flash_methods:?}
+METHOD=${deviceinfo_flash_method:?}
 case $METHOD in
 	fastboot|heimdall-bootimg)
 		BOOT_PARTITION=$(findfs PARTLABEL="boot")
