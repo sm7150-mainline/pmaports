@@ -240,6 +240,9 @@ start_udhcpd() {
 	if [ -z $INTERFACE ]; then
 		ifconfig usb0 "$IP" && INTERFACE=usb0
 	fi
+	if [ -z $INTERFACE ]; then
+		ifconfig eth0 "$IP" && INTERFACE=eth0
+	fi
 
 	# Create /etc/udhcpd.conf
 	{
@@ -275,12 +278,6 @@ start_onscreen_keyboard(){
 show_splash() {
 	gzip -c -d "$1" >/tmp/splash.ppm
 	fbsplash -s /tmp/splash.ppm
-}
-
-echo_connect_ssh_message() {
-	echo "Your root partition has been decrypted successfully!"
-	echo "You can connect to your device using SSH in a few seconds:"
-	echo "ssh user@$IP"
 }
 
 start_msm_refresher() {

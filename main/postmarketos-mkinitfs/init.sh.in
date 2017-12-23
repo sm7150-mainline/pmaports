@@ -30,7 +30,7 @@ set_framebuffer_mode
 show_splash /splash-loading.ppm.gz
 
 # Always run dhcp daemon/usb networking for now (later this should only
-# be enabled, when having the usb-shell hook installed for debugging,
+# be enabled, when having the debug-shell hook installed for debugging,
 # or get activated after the initramfs is done with an OpenRC service).
 setup_usb_network
 start_udhcpd
@@ -55,6 +55,6 @@ umount /dev
 exec switch_root /sysroot /sbin/init
 
 echo "ERROR: switch_root failed!"
-echo "Looping forever. Install and use the usb-shell hook to debug this."
-echo "For more information, see <https://postmarketos.org/usbhook>"
+echo "Looping forever. Install and use the debug-shell hook to debug this."
+echo "For more information, see <https://postmarketos.org/debug-shell>"
 loop_forever
