@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# See wiki: <https://wiki.postmarketos.org/wiki/Teclast_X80_Pro_(teclast-x80pro)> for installation information
+# This package is also likely to work for most Intel based, EFI booting tablets (and laptops).
+pkgname="device-teclast-x80pro"
+pkgdesc="Teclast X80Pro"
+pkgver=1.0
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-teclast-x80pro linux-firmware"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="18e6b8d59378fea9eb7f41b9aae755e493ea62dc199eb8f3f25ee4d55a1b823d80e881845941933067aea11e722b4fd0de097e38f32f64392ee1fd21256d08ec  deviceinfo"
