@@ -3,13 +3,13 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=4.14_rc7
+pkgver=4.15_rc6
 _pkgver=${pkgver/_/-}
 _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=2
+pkgrel=0
 
 arch="all"
 pkgdesc="Linux for pmOS supported chipsets (mainline, more bleeding-edge than stable)"
@@ -20,12 +20,12 @@ options="!strip !check !tracedeps"
 install=
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v$_mainver.x/linux-$_basever.tar.xz
-	linux-v$_basever-v$_kernver-rc1.patch::https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/rawdiff/?id=v$_kernver-rc1&id2=v$_basever
-	linux-v$_kernver-rc1-v$_pkgver.patch::https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/rawdiff/?id=v$_pkgver&id2=v$_kernver-rc1
+	linux-v$_basever-v$_pkgver.patch::https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/rawdiff/?id=v$_pkgver&id2=v$_basever
 	config-${_flavor}.armhf
 	config-${_flavor}.aarch64
 	config-${_flavor}.x86_64
-	001-sony-amami-dts.patch
+	0001-sony-amami-dts.patch
+	0002-tools-objtool-Makefile-don-t-assume-sync-check.sh-is.patch
 "
 
 subpackages="$pkgname-dev::$CBUILD_ARCH"
@@ -171,10 +171,10 @@ dev() {
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
 }
-sha512sums="a557c2f0303ae618910b7106ff63d9978afddf470f03cb72aa748213e099a0ecd5f3119aea6cbd7b61df30ca6ef3ec57044d524b7babbaabddf8b08b8bafa7d2  linux-4.13.tar.xz
-ec42158f59f105995a3ccde025085343b5e6ba60de778c14cacf9aa34c40ae2e23058a03a1e6545f174c694620bbb0e423947f784c43e1474adfdcb7f866b3b6  linux-v4.13-v4.14-rc1.patch
-f120fc30e759c5c1dfd391c13bfdfa05675fbef02afdad3dce0fd22f02455f4d2ed545c1d4bddf2ada26827f5d54adc6813e2f927df3ebe18cd78ad1c99e0098  linux-v4.14-rc1-v4.14-rc7.patch
+sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
+b68965ef7b78ed9a0547d3a00432b0afaa8441a77412026c84d9b91b751f62d54cb263ec0ffc3547196038f0fe39bdcdfd1e7535776dc8f7a139528ea8ce3dcc  linux-v4.14-v4.15-rc6.patch
 a75225750193cf31c8b6c15e7748699f842ecadc9ed573f0b10f42bb5343b4e092bcb65b359d170a42a102a4ddfe09d63c1d67550f4b99c29295fa22e1d7b995  config-postmarketos-mainline.armhf
 6310035a0a4c028cc98cab92919cca54be9b79ee9fe63211e7a05876d7befdbd8506a2f80548e228e014e99b0f91f63946352789d8d2f2134c66914163f66ab3  config-postmarketos-mainline.aarch64
 3d42c60061d12a436d19ffdf00623ea71ca31f16f690ae82ebf872d35177c283b4038cd5e270f4e610d6cf6861cef73ac63c995f1f4cfe9d6f2a4a8648ba28fb  config-postmarketos-mainline.x86_64
-e34315167868c2539b2cb548b4305a5e16527b8d5b39843945bf3b0c2a67d70f7d9c93443bac2d28a744aa85012c241c68c5a4f09f0ad3e35ba8945bdaed2e2d  001-sony-amami-dts.patch"
+e0fb34032fe70d9a4713ed521b8a5e29cf7f76cb7c56ceb24ed7206a8445ba743226e4873fa2069077952e21f99fb36eabf7c4daa779f565961f0dded4591887  0001-sony-amami-dts.patch
+04863696e5ed64a8fe41b3ac49c4f7e3028a945c3abf74467e0b0b39d57748f1f89269776f4e0301e2f996738f29a1e1932b3c121d6530a889eb3c1fd91a7af4  0002-tools-objtool-Makefile-don-t-assume-sync-check.sh-is.patch"
