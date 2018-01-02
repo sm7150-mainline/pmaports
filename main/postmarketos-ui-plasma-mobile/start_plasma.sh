@@ -12,6 +12,12 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 		export QML2_IMPORT_PATH=/usr/lib/qt/qml:/usr/lib/qt5/qml
 
 		sleep 2
-		ck-launch-session kwin_wayland --drm --xwayland -- plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
+
+		if [ -d "/dev/dri" ]; then
+			ck-launch-session kwin_wayland --drm --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
+		else
+			export KWIN_COMPOSE=Q
+			ck-launch-session kwin_wayland --framebuffer --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
+		fi
 	fi
 fi
