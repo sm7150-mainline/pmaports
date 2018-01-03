@@ -1,0 +1,21 @@
+pkgname=postmarketos-ui-mate
+pkgver=1
+pkgrel=0
+pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
+url="http://mate-desktop.org/"
+arch="noarch"
+license="GPL3+"
+depends="mate-desktop-environment xorg-server dbus-x11"
+makedepends=""
+install="$pkgname.post-install"
+subpackages=""
+source="start_mate.sh"
+options="!check"
+
+package() {
+	# Autostart via autologin on TTY0 (until we have a display manager #656)
+	install -D -m644 "$srcdir"/start_mate.sh \
+		"$pkgdir"/etc/profile.d/start_mate.sh
+}
+
+sha512sums="a5a48821538b18069bad6528d488ed2dd5ae7d4f4fa095215c30d5399a41e645300f0c70bef1178be085e5fe8510fb4dda5446585663fd57193e938558b803de  start_mate.sh"
