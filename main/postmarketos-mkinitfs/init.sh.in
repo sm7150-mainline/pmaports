@@ -18,14 +18,14 @@ mount_subpartitions
 # Start msm-fb-refresher workaround for qualcomm devices
 start_msm_refresher
 
+# Fix for framebuffer drivers, which do not have a default mode
+set_framebuffer_mode
+
 # Hooks
 for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do
 	[ -e "$hook" ] || continue
 	sh "$hook"
 done
-
-# Fix for framebuffer drivers, which do not have a default mode
-set_framebuffer_mode
 
 show_splash /splash-loading.ppm.gz
 
