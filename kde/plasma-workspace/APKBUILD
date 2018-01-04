@@ -1,8 +1,8 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-workspace
-pkgver=5.11.2
-pkgrel=1
+pkgver=5.11.5
+pkgrel=0
 pkgdesc='KDE Plasma Workspace'
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
@@ -23,7 +23,8 @@ depends_dev="krunner-dev kdesignerplugin-dev kdesignerplugin qt5-qtwayland-dev q
 			baloo-dev prison-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev gpsd iso-codes-dev libxtst-dev
 			xcb-util-image-dev libxrender-dev"
-source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
+source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz
+		dont-set-brightness-to-one.patch"
 subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -47,4 +48,5 @@ package() {
 
 	install -Dm644 plasmawayland.desktop "$pkgdir"/usr/share/wayland-sessions/plasmawayland.desktop
 }
-sha512sums="0538b18e0991e7aad4a3713e5fc0559e75b2929b8d2c2f3a44ea9ed5c236362956f4ec0ce2697ea337ca7cea29af0030d6b5c0dbd01771253b38dde7d81f6c35  plasma-workspace-5.11.2.tar.xz"
+sha512sums="6f15e529665a5fbe24ee0420d1c8fe96ff97dbd2788ae120cd1834889b307b5979ca2aedd4f97d3cadcc7ed5cdb06c0e5f9c704ec732468db4b8ecf89270826f  plasma-workspace-5.11.5.tar.xz
+444cfb650bfabdd1555b1be01fcdb47dacfeada6bd258d2870cb2e90af4ca4b379e311502d0527a75dfdf666f2edf1e37eb811a16caaf5c7e45f80e941ec4b90  dont-set-brightness-to-one.patch"
