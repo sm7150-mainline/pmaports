@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-leeco-s2"
+pkgdesc="LeEco Le 2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-leeco-s2 mkbootimg msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="e270a4a9edcb6db2c6bf46b0347d658a4326f7b6fc1827e43d78e3c33c6600103c873bc4f566a39d4f20ff64cc6a1db949fd7538f28bd64dc0a339ee9bd9c377  deviceinfo"

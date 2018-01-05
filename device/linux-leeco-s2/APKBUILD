@@ -1,0 +1,84 @@
+# Kernel config based on: arch/arm64/configs/lineage_s2_defconfig
+
+pkgname="linux-leeco-s2"
+pkgver=3.10.106
+pkgrel=0
+pkgdesc="LeEco Le 2 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="leeco-s2"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev git python2"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+# Source
+_repository="overload1"
+_commit="b3650e93fec05cfe6ecf1fe80383bcff979463a0"
+_config="config-${_flavor}.${arch}"
+source="
+    $pkgname-$_commit.tar.gz::https://github.com/renjian2/${_repository}/archive/${_commit}.tar.gz
+    $_config
+    compiler-gcc6.h
+    01_fix_gcc6_errors.patch
+    03_psci.patch
+    05_dtb-fix.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+    default_prepare
+
+    # gcc6 support
+    cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+    # Remove -Werror from all makefiles
+    find . -type f -name Makefile -print0 | \
+        xargs -0 sed -i 's/-Werror-/-W/g'
+    find . -type f -name Makefile -print0 | \
+        xargs -0 sed -i 's/-Werror//g'
+
+    # Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+    cp "$srcdir"/$_config "$builddir"/.config
+    yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+    cd "$builddir"
+    make ARCH="$_carch" menuconfig
+    cp .config "$startdir"/$_config
+}
+
+build() {
+    unset LDFLAGS
+    make ARCH="$_carch" CC="${CC:-gcc}" \
+        KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+    # kernel.release
+    install -D "$builddir/include/config/kernel.release" \
+        "$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+    # zImage (find the right one)
+    cd "$builddir/arch/$_carch/boot"
+    _target="$pkgdir/boot/vmlinuz-$_flavor"
+    for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+        [ -e "$_zimg" ] || continue
+        msg "zImage found: $_zimg"
+        install -Dm644 "$_zimg" "$_target"
+        break
+    done
+    if ! [ -e "$_target" ]; then
+        error "Could not find zImage in $PWD!"
+        return 1
+    fi
+}
+
+sha512sums="e04ad32aef101019c66717d23ee9af3c1ef1770d3627d5ef6fab68c6ed81a2de766829f9aea9fdf1968523524de82aa6d0617656e1e66cc7a813ee9f54642b9a  linux-leeco-s2-b3650e93fec05cfe6ecf1fe80383bcff979463a0.tar.gz
+9427a9a9efecdcf747b119239b5ca7119d5952899908eae715c7ce934c100e7b7c6262840d4d74afa4d0ead7e1efc2346df4ba3c9a3fa8c5920a7d53ca614152  config-leeco-s2.aarch64
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+b23dfac4f6be2ac460f220f9e0780590c8d137cdfc5f0bf513efa0fb1ca07f32a6f0a53a96b215e9db8cdc28937e0eb46e6420147b5d3cf4dc64cff77b414457  01_fix_gcc6_errors.patch
+a66521ea257ed7d339592e198ce9cab983deb20fa45c02ffa8689ac7081d879ae3bff9648107c65e2805893c08611b356a55e6c088c8e17c7631364aa2a10c39  03_psci.patch
+0e5ebee2f1b0005fcae4f313219c0b6481b3d044c7167e0fb18b72db0eae49aef7b281cd29e0fa1e653fc5585064c990085ca68f920348c3d9d9ea9524d1baa6  05_dtb-fix.patch"
