@@ -16,11 +16,9 @@ static void activate(GtkApplication *app, gpointer user_data)
 	gtk_container_add(GTK_CONTAINER (window), button_box);
 
 	const char *programs[] = {
-		"Shutdown",
-			"poweroff &",
 		"GTK3 Demo",
 			"gtk3-demo &",
-		"Firefox (XWayland)",
+		"Firefox (XWayland, needs to be installed)",
 			"firefox &",
 		"weston-presentation-shm (Animation)",
 			"weston-presentation-shm &",
