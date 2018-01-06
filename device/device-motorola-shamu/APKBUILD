@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-motorola-shamu"
+pkgdesc="Motorola Google Nexus 6"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-motorola-shamu mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="40bff906976c61fa5a80bf564fa356249cd70b373508d81be517f8cdd0324c4ebf530436b110494e4a9f232e2a03fd3d1470a1760807f16b2f72cf187336d837  deviceinfo"
