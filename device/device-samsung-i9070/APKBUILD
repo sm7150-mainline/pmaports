@@ -1,12 +1,12 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9070
 pkgver=1
-pkgrel=17
+pkgrel=18
 pkgdesc="Samsung Galaxy S Advance"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-samsung-i9070 firmware-samsung-i9070"
+depends="linux-samsung-i9070 firmware-samsung-i9070 mesa-dri-swrast"
 makedepends="devicepkg-dev"
 install=""
 subpackages="$pkgname-mesa"
@@ -28,12 +28,6 @@ package() {
 		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 	install -Dm644 "$srcdir"/modules-load.conf \
 		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
-}
-
-mesa() {
-	install_if="$pkgname mesa"
-	depends="mesa-dri-swrast"
-	mkdir "$subpkgdir"
 }
 
 sha512sums="fe7b2af2abd441775705e5d228eab7904194bb3ef6af08a69593849e3380e6c9fc4905b3eac52e851aff0f2364a4425a79da8e6e48416b7a630754a525df3b9e  deviceinfo
