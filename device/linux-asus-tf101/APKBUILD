@@ -1,0 +1,98 @@
+# Kernel config based on: arch/arm/configs/tf101-linux_defconfig
+
+pkgname="linux-asus-tf101"
+pkgver=3.1.10
+pkgrel=0
+pkgdesc="Asus Eee Pad Transformer kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="asus-tf101"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="TF101-GNU-kernel"
+_commit="5ddd9654ec52599fbef71657ad2e03b3cdacee31"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/jmrohwer/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_fix_return_address.patch
+	01-fix-alignment.patch
+	02_fix_static_vma_address.patch
+	03_remove_deprecated_perl.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror-/-W/g'
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror//g'
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" modules
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Modules
+	cd "$builddir"
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		CONFIG_NO_ERROR_ON_MISMATCH=y \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
+		modules_install
+}
+
+sha512sums="44a2bccef4f5d9258aee8d7c8cdb2572f7136cf1a3487e6290457a21de28ecc4201951f5ea89d9392a44d0980f66a590cf23696209639b63dafefd4d39662902  linux-asus-tf101-5ddd9654ec52599fbef71657ad2e03b3cdacee31.tar.gz
+533575b9b66d99eb4237325ed7972f68adb01c0d3948f58e8c014f7f26338c3e224dea738d76e3ebdd35816f16bacb1ee46abcaeeeee52adec1aee2b43d8b805  config-asus-tf101.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+cdddc37d3c173c931631037d7c337e45589420eba956231436b8d3b857b942db7fd33e4800d0badaa6f09d33a5373a9f0bf173748e8e72b237bd7d699e7fe4a8  01-fix-alignment.patch
+59231af0dee68fc424d1ad78f62c491ace795d4cc4af4c26e59b08da5c10cfc406dfc980305f851254bbfa7f03b1bc75f8072f4b4d0f06629ebdbb9ca5a6fea9  02_fix_static_vma_address.patch
+cd0bc463eae0372554d09dac7914ae391f999ca4a77238f761dee636a398eb45e6c02280b7035c8d162ce539f646f3e4170f180ba2e78262c22e308f094d2cd2  03_remove_deprecated_perl.patch"
