@@ -1,14 +1,15 @@
 pkgname=device-qemu-aarch64
 pkgver=1
-pkgrel=8
+pkgrel=9
 pkgdesc="Simulated device in qemu with vexpress soc"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="linux-postmarketos-stable mesa-dri-swrast"
+# NOTE: 'pmbootstrap init' allows you to choose the mesa-dri-* package
+depends="linux-postmarketos-stable"
 makedepends=""
-subpackages=""
-source="deviceinfo interfaces"
+subpackages="$pkgname-weston"
+source="deviceinfo interfaces weston.ini"
 options="!check"
 
 package() {
@@ -18,5 +19,13 @@ package() {
 		"$pkgdir"/etc/network/interfaces
 }
 
+weston() {
+    install_if="$pkgname weston"
+    install -Dm644 "$srcdir"/weston.ini \
+        "$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+
 sha512sums="8802ad301bffd10d79db938adecf4bbdf8293c8caefe5fce753c56f228a7212330318a0be9853a83442e8971bbc235269796fe66077c501d35a935df1d2ed90c  deviceinfo
-d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  interfaces"
+d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  interfaces
+df0fe900693e5f176076c59f5379e56aaa96c3df16a4120448f15b71f530170730b43e5fe32733c40c118a00ca3581043231a062a8a1eb0a930bfbfbb6c52a47  weston.ini"
