@@ -1,0 +1,40 @@
+From 29c40823eee0bd4d3a40938dfdabd0187e34625f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Filip=20Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>
+Date: Thu, 23 Nov 2017 19:58:07 +0100
+Subject: [PATCH 07/12] ARM: dts: N9: Add support for volume keys
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Filip Matijević <filip.matijevic.pz@gmail.com>
+---
+ arch/arm/boot/dts/omap3-n9.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm/boot/dts/omap3-n9.dts b/arch/arm/boot/dts/omap3-n9.dts
+index 7bf1c0c1f884..9e417ba08deb 100644
+--- a/arch/arm/boot/dts/omap3-n9.dts
++++ b/arch/arm/boot/dts/omap3-n9.dts
+@@ -11,6 +11,7 @@
+ /dts-v1/;
+
+ #include "omap3-n950-n9.dtsi"
++#include <dt-bindings/input/input.h>
+
+ / {
+	model = "Nokia N9";
+@@ -79,6 +80,12 @@
+	compatible = "nokia,n9-modem";
+ };
+
++&twl_keypad {
++	linux,keymap = < MATRIX_KEY(6, 8, KEY_VOLUMEUP)
++			 MATRIX_KEY(7, 8, KEY_VOLUMEDOWN)
++			 >;
++};
++
+ &lis302 {
+	st,axis-x = <1>;    /* LIS3_DEV_X */
+	st,axis-y = <(-2)>; /* LIS3_INV_DEV_Y */
+--
+2.14.1
