@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# set framebuffer resolution
-echo 16 > /sys/class/graphics/fb0/bits_per_pixel
-echo 960,1600 > /sys/class/graphics/fb0/virtual_size
-
 # set usb properties
 echo 0 > /sys/class/android_usb/android0/enable
 echo samsung > /sys/class/android_usb/android0/iManufacturer
