@@ -98,6 +98,11 @@ mount -t ext2 -rw "$PMOS_BOOT" /mnt/pmOS/boot || {
 }
 ui_print "Installing rootfs..."
 unzip -p pmos.zip rootfs.tar.gz | tar -xz -C /mnt/pmOS
+ui_print "Creating home folder..."
+mkdir /mnt/pmOS/home
+user="$(awk -F ':' '$3 == "1000" {print $1}' /mnt/pmOS/etc/passwd)"
+cp -a /mnt/pmOS/etc/skel /mnt/pmOS/home/"$user"
+chown -R 1000 /mnt/pmOS/home/"$user"
 if [ "$FLASH_KERNEL" = "true" ]
 then
 	if [ "$ISOREC" = "true" ]
