@@ -213,6 +213,10 @@ create_bootimg()
 		--pagesize "${deviceinfo_flash_pagesize}" \
 		${_dt} \
 		-o "${outfile/initramfs-/boot.img-}"
+	if [ "${deviceinfo_bootimg_blobpack}" == "true" ]; then
+		echo "==> initramfs: creating blob"
+		blobpack "${outfile/initramfs-/blob-}" LNX "${outfile/initramfs-/boot.img-}"
+	fi
 }
 
 # Create splash screens
