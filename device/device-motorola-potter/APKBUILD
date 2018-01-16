@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-motorola-potter"
+pkgdesc="Motorola Moto G5 Plus"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-motorola-potter mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="7c38b81dd327f04acca2e8acad12ca15ab873aae2935f2ac7c66077f7c869b07d0a1502a92e9a7fcd552ac9c3817d00dbcccac27d3753207fbce199db96a739c  deviceinfo"

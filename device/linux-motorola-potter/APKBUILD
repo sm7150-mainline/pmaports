@@ -1,0 +1,97 @@
+# Kernel config based on: arch/arm64/configs/potter_defconfig
+
+pkgname="linux-motorola-potter"
+pkgver=3.18.91
+pkgrel=0
+pkgdesc="Motorola Moto G5 Plus kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="motorola-potter"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool xz"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_motorola_msm8953"
+_commit="5ec24e0225d19f2746088c88fbbc48978da5f3d5"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/boulzordev/android_kernel_motorola_msm8953/archive/${_commit}.tar.gz
+	$_config
+	01_prima_gcc6.patch
+	02_fix_msm_dba.patch
+	03_fix_rndis_ipa_trace_header_not_found.patch
+	04_fix_stmvl53l0_headers.patch
+	05_fix_u_f_header.patch
+	06_fix_usb_gadget_function.patch
+	compiler-gcc6.h
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror-/-W/g'
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror//g'
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	# Generate master DTB
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/dt.img" "arch/arm64/boot/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB
+	install -Dm644 "$builddir/arch/arm64/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="e735870e981e727afd0fb97c3ae5e544a724cbf6024c6ad710fca7e50bb19a613b42a40d1f9ec18f449d8b9c85cba9d5713b472b4204c74b5ba893f2b7e61749  linux-motorola-potter-5ec24e0225d19f2746088c88fbbc48978da5f3d5.tar.gz
+98429151eebf0d071d0db487d8d8a9acdcebafb3b3634cb207a74400a1136ea0f824f8c327cb8cf853688fe31a14c1af6f50050f3ec5d907f81d5576d88aed8c  config-motorola-potter.aarch64
+184875cf13a180d1c4bbe27d8ad24a8d6bd2e36ec35f9c4326809f1c8938ecebf3844c36ef71f4a0af9077e2506a82b2b4383ffd020dd1918aba1689d77b0c01  01_prima_gcc6.patch
+7e765cb696fa8c3dfbc305b05cbf1fad85fb9572613d5391e945341dae5974a745f4906c795dc841e5562b19ab77d5257f9741e514af2c2573aa4bb8b262ce51  02_fix_msm_dba.patch
+9c549714f03c7a7666e8aa7508a48cfdccab7cf3e97fb59c4df8fa97f75492365926f82c4a677c50780d68d4905504dcccbdd6de6344bd8d4b88b2331933ed46  03_fix_rndis_ipa_trace_header_not_found.patch
+1a128e1483459144726458175314c58528e6b1f1a85e5f4230fa0461b0c3dd650037567f672c220a95618f9df023a82a35f010e8e8b784e349806516c1daaf7e  04_fix_stmvl53l0_headers.patch
+b408f157cc025d410b38f5aee9be977e670e1ac3f195f6c3a6681446fa0c3887067d62a4f729cfcd058fab42fca355b0265764dc2d21515f6e023ed025f55d41  05_fix_u_f_header.patch
+1f23466d1a864f2d2c67ae4250b0c166ecb7755779bbdad6732808a001cc2826cc1d013c2281d2ca1d5abd7d60d13783f0b9f11bb8359971f2b30b911e627220  06_fix_usb_gadget_function.patch
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
