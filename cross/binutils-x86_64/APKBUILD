@@ -1,0 +1,69 @@
+# Automatically generated aport, do not edit!
+# Generator: pmbootstrap aportgen binutils-x86_64
+# Based on: main/binutils
+
+
+pkgname="binutils-x86_64"
+pkgver=2.28
+pkgrel=3
+pkgdesc="Tools necessary to build programs for x86_64 targets"
+url="https://www.gnu.org/software/binutils/"
+depends=""
+makedepends_build=""
+makedepends_host=""
+makedepends="gettext libtool autoconf automake bison"
+arch="all"
+license="GPL-2.0 GPL-3.0-or-later LGPL-2.0 BSD"
+subpackages=""
+source="http://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.bz2
+	binutils-ld-fix-static-linking.patch
+	hash-style-configure-flag.patch
+	CVE-2017-7614.patch
+	gold-mips.patch
+	"
+builddir="$srcdir/binutils-$pkgver"
+
+if [ "$CHOST" != "$CTARGET" ]; then
+	pkgname="binutils-$CTARGET_ARCH"
+	subpackages=""
+	sonameprefix="binutils:"
+fi
+
+# secfixes:
+#   2.28-r1:
+#   - CVE-2017-7614
+
+build() {
+        _target="$(arch_to_hostspec x86_64)"
+        cd "$builddir"
+        "$builddir"/configure \
+            --build="$CBUILD" \
+            --target=$_target \
+            --with-lib-path=/usr/lib \
+            --prefix=/usr \
+            --with-sysroot=/usr/$_target \
+            --enable-ld=default \
+            --enable-gold=yes \
+            --enable-plugins \
+            --enable-deterministic-archives \
+            --disable-multilib \
+            --disable-werror \
+            --disable-nls
+        make
+}
+
+package() {
+        cd "$builddir"
+        make install DESTDIR="$pkgdir"
+
+        # remove man, info folders
+        rm -rf "$pkgdir"/usr/share
+}
+
+
+
+sha512sums="ede2e4e59a800260eea8c14eafbaee94e30abadafd5c419a3370f9f62213cf027d6400a1d4970b6958bd4d220e675dcd483a708107016e7abd5c99d7392ba8fd  binutils-2.28.tar.bz2
+ecee33b0e435aa704af1c334e560f201638ff79e199aa11ed78a72f7c9b46f85fbb227af5748e735fd681d1965fcc42ac81b0c8824e540430ce0c706c81e8b49  binutils-ld-fix-static-linking.patch
+404a483adc8bf8112d953c53a853d21588745752687ee3ca57def539201b9e87844b23ba3c666d7c9648911cdeb55144382c3726ae3845e12b232c3f001c1bfe  hash-style-configure-flag.patch
+03e2329a216eaaaebc00a2b487a8ffa57657845ea3428f24a1029eabaca2103cb00f39cb4824fe6b70ce9c124e0f850c893746fcf203a6a69288d19df624c60a  CVE-2017-7614.patch
+f55cf2e0bf82f97583a1abe10710e4013ecf7d64f1da2ef8659a44a06d0dd8beaf58dab98a183488ea137f03e32d62efc878d95f018f836f8cec870bc448556f  gold-mips.patch"
