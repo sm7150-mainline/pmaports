@@ -1,12 +1,18 @@
-pkgname=qemu-user-static-repack
+pkgname="qemu-user-static-repack"
 pkgver=2.8
-_debver=${pkgver}+dfsg-6+deb9u3_amd64
-pkgrel=10
+pkgrel=11
 pkgdesc="QEMU user mode emulation binaries (static version)"
-arch=x86_64
+arch="all"
 url="https://wiki.debian.org/DebianKernel/ARMMP"
 license="GPL2"
-source="https://deb.debian.org/debian/pool/main/q/qemu/qemu-user-static_${_debver}.deb"
+_debver="${pkgver}+dfsg-6+deb9u3"
+_deburl="https://deb.debian.org/debian/pool/main/q/qemu/qemu-user-static_${_debver}"
+source="
+	qemu-user-static_${_debver}_x86.deb::${_deburl}_i386.deb
+	qemu-user-static_${_debver}_x86_64.deb::${_deburl}_amd64.deb
+	qemu-user-static_${_debver}_armhf.deb::${_deburl}_armhf.deb
+	qemu-user-static_${_debver}_aarch64.deb::${_deburl}_arm64.deb
+	"
 makedepends="tar xz"
 subpackages="$pkgname-doc $pkgname-binfmt:binfmt:noarch"
 options="!check"
@@ -14,8 +20,8 @@ options="!check"
 unpack() {
 	cd "$srcdir"
 	for i in $source; do
-		case $i in
-			*.deb) ar x ${i##*/} ;;
+		case ${i%::*} in
+			*${CARCH}.deb) ar x ${i%::*} ;;
 		esac
 	done
 
@@ -50,4 +56,7 @@ binfmt() {
 		"$pkgdir-binfmt/usr/share/qemu-user-binfmt.txt"
 }
 
-sha512sums="96ffac25444f7fd3275dfb5c00b73a033b4668572aac3448e77e8d87ca27698f9b32fc7d57f1b311ee8b0662a7d7cb39c716bbdb433e0bd798e7b6d2d8380c2a  qemu-user-static_2.8+dfsg-6+deb9u3_amd64.deb"
+sha512sums="466544a6e2b2ee4b0a25d290d9a95dd9082131118ee2818436e0a1ab4835ed5eaed0d4479dd392c2285dcb70e572a3323da970ff625706b9d72164992e8dd4a6  qemu-user-static_2.8+dfsg-6+deb9u3_x86.deb
+96ffac25444f7fd3275dfb5c00b73a033b4668572aac3448e77e8d87ca27698f9b32fc7d57f1b311ee8b0662a7d7cb39c716bbdb433e0bd798e7b6d2d8380c2a  qemu-user-static_2.8+dfsg-6+deb9u3_x86_64.deb
+d7aac0a40e3795a3cc83131f95d5e5c8e6164d29fc58a412ee5b5306017f9d47b3c659504bea93b87dbbe86ee07b60284c38e58476a6d7142f3cfde392f75502  qemu-user-static_2.8+dfsg-6+deb9u3_armhf.deb
+cb46e7ce7091b8d032a1a2fc7238ecce0238494517a23d64ad92dc50dc5ba5acdfb9e0d907db3c46d4c23d6c63612aa07d610ed3e11c4664c61d6bafe5b117ed  qemu-user-static_2.8+dfsg-6+deb9u3_aarch64.deb"
