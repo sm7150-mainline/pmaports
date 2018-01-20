@@ -1,0 +1,79 @@
+# Kernel config based on: arch/arm/configs/lineage_manta_defconfig
+
+pkgname="linux-samsung-manta"
+pkgver=3.4.113
+pkgrel=0
+pkgdesc="Google Nexus 10 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-manta"
+url="https://github.com/LineageOS/android_kernel_samsung_manta"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_manta"
+_commit="21157195150c268c19303513e4e1327dc01ff89e"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror-/-W/g'
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror//g'
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="11f8c197810438082bb103be9f26857e7ec1e1e49a1a8aca3bade12332ed1def62142b58219f4d17d07f0ab076708bef6c709312b784ab1c5339aa2e9db0232f  linux-samsung-manta-21157195150c268c19303513e4e1327dc01ff89e.tar.gz
+9ddba5bc4671b021db61bcdf0695f3469704612254ff3eba05e185b8a24e2fd24e512f5a25bfb5690a0894f5e6da40e4319c492a55e296fcd7f5de4695f80ab6  config-samsung-manta.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
