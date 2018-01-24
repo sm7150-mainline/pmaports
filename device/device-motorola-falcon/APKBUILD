@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-motorola-falcon"
+pkgdesc="Moto G (2013)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-motorola-falcon mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="5e75404b3ef0fc7e587168de6b78598dfcdb720c75b132501da4ad739a4bdd901ea27e83463e4234827857e307988a8ab60774bdb86e203aa427be3134d79c4f  deviceinfo"
