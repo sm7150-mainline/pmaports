@@ -1,0 +1,27 @@
+pkgname=gnome-menus
+pkgver=3.13.3
+pkgrel=0
+pkgdesc='Library for the Desktop Menu Specification'
+arch="all"
+url='http://www.gnome.org/'
+license="LGPL"
+depends="glib"
+makedepends="gobject-introspection intltool python-dev glib-dev"
+subpackages="$pkgname-dev"
+source="http://ftp.gnome.org/pub/gnome/sources/${pkgname}/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+
+builddir="$srcdir/${pkgname}-$pkgver"
+
+build() {
+    cd "$builddir"
+
+    export PYTHON='/usr/bin/python2'
+    ./configure --prefix='/usr' --sysconfdir='/etc' --localstatedir='/var' --disable-static
+    make
+}
+
+package(){
+    cd "$builddir"
+    make DESTDIR="${pkgdir}" install
+}
+sha512sums="d631eb17ddc1b33227d0e5862a9344a8605ee1e9ebc1f12ce4ac98895adaf8a82ef2a49415d99bc194a02f30f30c3d6d49759f280fbc246c9e482711fd5021d2  gnome-menus-3.13.3.tar.xz"
