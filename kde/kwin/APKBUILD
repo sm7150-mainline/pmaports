@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwin
 pkgver=5.11.5
-pkgrel=0
+pkgrel=1
 pkgdesc='An easy to use, but flexible, composited Window Manager'
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
@@ -19,7 +19,8 @@ depends_dev="kdecoration-dev kjobwidgets-dev kcmutils-dev kscreenlocker-dev bree
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev libxkbcommon-dev
 			libepoxy-dev libinput-dev xcb-util-cursor-dev libdrm-dev eudev-dev xcb-util-wm-dev"
 source="https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz
-		0001-fbdev-support-RGB32-framebuffer-with-BGR-order.patch"
+		0001-fbdev-support-RGB32-framebuffer-with-BGR-order.patch
+		fix-compilation.patch"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -30,7 +31,7 @@ build() {
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DKDE_INSTALL_LIBEXECDIR=lib \
 		-DLIBC_IS_GLIBC=0
-	make
+	SKIP_AUTOMOC=main.cpp make
 }
 
 check() {
@@ -43,4 +44,5 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 sha512sums="fb1355a33998c5b5ddb0bac59d65862fecfa8bab8bda234bf60c75800f04fb7b96b8069d3fcdd5f2647c06ca7673ed6ef6b7fa49b160b57dcbcb65dc1a853cd2  kwin-5.11.5.tar.xz
-5c35ff9526eb5a239e384025d20840ef159ad1f82922a49bb92ebd251c61410361495da9b03a5e185a26c6ad587ece68a20bd7973cad05cbb4f6cd490a4cbf37  0001-fbdev-support-RGB32-framebuffer-with-BGR-order.patch"
+5c35ff9526eb5a239e384025d20840ef159ad1f82922a49bb92ebd251c61410361495da9b03a5e185a26c6ad587ece68a20bd7973cad05cbb4f6cd490a4cbf37  0001-fbdev-support-RGB32-framebuffer-with-BGR-order.patch
+9820d89d9f02fc26cdef710f0d074a102417c4695691e8be2eb82a62a8a42eeed0cdb586e4d365f7812321341663c7608bc45be569f7eb9c509f889820b99e9c  fix-compilation.patch"

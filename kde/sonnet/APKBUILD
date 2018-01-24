@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=sonnet
-pkgver=5.41.0
+pkgver=5.42.0
 pkgrel=0
 pkgdesc='Spelling framework for Qt5'
 arch="all"
@@ -12,6 +12,7 @@ depends_dev="qt5-qtbase"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen hunspell-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+options="!check" # Fails due to requiring running X11
 
 build() {
 	cmake \
@@ -31,4 +32,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="608b0c476f6a1bb9e598c9c3dbb58882ec80f2e3d436cf4e4657cccc2ca5abd24bf7af5f7982ff79d80eb602c92a26be498a9bd02fcb8b6ac44298b42af6648b  sonnet-5.41.0.tar.xz"
+sha512sums="f066d54107895970fb4502a3b6987373300a2c753e54ed31b25c952eb2c9e4d40cb2ea98a14bffd6e05147eee8ac7d59c210b04809bf99c826cd0c93e4edec01  sonnet-5.42.0.tar.xz"

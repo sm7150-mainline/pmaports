@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kdelibs4support
-pkgver=5.41.0
+pkgver=5.42.0
 pkgrel=0
 pkgdesc='Porting aid from KDELibs4'
 arch="all"
@@ -14,8 +14,7 @@ depends_dev="kdesignerplugin kunitconversion-dev kemoticons-dev kded-dev kparts-
 			kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev knotifications-dev ktextwidgets-dev sonnet-dev
 			kwindowsystem-dev kdbusaddons-dev kdesignerplugin-dev kbookmarks-dev kcoreaddons-dev kio-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev qt5-qttools-dev networkmanager perl-uri ca-certificates"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/portingAids/${pkgname}-${pkgver}.tar.xz
-		D8672.patch"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/portingAids/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="suid !check" # Fails due to requiring running X11
 
@@ -43,5 +42,4 @@ package() {
 	rm -f "$pkgdir"/usr/share/kf5/kssl/ca-bundle.crt
 	ln -sf /etc/ssl/certs/ca-certificates.crt "${pkgdir}"/usr/share/kf5/kssl/ca-bundle.crt
 }
-sha512sums="ecda32a36099bc6b7fcdb56a7608cabb20fd30ea591a47c789b499924c7beda37f9479b8321d5e0a09094cd1274060e9546f4fb089cad70b80991e7f9a6fdc61  kdelibs4support-5.41.0.tar.xz
-c0c9067cabd41e206ecc83a1d9156ba80b5ee05def2d205e37b4534d796d97973cc21c185ba4afd59c948490f59ec6a95fc30a19594ade184522c2357635bb82  D8672.patch"
+sha512sums="eb4ea8ab7828197615ee35ebff259c30e52142cc8cbd964e8cc7fbd9745174f199e3c53b2bd3d31a216f16ad3eba06806c669b3d4d6aeebd2b89c8a124737994  kdelibs4support-5.42.0.tar.xz"
