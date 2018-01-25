@@ -1,6 +1,6 @@
 pkgname=device-t2m-flame
 pkgver=1
-pkgrel=8
+pkgrel=9
 pkgdesc="Mozilla Flame"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -8,8 +8,7 @@ license="MIT"
 depends="linux-t2m-flame firmware-t2m-flame mkbootimg mesa-dri-swrast"
 makedepends=""
 install="$pkgname.post-install"
-subpackages="$pkgname-weston"
-source="deviceinfo 90-android-touch-dev.rules weston.ini $install"
+source="deviceinfo 90-android-touch-dev.rules $install"
 options="!check"
 
 package() {
@@ -19,13 +18,6 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
 
-weston() {
-	install_if="$pkgname weston"
-	install -Dm644 "$srcdir"/weston.ini \
-		"$subpkgdir"/etc/xdg/weston/weston.ini
-}
-
 sha512sums="2a674961778b4f9fc5d7fb5186d2fa958ba3659743279f887cbe3008ad7889ff9d9485583637e652b86f94f469bcd0927814c21bc9373228cde97a4f8ffc15e6  deviceinfo
 25256120a19cba6b6f9ae0cda7b2c8c84d168a6457e82afee438d50d2c28b9598bfe690301c15156d866b77cd87652d9b7cc3d9b0637f69414aae09fec159c91  90-android-touch-dev.rules
-4f321242005b4da012322a8e9bce14a3734281d6ab410f60e7c9c28a6df905876ccce65c3b914233f351118718ccd81b9be41724ee2099ca36d40b4cfff46b93  weston.ini
 0a301a723f2a6ad8285fa8c016a73b0d05ae9811a8c96cd73f6db274e85676f7b3d427ede46484665fd613b67ef42330f0b69413328c04c3f489db86c5aa9038  device-t2m-flame.post-install"
