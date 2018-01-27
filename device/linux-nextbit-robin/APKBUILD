@@ -1,0 +1,83 @@
+# Kernel config based on: arch/arm64/configs/lineageos_ether_defconfig
+
+pkgname="linux-nextbit-robin"
+pkgver=3.10.108
+pkgrel=0
+pkgdesc="Nextbit Robin kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="nextbit-robin"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_nextbit_msm8992"
+_commit="8b8773362248bdba3224a1d92e76c5b9004519d6"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_psci_err.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="f2bffe51d021cbe7e5eb3f33486ee3544ca4477e4d21bfb2cffb5743e16dd24a02dbbb93daa45f43ed1825607b730fb39a1b7dace7b24f99a844dca577ba52ad  linux-nextbit-robin-8b8773362248bdba3224a1d92e76c5b9004519d6.tar.gz
+2b1bfe206071852b5866cd932f290650e57866386dbf80f992d9229d287fa5910724ad9486280e0f8c0885adae77ac5cf9803fdc5d5594b524a87ceddd947d7e  config-nextbit-robin.aarch64
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+8740861d5e125a5f9faa144e6fe6d7e6413250664547f217bf8a02e1bea77f9809582c952cdd3618fcbf150979faab57540ecc3370d6734cc82bbd62afdf15b1  01_psci_err.patch"
