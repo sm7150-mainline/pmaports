@@ -1,6 +1,6 @@
 pkgname=device-nokia-n900
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Nokia N900"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -8,7 +8,7 @@ license="MIT"
 depends="linux-postmarketos-stable uboot-tools linux-firmware kbd kbd-bkeymaps ofono mesa-dri-swrast"
 makedepends="uboot-tools kbd kbd-bkeymaps"
 install="$pkgname.post-install"
-subpackages="$pkgname-weston:weston"
+subpackages="$pkgname-weston $pkgname-x11"
 source="
 	deviceinfo
 	uboot-script.cmd
@@ -18,6 +18,7 @@ source="
 	acpi_handler.sh
 	acpi.map
 	keymaps/rx51_us.map
+	keymaps/40-xkb.conf
 	pointercal
 	asound.state
 	weston.ini
@@ -69,6 +70,12 @@ weston() {
 		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
+x11() {
+	install_if="$pkgname xorg-server"
+	install -D -m644 "$srcdir"/40-xkb.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/40-xkb.conf
+}
+
 sha512sums="b8b61cc2a795e59bb11318ddcaeca1c36dbe786a9925fae366c4ab639db0314fb14f5d08e52665df65fabd62db2a580fd3055b9f56f0e61313b96e185af5f79f  deviceinfo
 8f5b68b86f5345698114a2d70fd174699e5729f6c157659e4e57bef1dcab8c1209c13b30df6f5c2e8f31fee077039ffbc7817ca201f0745467b693e7550eaf6b  uboot-script.cmd
 3d55e34b95791636e44a5f41754f3d0de039dbba41f7a556d43a95c9e64afcfa930046b4b96b40020b6f196096ffba93514682927e32fa4488686fdd19c6da5a  backlight-enable.sh
@@ -77,6 +84,7 @@ d303734dd49fe75a299ca723f4da52bc0cda2775683c54aa736aabf397db4ae8deb6d912d4116800
 df5dcae9a32d04ba2fed8b4dbb8722f8d56d063a288dfbaeca37806bdbb8ba4de639b392859b9f24040a1032456d5dcd754f51314e3ab66515b91ae1e03c93a7  acpi_handler.sh
 7761aec6e6e219245b006e7bdc1d19812e9c5915cf3e64bb3dd46bb4b5570c1715650b53a1fc1007cb814076b5d81be0a66ba7ebf06d9a1fa4e364725c3ee633  acpi.map
 c9ff8b5968fe94007e1139db5ae76f3ee6c214356bff297b9672276c6adb332ba2342b6ca54cf7992d6556f3c68a13ef49ae5e61abe86154935514034170e228  rx51_us.map
+181187db6d88b872233f594759373f32fd08065ee340b60f0c3ff06396d99f4b1250192d70a054fcc9e51e067f6cc063c62b7d8dfff3427b292f1d0c766db206  40-xkb.conf
 143c21f0b18a016d37cb44178e9daea09f128a90769b48353c03c3f245cb9b1f7e773b9ccee084973fc78ddd7a18c2642e54888a85bda7c7daecddc9a8c62eff  pointercal
 e023df91295fe7e410e163747d17e5b92fe3c022ff076e286778b8334368f885603b8fda65671e4a7328766da7b2552ea4df1b1399df23e504a41a6655771142  asound.state
 e7749ce65de8e90b64f728f6ff695d4199cfcac31f0a7def19c46cd3cd6fba623b03202036ab99bdaec8611bfe7c787259f6f6ef7316f208a2b2fe9a7d01d22f  weston.ini
