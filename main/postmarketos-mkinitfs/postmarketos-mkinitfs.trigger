@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # $1: kernel flavor
 rebuild_initfs_flavor()

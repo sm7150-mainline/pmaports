@@ -7,9 +7,6 @@ source_deviceinfo()
 		exit 1
 	fi
 	. /etc/deviceinfo
-	if [ -z "${deviceinfo_modules_initfs}" ]; then
-		echo "WARNING: deviceinfo_modules_initfs is empty!"
-	fi
 }
 
 parse_commandline()
@@ -65,7 +62,14 @@ get_modules_by_globs()
 # That's why postmarketos-mkinitfs depends on kmod
 get_modules_by_name()
 {
-	MODULES="drm_kms_helper drm dm_crypt ext4 \
+	{
+		echo "Scanning kernel module dependencies..."
+		echo "NOTE: ** modprobe warnings below can be ignored ** if your device does not run the"
+		echo "mainline kernel yet (most devices!) or if the related kernel options are enabled"
+		echo "with 'y' instead of 'm' (module)."
+	} >&2
+
+	MODULES="drm_kms_helper drm dm_crypt \
 		${deviceinfo_modules_initfs}"
 	modprobe \
 		-a \
@@ -170,25 +174,44 @@ create_cpio_image()
 		| gzip -1 > "$2"
 }
 
+# Required command check with useful error message
+# $1: command (e.g. "mkimage")
+# $2: package (e.g. "uboot-tools")
+# $3: related deviceinfo variable (e.g. "generate_bootimg")
+require_package()
+{
+	[ "$(command -v "$1")" == "" ] || return
+	echo "ERROR: 'deviceinfo_$3' is set, but the package '$2' was not"
+	echo "installed! Please add '$2' to the depends= line of your device's"
+	echo "APKBUILD. See also: <https://postmarketos.org/deviceinfo>"
+	exit 1
+}
+
 # Legacy u-boot images
 create_uboot_files()
 {
 	[ "${deviceinfo_generate_legacy_uboot_initfs}" == "true" ] || return
+	require_package "mkimage" "uboot-tools" "generate_legacy_uboot_initfs"
+
 	echo "==> initramfs: creating uInitrd"
-	mkimage -A arm -T ramdisk -C none -n uInitrd -d "$outfile" "${outfile/initramfs-/uInitrd-}"
+	mkimage -A arm -T ramdisk -C none -n uInitrd -d "$outfile" \
+		"${outfile/initramfs-/uInitrd-}" || exit 1
 
 	echo "==> kernel: creating uImage"
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
 	if [ -n "${deviceinfo_dtb}" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
-	mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 -n postmarketos -d $kernelfile "${outfile/initramfs-/uImage-}"
+	mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 \
+		-n postmarketos -d $kernelfile "${outfile/initramfs-/uImage-}" || exit 1
 }
 
 # Android devices
 create_bootimg()
 {
 	[ "${deviceinfo_generate_bootimg}" == "true" ] || return
+	require_package "mkbootimg" "mkbootimg" "generate_bootimg"
+
 	echo "==> initramfs: creating boot.img"
 	_base="${deviceinfo_flash_offset_base}"
 	[ -z "$_base" ] && _base="0x10000000"
@@ -200,6 +223,16 @@ create_bootimg()
 	_dt=""
 	if [ "${deviceinfo_bootimg_qcdt}" == "true" ]; then
 		_dt="--dt /boot/dt.img"
+		if ! [ -e "/boot/dt.img" ]; then
+			echo "ERROR: File not found: /boot/dt.img, but"
+			echo "'deviceinfo_bootimg_qcdt' is set. Please verify that your"
+			echo "device is a QCDT device by analyzing the boot.img file"
+			echo "(e.g. 'pmbootstrap bootimg_analyze path/to/twrp.img')"
+			echo "and based on that, set the deviceinfo variable to false or"
+			echo "adjust your linux APKBUILD to properly generate the dt.img"
+			echo "file. See also: <https://postmarketos.org/deviceinfo>"
+			exit 1
+		fi
 	fi
 	mkbootimg \
 		--kernel "${kernelfile}" \
@@ -212,10 +245,11 @@ create_bootimg()
 		--tags_offset "${deviceinfo_flash_offset_tags}" \
 		--pagesize "${deviceinfo_flash_pagesize}" \
 		${_dt} \
-		-o "${outfile/initramfs-/boot.img-}"
+		-o "${outfile/initramfs-/boot.img-}" || exit 1
 	if [ "${deviceinfo_bootimg_blobpack}" == "true" ]; then
 		echo "==> initramfs: creating blob"
-		blobpack "${outfile/initramfs-/blob-}" LNX "${outfile/initramfs-/boot.img-}"
+		blobpack "${outfile/initramfs-/blob-}" LNX \
+			"${outfile/initramfs-/boot.img-}" || exit 1
 	fi
 }
 
@@ -293,6 +327,10 @@ append_device_tree()
 	dtb="/usr/share/dtb/${deviceinfo_dtb}.dtb"
 	kernel="${outfile/initramfs-/vmlinuz-}"
 	echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
+	if ! [ -e "$dtb" ]; then
+		echo "ERROR: File not found: $dtb"
+		exit 1
+	fi
 	cat $kernel $dtb > "${kernel}-dtb"
 }
 
