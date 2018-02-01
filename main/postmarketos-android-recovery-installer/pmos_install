@@ -58,13 +58,17 @@ mountpoint -q /mnt/pmOS && umount -R /mnt/pmOS
 
 ui_print "Symlinking block devices..."
 ln -sf /dev/block/* /dev/
+
 ui_print "Extracting partition table..."
 extract_partition_table
+
 ui_print "Unmounting /$INSTALL_PARTITION..."
 umount_install_partition
+
 ui_print "Creating partition table on $INSTALL_DEVICE..."
 # parted returns nonzero even when command executed successfully
 partition_install_device || :
+
 ui_print "Creating mountpoint..."
 mkdir -p /mnt/pmOS
 
@@ -72,22 +76,29 @@ if [ "$FDE" = "true" ]
 then
 	ui_print "Generating temporary keyfile with random data..."
 	dd bs=512 count=4 if=/dev/urandom of=/lukskey
+
 	ui_print "Initializing LUKS device..."
 	cryptsetup luksFormat --use-urandom -c "$CIPHER" -q "$ROOT_PARTITION" /lukskey
+
 	ui_print "Opening LUKS partition..."
 	cryptsetup luksOpen -d /lukskey "$ROOT_PARTITION" pm_crypt
+
 	ui_print "Formatting LUKS partition..."
 	mkfs.ext4 -L 'pmOS_root' /dev/mapper/pm_crypt
+
 	ui_print "Mounting LUKS partition..."
 	mount -t ext4 -rw /dev/mapper/pm_crypt /mnt/pmOS
 else
 	ui_print "Formatting root partition..."
 	mkfs.ext4 -L 'pmOS_root' "$ROOT_PARTITION"
+
 	ui_print "Mounting root partition..."
 	mount -t ext4 -rw "$ROOT_PARTITION" /mnt/pmOS
 fi
+
 ui_print "Formatting pmOS_boot..."
 mkfs.ext2 -q -L 'pmOS_boot' "$PMOS_BOOT"
+
 ui_print "Mounting pmOS_boot..."
 mkdir /mnt/pmOS/boot
 mount -t ext2 -rw "$PMOS_BOOT" /mnt/pmOS/boot || {
@@ -96,19 +107,27 @@ mount -t ext2 -rw "$PMOS_BOOT" /mnt/pmOS/boot || {
 	mkfs.ext4 -L 'pmOS_boot' "$PMOS_BOOT"
 	mount -t ext4 -rw "$PMOS_BOOT" /mnt/pmOS/boot
 }
+
 ui_print "Installing rootfs..."
 unzip -p pmos.zip rootfs.tar.gz | tar -xz -C /mnt/pmOS
+
 ui_print "Creating home folder..."
 mkdir /mnt/pmOS/home
 user="$(awk -F ':' '$3 == "1000" {print $1}' /mnt/pmOS/etc/passwd)"
 cp -a /mnt/pmOS/etc/skel /mnt/pmOS/home/"$user"
 chown -R 1000 /mnt/pmOS/home/"$user"
+
+ui_print "Configuring apk..."
+sed -i '/\/mnt\/pmbootstrap-packages/d' /mnt/pmOS/etc/apk/repositories
+
+# Flash kernel
 if [ "$FLASH_KERNEL" = "true" ]
 then
 	if [ "$ISOREC" = "true" ]
 	then
 		ui_print "Flashing kernel..."
 		dd if=/mnt/pmOS/boot/vmlinuz-"$FLAVOR" of="$KERNEL_PARTITION"
+
 		ui_print "Flashing initfs..."
 		gunzip -c /mnt/pmOS/boot/initramfs-"$FLAVOR" | lzop \
 			> "$INITFS_PARTITION"
@@ -117,9 +136,11 @@ then
 		dd if=/mnt/pmOS/boot/boot.img-"$FLAVOR" of="$BOOT_PARTITION"
 	fi
 fi
+
 if [ "$FDE" = "true" ]
 then
 	ui_print "Do not forget to add a password to the LUKS partition!"
 	ui_print "Run the command: pmos_setpw from the terminal/adb shell!"
 fi
+
 ui_print "Installation done."
