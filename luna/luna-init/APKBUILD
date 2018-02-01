@@ -1,12 +1,12 @@
 pkgname=luna-init
 pkgver=5.0.0_git20171117
-pkgrel=1
+pkgrel=2
 _commit=5fff640fb0b9f3e973c13d1620889b2da4c11766
 pkgdesc="Initialization and font setup files used by luna-sysmgr."
 arch="all"
 url="http://webos-ports.org"
 license="GPL-3.0+"
-depends=""
+depends="postmarketos-artwork-wallpapers"
 makedepends="cmake-modules-webos python2 py2-tz"
 source="$pkgname-$_commit.tar.gz::https://github.com/webOS-ports/luna-init/archive/$_commit.tar.gz"
 options="!check"
@@ -35,5 +35,7 @@ package() {
 	install -v -m 644 "$builddir"/files/conf/default-launcher-page-layout.json "$pkgdir"/etc/palm
 	install -v -m 644 "$builddir"/files/conf/locale.txt "$pkgdir"/etc/palm
 
+	install -d "$pkgdir"/media/internal/wallpapers
+	ln -s -v /usr/share/wallpapers/postmarketos.jpg "$pkgdir"/media/internal/wallpapers/LuneOS.jpg
 }
 sha512sums="9278b53e8358230e0979d314958a02ada6d68a68b97e253d81ffc5132901cf7aa033c8d908530cbf36c422a161a3f80cc70f1ddb3e0e4b3fae86183c39d10b95  luna-init-5fff640fb0b9f3e973c13d1620889b2da4c11766.tar.gz"
