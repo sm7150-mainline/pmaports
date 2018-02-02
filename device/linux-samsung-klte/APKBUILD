@@ -1,0 +1,95 @@
+# Kernel config based on: arch/arm/configs/boeffla_defconfig
+
+pkgname="linux-samsung-klte"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Samsung Galaxy S5 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-klte"
+url="https://github.com/andip71/boeffla-kernel-samsung-s5"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz dtbtool"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="boeffla-kernel-samsung-s5"
+_commit="4f0aa338c54103b7d7744dd3a8202081883512b5"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/andip71/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_fix_return_address.patch
+	01_timeconst_fix.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+	03_msm_fix_trace.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror-/-W/g'
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror//g'
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		C_INCLUDE_PATH="./arch/arm/mach-msm:./sound/soc/msm/qdsp6v2"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Generate master DTB
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="c4bee8ae1f9a6d3126c54395e5640ec7d2750b82cb83c515d132a2fa769667d9795d5cff8ae9bf41118d61d4311dbba50328f31804bee901f5cd6ff899d2040b  linux-samsung-klte-4f0aa338c54103b7d7744dd3a8202081883512b5.tar.gz
+dbd294dccaaf1d94b8cb235ad54e9f72af1a0e7e31184c25e4b24685419d01f4420dd6e4af5080b47d12f719531cee97e037e305e7eb7371980d8c90d67b60c0  config-samsung-klte.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
+657630a1ebd5a9aff872530022e83b1087ef3c0eb7a214d350c9caf779c2691f92de6630a40d735b5f7a34ba6a3e9e7eb708d3deb52f134d53164836c312e5e9  03_msm_fix_trace.patch"
