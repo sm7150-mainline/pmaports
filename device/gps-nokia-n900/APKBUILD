@@ -1,0 +1,26 @@
+pkgname=gps-nokia-n900
+pkgver=0.0
+pkgrel=0
+pkgdesc="GPS support for Nokia N900"
+url="https://github.com/postmarketOS/gps-nokia-n900"
+arch="all"
+license="GPL3"
+depends=""
+makedepends="linux-headers"
+subpackages=""
+source="${pkgname}-${pkgver}.tar.gz::https://github.com/postmarketOS/gps-nokia-n900/archive/v${pkgver}.tar.gz"
+options="!check"
+
+builddir="$srcdir"/"$pkgname"-"$pkgver"
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	install -d -m755 "$pkgdir"/usr/bin
+	install -D -m755 "$builddir"/gps-nokia-n900 "$pkgdir"/usr/bin
+}
+
+sha512sums="ea3b871b28a70d8761a0e427afe784826df7969eecad4e3d0294a2e6c2b2155545a57d3490e650e8ba675811b1f8604aed5c5003dee797ef800854ec26f1be32  gps-nokia-n900-0.0.tar.gz"
