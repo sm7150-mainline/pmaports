@@ -1,0 +1,42 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-xiaomi-armani"
+pkgdesc="Redmi 1S"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-xiaomi-armani mkbootimg mesa-dri-swrast msm-fb-refresher firmware-xiaomi-armani"
+makedepends="devicepkg-dev"
+install="$pkgname.post-install $pkgname.pre-deinstall"
+source="deviceinfo
+	90-touchscreen.rules
+	100-charging.rules
+	armani_battery_charging.sh
+	armani_battery_discharging.sh
+	wlanarmani
+	device-xiaomi-armani.post-install
+	device-xiaomi-armani.pre-deinstall"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/90-touchscreen.rules "$pkgdir"/etc/udev/rules.d/90-touchscreen.rules
+	install -Dm644 "$srcdir"/100-charging.rules "$pkgdir"/etc/udev/rules.d/100-charging.rules
+	install -Dm744 "$srcdir"/armani_battery_charging.sh "$pkgdir"/usr/bin/armani_battery_charging.sh
+	install -Dm744 "$srcdir"/armani_battery_discharging.sh "$pkgdir"/usr/bin/armani_battery_discharging.sh
+	install -Dm755 "$srcdir"/wlanarmani "$pkgdir"/etc/init.d/wlanarmani
+}
+
+sha512sums="8fdac59e87ee33d9c7981b46e6236877cd04536572aa14bb67af141dcf25b05656ffadea52fd402681f477c4eaf62ca8f118cbebd0612b63695aa741ac9bcfb9  deviceinfo
+abf694ebe949025268630457ad14ae69f6a33c151236c1a193da32c27f836591e932517f011f6eb7ce750ab74d2f1e9a70724fed7150210d4da1b80a6e86a801  90-touchscreen.rules
+862f9a8d81af74c0a1c99c6255d4ec9d4bdd7828636ee29fbaf4b3ceef53f236fd2b2078e3150baf0f1d78a3da87d7b3a5b975fef33014238eb7658428642571  100-charging.rules
+cf82b3bf37c4975668d7bb6f0e573fa5b44ed596d80a7ac2cdfa78dd619b7dc58c085fe1a0703953a143a46a4d917abf94f658e268578fe1c40664fa639959d3  armani_battery_charging.sh
+c2ae3887712a209a8c8dc60ee87ff1ec8944246cc1a69d1f6f9f2725434e05b6c8388c0b3756423d5cec6a6e0ffc7272c30ccc20b77f0dac0813bb25476d4997  armani_battery_discharging.sh
+22339e8b1c854e740034fe305d8447a88f7be98f8f2ef86b7e9ea6e373a30643993d95865c820df6c3598605d3390eb93a859c7a423f04de54a3b06a69adcb55  wlanarmani
+e769b2a631cf2e6c57da9fa904920c67c04a7ec754616eb2895c9c585155fb1312f870243a260320dc2fba31f64f20fc45ecefffb0d6055c1694d158b1dacf14  device-xiaomi-armani.post-install
+c1538df8252940e3f6d9d970adb452b5d3ddb368784c4a2f37b51386753ff91fdd13564a722013a2a4302b011ae142726ef1d4f72c8174d449fd943d2be20813  device-xiaomi-armani.pre-deinstall"
