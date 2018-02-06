@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
@@ -26,8 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void usage(char* appname)
 {
-    printf("Usage: %s [-d DEV] [-h]\n\
+    printf("Usage: %s [-d DEV] [-i] [-p] [-h]\n\
     -d  Framebuffer device (default /dev/fb0)\n\
+    -i  Show fixed and variable screen info\n\
+    -p  Perform the panning of the display\n\
     -h  Show this help\n", appname);
 }
 
@@ -108,13 +111,27 @@ int main(int argc, char** argv)
 
     // parse command line options
     fb_device = "/dev/fb0";
+    bool show_info = false;
+    bool pan_display = false;
+
+    if (argc < 2)
+    {
+        usage(argv[0]);
+        exit(1);
+    }
     int opt;
-    while ((opt = getopt(argc, argv, "d:h")) != -1)
+    while ((opt = getopt(argc, argv, "d:iph")) != -1)
     {
         switch (opt)
         {
             case 'd':
                 fb_device = optarg;
+                break;
+            case 'i':
+                show_info = true;
+                break;
+            case 'p':
+                pan_display = true;
                 break;
             case 'h':
             default:
@@ -141,7 +158,8 @@ int main(int argc, char** argv)
     }
 
     // print all the fixed screen info values
-    print_fix_screeninfo(&scr_fix);
+    if (show_info)
+        print_fix_screeninfo(&scr_fix);
 
     // call ioctl. retrieve variable screen info
     if (ioctl(fb_fd, FBIOGET_VSCREENINFO, &scr_var) < 0)
@@ -153,7 +171,20 @@ int main(int argc, char** argv)
     }
 
     // print all the variable screen info values
-    print_var_screeninfo(&scr_var);
+    if (show_info)
+        print_var_screeninfo(&scr_var);
+
+    if (pan_display)
+    {
+        // call ioctl. pan the display
+        if (ioctl(fb_fd, FBIOPAN_DISPLAY, &scr_var) < 0)
+        {
+            printf("Unable to pan the display: %s\n",
+                strerror(errno));
+            close(fb_fd);
+            return 1;
+        }
+    }
 
     // close the framebuffer device
     close(fb_fd);
