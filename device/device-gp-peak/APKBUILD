@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-gp-peak"
+pkgdesc="Geeksphone Peak"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-gp-peak mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="9647e9da6be3e2097cfa3872dcd5cb23ba0f62b7f028336d9d3c78ad623619566cd49444593de1e3b747a0bb7f8e9f116e53da7ecbe15e67f28222a82af9a4a5  deviceinfo"
