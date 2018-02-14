@@ -12,7 +12,7 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=0
+pkgrel=1
 
 arch="x86_64"
 pkgdesc="Linux for pmOS supported chipsets (stable)"
@@ -30,7 +30,7 @@ if [ "${pkgver%.0}" = "$pkgver" ]; then
 	source="$source
 	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
 fi
-subpackages="$pkgname-dev::$CBUILD_ARCH"
+subpackages="$pkgname-dev"
 
 license="GPL2"
 _abi_release=${pkgver}

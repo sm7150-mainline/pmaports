@@ -9,7 +9,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=0
+pkgrel=1
 
 arch="all"
 pkgdesc="Linux for pmOS supported chipsets (mainline, more bleeding-edge than stable)"
@@ -28,7 +28,7 @@ source="
 	0002-tools-objtool-Makefile-don-t-assume-sync-check.sh-is.patch
 "
 
-subpackages="$pkgname-dev::$CBUILD_ARCH"
+subpackages="$pkgname-dev"
 
 license="GPL2"
 _abi_release=$_pkgver
@@ -172,7 +172,7 @@ dev() {
 		"$subpkgdir"/lib/modules/${_abi_release}/build
 }
 sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
-b68965ef7b78ed9a0547d3a00432b0afaa8441a77412026c84d9b91b751f62d54cb263ec0ffc3547196038f0fe39bdcdfd1e7535776dc8f7a139528ea8ce3dcc  linux-v4.14-v4.15-rc6.patch
+5d05754adc696f180405acda79e2678075f99d12252fc1f7e6af46f5ab39076de926db6de900c28b2e05dd3753df60d3515bb805b71d3bff991a5ed040b91167  linux-v4.14-v4.15-rc6.patch
 a75225750193cf31c8b6c15e7748699f842ecadc9ed573f0b10f42bb5343b4e092bcb65b359d170a42a102a4ddfe09d63c1d67550f4b99c29295fa22e1d7b995  config-postmarketos-mainline.armhf
 6310035a0a4c028cc98cab92919cca54be9b79ee9fe63211e7a05876d7befdbd8506a2f80548e228e014e99b0f91f63946352789d8d2f2134c66914163f66ab3  config-postmarketos-mainline.aarch64
 3d42c60061d12a436d19ffdf00623ea71ca31f16f690ae82ebf872d35177c283b4038cd5e270f4e610d6cf6861cef73ac63c995f1f4cfe9d6f2a4a8648ba28fb  config-postmarketos-mainline.x86_64
