@@ -1,0 +1,62 @@
+pkgname=kernel-scripts
+pkgver=4.15.0
+pkgrel=0
+pkgdesc="Binary scripts needed to build kernel packages"
+url="http://kernel.org"
+depends=""
+makedepends="perl gmp-dev elfutils-dev bash sed bc linux-headers file openssl-dev"
+options="!check"
+arch="all"
+license="GPL-2.0"
+
+# Sources
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.*};;
+	*.*) _kernver=$pkgver;;
+esac
+source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz"
+if [ "${pkgver%.0}" = "$pkgver" ]; then
+	source="$source
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
+fi
+
+# Arch
+_carch=${CARCH}
+case "$_carch" in
+aarch64*) _carch="arm64" ;;
+arm*) _carch="arm" ;;
+mips*) _carch="mips" ;;
+ppc*) _carch="powerpc" ;;
+s390*) _carch="s390" ;;
+esac
+
+builddir="$srcdir/linux-$_kernver"
+prepare() {
+	cd "$builddir"
+
+	# Apply patch
+	if [ "$_kernver" != "$pkgver" ]; then
+		msg "Applying patch-$pkgver.xz"
+		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N
+	fi
+}
+
+build() {
+	unset LDFLAGS
+	mkdir -p "$srcdir/build"
+	make -j1 -C "$builddir" O="$srcdir/build" ARCH="$_carch" \
+		HOSTCC="${CC:-gcc}" defconfig scripts
+}
+
+package() {
+	cd "$srcdir/build/scripts"
+	msg "Finding and installing binaries..."
+	local i
+	for i in $(find . -type f); do
+		local type="$(file -b --mime-type "$i")"
+		[ "$type" != "application/x-sharedlib" ] && continue
+		echo "$i"
+		install -Dm755 "$i" "$pkgdir/usr/bin/kernel-scripts/$i"
+	done
+}
+sha512sums="c00d92659df815a53dcac7dde145b742b1f20867d380c07cb09ddb3295d6ff10f8931b21ef0b09d7156923a3957b39d74d87c883300173b2e20690d2b4ec35ea  linux-4.15.tar.xz"

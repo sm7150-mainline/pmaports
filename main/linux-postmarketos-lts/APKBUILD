@@ -8,13 +8,13 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 
 arch="all"
 pkgdesc="Linux for pmOS supported chipsets (LTS)"
 url="https://kernel.org/"
 depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev file"
 options="!strip !check !tracedeps"
 install=
 source="
@@ -174,6 +174,21 @@ dev() {
 	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
+
+	# cross-compiling: delete binaries with host arch and replace them with
+	# symlinks to binaries with the target arch (packaged in kernel-scripts)
+	if [ -n "$CROSS_COMPILE" ]; then
+		msg "Symlinking binary scripts..."
+		depends="$depends kernel-scripts"
+		cd "$dir/scripts"
+		local i
+		for i in $(find . -type f); do
+			local type="$(file -b --mime-type "$i")"
+			[ "$type" != "application/x-sharedlib" ] && continue
+			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
+			ln -svf "$native" "$i"
+		done
+	fi
 }
 
 sha512sums="bf67ff812cc3cb7e5059e82cc5db0d9a7c5637f7ed9a42e4730c715bf7047c81ed3a571225f92a33ef0b6d65f35595bc32d773356646df2627da55e9bc7f1f1a  linux-4.9.tar.xz

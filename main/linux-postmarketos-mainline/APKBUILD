@@ -9,13 +9,13 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=1
+pkgrel=2
 
 arch="all"
 pkgdesc="Linux for pmOS supported chipsets (mainline, more bleeding-edge than stable)"
 url="https://kernel.org/"
 depends="postmarketos-mkinitfs"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev libressl-dev"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev libressl-dev file"
 options="!strip !check !tracedeps"
 install=
 source="
@@ -170,6 +170,21 @@ dev() {
 	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
+
+	# cross-compiling: delete binaries with host arch and replace them with
+	# symlinks to binaries with the target arch (packaged in kernel-scripts)
+	if [ -n "$CROSS_COMPILE" ]; then
+		msg "Symlinking binary scripts..."
+		depends="$depends kernel-scripts"
+		cd "$dir/scripts"
+		local i
+		for i in $(find . -type f); do
+			local type="$(file -b --mime-type "$i")"
+			[ "$type" != "application/x-sharedlib" ] && continue
+			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
+			ln -svf "$native" "$i"
+		done
+	fi
 }
 sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
 5d05754adc696f180405acda79e2678075f99d12252fc1f7e6af46f5ab39076de926db6de900c28b2e05dd3753df60d3515bb805b71d3bff991a5ed040b91167  linux-v4.14-v4.15-rc6.patch
