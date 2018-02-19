@@ -1,0 +1,46 @@
+_flavor=postmarketos-stable
+_kpkg=linux-$_flavor
+_kver=4.14.9
+
+# we must match up _toolsrel with wireguard-tools
+_ver=0.0.20180202
+_toolsrel=0
+
+_kpkgver="$_kver-r$_kpkgrel"
+_toolsver="$_ver-r$toolsrel"
+_abi_release=${_kver}
+
+pkgname=wireguard-${_flavor}
+pkgver=4.14.9
+pkgrel=0
+pkgdesc="Next generation secure network tunnel: kernel modules for $_flavor"
+arch=all
+url='https://www.wireguard.com'
+license="GPL-2.0"
+depends="linux-postmarketos-stable"
+makedepends="linux-postmarketos-stable-dev libmnl-dev libelf-dev elfutils-libelf"
+install_if="wireguard-tools=$_toolsver linux-postmarketos-stable=$_kpkgver"
+options="!check"
+source="https://git.zx2c4.com/WireGuard/snapshot/WireGuard-$_ver.tar.xz"
+builddir="$srcdir"/WireGuard-$_ver
+
+build() {
+	cd "$builddir"
+	# only building module: see wireguard-tools for userspace
+	unset LDFLAGS
+	make -C src/ \
+		KERNELDIR=/lib/modules/${_abi_release}/build \
+		module
+}
+
+package() {
+	cd "$builddir/src"
+
+	local module=
+	for module in *.ko; do
+		install -v -D -m644 ${module} \
+			"$pkgdir/lib/modules/$_abi_release/extra/${module}"
+	done
+}
+
+sha512sums="81eb66b2abe3b3013fc7fbc7f6601808d1676f1fa5e7942d0af09e2ec56e91c396ded2b23eece7c63d1b76f6c3209d93b7cdf06c9d30a59e626d08a604a6780a  WireGuard-0.0.20180202.tar.xz"
