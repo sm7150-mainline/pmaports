@@ -9,7 +9,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=3
+pkgrel=4
 
 arch="x86_64 armhf aarch64"
 pkgdesc="Linux for pmOS supported chipsets (mainline, more bleeding-edge than stable)"
@@ -43,11 +43,11 @@ esac
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-ksrcdir="$srcdir/linux-$_basever"
+builddir="$srcdir/linux-$_basever"
 
 prepare() {
 	local _patch_failed=
-	cd "$ksrcdir"
+	cd "$builddir"
 	# first apply patches in specified order
 	for i in $source; do
 		case $i in
@@ -70,7 +70,7 @@ prepare() {
 
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
 		olddefconfig
 }
 
@@ -136,7 +136,7 @@ dev() {
 	# external modules, and create the scripts
 	mkdir -p "$dir"
 	cp "$srcdir"/$_config "$dir"/.config
-	make -j1 -C "$ksrcdir" O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -j1 -C "$builddir" O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
 		olddefconfig prepare modules_prepare scripts
 
 	# needed for 3rd party modules
@@ -154,7 +154,7 @@ dev() {
 	# this is taken from ubuntu kernel build script
 	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
 
-	cd "$ksrcdir"
+	cd "$builddir"
 	find . -path './include/*' -prune \
 		-o -path './scripts/*' -prune -o -type f \
 		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
