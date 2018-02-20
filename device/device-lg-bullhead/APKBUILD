@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-lg-bullhead"
+pkgdesc="Google Nexus 5X"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-lg-bullhead mkbootimg mesa-dri-swrast libsparse msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="8af915fed8fe29d279148077c3f71924fac31250990b886bfafc034d2c0905f116618ef3af4c4e993dffa4325273e5119efc388a3c17f1130b753c76ee2139b9  deviceinfo"
