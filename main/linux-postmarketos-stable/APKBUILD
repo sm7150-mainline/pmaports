@@ -4,18 +4,18 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=4.14.9
+pkgver=4.15.4
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=4
+pkgrel=0
 
 arch="x86_64 armhf aarch64"
 pkgdesc="Linux for pmOS supported chipsets (stable)"
 url="https://kernel.org/"
 depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev file"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev libressl-dev file"
 options="!strip !check !tracedeps"
 install=
 source="
@@ -192,8 +192,8 @@ dev() {
 	fi
 }
 
-sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
+sha512sums="c00d92659df815a53dcac7dde145b742b1f20867d380c07cb09ddb3295d6ff10f8931b21ef0b09d7156923a3957b39d74d87c883300173b2e20690d2b4ec35ea  linux-4.15.tar.xz
 7e4485a97ca37db7d071ebafa29450c2f307b51d48dac5c9f947d2f33c3194b1263f265031bbb502ac1d94039f0779d9528ef24491fa83260b9b78fcfe3c6c46  config-postmarketos-stable.armhf
 5e3c7d569b6a246ed5873afb088dbcd533cb1074f13a030292af41214a704ea08d9c5505b113429ded57849271c121bfef1b7771cb3051d2ac46808da13afa45  config-postmarketos-stable.aarch64
 9b7ae9e35731675db311aea9fe45b0e1ecc97cc40edc1ed7b179945e49d5656f26706c7fbf76a5308b0f480831adcfcff2777cb024c214c2e7a53b5ef0a15cd0  config-postmarketos-stable.x86_64
-8085944e5b8d49b07075776a1604a25ba87efe8b5a8a1a276a75dc47a87de4e487e72d9ace605166be977340b81a10a3cbc25c84b857509da8bba6d9184513fa  patch-4.14.9.xz"
+e903b02631f5fa261db44ea2da69b6edc3afbbbbb4da5eca6abf2972b9f5aeb032d6b4b22c1313eef7763bc91987ec793b05c00c04a0ec592f61cb5a82cea296  patch-4.15.4.xz"
