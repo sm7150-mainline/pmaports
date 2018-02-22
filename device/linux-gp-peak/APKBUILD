@@ -2,7 +2,7 @@
 
 pkgname="linux-gp-peak"
 pkgver=3.0.21
-pkgrel=1
+pkgrel=2
 pkgdesc="Peak kernel fork"
 arch="armhf"
 _carch="arm"
@@ -24,7 +24,6 @@ source="
 	compiler-gcc6.h
 	00_fix_return_address.patch
 	01_timeconst_fix.patch
-	linux-gp-peak.start
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
@@ -85,13 +84,10 @@ package() {
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
 		INSTALL_MOD_PATH="$pkgdir" modules_install
-
-	install -Dm755 "$srcdir"/$pkgname.start "$pkgdir"/etc/local.d/$pkgname.start
 }
 
 sha512sums="e643530bc4e8540284820af137d300d8bf12fa352200095757a64e8e34a71d6e8892bf5887a988404864866751fb8fcac9e89b4429a76be59aeae670d04d533d  linux-gp-peak-f02b7a6f10b257b0452d3de47e19e55836e57613.tar.gz
 577601feac4432540352d7ff147136d27e340f6a0798838deecbf9ae92f787afa6eb59e2ce0e08793e0912fccfc9e0e9f717069375555ac5e25978413736ce6c  config-gp-peak.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
-a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch
-92af13735f82c343f2f4224f8ca452a3a2d73ea7633c67cbda4a0d0243eb35b779186f9af01a1638ee5da3f2b5114b48faa071fe0b777edf823ebcd0a5bfa9e7  linux-gp-peak.start"
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch"
