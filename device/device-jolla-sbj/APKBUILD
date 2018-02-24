@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-jolla-sbj"
+pkgdesc="Jolla phone"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-jolla-sbj mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="ecbee6baf84f0fed94a778f08278657634232a00206967e4a1a899438a14cad3ded04ff09caa9d1bb5cbe8b5288c86b7c73c4bc615200979fda4fa6e4f6446be  deviceinfo"
