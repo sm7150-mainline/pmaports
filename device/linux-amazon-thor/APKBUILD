@@ -15,7 +15,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 arch="armhf"
 pkgdesc="KFHDX 2013 7-inch kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_amazon_hdx-common"
@@ -31,6 +31,7 @@ source="
 	00_Input-sentelic-use-static-inline-instead-of-inline.patch
 	00_Input-lifebook-use-static-inline-instead-of-inline-i.patch
 	02_gpu-msm-fix-gcc5-compile.patch
+	06_fix_mdss_fb_rgb_mode.patch
 "
 subpackages=""
 license="GPL2"
@@ -108,9 +109,10 @@ package() {
 }
 
 sha512sums="b089dd355c12ba4c53b4f5600aab3c4dff78f5a498a57f455c11ddeaa088de33cc353d24d7b89bc00cf017805a58f9edbde79a1fb26c53d7b8b6ac8c107c0bcf  linux-amazon-thor-93d33e4ad78da921538384cccf951162f5fc349b.tar.gz
-e296dc797589a35012aeb04d6cdb435b3fd54848bd5f4b52ac780509e8a8fa790bb6958c7888d3862e7403a856caad57dff6d930ed43866434ec7612b869e1ec  config-amazon-thor.armhf
+620f3a2278e1d15977e6e966e6b480f38f020ea8376da013b3baef0c8543bcf2df2462b9e01971fb646920e2082e131f56eeb1253bec91f20901f3bc58f639a3  config-amazon-thor.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 2d77d90b501aa8afbf81629e73fc0a2055b373942975f58277e43f398d0835b3dbbff4a1118137ec82873ba90a254fea87c1d73ba7708578f1779bd0b4c6ff2d  00_Input-sentelic-use-static-inline-instead-of-inline.patch
 5c49f6ff6773a7dc3067d2b1359648fe7a9f758b6c068d6fa69d9aaf24a291ba8022c960317d926aabc11d020a71b20c4e81a6fcf9b21ef66d9b6d065bae23e9  00_Input-lifebook-use-static-inline-instead-of-inline-i.patch
-7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
+2ce72397039e5a842e6564586ec14dcd2aaf0430959a42c18406c9c3736ce6f6fc6af146b345fa81977748a3182ce585af0da5db3e39cd4dc5314b6186478a64  06_fix_mdss_fb_rgb_mode.patch"
