@@ -1,0 +1,102 @@
+# Kernel config based on: arch/arm/configs/sun6ismp_fiber_defconfig
+
+pkgname="linux-infocus-flatfish"
+pkgver=3.3.0
+pkgrel=0
+pkgdesc="InFocus New Tab F1 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="infocus-flatfish"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="kernel_flatfish"
+_commit="b7e13780ed3ba80a5539a74d8704281cd6d3f5e6"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/mozilla-b2g/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_timeconst_fix.patch
+	02_fix_paranoid_network_disabled.patch
+	03_fix_pm_build.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+
+	# The standby code needs to be built separately
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KDIR=$builddir \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		-C $builddir/arch/arm/mach-sun6i/pm/standby
+
+	cd $builddir
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# External modules install
+	cd "$builddir"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" modules_install
+}
+
+sha512sums="9dad1d0226803566727cc34c44ec9240768a3e4e89f9a02dad0f9bf2f9ee6aecd17892c12d7b9f30e4bc522d67d06d4089d79f800de594c052760ad110d694d9  linux-infocus-flatfish-b7e13780ed3ba80a5539a74d8704281cd6d3f5e6.tar.gz
+5749219232d11c4b07b14414df828b5ad517208c8f11c90db19c38ccc1ca49546dc17158f67de5f991a343d59ddade4066ac52b8ff36d2326a2749829d34bb6e  config-infocus-flatfish.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch
+df62e03666313bb03d9a455eac875f170a55d378b6e56b847c1c6ff1ce5cfafcfdf1d7605754ca3c684840ea00357f9ec4c6621f6ff77377132a484b9258f6f7  02_fix_paranoid_network_disabled.patch
+06463b3f376650f7a8bf15cad9d6b619656ed80603c4988c6454e650a4ab99062dd47c19099a3cd5d6e0f6f291476eada2e79fe2231082bc2fd4edad84f809fd  03_fix_pm_build.patch"

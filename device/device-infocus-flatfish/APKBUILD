@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-infocus-flatfish"
+pkgdesc="InFocus New Tab F1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-infocus-flatfish mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="2fe08cf2a3b7b6340e5ae81085c5e9a60cc4c4291e1f6fbea3e24c63cf78e0328bd4701429541297afc66c5ddae7fb05d83b7d42c2900bb2cb2866d5f8201906  deviceinfo"
