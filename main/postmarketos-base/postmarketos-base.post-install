@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. /etc/deviceinfo
-
 # Enable udev OpenRC services and runlevels
 # https://github.com/alpinelinux/aports/blob/master/main/eudev/setup-udev
 setup-udev -n
@@ -19,9 +17,6 @@ done
 for service in mount-ro killprocs savecache; do
 	rc-update -q add $service shutdown
 done
-if [ "${deviceinfo_msm_refresher}" = "true" ]; then
-	rc-update -q add msm-fb-refresher boot
-fi
 
 # Prime swclock with a reasonable date/time on first boot
 mkdir -p /run/openrc
