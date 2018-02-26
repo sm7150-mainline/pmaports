@@ -107,6 +107,9 @@ get_binaries()
 	if [ "${deviceinfo_msm_refresher}" == "true" ]; then
 		BINARIES="${BINARIES} /usr/sbin/msm-fb-refresher"
 	fi
+	if [ -f /usr/sbin/fbdebug ]; then
+		BINARIES="${BINARIES} /usr/sbin/fbdebug"
+	fi
 	lddtree -l $BINARIES | sort -u
 }
 
