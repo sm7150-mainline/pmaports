@@ -1,14 +1,14 @@
 pkgname=device-samsung-i9305
 pkgver=1
-pkgrel=17
+pkgrel=18
 pkgdesc="Samsung Galaxy SIII LTE"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-samsung-i9305 firmware-samsung-i9305 mkbootimg mesa-dri-swrast"
+depends="postmarketos-base linux-samsung-i9305 mkbootimg mesa-dri-swrast"
 makedepends=""
 install="$pkgname.post-install"
-subpackages=""
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	90-android-touch-dev.rules
@@ -21,6 +21,12 @@ package() {
 		"$pkgdir/etc/deviceinfo"
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-i9305"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="43361c58d84463da8bbeab7a5b5756317b890b69253b011549696bda4b25e553217a7af61efd337718e5e791cda9bcc543ffaeba59f9d57245f45aacb8d848af  deviceinfo

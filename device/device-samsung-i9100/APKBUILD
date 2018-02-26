@@ -1,14 +1,14 @@
 pkgname=device-samsung-i9100
 pkgver=1
-pkgrel=18
+pkgrel=19
 pkgdesc="Samsung Galaxy SII"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-samsung-i9100 firmware-samsung-i9100 libsamsung-ipc mesa-dri-swrast"
+depends="postmarketos-base linux-samsung-i9100 libsamsung-ipc mesa-dri-swrast"
 makedepends=""
 install="$pkgname.post-install"
-subpackages=""
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	90-android-touch-dev.rules
@@ -21,6 +21,12 @@ package() {
 		"$pkgdir/etc/deviceinfo"
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-i9100"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="dbad2b2fffc0167aa91b5f56219d84557929f0d58da813b7c1277dc6c37ea05c672a4d0643091d18289fb7e7ffb62aefc295efd00dbbeccb695860a125c564a6  deviceinfo

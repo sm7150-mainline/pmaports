@@ -7,8 +7,9 @@ url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-motorola-peregrine firmware-motorola-titan mkbootimg mesa-dri-swrast msm-fb-refresher"
+depends="postmarketos-base linux-motorola-peregrine mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo"
 
 build() {
@@ -17,6 +18,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-motorola-titan"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="6dfabb68f4ccf1249ba90becfbdd17bc59ed2656df389f7fcf211ec40b4962597396c45d07112399563b0cd9bad5fba760ee5f8d94bf8cbe432438a938f862d2  deviceinfo"

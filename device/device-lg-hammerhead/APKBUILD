@@ -1,14 +1,14 @@
 pkgname=device-lg-hammerhead
 pkgver=1
-pkgrel=18
+pkgrel=19
 pkgdesc="Google Nexus 5"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-lg-hammerhead linux-firmware mkbootimg msm-fb-refresher mesa-dri-swrast"
+depends="postmarketos-base linux-lg-hammerhead mkbootimg msm-fb-refresher mesa-dri-swrast"
 makedepends=""
 install=""
-subpackages="$pkgname-weston $pkgname-x11"
+subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	90-android-touch-dev.rules
@@ -48,6 +48,12 @@ weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="linux-firmware"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="be2eba28f0b766917c9369c2f72f337bbb987076f6bd0c80b023bcdcc68684077a375209ac967b038dc018f6633c6795544bad87b2180c04b981660a4d713b41  deviceinfo

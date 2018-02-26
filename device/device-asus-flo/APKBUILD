@@ -1,14 +1,14 @@
 pkgname=device-asus-flo
 pkgver=0
-pkgrel=9
+pkgrel=10
 pkgdesc="Google Nexus 7 2013 flo"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-asus-flo mkbootimg firmware-asus-flo mesa mesa-egl mesa-dri-freedreno"
+depends="postmarketos-base linux-asus-flo mkbootimg mesa mesa-egl mesa-dri-freedreno"
 makedepends=""
 install=""
-subpackages="$pkgname-weston"
+subpackages="$pkgname-weston $pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo 90-android-touch-dev.rules wpa_supplicant.conf pointercal weston.ini"
 
 options="!check"
@@ -29,6 +29,13 @@ weston() {
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-asus-flo"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="cd112666a2c24fe040dbba4010ffb91b1e573d38ecec15e0fc23e2a7c20879d7eff0d677e2053bcf7896edac58038b4192fef689549f0b0cc701e5304c403509  deviceinfo
 5ac89b627f52d2f1103c3329bd905cdbb906cae5bb332d52e6805d7971fbcc0faabe1fd9d2beb7c6de4e4487c05047eaa17852dbf9e114ee3c5d4b0d57d73859  90-android-touch-dev.rules
 3278921cc1617d10fdd13dfbeaf213cda0078d069e727acd8cfac10bd8ade6f373be1e22fd1e4b50ae71cd2eae09f7d6aad5de42338d9ea9f8c1a34f0b60cb69  wpa_supplicant.conf

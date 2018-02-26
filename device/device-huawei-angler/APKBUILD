@@ -1,14 +1,14 @@
 pkgname=device-huawei-angler
 pkgver=1
-pkgrel=9
+pkgrel=10
 pkgdesc="Huawei Nexus 6P"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-huawei-angler mkbootimg firmware-aosp-broadcom-wlan msm-fb-refresher mesa-dri-swrast"
+depends="postmarketos-base linux-huawei-angler mkbootimg msm-fb-refresher mesa-dri-swrast"
 makedepends=""
 install=""
-subpackages=""
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	90-android-touch-dev.rules
@@ -27,6 +27,12 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/bcmdhd.cal \
 		"$pkgdir"/etc/wifi/bcmdhd.cal
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-aosp-broadcom-wlan"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="8e1ff6d2a11099b0b95903d400837985b347c0d0bdd1cca744b6ec33ea8ab94b9914ef40c4261a3cd6b47ada19c3f4e3b3bf89122a7c8031aefb2ca2a22b022c  deviceinfo

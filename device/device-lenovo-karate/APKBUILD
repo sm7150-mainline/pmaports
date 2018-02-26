@@ -1,20 +1,27 @@
 pkgname="device-lenovo-karate"
 pkgdesc="Lenovo K6 Power"
 pkgver=0.1
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-lenovo-karate firmware-lenovo-karate mkbootimg mdss-fb-init-hack mesa-dri-swrast"
+depends="postmarketos-base linux-lenovo-karate mkbootimg mdss-fb-init-hack mesa-dri-swrast"
 source="deviceinfo 90-android-touch-dev.rules"
 install="$pkgname.post-install"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 package() {
 	install -Dm644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
 	install -Dm755 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+nonfree_firmware() {
+	depends="firmware-lenovo-karate"
+	pkgdesc="Wifi firmware"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="dbf14b024f014762f2a52e5cbec94c07cf1184189b813ff9a8d6a458fee3cf812db498fad8493272cd97c53dbf40feb007fa7b42ed9ba6a35a4d8b8de22a4626  deviceinfo

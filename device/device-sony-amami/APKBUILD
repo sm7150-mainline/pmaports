@@ -1,14 +1,14 @@
 pkgname=device-sony-amami
 pkgver=1
-pkgrel=17
+pkgrel=18
 pkgdesc="Sony Xperia Z1 Compact"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-sony-amami mkbootimg mdss-fb-init-hack firmware-sony-amami mesa-dri-swrast"
+depends="postmarketos-base linux-sony-amami mkbootimg mdss-fb-init-hack mesa-dri-swrast"
 makedepends=""
 install=""
-subpackages=""
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo 90-android-touch-dev.rules"
 options="!check"
 
@@ -17,6 +17,12 @@ package() {
 		"$pkgdir/etc/deviceinfo"
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-sony-amami"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="29e22a8edf9e7efce2231d1ae1de000d65911794ade8317d53b6b26bb1bad022087ec7c5a954c795b85084c622958d0d2a80d41c10c49c5332227d807da4fd7e  deviceinfo

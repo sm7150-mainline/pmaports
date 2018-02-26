@@ -1,14 +1,14 @@
 pkgname=device-htc-ace
 pkgver=1
-pkgrel=8
+pkgrel=9
 pkgdesc="HTC Desire HD"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-htc-ace mkbootimg linux-firmware mesa-dri-swrast"
+depends="postmarketos-base linux-htc-ace mkbootimg mesa-dri-swrast"
 makedepends=""
 install=""
-subpackages=""
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	initfs-hook.sh
@@ -23,6 +23,12 @@ package() {
 		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="linux-firmware"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="d3df77ec0df3ae5299a554af065abace1ce53bd6c1b55a76c57f68eabc433a41fe037e08c848377f830b62d19a80e0fa2146542bdfe74221cc62f9131ff925b9  deviceinfo

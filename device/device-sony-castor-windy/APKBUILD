@@ -1,14 +1,14 @@
 pkgname=device-sony-castor-windy
 pkgver=1
-pkgrel=11
+pkgrel=12
 pkgdesc="Sony Xperia Z2 Tablet WIFI"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base mkbootimg linux-sony-castor-windy linux-firmware mesa-dri-freedreno firmware-adreno"
+depends="postmarketos-base mkbootimg linux-sony-castor-windy mesa-dri-freedreno"
 makedepends=""
 install=""
-subpackages=""
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="modules-load.conf deviceinfo 90-android-touch-dev.rules brcmfmac4335-sdio.txt"
 options="!check"
 
@@ -22,6 +22,13 @@ package() {
 	install -D -m644 "$srcdir"/modules-load.conf \
 		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
 }
+
+nonfree_firmware() {
+	pkgdesc="Wifi, GPU firmware"
+	depends="linux-firmware firmware-adreno"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="d8ce60ea7acaabf627ddca2f0887a4cda46f313b7aaf7934bef2fef8a6e0798ccefab849e4571e4e3fcd06ae34c1a6efe3b58b401e2e443416f6200e6d4ea769  modules-load.conf
 2472ed5ff56825a195ff82e175813e8e4fc581a04255b74db7babc75efc8fe6424488e412d74e12f8d87dbc0cd2e1a7e678ea905aa97ddfbd7f671085c53f452  deviceinfo
 fa0d8b7a17509f5882424e67e66f5f562705a076a12e8d9dd9363215c858d7801216520cf25373110671958b1e1589080b097170c760d18e621849b0b9090e05  90-android-touch-dev.rules

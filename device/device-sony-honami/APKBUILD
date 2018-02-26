@@ -1,19 +1,26 @@
 pkgname="device-sony-honami"
 pkgdesc="Sony Xperia Z1"
 pkgver=1.0
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-sony-honami firmware-sony-amami msm-fb-refresher mkbootimg mesa-dri-swrast"
+depends="postmarketos-base linux-sony-honami msm-fb-refresher mkbootimg mesa-dri-swrast"
 source="deviceinfo 90-android-touch-dev.rules"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 package() {
 	install -Dm644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
 	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+nonfree_firmware() {
+	depends="firmware-sony-amami"
+	pkgdesc="Wifi firmware"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="21e41e8f92ad3b3c996d3c01d2aea2abab4fa88951ef6e3a4e8c3c5e1f05b8cbb91f64336486a11958944dd652f53d71c9b5c45ce0c566b51386f4927dd002c7  deviceinfo

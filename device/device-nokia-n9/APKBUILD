@@ -1,11 +1,11 @@
 pkgname=device-nokia-n9
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Nokia N9"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-nokia-n9 linux-firmware ofono watchdog-kick"
+depends="postmarketos-base linux-nokia-n9 ofono watchdog-kick"
 makedepends=""
 install=""
 subpackages="$pkgname-weston:weston"
@@ -28,6 +28,12 @@ weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="linux-firmware"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="3298afa3312a032836e271d4c6808d304436470545472beb4a4ac1a4b8f93ec25d5b895f5bebf351ffb6e910a155f97a4d96b1d74f1d8ab278c246cb3815bf79  deviceinfo

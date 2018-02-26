@@ -1,12 +1,13 @@
 pkgname="device-samsung-i9505"
 pkgdesc="Samsung Galaxy S4 International"
 pkgver=0.4
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-samsung-i9505 firmware-samsung-i9505 mkbootimg mesa-dri-swrast"
+depends="postmarketos-base linux-samsung-i9505 mkbootimg mesa-dri-swrast"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo 90-android-sec_touchscreen.rules"
 
 package() {
@@ -14,7 +15,12 @@ package() {
 		"$pkgdir"/etc/deviceinfo
 	install -D -m644 "$srcdir"/90-android-sec_touchscreen.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-sec_touchscreen.rules
+}
 
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-i9505"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="3cf9bdd32bbaa9108dde668fa1c279e5166cd329898cc47d23d951d075feff814b319b5b7c373b16fe16285225ac3082ddc64a74b12a7ce8aa3f872c0bf3b9fd  deviceinfo

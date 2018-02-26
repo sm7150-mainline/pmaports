@@ -2,13 +2,14 @@
 pkgname=device-semc-anzu
 pkgdesc="Xperia Arc"
 pkgver=1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-semc-anzu linux-firmware msm-fb-refresher mkbootimg libsparse mesa-dri-swrast"
+depends="postmarketos-base linux-semc-anzu msm-fb-refresher mkbootimg libsparse mesa-dri-swrast"
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	modules-load.conf
@@ -22,6 +23,12 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/modules-load.conf \
 		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="linux-firmware"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="290725561229df2c70396a950aff00605122d146def342d9a48fbb282fe238175095d1cfefdb83668da8ef11eaaf048599a807ef06c37e051916a64f2cc25be5  deviceinfo

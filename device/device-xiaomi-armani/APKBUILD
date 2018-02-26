@@ -2,14 +2,15 @@
 pkgname="device-xiaomi-armani"
 pkgdesc="Redmi 1S"
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-xiaomi-armani mkbootimg mesa-dri-swrast msm-fb-refresher firmware-xiaomi-armani"
+depends="postmarketos-base linux-xiaomi-armani mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install $pkgname.pre-deinstall"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo
 	90-touchscreen.rules
 	100-charging.rules
@@ -30,6 +31,12 @@ package() {
 	install -Dm744 "$srcdir"/armani_battery_charging.sh "$pkgdir"/usr/bin/armani_battery_charging.sh
 	install -Dm744 "$srcdir"/armani_battery_discharging.sh "$pkgdir"/usr/bin/armani_battery_discharging.sh
 	install -Dm755 "$srcdir"/wlanarmani "$pkgdir"/etc/init.d/wlanarmani
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-xiaomi-armani"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="8fdac59e87ee33d9c7981b46e6236877cd04536572aa14bb67af141dcf25b05656ffadea52fd402681f477c4eaf62ca8f118cbebd0612b63695aa741ac9bcfb9  deviceinfo

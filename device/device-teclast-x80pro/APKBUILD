@@ -4,14 +4,15 @@
 pkgname="device-teclast-x80pro"
 pkgdesc="Teclast X80Pro"
 pkgver=1.0
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-teclast-x80pro linux-firmware"
+depends="postmarketos-base linux-teclast-x80pro"
 makedepends="devicepkg-dev"
 source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -19,6 +20,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="linux-firmware"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="18e6b8d59378fea9eb7f41b9aae755e493ea62dc199eb8f3f25ee4d55a1b823d80e881845941933067aea11e722b4fd0de097e38f32f64392ee1fd21256d08ec  deviceinfo"

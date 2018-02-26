@@ -1,14 +1,14 @@
 pkgname=device-motorola-titan
 pkgver=1
-pkgrel=21
+pkgrel=23
 pkgdesc="Motorola Moto G 2014"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-motorola-titan firmware-motorola-titan mkbootimg msm-fb-refresher mesa-dri-swrast"
+depends="postmarketos-base linux-motorola-titan mkbootimg msm-fb-refresher mesa-dri-swrast"
 makedepends=""
 install="$pkgname.post-install"
-subpackages="$pkgname-weston"
+subpackages="$pkgname-weston $pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo 90-android-touch-dev.rules profile.sh weston.ini"
 options="!check"
 
@@ -29,6 +29,12 @@ weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-motorola-titan"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="efdd19f924659b92473d592c501c4ef8622cb09f1de17d1bea0bb371b2880e5da463fbea159ebec3806a5e90a8757cf6e87eb8feab8f2186b26cc198d8fad4bf  deviceinfo
