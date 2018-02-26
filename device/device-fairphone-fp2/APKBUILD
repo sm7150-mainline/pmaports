@@ -1,14 +1,14 @@
 pkgname=device-fairphone-fp2
 pkgver=1
-pkgrel=7
+pkgrel=8
 pkgdesc="Fairphone 2"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-fairphone-fp2 linux-firmware mkbootimg mesa-dri-swrast"
+depends="postmarketos-base linux-fairphone-fp2 mkbootimg mesa-dri-swrast"
 makedepends=""
 install=""
-subpackages=""
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	90-android-touch-dev.rules
@@ -23,6 +23,12 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/bcmdhd.cal \
 		"$pkgdir"/etc/wifi/bcmdhd.cal
+}
+
+nonfree_firmware() {
+	depends="firmware-fairphone-fp2"
+	pkgdesc="WCNSS firmware (WiFi, Bluetooth, FM)"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="44fd0b53e82db37d111a04641ca2ebd132d154a40fd5a3e8591e7679688932b12ebbb1e758563eaa850871ced3b6454ba66af92ef822c1e02ba117b765808f3d  deviceinfo
