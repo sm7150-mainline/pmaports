@@ -1,7 +1,7 @@
 pkgname=firmware-motorola-titan
 pkgver=1
-pkgrel=0
-pkgdesc="Firmware files for Motorola Moto G 2014 (titan)"
+pkgrel=1
+pkgdesc="Firmware files for Motorola Moto G 2014 (titan) and Moto G 4G 2013 (peregrine)"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="proprietary"
@@ -25,7 +25,7 @@ package() {
 
 	# /lib/firmware/postmarketos/wlan/prima
 	_files="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_cal.bin
-		WCNSS_qcom_wlan_nv.bin"
+		WCNSS_qcom_wlan_nv.bin WCNSS_qcom_wlan_factory_nv.bin"
 	for _i in $_files; do
 		install -D -m644 "wlan/prima/$_i" \
 			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
