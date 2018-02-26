@@ -3,8 +3,10 @@
 source_deviceinfo()
 {
 	if [ ! -e "/etc/deviceinfo" ]; then
-		echo "ERROR: Missing /etc/deviceinfo!"
-		exit 1
+		echo "NOTE: deviceinfo (from device package) not installed yet," \
+			"not building the initramfs now (it should get built later" \
+			"automatically.)"
+		exit 0
 	fi
 	. /etc/deviceinfo
 }
