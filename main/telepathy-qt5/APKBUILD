@@ -1,0 +1,36 @@
+pkgname=telepathy-qt5
+pkgbase=${pkgname/qt5/qt}
+pkgver=0.9.7
+pkgrel=0
+arch="all"
+url="http://telepathy.freedesktop.org/wiki/"
+license="LGPL"
+pkgdesc="A library for Qt-based Telepathy clients"
+depends="qt5-qtbase"
+depends_dev="telepathy-farstream-dev telepathy-glib-dev gstreamer-dev"
+makedepends="$depends_dev cmake python2 qt5-qttools-dev dbus"
+source="https://telepathy.freedesktop.org/releases/$pkgbase/$pkgbase-$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+options="!check" # Fails due to requiring a running dbus daemon
+builddir="$srcdir/$pkgbase-$pkgver"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DPYTHON_EXECUTABLE=/usr/bin/python2 \
+		-DDESIRED_QT_VERSION=5 \
+		-DENABLE_EXAMPLES=OFF
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="081daecb2509ea690079014bcc88eacbf2b3e4f4ac42aaf1b0cb264c01b801bc499a041482571d383f258cb3d3e2c6ffa5682fbe417fe807fcc25a06d2ead877  telepathy-qt-0.9.7.tar.gz"
