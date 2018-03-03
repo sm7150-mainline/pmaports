@@ -1,15 +1,18 @@
-From c73c38789362ca9d4903b7afffdca550d2afb691 Mon Sep 17 00:00:00 2001
-From: filippz <filip.matijevic.pz@gmail.com>
-Date: Thu, 28 Dec 2017 06:58:40 +0100
-Subject: [PATCH 10/12] misc: apds990x: convert to iio
+From b8d6cddfec87f35e49d4bc54020e59a4c71dc31e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Filip=20Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>
+Date: Sat, 10 Feb 2018 21:28:19 +0100
+Subject: [PATCH 09/11] misc: apds990x: convert to iio
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Signed-off-by: filippz <filip.matijevic.pz@gmail.com>
+Signed-off-by: Filip Matijević <filip.matijevic.pz@gmail.com>
 ---
- drivers/misc/apds990x.c | 956 +++++++++++++++++++++++++-----------------------
- 1 file changed, 495 insertions(+), 461 deletions(-)
+ drivers/misc/apds990x.c | 959 +++++++++++++++++++++++++-----------------------
+ 1 file changed, 493 insertions(+), 466 deletions(-)
 
 diff --git a/drivers/misc/apds990x.c b/drivers/misc/apds990x.c
-index 77c168d928f8..3e4c664b602d 100644
+index 7bb9cd76110a..363a6bf85a6c 100644
 --- a/drivers/misc/apds990x.c
 +++ b/drivers/misc/apds990x.c
 @@ -1,4 +1,5 @@
@@ -28,45 +31,45 @@ index 77c168d928f8..3e4c664b602d 100644
 +
 +#define APDS990X_DRV_NAME	"apds990x"
 +#define APDS990X_SLEEP_DELAY_MS 3000
-
+ 
  /* Register map */
  #define APDS990X_ENABLE	 0x00 /* Enable of states and interrupts */
 @@ -130,10 +137,12 @@ struct apds990x_chip {
-	struct i2c_client		*client;
-	struct mutex			mutex; /* avoid parallel access */
-	struct regulator_bulk_data	regs[2];
+ 	struct i2c_client		*client;
+ 	struct mutex			mutex; /* avoid parallel access */
+ 	struct regulator_bulk_data	regs[2];
 -	wait_queue_head_t		wait;
 +	wait_queue_head_t		wait_lux;
 +	wait_queue_head_t		wait_prox;
-
+ 
 -	int	prox_en;
 -	bool	prox_continuous_mode;
 +	bool    lux_en;
 +	bool    prox_en;
 +	bool	prox_wait_fresh_res;
-	bool	lux_wait_fresh_res;
-
-	/* Chip parameters */
+ 	bool	lux_wait_fresh_res;
+ 
+ 	/* Chip parameters */
 @@ -207,7 +216,6 @@ static int apds990x_read_byte(struct apds990x_chip *chip, u8 reg, u8 *data)
-
-	reg &= ~APDS990x_CMD_TYPE_MASK;
-	reg |= APDS990x_CMD | APDS990x_CMD_TYPE_RB;
+ 
+ 	reg &= ~APDS990x_CMD_TYPE_MASK;
+ 	reg |= APDS990x_CMD | APDS990x_CMD_TYPE_RB;
 -
-	ret = i2c_smbus_read_byte_data(client, reg);
-	*data = ret;
-	return (int)ret;
+ 	ret = i2c_smbus_read_byte_data(client, reg);
+ 	*data = ret;
+ 	return (int)ret;
 @@ -233,7 +241,6 @@ static int apds990x_write_byte(struct apds990x_chip *chip, u8 reg, u8 data)
-
-	reg &= ~APDS990x_CMD_TYPE_MASK;
-	reg |= APDS990x_CMD | APDS990x_CMD_TYPE_RB;
+ 
+ 	reg &= ~APDS990x_CMD_TYPE_MASK;
+ 	reg |= APDS990x_CMD | APDS990x_CMD_TYPE_RB;
 -
-	ret = i2c_smbus_write_byte_data(client, reg, data);
-	return (int)ret;
+ 	ret = i2c_smbus_write_byte_data(client, reg, data);
+ 	return (int)ret;
  }
 @@ -250,18 +257,6 @@ static int apds990x_write_word(struct apds990x_chip *chip, u8 reg, u16 data)
-	return (int)ret;
+ 	return (int)ret;
  }
-
+ 
 -static int apds990x_mode_on(struct apds990x_chip *chip)
 -{
 -	/* ALS is mandatory, proximity optional */
@@ -81,35 +84,35 @@ index 77c168d928f8..3e4c664b602d 100644
 -
  static u16 apds990x_lux_to_threshold(struct apds990x_chip *chip, u32 lux)
  {
-	u32 thres;
+ 	u32 thres;
 @@ -346,10 +341,7 @@ static int apds990x_refresh_pthres(struct apds990x_chip *chip, int data)
-		hi = chip->prox_thres;
-	} else {
-		lo = chip->prox_thres - APDS_PROX_HYSTERESIS;
+ 		hi = chip->prox_thres;
+ 	} else {
+ 		lo = chip->prox_thres - APDS_PROX_HYSTERESIS;
 -		if (chip->prox_continuous_mode)
 -			hi = chip->prox_thres;
 -		else
 -			hi = APDS_RANGE;
 +		hi = APDS_RANGE;
-	}
-
-	ret = apds990x_write_word(chip, APDS990X_PILTL, lo);
+ 	}
+ 
+ 	ret = apds990x_write_word(chip, APDS990X_PILTL, lo);
 @@ -490,8 +482,10 @@ static int apds990x_ack_int(struct apds990x_chip *chip, u8 mode)
-
+ 
  static irqreturn_t apds990x_irq(int irq, void *data)
  {
 -	struct apds990x_chip *chip = data;
 +	struct iio_dev *indio_dev = data;
 +	struct apds990x_chip *chip = iio_priv(indio_dev);
-	u8 status;
+ 	u8 status;
 +	int ev_dir = IIO_EV_DIR_EITHER;
-
-	apds990x_read_byte(chip, APDS990X_STATUS, &status);
-	apds990x_ack_int(chip, status);
+ 
+ 	apds990x_read_byte(chip, APDS990X_STATUS, &status);
+ 	apds990x_ack_int(chip, status);
 @@ -514,14 +508,25 @@ static irqreturn_t apds990x_irq(int irq, void *data)
-				/* Result is valid */
-				chip->lux = chip->lux_raw;
-				chip->lux_wait_fresh_res = false;
+ 				/* Result is valid */
+ 				chip->lux = chip->lux_raw;
+ 				chip->lux_wait_fresh_res = false;
 -				wake_up(&chip->wait);
 -				sysfs_notify(&chip->client->dev.kobj,
 -					NULL, "lux0_input");
@@ -126,31 +129,31 @@ index 77c168d928f8..3e4c664b602d 100644
 +													ev_dir),
 +								iio_get_time_ns(indio_dev));
 +				}
-			}
-		}
-
+ 			}
+ 		}
+ 
 -		if ((status & APDS990X_ST_PINT) && chip->prox_en) {
 +		if (status & APDS990X_ST_PINT) {
-			u16 clr_ch;
+ 			u16 clr_ch;
 +			bool prox_ok = false;
-
-			apds990x_read_word(chip, APDS990X_CDATAL, &clr_ch);
-			/*
+ 
+ 			apds990x_read_word(chip, APDS990X_CDATAL, &clr_ch);
+ 			/*
 @@ -529,27 +534,58 @@ static irqreturn_t apds990x_irq(int irq, void *data)
-			 * proximity gives false posivite values.
-			 * Just ignore them.
-			 */
+ 			 * proximity gives false posivite values.
+ 			 * Just ignore them.
+ 			 */
 -			if (chip->again_meas == 0 &&
 -				clr_ch == chip->a_max_result)
 +			if ((chip->again_meas == 0)
 +					&& (clr_ch == chip->a_max_result)) {
-				chip->prox_data = 0;
+ 				chip->prox_data = 0;
 -			else
 +			} else {
 +				prox_ok = true;
-				apds990x_read_word(chip,
-						APDS990X_PDATAL,
-						&chip->prox_data);
+ 				apds990x_read_word(chip,
+ 						APDS990X_PDATAL,
+ 						&chip->prox_data);
 +				if (chip->prox_data < chip->prox_thres) {
 +					chip->prox_data = 0;
 +					ev_dir = IIO_EV_DIR_FALLING;
@@ -161,8 +164,8 @@ index 77c168d928f8..3e4c664b602d 100644
 +				chip->prox_wait_fresh_res = false;
 +				wake_up(&chip->wait_prox);
 +			}
-
-			apds990x_refresh_pthres(chip, chip->prox_data);
+ 
+ 			apds990x_refresh_pthres(chip, chip->prox_data);
 -			if (chip->prox_data < chip->prox_thres)
 -				chip->prox_data = 0;
 -			else if (!chip->prox_continuous_mode)
@@ -176,12 +179,12 @@ index 77c168d928f8..3e4c664b602d 100644
 +												ev_dir),
 +							iio_get_time_ns(indio_dev));
 +			}
-		}
-	}
-	mutex_unlock(&chip->mutex);
-	return IRQ_HANDLED;
+ 		}
+ 	}
+ 	mutex_unlock(&chip->mutex);
+ 	return IRQ_HANDLED;
  }
-
+ 
 +static int apds990x_set_mode(struct apds990x_chip *chip)
 +{
 +	u8 reg = 0;
@@ -203,19 +206,19 @@ index 77c168d928f8..3e4c664b602d 100644
 +
  static int apds990x_configure(struct apds990x_chip *chip)
  {
-	/* It is recommended to use disabled mode during these operations */
+ 	/* It is recommended to use disabled mode during these operations */
 @@ -577,6 +613,7 @@ static int apds990x_configure(struct apds990x_chip *chip)
-			(chip->pdiode << 4) |
-			(chip->pgain << 2) |
-			(chip->again_next << 0));
+ 			(chip->pdiode << 4) |
+ 			(chip->pgain << 2) |
+ 			(chip->again_next << 0));
 +
-	return 0;
+ 	return 0;
  }
-
+ 
 @@ -611,106 +648,8 @@ static int apds990x_detect(struct apds990x_chip *chip)
-	return ret;
+ 	return ret;
  }
-
+ 
 -#ifdef CONFIG_PM
 -static int apds990x_chip_on(struct apds990x_chip *chip)
 -{
@@ -318,28 +321,29 @@ index 77c168d928f8..3e4c664b602d 100644
 -		apds990x_lux_calib_store);
 +static IIO_CONST_ATTR(intensity_calibscale_default,
 +						__stringify(APDS_CALIB_SCALER));
-
+ 
  static ssize_t apds990x_rate_avail(struct device *dev,
-				   struct device_attribute *attr, char *buf)
-@@ -723,12 +662,8 @@ static ssize_t apds990x_rate_avail(struct device *dev,
-	return pos;
+ 				   struct device_attribute *attr, char *buf)
+@@ -724,13 +663,8 @@ static ssize_t apds990x_rate_avail(struct device *dev,
+ 	return pos;
  }
-
+ 
 -static ssize_t apds990x_rate_show(struct device *dev,
 -				   struct device_attribute *attr, char *buf)
 -{
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
+-
 -	return sprintf(buf, "%d\n", chip->arate);
 -}
 +static IIO_DEVICE_ATTR(intensity_rate_avail, S_IRUGO,
 +						apds990x_rate_avail, NULL, 0);
-
+ 
  static int apds990x_set_arate(struct apds990x_chip *chip, int rate)
  {
-@@ -755,306 +690,417 @@ static int apds990x_set_arate(struct apds990x_chip *chip, int rate)
-			(chip->prox_persistence << APDS990X_PPERS_SHIFT));
+@@ -757,315 +691,420 @@ static int apds990x_set_arate(struct apds990x_chip *chip, int rate)
+ 			(chip->prox_persistence << APDS990X_PPERS_SHIFT));
  }
-
+ 
 -static ssize_t apds990x_rate_store(struct device *dev,
 -				  struct device_attribute *attr,
 -				  const char *buf, size_t len)
@@ -349,14 +353,14 @@ index 77c168d928f8..3e4c664b602d 100644
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 -	unsigned long value;
 -	int ret;
--
+ 
 -	ret = kstrtoul(buf, 0, &value);
 -	if (ret)
 -		return ret;
 +	if (thresh > APDS_RANGE)
 +		return -EINVAL;
-
-	mutex_lock(&chip->mutex);
+ 
+ 	mutex_lock(&chip->mutex);
 -	ret = apds990x_set_arate(chip, value);
 +	*target = thresh;
 +	/*
@@ -365,14 +369,14 @@ index 77c168d928f8..3e4c664b602d 100644
 +	 */
 +	if (!chip->lux_wait_fresh_res)
 +		apds990x_refresh_athres(chip);
-	mutex_unlock(&chip->mutex);
+ 	mutex_unlock(&chip->mutex);
 -
 -	if (ret < 0)
 -		return ret;
 -	return len;
 +	return 0;
  }
-
+ 
 -static DEVICE_ATTR(lux0_rate_avail, S_IRUGO, apds990x_rate_avail, NULL);
 -
 -static DEVICE_ATTR(lux0_rate, S_IRUGO | S_IWUSR, apds990x_rate_show,
@@ -385,21 +389,22 @@ index 77c168d928f8..3e4c664b602d 100644
  {
 -	ssize_t ret;
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
+ 
 -	if (pm_runtime_suspended(dev) || !chip->prox_en)
 -		return -EIO;
 +	if ((thresh > APDS_RANGE) || (thresh == 0) ||
 +		(thresh < APDS_PROX_HYSTERESIS))
 +		return -EINVAL;
-
-	mutex_lock(&chip->mutex);
+ 
+ 	mutex_lock(&chip->mutex);
 -	ret = sprintf(buf, "%d\n", chip->prox_data);
 -	mutex_unlock(&chip->mutex);
 -	return ret;
 -}
-+	chip->prox_thres = thresh;
-
--static DEVICE_ATTR(prox0_raw, S_IRUGO, apds990x_prox_show, NULL);
 -
+-static DEVICE_ATTR(prox0_raw, S_IRUGO, apds990x_prox_show, NULL);
++	chip->prox_thres = thresh;
+ 
 -static ssize_t apds990x_prox_range_show(struct device *dev,
 -				 struct device_attribute *attr, char *buf)
 -{
@@ -408,20 +413,21 @@ index 77c168d928f8..3e4c664b602d 100644
 +	mutex_unlock(&chip->mutex);
 +	return 0;
  }
-
+ 
 -static DEVICE_ATTR(prox0_sensor_range, S_IRUGO, apds990x_prox_range_show, NULL);
 -
 -static ssize_t apds990x_prox_enable_show(struct device *dev,
 +static ssize_t apds990x_chip_id_show(struct device *dev,
-				   struct device_attribute *attr, char *buf)
+ 				   struct device_attribute *attr, char *buf)
  {
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
--	return sprintf(buf, "%d\n", chip->prox_en);
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 +	struct apds990x_chip *chip = iio_priv(indio_dev);
+ 
+-	return sprintf(buf, "%d\n", chip->prox_en);
 +	return sprintf(buf, "%s %d\n", chip->chipname, chip->revision);
  }
-
+ 
 -static ssize_t apds990x_prox_enable_store(struct device *dev,
 -				  struct device_attribute *attr,
 -				  const char *buf, size_t len)
@@ -435,11 +441,11 @@ index 77c168d928f8..3e4c664b602d 100644
 -		return ret;
 +static IIO_DEVICE_ATTR(chip_id, S_IRUGO,
 +						apds990x_chip_id_show, NULL, 0);
-
+ 
 -	mutex_lock(&chip->mutex);
 +#define APDS990X_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
 +#define APDS990X_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
-
+ 
 -	if (!chip->prox_en)
 -		chip->prox_data = 0;
 +static struct attribute *sysfs_attrs_ctrl[] = {
@@ -448,7 +454,7 @@ index 77c168d928f8..3e4c664b602d 100644
 +	APDS990X_DEV_ATTR(chip_id),
 +	NULL,
 +};
-
+ 
 -	if (value)
 -		chip->prox_en++;
 -	else if (chip->prox_en > 0)
@@ -456,7 +462,7 @@ index 77c168d928f8..3e4c664b602d 100644
 +static struct attribute_group apds990x_attribute_group = {
 +	.attrs = sysfs_attrs_ctrl,
 +};
-
+ 
 -	if (!pm_runtime_suspended(dev))
 -		apds990x_mode_on(chip);
 -	mutex_unlock(&chip->mutex);
@@ -476,7 +482,7 @@ index 77c168d928f8..3e4c664b602d 100644
 +						 BIT(IIO_EV_INFO_ENABLE),
 +	},
 +};
-
+ 
 -static DEVICE_ATTR(prox0_raw_en, S_IRUGO | S_IWUSR, apds990x_prox_enable_show,
 -						   apds990x_prox_enable_store);
 +static const struct iio_event_spec apds990x_prox_event_spec[] = {
@@ -487,7 +493,7 @@ index 77c168d928f8..3e4c664b602d 100644
 +						 BIT(IIO_EV_INFO_ENABLE),
 +	},
 +};
-
+ 
 -static const char *reporting_modes[] = {"trigger", "periodic"};
 +static const struct iio_chan_spec apds990x_channels[] = {
 +	{
@@ -507,30 +513,27 @@ index 77c168d928f8..3e4c664b602d 100644
 +		.num_event_specs = ARRAY_SIZE(apds990x_prox_event_spec),
 +	},
 +};
-
+ 
 -static ssize_t apds990x_prox_reporting_mode_show(struct device *dev,
 -				   struct device_attribute *attr, char *buf)
 +static int apds990x_set_power_state(struct apds990x_chip *chip, bool on)
  {
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
++	struct device *dev = &chip->client->dev;
++	int ret = 0;
+ 
 -	return sprintf(buf, "%s\n",
 -		reporting_modes[!!chip->prox_continuous_mode]);
 -}
-+	struct device *dev = &chip->client->dev;
-+	int ret = 0;
-
++	mutex_lock(&chip->mutex);
++	apds990x_set_mode(chip);
+ 
 -static ssize_t apds990x_prox_reporting_mode_store(struct device *dev,
 -				  struct device_attribute *attr,
 -				  const char *buf, size_t len)
 -{
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 -	int ret;
-+	mutex_lock(&chip->mutex);
-+	apds990x_set_mode(chip);
-
--	ret = sysfs_match_string(reporting_modes, buf);
--	if (ret < 0)
--		return ret;
 +	if (on) {
 +		ret = pm_runtime_get_sync(dev);
 +		if (ret < 0)
@@ -539,18 +542,21 @@ index 77c168d928f8..3e4c664b602d 100644
 +		pm_runtime_mark_last_busy(dev);
 +		ret = pm_runtime_put_autosuspend(dev);
 +	}
-
+ 
+-	ret = sysfs_match_string(reporting_modes, buf);
+-	if (ret < 0)
+-		return ret;
++	mutex_unlock(&chip->mutex);
+ 
 -	chip->prox_continuous_mode = ret;
 -	return len;
--}
-+	mutex_unlock(&chip->mutex);
-
++	return ret;
+ }
+ 
 -static DEVICE_ATTR(prox0_reporting_mode, S_IRUGO | S_IWUSR,
 -		apds990x_prox_reporting_mode_show,
 -		apds990x_prox_reporting_mode_store);
-+	return ret;
-+}
-
+-
 -static ssize_t apds990x_prox_reporting_avail_show(struct device *dev,
 -				   struct device_attribute *attr, char *buf)
 +static int apds990x_read_raw(struct iio_dev *indio_dev,
@@ -559,13 +565,14 @@ index 77c168d928f8..3e4c664b602d 100644
  {
 -	return sprintf(buf, "%s %s\n", reporting_modes[0], reporting_modes[1]);
 -}
+-
+-static DEVICE_ATTR(prox0_reporting_mode_avail, S_IRUGO | S_IWUSR,
+-		apds990x_prox_reporting_avail_show, NULL);
 +	struct apds990x_chip *chip = iio_priv(indio_dev);
 +	long timeout;
 +	u32 result;
 +	int ret;
-
--static DEVICE_ATTR(prox0_reporting_mode_avail, S_IRUGO | S_IWUSR,
--		apds990x_prox_reporting_avail_show, NULL);
+ 
 +	switch (mask) {
 +	case IIO_CHAN_INFO_PROCESSED:
 +		switch (chan->type) {
@@ -581,16 +588,16 @@ index 77c168d928f8..3e4c664b602d 100644
 +				if (!timeout)
 +					return -EIO;
 +			}
-
-+			mutex_lock(&chip->mutex);
-+			result = (chip->lux * chip->lux_calib) / APDS_CALIB_SCALER;
-+			if (result > (APDS_RANGE * APDS990X_LUX_OUTPUT_SCALE))
-+				result = APDS_RANGE * APDS990X_LUX_OUTPUT_SCALE;
-
+ 
 -static ssize_t apds990x_lux_thresh_above_show(struct device *dev,
 -				   struct device_attribute *attr, char *buf)
 -{
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
++			mutex_lock(&chip->mutex);
++			result = (chip->lux * chip->lux_calib) / APDS_CALIB_SCALER;
++			if (result > (APDS_RANGE * APDS990X_LUX_OUTPUT_SCALE))
++				result = APDS_RANGE * APDS990X_LUX_OUTPUT_SCALE;
+ 
 -	return sprintf(buf, "%d\n", chip->lux_thres_hi);
 -}
 +			*val = result;
@@ -617,12 +624,11 @@ index 77c168d928f8..3e4c664b602d 100644
 +				if (!timeout)
 +					return -EIO;
 +			}
-
+ 
 -static ssize_t apds990x_lux_thresh_below_show(struct device *dev,
 -				   struct device_attribute *attr, char *buf)
 -{
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
--	return sprintf(buf, "%d\n", chip->lux_thres_lo);
 +			mutex_lock(&chip->mutex);
 +			*val = chip->prox_data;
 +			mutex_unlock(&chip->mutex);
@@ -672,10 +678,11 @@ index 77c168d928f8..3e4c664b602d 100644
 +	default:
 +		return -EINVAL;
 +	}
-+
+ 
+-	return sprintf(buf, "%d\n", chip->lux_thres_lo);
 +	return ret;
  }
-
+ 
 -static ssize_t apds990x_set_lux_thresh(struct apds990x_chip *chip, u32 *target,
 -				const char *buf)
 +static int apds990x_write_raw(struct iio_dev *indio_dev,
@@ -684,15 +691,27 @@ index 77c168d928f8..3e4c664b602d 100644
  {
 -	unsigned long thresh;
 +	struct apds990x_chip *chip = iio_priv(indio_dev);
-	int ret;
-
+ 	int ret;
+ 
 -	ret = kstrtoul(buf, 0, &thresh);
 -	if (ret)
 -		return ret;
-+	mutex_lock(&chip->mutex);
-
+-
 -	if (thresh > APDS_RANGE)
 -		return -EINVAL;
+-
+ 	mutex_lock(&chip->mutex);
+-	*target = thresh;
+-	/*
+-	 * Don't update values in HW if we are still waiting for
+-	 * first interrupt to come after device handle open call.
+-	 */
+-	if (!chip->lux_wait_fresh_res)
+-		apds990x_refresh_athres(chip);
+-	mutex_unlock(&chip->mutex);
+-	return ret;
+ 
+-}
 +	switch (mask) {
 +	case IIO_CHAN_INFO_SAMP_FREQ:
 +		switch (chan->type) {
@@ -726,32 +745,21 @@ index 77c168d928f8..3e4c664b602d 100644
 +		ret = -EINVAL;
 +		break;
 +	}
-
--	mutex_lock(&chip->mutex);
--	*target = thresh;
--	/*
--	 * Don't update values in HW if we are still waiting for
--	 * first interrupt to come after device handle open call.
--	 */
--	if (!chip->lux_wait_fresh_res)
--		apds990x_refresh_athres(chip);
-	mutex_unlock(&chip->mutex);
--	return ret;
--
--}
-
+ 
 -static ssize_t apds990x_lux_thresh_above_store(struct device *dev,
 -				  struct device_attribute *attr,
 -				  const char *buf, size_t len)
 -{
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 -	int ret = apds990x_set_lux_thresh(chip, &chip->lux_thres_hi, buf);
++	mutex_unlock(&chip->mutex);
+ 
 -	if (ret < 0)
 -		return ret;
 -	return len;
 +	return ret;
  }
-
+ 
 -static ssize_t apds990x_lux_thresh_below_store(struct device *dev,
 -				  struct device_attribute *attr,
 -				  const char *buf, size_t len)
@@ -762,19 +770,25 @@ index 77c168d928f8..3e4c664b602d 100644
  {
 -	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 -	int ret = apds990x_set_lux_thresh(chip, &chip->lux_thres_lo, buf);
+-
 -	if (ret < 0)
 -		return ret;
 -	return len;
 -}
--
++	struct apds990x_chip *chip = iio_priv(indio_dev);
+ 
 -static DEVICE_ATTR(lux0_thresh_above_value, S_IRUGO | S_IWUSR,
 -		apds990x_lux_thresh_above_show,
 -		apds990x_lux_thresh_above_store);
-+	struct apds990x_chip *chip = iio_priv(indio_dev);
-
+-
 -static DEVICE_ATTR(lux0_thresh_below_value, S_IRUGO | S_IWUSR,
 -		apds990x_lux_thresh_below_show,
 -		apds990x_lux_thresh_below_store);
+-
+-static ssize_t apds990x_prox_threshold_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
+-{
+-	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 +	switch (chan->type) {
 +	case IIO_INTENSITY:
 +		switch (dir) {
@@ -793,15 +807,11 @@ index 77c168d928f8..3e4c664b602d 100644
 +	default:
 +		return -EINVAL;
 +	}
-
--static ssize_t apds990x_prox_threshold_show(struct device *dev,
--				   struct device_attribute *attr, char *buf)
--{
--	struct apds990x_chip *chip =  dev_get_drvdata(dev);
+ 
 -	return sprintf(buf, "%d\n", chip->prox_thres);
 +	return IIO_VAL_INT;
  }
-
+ 
 -static ssize_t apds990x_prox_threshold_store(struct device *dev,
 -				  struct device_attribute *attr,
 -				  const char *buf, size_t len)
@@ -814,8 +824,8 @@ index 77c168d928f8..3e4c664b602d 100644
 -	unsigned long value;
 +	struct apds990x_chip *chip = iio_priv(indio_dev);
 +	u32 *thresh;
-	int ret;
-
+ 	int ret;
+ 
 -	ret = kstrtoul(buf, 0, &value);
 -	if (ret)
 -		return ret;
@@ -850,9 +860,9 @@ index 77c168d928f8..3e4c664b602d 100644
 +		}
 +		break;
 +	default:
-		return -EINVAL;
+ 		return -EINVAL;
 +	}
-
+ 
 -	mutex_lock(&chip->mutex);
 -	chip->prox_thres = value;
 -
@@ -861,7 +871,7 @@ index 77c168d928f8..3e4c664b602d 100644
 -	return len;
 +	return ret;
  }
-
+ 
 -static DEVICE_ATTR(prox0_thresh_above_value, S_IRUGO | S_IWUSR,
 -		apds990x_prox_threshold_show,
 -		apds990x_prox_threshold_store);
@@ -885,9 +895,9 @@ index 77c168d928f8..3e4c664b602d 100644
 +		return -EINVAL;
 +	}
 +
-	return 0;
+ 	return 0;
  }
-
+ 
 -static ssize_t apds990x_power_state_store(struct device *dev,
 -				  struct device_attribute *attr,
 -				  const char *buf, size_t len)
@@ -900,22 +910,16 @@ index 77c168d928f8..3e4c664b602d 100644
 -	unsigned long value;
 -	int ret;
 +	struct apds990x_chip *chip = iio_priv(indio_dev);
-
+ 
 -	ret = kstrtoul(buf, 0, &value);
 -	if (ret)
 -		return ret;
 +	state = !!state;
-
+ 
 -	if (value) {
 -		pm_runtime_get_sync(dev);
 -		mutex_lock(&chip->mutex);
-+	switch (chan->type) {
-+	case IIO_INTENSITY:
-+		if (chip->lux_en == state)
-+			return -EINVAL;
-+
-+		chip->lux_en = state;
-		chip->lux_wait_fresh_res = true;
+-		chip->lux_wait_fresh_res = true;
 -		apds990x_force_a_refresh(chip);
 -		apds990x_force_p_refresh(chip);
 -		mutex_unlock(&chip->mutex);
@@ -925,15 +929,26 @@ index 77c168d928f8..3e4c664b602d 100644
 -	}
 -	return len;
 -}
++	switch (chan->type) {
++	case IIO_INTENSITY:
++		if (chip->lux_en == state)
++			return -EINVAL;
+ 
+-static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
+-		apds990x_power_state_show,
+-		apds990x_power_state_store);
++		chip->lux_en = state;
++		chip->lux_wait_fresh_res = true;
 +		apds990x_set_mode(chip);
 +		break;
 +	case IIO_PROXIMITY:
 +		if (chip->prox_en == state)
 +			return -EINVAL;
-
--static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
--		apds990x_power_state_show,
--		apds990x_power_state_store);
+ 
+-static ssize_t apds990x_chip_id_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
+-{
+-	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 +		chip->prox_en = state;
 +		chip->prox_wait_fresh_res = true;
 +		apds990x_set_mode(chip);
@@ -941,15 +956,11 @@ index 77c168d928f8..3e4c664b602d 100644
 +	default:
 +		return -EINVAL;
 +	}
-
--static ssize_t apds990x_chip_id_show(struct device *dev,
--				   struct device_attribute *attr, char *buf)
--{
--	struct apds990x_chip *chip =  dev_get_drvdata(dev);
+ 
 -	return sprintf(buf, "%s %d\n", chip->chipname, chip->revision);
 +	return 0;
  }
-
+ 
 -static DEVICE_ATTR(chip_id, S_IRUGO, apds990x_chip_id_show, NULL);
 -
 -static struct attribute *sysfs_attrs_ctrl[] = {
@@ -983,21 +994,21 @@ index 77c168d928f8..3e4c664b602d 100644
 +	.write_event_config = apds990x_write_event_config,
 +	.attrs = &apds990x_attribute_group,
  };
-
+ 
  static const int apds990x_parse_dt(struct device *dev,
-@@ -1121,16 +1167,27 @@ static int apds990x_probe(struct i2c_client *client,
-				const struct i2c_device_id *id)
+@@ -1132,16 +1171,27 @@ static int apds990x_probe(struct i2c_client *client,
+ 				const struct i2c_device_id *id)
  {
-	struct apds990x_chip *chip;
+ 	struct apds990x_chip *chip;
 +	struct iio_dev *indio_dev;
-	int err = 0;
-
+ 	int err = 0;
+ 
 -	chip = kzalloc(sizeof *chip, GFP_KERNEL);
 -	if (!chip)
 +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
 +	if (!indio_dev)
-		return -ENOMEM;
-
+ 		return -ENOMEM;
+ 
 -	i2c_set_clientdata(client, chip);
 -	chip->client  = client;
 +	indio_dev->info = &apds990x_info;
@@ -1006,7 +1017,7 @@ index 77c168d928f8..3e4c664b602d 100644
 +	indio_dev->channels = apds990x_channels;
 +	indio_dev->num_channels = ARRAY_SIZE(apds990x_channels);
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-
+ 
 -	init_waitqueue_head(&chip->wait);
 +	chip = iio_priv(indio_dev);
 +	i2c_set_clientdata(client, indio_dev);
@@ -1015,75 +1026,75 @@ index 77c168d928f8..3e4c664b602d 100644
 +
 +	init_waitqueue_head(&chip->wait_lux);
 +	init_waitqueue_head(&chip->wait_prox);
-	mutex_init(&chip->mutex);
-	chip->pdata	= client->dev.platform_data;
-
-@@ -1146,8 +1203,7 @@ static int apds990x_probe(struct i2c_client *client,
-
-	if (chip->pdata == NULL) {
-		dev_err(&client->dev, "platform data is mandatory\n");
+ 	mutex_init(&chip->mutex);
+ 	chip->pdata	= client->dev.platform_data;
+ 
+@@ -1157,8 +1207,7 @@ static int apds990x_probe(struct i2c_client *client,
+ 
+ 	if (chip->pdata == NULL) {
+ 		dev_err(&client->dev, "platform data is mandatory\n");
 -		err = -EINVAL;
 -		goto fail1;
 +		return -EINVAL;
-	}
-
-	if (chip->pdata->cf.ga == 0) {
-@@ -1186,22 +1242,23 @@ static int apds990x_probe(struct i2c_client *client,
-	chip->pgain = APDS_PGAIN_1X;
-	chip->prox_calib = APDS_PROX_NEUTRAL_CALIB_VALUE;
-	chip->prox_persistence = APDS_DEFAULT_PROX_PERS;
+ 	}
+ 
+ 	if (chip->pdata->cf.ga == 0) {
+@@ -1197,22 +1246,23 @@ static int apds990x_probe(struct i2c_client *client,
+ 	chip->pgain = APDS_PGAIN_1X;
+ 	chip->prox_calib = APDS_PROX_NEUTRAL_CALIB_VALUE;
+ 	chip->prox_persistence = APDS_DEFAULT_PROX_PERS;
 -	chip->prox_continuous_mode = false;
-
-	chip->regs[0].supply = reg_vcc;
-	chip->regs[1].supply = reg_vled;
-
+ 
+ 	chip->regs[0].supply = reg_vcc;
+ 	chip->regs[1].supply = reg_vled;
+ 
 -	err = regulator_bulk_get(&client->dev,
 +	chip->lux_en = true;
 +
 +	err = devm_regulator_bulk_get(&client->dev,
-				 ARRAY_SIZE(chip->regs), chip->regs);
-	if (err < 0) {
-		dev_err(&client->dev, "Cannot get regulators\n");
+ 				 ARRAY_SIZE(chip->regs), chip->regs);
+ 	if (err < 0) {
+ 		dev_err(&client->dev, "Cannot get regulators\n");
 -		goto fail1;
 +		return err;
-	}
-
-	err = regulator_bulk_enable(ARRAY_SIZE(chip->regs), chip->regs);
-	if (err < 0) {
-		dev_err(&client->dev, "Cannot enable regulators\n");
+ 	}
+ 
+ 	err = regulator_bulk_enable(ARRAY_SIZE(chip->regs), chip->regs);
+ 	if (err < 0) {
+ 		dev_err(&client->dev, "Cannot enable regulators\n");
 -		goto fail2;
 +		return err;
-	}
-
-	usleep_range(APDS_STARTUP_DELAY, 2 * APDS_STARTUP_DELAY);
-@@ -1209,141 +1266,119 @@ static int apds990x_probe(struct i2c_client *client,
-	err = apds990x_detect(chip);
-	if (err < 0) {
-		dev_err(&client->dev, "APDS990X not found\n");
+ 	}
+ 
+ 	usleep_range(APDS_STARTUP_DELAY, 2 * APDS_STARTUP_DELAY);
+@@ -1220,141 +1270,119 @@ static int apds990x_probe(struct i2c_client *client,
+ 	err = apds990x_detect(chip);
+ 	if (err < 0) {
+ 		dev_err(&client->dev, "APDS990X not found\n");
 -		goto fail3;
 +		goto fail1;
-	}
-
+ 	}
+ 
 -	pm_runtime_set_active(&client->dev);
 -
 -	apds990x_configure(chip);
 -	apds990x_set_arate(chip, APDS_LUX_DEFAULT_RATE);
 -	apds990x_mode_on(chip);
 -
-	pm_runtime_enable(&client->dev);
+ 	pm_runtime_enable(&client->dev);
 +	pm_runtime_set_autosuspend_delay(&client->dev,
 +									APDS990X_SLEEP_DELAY_MS);
 +	pm_runtime_use_autosuspend(&client->dev);
-
-	if (chip->pdata->setup_resources) {
-		err = chip->pdata->setup_resources();
-		if (err) {
-			err = -EINVAL;
+ 
+ 	if (chip->pdata->setup_resources) {
+ 		err = chip->pdata->setup_resources();
+ 		if (err) {
+ 			err = -EINVAL;
 -			goto fail3;
 +			goto fail1;
-		}
-	}
-
+ 		}
+ 	}
+ 
 -	err = sysfs_create_group(&chip->client->dev.kobj,
 -				apds990x_attribute_group);
 -	if (err < 0) {
@@ -1099,12 +1110,12 @@ index 77c168d928f8..3e4c664b602d 100644
 +	err = devm_request_threaded_irq(&client->dev, client->irq, NULL,
 +				apds990x_irq, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_LOW |
 +				IRQF_ONESHOT, "apds990x", indio_dev);
-	if (err) {
-		dev_err(&client->dev, "could not get IRQ %d\n",
-			client->irq);
+ 	if (err) {
+ 		dev_err(&client->dev, "could not get IRQ %d\n",
+ 			client->irq);
 -		goto fail5;
 +		goto fail2;
-	}
+ 	}
 -	return err;
 -fail5:
 -	sysfs_remove_group(&chip->client->dev.kobj,
@@ -1117,8 +1128,8 @@ index 77c168d928f8..3e4c664b602d 100644
 +
 +	return 0;
 +fail2:
-	if (chip->pdata && chip->pdata->release_resources)
-		chip->pdata->release_resources();
+ 	if (chip->pdata && chip->pdata->release_resources)
+ 		chip->pdata->release_resources();
 -fail3:
 -	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
 -fail2:
@@ -1127,9 +1138,9 @@ index 77c168d928f8..3e4c664b602d 100644
 -	kfree(chip);
 +	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
 +
-	return err;
+ 	return err;
  }
-
+ 
  static int apds990x_remove(struct i2c_client *client)
  {
 -	struct apds990x_chip *chip = i2c_get_clientdata(client);
@@ -1139,23 +1150,23 @@ index 77c168d928f8..3e4c664b602d 100644
 -			apds990x_attribute_group);
 +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 +	struct apds990x_chip *chip = iio_priv(indio_dev);
-
-	if (chip->pdata && chip->pdata->release_resources)
-		chip->pdata->release_resources();
-
+ 
+ 	if (chip->pdata && chip->pdata->release_resources)
+ 		chip->pdata->release_resources();
+ 
 -	if (!pm_runtime_suspended(&client->dev))
 -		apds990x_chip_off(chip);
 -
-	pm_runtime_disable(&client->dev);
-	pm_runtime_set_suspended(&client->dev);
+ 	pm_runtime_disable(&client->dev);
+ 	pm_runtime_set_suspended(&client->dev);
 +	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
-
+ 
 -	regulator_bulk_free(ARRAY_SIZE(chip->regs), chip->regs);
 -
 -	kfree(chip);
-	return 0;
+ 	return 0;
  }
-
+ 
 -#ifdef CONFIG_PM_SLEEP
 -static int apds990x_suspend(struct device *dev)
 +static int apds990x_set_power(struct apds990x_chip *chip, bool on)
@@ -1163,7 +1174,7 @@ index 77c168d928f8..3e4c664b602d 100644
 -	struct i2c_client *client = to_i2c_client(dev);
 -	struct apds990x_chip *chip = i2c_get_clientdata(client);
 +	int ret = 0;
-
+ 
 -	apds990x_chip_off(chip);
 -	return 0;
 -}
@@ -1172,13 +1183,13 @@ index 77c168d928f8..3e4c664b602d 100644
 +					chip->regs);
 +		if (ret < 0)
 +			return ret;
-
+ 
 -static int apds990x_resume(struct device *dev)
 -{
 -	struct i2c_client *client = to_i2c_client(dev);
 -	struct apds990x_chip *chip = i2c_get_clientdata(client);
 +		usleep_range(APDS_STARTUP_DELAY, 2 * APDS_STARTUP_DELAY);
-
+ 
 -	/*
 -	 * If we were enabled at suspend time, it is expected
 -	 * everything works nice and smoothly. Chip_on is enough
@@ -1186,7 +1197,7 @@ index 77c168d928f8..3e4c664b602d 100644
 -	apds990x_chip_on(chip);
 +		apds990x_configure(chip);
 +		apds990x_set_arate(chip, APDS_LUX_DEFAULT_RATE);
-
+ 
 -	return 0;
 +		chip->lux_wait_fresh_res = true;
 +		chip->prox_wait_fresh_res = true;
@@ -1201,7 +1212,7 @@ index 77c168d928f8..3e4c664b602d 100644
 +	return ret;
  }
 -#endif
-
+ 
 -#ifdef CONFIG_PM
  static int apds990x_runtime_suspend(struct device *dev)
  {
@@ -1209,24 +1220,24 @@ index 77c168d928f8..3e4c664b602d 100644
 -	struct apds990x_chip *chip = i2c_get_clientdata(client);
 +	struct apds990x_chip *chip =
 +					iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-
+ 
 -	apds990x_chip_off(chip);
 +	apds990x_set_power(chip, false);
-	return 0;
+ 	return 0;
  }
-
+ 
  static int apds990x_runtime_resume(struct device *dev)
  {
 -	struct i2c_client *client = to_i2c_client(dev);
 -	struct apds990x_chip *chip = i2c_get_clientdata(client);
 +	struct apds990x_chip *chip =
 +					iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-
+ 
 -	apds990x_chip_on(chip);
 +	apds990x_set_power(chip, true);
-	return 0;
+ 	return 0;
  }
-
+ 
 -#endif
 +static const struct dev_pm_ops apds990x_pm_ops = {
 +	SET_SYSTEM_SLEEP_PM_OPS(apds990x_runtime_suspend,
@@ -1234,14 +1245,14 @@ index 77c168d928f8..3e4c664b602d 100644
 +	SET_RUNTIME_PM_OPS(apds990x_runtime_suspend,
 +					   apds990x_runtime_resume, NULL)
 +};
-
+ 
  static const struct i2c_device_id apds990x_id[] = {
-	{"apds990x", 0 },
-	{}
+ 	{"apds990x", 0 },
+ 	{}
  };
 -
  MODULE_DEVICE_TABLE(i2c, apds990x_id);
-
+ 
 -static const struct dev_pm_ops apds990x_pm_ops = {
 -	SET_SYSTEM_SLEEP_PM_OPS(apds990x_suspend, apds990x_resume)
 -	SET_RUNTIME_PM_OPS(apds990x_runtime_suspend,
@@ -1250,24 +1261,25 @@ index 77c168d928f8..3e4c664b602d 100644
 -};
 -
  static const struct of_device_id apds990x_of_match[] = {
-	{.compatible = "avago,apds990x" },
-	{}
-@@ -1352,7 +1387,7 @@ MODULE_DEVICE_TABLE(of, apds990x_of_match);
-
+ 	{.compatible = "avago,apds990x" },
+ 	{}
+@@ -1363,7 +1391,7 @@ MODULE_DEVICE_TABLE(of, apds990x_of_match);
+ 
  static struct i2c_driver apds990x_driver = {
-	.driver	 = {
+ 	.driver	 = {
 -		.name	= "apds990x",
 +		.name	= APDS990X_DRV_NAME,
-		.of_match_table	= apds990x_of_match,
-		.pm	= &apds990x_pm_ops,
-	},
-@@ -1360,7 +1395,6 @@ static struct i2c_driver apds990x_driver = {
-	.remove	  = apds990x_remove,
-	.id_table = apds990x_id,
+ 		.of_match_table	= apds990x_of_match,
+ 		.pm	= &apds990x_pm_ops,
+ 	},
+@@ -1371,7 +1399,6 @@ static struct i2c_driver apds990x_driver = {
+ 	.remove	  = apds990x_remove,
+ 	.id_table = apds990x_id,
  };
 -
  module_i2c_driver(apds990x_driver);
-
+ 
  MODULE_DESCRIPTION("APDS990X combined ALS and proximity sensor");
---
+-- 
 2.14.1
+

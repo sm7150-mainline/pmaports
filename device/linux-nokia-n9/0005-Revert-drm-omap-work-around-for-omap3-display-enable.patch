@@ -1,7 +1,7 @@
-From faaa1d9e395ea7231534561d5bd2ed6e1d9a760c Mon Sep 17 00:00:00 2001
+From 324c0340c85dee1a2ae3eb6c71bcd9e47c9f03f7 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Filip=20Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>
 Date: Thu, 2 Nov 2017 18:46:21 +0100
-Subject: [PATCH 05/12] Revert "drm/omap: work-around for omap3 display enable"
+Subject: [PATCH 05/11] Revert "drm/omap: work-around for omap3 display enable"
 
 This reverts commit fc5cc9678e130196012c17b37e555d53d3d3476b.
 ---
@@ -9,13 +9,13 @@ This reverts commit fc5cc9678e130196012c17b37e555d53d3d3476b.
  1 file changed, 17 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/gpu/drm/omapdrm/omap_drv.c b/drivers/gpu/drm/omapdrm/omap_drv.c
-index cdf5b0601eba..9b3c36b48356 100644
+index dd68b2556f5b..bc5b68ecd0f7 100644
 --- a/drivers/gpu/drm/omapdrm/omap_drv.c
 +++ b/drivers/gpu/drm/omapdrm/omap_drv.c
-@@ -84,36 +84,23 @@ static void omap_atomic_commit_tail(struct drm_atomic_state *old_state)
-	/* Apply the atomic update. */
-	drm_atomic_helper_commit_modeset_disables(dev, old_state);
-
+@@ -74,36 +74,23 @@ static void omap_atomic_commit_tail(struct drm_atomic_state *old_state)
+ 	/* Apply the atomic update. */
+ 	drm_atomic_helper_commit_modeset_disables(dev, old_state);
+ 
 -	if (priv->omaprev != 0x3430) {
 -		/* With the current dss dispc implementation we have to enable
 -		 * the new modeset before we can commit planes. The dispc ovl
@@ -63,8 +63,9 @@ index cdf5b0601eba..9b3c36b48356 100644
 +	drm_atomic_helper_commit_planes(dev, old_state, 0);
 +
 +	drm_atomic_helper_commit_hw_done(old_state);
-
-	/*
-	 * Wait for completion of the page flips to ensure that old buffers
---
+ 
+ 	/*
+ 	 * Wait for completion of the page flips to ensure that old buffers
+-- 
 2.14.1
+
