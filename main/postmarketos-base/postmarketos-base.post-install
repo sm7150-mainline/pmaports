@@ -11,7 +11,7 @@ done
 for service in hwclock modules sysctl hostname bootmisc swclock syslog; do
 	rc-update -q add $service boot
 done
-for service in dbus haveged sshd swapfile wpa_supplicant chronyd local; do
+for service in dbus haveged sshd swapfile wpa_supplicant chronyd local networkmanager wpa_supplicant; do
 	rc-update -q add $service default
 done
 for service in mount-ro killprocs savecache; do
@@ -36,6 +36,7 @@ write_unless_modified() {
 	echo 'LABEL="pmOS_root"	/	ext4	relatime,data=ordered	0	1'
 	echo 'LABEL="pmOS_boot"	/boot	auto	defaults		0	2'
 } | write_unless_modified /etc/fstab
+
 # Set /etc/issue
   {
 	echo 'Welcome to postmarketOS'
@@ -43,6 +44,7 @@ write_unless_modified() {
 	# setterm -powersave on -blank 5
 	echo -ne "\033[9;5]"
   } | write_unless_modified /etc/issue
+
 # Set /etc/motd
 {
 	echo 'Welcome to postmarketOS!'
@@ -55,6 +57,12 @@ write_unless_modified() {
 	echo 'You may change this message by editing /etc/motd.'
 	echo ''
 } | write_unless_modified /etc/motd
+
+# Change wpa_supplicant into dbus mode and enable both drivers
+{
+	echo 'wpa_supplicant_args="-u -Dwext,nl80211"'
+} | write_unless_modified /etc/conf.d/wpa_supplicant
+touch /etc/wpa_supplicant/wpa_supplicant.conf
 
 # Enable syslog to SHM. Note: size is 4048KiB, which *should* be More Than Enough(TM) for all but the most chattiest of devices.
 sed s/=\"/=\""-C4048 "/  -i /etc/conf.d/syslog
