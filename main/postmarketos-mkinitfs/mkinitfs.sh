@@ -92,17 +92,19 @@ get_modules()
 # Get the paths to all binaries and their dependencies
 BINARIES="/bin/busybox /bin/busybox-extras /usr/sbin/telnetd /sbin/kpartx"
 BINARIES_EXTRA="
-	/sbin/cryptsetup
-	/sbin/dmsetup
-	/usr/sbin/parted
-	/sbin/e2fsck
-	/usr/sbin/resize2fs
-	/usr/bin/osk-sdl
-	/usr/lib/libGL.so.1
-	/usr/lib/ts/*
-	/usr/lib/libts*
 	$(find /usr/lib/directfb-* -name '*.so')
 	/lib/libz.so.1
+	/sbin/cryptsetup
+	/sbin/dmsetup
+	/sbin/e2fsck
+	/usr/bin/charging-sdl
+	/usr/bin/osk-sdl
+	/usr/lib/libGL.so.1
+	/usr/lib/libts*
+	/usr/lib/ts/*
+	/usr/sbin/parted
+	/usr/sbin/resize2fs
+	/usr/sbin/thd
 "
 get_binaries()
 {

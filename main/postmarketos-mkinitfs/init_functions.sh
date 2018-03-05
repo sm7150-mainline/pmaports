@@ -267,8 +267,8 @@ start_udhcpd() {
 	udhcpd
 }
 
-start_onscreen_keyboard(){
-	# Set up directfb and tslib for osk-sdl
+setup_directfb_tslib(){
+	# Set up directfb and tslib
 	# Note: linux_input module is disabled since it will try to take over
 	# the touchscreen device from tslib (e.g. on the N900)
 	export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input"
@@ -276,9 +276,35 @@ start_onscreen_keyboard(){
 	if [ ! -z "$deviceinfo_dev_touchscreen" ]; then
 		export TSLIB_TSDEVICE="$deviceinfo_dev_touchscreen"
 	fi
+}
+
+start_onscreen_keyboard(){
+	setup_directfb_tslib
 	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
 	unset DFBARGS
 	unset TSLIB_TSDEVICE
+}
+
+start_charging_mode(){
+	# Check cmdline for charging mode
+	chargingmodes="
+		androidboot.mode=charger
+		lpm_boot=1
+		androidboot.huawei_type=oem_rtc
+		startup=0x00010004
+	"
+	# shellcheck disable=SC2086
+	grep -Eq "$(echo $chargingmodes | tr ' ' '|')" /proc/cmdline || return
+	setup_directfb_tslib
+	# Get the font from osk-sdl config
+	fontpath=$(awk '/^keyboard-font/{print $3}' /etc/osk.conf)
+	# Set up triggerhappy config
+	{
+		echo "KEY_POWER 1 pgrep -x charging-sdl || charging-sdl -pcf $fontpath"
+	} >/etc/triggerhappy.conf
+	# Start it once and then start triggerhappy
+	charging-sdl -pcf "$fontpath" &
+	thd --deviceglob /dev/input/event* --triggers /etc/triggerhappy.conf
 }
 
 # $1: path to ppm.gz file
