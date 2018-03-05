@@ -11,7 +11,7 @@ done
 for service in hwclock modules sysctl hostname bootmisc swclock syslog; do
 	rc-update -q add $service boot
 done
-for service in dbus haveged sshd swapfile wpa_supplicant chronyd local networkmanager wpa_supplicant; do
+for service in dbus haveged sshd swapfile wpa_supplicant chronyd local networkmanager; do
 	rc-update -q add $service default
 done
 for service in mount-ro killprocs savecache; do
@@ -38,12 +38,12 @@ write_unless_modified() {
 } | write_unless_modified /etc/fstab
 
 # Set /etc/issue
-  {
+{
 	echo 'Welcome to postmarketOS'
 	echo 'Kernel \r on an \m (\l)'
 	# setterm -powersave on -blank 5
 	echo -ne "\033[9;5]"
-  } | write_unless_modified /etc/issue
+} | write_unless_modified /etc/issue
 
 # Set /etc/motd
 {
@@ -69,7 +69,7 @@ sed s/=\"/=\""-C4048 "/  -i /etc/conf.d/syslog
 
 # Enable wext, nl80211 & dbus control for wpa_supplicant
 if ! grep -q Dwext /etc/conf.d/wpa_supplicant; then
-        sed -i 's/wpa_supplicant_args=\"/wpa_supplicant_args=\" -u -Dwext,nl80211/' /etc/conf.d/wpa_supplicant
+	sed -i 's/wpa_supplicant_args=\"/wpa_supplicant_args=\" -u -Dwext,nl80211/' /etc/conf.d/wpa_supplicant
 fi
 touch /etc/wpa_supplicant/wpa_supplicant.conf
 

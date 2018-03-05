@@ -1,6 +1,6 @@
 pkgname=device-qemu-amd64
 pkgver=1
-pkgrel=14
+pkgrel=15
 pkgdesc="Simulated device in qemu with an x86 platform"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -9,14 +9,12 @@ license="MIT"
 depends="postmarketos-base linux-postmarketos-lts"
 makedepends=""
 subpackages="$pkgname-x11 $pkgname-weston"
-source="deviceinfo interfaces weston.ini"
+source="deviceinfo weston.ini"
 options="!check"
 
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/interfaces \
-		"$pkgdir"/etc/network/interfaces
 }
 
 x11() {
@@ -32,5 +30,4 @@ weston() {
 }
 
 sha512sums="29e2bf334a04ede2cc48095190cfb9d4cc47d8bf2ff68ea06452bfd1ed26765a2dd39cc525953cdf00f2d6919ac914c5d3a7b3f9d7f0ea2af75ef7c466bf2164  deviceinfo
-d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  interfaces
 df0fe900693e5f176076c59f5379e56aaa96c3df16a4120448f15b71f530170730b43e5fe32733c40c118a00ca3581043231a062a8a1eb0a930bfbfbb6c52a47  weston.ini"
