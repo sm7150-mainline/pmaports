@@ -1,7 +1,7 @@
 pkgname=gtk+2.0-maemo
 pkgver=2.24.31
 _tag=2.24.25
-pkgrel=3
+pkgrel=4
 subpkg=gtk-update-icon-cache
 pkgdesc="The GTK+ Toolkit (v2)"
 url="http://www.gtk.org/"
@@ -9,11 +9,11 @@ install="$pkgname.post-install $pkgname.post-upgrade $pkgname.post-deinstall"
 triggers="$subpkg.trigger=/usr/share/icons/*"
 arch="all"
 license="LGPL"
-subpackages="$pkgname-dev $pkgname-doc $pkgname-lang $subpkg:icon_cache"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang:lang $subpkg:icon_cache"
 depends="shared-mime-info gtk-update-icon-cache"
 
 replaces="gtk+ gtk+-dev gtk+-doc"
-provides="gtk+2.0=$pkgver gtk+2.0-dev=$pkgver gtk+2.0-doc=$pkgver"
+provides="gtk+2.0=$pkgver"
 
 depends_dev="
 	atk-dev
@@ -114,13 +114,26 @@ dev() {
 	mv "$pkgdir"/usr/share/gtk-2.0 "$subpkgdir"/usr/share/
 	default_dev
 	replaces="gtk+2.0"
+	provides="gtk+2.0-dev=$pkgver"
+
 	mv "$pkgdir"/usr/bin/gtk-builder-convert \
 		"$pkgdir"/usr/bin/gtk-demo \
 		"$subpkgdir"/usr/bin
 }
 
+doc() {
+	default_doc
+	provides="gtk+2.0-doc=$pkgver"
+}
+
+lang() {
+	default_lang
+	provides="gtk+2.0-lang=$pkgver"
+}
+
 icon_cache() {
 	depends="hicolor-icon-theme"
+	provides="gtk+2.0-icon_cache=$pkgver"
 
 	mkdir -p "$subpkgdir"/usr/bin
 	mv "$pkgdir"/usr/bin/"$subpkg" "$subpkgdir"/usr/bin
