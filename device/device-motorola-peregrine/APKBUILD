@@ -2,15 +2,15 @@
 pkgname="device-motorola-peregrine"
 pkgdesc="Moto G 4G (2013)"
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
 depends="postmarketos-base linux-motorola-peregrine mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware device-motorola-peregrine-x11"
+source="deviceinfo xorg.conf"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -20,10 +20,21 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+x11() {
+	install_if="$pkgname xorg-server"
+	depends="
+		libinput
+		xf86-input-libinput
+		xf86-video-fbdev"
+	install -Dm644 "$srcdir"/xorg.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/10-peregrine.conf
+}
+
 nonfree_firmware() {
 	pkgdesc="Wifi firmware"
 	depends="firmware-motorola-titan"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="572091b996d55ce7f6a1b10b67cbd55677a251b4fdba209b6085d4cc00db411df35926fecf22c2dc62bca3c7472118643ed0956b479aa97a469d75f4b410feb7  deviceinfo"
+sha512sums="572091b996d55ce7f6a1b10b67cbd55677a251b4fdba209b6085d4cc00db411df35926fecf22c2dc62bca3c7472118643ed0956b479aa97a469d75f4b410feb7  deviceinfo
+f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf"
