@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kio
-pkgver=5.43.0
+pkgver=5.44.0
 pkgrel=0
 pkgdesc='Resource and network access abstraction'
 arch="all"
@@ -13,8 +13,7 @@ depends_dev="kdoctools-dev kconfig-dev kdbusaddons-dev kservice-dev solid-dev kb
 			kcompletion-dev kconfigwidgets-dev kauth-dev kcodecs-dev kiconthemes-dev kitemviews-dev
 			kwindowsystem-dev qt5-x11extras-dev kxmlgui-dev ktextwidgets-dev sonnet-dev qt5-qtscript-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev libxslt-dev libxml2-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz
-	msghdr-initialize-by-name.patch"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -37,5 +36,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="${pkgdir}" install
 }
-sha512sums="23885d851dade24bb08ba1de2eda65db3ab13c8f378a42281f8a50230c9e836b5255643c89fbfca3dedc1e41ee259e67aaed2933cdf739ee4fb1c7eb650b95f6  kio-5.43.0.tar.xz
-15dcd931df86390bc7d8a476356bfb2ac86de0864e9db836044f7b86428fee6c143d276d1879ebaf677dcaa59369c8c5fa3417961301b3c698f376717a2a539d  msghdr-initialize-by-name.patch"
+sha512sums="ec50fce1b60eda5ba637abd37a14e10d853bbf35be2d1ef48ee69681ed2f5356d919e06f0156558187f0e7bc5f642790e72af6f7554a1c72ffd445d22844429b  kio-5.44.0.tar.xz"
