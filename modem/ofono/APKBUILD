@@ -1,0 +1,44 @@
+# Based on https://git.alpinelinux.org/cgit/aports/tree/testing/ofono/APKBUILD?id=014ae282b4a9152a5b64451f2815f34fcb53507c
+pkgname=ofono
+_upstreamver=1.21
+pkgver=1.21_p20180307
+pkgrel=0
+pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications"
+url="https://01.org/ofono"
+arch="all"
+license="GPL2"
+depends="bluez mobile-broadband-provider-info"
+makedepends="glib-dev dbus-dev eudev-dev
+	linux-headers bsd-compat-headers libexecinfo-dev
+	mobile-broadband-provider-info"
+options="!check"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$_upstreamver.tar.xz
+	$pkgname.initd
+	0001-nokia-gpio-do-not-create-links-to-gpios-in-dev-cmt.patch::https://git.alpinelinux.org/cgit/aports/plain/testing/ofono/0001-nokia-gpio-do-not-create-links-to-gpios-in-dev-cmt.patch?id=014ae282b4a9152a5b64451f2815f34fcb53507c
+	support-smdpkt.patch"
+
+builddir="$srcdir"/$pkgname-$_upstreamver
+
+build() {
+	cd "$builddir"
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--sbindir=/usr/sbin
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+	install -Dm644 "$srcdir/$pkgname-${_upstreamver}/plugins/ofono.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono.rules"
+	install -Dm644 "$srcdir/$pkgname-${_upstreamver}/plugins/ofono-smdpkt.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono-smdpkt.rules"
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+}
+
+sha512sums="bbc7fdb1d05294839eee5f31ec345866315a80feac8ccc2a67e0ca2c1030c55e0fb4fd6faee82133c00ec287730a5fd8df0610146a4f6a099e6b90703e621945  ofono-1.21.tar.xz
+fd0d303ca71df6953155aac0624c847f273030ebc5fb12efe2fa2ae7b8d75380e2885ab08d9c65c80cf756ef952569832ffdc25317e86a99552b4caac322b3ed  ofono.initd
+a1f66f3f40c1aa4af5f5b66436414408b46f3c90f2a2c88fa12e09ca6a1732334d2f47687478d652a3a176ee93c1905752635246fd01412834565626c021ca64  0001-nokia-gpio-do-not-create-links-to-gpios-in-dev-cmt.patch
+1eb3fb4e6181e9b4f0afd1b68045750229e6c383380b98111d8238b397ea8dd26dda40b16d64f56f5187fafa97c0613139393e62a1ce58d2631a072903c273a4  support-smdpkt.patch"

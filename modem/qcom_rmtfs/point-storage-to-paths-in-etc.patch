@@ -1,0 +1,33 @@
+From c8af1ceccfa1c69845a0afb0068917cb16a4ef5b Mon Sep 17 00:00:00 2001
+From: Joey Hewitt <joey@joeyhewitt.com>
+Date: Sat, 10 Mar 2018 17:38:00 -0700
+Subject: [PATCH] point storage to paths in /etc
+
+Device packages will put symlinks there pointing to their storage
+partitions.
+---
+ storage.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/storage.c b/storage.c
+index 997b428..8754b98 100644
+--- a/storage.c
++++ b/storage.c
+@@ -23,10 +23,10 @@ struct caller {
+ };
+ 
+ static const struct partition partition_table[] = {
+-	{ "/boot/modem_fs1", "/boot/modem_fs1" },
+-	{ "/boot/modem_fs2", "/boot/modem_fs2" },
+-	{ "/boot/modem_fsc", "/boot/modem_fsc" },
+-	{ "/boot/modem_fsg", "/boot/modem_fsg" },
++	{ "/boot/modem_fs1", "/etc/qcom_rmtfs/partition-symlinks/modem_fs1" },
++	{ "/boot/modem_fs2", "/etc/qcom_rmtfs/partition-symlinks/modem_fs2" },
++	{ "/boot/modem_fsc", "/etc/qcom_rmtfs/partition-symlinks/modem_fsc" },
++	{ "/boot/modem_fsg", "/etc/qcom_rmtfs/partition-symlinks/modem_fsg" },
+ 	{}
+ };
+ 
+-- 
+2.7.4
+

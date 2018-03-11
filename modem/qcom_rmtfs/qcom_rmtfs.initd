@@ -1,0 +1,10 @@
+#!/sbin/openrc-run
+
+# libqipcrtr4msmipc.so may not be present, on devices that don't need it
+export LD_PRELOAD=/usr/lib/preload/libqipcrtr4msmipc.so
+
+command="/bin/sh"
+command_args="-c 'exec /usr/sbin/qcom_rmtfs 2>&1 | logger -t qcom_rmtfs'"
+command_background="yes"
+
+pidfile="/var/run/${SVCNAME}.pid"

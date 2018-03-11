@@ -1,0 +1,29 @@
+pkgname=firmware-samsung-i9195
+# XDA post explains the meaning of the firmware version, which I've translated into pkgver
+pkgver=201707.1
+_ver=I9195XXUCQG1
+pkgrel=0
+pkgdesc="Samsung Galaxy S 4 Mini firmware"
+subpackages="$pkgname-modem"
+url="https://forum.xda-developers.com/galaxy-s4-mini/general/modem-samsung-galaxy-s4-mini-gt-i9195-t3390780"
+arch="noarch"
+license="proprietary"
+options="!strip !archcheck"
+
+source="$_ver.tar.xz::https://drive.google.com/uc?export=download&id=1bKQ6m9avN6k2puJTZr55dIeGb8B7K_lT"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+modem() {
+	pkgdesc="Samsung Galaxy S 4 Mini modem firmware"
+
+	cd "$srcdir"
+	for _i in *.b?? *.mdt; do
+		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
+	done
+}
+
+sha512sums="32e27bf12f40abd9a049562e4830d061518bd9efaf991cdc48c1aa3736bdc8c581eea14fa240fbaead255f83c7692d186f53a491837a662ac6368ca943634684  I9195XXUCQG1.tar.xz"

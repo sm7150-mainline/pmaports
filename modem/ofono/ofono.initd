@@ -1,0 +1,21 @@
+#!/sbin/runscript
+# Copyright 1999-2009 Gentoo Foundation
+# Distributed under the terms of the GNU General Purpose License v2
+# $Header: ./gentoo-x86-cvsroot/net-misc/ofono/files/ofono.initd,v 1.1 2009/08/24 13:20:40 dagger Exp $
+
+depend() {
+   need dbus
+}
+
+start() {
+   ebegin "Starting oFono"
+   # libsmdpkt_wrapper.so may not exist, if this device doesn't need it
+   start-stop-daemon --start --quiet --exec /usr/bin/env LD_PRELOAD=/usr/lib/preload/libsmdpkt_wrapper.so /usr/sbin/ofonod
+   eend $?
+}
+
+stop() {
+   ebegin "Stopping oFono"
+   start-stop-daemon --stop --quiet --exec /usr/sbin/ofonod
+   eend $?
+}

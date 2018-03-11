@@ -1,0 +1,89 @@
+diff -rN -U3 a/plugins/ofono-smdpkt.rules b/plugins/ofono-smdpkt.rules
+--- a/plugins/ofono-smdpkt.rules	1970-01-01 00:00:00.000000000 +0000
++++ b/plugins/ofono-smdpkt.rules	2018-03-08 05:46:35.000000000 +0000
+@@ -0,0 +1,2 @@
++# SMD serial device on MSM devices
++KERNEL=="smdcntl0", ENV{OFONO_DRIVER}="gobi"
+diff -rN -U3 a/plugins/udevng.c b/plugins/udevng.c
+--- a/plugins/udevng.c	2017-10-05 14:32:37.000000000 +0000
++++ b/plugins/udevng.c	2018-03-08 05:29:16.000000000 +0000
+@@ -201,39 +201,43 @@
+ 
+ 	DBG("%s", modem->syspath);
+ 
+-	for (list = modem->devices; list; list = list->next) {
+-		struct device_info *info = list->data;
++	if (modem->type != MODEM_TYPE_SERIAL) {
++		for (list = modem->devices; list; list = list->next) {
++			struct device_info *info = list->data;
+ 
+-		DBG("%s %s %s %s %s %s", info->devnode, info->interface,
+-						info->number, info->label,
+-						info->sysattr, info->subsystem);
++			DBG("%s %s %s %s %s %s", info->devnode, info->interface,
++							info->number, info->label,
++							info->sysattr, info->subsystem);
+ 
+-		if (g_strcmp0(info->subsystem, "usbmisc") == 0) /* cdc-wdm */
+-			qmi = info->devnode;
+-		else if (g_strcmp0(info->subsystem, "net") == 0) /* wwan */
+-			net = info->devnode;
+-		else if (g_strcmp0(info->subsystem, "tty") == 0) {
+-			if (g_strcmp0(info->interface, "255/255/255") == 0) {
+-				if (g_strcmp0(info->number, "00") == 0)
+-					diag = info->devnode; /* ec20 */
+-				else if (g_strcmp0(info->number, "01") == 0)
+-					diag = info->devnode; /* gobi */
+-				else if (g_strcmp0(info->number, "02") == 0)
+-					mdm = info->devnode; /* gobi */
+-				else if (g_strcmp0(info->number, "03") == 0)
+-					gps = info->devnode; /* gobi */
+-			} else if (g_strcmp0(info->interface, "255/0/0") == 0) {
+-				if (g_strcmp0(info->number, "01") == 0)
+-					gps = info->devnode; /* ec20 */
+-				if (g_strcmp0(info->number, "02") == 0)
+-					mdm = info->devnode; /* ec20 */
+-				/* ignore the 3rd device second AT/mdm iface */
++			if (g_strcmp0(info->subsystem, "usbmisc") == 0) /* cdc-wdm */
++				qmi = info->devnode;
++			else if (g_strcmp0(info->subsystem, "net") == 0) /* wwan */
++				net = info->devnode;
++			else if (g_strcmp0(info->subsystem, "tty") == 0) {
++				if (g_strcmp0(info->interface, "255/255/255") == 0) {
++					if (g_strcmp0(info->number, "00") == 0)
++						diag = info->devnode; /* ec20 */
++					else if (g_strcmp0(info->number, "01") == 0)
++						diag = info->devnode; /* gobi */
++					else if (g_strcmp0(info->number, "02") == 0)
++						mdm = info->devnode; /* gobi */
++					else if (g_strcmp0(info->number, "03") == 0)
++						gps = info->devnode; /* gobi */
++				} else if (g_strcmp0(info->interface, "255/0/0") == 0) {
++					if (g_strcmp0(info->number, "01") == 0)
++						gps = info->devnode; /* ec20 */
++					if (g_strcmp0(info->number, "02") == 0)
++						mdm = info->devnode; /* ec20 */
++					/* ignore the 3rd device second AT/mdm iface */
++				}
+ 			}
+ 		}
+-	}
+ 
+-	if (qmi == NULL || mdm == NULL || net == NULL)
+-		return FALSE;
++		if (qmi == NULL || mdm == NULL || net == NULL)
++			return FALSE;
++	} else {
++		qmi = modem->serial->devnode;
++	}
+ 
+ 	DBG("qmi=%s net=%s mdm=%s gps=%s diag=%s", qmi, net, mdm, gps, diag);
+ 
+@@ -1708,6 +1712,7 @@
+ 		return;
+ 
+ 	udev_enumerate_add_match_subsystem(enumerate, "tty");
++	udev_enumerate_add_match_subsystem(enumerate, "smdpkt");
+ 	udev_enumerate_add_match_subsystem(enumerate, "usb");
+ 	udev_enumerate_add_match_subsystem(enumerate, "usbmisc");
+ 	udev_enumerate_add_match_subsystem(enumerate, "net");

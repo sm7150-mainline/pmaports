@@ -1,0 +1,30 @@
+pkgname=msmipc-dev
+pkgver=0.1
+pkgrel=0
+pkgdesc="Headers for Qualcomm MSM IPC (AF_MSM_IPC and AF_QRTR)"
+url="https://android.googlesource.com/kernel/msm/+/e63c5a50c9379ccbee4c7f0e6ba43394e9d89db4/include/linux/msm_ipc.h"
+arch="noarch"
+depends="linux-headers"
+license="GPL-2.0 WITH Linux-syscall-note"
+source="
+	https://github.com/torvalds/linux/raw/0573fed92b671bfe6a302c67bb66471b18a5004d/include/uapi/linux/qrtr.h
+	msm_ipc.h.base64::https://android.googlesource.com/kernel/msm/+/e63c5a50c9379ccbee4c7f0e6ba43394e9d89db4/include/linux/msm_ipc.h?format=TEXT
+	"
+options="!check"
+
+unpack() {
+	default_unpack
+
+	cd $srcdir
+	base64 -d msm_ipc.h.base64 > msm_ipc.h
+}
+
+package() {
+	cd "$srcdir"
+	for f in qrtr.h msm_ipc.h; do
+		install -Dm644 $f "$pkgdir"/usr/src/msmipc-dev/include/linux/$f
+	done
+}
+
+sha512sums="1d424b43806930df079041c97db734572b48848b38b37852c3376a5e69e5257f24684f29381891f164d36cac7fbce2746f9580c0aab4ef4d92b8c72cadcb888c  qrtr.h
+c626c03b567b3e12ca0e7d7d89f7c308f1ca3782c163112a04076060a79a91c1192ffb695ab99b28a952021449657b0fdf1912873b7ca05a16a9848f896ea8d0  msm_ipc.h.base64"

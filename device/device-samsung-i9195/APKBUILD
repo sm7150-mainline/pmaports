@@ -1,13 +1,14 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname="device-samsung-i9195"
 pkgdesc="Samsung Galaxy S4 Mini"
-pkgver=0.2
-pkgrel=4
+pkgver=0.3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
 depends="postmarketos-base linux-samsung-i9195 mkbootimg"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-rmtfs"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 
@@ -17,6 +18,24 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem firmware"
+	# Non-firmware packages placed here, because they aren't useful without firmware
+	depends="firmware-samsung-i9195-modem qcom_rmtfs libqipcrtr4msmipc libsmdpkt_wrapper"
+	mkdir "$subpkgdir"
+}
+
+rmtfs() {
+	install_if="$pkgname qcom_rmtfs"
+
+	local _linkpath="$subpkgdir"/etc/qcom_rmtfs/partition-symlinks
+	mkdir -p $_linkpath
+	cd $_linkpath
+	ln -s /dev/disk/by-partlabel/modemst1   modem_fs1
+	ln -s /dev/disk/by-partlabel/modemst2   modem_fs2
+	ln -s /dev/disk/by-partlabel/fsg        modem_fsg
 }
 
 sha512sums="8e4ff08c7f2a7e7c55370be0547908b088bdb96e1d51d45e8d2840958bacb31fab0b9774b29332509270b2e18d8b569a159ed96fc9c6c2ed2f360fbb9b5cb26e  deviceinfo"

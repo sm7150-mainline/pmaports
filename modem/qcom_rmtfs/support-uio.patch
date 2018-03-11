@@ -1,0 +1,186 @@
+From b98442bbfaa0b61963c23c6079055c94515e38dd Mon Sep 17 00:00:00 2001
+From: Joey Hewitt <joey@joeyhewitt.com>
+Date: Mon, 9 Oct 2017 21:41:43 -0700
+Subject: [PATCH] add uio dev support
+
+diff --git a/sharedmem.c b/sharedmem.c
+index f788b8a..eead258 100644
+--- a/sharedmem.c
++++ b/sharedmem.c
+@@ -44,6 +44,37 @@ static int parse_hex_sysattr(struct udev_device *dev, const char *name,
+ 	return 0;
+ }
+ 
++static int parse_hex_sysfsfile(int dir_fd, const char *name,
++			     unsigned long *value)
++{
++	unsigned long val;
++	char buf[32];
++	char *endptr;
++	int fd;
++
++	fd = openat(dir_fd, name, O_RDONLY);
++	if (fd < 0) {
++		return -errno;
++	}
++
++	if (read(fd, buf, sizeof(buf)) < 0) {
++		close(fd);
++		return -errno;
++	}
++
++	close(fd);
++
++	errno = 0;
++	val = strtoul(buf, &endptr, 16);
++	if ((val == LONG_MAX && errno == ERANGE) || endptr == buf) {
++		return -errno;
++	}
++
++	*value = val;
++
++	return 0;
++}
++
+ static int rmtfs_mem_open_rfsa(struct rmtfs_mem *rmem, int client_id)
+ {
+ 	struct udev_device *dev;
+@@ -114,6 +145,88 @@ err_close_fd:
+ 	return -saved_errno;
+ }
+ 
++static int rmtfs_mem_open_uio(struct rmtfs_mem *rmem)
++{
++	int saved_errno;
++	char path[64];
++	char buf[32];
++	int ret;
++	int dir_fd;
++	int fd;
++
++	for (int uio_index = 0; uio_index < 8; uio_index++) {
++		snprintf(path, sizeof(path), "/sys/class/uio/uio%d", uio_index);
++		dir_fd = open(path, O_DIRECTORY);
++		if (dir_fd < 0) {
++			saved_errno = errno;
++			if (errno != ENOENT) {
++				fprintf(stderr, "failed to open %s: %s\n", path, strerror(errno));
++			}
++			goto ret;
++		}
++
++		fd = openat(dir_fd, "name", O_RDONLY);
++		if (fd < 0) {
++			saved_errno = errno;
++			fprintf(stderr, "failed to open %s/name: %s\n", path, strerror(errno));
++			goto close_dirfd;
++		}
++
++		if (read(fd, buf, sizeof(buf)) < 0) {
++			saved_errno = errno;
++			fprintf(stderr, "failed to read %s/name: %s\n", path, strerror(errno));
++			close(fd);
++			goto close_dirfd;
++		}
++
++		close(fd);
++
++		if (strncmp(buf, "rmtfs\n", 6)) {
++			continue;
++		}
++
++		ret = parse_hex_sysfsfile(dir_fd, "maps/map0/addr", &rmem->address);
++		if (ret < 0) {
++			fprintf(stderr, "failed to parse addr of %s\n", path);
++			saved_errno = -ret;
++			goto close_dirfd;
++		}
++
++		ret = parse_hex_sysfsfile(dir_fd, "maps/map0/size", &rmem->size);
++		if (ret < 0) {
++			fprintf(stderr, "failed to parse size of %s\n", path);
++			saved_errno = -ret;
++			goto close_dirfd;
++		}
++
++		snprintf(path, sizeof(path), "/dev/uio%d", uio_index);
++		rmem->fd = open(path, O_RDWR);
++		if (rmem->fd < 0) {
++			saved_errno = errno;
++			fprintf(stderr, "failed to open %s: %s\n", path, strerror(errno));
++			goto close_dirfd;
++		}
++
++		rmem->base = mmap(0, rmem->size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
++		if (rmem->base == MAP_FAILED) {
++			saved_errno = errno;
++			fprintf(stderr, "failed to mmap: %s\n", strerror(errno));
++			close(rmem->fd);
++			goto close_dirfd;
++		}
++
++		saved_errno = 0;
++		goto close_dirfd;
++	}
++
++	saved_errno = ENOENT;
++
++close_dirfd:
++	close(dir_fd);
++ret:
++	return -saved_errno;
++}
++
+ struct rmtfs_mem *rmtfs_mem_open(void)
+ {
+ 	struct rmtfs_mem *rmem;
+@@ -131,26 +244,31 @@ struct rmtfs_mem *rmtfs_mem_open(void)
+ 	if (ret < 0 && ret != -ENOENT) {
+ 		goto err;
+ 	} else if (ret < 0) {
+-		fprintf(stderr, "falling back to /dev/mem access\n");
+-
+-		ret = rmtfs_mem_enumerate(rmem);
+-		if (ret < 0)
+-			goto err;
+-
+-		fd = open("/dev/mem", O_RDWR|O_SYNC);
+-		if (fd < 0) {
+-			fprintf(stderr, "failed to open /dev/mem\n");
++		ret = rmtfs_mem_open_uio(rmem);
++		if (ret < 0 && ret != -ENOENT) {
+ 			goto err;
++		} else if (ret < 0) {
++			fprintf(stderr, "falling back to /dev/mem access\n");
++
++			ret = rmtfs_mem_enumerate(rmem);
++			if (ret < 0)
++				goto err;
++
++			fd = open("/dev/mem", O_RDWR|O_SYNC);
++			if (fd < 0) {
++				fprintf(stderr, "failed to open /dev/mem\n");
++				goto err;
++			}
++
++			base = mmap(0, rmem->size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, rmem->address);
++			if (base == MAP_FAILED) {
++				fprintf(stderr, "failed to mmap: %s\n", strerror(errno));
++				goto err_close_fd;
++			}
++
++			rmem->base = base;
++			rmem->fd = fd;
+ 		}
+-
+-		base = mmap(0, rmem->size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, rmem->address);
+-		if (base == MAP_FAILED) {
+-			fprintf(stderr, "failed to mmap: %s\n", strerror(errno));
+-			goto err_close_fd;
+-		}
+-
+-		rmem->base = base;
+-		rmem->fd = fd;
+ 	}
+ 
+ 	return rmem;

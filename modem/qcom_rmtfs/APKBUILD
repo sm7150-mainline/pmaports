@@ -1,0 +1,38 @@
+pkgname=qcom_rmtfs
+pkgver=0.0_git20180131
+pkgrel=0
+pkgdesc="Qualcomm Remote Filesystem Service Implementation"
+url="https://github.com/andersson/rmtfs"
+arch="all"
+license="BSD-3-Clause"
+depends="qrtr"
+makedepends="eudev-dev qrtr-dev msmipc-dev"
+subpackages="$pkgname-doc"
+_commit="0f800fa4334b03a47941ce1b577f51a69552e414"
+source="
+	rmtfs.tgz::https://github.com/andersson/rmtfs/archive/"$_commit".tar.gz
+	support-uio.patch
+	point-storage-to-paths-in-etc.patch
+	qcom_rmtfs.initd
+	"
+builddir="$srcdir""/rmtfs-"$_commit
+options="!check"
+install="$pkgname.post-install"
+
+build() {
+	cd "$builddir"
+	make C_INCLUDE_PATH=/usr/src/msmipc-dev/include rmtfs
+}
+
+package() {
+	cd "$builddir"
+	install -D -m 755 rmtfs "$pkgdir"/usr/sbin/"$pkgname"
+	mkdir -p "$pkgdir"/etc/qcom_rmtfs/partition-symlinks
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+}
+
+sha512sums="4b49cdf9d778bf6ae5e838c1da48e76b1004786a0dafefb0097fe3a73e4652c13ed1b011c051a712017f10b43ffc96b2fa133809715577b65fa4ca30cbdc191b  rmtfs.tgz
+a216dc36a7f12bbc125120ac7cc3e3030f3718f7d894c9e6d5e586375cbd76eae897160fdf780da8e3089dbfc0a31f1631dca4a2e850e193135ab825aa8d05cf  support-uio.patch
+3d205bb7e662cca2a3c87a57c1a129cf6c42afbe179f810069843f521decfd869bc82d1c1a367c507eaf880cf33316a2f7b3dbce9c2d9e8150b1500c3910c843  point-storage-to-paths-in-etc.patch
+21f5ba8b30d4e39046056e131b8eeb4d3bc7b11897b59b800d2d5162acc1629102fdc00b5df1df1ae7497c0cb6bbb0a40fa983c20733210ac01b76f6eaa848ee  qcom_rmtfs.initd"
