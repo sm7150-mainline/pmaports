@@ -1,23 +1,24 @@
 pkgname=postmarketos-ui-xfce4
-pkgver=0.1
+pkgver=0.2
 pkgrel=0
 pkgdesc="(X11) Lightweight GTK+2 desktop (stylus recommended)"
 url="https://github.com/postmarketOS/xfce4-phone"
 arch="noarch"
 license="GPL3"
-depends="xfce4 xorg-server mesa-egl"
+depends="xfce4 xorg-server mesa-egl postmarketos-artwork-wallpapers faenza-icon-theme xfce4-battery-plugin"
 makedepends=""
 install="$pkgname.post-install"
 subpackages=""
-source="start_xfce4.sh $install ${pkgname}-${pkgver}.tar.gz::https://github.com/postmarketOS/xfce4-phone/archive/${pkgver}.tar.gz"
+source="start_xfce4.sh ${pkgname}-${pkgver}.tar.gz::https://github.com/postmarketOS/xfce4-phone/archive/${pkgver}.tar.gz"
 options="!check"
+builddir="$srcdir/xfce4-phone-$pkgver"
 
 package() {
 	install -D -m644 "$srcdir"/start_xfce4.sh \
 		"$pkgdir"/etc/profile.d/start_xfce4.sh
 	install -d -m755 "$pkgdir"/etc/skel
-	cp -a "${srcdir}/xfce4-phone-${pkgver}"/config "$pkgdir"/etc/skel/.config
+	cp -a "$builddir"/config "$pkgdir"/etc/skel/.config
 }
+
 sha512sums="34ad0048947b2cefe4de08592c479f717ae4b65a59f06aff9fc05b387ce6516d9f976a79e1efdf1c30a14ee2bc723fcf28f2aaac937f1e0787d95bd16a80332f  start_xfce4.sh
-916f80ebd1ab86c17bb09158ca470bbc53c1fac53771a38e2422672c29cb07fd35906804a5b00eb852e6f1d08abaf31a6db13452765d1cceefc06c57479d3984  postmarketos-ui-xfce4.post-install
-17cfdec14781abe0c584e3627b66aa707057783d714d2a4540bc2065f511c04fa392093aa73624e2ff1921b1d9e5a97e3319c6992857f13984ce019aeba4b910  postmarketos-ui-xfce4-0.1.tar.gz"
+4321a2a24b45f0d33b586ef098cfb236d87f557e7e2fecb180774d1cb1bc9fa1edfe6ce8a1faa646adcb026b4ef1b03b477eae0c46f4c46c8488baabb9c382e3  postmarketos-ui-xfce4-0.2.tar.gz"
