@@ -2,15 +2,21 @@
 pkgname="device-samsung-p4wifi"
 pkgdesc="Galaxy Tab 10.1"
 pkgver=0.1
-pkgrel=2
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
-depends="postmarketos-base linux-samsung-p4wifi mkbootimg mesa-dri-swrast"
+depends="postmarketos-base linux-samsung-p4wifi mkbootimg mesa-dri-swrast alsa-utils"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo"
+source="deviceinfo
+	modules-load.conf
+	modprobe.conf
+	90-device-samsung-p4wifi-audio.rules
+	90-device-samsung-p4wifi-jack.rules
+	HiFi
+	wm8994aif1.conf"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -18,6 +24,20 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -D -m644 "$srcdir"/modules-load.conf \
+		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+	install -D -m644 "$srcdir"/modprobe.conf \
+		"$pkgdir"/etc/modprobe.d/00-${pkgname}.conf
+
+	install -D -m644 "$srcdir"/HiFi \
+		"$pkgdir"/usr/share/alsa/ucm/wm8994aif1/HiFi
+	install -D -m644 "$srcdir"/wm8994aif1.conf \
+		"$pkgdir"/usr/share/alsa/ucm/wm8994aif1/wm8994aif1.conf
+	install -D -m644 "$srcdir"/90-device-samsung-p4wifi-audio.rules \
+		"$pkgdir"/etc/udev/rules.d/90-device-samsung-p4wifi-audio.rules
+	install -D -m644 "$srcdir"/90-device-samsung-p4wifi-jack.rules \
+		"$pkgdir"/etc/udev/rules.d/90-device-samsung-p4wifi-jack.rules
 }
 
 nonfree_firmware() {
@@ -26,4 +46,10 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="1a7c18122a83ec6f1e49708170b870b7275afd73f40db5aa2dea2776105c37b945d70e962e9d502e0bb985e52759d22a3bf35d33ce38086aa09734ef3f5b42a1  deviceinfo"
+sha512sums="eada1b16fca29920a4e838165c38ba997b0c2faca83dabc9250d1fcb4ff70a4ad469c333abfe4bbb6a4cde6282e9fe4ab67323a2255d19f38be75d2abab333bd  deviceinfo
+d8ce60ea7acaabf627ddca2f0887a4cda46f313b7aaf7934bef2fef8a6e0798ccefab849e4571e4e3fcd06ae34c1a6efe3b58b401e2e443416f6200e6d4ea769  modules-load.conf
+56b865bab0714aed53bd6535ebefd2f3629ec78786e8f87dcae4637cfacb5912d28dc39d1fe0287d34bb36b4a8371481f54647e1b25190afbcd23ed30fe7edac  modprobe.conf
+559d3f49a2a99445c644f53b1148fbac6963cc27fc77ba735da7b6c742b8d4faecf938943ce598ea71d590ce2297e2ec6f98aec54b2b339c861f92d0e0430434  90-device-samsung-p4wifi-audio.rules
+0ba8fc472df6a2a420c963d637bebe0cb167f593c50b1cd0dfb654375a1d16de99590dc5e48d0f42e7d44b6fe2ffa9dbfec062a32483d1b5ed32f383cd29ed22  90-device-samsung-p4wifi-jack.rules
+a62bbae27b3e76e5ba4b3d06fdd3a35e14b69319b213724196b5ab8acf2086bdf6aef3feef20b262294860f03b8b202a094702af458fe1cfff74c5a17a1cd915  HiFi
+16640080221d6ce6b87eb02bef401a18152008f75e52c0db2eee0a67f1ac65fc9ed053cc2388012f3f661e8f5526e8133af4ae2a5176441fde382597c02a75fa  wm8994aif1.conf"

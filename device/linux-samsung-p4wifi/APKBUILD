@@ -1,7 +1,7 @@
 # Kernel config based on: arch/arm/configs/tegra_android_defconfig
 
 pkgname="linux-samsung-p4wifi"
-pkgver=4.14.0
+pkgver=4.14.18
 pkgrel=0
 pkgdesc="Galaxy Tab 10.1 kernel"
 arch="armhf"
@@ -16,7 +16,7 @@ HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="linux"
-_rev="742ba99a0bde5734d5ba9ef0361e3747773c05f3"
+_rev="e64e8ca4def3037aab04f409fe1a0749f25a7953"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_rev.tar.gz::https://github.com/decatf/${_repository}/archive/${_rev}.tar.gz
@@ -75,8 +75,17 @@ package() {
 		error "Could not find zImage in $PWD!"
 		return 1
 	fi
+
+	# Modules
+	cd "$builddir"
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		CONFIG_NO_ERROR_ON_MISMATCH=y \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
+		modules_install
 }
 
-sha512sums="6bf209fb92b5da9f1a633b12701719bcb5576d128fa104e812a4e640737b827e3294cf1ccde4c7d0a8e410b990974bfb3b9f4151f7d7c13c9a37f2e586bd7cbe  linux-samsung-p4wifi-742ba99a0bde5734d5ba9ef0361e3747773c05f3.tar.gz
-03a61b17390f2d7a7a5408e970ef59290cb44aedc5224225a363fc2a3869f0e8720e44e38743342bc339adb7dd08804705a463779da76a710bea5e69b246f47e  config-samsung-p4wifi.armhf
+sha512sums="34a259ad33c11b116be940f4ae30dfa2445b3ebc2855422cda9df515c0262da8be74fa0f4ea71321c70c229a0240ae0d76fcb025c9d448326569d87e0bfa13b0  linux-samsung-p4wifi-e64e8ca4def3037aab04f409fe1a0749f25a7953.tar.gz
+b9070eb4a1ff2e456df8f38822f27c8e15daca212f3e7a7ea3f33ebf6fc5ebbb7b5607567bf3180c8b077b8ba6b6c17410a0c9871052c7d8c2d666ad1b55280e  config-samsung-p4wifi.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"

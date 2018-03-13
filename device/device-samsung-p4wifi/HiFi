@@ -1,0 +1,98 @@
+SectionVerb {
+        EnableSequence [
+                cdev "hw:wm8994aif1"
+
+        ]
+
+        DisableSequence [
+                cdev "hw:wm8994aif1"
+
+        ]
+
+        Value {
+                PlaybackPCM "hw:wm8994aif1,0"
+                CapturePCM "hw:wm8994aif1,0"
+        }
+
+}
+
+SectionDevice."Speaker" {
+        Comment "Speaker Rx device"
+
+        ConflictingDevice [
+                "Headphones"
+        ]
+
+        EnableSequence [
+                cdev "hw:wm8994aif1"
+
+                cset "name='DAC1R Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1L Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1 Switch' 1"
+                cset "name='AIF1DAC1 EQ Switch' 1"
+                cset "name='AIF1DAC1 EQ1 Volume' 3"
+                cset "name='AIF1DAC1 EQ2 Volume' 8"
+                cset "name='AIF1DAC1 EQ3 Volume' 16"
+                cset "name='AIF1DAC1 EQ4 Volume' 10"
+                cset "name='AIF1DAC1 EQ5 Volume' 11"
+                cset "name='Speaker Switch' 1"
+                cset "name='SPKR DAC1 Switch' 1"
+                cset "name='SPKL DAC1 Switch' 1"
+                cset "name='Speaker Mixer Volume' 3"
+                cset "name='Speaker Boost Volume' 5"
+                cset "name='AIF1DAC1 DRC Switch' 1"
+                cset "name='Speaker Volume' 61"
+                cset "name='Speaker Volume' 62"
+        ]
+
+        DisableSequence [
+                cdev "hw:wm8994aif1"
+
+                cset "name='DAC1R Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1L Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1 Switch' 1"
+                cset "name='Speaker Switch' 0"
+                cset "name='SPKR DAC1 Switch' 1"
+                cset "name='SPKL DAC1 Switch' 1"
+                cset "name='Speaker Mixer Volume' 1"
+        ]
+
+        Value {
+                PlaybackChannels "2"
+        }
+
+}
+
+SectionDevice."Headphones" {
+        Comment "Headset Rx device"
+
+        ConflictingDevice [
+                "Speaker"
+        ]
+
+        EnableSequence [
+                cdev "hw:wm8994aif1"
+
+                cset "name='DAC1R Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1L Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1 Switch' 1"
+                cset "name='AIF1DAC1 EQ Switch' 0"
+                cset "name='Headphone Switch' 1"
+                cset "name='Headphone Volume' 35"
+        ]
+
+        DisableSequence [
+                cdev "hw:wm8994aif1"
+
+                cset "name='DAC1R Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1L Mixer AIF1.1 Switch' 1"
+                cset "name='DAC1 Switch' 1"
+                cset "name='Headphone Switch' 0"
+        ]
+
+        Value {
+                PlaybackChannels "2"
+        }
+
+}
+
