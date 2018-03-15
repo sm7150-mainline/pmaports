@@ -42,7 +42,7 @@ check_whether_exists()
 }
 
 BINARIES="/bin/busybox /bin/umount /sbin/cryptsetup /sbin/findfs /sbin/kpartx /sbin/mkfs.ext2 /sbin/mkfs.ext4 \
-	/usr/sbin/parted /usr/sbin/partprobe"
+	/usr/sbin/parted /usr/sbin/partprobe /bin/tar"
 # shellcheck disable=SC2086
 LIBRARIES=$(lddtree -l $BINARIES | awk '/lib/ {print}' | sort -u)
 copy_files "$BINARIES" chroot/bin/
