@@ -1,0 +1,138 @@
+# Kernel config based on: arch/arm/configs/mapphone_mmi_defconfig
+
+pkgname="linux-motorola-maserati"
+pkgver=3.0.8
+pkgrel=0
+pkgdesc="Motorola Droid 4 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="motorola-maserati"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_motorola_omap4-common"
+_commit="2a348afc315c4ab32c4a1c8cb2c7e2ad0cedaec3"
+_config="config-${_flavor}.${arch}"
+
+_wlan_repository="android_hardware_ti_wlan"
+_wlan_commit="f75d24a45f68dfeabda86d2e8416990d796f9a7e"
+
+_hardware_repository="android_hardware_ti_omap4"
+_hardware_commit="0f456ee3a0d8cc79b708a11b505a9e376d467a2b"
+
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/NotKit/${_repository}/archive/${_commit}.tar.gz
+	$_wlan_repository-$_wlan_commit.tar.gz::https://github.com/LineageOS/${_wlan_repository}/archive/${_wlan_commit}.tar.gz
+	$_hardware_repository-$_hardware_commit.tar.gz::https://github.com/LineageOS/${_hardware_repository}/archive/${_hardware_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_maserati-fix-gcc6-compile.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+_wlan_builddir="$srcdir/${_wlan_repository}-${_wlan_commit}/mac80211/compat_wl12xx"
+_pvr_builddir="$srcdir/${_hardware_repository}-${_hardware_commit}/pvr-source/eurasiacon"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror-/-W/g'
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror//g'
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+
+	# Workaround to get the Makefile working outside of a git repository
+	cd "$_wlan_builddir"
+	mkdir -p .git/refs/tags
+	touch .git/HEAD .git/index .git/refs/tags
+	sed -i "s/\$(shell git describe --dirty)/$_wlan_commit/g" drivers/net/wireless/wl12xx/Makefile
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	cd "$builddir"
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	cd "$_wlan_builddir"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		KBUILD_NOPEDANTIC=1 \
+		KERNEL_DIR="$builddir" KLIB="$builddir" KLIB_BUILD="$builddir"
+
+	cd "$_pvr_builddir/build/linux2/omap4430_android"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		TARGET_SGX=540 BUILD=release PLATFORM_VERSION=4.0 \
+		KERNELDIR="$builddir"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	cd "$builddir"
+	make modules_install \
+		ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_MOD_PATH="$pkgdir"
+
+	cd "$_wlan_builddir"
+	for _module in "compat/compat.ko" "net/mac80211/mac80211.ko" \
+		"net/wireless/cfg80211.ko" "drivers/net/wireless/wl12xx/wl12xx.ko" \
+		"drivers/net/wireless/wl12xx/wl12xx_spi.ko" \
+		"drivers/net/wireless/wl12xx/wl12xx_sdio.ko"; do
+			install -Dm644 "$_module" "$pkgdir/lib/modules/$pkgver/kernel/$_module"
+			${CROSS_COMPILE}strip --strip-unneeded \
+				"$pkgdir/lib/modules/$pkgver/kernel/$_module"
+	done
+
+	cd "$_pvr_builddir/binary2_omap4430_android_release/target/kbuild"
+	install -Dm644 "pvrsrvkm.ko" \
+		"$pkgdir/lib/modules/$pkgver/pvrsrvkm_sgx540_120.ko"
+	${CROSS_COMPILE}strip --strip-unneeded \
+		"$pkgdir/lib/modules/$pkgver/pvrsrvkm_sgx540_120.ko"
+
+	depmod -b "$pkgdir" $pkgver
+}
+
+sha512sums="0cb163100dad093b56c208c17c021a8aa3a4ae133468701d4ece2fc7342661db8e118795a00fbc2d7921743039c00976ff0e361e41a68f8280bf6b630857b680  linux-motorola-maserati-2a348afc315c4ab32c4a1c8cb2c7e2ad0cedaec3.tar.gz
+961568d8f2cf2325292176f30542431e145594dacb817e87ecfab1b7c8d95fa93e61babca9779851c2d5b9bb8d9566f84665d96f22845e4a6602d9e314d8d785  android_hardware_ti_wlan-f75d24a45f68dfeabda86d2e8416990d796f9a7e.tar.gz
+a27237cff59b13740d4107bcfcac706ba5dfc204f51e39fb5b72fb1fbb1fb0ac13fc1a9c694dfc48c0883d359ff11fd7a67ca1e3f277bd086b5c63160fe0824c  android_hardware_ti_omap4-0f456ee3a0d8cc79b708a11b505a9e376d467a2b.tar.gz
+4582ffede12e8c6546e8cd16eed088e94f8c7ba7e501a88c1b2a46b5ec6e750186e4f7259def9628465149459c4859ec8bff5b5bdbf2f751278c15cb6abd5eb5  config-motorola-maserati.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+90c3a109600b00ce691d13cc19a1868cd9aea4033f99273a8cfc83e0f7beced31421303fa0418fb8a919843bf4c1310d4597e6c7d37c7776356036269810308f  01_maserati-fix-gcc6-compile.patch"
