@@ -10,6 +10,14 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 		udevadm settle
 	
 		export QML2_IMPORT_PATH=/usr/lib/qt/qml:/usr/lib/qt5/qml
+		export QT_QPA_PLATFORMTHEME=KDE
+		export QT_QUICK_CONTROLS_STYLE=Plasma
+		export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+		# this is due to broken xdgvshell6 in qt
+		export QT_WAYLAND_SHELL_INTEGRATION=wl-shell
+		export XDG_CURRENT_DESKTOP=KDE
+		export KDE_SESSION_VERSION=5
+		export PLASMA_PLATFORM=phone
 
 		sleep 2
 
