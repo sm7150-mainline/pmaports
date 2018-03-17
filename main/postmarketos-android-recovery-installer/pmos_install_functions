@@ -35,10 +35,10 @@ extract_partition_table() {
 		"system")
 			_INSTALL_DEVICE=$(findfs PARTLABEL="$SYSTEM_PARTLABEL") || \
 				# We need to resolve symlinks, to make set_subpartitions() work.
-				_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/system/ {print $3}' /recovery.fstab)")
+				_INSTALL_DEVICE=$(readlink -fn "$(awk '$1 == "/system" {print $3; exit;}' /recovery.fstab)")
 			;;
 		"external_sd")
-			_INSTALL_DEVICE=$(readlink -fn "$(awk '/^\/external_sd/ {print $4}' /recovery.fstab)")
+			_INSTALL_DEVICE=$(readlink -fn "$(awk '$1 == "/external_sd" {print $4; exit;}' /recovery.fstab)")
 			;;
 		*)
 			echo "No support for flashing $INSTALL_PARTITION."
@@ -61,7 +61,7 @@ extract_partition_table() {
 		INITFS_PARTITION=$(findfs PARTLABEL="$INITFS_PARTLABEL")
 	else
 		_BOOT_PARTITION=$(findfs PARTLABEL="boot") || \
-			_BOOT_PARTITION=$(awk '/^\/boot/ {print $3}' /recovery.fstab)
+			_BOOT_PARTITION=$(awk '$1 == "/boot" {print $3; exit;}' /recovery.fstab)
 		if [ ! -z "$_BOOT_PARTITION" ]
 		then
 			echo "boot partition found at $_BOOT_PARTITION"
