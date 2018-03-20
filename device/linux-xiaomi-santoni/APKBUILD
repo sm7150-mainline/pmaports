@@ -1,0 +1,86 @@
+# Kernel config based on: arch/arm64/configs/S88536AA2-perf_defconfig
+
+pkgname="linux-xiaomi-santoni"
+pkgver=3.18.31
+pkgrel=0
+pkgdesc="Xiaomi Redmi 4X kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="xiaomi-santoni"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="Xiaomi_Kernel_OpenSource"
+_commit="09baf1a3dd0e13a81e484035f0be71dcb2ecc723"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/MiCode/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	02_fix_msm_dba.patch
+	03_fix_rndis_ipa_trace_header_not_found.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="f776fe0fbb5e155da8af9cbcb29bd7f712a74d3ae6f4617e5d31b119b5ff160e66196e8be107a7216d670cad7be89c108426fef5b2cd3f2baedbf8496db9f4f6  linux-xiaomi-santoni-09baf1a3dd0e13a81e484035f0be71dcb2ecc723.tar.gz
+e5e84c9eb1dcd14a81c00000d35b0af506869aaaa5845cb6213e9a2eaee0150f342b9e6c6f80723923b32165f7750ee05483c1f03ce763e358514b2970ec0d7f  config-xiaomi-santoni.aarch64
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+7e765cb696fa8c3dfbc305b05cbf1fad85fb9572613d5391e945341dae5974a745f4906c795dc841e5562b19ab77d5257f9741e514af2c2573aa4bb8b262ce51  02_fix_msm_dba.patch
+9c549714f03c7a7666e8aa7508a48cfdccab7cf3e97fb59c4df8fa97f75492365926f82c4a677c50780d68d4905504dcccbdd6de6344bd8d4b88b2331933ed46  03_fix_rndis_ipa_trace_header_not_found.patch"
