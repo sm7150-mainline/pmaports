@@ -1,0 +1,90 @@
+# Kernel config based on: arch/arm/configs/franken_defconfig
+
+pkgname="linux-samsung-kylessopen"
+pkgver=3.0.101
+pkgrel=1
+pkgdesc="Galaxy Trend kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-kylessopen"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev lzo xz"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="FrankenKernel"
+_commit="d0e853abec2d7be79f5d9b319273a0b66046b125"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/pavlepiramida/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	gcc5.patch
+	0001-fix-video-argb-setting.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+	echo "--[ Installing modules ]--"
+	cd "$builddir"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		INSTALL_MOD_PATH="$pkgdir" KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" modules_install
+}
+
+sha512sums="22c89caaae880c64fb1a9e25ff5c65813b4bfa9a27ca4310fe9da17c4a1bfff2b49b4516f48fd30a4ccb1a185fc525b0c5967b4f18bfd3c2f8cfce66c8a268bd  linux-samsung-kylessopen-d0e853abec2d7be79f5d9b319273a0b66046b125.tar.gz
+b28a411506adb2540c3de93b4d7529d25efb96ab93b31417bd78c4deea3b1e4f63bd4240d090dd27c54040e9c937a27bc8702d471be414722265d2dbd1cf4630  config-samsung-kylessopen.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+db5d16e03a93b453c98882dcd08b7a4cd96c126393365d8916d9cf045e8725831f70ea841756526af7bead36a74301024e3c569c438442906e079fea2ac0a022  gcc5.patch
+e3083c260ed9c4fc0d83f43106700b6173876dbfae072f6e6696ac6785a4dc17771fbcb3e21601e04ed29a11bf0f7a2a09ad549375e0c34cea245c7f2e2bcbbd  0001-fix-video-argb-setting.patch"
