@@ -25,6 +25,21 @@ parse_commandline()
 	modules_path="/lib/modules/${kernel}"
 }
 
+# Verify that each file required by the installed hooks exists and exit with an
+# error if they don't.
+check_hook_files()
+{
+	for file in "/etc/postmarketos-mkinitfs/files"/*.files; do
+		[ -f "$file" ] || continue
+		while IFS= read -r line; do
+			if ! [ -f "$line" ]; then
+				echo "ERROR: File ${line} specified in ${file} does not exist!"
+				exit 1
+			fi
+		done < "$file"
+	done
+}
+
 create_folders()
 {
 	for dir in /bin /sbin /usr/bin /usr/sbin /proc /sys /dev /tmp /lib \
@@ -111,9 +126,12 @@ get_binaries()
 	if [ "${deviceinfo_msm_refresher}" == "true" ]; then
 		BINARIES="${BINARIES} /usr/sbin/msm-fb-refresher"
 	fi
-	if [ -f /usr/sbin/fbdebug ]; then
-		BINARIES="${BINARIES} /usr/sbin/fbdebug"
-	fi
+	for file in "/etc/postmarketos-mkinitfs/files"/*.files; do
+		[ -f "$file" ] || continue
+		while IFS= read -r line; do
+			BINARIES="${BINARIES} ${line}"
+		done < "$file"
+	done
 	lddtree -l $BINARIES | sort -u
 }
 
@@ -382,6 +400,7 @@ generate_initramfs_extra()
 # initialize
 source_deviceinfo
 parse_commandline "$1" "$2" "$3"
+check_hook_files
 echo "==> initramfs: creating $outfile"
 tmpdir=$(mktemp -d /tmp/mkinitfs.XXXXXX)
 

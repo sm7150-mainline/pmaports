@@ -1,16 +1,21 @@
 pkgname=postmarketos-mkinitfs-hook-debug-shell
 pkgver=0.1.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Root shell in the initramfs (security hole, for debugging only)"
 url="https://github.com/postmarketOS"
-depends="postmarketos-mkinitfs fbdebug"
-source="20-debug-shell.sh"
+depends="postmarketos-mkinitfs fbdebug evtest linuxconsoletools"
+source="20-debug-shell.sh 20-debug-shell.files"
 arch="noarch"
 license="GPL2"
+options="!check"
 
 package() {
 	mkdir -p "$pkgdir"/etc/postmarketos-mkinitfs/hooks/
 	install -Dm644 "$srcdir"/20-debug-shell.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/20-debug-shell.sh
+	install -Dm644 "$srcdir"/20-debug-shell.files \
+		"$pkgdir"/etc/postmarketos-mkinitfs/files/20-debug-shell.files
 }
-sha512sums="30df4a3e2f8a82c8c83e80e645fb10516bfae51bc014c28b7d73d48bd0b2f238c186909a0727e5636cf7087aa1e4a348c83a6cf26e99552cea80922d4086627f  20-debug-shell.sh"
+
+sha512sums="30df4a3e2f8a82c8c83e80e645fb10516bfae51bc014c28b7d73d48bd0b2f238c186909a0727e5636cf7087aa1e4a348c83a6cf26e99552cea80922d4086627f  20-debug-shell.sh
+2761269b5809ed7a1692a26d3e28deea20392d6f5e00fcc209aec8835849b96f791270eb7ad00794cf492d8dda28b940f6d6557b0b764ca46314883a0692d174  20-debug-shell.files"
