@@ -84,13 +84,13 @@ then
 	cryptsetup luksOpen -d /lukskey "$ROOT_PARTITION" pm_crypt
 
 	ui_print "Formatting LUKS partition..."
-	mkfs.ext4 -L 'pmOS_root' /dev/mapper/pm_crypt
+	mkfs.ext4 -O "^metadata_csum" -L 'pmOS_root' /dev/mapper/pm_crypt
 
 	ui_print "Mounting LUKS partition..."
 	mount -t ext4 -rw /dev/mapper/pm_crypt /mnt/pmOS
 else
 	ui_print "Formatting root partition..."
-	mkfs.ext4 -L 'pmOS_root' "$ROOT_PARTITION"
+	mkfs.ext4 -O "^metadata_csum" -L 'pmOS_root' "$ROOT_PARTITION"
 
 	ui_print "Mounting root partition..."
 	mount -t ext4 -rw "$ROOT_PARTITION" /mnt/pmOS
@@ -104,7 +104,7 @@ mkdir /mnt/pmOS/boot
 mount -t ext2 -rw "$PMOS_BOOT" /mnt/pmOS/boot || {
 	ui_print "Failed to format/mount ext2 partition."
 	ui_print "Trying ext4..."
-	mkfs.ext4 -L 'pmOS_boot' "$PMOS_BOOT"
+	mkfs.ext4 -O "^metadata_csum" -L 'pmOS_boot' "$PMOS_BOOT"
 	mount -t ext4 -rw "$PMOS_BOOT" /mnt/pmOS/boot
 }
 
