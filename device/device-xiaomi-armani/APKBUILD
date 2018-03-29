@@ -2,14 +2,14 @@
 pkgname="device-xiaomi-armani"
 pkgdesc="Redmi 1S"
 pkgver=0.1
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
 depends="postmarketos-base linux-xiaomi-armani mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
-install="$pkgname.post-install $pkgname.pre-deinstall"
+install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-upgrade"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo
 	90-touchscreen.rules
@@ -18,7 +18,9 @@ source="deviceinfo
 	armani_battery_discharging.sh
 	wlanarmani
 	device-xiaomi-armani.post-install
-	device-xiaomi-armani.pre-deinstall"
+	device-xiaomi-armani.post-upgrade
+	device-xiaomi-armani.pre-deinstall
+	fb.modes"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -31,6 +33,7 @@ package() {
 	install -Dm744 "$srcdir"/armani_battery_charging.sh "$pkgdir"/usr/bin/armani_battery_charging.sh
 	install -Dm744 "$srcdir"/armani_battery_discharging.sh "$pkgdir"/usr/bin/armani_battery_discharging.sh
 	install -Dm755 "$srcdir"/wlanarmani "$pkgdir"/etc/init.d/wlanarmani
+	install -Dm755 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
 }
 
 nonfree_firmware() {
@@ -45,5 +48,7 @@ abf694ebe949025268630457ad14ae69f6a33c151236c1a193da32c27f836591e932517f011f6eb7
 cf82b3bf37c4975668d7bb6f0e573fa5b44ed596d80a7ac2cdfa78dd619b7dc58c085fe1a0703953a143a46a4d917abf94f658e268578fe1c40664fa639959d3  armani_battery_charging.sh
 c2ae3887712a209a8c8dc60ee87ff1ec8944246cc1a69d1f6f9f2725434e05b6c8388c0b3756423d5cec6a6e0ffc7272c30ccc20b77f0dac0813bb25476d4997  armani_battery_discharging.sh
 22339e8b1c854e740034fe305d8447a88f7be98f8f2ef86b7e9ea6e373a30643993d95865c820df6c3598605d3390eb93a859c7a423f04de54a3b06a69adcb55  wlanarmani
-e769b2a631cf2e6c57da9fa904920c67c04a7ec754616eb2895c9c585155fb1312f870243a260320dc2fba31f64f20fc45ecefffb0d6055c1694d158b1dacf14  device-xiaomi-armani.post-install
-c1538df8252940e3f6d9d970adb452b5d3ddb368784c4a2f37b51386753ff91fdd13564a722013a2a4302b011ae142726ef1d4f72c8174d449fd943d2be20813  device-xiaomi-armani.pre-deinstall"
+c2db5aa96abc6181d69db02d921beb6d06245aad8647b25e6993c1cbc2b6b1876cbcc4e8bcc01825ef2320aa354f889a3890536d9782b62bc66145b953baf29c  device-xiaomi-armani.post-install
+83d1a74578698d5851191eaa8c6c05feedfc9a2336e1006fb23cd338a738fdeebf40f8eda07e5ecdf27f3b141c455d710364070dd521560f4195b745a076fd8d  device-xiaomi-armani.post-upgrade
+bb32227eae035e9f7dd70061e84d30abe6e8ad671cf9a5e9531a5468f153ac97fc33892f743b513de387ec915ad8814ca883348c9817e1ecd655c715e1d306d8  device-xiaomi-armani.pre-deinstall
+cf2b75e766f6ed5b7372179dfe160ecf1fa24a1c4f054abacc98e69794db90ca2c7f686325f7ce806b102c8eb93a345da3c016b17f280eda47f5891322162362  fb.modes"
