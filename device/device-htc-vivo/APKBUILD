@@ -1,0 +1,25 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-htc-vivo"
+pkgdesc="Incredible S"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-htc-vivo mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+			"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+}
+
+sha512sums="3c53bb57a3f98bbf4686453c3120bbe45065e82591a9969370df7369dc91c79860c95bad768e1d5ff3827425f047358ecaf3c2054c22afc8bd6bf3b4f6e6692f  deviceinfo
+2d02a02649ee3dc28041045086ffe11c9077067393954295343efb80727432902494da4c3b68f992880f3c0f01a9d164c2517f51519c92445e3ed88872a71e2f  initfs-hook.sh"
