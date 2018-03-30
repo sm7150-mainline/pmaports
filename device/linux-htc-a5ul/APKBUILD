@@ -1,0 +1,91 @@
+# Kernel config based on: arch/arm/configs/cm_a5_defconfig
+
+pkgname="linux-htc-a5ul"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="hTC Desire 816 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="htc-a5ul"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev lz4 dtbtool"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_htc_msm8974"
+_commit="2115207f50d4c2e4bad1f1fc1498109f57b6ebc7"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/bigsuperprojects/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	0003-Fix-CC-error.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Generate master DTB
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# We need the dtb file
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="0d7df2eff49cb40fa5f5353b2c63bdb0f4dd9f654ac0f09ab2547f2e47b62659f011e9b5c1e4cf00307c8017e654980ad3065133964d5359a41af8704463522a  linux-htc-a5ul-2115207f50d4c2e4bad1f1fc1498109f57b6ebc7.tar.gz
+583bb0eb6675837c0f1186926b059a2175983bd239f63fd73f7cefbf7cd95400e2e853c594c8303c6562d1df084c2ebbeb80153f9aeb54db15f8ba3c286627c2  config-htc-a5ul.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+4d328283b2c4e55624703f204f804d9a40e5aa504d7c7198365536c47793d598271a63e864596c7b54ed8f60e74862ec6b4859a948c2c2ed2158f15cb148a94d  0003-Fix-CC-error.patch"
