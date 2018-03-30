@@ -4,13 +4,10 @@
 #   https://patchwork.freedesktop.org/patch/150943/
 # - APKBUILD arch changed to "all", upstreaming here:
 #   https://github.com/alpinelinux/aports/pull/1689
-# - RDP (remote desktop protocol) backend disabled for now, as "freerdp-libs" currently breaks the build
-#   until it is rebuilt upstream against the latest libressl (they had a soname bump), see also:
-#   https://github.com/postmarketOS/pmbootstrap/issues/895
 pkgname=weston
 pkgver=9999
 _pkgver=3.0.0
-pkgrel=9
+pkgrel=10
 _libname=lib$pkgname
 _libdir=$_libname-${_pkgver%%.*}
 pkgdesc="The reference Wayland server"
@@ -18,11 +15,11 @@ url="http://wayland.freedesktop.org"
 arch="all"
 license="MIT"
 depends=""
-makedepends="wayland-protocols libxkbcommon-dev xkeyboard-config libinput-dev libunwind-dev mtdev-dev libxcursor-dev glu-dev pango-dev colord-dev libwebp-dev libva-dev dbus-dev linux-pam-dev"
+makedepends="wayland-protocols libxkbcommon-dev xkeyboard-config libinput-dev libunwind-dev mtdev-dev libxcursor-dev glu-dev pango-dev colord-dev freerdp-dev libwebp-dev libva-dev dbus-dev linux-pam-dev"
 _cms="cms-colord cms-static"
 _shell="shell-desktop shell-fullscreen shell-ivi"
 _client="info terminal wcap-decode"
-_backend="backend-drm backend-fbdev backend-headless backend-x11 backend-wayland"
+_backend="backend-drm backend-fbdev backend-headless backend-rdp backend-x11 backend-wayland"
 options="!check suid"
 
 for _sub in $_cms $_shell $_client $_backend; do
@@ -53,6 +50,7 @@ build() {
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
 		--libexecdir=/usr/lib/$pkgname \
+		--enable-rdp-compositor \
 		--enable-screen-sharing \
 		--enable-vaapi-recorder \
 		--enable-clients \
