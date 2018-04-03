@@ -1,7 +1,7 @@
 # Kernel config based on: arch/arm/configs/tegra_android_defconfig
 
 pkgname="linux-samsung-p4wifi"
-pkgver=4.14.18
+pkgver=4.16.0
 pkgrel=0
 pkgdesc="Galaxy Tab 10.1 kernel"
 arch="armhf"
@@ -10,13 +10,13 @@ _flavor="samsung-p4wifi"
 url="https://kernel.org"
 license="GPL2"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz flex bison openssl-dev"
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="linux"
-_rev="e64e8ca4def3037aab04f409fe1a0749f25a7953"
+_rev="503aa31b667507c7adf02c45e74d743f03119b1c"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_rev.tar.gz::https://github.com/decatf/${_repository}/archive/${_rev}.tar.gz
@@ -26,66 +26,78 @@ source="
 builddir="$srcdir/${_repository}-${_rev}"
 
 prepare() {
-	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	local i
-	local makefiles="$(find . -type f -name Makefile)
-		$(find . -type f -name Kbuild)"
-	for i in $makefiles; do
-		sed -i 's/-Werror-/-W/g' "$i"
-		sed -i 's/-Werror//g' "$i"
+	local _patch_failed=
+	cd "$builddir"
+	# first apply patches in specified order
+	for i in $source; do
+		case $i in
+		*.patch|*.patch::*)
+			_patch=${i%::*}
+			msg "Applying $_patch..."
+			if ! patch -s -p1 -N -i "$srcdir"/$_patch; then
+				echo $_patch >>failed
+				_patch_failed=1
+			fi
+			;;
+		esac
 	done
 
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/.config
-	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	if ! [ -z "$_patch_failed" ]; then
+		error "The following patches failed:"
+		cat failed
+		return 1
+	fi
+
+	mkdir -p "$srcdir"/build
+	cp -v "$srcdir"/$_config "$srcdir"/build/.config
+	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+		olddefconfig
 }
 
+# this is so we can do: 'abuild menuconfig' to reconfigure kernel
 menuconfig() {
-	cd "$builddir"
+	cd "$srcdir"/build
 	make ARCH="$_carch" menuconfig
 	cp .config "$startdir"/$_config
 }
 
 build() {
+	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
+		CFLAGS_MODULE=-fno-pic
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	cd "$srcdir/build/arch/${_carch}/boot"
 
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
+	if [ "$CARCH" == "aarch64" ]; then
+		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image" \
+			"$pkgdir/boot/vmlinuz-$_flavor"
+	else
+		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
+			"$pkgdir/boot/vmlinuz-$_flavor"
 	fi
 
-	# Modules
-	cd "$builddir"
-	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		CONFIG_NO_ERROR_ON_MISMATCH=y \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
-		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
-		modules_install
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir"/build
+
+	local _install
+	case "$CARCH" in
+	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
+	*)		_install="modules_install" ;;
+	esac
+
+	make -j1 $_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-sha512sums="34a259ad33c11b116be940f4ae30dfa2445b3ebc2855422cda9df515c0262da8be74fa0f4ea71321c70c229a0240ae0d76fcb025c9d448326569d87e0bfa13b0  linux-samsung-p4wifi-e64e8ca4def3037aab04f409fe1a0749f25a7953.tar.gz
-b9070eb4a1ff2e456df8f38822f27c8e15daca212f3e7a7ea3f33ebf6fc5ebbb7b5607567bf3180c8b077b8ba6b6c17410a0c9871052c7d8c2d666ad1b55280e  config-samsung-p4wifi.armhf
+
+sha512sums="50f462c42a8cade2c83445f730db4ed1eb229139fd38a7c19bd69fc0e3aecf8849e5ce94f2ae7c24e8da0e72b339d521f3fb4b505c9b84472eb10e3b96921c37  linux-samsung-p4wifi-503aa31b667507c7adf02c45e74d743f03119b1c.tar.gz
+2c0cbdea23cb50d8c7ceb06b0bfd5241516ac5fa9bd7a8c8cf05619abad38dcb2849692f89951645398f782696d125f3c31e01e2cdc3095e4cc1656e05d6a4e9  config-samsung-p4wifi.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
