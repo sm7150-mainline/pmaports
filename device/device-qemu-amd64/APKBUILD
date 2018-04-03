@@ -1,14 +1,20 @@
 pkgname=device-qemu-amd64
 pkgver=1
-pkgrel=16
+pkgrel=17
 pkgdesc="Simulated device in qemu with an x86 platform"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
 # NOTE: 'pmbootstrap init' allows you to choose the mesa-dri-* package
-depends="postmarketos-base linux-postmarketos-lts"
+depends="postmarketos-base"
 makedepends=""
-subpackages="$pkgname-x11 $pkgname-weston"
+subpackages="
+	$pkgname-x11
+	$pkgname-weston
+	$pkgname-kernel-stable:kernel_stable
+	$pkgname-kernel-mainline:kernel_mainline
+"
+
 source="deviceinfo weston.ini"
 options="!check"
 
@@ -27,6 +33,18 @@ weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+kernel_stable() {
+	pkgdesc="Stable for everyday usage (recommended)"
+	depends="linux-postmarketos-stable"
+	mkdir "$subpkgdir"
+}
+
+kernel_mainline() {
+	pkgdesc="Newest kernel features"
+	depends="linux-postmarketos-mainline"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="eb12ff5fe6fe592661facd3f8c910e00752e963b2092f4d4062c4af67972249233d20d641355e03de17ab537f42617140ccb9c296c2dcfb6077785fa9eeb25fd  deviceinfo

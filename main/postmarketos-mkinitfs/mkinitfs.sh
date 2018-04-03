@@ -352,11 +352,13 @@ append_device_tree()
 	dtb="/usr/share/dtb/${deviceinfo_dtb}.dtb"
 	kernel="${outfile/initramfs-/vmlinuz-}"
 	echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
-	if ! [ -e "$dtb" ]; then
-		echo "ERROR: File not found: $dtb"
-		exit 1
+	if [ -e "$dtb" ]; then
+		cat "$kernel" "$dtb" > "${kernel}-dtb"
+	else
+		echo "NOTE: device tree does not exist, not appending it to the kernel."
+		echo "This is expected for downstream kernels."
+		cp "$kernel" "${kernel}-dtb"
 	fi
-	cat $kernel $dtb > "${kernel}-dtb"
 }
 
 # Create the initramfs-extra archive
