@@ -1,0 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-htc-m8"
+pkgdesc="HTC One M8"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="linux-htc-m8 mkbootimg mesa-dri-swrast msm-fb-refresher postmarketos-base"
+makedepends="devicepkg-dev"
+source="deviceinfo
+	initfs-hook.sh
+	90-android-touch-dev.rules"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	
+	install -D -m644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+sha512sums="5bad059537b9c271111c6c023df89d523f596f0432a2b3da1f0843106a6a871c5d9df5445c5311a608d47b418f3e56e7985ae37a85c58ce46ba7b7f27cd8b2fb  deviceinfo
+765abaad5fda0dfda5e62e1e48414d3eea822198f39d0792171a04d73f86f6273a6e562afab430cbfcdd084412568a0ad03d012e9c40c5564f5cd1b9c0f181eb  initfs-hook.sh
+f0f69ab3b5b3fed11ec5049f37c71c4e9dcf87dc1f238199a3917dd61957d46783a8798d63d400cc5d3983987e750e3fec6d7117561ad5005f28131ae4821d66  90-android-touch-dev.rules"
