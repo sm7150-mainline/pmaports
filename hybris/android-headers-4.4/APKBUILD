@@ -1,0 +1,29 @@
+pkgname=android-headers-4.4
+_pkgname=android-headers
+pkgver=4.4_git20171022
+_pkgver=4.4
+pkgrel=0
+arch="noarch"
+url="https://github.com/ubports/android-headers"
+license="Apache"
+makedepends=""
+depends=""
+_rev=f636fa26a61b36bef284a7aeba95eb767344b8b4
+source="$pkgname-$_rev.tar.gz::https://github.com/ubports/android-headers/archive/$_rev.tar.gz
+	android-headers.pc"
+pkgdesc="Android headers used for building libhybris"
+options="!check"
+
+builddir="$srcdir/$_pkgname-$_rev"
+
+package() {
+	cd "$builddir"
+
+	mkdir -p "${pkgdir}/usr/include"
+	cp -r "$builddir/19" "${pkgdir}/usr/include/android-$_pkgver"
+
+	install -Dm644 "$srcdir/android-headers.pc" "${pkgdir}/usr/lib/pkgconfig/android-headers-$_pkgver.pc"
+}
+
+sha512sums="c146753908ae0dd9aca0138a0a63e8578d65200d6d9b5154b846a0ac3309d9e33f6edddd92cd420e7b7dcaf73630546eb1bd45927cf8b4921f67dec7db7bb55c  android-headers-4.4-f636fa26a61b36bef284a7aeba95eb767344b8b4.tar.gz
+331f2670da9ce2690225694196265a55e2f41c35a1a12b71a75de3478b3b266c215be9bd451ab5ea13d4802e9f7d4e1bab8aa006d0df81fc264b2a132a022640  android-headers.pc"
