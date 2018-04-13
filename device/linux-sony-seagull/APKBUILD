@@ -1,0 +1,103 @@
+# Kernel config based on:
+# arch/arm/configs/{msm8226_defconfig,proj_SEAGULL_3G_defconfig,proj_SEAGULL_3G_defconfig}
+# (combined in that order)
+
+pkgname="linux-sony-seagull"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Sony Xperia T3 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="sony-seagull"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_sony_seagull"
+_commit="e39e9203b59a21cac634a86641b0413b0100ed48"
+_srcurl="https://github.com/pmsourcedump/${_repository}/archive/${_commit}.tar.gz"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$pkgver.tar.gz::${_srcurl}
+	$_config
+	compiler-gcc6.h
+	01_fix_return_address.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+	03_fix_various_include_directives.patch
+	04_timeconst_fix.patch
+	05_psmouse_base.patch
+"
+builddir="$srcdir/${_repository}-${_commit}/"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+        CONFIG_NO_ERROR_ON_MISMATCH=y
+
+	# Generate master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="d060cd2ac73d5fd645ee3d9aff1b5912e2e237606d78be4180de0da850143458c8dc1bc425ed6201f9d6bff941364a722ea84e3c2a5b8404bc2e79cecf7c88e8  linux-sony-seagull-3.4.0.tar.gz
+7aa575bfcd157e993bf3935e29039ad857cd1624a4ee3e53e3ed31d0f2fec05abac5bcd59d2f95c7ee4dc378c958ff88aef48c0ee38f63d9a3361037a45696ee  config-sony-seagull.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  01_fix_return_address.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
+f3a3b9a2e4f390b7b6bb5e986172db4258c6ce3babf76df7eb19aa7197ef9d16cf5e3bda5996b2d6d5be86a25ee984f1ea601a838c1b61724cbb6659da127e03  03_fix_various_include_directives.patch
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  04_timeconst_fix.patch
+f7e31cfe422696922aec52002e56c58103183966edee3bb8e1995d33f8d37b07c32280a8ecc213874e358a6ff367418556a4542fba7e3c17e4b8e82e05c3a543  05_psmouse_base.patch"
