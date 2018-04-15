@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-motorola-athene"
+pkgdesc="Motorola Moto G4"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-motorola-athene mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="78457259b7417ea48dce44502b6f3dbca494bae4d364d8bf8c6bc2a891b9d1f7cde4d8766989bd672ef177a5392621fbcebff362b5bd0f022ac4625fc2ff3be5  deviceinfo"

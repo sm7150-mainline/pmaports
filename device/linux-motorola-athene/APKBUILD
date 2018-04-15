@@ -1,0 +1,91 @@
+# Kernel config based on: arch/arm64/configs/athene_defconfig
+
+pkgname="linux-motorola-athene"
+pkgver=3.10.108
+pkgrel=0
+pkgdesc="Motorola Moto G4 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="motorola-athene"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool xz"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_motorola_msm8952"
+_commit="4f6c8d2e1507595b5ef404d076128874176f1219"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/fengjiongmax/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_fix_gcc6_errors.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Generate master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/dt.img" "arch/arm64/boot/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm64/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="74d13e6787337454dc09c643efcf95cd46a2f02deecbe687c7a451f53bc2a5978aca394cf76f828cced88a6cffb310deb430c2c8c989471b368733f1aad728c2  linux-motorola-athene-4f6c8d2e1507595b5ef404d076128874176f1219.tar.gz
+806b21e3057815e1fe97ebf5950ff9ea800d69c4bd7ef5127a89927c9f6042bd7c51524e20319cfdfd651694dac3999aec453af9143ec2f4e36a5634b5d2946a  config-motorola-athene.aarch64
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+972e98523d6ef06342e69a09e979bdd86904cf7f9a843b519b37791e531b680182564a2ab537c94629c3589f4e775b2c39de04c64e210a0f8b6f10745c3596f1  01_fix_gcc6_errors.patch"
