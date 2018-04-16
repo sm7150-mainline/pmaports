@@ -1,17 +1,16 @@
 pkgname=device-lg-hammerhead
 pkgver=1
-pkgrel=20
+pkgrel=21
 pkgdesc="Google Nexus 5"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-lg-hammerhead mkbootimg msm-fb-refresher mesa-dri-swrast"
+depends="postmarketos-base linux-postmarketos-qcom mkbootimg mesa-dri-freedreno"
 makedepends=""
 install=""
 subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
-	90-android-touch-dev.rules
 	profile.sh
 	bcmdhd.cal
 	weston.ini
@@ -22,16 +21,8 @@ options="!check"
 package() {
 	install -Dm644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -Dm644 "$srcdir"/profile.sh \
 		"$pkgdir"/etc/profile.d/00-$pkgname.sh
-	install -Dm644 "$srcdir"/bcmdhd.cal \
-		"$pkgdir"/etc/wifi/bcmdhd.cal
-
-	# Disable v4l (video4linux), because without the camera firmware
-	# blobs this makes dev hang with the kernel this device uses (#1033)
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 x11() {
@@ -51,14 +42,13 @@ weston() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Wifi firmware"
-	depends="linux-firmware"
+	pkgdesc="Wifi/GPU firmware"
+	depends="linux-firmware-qcom linux-firmware-brcm firmware-adreno"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="b8cdcf8ffa895eb2481afbc614a62c187c9aee1851117fadd30e34e3da6c39f28d33aab3f8333842989897a95959fe8bcffa36c1187fdfe729542da2aab21417  deviceinfo
-ee25f3d0377f027d108593eb7953b8db49d7f05a5c36a0c8ca7e7849d15e3c217bc1ac97d77a66e28d2db4b81c0f50b905639911276da40321d2b6cca7f797df  90-android-touch-dev.rules
+sha512sums="159c70204858ddf1463a5d3c2672e62d75d5d0425bec81c25326bab290479d672b98848070af4fc75932e71e1342096cff77d7df1e4161b51f082c7d8ce19ae5  deviceinfo
 d04013c17caf77a87ebea167dbe48f7efa9c9d3123c5743d359f3ea8ccc6b268fa021535a4bf8291eb4a352f0c92f6eb527da0db340421f53bc1cc439a453306  profile.sh
 32652ef366694f34dec31f316a38aca96700e3a5a3eac1f8d192e3c5de7b91e480b1c0fcd8e7c80a51692dc3737020ebbb2e5d3779436e82fb18822089c63055  bcmdhd.cal
-4f321242005b4da012322a8e9bce14a3734281d6ab410f60e7c9c28a6df905876ccce65c3b914233f351118718ccd81b9be41724ee2099ca36d40b4cfff46b93  weston.ini
+bdf89f09e1ab82ac0da273c9ebca21755855d497f9dc0d6f7af99fd56157f98d72d70118504db8b2c20c0b818cbc5d344c70463334a60d924671a8acbda41dff  weston.ini
 f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf"
