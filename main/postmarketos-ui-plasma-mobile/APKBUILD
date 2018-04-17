@@ -1,6 +1,6 @@
 pkgname=postmarketos-ui-plasma-mobile
 pkgver=1
-pkgrel=12
+pkgrel=13
 pkgdesc="(Wayland) Mobile variant of KDE Plasma, optimized for touchscreen (aarch64, x86_64 or hardware acceleration required!)"
 url="https://wiki.postmarketos.org/wiki/Plasma_Mobile"
 arch="noarch"
@@ -13,7 +13,7 @@ depends="plasma-phone-components dbus dbus-x11 qmltermwidget plasma-settings
 makedepends=""
 install="$pkgname.post-install"
 subpackages=""
-source="start_plasma.sh kwinrc qtlogging.ini"
+source="start_plasma.sh kwinrc kdeglobals qtlogging.ini"
 options="!check"
 
 package() {
@@ -23,9 +23,13 @@ package() {
 	install -D -m644 "$srcdir"/kwinrc \
 		"$pkgdir"/etc/xdg/kwinrc
 	
+	install -D -m644 "$srcdir"/kdeglobals \
+		"$pkgdir"/etc/xdg/kdeglobals
+
 	install -D -m644 "$srcdir"/qtlogging.ini \
 		"$pkgdir"/etc/skel/.config/QtProject/qtlogging.ini
 }
 sha512sums="13bb7646ab4e6ec0638a20765e4ca173a119a69515b5993d65ef868b6fd5db1ac448ffc522e7cc8806a12786de6b44e8aff4b8dd5ec7e58a6dfa04a9eebf9e00  start_plasma.sh
 a95d3bbd1e8051c9b394ad7a26e4beb2d1be8d3c38189819da61fd42b1c7fd3948c4737bc9246eee23eaf5fd9451cd6362fb06442f3d8f967f930d3bcc5cfbe9  kwinrc
+8eb0a095cd6e8cf693af212d57c0b99c74f39636d8f4f391561197ec662a7ca4dd5648aa74bb8ac5f088d8baf2bde976567c333f98db708e19f6ed7839d6b6fe  kdeglobals
 341f0b866c315f37868ef3e7137cce8b53a0e8e6164e5af71b3e8e2fa68321afbf0652d76124ef84bade1393f701748852ac939aef9daff7e272a0df827780eb  qtlogging.ini"
