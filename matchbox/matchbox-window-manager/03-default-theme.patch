@@ -1,0 +1,113 @@
+Description: Revert to old version of theme.xml for Default theme (current upstream version doesn't work)
+--- a/matchbox-window-manager/data/themes/Default/theme.xml
++++ b/matchbox-window-manager/data/themes/Default/theme.xml
+@@ -1,5 +1,5 @@
+ <?xml version="1.0"?>
+-<theme name="Default" author="Nokia"
++<theme name="Default" author="Matthew Allum - mallum@handhelds.org"
+        desc="" version="1.0" engine_version="1" >
+ 
+ <color id="white" def="#ffffff" />
+@@ -31,37 +31,55 @@
+ <pixmap id="closebutton" filename="closebutton.xpm" />  
+ <pixmap id="menubutton"  filename="menubutton.xpm" />  
+ 
++<frame id="main" height="20">
+ 
++  <layer x="0" y="0" w="100%"  h="100%" 
++   type="plain" color="borderdark" />
++
++  <layer x="1" y="1" w="100%-2"  h="1" 
++   type="plain" color="borderlight" />
++
++  <layer x="1" y="2" w="100%-2"  h="13" 
++   type="gradient-vert" startcol="grad1" endcol="grad2"/>
++
++  <layer x="1" y="2" w="100%-2"  h="17" 
++   type="plain" color="grad3"/>
+ 
+-<!-- Main windows title bar. You need to define its height -->
+-<frame id="main" height="60">
++  <layer x="22" y="3" w="100%-44"  h="14" 
++   type="plain" color="menuhl"/>
+ 
+-  <layer x="0" y="0" w="720" h="60"
+-     type="plain" color="borderdark"/>
++  <layer x="22" y="3" w="1"  h="1" type="plain" color="grad3"/>
++  <layer x="22" y="16" w="1"  h="1" type="plain" color="grad3"/>
++  <layer x="100%-23" y="3" w="1"  h="1" type="plain" color="grad3"/>
++  <layer x="100%-23" y="16" w="1"  h="1" type="plain" color="grad3"/>
+ 
+-  <layer x="35" y="12" w="283" h="30"
+-     type="label" color="textcol" justify="left" font="titlefont" />
++  <layer x="1" y="19" w="2"  h="1" 
++   type="plain" color="grad3" />
++
++  <layer x="100%-3" y="19" w="2"  h="1" 
++   type="plain" color="grad3" />
+ 
+-  <!-- Define the area that launches application menu -->
+-  <button x="3" y="0" w="315" h="60" action="custom" options="inputonly,pressonly" />
++  <!-- <layer x="6" y="2" w="16"  h="16" type="icon" />-->
+ 
+-  <!-- Define the status bar applet panel -->
+-  <panel x="-372" y="2" w="280" h="40" />
++  <layer x="26" y="3" w="100%-60" h="20" 
++   type="label" color="textcol" justify="left" font="titlefont" />
+ 
+-  <!-- Define minimize and close buttons -->
+-  <button x="-80" y="2" w="40" h="40" action="minimize" >
+-    <active pixmap="closebutton" blend="-150"/>
+-    <inactive pixmap="closebutton"/>
++
++  <button x="100%-20" y="0" w="16" h="20" action="close" >
++   <active pixmap="closebutton" blend="-150"/>
++   <inactive pixmap="closebutton" />
+   </button>
+ 
+-  <button x="-40" y="2" w="40" h="40" action="close" >
+-    <active pixmap="menubutton" blend="-150" />
+-    <inactive pixmap="menubutton"/>
++  <button x="4" y="0" w="16" h="20" action="menu" >
++   <active pixmap="menubutton" blend="-150"/>
++   <inactive pixmap="menubutton" />
+   </button>
+ 
+-  </frame>
++  <button x="labelx" y="0" w="labelw" h="20" 
++   action="menu" options="inputonly" /> -
++
++</frame>
+ 
+-  <!--
+ <frame id="main-east" width="4" >
+ 
+   <layer x="0" y="0" w="100%"  h="100%" 
+@@ -100,7 +118,6 @@
+    type="plain" color="borderlight" />
+ 
+ </frame>
+--->
+ 
+ <frame id="dialog" height="20" >
+ 
+@@ -244,7 +261,7 @@
+ 
+ </frame>
+ 
+-<!--
++
+ <frame id="menu" 
+         border_north="2" 
+ 	border_south="3" 
+@@ -268,7 +285,7 @@
+    type="plain" color="trans" />
+ 
+ </frame>
+--->
++
+ <shadow style="simple" dx="3" dy="3" color="shadowcol"/>
+ 
+-</theme>
++</theme>
+\ No newline at end of file

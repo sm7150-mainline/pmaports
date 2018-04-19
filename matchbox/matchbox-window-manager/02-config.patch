@@ -1,0 +1,12 @@
+Description: Fix pkg-config use
+--- a/matchbox-window-manager/configure.ac
++++ b/matchbox-window-manager/configure.ac
+@@ -423,7 +423,7 @@
+ if test x$enable_standalone != xyes && test x$enable_standalone_xft != xyes; then
+   AC_MSG_CHECKING([for libmb xsettings support])
+ 
+-  if $PKG_CONFIG --libs libmb | grep -i xsettings ; then
++  if $PKG_CONFIG --static --libs libmb | grep -i xsettings ; then
+      mb_have_xsettings="yes"
+      AC_DEFINE(USE_XSETTINGS, [1], [Use XSettings])
+      AC_MSG_RESULT([yes])

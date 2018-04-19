@@ -1,0 +1,19 @@
+pkgname=postmarketos-ui-matchbox
+pkgver=1
+pkgrel=0
+pkgdesc="(X11) Very basic user interface for handhelds"
+url="https://matchbox-project.org"
+arch="noarch"
+license="GPL-2.0-only"
+depends="matchbox-common matchbox-panel matchbox-panel-manager matchbox-desktop matchbox-keyboard matchbox-window-manager mb-applet-input-manager xterm xorg-server dbus-x11 mesa-egl"
+install="$pkgname.post-install"
+source="start_matchbox.sh"
+options="!check"
+
+package() {
+	# Autostart via autologin on TTY0 (until we have a display manager #656)
+	install -D -m644 "$srcdir"/start_matchbox.sh \
+		"$pkgdir"/etc/profile.d/start_matchbox.sh
+}
+
+sha512sums="9286e12744fc313fd3ed842dbc524226c2714cffb6fdd1327ff079527546a5c0b0738ce5a444fd534fb267fbde2759b552784cbed09ec988cd4abfa2d0001319  start_matchbox.sh"

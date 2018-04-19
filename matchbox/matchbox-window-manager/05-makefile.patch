@@ -1,0 +1,21 @@
+Description: Fix FTBFS with binutils-gold
+Add -lX11, -lXext, -lXsettings-client to LDADD settings.  Closes: #555591.
+
+Author: Moray Allan <moray@debian.org>
+Bug-Debian: http://bugs.debian.org/555591
+--- a/matchbox-window-manager/src/Makefile.am
++++ b/matchbox-window-manager/src/Makefile.am
+@@ -16,11 +16,11 @@
+ 
+ INCLUDES = -DDATADIR=\"$(DATADIR)\" -DCONFDIR=\"$(CONFDIR)\" -DPKGDATADIR=\"$(PKGDATADIR)\" -DPREFIX=\"$(PREFIXDIR)\" $(LIBMB_CFLAGS) $(COMPO_CFLAGS) $(EXPAT_CFLAGS) $(SN_CFLAGS) $(GCONF_CFLAGS) $(XFIXES_CFLAGS) $(XCURSOR_CFLAGS)
+ 
+-matchbox_remote_LDADD = $(LIBMB_LIBS)
++matchbox_remote_LDADD = $(LIBMB_LIBS) -lX11 -lXext -lXsettings-client
+ 
+ matchbox_remote_SOURCES = matchbox-remote.c 
+ 
+-matchbox_window_manager_LDADD = $(LIBMB_LIBS) $(COMPO_LIBS) $(EXPAT_LIBS) $(SN_LIBS) $(GCONF_LIBS) $(XFIXES_LIBS) $(XCURSOR_LIBS)
++matchbox_window_manager_LDADD = $(LIBMB_LIBS) $(COMPO_LIBS) $(EXPAT_LIBS) $(SN_LIBS) $(GCONF_LIBS) $(XFIXES_LIBS) $(XCURSOR_LIBS) -lX11 -lXext -lXsettings-client
+ 
+ matchbox_window_manager_SOURCES =                        \
+ 		   main.c structs.h wm.c wm.h            \

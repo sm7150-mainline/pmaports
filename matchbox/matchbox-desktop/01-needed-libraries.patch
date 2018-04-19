@@ -1,0 +1,25 @@
+Description: FTBFS with binutils-gold (#555587)
+Author: Bhavani Shankar R <bhavi@ubuntu.com>
+Last-Update: 2010-12-28
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -7,7 +7,7 @@
+ matchbox_desktop_CFLAGS = \
+ 	-Wall
+ matchbox_desktop_LDADD = \
+-	$(GTK_LIBS) $(SN_LIBS)
++	$(GTK_LIBS) $(SN_LIBS) -lX11
+ 
+ matchbox_desktop_SOURCES = \
+ 	taku-tile.h taku-tile.c \
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -183,7 +183,7 @@
+ 	-Wall
+ 
+ matchbox_desktop_LDADD = \
+-	$(GTK_LIBS) $(SN_LIBS)
++	$(GTK_LIBS) $(SN_LIBS) -lX11
+ 
+ matchbox_desktop_SOURCES = \
+ 	taku-tile.h taku-tile.c \

@@ -1,0 +1,42 @@
+# Contributor: Duncan Guthrie <dguthrie@posteo.net>
+# Maintainer: Duncan Guthrie <dguthrie@posteo.net>
+pkgname=libmatchbox
+pkgver=1.12
+pkgrel=0
+pkgdesc="Library for matchbox window manager"
+url="http://matchbox-project.org"
+arch="all"
+license="GPL-2.0-only"
+depends="pango glib jpeg libpng libx11 libxext libxft"
+makedepends="autoconf automake libtool libx11-dev libxext-dev libxft-dev pango-dev doxygen libjpeg-turbo-dev"
+install=""
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://git.yoctoproject.org/cgit/cgit.cgi/$pkgname/snapshot/$pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	autoreconf --install
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-pango \
+		--enable-doxygen-docs \
+		--enable-jpeg \
+		--enable-unit-tests 
+	make
+}
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="28392757960a41272e3ac32b8698549be6ee923a79f17a3b648abd59efcf5bda3eaa6de18337e1920a5ca602d7c8f3031c5418a4ce44d6c39376c70aeb49267a  libmatchbox-1.12.tar.gz"

@@ -1,0 +1,48 @@
+# Contributor: Duncan Guthrie <dguthrie@posteo.net>
+# Maintainer: Duncan Guthrie <dguthrie@posteo.net>
+pkgname=matchbox-window-manager
+pkgver=1.2
+_pkgrel=osso21
+pkgrel=0
+_pkgver=$pkgver-$_pkgrel
+pkgdesc="Window manager intended for non-desktop embedded platforms such as handhelds and set-top boxes"
+url="http://matchbox-project.org"
+arch="all"
+license="GPL-2.0-only"
+depends="libxsettings-client libmatchbox startup-notification libpng expat libx11 libxext jpeg"
+makedepends="expat-dev autoconf automake libtool libmatchbox-dev libx11-dev libxext-dev libxt-dev libxft-dev gconf-dev libxsettings-dev libxsettings-client-dev startup-notification-dev jpeg-dev"
+source="${pkgname}_${_pkgver}.orig.tar.gz::http://http.debian.net/debian/pool/main/m/${pkgname}/${pkgname}_${_pkgver}.orig.tar.gz
+	01-build-themes.patch
+	02-config.patch  
+	03-default-theme.patch  
+	04-install-themes.patch  
+	05-makefile.patch  
+	06-tidy-help-text.patch"
+builddir="$srcdir/$pkgname-$pkgver/"
+options="!check"
+
+build() {
+	cd "$builddir/$pkgname"
+	autoreconf --install
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/ \
+		--enable-startup-notification \
+		--enable-expat \
+	make
+}
+package() {
+	cd "$builddir/$pkgname"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="65fa98288dc98f3c68ba2a2159957ef22afa00382bfb7bb759ce2fbed38cd2b5c24eac706f47823c85c516dc960e326d38df3bc3077a12890c58376e6f4ae717  matchbox-window-manager_1.2-osso21.orig.tar.gz
+874caea7009095cbdd5c3f8c3634921e74e7866546d597fb3d6ed2180afeef52c7ff76ebb8eaed3339fdae2b999e20892e758602fd36f176905a70f3965851a6  01-build-themes.patch
+1a2b3c1800fa0a1e32521552a44cac058ec18ec0d2e3cd791312bd9c3687b90dfe678aa9274790948dee7aa13e61fefb5e1eaa589926cefa38138295938a03bf  02-config.patch
+c4f1c68602f8e5cfe4c432de4afdcfce4fb54f402ad2a0cf7ccbe50acfe57ac30582e3f8832df0726a1f2f1900a5ad1215e3317d49800766a44dcb241fc21d88  03-default-theme.patch
+a0c9ac95a38c1d793b85e51d022317f6b840f5913c3bc46d32c981612a759488bf89b68fcb4851aa7f4ff9c61d328018f5b9a047929a6e13333708e919c43ef5  04-install-themes.patch
+8ed4217371f1ddbf45b457d94ea953b36a253e557e834f405ed29d72bbcda3309719b58ea04999eccaa30629b9dced44a3f290f81ffeb40498577d10308a1bc9  05-makefile.patch
+d32452203c6534d6d673962ed83ba70c03e3a7eedd9bef66e111e08466331103539c07edb89605f134bd7c427f6a221cbd42243d5d410c57c0cab61b9344b98b  06-tidy-help-text.patch"

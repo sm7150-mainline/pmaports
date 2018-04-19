@@ -1,0 +1,25 @@
+Description: Fix FTBFS with binutils-gold (#555590)
+Author: Bhavani Shankar R <bhavi@ubuntu.com>
+Last-Update: 2010-12-28
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -6,7 +6,7 @@
+ matchbox_panel_manager_SOURCES = 				\
+ 	mbpanelmgr.c			        
+ 
+-matchbox_panel_manager_LDADD = @MBPANELMGR_LIBS@
++matchbox_panel_manager_LDADD = @MBPANELMGR_LIBS@ -lX11
+ 
+ desktopdir = $(datadir)/applications/
+ pixmapsdir = $(datadir)/pixmaps/
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -119,7 +119,7 @@
+ 	mbpanelmgr.c			        
+ 
+ 
+-matchbox_panel_manager_LDADD = @MBPANELMGR_LIBS@
++matchbox_panel_manager_LDADD = @MBPANELMGR_LIBS@ -lX11
+ 
+ desktopdir = $(datadir)/applications/
+ pixmapsdir = $(datadir)/pixmaps/

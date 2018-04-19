@@ -1,0 +1,37 @@
+# Contributor: Duncan Guthrie <dguthrie@posteo.net>
+# Maintainer: Duncan Guthrie <dguthrie@posteo.net>
+pkgname=matchbox-panel
+pkgver=0_git20100816
+pkgrel=0
+_commit=886605280c1032f76e382f68f9a1d2e57012f4db
+pkgdesc="Simple GTK+2-based panel for handheld devices"
+url="http://matchbox-project.org"
+arch="all"
+license="GPL-2.0-only"
+depends="libmatchbox startup-notification libx11 libxext matchbox-common libjpeg-turbo"
+makedepends="libmatchbox-dev startup-notification-dev libx11-dev autoconf automake libtool libjpeg-turbo-dev"
+source="$pkgname-$_commit.tar.gz::https://git.yoctoproject.org/cgit/cgit.cgi/$pkgname/snapshot/$pkgname-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check"
+
+build() {
+	cd "$builddir"
+	autoreconf --install
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-startup-notification \
+		--enable-expat
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="6a5d9bdd612d7149e9852f9b3672fb39248fc116a0a74e0680ced67e6ca784a1596ebf3ec62a8657d44a7056e0d9781f303461e6c8cea442935da50918fff04e  matchbox-panel-886605280c1032f76e382f68f9a1d2e57012f4db.tar.gz"

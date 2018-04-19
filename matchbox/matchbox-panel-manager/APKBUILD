@@ -1,0 +1,34 @@
+# Contributor: Duncan Guthrie <dguthrie@posteo.net>
+# Maintainer: Duncan Guthrie <dguthrie@posteo.net>
+pkgname=matchbox-panel-manager
+pkgver=0.1
+pkgrel=0
+pkgdesc="Panel manager for matchbox-panel"
+url="http://matchbox-project.org"
+arch="all"
+license="GPL-2.0-only"
+depends="startup-notification gdk-pixbuf glib gtk+2.0 libx11 expat"
+makedepends="autoconf libtool automake gtk+2.0-dev libmatchbox-dev startup-notification-dev expat-dev"
+source="${pkgname}_${pkgver}.orig.tar.gz::http://http.debian.net/debian/pool/main/m/${pkgname}/${pkgname}_${pkgver}.orig.tar.gz
+	01-linking-fix.patch"
+builddir="$srcdir/$pkgname-$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var
+	make
+}
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="1c860d3452e6f9feb2f602f208ed1d1245a638c3e5f2baf1ee2c0614cbf9b52519902de7fda1aabe1b3b03e8960d9b6fb2f61ac97df51a97fe3208aceea34ec2  matchbox-panel-manager_0.1.orig.tar.gz
+5105da67046fd9a62ca9cab70ecc7bfe1319463719d365b3325594b8c71b84234aade023634fdf2c9ca7fdb8802c9cd8d72b3f43819c93b27181c681a024f091  01-linking-fix.patch"
