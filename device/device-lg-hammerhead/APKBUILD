@@ -1,6 +1,6 @@
 pkgname=device-lg-hammerhead
 pkgver=1
-pkgrel=21
+pkgrel=22
 pkgdesc="Google Nexus 5"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -12,9 +12,10 @@ subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firm
 source="
 	deviceinfo
 	profile.sh
-	bcmdhd.cal
 	weston.ini
 	xorg.conf
+	modules-load.conf
+	brcmfmac4339-sdio.txt
 "
 options="!check"
 
@@ -23,6 +24,10 @@ package() {
 		"$pkgdir"/etc/deviceinfo
 	install -Dm644 "$srcdir"/profile.sh \
 		"$pkgdir"/etc/profile.d/00-$pkgname.sh
+	install -D -m644 "$srcdir"/modules-load.conf \
+		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+	install -D -m644 "$srcdir"/brcmfmac4339-sdio.txt \
+		"$pkgdir"/lib/firmware/brcm/brcmfmac4339-sdio.txt
 }
 
 x11() {
@@ -49,6 +54,7 @@ nonfree_firmware() {
 
 sha512sums="159c70204858ddf1463a5d3c2672e62d75d5d0425bec81c25326bab290479d672b98848070af4fc75932e71e1342096cff77d7df1e4161b51f082c7d8ce19ae5  deviceinfo
 d04013c17caf77a87ebea167dbe48f7efa9c9d3123c5743d359f3ea8ccc6b268fa021535a4bf8291eb4a352f0c92f6eb527da0db340421f53bc1cc439a453306  profile.sh
-32652ef366694f34dec31f316a38aca96700e3a5a3eac1f8d192e3c5de7b91e480b1c0fcd8e7c80a51692dc3737020ebbb2e5d3779436e82fb18822089c63055  bcmdhd.cal
 bdf89f09e1ab82ac0da273c9ebca21755855d497f9dc0d6f7af99fd56157f98d72d70118504db8b2c20c0b818cbc5d344c70463334a60d924671a8acbda41dff  weston.ini
-f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf"
+f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
+d8ce60ea7acaabf627ddca2f0887a4cda46f313b7aaf7934bef2fef8a6e0798ccefab849e4571e4e3fcd06ae34c1a6efe3b58b401e2e443416f6200e6d4ea769  modules-load.conf
+59baf815a45c632f3413dc8d9f48978f91d8f8ee165003689dcd54cc3b3d1af65bfc0c88f76579f840b83b303a28a1de2c2994a651d62cc6f6d8988c8716e345  brcmfmac4339-sdio.txt"
