@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-i8190"
+pkgdesc="Samsung Galaxy SIII mini"
+pkgver=0.3
+pkgrel=2
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-samsung-i8190 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="
+    deviceinfo
+    init-usb-hook.sh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/init-usb-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-init_usb.sh
+}
+
+sha512sums="02774739faf54ca26690bc35fc83bccfbaebf092de35b15226f738bc5dedf2a3846e990738354b7d9da06ee915febad8f1d963dadd1f6ac9b7fdd118a415caf9  deviceinfo
+769f76b2b0dc5279c514181f6cc915c045562df0c1fe08c54b6588d11ff2c75441a3a4f78d6dde669c82e1c572a66bdde475da3e289d334e3255fcf15430c044  init-usb-hook.sh"

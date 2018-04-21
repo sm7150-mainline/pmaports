@@ -1,0 +1,90 @@
+# Kernel config based on: arch/arm/configs/golden_android_defconfig
+
+pkgname="linux-samsung-i8190"
+pkgver=3.0.31
+pkgrel=0
+pkgdesc="Samsung Galaxy SIII mini kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-i8190"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_golden"
+_commit="2662dc4f65ef3ad5eeb4222d3aad5dd418a04510"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/NovaFusion/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_fix_makefile.patch
+	01_fix_return_address.patch
+	02_timeconst_fix.patch
+	03_fix_rndis.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="318586c486d831719d678e7645c073146b6d2cfc60ac0b8b54ddc6e545723d207d46a7acd78d944e7a855e3a5181fa8ccf863d9dd0c10129a6814e9e7e70a2fa  linux-samsung-i8190-2662dc4f65ef3ad5eeb4222d3aad5dd418a04510.tar.gz
+e72c48c0e5230f75418a3e77b5e99e590a6e9e0830d89ccf7b994a2eb5fa8a015a7f1100056bba127d4c0ecd336899b629cbb65341d79387f4a1fa8a034610de  config-samsung-i8190.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+1b3ffbfd511af7a81590e0004bcf45b89592d6bf38cc3dd48af1e227f879426894eede34376ac708e56e84217af6ff22ee16526b3e64905ef30f0d101bbcbc29  00_fix_makefile.patch
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  01_fix_return_address.patch
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  02_timeconst_fix.patch
+6585c67450f1ef6d0c165ce4cb5c64f64d779147d1390558bf72cd40da5a33d53de6fd3c67e5ab864c14b3f67602bbe3060eea07c85b19bb82a0735024b369eb  03_fix_rndis.patch"
