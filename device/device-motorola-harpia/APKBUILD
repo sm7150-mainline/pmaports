@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-motorola-harpia"
+pkgdesc="Motorola Moto G4 Play"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-motorola-harpia mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="
+    deviceinfo
+    initfs-hook.sh
+"
+
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+        install -D -m644 "$srcdir"/initfs-hook.sh \
+            "$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+}
+
+sha512sums="6c1485882a4712e5d03fafc9a0ce4840f019a604c7c4ed4e6da765487f352a4f8163ca8f880e7f7f40bfe4b229af5c8d9c4b9b605c8b4255a18631cbdfd71671  deviceinfo
+17dabb0190a9191173454ac12c5c8ad8744b922d20807bd9465bc26d485c0f2d34e968d40b8e886a32640f0c36635cde083c4dc7e4122b55c3cff1f9d1b34af6  initfs-hook.sh"
