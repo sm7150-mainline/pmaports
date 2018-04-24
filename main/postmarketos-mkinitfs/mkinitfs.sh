@@ -123,9 +123,6 @@ BINARIES_EXTRA="
 "
 get_binaries()
 {
-	if [ "${deviceinfo_msm_refresher}" == "true" ]; then
-		BINARIES="${BINARIES} /usr/sbin/msm-fb-refresher"
-	fi
 	for file in "/etc/postmarketos-mkinitfs/files"/*.files; do
 		[ -f "$file" ] || continue
 		while IFS= read -r line; do
@@ -405,12 +402,6 @@ parse_commandline "$1" "$2" "$3"
 check_hook_files
 echo "==> initramfs: creating $outfile"
 tmpdir=$(mktemp -d /tmp/mkinitfs.XXXXXX)
-
-if [ "${deviceinfo_msm_refresher}" == "true" ] && ! [ -e /usr/sbin/msm-fb-refresher ]; then
-	echo "ERROR: Please add msm-fb-refresher as dependency to your device package,"
-	echo "or set msm_refresher to false in your deviceinfo!"
-	exit 1
-fi
 
 # set up initfs in temp folder
 create_folders

@@ -313,13 +313,6 @@ show_splash() {
 	fbsplash -s /tmp/splash.ppm
 }
 
-start_msm_refresher() {
-	# shellcheck disable=SC2154,SC2086
-	if [ "${deviceinfo_msm_refresher}" = "true" ]; then
-		/usr/sbin/msm-fb-refresher --loop &
-	fi
-}
-
 set_framebuffer_mode() {
 	[ -e "/sys/class/graphics/fb0/modes" ] || return
 	[ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
