@@ -1,0 +1,33 @@
+pkgname=firmware-xiaomi-mido
+pkgver=1
+pkgrel=1
+pkgdesc="Firmware files for Xiaomi Redmi Note 4"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="proprietary"
+depends="wcnss-wlan"
+options="!strip !check !archcheck"
+
+# Source
+_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06
+	    wcnss.b09 wcnss.b10 wcnss.b11 wcnss.b12 wcnss.mdt"
+_files_prima="WCNSS_wlan_dictionary.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
+_commit="9a07efe4fcf2d13bcdb4490ea0cb08ad78c56e0b"
+source="$pkgname-$_commit.tar.gz::https://github.com/Nikolay0054/vendor_xiaomi_mido/archive/${_commit}.tar.gz"
+package() {
+	cd "$srcdir/vendor_xiaomi_mido-${_commit}"
+
+	# /lib/firmware/postmarketos
+	for _i in $_files; do
+		install -D -m644 "$_i" \
+			"$pkgdir/lib/firmware/postmarketos/$_i"
+	done
+
+	# /lib/firmware/postmarketos/wlan/prima
+	for _i in $_files_prima; do
+		install -D -m644 "wlan/prima/$_i" \
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
+	done
+}
+
+sha512sums="a9a3a5d717e6cef0407ab964f7a85a530d6839e51ae95ae11e9f6cc9a191852622415dad1f241377d607b4b23f05db0e6d017da1c2c2bcee0d28f6d450a9ffe6  firmware-xiaomi-mido-9a07efe4fcf2d13bcdb4490ea0cb08ad78c56e0b.tar.gz"
