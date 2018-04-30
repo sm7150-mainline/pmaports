@@ -10,7 +10,7 @@ arch="armhf"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm devices"
 url="https://kernel.org/"
 depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev libressl-dev file bison flex"
+makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev libressl-dev file bison flex"
 options="!strip !check !tracedeps"
 install=
 _commit="e9fc9b4e4a83c8a9fba2230ac91d5c75b9fcd4d8"
@@ -81,6 +81,8 @@ build() {
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
 		CFLAGS_MODULE=-fno-pic
+
+	dtbTool -s 2048 -p scripts/dtc/ -o arch/arm/boot/dt.img arch/arm/boot/dts --version=2
 }
 
 package() {
@@ -96,6 +98,9 @@ package() {
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	install -Dm644 "$srcdir/build/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
 
 	cd "$srcdir"/build
 
