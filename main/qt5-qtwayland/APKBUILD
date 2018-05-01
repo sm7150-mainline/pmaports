@@ -1,8 +1,8 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qt5-qtwayland
-pkgver=5.9.3
-pkgrel=1
+pkgver=5.10.1
+pkgrel=0
 arch="all"
 url='http://qt-project.org/'
 license="GPL-3.0 GPL-2.0 LGPL-3.0"
@@ -10,10 +10,10 @@ pkgdesc='Provides APIs for Wayland'
 depends="qt5-qtdeclarative libxcomposite wayland qt5-qtquickcontrols2"
 depends_dev="qt5-qtbase-dev"
 makedepends="$depends_dev libxkbcommon-dev qt5-qtquickcontrols2-dev"
-source="http://download.qt.io/official_releases/qt/${pkgver%.*}/${pkgver}/submodules/${pkgname/qt5-/}-opensource-src-$pkgver.tar.xz
+source="http://download.qt.io/official_releases/qt/${pkgver%.*}/${pkgver}/submodules/${pkgname/qt5-/}-everywhere-src-$pkgver.tar.xz
 	0003-QtKeyExtensionGlobal-fix-export.patch"
 subpackages="$pkgname-dev $pkgname-doc"
-builddir="$srcdir/${pkgname/qt5-/}-opensource-src-$pkgver"
+builddir="$srcdir/${pkgname/qt5-/}-everywhere-src-$pkgver"
 options="!check"
 
 build() {
@@ -32,5 +32,5 @@ package() {
 	install -d "$pkgdir"/usr/share/licenses
 	ln -s /usr/share/licenses/qt5-base "$pkgdir"/usr/share/licenses/$pkgname
 }
-sha512sums="1deb41d3a2e081fa434167211b975019840c56cbf04c8fc18325d405818c2ecee6d65c9376f498ddacc1587455d310b815d56124d6a7734b2857399abfb3b659  qtwayland-opensource-src-5.9.3.tar.xz
+sha512sums="ca68abdc538c79a69776a55aa94c54db455536ab523e4b566f67fbdca7ee5a78f6eb95b52800425f79656dfe74ed06d5216be9d37babc833aacedeade7f4b2f3  qtwayland-everywhere-src-5.10.1.tar.xz
 2e081b0bd66d4f3865a96a53df45fcd04f61a2a951be89ed46405b35a334b4900be1cd834b583c6dca4bfb75ed816aaab8a2d536962922505c30e48fdc3b394d  0003-QtKeyExtensionGlobal-fix-export.patch"
