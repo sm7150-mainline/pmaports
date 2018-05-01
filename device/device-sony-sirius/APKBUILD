@@ -1,0 +1,58 @@
+pkgname=device-sony-sirius
+pkgver=1
+pkgrel=0
+pkgdesc="Sony Xperia Z2 device package"
+url="https://github.com/postmarketOS"
+arch="noarch"
+license="MIT"
+depends="postmarketos-base linux-postmarketos-qcom mkbootimg mesa-dri-freedreno"
+makedepends=""
+install=""
+subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
+source="
+	deviceinfo
+	weston.ini
+	99-touch.rules
+	modules-load.conf
+	brcmfmac4339-sdio.txt
+"
+options="!check"
+
+package() {
+	install -D -m644 "$srcdir"/modules-load.conf \
+		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+	install -Dm644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+	install -Dm644 "$srcdir"/99-touch.rules \
+		"$pkgdir"/etc/udev/rules.d/99-touch.rules
+	install -D -m644 "$srcdir"/brcmfmac4339-sdio.txt \
+		"$pkgdir"/lib/firmware/brcm/brcmfmac4339-sdio.txt
+
+}
+
+x11() {
+	install_if="$pkgname xorg-server"
+	depends="
+		libinput
+		xf86-input-libinput
+		xf86-video-modesetting"
+	mkdir "$subpkgdir"
+}
+
+weston() {
+	install_if="$pkgname weston"
+	install -Dm644 "$srcdir"/weston.ini \
+		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi/GPU firmware"
+	depends="linux-firmware-qcom linux-firmware-brcm firmware-adreno"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="4726e395dd2002f0d83ddde351c68c99d10ba0f3d8bea87a438c22f02c812b948f0c55486a5ddb6ae3545f740086f25807834240688b8a818b319ec44d86b010  deviceinfo
+df0fe900693e5f176076c59f5379e56aaa96c3df16a4120448f15b71f530170730b43e5fe32733c40c118a00ca3581043231a062a8a1eb0a930bfbfbb6c52a47  weston.ini
+ec5e26e60a77e74befabf5cc3f85a2636ce07261e725c0a051999d321ddec056f307001ba659c91e403770ac99d38b3160fd46e235c467fefc03d0901452314d  99-touch.rules
+35a5dbd90eef6c567822f1a805c6adf620bb9c6c9c2e1755407409c2fab044baa40dda9e526c45108b4a2bbf43e0ad67e3dd90c35f6a6c6e29ec5930f2d1c4a7  modules-load.conf
+b99a1bc0d430a261b6ab0b5ea12f2e996ab24ece6fe40ff57357697f4db976394c655a7c7a63e7c985f6356126a6b1d920eb0077817cb65ae18250f404282a68  brcmfmac4339-sdio.txt"
