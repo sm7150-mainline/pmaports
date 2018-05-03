@@ -1,6 +1,6 @@
 pkgname=device-lg-hammerhead
 pkgver=1
-pkgrel=23
+pkgrel=24
 pkgdesc="Google Nexus 5"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -11,7 +11,6 @@ install=""
 subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
-	profile.sh
 	weston.ini
 	xorg.conf
 	modules-load.conf
@@ -22,8 +21,6 @@ options="!check"
 package() {
 	install -Dm644 "$srcdir"/deviceinfo \
 		"$pkgdir"/etc/deviceinfo
-	install -Dm644 "$srcdir"/profile.sh \
-		"$pkgdir"/etc/profile.d/00-$pkgname.sh
 	install -D -m644 "$srcdir"/modules-load.conf \
 		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
 	install -D -m644 "$srcdir"/brcmfmac4339-sdio.txt \
@@ -52,9 +49,8 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="d91d248da5e8567a36f48e0ca0cd8d63e2bdb52bdb407b6c57717db68b64e9e1526a408912f7818aea81ce455606ab24949f6ba8aa79c7612672a996c5e81c82  deviceinfo
-d04013c17caf77a87ebea167dbe48f7efa9c9d3123c5743d359f3ea8ccc6b268fa021535a4bf8291eb4a352f0c92f6eb527da0db340421f53bc1cc439a453306  profile.sh
-bdf89f09e1ab82ac0da273c9ebca21755855d497f9dc0d6f7af99fd56157f98d72d70118504db8b2c20c0b818cbc5d344c70463334a60d924671a8acbda41dff  weston.ini
+sha512sums="c101c0de0f0799bd0d78303f3dc13da74b54369df89ddd85f75e11ef3122f8a4ba8c3543c640a27eb079e9c3afceafec7958c7427abe914b3409ca1430a00f61  deviceinfo
+eb9955c3dcb1b68b4db1f9de25843c8b0bdeb73ec6580c563cb1ee38008af267091513a21493173bd5dc6c4791d1ec7883cc9f255c4c1658879963e6437bebbc  weston.ini
 f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
 d8ce60ea7acaabf627ddca2f0887a4cda46f313b7aaf7934bef2fef8a6e0798ccefab849e4571e4e3fcd06ae34c1a6efe3b58b401e2e443416f6200e6d4ea769  modules-load.conf
 59baf815a45c632f3413dc8d9f48978f91d8f8ee165003689dcd54cc3b3d1af65bfc0c88f76579f840b83b303a28a1de2c2994a651d62cc6f6d8988c8716e345  brcmfmac4339-sdio.txt"
