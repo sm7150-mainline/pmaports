@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-kminilte"
+pkgdesc="Samsung Galaxy S5 Mini"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-samsung-kminilte mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="a8ba2bf24f35da0c831f90aad91ce1ae925e67ea18638af012741fefcfc0449454a51f92e18bb97b4e1c90ef14a20776f4addbb3401b0fcf9c747cb0582ec22f  deviceinfo"
