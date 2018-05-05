@@ -78,10 +78,12 @@ source="
 	kscreenlockerrc
 	kwinrc
 	maliit-plasmamobile.json
+	org.kde.phone.homescreen.js
 	qtlogging.ini
 	unlock-plasma
 	"
 subpackages="$pkgname-extras"
+replaces="plasma-mobile"
 options="!check pmb:gpu-accel"
 
 package() {
@@ -111,6 +113,9 @@ package() {
 
 	install -Dm644 "$srcdir"/maliit-plasmamobile.json \
 		"$pkgdir"/usr/share/maliit/keyboard2/devices/plasmamobile.json
+
+	install -Dm644 "$srcdir"/org.kde.phone.homescreen.js \
+		"$pkgdir"/usr/share/plasma/look-and-feel/org.kde.plasma.phone/contents/plasmoidsetupscripts/org.kde.phone.homescreen.js
 
 	# TODO: remove once keyboard input bug is fixed
 	# https://bugs.kde.org/show_bug.cgi?id=435183
@@ -145,6 +150,7 @@ extras() {
 	mkdir -p "$subpkgdir"
 }
 
+
 sha512sums="
 591529f147f161f5e97c979a9ad4b9f3a65e6d3b87a7bdbd020ec928155cfe5fd561cae6582c4b2831b452fe9b0a03168731771b77020fb66e09f81552ba421e  000-gschema.override
 57793bb079c76ba3bdcfca7880aa887de11fe80e7a05557b78435e57feabab70fbaeedc42da3aec6f914c35bba8e8ee9918367516eb45ee247f63f694624f179  gtk-app-wayland.sh
@@ -154,6 +160,7 @@ f3fdaaaf13e985166b86158d5a60098aa45195ea078a4cab7fbf12d3aa428000af3e46ec011dbdc3
 20cdb856fb46b024d8368d469e9e0a9c45724fb6f27514edca9b733ea84b63644b6d0328780879285b4e649f7a02ea8761f6b607e127fb7b055b753bfd3ee3d2  kscreenlockerrc
 4e78dc2dc67ec7b45a7b0bb897b042a661e854d6a3546076740e6f0d46cfd4e4d71b504bb95c8838f332e5e52af7921eb17c6abde5b92196ac7e7e5b664d6fc2  kwinrc
 70ee87860842057b557a433a9ae7d54653f076a612b3d9de2d413d598806d23ec19390262eaa398cddf39437f1213d14922402a8d978878e5e98f3767ce0b9eb  maliit-plasmamobile.json
+50dbb5e0b1550776ca6fc5b91468412b23d49aa502af77cf7d5d15af11eaf61b1632b205f42eac3274bf28a0b7b278a4d6bfc98c6c12ea29830fd258bad5107d  org.kde.phone.homescreen.js
 341f0b866c315f37868ef3e7137cce8b53a0e8e6164e5af71b3e8e2fa68321afbf0652d76124ef84bade1393f701748852ac939aef9daff7e272a0df827780eb  qtlogging.ini
 e5dcc82c0e58288fd7a8f805e60fa777fab71c68355f085a0e4f25b05526491476fdb6decbc7c0495626d6736a53bfc8e8f34a3231210858998e19cd6fbc89a0  unlock-plasma
 "
