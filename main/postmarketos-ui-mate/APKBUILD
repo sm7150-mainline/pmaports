@@ -1,21 +1,24 @@
 pkgname=postmarketos-ui-mate
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
 url="http://mate-desktop.org/"
 arch="noarch"
 license="GPL3+"
-depends="mate-desktop-environment xorg-server dbus-x11 mesa-egl"
+depends="mate-desktop-environment xorg-server dbus-x11 mesa-egl postmarketos-artwork-wallpapers"
 makedepends=""
 install="$pkgname.post-install"
 subpackages=""
-source="start_mate.sh"
+source="start_mate.sh 000-system-background.gschema.override"
 options="!check"
 
 package() {
 	# Autostart via autologin on TTY0 (until we have a display manager #656)
 	install -D -m644 "$srcdir"/start_mate.sh \
 		"$pkgdir"/etc/profile.d/start_mate.sh
+	install -Dm644 "$srcdir"/000-system-background.gschema.override \
+		"$pkgdir"/usr/share/glib-2.0/schemas/000-system-background.gschema.override
 }
 
-sha512sums="a5a48821538b18069bad6528d488ed2dd5ae7d4f4fa095215c30d5399a41e645300f0c70bef1178be085e5fe8510fb4dda5446585663fd57193e938558b803de  start_mate.sh"
+sha512sums="a5a48821538b18069bad6528d488ed2dd5ae7d4f4fa095215c30d5399a41e645300f0c70bef1178be085e5fe8510fb4dda5446585663fd57193e938558b803de  start_mate.sh
+b4eded3d1aba2086d53507d434da6f2d5aae24fa49c7a8619abb1d81f87898d7a6d813be777a285ce988d78db236bea7507e7868c39fe020e5d23c230dd36242  000-system-background.gschema.override"
