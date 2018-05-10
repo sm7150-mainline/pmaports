@@ -1,13 +1,9 @@
-# Based on the upstream weston aport
-# Changes:
-# - framebuffer no 0 hz patch for lg-mako, upstreamed here (this will be in the next weston release \o/):
-#   https://patchwork.freedesktop.org/patch/150943/
-# - APKBUILD arch changed to "all", upstreaming here:
-#   https://github.com/alpinelinux/aports/pull/1689
+# Forked from Alpine to add patches that make it work with weird framebuffer drivers
+# from downstream kernels
 pkgname=weston
 pkgver=9999
 _pkgver=3.0.0
-pkgrel=12
+pkgrel=13
 _libname=lib$pkgname
 _libdir=$_libname-${_pkgver%%.*}
 pkgdesc="The reference Wayland server"
@@ -15,11 +11,14 @@ url="http://wayland.freedesktop.org"
 arch="all"
 license="MIT"
 depends=""
-makedepends="wayland-protocols libxkbcommon-dev xkeyboard-config libinput-dev libunwind-dev mtdev-dev libxcursor-dev glu-dev pango-dev colord-dev freerdp-dev libwebp-dev libva-dev dbus-dev linux-pam-dev"
+makedepends="wayland-protocols libxkbcommon-dev xkeyboard-config
+	libinput-dev libunwind-dev mtdev-dev libxcursor-dev glu-dev
+	pango-dev colord-dev libwebp-dev libva-dev dbus-dev
+	linux-pam-dev wayland-libs-egl wayland-dev"
 _cms="cms-colord cms-static"
 _shell="shell-desktop shell-fullscreen shell-ivi"
 _client="info terminal wcap-decode"
-_backend="backend-drm backend-fbdev backend-headless backend-rdp backend-x11 backend-wayland"
+_backend="backend-drm backend-fbdev backend-headless backend-x11 backend-wayland"
 options="!check suid"
 
 for _sub in $_cms $_shell $_client $_backend; do
@@ -50,7 +49,6 @@ build() {
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
 		--libexecdir=/usr/lib/$pkgname \
-		--enable-rdp-compositor \
 		--enable-screen-sharing \
 		--enable-vaapi-recorder \
 		--enable-clients \
