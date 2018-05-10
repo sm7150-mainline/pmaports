@@ -1,10 +1,9 @@
 From c8af1ceccfa1c69845a0afb0068917cb16a4ef5b Mon Sep 17 00:00:00 2001
 From: Joey Hewitt <joey@joeyhewitt.com>
-Date: Sat, 10 Mar 2018 17:38:00 -0700
-Subject: [PATCH] point storage to paths in /etc
+Date: Sat, 2 Apr 2018 17:38:00 -0700
+Subject: [PATCH] point storage to udev-linked paths
 
-Device packages will put symlinks there pointing to their storage
-partitions.
+udev rules in this package create symlinks the daemon opens
 ---
  storage.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
@@ -21,10 +20,10 @@ index 997b428..8754b98 100644
 -	{ "/boot/modem_fs2", "/boot/modem_fs2" },
 -	{ "/boot/modem_fsc", "/boot/modem_fsc" },
 -	{ "/boot/modem_fsg", "/boot/modem_fsg" },
-+	{ "/boot/modem_fs1", "/etc/qcom_rmtfs/partition-symlinks/modem_fs1" },
-+	{ "/boot/modem_fs2", "/etc/qcom_rmtfs/partition-symlinks/modem_fs2" },
-+	{ "/boot/modem_fsc", "/etc/qcom_rmtfs/partition-symlinks/modem_fsc" },
-+	{ "/boot/modem_fsg", "/etc/qcom_rmtfs/partition-symlinks/modem_fsg" },
++	{ "/boot/modem_fs1", "/dev/disk/qcom_rmtfs/modem_fs1" },
++	{ "/boot/modem_fs2", "/dev/disk/qcom_rmtfs/modem_fs2" },
++	{ "/boot/modem_fsc", "/dev/disk/qcom_rmtfs/modem_fsc" },
++	{ "/boot/modem_fsg", "/dev/disk/qcom_rmtfs/modem_fsg" },
  	{}
  };
  

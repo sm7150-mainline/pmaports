@@ -1,0 +1,18 @@
+pkgname=modem-qcom-msm-downstream-common
+pkgver=0.1
+pkgrel=1
+pkgdesc="Common support for Qualcomm MSM modems on the downstream kernel"
+url="https://postmarketos.org/"
+arch="armhf"
+license="GPL-3.0-or-later"
+depends="qcom_rmtfs libqipcrtr4msmipc libsmdpkt_wrapper"
+makedepends=""
+options="!check"
+subpackages=""
+source="udev.rules"
+
+package() {
+	install -Dm644 "$srcdir/udev.rules" "$pkgdir/usr/lib/udev/rules.d/55-$pkgname.rules"
+}
+
+sha512sums="64a40fb88d40ae0ff64d3545f7a54c6f10f2ab366ef75b8b158c2d5a3733223839c87aed8d5c6685d5056a5840d3943e68c76bd1bda2b48388161849d5e253f3  udev.rules"
