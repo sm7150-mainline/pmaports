@@ -2,7 +2,7 @@
 # Maintainer: Duncan Guthrie <dguthrie@posteo.net>
 pkgname=matchbox-common
 pkgver=0_git20070606
-pkgrel=0
+pkgrel=1
 _commit=3055fb158054d059e9a50141e7ded2a41ecfbd47 
 pkgdesc="Common data files for Matchbox"
 url="http://matchbox-project.org"
@@ -10,13 +10,14 @@ arch="noarch"
 license="GPL-2.0-only"
 depends=""
 makedepends="libmatchbox-dev autoconf automake libtool"
-source="https://git.yoctoproject.org/cgit/cgit.cgi/$pkgname/snapshot/$pkgname-$_commit.tar.gz"
+source="https://git.yoctoproject.org/cgit/cgit.cgi/$pkgname/snapshot/$pkgname-$_commit.tar.gz
+	matchbox-v2-utils.patch"
 builddir="$srcdir/$pkgname-$_commit"
 options="!check"
 
 build() {
 	cd "$builddir"
-	./autogen.sh
+	autoreconf --install
 	./configure \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -26,8 +27,11 @@ build() {
 		--localstatedir=/var
 	make
 }
+
 package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="742c38c60efa99de6a7d9bf510045eaf8ea1038722c9e45d614b66a3112f2b48f715d53bf9d44f173ca35e858aee135d0fbc3ed4fe0937b74c40ac515c5320f4  matchbox-common-3055fb158054d059e9a50141e7ded2a41ecfbd47.tar.gz"
+
+sha512sums="742c38c60efa99de6a7d9bf510045eaf8ea1038722c9e45d614b66a3112f2b48f715d53bf9d44f173ca35e858aee135d0fbc3ed4fe0937b74c40ac515c5320f4  matchbox-common-3055fb158054d059e9a50141e7ded2a41ecfbd47.tar.gz
+dc96692d51803d71288e030757ad6f597ffffb107a57d7fc51d6dea3a1eabd5736535164ec33d86effff4891e38aa30ea5ee33a1e68c58683204cf1b220721d7  matchbox-v2-utils.patch"

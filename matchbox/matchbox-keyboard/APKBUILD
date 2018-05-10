@@ -2,18 +2,25 @@
 # Maintainer: drebrez <drebrez@gmail.com>
 pkgname=matchbox-keyboard
 pkgver=0.1.1
-pkgrel=0
+pkgrel=1
 pkgdesc="An on screen virtual keyboard"
 url="http://matchbox-project.org/"
 arch="all"
 license="GPL-2.0-only"
-depends="libfakekey libxft"
-makedepends="autoconf automake libtool libxft-dev libxtst-dev"
+depends="libfakekey libxft cairo gtk+3.0 libx11 libxrender"
+makedepends="autoconf automake libtool libxft-dev libxtst-dev cairo-dev gtk+3.0-dev matchbox-panel-dev libx11-dev libxrender-dev"
 source="$pkgname-$pkgver.tar.bz2::http://git.yoctoproject.org/cgit/cgit.cgi/matchbox-keyboard/snapshot/matchbox-keyboard-$pkgver.tar.bz2"
+options="!check"
 
 build() {
-	./autogen.sh
-	./configure --prefix=/usr
+	autoreconf --install
+	./configure \
+		--prefix=/usr \
+		--enable-cairo \
+		--enable-applet \
+		--enable-gtk2-im \
+		--enable-gtk3-im \
+		LDFLAGS="-lXrender -lX11"
 	make
 }
 

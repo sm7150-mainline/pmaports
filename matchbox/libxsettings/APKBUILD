@@ -19,10 +19,12 @@ dev () {
 	mkdir -p "$subpkgdir"/usr
 	make PREFIX="/usr" DESTDIR="$subpkgdir" install-devel
 }
+
 build () {
 	cd "$builddir"
 	make
 }
+
 package() {
 	cd "$builddir"
 	make PREFIX="/usr" DESTDIR="$pkgdir" install

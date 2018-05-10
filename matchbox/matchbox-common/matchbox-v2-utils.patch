@@ -1,0 +1,43 @@
+diff -Naur a/matchbox-session b/matchbox-session
+--- a/matchbox-session	2007-06-06 12:30:47.000000000 +0100
++++ b/matchbox-session	2018-05-09 17:30:48.556398420 +0100
+@@ -4,21 +4,24 @@
+ #
+ 
+ # Uncomment below to enable parsing of debian menu entrys
+-# export MB_USE_DEB_MENUS=1 
+-
+-if [ -e $HOME/.matchbox/session ]
+-then
+-exec $HOME/.matchbox/session
+-fi
+-
+-if [ -e /etc/matchbox/session ]
+-then
+-exec /etc/matchbox/session
+-fi
+-
++# export MB_USE_DEB_MENUS=1
++#
++# if [ -e $HOME/.matchbox/session ]
++# then
++# exec $HOME/.matchbox/session
++# fi
++#
++# if [ -e /etc/matchbox/session ]
++# then
++# exec /etc/matchbox/session
++# fi
++#
+ # Default files to run if $HOME/.matchbox/session or /etc/matchbox/session
+-# dont exist. 
++# dont exist.
++
++START_APPLETS=showdesktop,windowselector
++END_APPLETS=clock,keyboard,systray,startup-notify,notify
+ 
+ matchbox-desktop &
+-matchbox-panel  --orientation south &
+-exec matchbox-window-manager $@
++matchbox-panel  --edge=bottom --start-applets=$START_APPLETS --end-applets=$END_APPLETS &
++exec matchbox-window-manager-2-simple -use_cursor yes $@
