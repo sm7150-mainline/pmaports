@@ -1,0 +1,37 @@
+pkgname=firmware-lg-hammerhead
+pkgver=1
+pkgrel=1
+pkgdesc="Firmware for LG hammerhead (Nexus 5)"
+subpackages="$pkgname-modem $pkgname-adsp"
+url="https://github.com/TheMuppets/proprietary_vendor_lge"
+arch="noarch"
+license="proprietary"
+options="!check !strip !archcheck"
+
+# Sources
+source="https://bshah.in/hammerhead-firmware.tar.gz"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+modem() {
+	pkgdesc="LG Nexus 5 modem firmware"
+
+	cd "$srcdir"
+	for _i in modem.* mba.*; do
+		install -Dm644 $_i "$subpkgdir"/lib/firmware/$_i
+	done
+}
+
+adsp() {
+	pkgdesc="LG Nexus 5 adsp firmware"
+
+	cd "$srcdir"
+	for _i in adsp.*; do
+		install -Dm644 $_i "$subpkgdir"/lib/firmware/$_i
+	done
+}
+
+sha512sums="ae8cd5ad7bd6486117131b407454be79df9e8b092d7eabfcb0eec029867d6aa037f52ec0a15dd2bf268a9d9eb74e01dca7e8a4b779eb1564a95ab19457402f64  hammerhead-firmware.tar.gz"
