@@ -1,0 +1,88 @@
+# Kernel config based on: arch/arm/configs/pxa986_lt023g_blackhawk_defconfig
+
+pkgname="linux-samsung-lt023g"
+pkgver=3.4.5
+pkgrel=0
+pkgdesc="Samsung Galaxy Tab 3 7.0 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-lt023g"
+url="https://github.com/kumajaya/android_kernel_samsung_lt02"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_lt02"
+_commit="c6fb6f677aa195b07348eb7777322ca956f9c44c"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/kumajaya/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	timeconst_fix.patch
+	455bd4c430b0c0a361f38e8658a0d6cb469942b5.patch
+	418df63adac56841ef6b0f1fcf435bc64d4ed177.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="41b0dc94d29e1ad75bcb309aebefc58302b5176be30cafd827b7f69b44805b84d44de93dfc363e671a421623ad2b6d264edbc74976106ba52f0c249d268622f1  linux-samsung-lt023g-c6fb6f677aa195b07348eb7777322ca956f9c44c.tar.gz
+8b0c70ed3e3a9f0fb57722437dd76342f0cd5a4a1a6a2fbc7a30ee13fa6a025f0e25f5de227abba2b0b8375708c30f2a32f6731764682e05a539fb1ec1342b33  config-samsung-lt023g.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+7191d532df8f6a8bf64b5b5bcaa7343c8d1b844c891a67fc6d29f421903ddd46c3e779a6f5a5833a6a8f635d1582f5224fa795b3912b8b211a90ee561ad31469  timeconst_fix.patch
+efd1641c0892fddb9c5feea3e49e534fed311b01f0576688b5af766e0160850822d0eb8e296b08c5f82b586d5d0336a98e8e86707ba9af7fcf36fc89f0b288eb  455bd4c430b0c0a361f38e8658a0d6cb469942b5.patch
+5c080c27716d124616e4e684fc63bffb2665f00de06e894dfd78f58588feec2fec858fe8234b054061e3db14d28cb90fbac53f4b54c4fac5946d843cf038386c  418df63adac56841ef6b0f1fcf435bc64d4ed177.patch"
