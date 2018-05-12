@@ -1,0 +1,11 @@
+#!/sbin/runscript
+
+depend() {
+	before qcom_rmtfs
+}
+
+start() {
+	ebegin "Starting QRTR service"
+	/usr/bin/qrtr-cfg 1 && /usr/bin/qrtr-ns
+	eend $?
+}

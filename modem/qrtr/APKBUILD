@@ -1,6 +1,6 @@
 pkgname=qrtr
 pkgver=1.0_git20180131
-pkgrel=0
+pkgrel=1
 pkgdesc="Userspace reference for net/qrtr in the Linux kernel"
 url="https://github.com/andersson/qrtr"
 arch="all"
@@ -11,20 +11,24 @@ _commit="dbffdd0193996723fdc9456e09736a30a32daf25"
 source="
 	qrtr.tgz::https://github.com/andersson/qrtr/archive/"$_commit".tar.gz
 	fix-cfg-include.patch
+	qrtr.initd
 	"
 builddir="$srcdir""/qrtr-"$_commit
 options="!check"
+install="$pkgname.post-install"
 
 build() {
 	cd "$builddir"
-	make C_INCLUDE_PATH=/usr/src/msmipc-dev/include libqrtr.so
+	make prefix=/usr libdir=/usr/lib/ C_INCLUDE_PATH=/usr/src/msmipc-dev/include all
 }
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" prefix=/usr "$pkgdir"/usr/lib/libqrtr.so.1.0 "$pkgdir"/usr/include/libqrtr.h
+	make prefix=/usr DESTDIR="$pkgdir" install
 	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
 }
 
 sha512sums="4fbf9bcb26794a54e9784bafd0ee46a0c628327d6b31a438ca6d907185260cf590fc90a2e22139ebf3b939750277f434d67096396192d1ee3b0542c2feb39075  qrtr.tgz
-fca4a8b886b7bb6a53a83f3a69e3ae03b8fc462f6f6bf6c812af1a1036aa5a8c1f40b6cabf921e91c55423c37309d4e56ac8ccf0d4c5f7db41c1005afaf19382  fix-cfg-include.patch"
+fca4a8b886b7bb6a53a83f3a69e3ae03b8fc462f6f6bf6c812af1a1036aa5a8c1f40b6cabf921e91c55423c37309d4e56ac8ccf0d4c5f7db41c1005afaf19382  fix-cfg-include.patch
+fcd9b8e4c4df9236ec778f1ffb231e547e0d65c718e0caf351bee821b1549aecafbfdb21b4c1d1e3d049d541d87b6bf98746414e88e5d70d05131e0496e1ef37  qrtr.initd"
