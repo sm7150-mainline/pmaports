@@ -1,15 +1,15 @@
-From 324c0340c85dee1a2ae3eb6c71bcd9e47c9f03f7 Mon Sep 17 00:00:00 2001
+From 3a501b2c3c0507c8f560183ac79617fe975b8594 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Filip=20Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>
 Date: Thu, 2 Nov 2017 18:46:21 +0100
 Subject: [PATCH 05/11] Revert "drm/omap: work-around for omap3 display enable"
 
 This reverts commit fc5cc9678e130196012c17b37e555d53d3d3476b.
 ---
- drivers/gpu/drm/omapdrm/omap_drv.c | 47 ++++++++++++++------------------------
+ drivers/gpu/drm/omapdrm/omap_drv.c | 47 +++++++++++-------------------
  1 file changed, 17 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/gpu/drm/omapdrm/omap_drv.c b/drivers/gpu/drm/omapdrm/omap_drv.c
-index dd68b2556f5b..bc5b68ecd0f7 100644
+index 3632854c2b91..54bc31679b27 100644
 --- a/drivers/gpu/drm/omapdrm/omap_drv.c
 +++ b/drivers/gpu/drm/omapdrm/omap_drv.c
 @@ -74,36 +74,23 @@ static void omap_atomic_commit_tail(struct drm_atomic_state *old_state)
@@ -67,5 +67,5 @@ index dd68b2556f5b..bc5b68ecd0f7 100644
  	/*
  	 * Wait for completion of the page flips to ensure that old buffers
 -- 
-2.14.1
+2.17.0
 

@@ -1,4 +1,4 @@
-From 2c62ef61b0361f6850140832b35bc4f400b9ccfe Mon Sep 17 00:00:00 2001
+From c134a2d3ff1b6cf075b8ba27136087773029513a Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Filip=20Matijevi=C4=87?= <filip.matijevic.pz@gmail.com>
 Date: Sat, 10 Feb 2018 20:33:59 +0100
 Subject: [PATCH 01/11] SREv2
@@ -8,22 +8,22 @@ Content-Transfer-Encoding: 8bit
 
 Signed-off-by: Filip Matijević <filip.matijevic.pz@gmail.com>
 ---
- .../bindings/display/panel/panel-common.txt        |  12 ++
- arch/arm/boot/dts/omap4-droid4-xt894.dts           |   3 +
- drivers/gpu/drm/omapdrm/displays/panel-dsi-cm.c    |  13 ++
- drivers/gpu/drm/omapdrm/dss/dispc.c                |  36 ++++-
- drivers/gpu/drm/omapdrm/dss/omapdss.h              |   2 +
- drivers/gpu/drm/omapdrm/omap_connector.c           |  18 ++-
- drivers/gpu/drm/omapdrm/omap_connector.h           |   1 +
- drivers/gpu/drm/omapdrm/omap_crtc.c                | 158 +++++++++++++++++++--
- drivers/gpu/drm/omapdrm/omap_crtc.h                |   2 +
- drivers/gpu/drm/omapdrm/omap_fb.c                  |  20 +++
- drivers/gpu/drm/omapdrm/omap_irq.c                 |  24 ++++
- drivers/gpu/drm/omapdrm/omap_irq.h                 |   1 +
- 12 files changed, 280 insertions(+), 10 deletions(-)
+ .../bindings/display/panel/panel-common.txt   |  12 ++
+ arch/arm/boot/dts/omap4-droid4-xt894.dts      |   3 +
+ .../gpu/drm/omapdrm/displays/panel-dsi-cm.c   |  13 ++
+ drivers/gpu/drm/omapdrm/dss/dispc.c           |  37 ++++-
+ drivers/gpu/drm/omapdrm/dss/omapdss.h         |   2 +
+ drivers/gpu/drm/omapdrm/omap_connector.c      |  18 ++-
+ drivers/gpu/drm/omapdrm/omap_connector.h      |   1 +
+ drivers/gpu/drm/omapdrm/omap_crtc.c           | 153 +++++++++++++++++-
+ drivers/gpu/drm/omapdrm/omap_crtc.h           |   2 +
+ drivers/gpu/drm/omapdrm/omap_fb.c             |  20 +++
+ drivers/gpu/drm/omapdrm/omap_irq.c            |  24 +++
+ drivers/gpu/drm/omapdrm/omap_irq.h            |   1 +
+ 12 files changed, 277 insertions(+), 9 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/display/panel/panel-common.txt b/Documentation/devicetree/bindings/display/panel/panel-common.txt
-index 557fa765adcb..c646b8908458 100644
+index 5d2519af4bb5..149af74082ba 100644
 --- a/Documentation/devicetree/bindings/display/panel/panel-common.txt
 +++ b/Documentation/devicetree/bindings/display/panel/panel-common.txt
 @@ -18,6 +18,18 @@ Descriptive Properties
@@ -46,7 +46,7 @@ index 557fa765adcb..c646b8908458 100644
    string suitable for use by humans. It typically contains a name inscribed on
    the system (e.g. as an affixed label) or specified in the system's
 diff --git a/arch/arm/boot/dts/omap4-droid4-xt894.dts b/arch/arm/boot/dts/omap4-droid4-xt894.dts
-index b21084da490b..e11a24397163 100644
+index bdf73cbcec3a..42885e7b053c 100644
 --- a/arch/arm/boot/dts/omap4-droid4-xt894.dts
 +++ b/arch/arm/boot/dts/omap4-droid4-xt894.dts
 @@ -6,6 +6,7 @@
@@ -57,7 +57,7 @@ index b21084da490b..e11a24397163 100644
  #include "omap443x.dtsi"
  #include "motorola-cpcap-mapphone.dtsi"
  
-@@ -181,6 +182,8 @@
+@@ -216,6 +217,8 @@
  		height-mm = <89>;
  		backlight = <&lcd_backlight>;
  
@@ -67,7 +67,7 @@ index b21084da490b..e11a24397163 100644
  			clock-frequency = <0>;		/* Calculated by dsi */
  
 diff --git a/drivers/gpu/drm/omapdrm/displays/panel-dsi-cm.c b/drivers/gpu/drm/omapdrm/displays/panel-dsi-cm.c
-index 15399a1a666b..7a63d6775a27 100644
+index 428de90fced1..d096185683cb 100644
 --- a/drivers/gpu/drm/omapdrm/displays/panel-dsi-cm.c
 +++ b/drivers/gpu/drm/omapdrm/displays/panel-dsi-cm.c
 @@ -68,6 +68,7 @@ struct panel_drv_data {
@@ -78,7 +78,7 @@ index 15399a1a666b..7a63d6775a27 100644
  
  	struct omap_dsi_pin_config pin_config;
  
-@@ -1198,6 +1199,14 @@ static void dsicm_get_size(struct omap_dss_device *dssdev,
+@@ -1210,6 +1211,14 @@ static void dsicm_get_size(struct omap_dss_device *dssdev,
  	*height = ddata->height_mm;
  }
  
@@ -93,7 +93,7 @@ index 15399a1a666b..7a63d6775a27 100644
  static struct omap_dss_driver dsicm_ops = {
  	.connect	= dsicm_connect,
  	.disconnect	= dsicm_disconnect,
-@@ -1211,6 +1220,7 @@ static struct omap_dss_driver dsicm_ops = {
+@@ -1223,6 +1232,7 @@ static struct omap_dss_driver dsicm_ops = {
  	.get_timings	= dsicm_get_timings,
  	.check_timings	= dsicm_check_timings,
  	.get_size	= dsicm_get_size,
@@ -101,21 +101,21 @@ index 15399a1a666b..7a63d6775a27 100644
  
  	.enable_te	= dsicm_enable_te,
  	.get_te		= dsicm_get_te,
-@@ -1259,6 +1269,9 @@ static int dsicm_probe_of(struct platform_device *pdev)
+@@ -1270,6 +1280,9 @@ static int dsicm_probe_of(struct platform_device *pdev)
  	ddata->height_mm = 0;
  	of_property_read_u32(node, "height-mm", &ddata->height_mm);
  
 +	ddata->orientation = DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
 +	of_property_read_u32(node, "orientation", &ddata->orientation);
 +
- 	in = omapdss_of_find_source_for_first_ep(node);
- 	if (IS_ERR(in)) {
- 		dev_err(&pdev->dev, "failed to find video source\n");
+	ddata->vpnl = devm_regulator_get_optional(&pdev->dev, "vpnl");
+	if (IS_ERR(ddata->vpnl)) {
+		err = PTR_ERR(ddata->vpnl);
 diff --git a/drivers/gpu/drm/omapdrm/dss/dispc.c b/drivers/gpu/drm/omapdrm/dss/dispc.c
-index 4e8f68efd169..0904c3201914 100644
+index 7f3ac6b13b56..842941930dfa 100644
 --- a/drivers/gpu/drm/omapdrm/dss/dispc.c
 +++ b/drivers/gpu/drm/omapdrm/dss/dispc.c
-@@ -157,6 +157,8 @@ struct dispc_features {
+@@ -161,6 +161,8 @@ struct dispc_features {
  	bool has_gamma_table:1;
  
  	bool has_gamma_i734_bug:1;
@@ -124,26 +124,27 @@ index 4e8f68efd169..0904c3201914 100644
  };
  
  #define DISPC_MAX_NR_FIFOS 5
-@@ -1489,6 +1491,18 @@ void dispc_ovl_compute_fifo_thresholds(enum omap_plane_id plane,
- 	}
+@@ -1593,6 +1595,19 @@ static void dispc_ovl_set_mflag(struct dispc_device *dispc,
+	REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES(plane), enable, bit, bit);
  }
  
-+static void dispc_ovl_set_manual_fifo_threshold(enum omap_plane_id plane)
++static void dispc_ovl_set_manual_fifo_threshold(struct dispc_device *dispc,
++												enum omap_plane_id plane)
 +{
 +	u32 fifo_low, fifo_high;
 +	bool use_fifo_merge = false;
 +	bool use_manual_update = true;
 +
-+	dispc_ovl_compute_fifo_thresholds(plane, &fifo_low, &fifo_high,
++	dispc_ovl_compute_fifo_thresholds(dispc, plane, &fifo_low, &fifo_high,
 +					  use_fifo_merge, use_manual_update);
 +
-+	dispc_ovl_set_fifo_threshold(plane, fifo_low, fifo_high);
++	dispc_ovl_set_fifo_threshold(dispc, plane, fifo_low, fifo_high);
 +}
 +
- static void dispc_ovl_set_mflag(enum omap_plane_id plane, bool enable)
- {
- 	int bit;
-@@ -2651,8 +2665,21 @@ static int dispc_ovl_setup(enum omap_plane_id plane,
+ static void dispc_ovl_set_mflag_threshold(struct dispc_device *dispc,
+					  enum omap_plane_id plane,
+					  int low, int high)
+@@ -2802,8 +2817,21 @@ static int dispc_ovl_setup(struct dispc_device *dispc,
  		oi->out_width, oi->out_height, oi->fourcc, oi->rotation,
  		oi->zorder, oi->pre_mult_alpha, oi->global_alpha,
  		oi->rotation_type, replication, vm, mem_to_mem);
@@ -156,17 +157,17 @@ index 4e8f68efd169..0904c3201914 100644
 +	 * displays. The issue is not fully understood, but this workaround
 +	 * fixes the issue. OMAP4 is known to work with default thresholds.
 +	 */
-+	if (mgr_fld_read(channel, DISPC_MGR_FLD_STALLMODE) &&
-+	    dispc.feat->has_fifo_stallmode_bug) {
++	if (mgr_fld_read(dispc, channel, DISPC_MGR_FLD_STALLMODE) &&
++	    dispc->feat->has_fifo_stallmode_bug) {
 +		DSSDBG("Enable OMAP3 FIFO stallmode bug workaround!\n");
-+		dispc_ovl_set_manual_fifo_threshold(plane);
++		dispc_ovl_set_manual_fifo_threshold(dispc, plane);
 +	}
 +
 +	return 0;
  }
  
- int dispc_wb_setup(const struct omap_dss_writeback_info *wi,
-@@ -4067,6 +4094,7 @@ static const struct dispc_features omap24xx_dispc_feats = {
+ static int dispc_wb_setup(struct dispc_device *dispc,
+@@ -4286,6 +4314,7 @@ static const struct dispc_features omap24xx_dispc_feats = {
  	.no_framedone_tv	=	true,
  	.set_max_preload	=	false,
  	.last_pixel_inc_missing	=	true,
@@ -174,7 +175,7 @@ index 4e8f68efd169..0904c3201914 100644
  };
  
  static const struct dispc_features omap34xx_rev1_0_dispc_feats = {
-@@ -4101,6 +4129,7 @@ static const struct dispc_features omap34xx_rev1_0_dispc_feats = {
+@@ -4320,6 +4349,7 @@ static const struct dispc_features omap34xx_rev1_0_dispc_feats = {
  	.no_framedone_tv	=	true,
  	.set_max_preload	=	false,
  	.last_pixel_inc_missing	=	true,
@@ -182,7 +183,7 @@ index 4e8f68efd169..0904c3201914 100644
  };
  
  static const struct dispc_features omap34xx_rev3_0_dispc_feats = {
-@@ -4135,6 +4164,7 @@ static const struct dispc_features omap34xx_rev3_0_dispc_feats = {
+@@ -4354,6 +4384,7 @@ static const struct dispc_features omap34xx_rev3_0_dispc_feats = {
  	.no_framedone_tv	=	true,
  	.set_max_preload	=	false,
  	.last_pixel_inc_missing	=	true,
@@ -190,7 +191,7 @@ index 4e8f68efd169..0904c3201914 100644
  };
  
  static const struct dispc_features omap36xx_dispc_feats = {
-@@ -4169,6 +4199,7 @@ static const struct dispc_features omap36xx_dispc_feats = {
+@@ -4388,6 +4419,7 @@ static const struct dispc_features omap36xx_dispc_feats = {
  	.no_framedone_tv	=	true,
  	.set_max_preload	=	false,
  	.last_pixel_inc_missing	=	true,
@@ -198,7 +199,7 @@ index 4e8f68efd169..0904c3201914 100644
  };
  
  static const struct dispc_features am43xx_dispc_feats = {
-@@ -4203,6 +4234,7 @@ static const struct dispc_features am43xx_dispc_feats = {
+@@ -4422,6 +4454,7 @@ static const struct dispc_features am43xx_dispc_feats = {
  	.no_framedone_tv	=	true,
  	.set_max_preload	=	false,
  	.last_pixel_inc_missing	=	true,
@@ -206,7 +207,7 @@ index 4e8f68efd169..0904c3201914 100644
  };
  
  static const struct dispc_features omap44xx_dispc_feats = {
-@@ -4242,6 +4274,7 @@ static const struct dispc_features omap44xx_dispc_feats = {
+@@ -4461,6 +4494,7 @@ static const struct dispc_features omap44xx_dispc_feats = {
  	.reverse_ilace_field_order =	true,
  	.has_gamma_table	=	true,
  	.has_gamma_i734_bug	=	true,
@@ -214,7 +215,7 @@ index 4e8f68efd169..0904c3201914 100644
  };
  
  static const struct dispc_features omap54xx_dispc_feats = {
-@@ -4282,6 +4315,7 @@ static const struct dispc_features omap54xx_dispc_feats = {
+@@ -4501,6 +4535,7 @@ static const struct dispc_features omap54xx_dispc_feats = {
  	.reverse_ilace_field_order =	true,
  	.has_gamma_table	=	true,
  	.has_gamma_i734_bug	=	true,
@@ -223,10 +224,10 @@ index 4e8f68efd169..0904c3201914 100644
  
  static irqreturn_t dispc_irq_handler(int irq, void *arg)
 diff --git a/drivers/gpu/drm/omapdrm/dss/omapdss.h b/drivers/gpu/drm/omapdrm/dss/omapdss.h
-index f8f83e826a56..72ebd82409d3 100644
+index 14d74adb13fb..0d3b0143a65e 100644
 --- a/drivers/gpu/drm/omapdrm/dss/omapdss.h
 +++ b/drivers/gpu/drm/omapdrm/dss/omapdss.h
-@@ -565,6 +565,8 @@ struct omap_dss_driver {
+@@ -554,6 +554,8 @@ struct omap_dss_driver {
  			    struct videomode *vm);
  	void (*get_size)(struct omap_dss_device *dssdev,
  			 unsigned int *width, unsigned int *height);
@@ -236,7 +237,7 @@ index f8f83e826a56..72ebd82409d3 100644
  	int (*set_wss)(struct omap_dss_device *dssdev, u32 wss);
  	u32 (*get_wss)(struct omap_dss_device *dssdev);
 diff --git a/drivers/gpu/drm/omapdrm/omap_connector.c b/drivers/gpu/drm/omapdrm/omap_connector.c
-index a0d7b1d905e8..2f296d29b74b 100644
+index 5cde26ac937b..d936be1f071e 100644
 --- a/drivers/gpu/drm/omapdrm/omap_connector.c
 +++ b/drivers/gpu/drm/omapdrm/omap_connector.c
 @@ -57,6 +57,14 @@ bool omap_connector_get_hdmi_mode(struct drm_connector *connector)
@@ -254,7 +255,7 @@ index a0d7b1d905e8..2f296d29b74b 100644
  static enum drm_connector_status omap_connector_detect(
  		struct drm_connector *connector, bool force)
  {
-@@ -241,6 +249,7 @@ struct drm_connector *omap_connector_init(struct drm_device *dev,
+@@ -251,6 +259,7 @@ struct drm_connector *omap_connector_init(struct drm_device *dev,
  	struct drm_connector *connector = NULL;
  	struct omap_connector *omap_connector;
  	bool hpd_supported = false;
@@ -262,7 +263,7 @@ index a0d7b1d905e8..2f296d29b74b 100644
  
  	DBG("%s", dssdev->name);
  
-@@ -259,7 +268,7 @@ struct drm_connector *omap_connector_init(struct drm_device *dev,
+@@ -269,7 +278,7 @@ struct drm_connector *omap_connector_init(struct drm_device *dev,
  	drm_connector_helper_add(connector, &omap_connector_helper_funcs);
  
  	if (dssdev->driver->register_hpd_cb) {
@@ -271,7 +272,7 @@ index a0d7b1d905e8..2f296d29b74b 100644
  							  omap_connector_hpd_cb,
  							  omap_connector);
  		if (!ret)
-@@ -280,6 +289,13 @@ struct drm_connector *omap_connector_init(struct drm_device *dev,
+@@ -290,6 +299,13 @@ struct drm_connector *omap_connector_init(struct drm_device *dev,
  	connector->interlace_allowed = 1;
  	connector->doublescan_allowed = 0;
  
@@ -297,7 +298,7 @@ index 98bbc779b302..652136d167f5 100644
  
  #endif /* __OMAPDRM_CONNECTOR_H__ */
 diff --git a/drivers/gpu/drm/omapdrm/omap_crtc.c b/drivers/gpu/drm/omapdrm/omap_crtc.c
-index 1b8154e58d18..c2defb514b9f 100644
+index 6c4d40b824e4..df746a33756f 100644
 --- a/drivers/gpu/drm/omapdrm/omap_crtc.c
 +++ b/drivers/gpu/drm/omapdrm/omap_crtc.c
 @@ -51,6 +51,10 @@ struct omap_crtc {
@@ -311,14 +312,11 @@ index 1b8154e58d18..c2defb514b9f 100644
  };
  
  /* -----------------------------------------------------------------------------
-@@ -139,6 +143,28 @@ static void omap_crtc_dss_disconnect(enum omap_channel channel,
- 
- static void omap_crtc_dss_start_update(enum omap_channel channel)
+@@ -143,6 +147,25 @@ static void omap_crtc_dss_disconnect(struct omap_drm_private *priv,
+ static void omap_crtc_dss_start_update(struct omap_drm_private *priv,
+				       enum omap_channel channel)
  {
-+	struct omap_crtc *omap_crtc = omap_crtcs[channel];
-+	struct omap_drm_private *priv = omap_crtc->base.dev->dev_private;
-+
-+	priv->dispc_ops->mgr_enable(channel, true);
++	priv->dispc_ops->mgr_enable(priv->dispc, channel, true);
 +}
 +
 +static bool omap_crtc_is_manually_updated(struct drm_crtc *crtc)
@@ -340,35 +338,32 @@ index 1b8154e58d18..c2defb514b9f 100644
  }
  
  /* Called only from the encoder enable/disable and suspend/resume handlers. */
-@@ -150,12 +176,17 @@ static void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
+@@ -154,11 +177,15 @@ static void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
  	enum omap_channel channel = omap_crtc->channel;
  	struct omap_irq_wait *wait;
  	u32 framedone_irq, vsync_irq;
 +	bool is_manual = omap_crtc_is_manually_updated(crtc);
-+	enum omap_display_type type = omap_crtc_output[channel]->output_type;
  	int ret;
  
  	if (WARN_ON(omap_crtc->enabled == enable))
  		return;
  
--	if (omap_crtc_output[channel]->output_type == OMAP_DISPLAY_TYPE_HDMI) {
 +	if (is_manual)
 +		omap_irq_enable_framedone(crtc, enable);
 +
-+	if (is_manual || type == OMAP_DISPLAY_TYPE_HDMI) {
- 		priv->dispc_ops->mgr_enable(channel, enable);
+	if (omap_crtc_output[channel]->output_type == OMAP_DISPLAY_TYPE_HDMI) {
+		priv->dispc_ops->mgr_enable(priv->dispc, channel, enable);
  		omap_crtc->enabled = enable;
- 		return;
-@@ -206,7 +237,6 @@ static void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
+@@ -211,7 +238,6 @@ static void omap_crtc_set_enabled(struct drm_crtc *crtc, bool enable)
  	}
  }
  
 -
- static int omap_crtc_dss_enable(enum omap_channel channel)
+ static int omap_crtc_dss_enable(struct omap_drm_private *priv,
+				enum omap_channel channel)
  {
- 	struct omap_crtc *omap_crtc = omap_crtcs[channel];
-@@ -247,6 +277,17 @@ static int omap_crtc_dss_register_framedone(
- 		enum omap_channel channel,
+@@ -256,6 +282,17 @@ static int omap_crtc_dss_register_framedone(
+		struct omap_drm_private *priv, enum omap_channel channel,
  		void (*handler)(void *), void *data)
  {
 +	struct omap_crtc *omap_crtc = omap_crtcs[channel];
@@ -385,8 +380,8 @@ index 1b8154e58d18..c2defb514b9f 100644
  	return 0;
  }
  
-@@ -254,6 +295,16 @@ static void omap_crtc_dss_unregister_framedone(
- 		enum omap_channel channel,
+@@ -263,6 +300,16 @@ static void omap_crtc_dss_unregister_framedone(
+		struct omap_drm_private *priv, enum omap_channel channel,
  		void (*handler)(void *), void *data)
  {
 +	struct omap_crtc *omap_crtc = omap_crtcs[channel];
@@ -402,7 +397,7 @@ index 1b8154e58d18..c2defb514b9f 100644
  }
  
  static const struct dss_mgr_ops mgr_ops = {
-@@ -321,6 +372,77 @@ void omap_crtc_vblank_irq(struct drm_crtc *crtc)
+@@ -330,6 +377,77 @@ void omap_crtc_vblank_irq(struct drm_crtc *crtc)
  	DBG("%s: apply done", omap_crtc->name);
  }
  
@@ -480,7 +475,7 @@ index 1b8154e58d18..c2defb514b9f 100644
  static void omap_crtc_write_crtc_properties(struct drm_crtc *crtc)
  {
  	struct omap_drm_private *priv = crtc->dev->dev_private;
-@@ -373,6 +495,10 @@ static void omap_crtc_atomic_enable(struct drm_crtc *crtc,
+@@ -382,6 +500,10 @@ static void omap_crtc_atomic_enable(struct drm_crtc *crtc,
  
  	DBG("%s", omap_crtc->name);
  
@@ -491,7 +486,7 @@ index 1b8154e58d18..c2defb514b9f 100644
  	spin_lock_irq(&crtc->dev->event_lock);
  	drm_crtc_vblank_on(crtc);
  	ret = drm_crtc_vblank_get(crtc);
-@@ -386,6 +512,7 @@ static void omap_crtc_atomic_disable(struct drm_crtc *crtc,
+@@ -395,6 +517,7 @@ static void omap_crtc_atomic_disable(struct drm_crtc *crtc,
  				     struct drm_crtc_state *old_state)
  {
  	struct omap_crtc *omap_crtc = to_omap_crtc(crtc);
@@ -499,7 +494,7 @@ index 1b8154e58d18..c2defb514b9f 100644
  
  	DBG("%s", omap_crtc->name);
  
-@@ -396,6 +523,11 @@ static void omap_crtc_atomic_disable(struct drm_crtc *crtc,
+@@ -405,6 +528,11 @@ static void omap_crtc_atomic_disable(struct drm_crtc *crtc,
  	}
  	spin_unlock_irq(&crtc->dev->event_lock);
  
@@ -511,7 +506,7 @@ index 1b8154e58d18..c2defb514b9f 100644
  	drm_crtc_vblank_off(crtc);
  }
  
-@@ -545,13 +677,20 @@ static void omap_crtc_atomic_flush(struct drm_crtc *crtc,
+@@ -555,13 +683,21 @@ static void omap_crtc_atomic_flush(struct drm_crtc *crtc,
  
  	DBG("%s: GO", omap_crtc->name);
  
@@ -522,12 +517,13 @@ index 1b8154e58d18..c2defb514b9f 100644
 +		WARN_ON(ret != 0);
  
 -	spin_lock_irq(&crtc->dev->event_lock);
--	priv->dispc_ops->mgr_go(omap_crtc->channel);
+-	priv->dispc_ops->mgr_go(priv->dispc, omap_crtc->channel);
 -	omap_crtc_arm_event(crtc);
 -	spin_unlock_irq(&crtc->dev->event_lock);
 +		spin_lock_irq(&crtc->dev->event_lock);
-+		priv->dispc_ops->mgr_go(omap_crtc->channel);
++		priv->dispc_ops->mgr_go(priv->dispc, omap_crtc->channel);
 +		omap_crtc_arm_event(crtc);
++		spin_unlock_irq(&crtc->dev->event_lock);
 +		spin_unlock_irq(&crtc->dev->event_lock);
 +	} else {
 +		spin_lock_irq(&crtc->dev->event_lock);
@@ -538,7 +534,7 @@ index 1b8154e58d18..c2defb514b9f 100644
  }
  
  static int omap_crtc_atomic_set_property(struct drm_crtc *crtc,
-@@ -713,6 +852,9 @@ struct drm_crtc *omap_crtc_init(struct drm_device *dev,
+@@ -723,6 +859,9 @@ struct drm_crtc *omap_crtc_init(struct drm_device *dev,
  	omap_crtc->channel = channel;
  	omap_crtc->name = channel_names[channel];
  
@@ -549,19 +545,19 @@ index 1b8154e58d18..c2defb514b9f 100644
  					&omap_crtc_funcs, NULL);
  	if (ret < 0) {
 diff --git a/drivers/gpu/drm/omapdrm/omap_crtc.h b/drivers/gpu/drm/omapdrm/omap_crtc.h
-index ad7b007c6174..b61c94b34f04 100644
+index eaab2d7f0324..300b6498d03e 100644
 --- a/drivers/gpu/drm/omapdrm/omap_crtc.h
 +++ b/drivers/gpu/drm/omapdrm/omap_crtc.h
 @@ -39,5 +39,7 @@ struct drm_crtc *omap_crtc_init(struct drm_device *dev,
  int omap_crtc_wait_pending(struct drm_crtc *crtc);
- void omap_crtc_error_irq(struct drm_crtc *crtc, uint32_t irqstatus);
+ void omap_crtc_error_irq(struct drm_crtc *crtc, u32 irqstatus);
  void omap_crtc_vblank_irq(struct drm_crtc *crtc);
 +void omap_crtc_framedone_irq(struct drm_crtc *crtc, uint32_t irqstatus);
 +void omap_crtc_flush(struct drm_crtc *crtc);
  
  #endif /* __OMAPDRM_CRTC_H__ */
 diff --git a/drivers/gpu/drm/omapdrm/omap_fb.c b/drivers/gpu/drm/omapdrm/omap_fb.c
-index b2539a90e1a4..57b1767bef09 100644
+index 5fd22ca73913..b65212c9a423 100644
 --- a/drivers/gpu/drm/omapdrm/omap_fb.c
 +++ b/drivers/gpu/drm/omapdrm/omap_fb.c
 @@ -95,8 +95,28 @@ static void omap_framebuffer_destroy(struct drm_framebuffer *fb)
@@ -594,7 +590,7 @@ index b2539a90e1a4..57b1767bef09 100644
  };
  
 diff --git a/drivers/gpu/drm/omapdrm/omap_irq.c b/drivers/gpu/drm/omapdrm/omap_irq.c
-index 53ba424823b2..354df3583229 100644
+index c85115049f86..99de4b9d04a5 100644
 --- a/drivers/gpu/drm/omapdrm/omap_irq.c
 +++ b/drivers/gpu/drm/omapdrm/omap_irq.c
 @@ -85,6 +85,27 @@ int omap_irq_wait(struct drm_device *dev, struct omap_irq_wait *wait,
@@ -607,7 +603,7 @@ index 53ba424823b2..354df3583229 100644
 +	struct omap_drm_private *priv = dev->dev_private;
 +	unsigned long flags;
 +	enum omap_channel channel = omap_crtc_channel(crtc);
-+	int framedone_irq = priv->dispc_ops->mgr_get_framedone_irq(channel);
++	int framedone_irq = priv->dispc_ops->mgr_get_framedone_irq(priv->dispc, channel);
 +
 +	DBG("dev=%p, crtc=%u, enable=%d", dev, channel, enable);
 +
@@ -625,18 +621,18 @@ index 53ba424823b2..354df3583229 100644
  /**
   * enable_vblank - enable vblank interrupt events
   * @dev: DRM device
-@@ -215,6 +236,9 @@ static irqreturn_t omap_irq_handler(int irq, void *arg)
+@@ -217,6 +238,9 @@ static irqreturn_t omap_irq_handler(int irq, void *arg)
  
- 		if (irqstatus & priv->dispc_ops->mgr_get_sync_lost_irq(channel))
+		if (irqstatus & priv->dispc_ops->mgr_get_sync_lost_irq(priv->dispc, channel))
  			omap_crtc_error_irq(crtc, irqstatus);
 +
-+		if (irqstatus & priv->dispc_ops->mgr_get_framedone_irq(channel))
++		if (irqstatus & priv->dispc_ops->mgr_get_framedone_irq(priv->dispc, channel))
 +			omap_crtc_framedone_irq(crtc, irqstatus);
  	}
  
  	omap_irq_ocp_error_handler(dev, irqstatus);
 diff --git a/drivers/gpu/drm/omapdrm/omap_irq.h b/drivers/gpu/drm/omapdrm/omap_irq.h
-index 606c09932bc0..69f4ff80a0e4 100644
+index 9d5441468eca..02abb4ed9813 100644
 --- a/drivers/gpu/drm/omapdrm/omap_irq.h
 +++ b/drivers/gpu/drm/omapdrm/omap_irq.h
 @@ -27,6 +27,7 @@ struct drm_device;
@@ -648,5 +644,5 @@ index 606c09932bc0..69f4ff80a0e4 100644
  void omap_drm_irq_uninstall(struct drm_device *dev);
  int omap_drm_irq_install(struct drm_device *dev);
 -- 
-2.14.1
+2.17.0
 
