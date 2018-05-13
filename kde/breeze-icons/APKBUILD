@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=breeze-icons
-pkgver=5.45.0
+pkgver=5.46.0
 pkgrel=0
 pkgdesc='Breeze icon themes'
 arch="noarch"
@@ -10,6 +10,7 @@ license="LGPL-3.0"
 depends_dev="qt5-qtbase-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
+options="!check" # plasma-browser-integration icon is not available in a scalable directory
 
 build() {
 	cmake \
@@ -28,4 +29,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="da2dae391508baa696412ddd83ae32deb98941cebcc5fc1d6f3ed63b1886223d0a753f02ee052b2b82c4faabfde124b7409784ac3ff50528131e6ab080ca82fb  breeze-icons-5.45.0.tar.xz"
+sha512sums="ff17523e154692ebc90d21b04758b051e80b5df9cad8ae82baabfaec906d99b9efcb0bfc36d5ce38e5a55698f8284ff73f67c24df9e4b5c35d484e18db9647dc  breeze-icons-5.46.0.tar.xz"
