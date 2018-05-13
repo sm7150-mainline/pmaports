@@ -1,5 +1,9 @@
 #!/sbin/openrc-run
 
+depend() {
+	after udev
+}
+
 # libqipcrtr4msmipc.so may not be present, on devices that don't need it
 export LD_PRELOAD=/usr/lib/preload/libqipcrtr4msmipc.so
 
