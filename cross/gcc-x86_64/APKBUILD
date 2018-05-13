@@ -4,7 +4,6 @@
 
 CTARGET_ARCH=x86_64
 CTARGET="$(arch_to_hostspec ${CTARGET_ARCH})"
-CBUILDROOT="/usr/$CTARGET"
 LANG_OBJC=false
 LANG_JAVA=false
 LANG_GO=false
@@ -12,40 +11,16 @@ LANG_FORTRAN=false
 LANG_ADA=false
 options="!strip !tracedeps"
 
-# Wrap the package function, to make the resulting package
-# lazy-reproducible
-package() {
-    # Repack the *.a files to be reproducible (see #64)
-    _temp="$_builddir"/_reproducible-patch
-    cd "$_builddir"
-    for f in $(find -name '*.a'); do
-        # Copy to a temporary folder
-        echo "Repack $f to be reproducible"
-        mkdir -p "$_temp"
-        cd "$_temp"
-        cp "$_builddir"/"$f" .
+# abuild doesn't try to tries to install "build-base-$CTARGET_ARCH"
+# when this variable matches "no*"
+BOOTSTRAP="nobuildbase"
 
-        # Repack with a sorted file order
-        ar x *.a
-        rm *.a
-        ar r sorted.a $(find -name '*.o' | sort)
+# abuild will only cross compile when this variable is set, but it
+# needs to find a valid package database in there for dependency
+# resolving, so we set it to /.
+CBUILDROOT="/"
 
-        # Copy back and clean up
-        cp -v sorted.a "$_builddir"/"$f"
-        cd ..
-        rm -r "$_temp"
-    done
-
-    # Unmodified package function from the gcc APKBUILD
-    _package
-
-    # Workaround for: postmarketOS/binary-package-repo#1
-    echo "Replacing hardlinks with symlinks"
-    rm -v "$pkgdir"/usr/bin/"$CTARGET"-c++
-    ln -s -v /usr/bin/"$CTARGET"-g++ "$pkgdir"/usr/bin/"$CTARGET"-c++
-    rm -v "$pkgdir"/usr/bin/"$CTARGET"-gcc-"$pkgver"
-    ln -s -v /usr/bin/"$CTARGET"-gcc "$pkgdir"/usr/bin/"$CTARGET"-gcc-"$pkgver"
-}
+_cross_configure="--disable-bootstrap --with-sysroot=/usr/$CTARGET"
 
 pkgname="gcc-x86_64"
 pkgver=6.4.0
@@ -287,7 +262,6 @@ prepare() {
 build() {
 	local _arch_configure=
 	local _libc_configure=
-	local _cross_configure=
 	local _bootstrap_configure=
 	local _symvers=
 
@@ -325,8 +299,6 @@ build() {
 		;;
 	esac
 
-	[ "$CBUILD" != "$CHOST"   ] && _cross_configure="--disable-bootstrap"
-	[ "$CHOST"  != "$CTARGET" ] && _cross_configure="--disable-bootstrap --with-sysroot=$CBUILDROOT"
 
 	case "$BOOTSTRAP" in
 	nolibc)	_bootstrap_configure="--with-newlib --disable-shared --enable-threads=no" ;;
@@ -382,7 +354,7 @@ build() {
 	make
 }
 
-_package() {
+package() {
 	cd "$_builddir"
 	make -j1 DESTDIR="${pkgdir}" install
 
