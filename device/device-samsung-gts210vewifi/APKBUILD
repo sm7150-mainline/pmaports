@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-gts210vewifi"
+pkgdesc="Galaxy Tab S2 9.7 WiFi (SM-T813)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-samsung-gts210vewifi mkbootimg mesa-dri-swrast mdss-fb-init-hack"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="bc4d64b148fb1039782af73bf931b77970d6b81e3a61459bbdfa11f6f9edecc1a0753d1fe15ec4b2bd9ff61b08b1c764e760847bdf4947d542efff7f4089fbf3  deviceinfo"

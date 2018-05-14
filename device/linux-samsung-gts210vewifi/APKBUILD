@@ -1,0 +1,94 @@
+# Kernel config based on: kernel/samsung/msm8976/arch/arm64/configs/gts210vewifi_defconfig
+
+pkgname="linux-samsung-gts210vewifi"
+pkgver=3.10.102
+pkgrel=0
+pkgdesc="Galaxy Tab S2 9.7 WiFi (SM-T813) kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-gts210vewifi"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+# gts210vewifi uses msm8976 kernel
+_repository="android_kernel_samsung_msm8976"
+_commit="82d475a1952b9bbb6652b35e87671b5031bcf934"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_fix_msm_dba.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+menuconfig() {
+	cd "$builddir"
+	make ARCH="$_carch" menuconfig
+	cp .config "$startdir"/$_config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		C_INCLUDE_PATH="./arch/arm/mach-msm:./sound/soc/msm/qdsp6v2"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	# As path is symlinked from arm64 to arm, dtb files end up below arm, not arm64
+	echo dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/dt.img" "arch/arm/boot/dts/"
+	# Generate master DTB (deviceinfo_bootimg_qcdt).
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/dt.img" "arch/arm/boot/dts/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+ 
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm64/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="37e55b3e64308a29deb8932d8d2452ff76601558bdcb9ff58f3a016f5ec63c2941e5fe7cdcced50d5039d3cdadaa5d43004c4e27cb8b105f8fda7596d676fb9e  linux-samsung-gts210vewifi-82d475a1952b9bbb6652b35e87671b5031bcf934.tar.gz
+31d6b7356ac1c1053dce3319371b18298a4a6e815abcd910a7e0ff0a4dc03bcff15da14f8e8d485c80da29169788754f019f2b158355c3768bae7c2b17f3047b  config-samsung-gts210vewifi.aarch64
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+7e765cb696fa8c3dfbc305b05cbf1fad85fb9572613d5391e945341dae5974a745f4906c795dc841e5562b19ab77d5257f9741e514af2c2573aa4bb8b262ce51  01_fix_msm_dba.patch"
