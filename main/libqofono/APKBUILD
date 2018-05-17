@@ -1,0 +1,35 @@
+# Contributor: Bhushan Shah <bshah@kde.org>
+# Maintainer: Bhushan Shah <bshah@kde.org>
+pkgname=libqofono
+pkgver=0.92
+pkgrel=0
+pkgdesc="A library for accessing the ofono daemon, and a Qt declarative plugin for it."
+url="https://git.merproject.org/mer-core/libqofono/"
+arch="all"
+license="LGPL-2.0"
+depends=""
+depends_dev="qt5-qtbase-dev qt5-qtxmlpatterns-dev qt5-qtdeclarative-dev"
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev"
+source="https://git.merproject.org/mer-core/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+# the tests are marked as autotest but they require ofono running
+# along with ofono-phonesim, which is overall complext setup
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	make INSTALL_ROOT="$pkgdir" install
+	# remove the installed tests xml file
+	rm -r "$pkgdir"/opt
+	rm -r "$pkgdir"/usr/lib/libqofono-qt5/tests/
+}
+
+sha512sums="955a044b15d9f09087c6d0a60395b40fc3a1b1ed203912db414f9faae8dc26488ded535fd1daf1a0d0579a36511127eb5a925ee214f4df4fc631cee7ba255102  libqofono-0.92.tar.gz"
