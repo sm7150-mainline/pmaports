@@ -1,6 +1,6 @@
 pkgname=device-nokia-n900
 pkgver=2
-pkgrel=7
+pkgrel=8
 pkgdesc="Nokia N900"
 url="https://github.com/postmarketOS"
 arch="noarch"
@@ -30,6 +30,7 @@ source="
 	weston.ini
 	i3wm/i3wm.conf
 	i3wm/i3status.conf
+	i3wm/bq27200_status.sh
 "
 options="!check"
 
@@ -93,6 +94,8 @@ i3wm() {
 		"$subpkgdir"/etc/skel/.config/i3/config
 	install -D -m644 "$srcdir"/i3status.conf \
 		"$subpkgdir"/etc/skel/.config/i3/i3status.conf
+	install -D -m755 "$srcdir"/bq27200_status.sh \
+		"$subpkgdir"/etc/skel/.config/i3/bq27200_status.sh
 }
 
 nonfree_firmware() {
@@ -114,5 +117,6 @@ dc585e11bf4e06e36c5c62bcc024eaacecc30437d9da5257df14be05e247a2f2bc208874be3058ed
 143c21f0b18a016d37cb44178e9daea09f128a90769b48353c03c3f245cb9b1f7e773b9ccee084973fc78ddd7a18c2642e54888a85bda7c7daecddc9a8c62eff  pointercal
 e023df91295fe7e410e163747d17e5b92fe3c022ff076e286778b8334368f885603b8fda65671e4a7328766da7b2552ea4df1b1399df23e504a41a6655771142  asound.state
 7f48d1a044f8c02f7b1d11487ec1f83978d9b0ea12529156e7418f82be556d9baee32b70c4d911174e388bb4941dc19519e93e7551d00ffcd825c848665ff096  weston.ini
-bd140c57259f8788c1db49e0b85d17868d837fa094f8d3bb3dc5114b4c6ad5c184b718ceb60b920cefe6f42162477c9753d7784494b7787202c6ba57b49d5005  i3wm.conf
-ea70ed51ed55ff307a6562985c8919d3e57c8bf6a4f6ab9fe5329477f0409da9424ca5c8371fb497ecfc5438c106d967f8258054725e4eb84e4a49e7f95f5dcd  i3status.conf"
+387c76ef51d08b1f397364657ab32c5915fbd62b2786e9fd61b47e9eeed36d24571e22974ea36cb1b01c25eef5789c4e8e1de9a23de3a4a9192e727ed6a7ab67  i3wm.conf
+3bed8554400d6bbebf7e61b14f347a0f3e24b29be296c56fc829ed655cf67fa547c09bb715589b716d6c3f04492e9f3a12473dce6c7151bc15562b9d102bac2f  i3status.conf
+4e7abd1ac6223494b2ce96f7fb2dfe6116ee8a526440df07307994ed577f1860222548f7512273b5a21febac8119794774658f60e5d6976747ddc60323d26a62  bq27200_status.sh"
