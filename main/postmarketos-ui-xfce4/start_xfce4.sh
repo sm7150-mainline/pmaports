@@ -6,7 +6,7 @@
 # display manager in the long run (#656).
 if [ "$(id -u)" = "1000" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# Start X11 with XFCE4
-	startxfce4 2>&1 | logger -t "$(whoami):x11"
+	ck-launch-session dbus-launch --exit-with-session startxfce4 2>&1 | logger -t "$(whoami):x11"
 
 
 	# In case of failure, restart after 1s
