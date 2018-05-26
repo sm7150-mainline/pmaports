@@ -1,0 +1,38 @@
+# Contributor: Bhushan Shah <bshah@kde.org>
+# Maintainer: Bhushan Shah <bshah@kde.org>
+pkgname=telepathy-ofono
+pkgver=0.2
+pkgrel=0
+pkgdesc="telepathy oFono connection manager"
+url="https://launchpad.net/telepathy-ofono"
+arch="all"
+license="GPL3"
+depends=""
+makedepends="cmake telepathy-mission-control-dev libphonenumber-dev telepathy-qt5-dev ofono-qt-dev pulseaudio-dev"
+install=""
+source="https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/telepathy-ofono/0.2+17.04.20161109-0ubuntu1/telepathy-ofono_0.2+17.04.20161109.orig.tar.gz"
+builddir="$srcdir/"
+options="!check" # no tests
+
+build() {
+	cd "$builddir"
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		${CMAKE_CROSSOPTS}
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="5c9cb4bdefda8c3a14b18d383f821e3f2abb36a3fcac6c9372cf119466465ade26c9bda12ea8a0510672999b11ff8c3538cd2c43393e1354c11f9af84163ea37  telepathy-ofono_0.2+17.04.20161109.orig.tar.gz"
