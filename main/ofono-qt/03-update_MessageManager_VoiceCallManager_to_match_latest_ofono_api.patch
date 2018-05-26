@@ -1,0 +1,154 @@
+Description: update MessageManager and VoiceCallManager interfaces to match latest ofono api
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+=== modified file 'a/lib/ofonomessagemanager.cpp'
+--- a/lib/ofonomessagemanager.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonomessagemanager.cpp	2013-04-23 05:22:22 +0000
+@@ -175,19 +175,21 @@
+ }
+ 
+ 
+-void OfonoMessageManager::sendMessage(const QString &to, const QString &message)
++QDBusObjectPath OfonoMessageManager::sendMessage(const QString &to, const QString &message)
+ {
+     QDBusMessage request;
++    QDBusReply<QDBusObjectPath> reply;
++    QDBusObjectPath objpath;
+ 
+     request = QDBusMessage::createMethodCall("org.ofono",
+                                              path(), m_if->ifname(),
+                                              "SendMessage");
+-
+     request << to << message;
+-
+-    QDBusConnection::systemBus().callWithCallback(request, this,
+-                                        SLOT(sendMessageResp(const QDBusObjectPath&)),
+-                                        SLOT(sendMessageErr(const QDBusError&)));
++    reply = QDBusConnection::systemBus().call(request);
++    if (reply.isValid()) {
++        objpath = reply;
++    }
++    return objpath;
+ }
+ 
+ void OfonoMessageManager::requestPropertyComplete(bool success, const QString& property, const QVariant& value)
+@@ -229,17 +231,6 @@
+     }
+ }
+ 
+-void OfonoMessageManager::sendMessageResp(const QDBusObjectPath& objectPath)
+-{
+-    emit sendMessageComplete(true, objectPath.path());
+-}
+-
+-void OfonoMessageManager::sendMessageErr(QDBusError error)
+-{
+-    m_if->setError(error.name(), error.message());
+-    emit sendMessageComplete(false, QString());
+-}
+-
+ QStringList OfonoMessageManager::getMessages() const
+ {
+     return m_messagelist;
+
+=== modified file 'a/lib/ofonomessagemanager.h'
+--- a/lib/ofonomessagemanager.h	2013-04-23 05:21:32 +0000
++++ b/lib/ofonomessagemanager.h	2013-04-23 05:22:22 +0000
+@@ -64,7 +64,7 @@
+     void requestAlphabet();
+     void setAlphabet(QString alphabet);
+ 
+-    void sendMessage(const QString &to, const QString &message);
++    QDBusObjectPath sendMessage(const QString &to, const QString &message);
+ 
+ Q_SIGNALS:
+     void serviceCenterAddressChanged(const QString &address);
+@@ -96,8 +96,6 @@
+     void requestPropertyComplete(bool success, const QString &property, const QVariant &value);
+     void onMessageAdded(const QDBusObjectPath &message, const QVariantMap &properties);
+     void onMessageRemoved(const QDBusObjectPath &message);
+-    void sendMessageResp(const QDBusObjectPath& objectPath);
+-    void sendMessageErr(QDBusError error);
+ 
+ private:
+     QStringList getMessageList();
+
+=== modified file 'a/lib/ofonovoicecallmanager.cpp'
+--- a/lib/ofonovoicecallmanager.cpp	2013-04-23 05:18:36 +0000
++++ b/lib/ofonovoicecallmanager.cpp	2013-04-23 05:22:22 +0000
+@@ -139,9 +139,11 @@
+                                         SIGNAL(forwarded(const QString&)));
+ }
+ 
+-void OfonoVoiceCallManager::dial(const QString &number, const QString &callerid_hide)
++QDBusObjectPath OfonoVoiceCallManager::dial(const QString &number, const QString &callerid_hide)
+ {
+     QDBusMessage request;
++    QDBusReply<QDBusObjectPath> reply;
++    QDBusObjectPath objpath;
+     request = QDBusMessage::createMethodCall("org.ofono",
+                                              path(), m_if->ifname(),
+                                              "Dial");
+@@ -149,10 +151,12 @@
+     arg.append(QVariant(number));
+     arg.append(QVariant(callerid_hide));
+     request.setArguments(arg);
+-    QDBusConnection::systemBus().callWithCallback(request, this,
+-                                        SLOT(dialResp()),
+-                                        SLOT(dialErr(const QDBusError&)),
+-                                        DIAL_TIMEOUT);
++
++    reply = QDBusConnection::systemBus().call(request);
++    if (reply.isValid()) {
++        objpath = reply;
++    }
++    return objpath;
+ }
+ 
+ void OfonoVoiceCallManager::hangupAll()
+@@ -410,10 +414,10 @@
+     return m_calllist;
+ }
+ 
+-void OfonoVoiceCallManager::callAddedChanged(const QDBusObjectPath &path, const QVariantMap& /*values*/)
++void OfonoVoiceCallManager::callAddedChanged(const QDBusObjectPath &path, const QVariantMap& values)
+ {
+     m_calllist << path.path();
+-    emit callAdded(path.path());
++    emit callAdded(path.path(), values);
+ }
+ 
+ void OfonoVoiceCallManager::callRemovedChanged(const QDBusObjectPath &path)
+
+=== modified file 'a/lib/ofonovoicecallmanager.h'
+--- a/lib/ofonovoicecallmanager.h	2013-04-23 05:21:32 +0000
++++ b/lib/ofonovoicecallmanager.h	2013-04-23 05:22:22 +0000
+@@ -65,7 +65,7 @@
+     Q_INVOKABLE QStringList getCalls() const;
+ 
+ public Q_SLOTS:
+-    void dial(const QString &number, const QString &callerid_hide);
++    QDBusObjectPath dial(const QString &number, const QString &callerid_hide);
+     void hangupAll();
+     void sendTones(const QString &tonestring);
+     void transfer();
+@@ -78,7 +78,7 @@
+ 
+ Q_SIGNALS:
+     void emergencyNumbersChanged(const QStringList &numbers);
+-    void callAdded(const QString &call);
++    void callAdded(const QString &call, const QVariantMap &values);
+     void callRemoved(const QString &call);
+     void dialComplete(const bool status);
+     void hangupAllComplete(const bool status);
+@@ -98,7 +98,7 @@
+     void validityChanged(bool);
+     void pathChanged(const QString& path);
+     void propertyChanged(const QString &property, const QVariant &value);
+-    void callAddedChanged(const QDBusObjectPath &call, const QVariantMap &properties);
++    void callAddedChanged(const QDBusObjectPath &call, const QVariantMap &values);
+     void callRemovedChanged(const QDBusObjectPath &call);
+     void dialResp();
+     void dialErr(const QDBusError &error);

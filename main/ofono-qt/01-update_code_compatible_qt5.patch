@@ -1,0 +1,516 @@
+Description: Update to qt5 and compile without keywords
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+=== modified file 'a/lib/lib.pro'
+--- a/lib/lib.pro	2013-04-23 05:14:42 +0000
++++ b/lib/lib.pro	2013-04-23 05:18:36 +0000
+@@ -69,7 +69,7 @@
+ QMAKE_PKGCONFIG_DESTDIR = pkgconfig
+ QMAKE_PKGCONFIG_INCDIR = $$headers.path
+ 
+-qtconfig.path = $$[QT_INSTALL_PREFIX]/share/qt4/mkspecs/features
++qtconfig.path = $$[QT_INSTALL_PREFIX]/share/qt5/mkspecs/features
+ qtconfig.files = ofono-qt.prf
+ 
+ INSTALLS += target headers qtconfig
+
+=== modified file 'a/lib/ofonocallbarring.cpp'
+--- a/lib/ofonocallbarring.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonocallbarring.cpp	2013-04-23 05:18:36 +0000
+@@ -163,44 +163,44 @@
+ 
+ void OfonoCallBarring::changePasswordResp()
+ {
+-    emit changePasswordComplete(TRUE);
++    emit changePasswordComplete(true);
+ }
+ 
+ void OfonoCallBarring::changePasswordErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit changePasswordComplete(FALSE);
++    emit changePasswordComplete(false);
+ }
+ 
+ void OfonoCallBarring::disableAllResp()
+ {
+-    emit disableAllComplete(TRUE);
++    emit disableAllComplete(true);
+ }
+ 
+ void OfonoCallBarring::disableAllErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit disableAllComplete(FALSE);
++    emit disableAllComplete(false);
+ }
+ 
+ void OfonoCallBarring::disableAllIncomingResp()
+ {
+-    emit disableAllIncomingComplete(TRUE);
++    emit disableAllIncomingComplete(true);
+ }
+ 
+ void OfonoCallBarring::disableAllIncomingErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit disableAllIncomingComplete(FALSE);
++    emit disableAllIncomingComplete(false);
+ }
+ 
+ void OfonoCallBarring::disableAllOutgoingResp()
+ {
+-    emit disableAllOutgoingComplete(TRUE);
++    emit disableAllOutgoingComplete(true);
+ }
+ 
+ void OfonoCallBarring::disableAllOutgoingErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit disableAllOutgoingComplete(FALSE);
++    emit disableAllOutgoingComplete(false);
+ }
+
+=== modified file 'a/lib/ofonocallforwarding.cpp'
+--- a/lib/ofonocallforwarding.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonocallforwarding.cpp	2013-04-23 05:18:36 +0000
+@@ -164,12 +164,12 @@
+ 
+ void OfonoCallForwarding::disableAllResp()
+ {
+-    emit disableAllComplete(TRUE);
++    emit disableAllComplete(true);
+ }
+ 
+ void OfonoCallForwarding::disableAllErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit disableAllComplete(FALSE);
++    emit disableAllComplete(false);
+ }
+ 
+
+=== modified file 'a/lib/ofonoconnman.cpp'
+--- a/lib/ofonoconnman.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonoconnman.cpp	2013-04-23 05:18:36 +0000
+@@ -137,13 +137,13 @@
+ 
+ void OfonoConnMan::deactivateAllResp()
+ {
+-    emit deactivateAllComplete(TRUE);
++    emit deactivateAllComplete(true);
+ }
+ 
+ void OfonoConnMan::deactivateAllErr(const QDBusError& error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit deactivateAllComplete(FALSE);
++    emit deactivateAllComplete(false);
+ }
+ 
+ void OfonoConnMan::addContext(const QString& type)
+@@ -166,13 +166,13 @@
+ 
+ void OfonoConnMan::addContextResp(const QDBusObjectPath &path)
+ {
+-    emit addContextComplete(TRUE, path.path());
++    emit addContextComplete(true, path.path());
+ }
+ 
+ void OfonoConnMan::addContextErr(const QDBusError& error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit addContextComplete(FALSE, QString());
++    emit addContextComplete(false, QString());
+ }
+ 
+ void OfonoConnMan::removeContext(const QString& contextpath)
+@@ -195,13 +195,13 @@
+ 
+ void OfonoConnMan::removeContextResp()
+ {
+-    emit removeContextComplete(TRUE);
++    emit removeContextComplete(true);
+ }
+ 
+ void OfonoConnMan::removeContextErr(const QDBusError& error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit removeContextComplete(FALSE);
++    emit removeContextComplete(false);
+ }
+ 
+ bool OfonoConnMan::attached() const
+
+=== modified file 'a/lib/ofononetworkoperator.cpp'
+--- a/lib/ofononetworkoperator.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofononetworkoperator.cpp	2013-04-23 05:18:36 +0000
+@@ -70,13 +70,13 @@
+ 
+ void OfonoNetworkOperator::registerResp()
+ {
+-    emit registerComplete(TRUE);
++    emit registerComplete(true);
+ }
+ 
+ void OfonoNetworkOperator::registerErr(const QDBusError& error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit registerComplete(FALSE);
++    emit registerComplete(false);
+ }
+ 
+ QString OfonoNetworkOperator::name() const
+
+=== modified file 'a/lib/ofononetworkregistration.cpp'
+--- a/lib/ofononetworkregistration.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofononetworkregistration.cpp	2013-04-23 05:18:36 +0000
+@@ -180,13 +180,13 @@
+ 
+ void OfonoNetworkRegistration::registerResp()
+ {
+-    emit registerComplete(TRUE);
++    emit registerComplete(true);
+ }
+ 
+ void OfonoNetworkRegistration::registerErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit registerComplete(FALSE);
++    emit registerComplete(false);
+ }
+ 
+ void OfonoNetworkRegistration::getOperatorsResp(OfonoOperatorList list)
+@@ -195,13 +195,13 @@
+     foreach(OfonoOperatorStruct op, list) {
+     	oplist << op.path.path();
+     }
+-    emit getOperatorsComplete(TRUE, oplist);
++    emit getOperatorsComplete(true, oplist);
+ }
+ 
+ void OfonoNetworkRegistration::getOperatorsErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit getOperatorsComplete(FALSE, QStringList());
++    emit getOperatorsComplete(false, QStringList());
+ }
+ 
+ void OfonoNetworkRegistration::scanResp(OfonoOperatorList list)
+@@ -210,12 +210,12 @@
+     foreach(OfonoOperatorStruct op, list) {
+     	oplist << op.path.path();
+     }
+-    emit scanComplete(TRUE, oplist);
++    emit scanComplete(true, oplist);
+ }
+ 
+ void OfonoNetworkRegistration::scanErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit scanComplete(FALSE, QStringList());
++    emit scanComplete(false, QStringList());
+ }
+ 
+
+=== modified file 'a/lib/ofonosimmanager.cpp'
+--- a/lib/ofonosimmanager.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonosimmanager.cpp	2013-04-23 05:18:36 +0000
+@@ -244,63 +244,63 @@
+ 
+ void OfonoSimManager::changePinResp()
+ {
+-    emit changePinComplete(TRUE);
++    emit changePinComplete(true);
+ }
+ 
+ void OfonoSimManager::changePinErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());    
+-    emit changePinComplete(FALSE);
++    emit changePinComplete(false);
+ }
+ 
+ void OfonoSimManager::enterPinResp()
+ {
+-    emit enterPinComplete(TRUE);
++    emit enterPinComplete(true);
+ }
+ 
+ void OfonoSimManager::enterPinErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit enterPinComplete(FALSE);
++    emit enterPinComplete(false);
+ }
+ 
+ void OfonoSimManager::resetPinResp()
+ {
+-    emit resetPinComplete(TRUE);
++    emit resetPinComplete(true);
+ }
+ 
+ void OfonoSimManager::resetPinErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit resetPinComplete(FALSE);
++    emit resetPinComplete(false);
+ }
+ 
+ void OfonoSimManager::lockPinResp()
+ {
+-    emit lockPinComplete(TRUE);
++    emit lockPinComplete(true);
+ }
+ void OfonoSimManager::lockPinErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit lockPinComplete(FALSE);
++    emit lockPinComplete(false);
+ }
+ 
+ void OfonoSimManager::unlockPinResp()
+ {
+-    emit unlockPinComplete(TRUE);
++    emit unlockPinComplete(true);
+ }
+ void OfonoSimManager::unlockPinErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message()); 
+-    emit unlockPinComplete(FALSE);
++    emit unlockPinComplete(false);
+ }
+ 
+ void OfonoSimManager::getIconResp(QByteArray icon)
+ {
+-    emit getIconComplete(TRUE, icon);
++    emit getIconComplete(true, icon);
+ }
+ void OfonoSimManager::getIconErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message()); 
+-    emit getIconComplete(FALSE, QByteArray());
++    emit getIconComplete(false, QByteArray());
+ }
+
+=== modified file 'a/lib/ofonosupplementaryservices.cpp'
+--- a/lib/ofonosupplementaryservices.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonosupplementaryservices.cpp	2013-04-23 05:18:36 +0000
+@@ -190,23 +190,23 @@
+ 
+ void OfonoSupplementaryServices::respondResp(QString message)
+ {
+-    emit respondComplete(TRUE, message);
++    emit respondComplete(true, message);
+ }
+ 
+ void OfonoSupplementaryServices::respondErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit respondComplete(FALSE, QString());
++    emit respondComplete(false, QString());
+ }
+ 
+ void OfonoSupplementaryServices::cancelResp()
+ {
+-    emit cancelComplete(TRUE);
++    emit cancelComplete(true);
+ }
+ 
+ void OfonoSupplementaryServices::cancelErr(QDBusError error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit cancelComplete(FALSE);
++    emit cancelComplete(false);
+ }
+ 
+
+=== modified file 'a/lib/ofonovoicecall.cpp'
+--- a/lib/ofonovoicecall.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonovoicecall.cpp	2013-04-23 05:18:36 +0000
+@@ -112,35 +112,35 @@
+ 
+ void OfonoVoiceCall::answerResp()
+ {
+-    emit answerComplete(TRUE);
++    emit answerComplete(true);
+ }
+ 
+ void OfonoVoiceCall::answerErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit answerComplete(FALSE);
++    emit answerComplete(false);
+ }
+ 
+ void OfonoVoiceCall::hangupResp()
+ {
+-    emit hangupComplete(TRUE);
++    emit hangupComplete(true);
+ }
+ 
+ void OfonoVoiceCall::hangupErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit hangupComplete(FALSE);
++    emit hangupComplete(false);
+ }
+ 
+ void OfonoVoiceCall::deflectResp()
+ {
+-    emit deflectComplete(TRUE);
++    emit deflectComplete(true);
+ }
+ 
+ void OfonoVoiceCall::deflectErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit deflectComplete(FALSE);
++    emit deflectComplete(false);
+ }
+ 
+ QString OfonoVoiceCall::incomingLine() const
+
+=== modified file 'a/lib/ofonovoicecallmanager.cpp'
+--- a/lib/ofonovoicecallmanager.cpp	2013-04-23 05:14:42 +0000
++++ b/lib/ofonovoicecallmanager.cpp	2013-04-23 05:18:36 +0000
+@@ -280,13 +280,13 @@
+ 
+ void OfonoVoiceCallManager::hangupMultipartyResp()
+ {
+-    emit hangupMultipartyComplete(TRUE);
++    emit hangupMultipartyComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::hangupMultipartyErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit hangupMultipartyComplete(FALSE);
++    emit hangupMultipartyComplete(false);
+ }
+ 
+ void OfonoVoiceCallManager::createMultipartyResp(const QList<QDBusObjectPath> &paths)
+@@ -294,13 +294,13 @@
+     QStringList calls;
+     foreach(QDBusObjectPath path, paths)
+ 	calls << path.path();
+-    emit createMultipartyComplete(TRUE, calls);
++    emit createMultipartyComplete(true, calls);
+ }
+ 
+ void OfonoVoiceCallManager::createMultipartyErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit createMultipartyComplete(FALSE, QStringList());
++    emit createMultipartyComplete(false, QStringList());
+ }
+ 
+ void OfonoVoiceCallManager::privateChatResp(const QList<QDBusObjectPath> &paths)
+@@ -308,89 +308,89 @@
+     QStringList calls;
+     foreach(QDBusObjectPath path, paths)
+ 	calls << path.path();
+-    emit privateChatComplete(TRUE, calls);
++    emit privateChatComplete(true, calls);
+ }
+ 
+ void OfonoVoiceCallManager::privateChatErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit privateChatComplete(FALSE, QStringList());
++    emit privateChatComplete(false, QStringList());
+ }
+ 
+ void OfonoVoiceCallManager::holdAndAnswerResp()
+ {
+-    emit holdAndAnswerComplete(TRUE);
++    emit holdAndAnswerComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::holdAndAnswerErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit holdAndAnswerComplete(FALSE);
++    emit holdAndAnswerComplete(false);
+ }
+ 
+ void OfonoVoiceCallManager::releaseAndAnswerResp()
+ {
+-    emit releaseAndAnswerComplete(TRUE);
++    emit releaseAndAnswerComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::releaseAndAnswerErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit releaseAndAnswerComplete(FALSE);
++    emit releaseAndAnswerComplete(false);
+ }
+ 
+ void OfonoVoiceCallManager::swapCallsResp()
+ {
+-    emit swapCallsComplete(TRUE);
++    emit swapCallsComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::swapCallsErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit swapCallsComplete(FALSE);
++    emit swapCallsComplete(false);
+ }
+ 
+ void OfonoVoiceCallManager::dialResp()
+ {
+-    emit dialComplete(TRUE);
++    emit dialComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::dialErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit dialComplete(FALSE);
++    emit dialComplete(false);
+ }
+ 
+ void OfonoVoiceCallManager::hangupAllResp()
+ {
+-    emit hangupAllComplete(TRUE);
++    emit hangupAllComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::hangupAllErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit hangupAllComplete(FALSE);
++    emit hangupAllComplete(false);
+ }
+ void OfonoVoiceCallManager::sendTonesResp()
+ {
+-    emit sendTonesComplete(TRUE);
++    emit sendTonesComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::sendTonesErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit sendTonesComplete(FALSE);
++    emit sendTonesComplete(false);
+ }
+ 
+ void OfonoVoiceCallManager::transferResp()
+ {
+-    emit transferComplete(TRUE);
++    emit transferComplete(true);
+ }
+ 
+ void OfonoVoiceCallManager::transferErr(const QDBusError &error)
+ {
+     m_if->setError(error.name(), error.message());
+-    emit transferComplete(FALSE);
++    emit transferComplete(false);
+ }
+ 
+ QStringList OfonoVoiceCallManager::emergencyNumbers() const

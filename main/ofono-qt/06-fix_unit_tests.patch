@@ -1,0 +1,353 @@
+Description: Fix unity tests
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+=== modified file 'a/tests/test_ofonoconnman.cpp'
+--- a/tests/test_ofonoconnman.cpp	2013-04-23 05:14:42 +0000
++++ b/tests/test_ofonoconnman.cpp	2013-05-14 21:27:29 +0000
+@@ -52,6 +52,7 @@
+ 
+     void testOfonoConnMan()
+     {
++        bool addContextSuccess = false;
+         QSignalSpy attch(m, SIGNAL(attachedChanged(const bool)));
+         QSignalSpy sus(m,SIGNAL(suspendedChanged(const bool)));
+         QSignalSpy ber(m, SIGNAL(bearerChanged(const QString&)));
+@@ -59,7 +60,6 @@
+         QSignalSpy pow(m,SIGNAL(poweredChanged(const bool)));
+         QSignalSpy add(m, SIGNAL(contextAdded(const QString&)));
+         QSignalSpy rem(m, SIGNAL(contextRemoved(const QString&)));
+-        QSignalSpy cadd(m,SIGNAL(addContextComplete(bool, const QString&)));
+         QSignalSpy crem(m,SIGNAL(removeContextComplete(bool)));
+         QSignalSpy deact(m,SIGNAL(deactivateAllComplete(bool)));
+ 
+@@ -71,19 +71,19 @@
+         QTest::qWait(5000);
+         m->setRoamingAllowed(true);
+         QTest::qWait(5000);
+-        m->addContext(QString("internet"));
++        QDBusObjectPath objectPath = m->addContext(QString("internet"), addContextSuccess);
+         QTest::qWait(10000);
+         QCOMPARE(m->powered(),true);
+         QCOMPARE(m->attached(),true);
+         QCOMPARE(m->suspended(),false);
+         QCOMPARE(m->roamingAllowed(),true);
+ 
+-        QCOMPARE(cadd.count(), 1);
++        QCOMPARE(addContextSuccess, true);
+         QCOMPARE(pow.count(), 2);
+         QCOMPARE(roam.count(), 2);
+         QCOMPARE(add.count(), 1);
+         QString path = add.takeFirst().at(0).toString();
+-        QString path2 = cadd.takeFirst().at(1).toString();
++        QString path2 = objectPath.path();
+ 	QCOMPARE(path, path2);
+         m->removeContext(path);
+         QTest::qWait(10000);
+
+=== modified file 'a/tests/test_ofonoconnmancontext.cpp'
+--- a/tests/test_ofonoconnmancontext.cpp	2013-04-23 05:14:42 +0000
++++ b/tests/test_ofonoconnmancontext.cpp	2013-05-14 21:27:29 +0000
+@@ -51,19 +51,18 @@
+ 
+     void testOfonoConnmanContext ()
+     {
++        bool success = false;
+         QSignalSpy addcon(m,SIGNAL(addContextComplete(bool, const QString&)));
+         QSignalSpy conadd(m, SIGNAL(contextAdded(const QString&)));
+         QSignalSpy conrem(m, SIGNAL(contextRemoved(const QString&)));
+ 
+-        m->addContext("internet");
++        QDBusObjectPath objectPath = m->addContext("internet", success);
+         QTest::qWait(1000);
+ 
+-        QCOMPARE(addcon.count(), 1);
+-	QVariantList list = addcon.takeFirst();
+-        QCOMPARE(list.at(0).toBool(),true);
++        QCOMPARE(success, true);
+         QCOMPARE(conadd.count(), 1);
+         QString contextid = conadd.takeFirst().at(0).toString();
+-	QCOMPARE(contextid, list.at(1).toString());
++	QCOMPARE(contextid, objectPath.path());
+ 
+         OfonoConnmanContext* context = new OfonoConnmanContext(contextid);
+ 
+
+=== modified file 'a/tests/test_ofonointerface.cpp'
+--- a/tests/test_ofonointerface.cpp	2013-04-23 05:14:42 +0000
++++ b/tests/test_ofonointerface.cpp	2013-05-14 21:27:29 +0000
+@@ -98,12 +98,13 @@
+         QVariantList list;
+         bool online;
+         bool online_found;
++        int lastSignalCount = -1;
+     
+         oi->setProperty("Online", qVariantFromValue(false));
+-        while (spy_changed.count() != 3 && spy_failed.count() == 0) {
+-            QTest::qWait(100);
++        while (spy_failed.count() == 0 && spy_changed.count() != lastSignalCount) {
++            lastSignalCount = spy_changed.count();
++            QTest::qWait(1000);
+         }
+-        QCOMPARE(spy_changed.count(), 3);
+         QCOMPARE(spy_failed.count(), 0);
+         online = false;
+         online_found = false;
+@@ -116,12 +117,16 @@
+         }
+         QCOMPARE(online_found, true);
+         QCOMPARE(online, false);
+-        
++
+         oi->setProperty("Online", qVariantFromValue(true));
+-        while (spy_changed.count() < 3 && spy_failed.count() == 0) {
+-            QTest::qWait(100);
++
++        lastSignalCount = -1;
++        while (spy_failed.count() == 0 && spy_changed.count() != lastSignalCount) {
++            lastSignalCount = spy_changed.count();
++            QTest::qWait(1000);
+         }
+-        QVERIFY(spy_changed.count() > 3);
++
++        qDebug() << lastSignalCount;
+         QCOMPARE(spy_failed.count(), 0);
+         online = false;
+         online_found = false;
+
+=== modified file 'a/tests/test_ofonomessagemanager.cpp'
+--- a/tests/test_ofonomessagemanager.cpp	2013-04-23 05:14:42 +0000
++++ b/tests/test_ofonomessagemanager.cpp	2013-05-14 21:27:29 +0000
+@@ -55,7 +55,7 @@
+ 
+     void testOfonoMessageManager()
+     {
+-        QSignalSpy sendMessage(m, SIGNAL(sendMessageComplete(bool, QString)));
++        bool success = false;
+         QSignalSpy messageAdded(m, SIGNAL(messageAdded(QString)));
+         QSignalSpy messageRemoved(m, SIGNAL(messageRemoved(QString)));
+         QSignalSpy immediateMessage(m, SIGNAL(immediateMessage(QString, QVariantMap)));
+@@ -65,16 +65,13 @@
+         QStringList messages = m->getMessages();
+         QVERIFY(messages.count() == 0);
+ 
+-        m->sendMessage("99999", "success");
++        QDBusObjectPath objectPath = m->sendMessage("99999", "success", success);
+ 
+         QTest::qWait(1000);
+ 
+-        QCOMPARE(sendMessage.count(), 1);
+-        QVariantList params = sendMessage.takeFirst();
+-        QCOMPARE(params.at(0).toBool(), true);
+-        QString objectPath = params.at(1).value<QString>();
+-        QVERIFY(objectPath.length() > 0);
+-        qDebug() << objectPath;
++        QCOMPARE(success, true);
++        QVERIFY(objectPath.path().length() > 0);
++        qDebug() << objectPath.path();
+ 
+         QCOMPARE(messageAdded.count(), 1);
+         QCOMPARE(messageRemoved.count(), 1);
+@@ -84,15 +81,12 @@
+         QSignalSpy state(message, SIGNAL(stateChanged(const QString)));
+         qDebug() << message->state();
+ 
+-        m->sendMessage("abc", "fail");
++        objectPath = m->sendMessage("abc", "fail", success);
+ 
+         QTest::qWait(1000);
+ 
+-        QCOMPARE(sendMessage.count(), 1);
+-        params = sendMessage.takeFirst();
+-        QCOMPARE(params.at(0).toBool(), false);
+-        objectPath = params.at(1).value<QString>();
+-        QVERIFY(objectPath.length() == 0);
++        QCOMPARE(success, false);
++        QVERIFY(objectPath.path().length() == 0);
+     }
+ 
+     void testOfonoMessageManagerSca()
+
+=== modified file 'a/tests/test_ofonomultipartycall.cpp'
+--- a/tests/test_ofonomultipartycall.cpp	2013-04-23 05:14:42 +0000
++++ b/tests/test_ofonomultipartycall.cpp	2013-05-14 21:27:29 +0000
+@@ -68,10 +68,10 @@
+         // 12. Hangup all calls
+ 
+ 	QVariantList variantList;
++        bool success = true;
+ 
+         // VoiceCallManager Spy's
+-        QSignalSpy dialreg(m,SIGNAL(dialComplete(bool)));
+-        QSignalSpy dspy(m, SIGNAL(callAdded(QString)));
++        QSignalSpy dspy(m, SIGNAL(callAdded(QString, QVariantMap)));
+         QSignalSpy rspy(m, SIGNAL(callRemoved(QString)));
+         QSignalSpy haspy(m, SIGNAL(hangupAllComplete(bool)));
+         QSignalSpy haaspy(m, SIGNAL(holdAndAnswerComplete(bool)));
+@@ -81,11 +81,10 @@
+         QSignalSpy pcspy(m, SIGNAL(privateChatComplete(bool, QStringList)));
+ 
+         // 1. Dial a call (outgoing)
+-        m->dial("123","");
++        QDBusObjectPath objectPath = m->dial("123","", success);
+         QTest::qWait(1000);
+ 
+-        QCOMPARE(dialreg.count(), 1);
+-        QCOMPARE(dialreg.takeFirst().at(0).toBool(),true);
++        QCOMPARE(success, true);
+         QCOMPARE(dspy.count(), 1);
+         QString c1id = dspy.takeFirst().at(0).toString();
+ 
+@@ -122,11 +121,10 @@
+ 
+         // 2. Receive a call
+         //    - dial "199" to trigger phonesim callback
+-        m->dial("199","");
++        objectPath = m->dial("199","", success);
+         QTest::qWait(8000);
+ 
+-        QCOMPARE(dialreg.count(), 1);
+-        QCOMPARE(dialreg.takeFirst().at(0).toBool(),false);
++        QCOMPARE(success,false);
+         QCOMPARE(dspy.count(),1);
+         QString c2id = dspy.takeFirst().at(0).toString();
+ 
+@@ -207,11 +205,10 @@
+         QCOMPARE(c2->state(),QString("held"));
+ 
+         // 6. Dial a 3rd call
+-        m->dial("456","");
++        objectPath = m->dial("456","", success);
+         QTest::qWait(1000);
+ 
+-        QCOMPARE(dialreg.count(), 1);
+-        QCOMPARE(dialreg.takeFirst().at(0).toBool(),true);
++        QCOMPARE(success, true);
+         QCOMPARE(dspy.count(), 1);
+         QString c3id = dspy.takeFirst().at(0).toString();
+ 
+
+=== modified file 'a/tests/test_ofonovoicecall.cpp'
+--- a/tests/test_ofonovoicecall.cpp	2013-04-23 05:14:42 +0000
++++ b/tests/test_ofonovoicecall.cpp	2013-05-14 21:27:29 +0000
+@@ -51,17 +51,17 @@
+ 
+     void testOfonoVoiceCall()
+     {
+-        QSignalSpy dialreg(m,SIGNAL(dialComplete(bool)));
+-        QSignalSpy dspy(m, SIGNAL(callAdded(QString)));
++        bool success = false;
++        QSignalSpy dspy(m, SIGNAL(callAdded(QString, QVariantMap)));
+ 
+         // Dial and hangup
+-        m->dial("123","");
++        QDBusObjectPath objectPath = m->dial("123","", success);
+         QTest::qWait(1000);
+ 
+-        QCOMPARE(dialreg.count(), 1);
+-        QCOMPARE(dialreg.takeFirst().at(0).toBool(),true);
++        QCOMPARE(objectPath.path().isEmpty(), false);
++        QCOMPARE(success,true);
+         QCOMPARE(dspy.count(), 1);
+-        QString callid = dspy.takeFirst().at(0).toString();
++        QString callid = objectPath.path();
+ 
+         OfonoVoiceCall* call = new OfonoVoiceCall(callid);
+ 
+@@ -106,10 +106,11 @@
+ 
+     void testOfonoVoiceCallStep2()
+     {
++        bool success = false;
+         //Dial failure, incoming, answer and local hangup
+-        QSignalSpy callsignal(m, SIGNAL(callAdded(const QString)));
++        QSignalSpy callsignal(m, SIGNAL(callAdded(const QString, QVariantMap)));
+ 
+-        m->dial("199","");
++        QDBusObjectPath objectPath = m->dial("199","", success);
+         QTest::qWait(8000);
+ 
+         QCOMPARE(callsignal.count(),1);
+@@ -158,10 +159,11 @@
+ 
+     void testOfonoVoiceCallStep3()
+     {
++        bool success = false;
+         //Dial failed, incoming, no answer and state change to disconnect
+-        QSignalSpy callsignal(m, SIGNAL(callAdded(const QString)));
++        QSignalSpy callsignal(m, SIGNAL(callAdded(const QString, QVariantMap)));
+ 
+-        m->dial("177","");
++        QDBusObjectPath objectPath = m->dial("177","", success);
+         QTest::qWait(3000);
+ 
+         QCOMPARE(callsignal.count(),1);
+@@ -182,9 +184,10 @@
+     }
+     void testOfonoVoiceCallStep4()
+     {
++        bool success = false;
+         //Deflect
+-        QSignalSpy callsignal(m, SIGNAL(callAdded(const QString)));
+-        m->dial("199","");
++        QSignalSpy callsignal(m, SIGNAL(callAdded(const QString, QVariantMap)));
++        QDBusObjectPath objectPath = m->dial("199","", success);
+         QTest::qWait(8000);
+ 
+         QCOMPARE(callsignal.count(),1);
+
+=== modified file 'a/tests/test_ofonovoicecallmanager.cpp'
+--- a/tests/test_ofonovoicecallmanager.cpp	2013-04-23 05:14:42 +0000
++++ b/tests/test_ofonovoicecallmanager.cpp	2013-05-14 21:27:29 +0000
+@@ -52,11 +52,11 @@
+ 
+     void testOfonoVoiceCallManager()
+     {
++        bool success = false;
+     	QVERIFY(m->emergencyNumbers().count() > 0);
+ 
+ 	QSignalSpy emergencyNumbers(m, SIGNAL(emergencyNumbersChanged(QStringList)));
+-        QSignalSpy dialreg(m,SIGNAL(dialComplete(bool)));
+-        QSignalSpy dspy(m, SIGNAL(callAdded(QString)));
++        QSignalSpy dspy(m, SIGNAL(callAdded(QString, QVariantMap)));
+         QSignalSpy hupreg(m,SIGNAL(hangupAllComplete(bool)));
+         QSignalSpy tonereg(m,SIGNAL(sendTonesComplete(bool)));
+         QSignalSpy hspy(m, SIGNAL(callRemoved(QString)));
+@@ -71,11 +71,11 @@
+         QCOMPARE(emergencyNumbers.count(), 1);
+         QVERIFY(emergencyNumbers.takeFirst().at(0).toStringList().count() > 0);
+         //Dial testing
+-        m->dial("123","");
++        QDBusObjectPath objectPath = m->dial("123","", success);
+         qDebug() << "Please find a call in 'Dialing' state in phonesim window and press 'Active' button";
+         QTest::qWait(15000);
+-        QCOMPARE(dialreg.count(), 1);
+-        QCOMPARE(dialreg.takeFirst().at(0).toBool(),true);
++        QCOMPARE(objectPath.path().isEmpty(), false);
++        QCOMPARE(success, true);
+         QCOMPARE(dspy.count(), 1);
+         //Tones testing
+         QTest::qWait(5000);
+@@ -97,17 +97,17 @@
+ 
+     void testoFonoVoiceCallManagerStep2()
+     {
++        bool success = false;
+         // test dial failure and hangup of incoming alerting call
+-        QSignalSpy dialreg(m,SIGNAL(dialComplete(bool)));
+         QSignalSpy hupreg(m,SIGNAL(hangupAllComplete(bool)));
+-        QSignalSpy dspy(m, SIGNAL(callAdded(QString)));
++        QSignalSpy dspy(m, SIGNAL(callAdded(QString, QVariantMap)));
+         QSignalSpy hspy(m, SIGNAL(callRemoved(QString)));
+ 
+ 
+-        m->dial("199","");
++        QDBusObjectPath objectPath = m->dial("199","", success);
+         QTest::qWait(5000);
+-        QCOMPARE(dialreg.count(), 1);
+-        QCOMPARE(dialreg.takeFirst().at(0).toBool(),false);
++        QCOMPARE(objectPath.path().isEmpty(), false);
++        QCOMPARE(success, false);
+         QTest::qWait(10000);
+         QCOMPARE(dspy.count(), 1);

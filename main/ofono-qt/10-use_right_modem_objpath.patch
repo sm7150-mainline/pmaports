@@ -1,0 +1,28 @@
+Description: do not fallback to / when using ManualSelect
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+Index: ofono-qt-1.5+git20120419+bcf0c04/lib/ofonomodem.cpp
+===================================================================
+--- ofono-qt-1.5+git20120419+bcf0c04.orig/lib/ofonomodem.cpp	2012-04-19 12:03:52.000000000 -0300
++++ ofono-qt-1.5+git20120419+bcf0c04/lib/ofonomodem.cpp	2014-03-26 10:24:13.250630065 -0300
+@@ -41,8 +41,7 @@
+     if (setting == AutomaticSelect)
+         finalModemPath = m_mm->modems().value(0);
+     else if (setting == ManualSelect)
+-        if (m_mm->modems().contains(modemPath))
+-            finalModemPath = modemPath;
++        finalModemPath = modemPath;
+     
+     if (finalModemPath.isEmpty()) {
+         finalModemPath = "/";
+@@ -122,8 +121,6 @@
+             }
+             m_if->setPath(modemPath);
+             emit pathChanged(modemPath);
+-        } else if (m_selectionSetting == ManualSelect) {
+-            m_if->setPath("/");
+         }
+     }
+     // validity has changed

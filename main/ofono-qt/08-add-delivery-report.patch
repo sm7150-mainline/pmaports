@@ -1,0 +1,43 @@
+Description: Add delivery report support
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+=== modified file 'a/lib/ofonomessagemanager.cpp'
+--- a/lib/ofonomessagemanager.cpp	2013-05-14 21:43:39 +0000
++++ b/lib/ofonomessagemanager.cpp	2013-12-11 14:00:49 +0000
+@@ -115,6 +115,10 @@
+                                          "ImmediateMessage",
+                                          this,
+                                          SIGNAL(immediateMessage(QString, QVariantMap)));
++    QDBusConnection::systemBus().disconnect("org.ofono", QString(), m_if->ifname(),
++                                         "StatusReport",
++                                         this,
++                                         SIGNAL(statusReport(QString, QVariantMap)));
+ 
+     QDBusConnection::systemBus().connect("org.ofono", path, m_if->ifname(),
+                                          "MessageAdded",
+@@ -132,6 +136,10 @@
+                                          "ImmediateMessage",
+                                          this,
+                                          SIGNAL(immediateMessage(QString, QVariantMap)));
++    QDBusConnection::systemBus().connect("org.ofono", path, m_if->ifname(),
++                                         "StatusReport",
++                                         this,
++                                         SIGNAL(statusReport(QString, QVariantMap)));
+ }
+ 
+ void OfonoMessageManager::requestServiceCenterAddress()
+
+=== modified file 'a/lib/ofonomessagemanager.h'
+--- a/lib/ofonomessagemanager.h	2013-05-13 18:02:33 +0000
++++ b/lib/ofonomessagemanager.h	2013-12-11 14:00:49 +0000
+@@ -86,6 +86,7 @@
+     void messageRemoved(const QString &message);
+     void immediateMessage(const QString &message, const QVariantMap &info);
+     void incomingMessage(const QString &message, const QVariantMap &info);
++    void statusReport(const QString &message, const QVariantMap &info);
+ 
+ private Q_SLOTS:
+     void validityChanged(bool);
+

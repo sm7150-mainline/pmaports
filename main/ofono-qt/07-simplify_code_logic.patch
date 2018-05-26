@@ -1,0 +1,93 @@
+Description: Simplify code logic
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+=== modified file 'a/lib/ofonoconnman.cpp'
+--- a/lib/ofonoconnman.cpp	2013-05-14 16:19:47 +0000
++++ b/lib/ofonoconnman.cpp	2013-05-14 21:43:39 +0000
+@@ -150,7 +150,6 @@
+ {
+     QDBusMessage request;
+     QDBusReply<QDBusObjectPath> reply;
+-    QDBusObjectPath objpath;
+ 
+     request = QDBusMessage::createMethodCall("org.ofono",
+ 					     path(), m_if->ifname(),
+@@ -161,14 +160,11 @@
+     request.setArguments(arg);
+ 
+     reply = QDBusConnection::systemBus().call(request);
+-    if (reply.isValid()) {
+-        objpath = reply;
+-        success = true;
+-    } else {
++    success = reply.isValid();
++    if (!success) {
+         m_if->setError(reply.error().name(), reply.error().message());
+-        success = false;
+     }
+-    return objpath;
++    return reply;
+ }
+ 
+ void OfonoConnMan::addContextResp(const QDBusObjectPath &path)
+
+=== modified file 'a/lib/ofonomessagemanager.cpp'
+--- a/lib/ofonomessagemanager.cpp	2013-05-13 18:02:33 +0000
++++ b/lib/ofonomessagemanager.cpp	2013-05-14 21:43:39 +0000
+@@ -179,21 +179,17 @@
+ {
+     QDBusMessage request;
+     QDBusReply<QDBusObjectPath> reply;
+-    QDBusObjectPath objpath;
+ 
+     request = QDBusMessage::createMethodCall("org.ofono",
+                                              path(), m_if->ifname(),
+                                              "SendMessage");
+     request << to << message;
+     reply = QDBusConnection::systemBus().call(request);
+-    if (reply.isValid()) {
+-        objpath = reply;
+-        success = true;
+-    } else {
++    success = reply.isValid();
++    if (!success) {
+         m_if->setError(reply.error().name(), reply.error().message());
+-        success = false;
+     }
+-    return objpath;
++    return reply;
+ }
+ 
+ void OfonoMessageManager::requestPropertyComplete(bool success, const QString& property, const QVariant& value)
+
+=== modified file 'a/lib/ofonovoicecallmanager.cpp'
+--- a/lib/ofonovoicecallmanager.cpp	2013-05-13 18:02:33 +0000
++++ b/lib/ofonovoicecallmanager.cpp	2013-05-14 21:43:39 +0000
+@@ -143,7 +143,6 @@
+ {
+     QDBusMessage request;
+     QDBusReply<QDBusObjectPath> reply;
+-    QDBusObjectPath objpath;
+     request = QDBusMessage::createMethodCall("org.ofono",
+                                              path(), m_if->ifname(),
+                                              "Dial");
+@@ -153,14 +152,11 @@
+     request.setArguments(arg);
+ 
+     reply = QDBusConnection::systemBus().call(request);
+-    if (reply.isValid()) {
+-        objpath = reply;
+-        success = true;
+-    } else {
++    success = reply.isValid();
++    if (!success) {
+         m_if->setError(reply.error().name(), reply.error().message());
+-        success = false;
+     }
+-    return objpath;
++    return reply;
+ }
+ 
+ void OfonoVoiceCallManager::hangupAll()

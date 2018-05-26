@@ -1,0 +1,51 @@
+Description: Make createMultiparty() synchronous
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+=== modified file 'lib/ofonovoicecallmanager.cpp'
+--- a/lib/ofonovoicecallmanager.cpp	2013-05-14 21:43:39 +0000
++++ b/lib/ofonovoicecallmanager.cpp	2014-02-07 20:33:22 +0000
+@@ -256,17 +256,23 @@
+                                         PRIVATE_CHAT_TIMEOUT);
+ }
+ 
+-void OfonoVoiceCallManager::createMultiparty()
++QList<QDBusObjectPath> OfonoVoiceCallManager::createMultiparty()
+ {
+     QDBusMessage request;
++    QDBusReply<QList<QDBusObjectPath> > reply;
+     request = QDBusMessage::createMethodCall("org.ofono",
+                                              path(), m_if->ifname(),
+                                              "CreateMultiparty");
+ 
+-    QDBusConnection::systemBus().callWithCallback(request, this,
+-                                        SLOT(createMultipartyResp(const QList<QDBusObjectPath>&)),
+-                                        SLOT(createMultipartyErr(const QDBusError&)),
+-                                        CREATE_MULTIPARTY_TIMEOUT);
++    request = QDBusMessage::createMethodCall("org.ofono",
++                                             path(), m_if->ifname(),
++                                             "CreateMultiparty");
++    reply = QDBusConnection::systemBus().call(request);
++    bool success = reply.isValid();
++    if (!success) {
++        m_if->setError(reply.error().name(), reply.error().message());
++    }
++    return reply;
+ }
+ 
+ void OfonoVoiceCallManager::hangupMultiparty()
+
+=== modified file 'lib/ofonovoicecallmanager.h'
+--- a/lib/ofonovoicecallmanager.h	2013-05-13 18:02:33 +0000
++++ b/lib/ofonovoicecallmanager.h	2014-02-07 20:33:22 +0000
+@@ -73,7 +73,7 @@
+     void releaseAndAnswer();
+     void holdAndAnswer();
+     void privateChat(const QString &path);
+-    void createMultiparty();
++    QList<QDBusObjectPath> createMultiparty();
+     void hangupMultiparty();
+ 
+ Q_SIGNALS:
+

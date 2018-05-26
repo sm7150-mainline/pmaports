@@ -1,0 +1,614 @@
+Description: Change signals by Q_SIGNALS and slots by Q_SLOTS
+Author: Tiago Salem Herrmann <tiago.herrmann@canonical.com>
+Forwarded: no
+
+diff:
+=== modified file 'a/lib/ofonocallbarring.h'
+--- a/lib/ofonocallbarring.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonocallbarring.h	2013-04-23 05:21:32 +0000
+@@ -42,7 +42,7 @@
+     OfonoCallBarring(OfonoModem::SelectionSetting modemSetting, const QString &modemPath, QObject *parent=0);
+     ~OfonoCallBarring();
+ 
+-public slots:
++public Q_SLOTS:
+     /* Properties */
+     void requestVoiceIncoming();
+     void setVoiceIncoming(const QString &barrings, const QString &password);
+@@ -55,7 +55,7 @@
+     void disableAllIncoming(const QString &password);
+     void disableAllOutgoing(const QString &password);
+ 
+-signals:
++Q_SIGNALS:
+     void voiceIncomingComplete(bool success, const QString &barrings);
+     void voiceOutgoingComplete(bool success, const QString &barrings);
+     void voiceIncomingChanged(const QString &barrings);
+@@ -68,7 +68,7 @@
+     void disableAllIncomingComplete(bool success);
+     void disableAllOutgoingComplete(bool success);
+ 
+-private slots:
++private Q_SLOTS:
+     void pathChanged(const QString& path);
+     void propertyChanged(const QString& property, const QVariant& value);
+     void setPropertyFailed(const QString& property);
+
+=== modified file 'a/lib/ofonocallforwarding.h'
+--- a/lib/ofonocallforwarding.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonocallforwarding.h	2013-04-23 05:21:32 +0000
+@@ -42,7 +42,7 @@
+     OfonoCallForwarding(OfonoModem::SelectionSetting modemSetting, const QString &modemPath, QObject *parent=0);
+     ~OfonoCallForwarding();
+ 
+-public slots:
++public Q_SLOTS:
+     /* Properties */
+     void requestVoiceUnconditional(); /* "" | phonenumber */
+     void setVoiceUnconditional(const QString &property); 
+@@ -59,7 +59,7 @@
+     /* Methods */
+     void disableAll(const QString &type); /* "all" | "conditional" */
+     
+-signals:
++Q_SIGNALS:
+     void voiceUnconditionalComplete(bool success, const QString &property);
+     void voiceBusyComplete(bool success, const QString &property);
+     void voiceNoReplyComplete(bool success, const QString &property);
+@@ -82,7 +82,7 @@
+ 
+     void disableAllComplete(bool success); 
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void setPropertyFailed(const QString& property);
+     void requestPropertyComplete(bool success, const QString& property, const QVariant& value);
+
+=== modified file 'a/lib/ofonocallmeter.h'
+--- a/lib/ofonocallmeter.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonocallmeter.h	2013-04-23 05:21:32 +0000
+@@ -41,16 +41,16 @@
+     OfonoCallMeter(OfonoModem::SelectionSetting modemSetting, const QString &modemPath, QObject *parent=0);
+     ~OfonoCallMeter();
+ 
+-public slots:
++public Q_SLOTS:
+     /* Properties */
+     void requestCallMeter();
+     
+-signals:
++Q_SIGNALS:
+     void callMeterComplete(bool success, uint value);
+ 
+     void callMeterChanged(uint value);
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void requestPropertyComplete(bool success, const QString& property, const QVariant& value);
+ };
+
+=== modified file 'a/lib/ofonocallsettings.h'
+--- a/lib/ofonocallsettings.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonocallsettings.h	2013-04-23 05:21:32 +0000
+@@ -41,7 +41,7 @@
+     OfonoCallSettings(OfonoModem::SelectionSetting modemSetting, const QString &modemPath, QObject *parent=0);
+     ~OfonoCallSettings();
+ 
+-public slots:
++public Q_SLOTS:
+     /* Properties */
+     void requestCallingLinePresentation();
+     void requestCalledLinePresentation();
+@@ -54,7 +54,7 @@
+     void requestVoiceCallWaiting();
+     void setVoiceCallWaiting(const QString &setting);
+     
+-signals:
++Q_SIGNALS:
+     void callingLinePresentationComplete(bool success, const QString &setting);
+     void calledLinePresentationComplete(bool success, const QString &setting);
+     void callingNamePresentationComplete(bool success, const QString &setting);
+@@ -76,7 +76,7 @@
+     void setHideCallerIdFailed();
+     void setVoiceCallWaitingFailed();
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void setPropertyFailed(const QString& property);
+     void requestPropertyComplete(bool success, const QString& property, const QVariant& value);      
+
+=== modified file 'a/lib/ofonocallvolume.h'
+--- a/lib/ofonocallvolume.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonocallvolume.h	2013-04-23 05:21:32 +0000
+@@ -50,12 +50,12 @@
+     quint8 speakerVolume() const;
+     quint8 microphoneVolume()const ;
+ 
+-public slots:
++public Q_SLOTS:
+     void setMuted(const bool mute);
+     void setSpeakerVolume(const quint8 &spvolume);
+     void setMicrophoneVolume(const quint8 &mpvolume);
+ 
+-signals:
++Q_SIGNALS:
+     void mutedChanged(const bool &muted);
+     void speakerVolumeChanged(const quint8 &volume);
+     void microphoneVolumeChanged(const quint8 &mvolume);
+@@ -63,7 +63,7 @@
+     void setSpeakerVolumeFailed();
+     void setMicrophoneVolumeFailed();
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void setPropertyFailed(const QString& property);
+ 
+
+=== modified file 'a/lib/ofonoconnman.h'
+--- a/lib/ofonoconnman.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonoconnman.h	2013-04-23 05:21:32 +0000
+@@ -67,14 +67,14 @@
+     bool roamingAllowed() const;
+     bool powered() const;
+ 
+-public slots:
++public Q_SLOTS:
+     void setPowered(const bool);
+     void setRoamingAllowed(const bool);
+     void deactivateAll();
+     void addContext(const QString& type);
+     void removeContext(const QString& path);
+ 
+-signals:
++Q_SIGNALS:
+     void attachedChanged(const bool value);
+     void bearerChanged(const QString &bearer);
+     void suspendedChanged(const bool suspnd);
+@@ -90,7 +90,7 @@
+     void setPoweredFailed();
+     void setRoamingAllowedFailed();
+ 
+-private slots:
++private Q_SLOTS:
+     void validityChanged(bool);
+     void pathChanged(const QString& path);
+     void propertyChanged(const QString& property, const QVariant& value);
+
+=== modified file 'a/lib/ofonoconnmancontext.h'
+--- a/lib/ofonoconnmancontext.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonoconnmancontext.h	2013-04-23 05:21:32 +0000
+@@ -95,7 +95,7 @@
+     QVariantMap settings() const;
+     QVariantMap IPv6Settings() const;
+ 
+-public slots:
++public Q_SLOTS:
+     void setActive(const bool);
+     void setAccessPointName(const QString&);
+     void setType(const QString&);
+@@ -106,7 +106,7 @@
+     void setMessageProxy(const QString&);
+     void setMessageCenter(const QString&);
+ 
+-signals:
++Q_SIGNALS:
+     void activeChanged(const bool);
+     void accessPointNameChanged(const QString &apn);
+     void nameChanged(const QString &name);
+@@ -131,7 +131,7 @@
+     void settingsChanged(const QVariantMap&);
+     void IPv6SettingsChanged(const QVariantMap&);
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString &property, const QVariant &value);
+     void setPropertyFailed(const QString& property);
+ 
+
+=== modified file 'a/lib/ofonointerface.h'
+--- a/lib/ofonointerface.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonointerface.h	2013-04-23 05:21:32 +0000
+@@ -94,7 +94,7 @@
+      */
+     QString errorMessage() const {return m_errorMessage;}
+ 
+-public slots:
++public Q_SLOTS:
+     //! Changes the interface path
+     /*!
+      * This method changes the D-Bus path to the interface.
+@@ -106,7 +106,7 @@
+     //! Sets the last error explicitly
+     void setError(const QString &errorName, const QString &errorMessage);
+ 
+-signals:
++Q_SIGNALS:
+     //! Issued when a property has changed
+     /*!
+      * \param name name of the property
+@@ -128,13 +128,13 @@
+      */
+     void setPropertyFailed(const QString &name);
+ 
+-private slots:
++private Q_SLOTS:
+     void onPropertyChanged(QString property, QDBusVariant value);
+     void getPropertiesAsyncResp(QVariantMap properties);
+     void getPropertiesAsyncErr(const QDBusError&);
+     void setPropertyResp();
+     void setPropertyErr(const QDBusError& error);
+-protected slots:
++protected Q_SLOTS:
+ private:
+     QVariantMap getAllPropertiesSync();
+     
+
+=== modified file 'a/lib/ofonomessage.h'
+--- a/lib/ofonomessage.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonomessage.h	2013-04-23 05:21:32 +0000
+@@ -74,10 +74,10 @@
+ 
+     QString state() const;
+ 
+-signals:
++Q_SIGNALS:
+     void stateChanged(const QString &state);
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString &property, const QVariant &value);
+ 
+ private:
+
+=== modified file 'a/lib/ofonomessagemanager.h'
+--- a/lib/ofonomessagemanager.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonomessagemanager.h	2013-04-23 05:21:32 +0000
+@@ -53,7 +53,7 @@
+     ~OfonoMessageManager();
+ 
+     Q_INVOKABLE QStringList getMessages() const;
+-public slots:
++public Q_SLOTS:
+     /* Properties */
+     void requestServiceCenterAddress();
+     void setServiceCenterAddress(QString address);
+@@ -66,7 +66,7 @@
+ 
+     void sendMessage(const QString &to, const QString &message);
+ 
+-signals:
++Q_SIGNALS:
+     void serviceCenterAddressChanged(const QString &address);
+     void useDeliveryReportsChanged(const bool &useDeliveryReports);
+     void bearerChanged(const QString &bearer);
+@@ -88,7 +88,7 @@
+     void immediateMessage(const QString &message, const QVariantMap &info);
+     void incomingMessage(const QString &message, const QVariantMap &info);
+ 
+-private slots:
++private Q_SLOTS:
+     void validityChanged(bool);
+     void pathChanged(const QString& path);
+     void propertyChanged(const QString &property, const QVariant &value);
+
+=== modified file 'a/lib/ofonomessagewaiting.h'
+--- a/lib/ofonomessagewaiting.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonomessagewaiting.h	2013-04-23 05:21:32 +0000
+@@ -48,17 +48,17 @@
+     bool voicemailWaiting() const;
+     int voicemailMessageCount() const;
+     QString voicemailMailboxNumber() const;
+-public slots:
++public Q_SLOTS:
+     void setVoicemailMailboxNumber(QString mailboxnumber);
+ 
+-signals:
++Q_SIGNALS:
+     void voicemailWaitingChanged(bool waiting);
+     void voicemailMessageCountChanged(int count);
+     void voicemailMailboxNumberChanged(const QString &mailboxnumber);
+ 
+     void setVoicemailMailboxNumberFailed();
+     
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void setPropertyFailed(const QString& property);    
+ };
+
+=== modified file 'a/lib/ofonomodem.h'
+--- a/lib/ofonomodem.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonomodem.h	2013-04-23 05:21:32 +0000
+@@ -119,12 +119,12 @@
+     QStringList features() const;
+     QStringList interfaces() const;
+ 
+-public slots:
++public Q_SLOTS:
+     void setPowered(bool powered);
+     void setOnline(bool online);
+     void setLockdown(bool lockdown);
+ 
+-signals:
++Q_SIGNALS:
+     //! Issued when a modem becomes unavailable or available again
+     void validityChanged(bool validity);
+     //! Issued when the object has switched to another modem
+@@ -149,7 +149,7 @@
+     void interfacesChanged(const QStringList &interfaces);
+ 
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString &property, const QVariant &value);
+     void setPropertyFailed(const QString& property);
+     void modemAdded(const QString &modem);
+
+=== modified file 'a/lib/ofonomodeminterface.h'
+--- a/lib/ofonomodeminterface.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonomodeminterface.h	2013-04-23 05:21:32 +0000
+@@ -89,7 +89,7 @@
+      */
+     QString errorMessage() const;
+ 
+-signals:
++Q_SIGNALS:
+     //! Interface validity has changed
+     /*!
+      * This may mean that modem has become unavailable
+@@ -102,7 +102,7 @@
+     bool checkValidity();
+     void updateValidity();
+ 
+-private slots:
++private Q_SLOTS:
+     void modemValidityChanged(bool validity);
+     void interfacesChanged(const QStringList &interfaces);
+ 
+
+=== modified file 'a/lib/ofonomodemmanager.h'
+--- a/lib/ofonomodemmanager.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonomodemmanager.h	2013-04-23 05:21:32 +0000
+@@ -44,14 +44,14 @@
+     //! Returns a list of d-bus object paths that represent available modems
+     Q_INVOKABLE QStringList modems() const;
+ 
+-signals:
++Q_SIGNALS:
+     //! Issued when a modem has been added
+     void modemAdded(const QString &modemPath);
+     
+     //! Issued when a modem has been removed
+     void modemRemoved(const QString &modemPath);
+ 
+-private slots:
++private Q_SLOTS:
+     void onModemAdded(const QDBusObjectPath &path, const QVariantMap &map);
+     void onModemRemoved(const QDBusObjectPath &path);
+ 
+
+=== modified file 'a/lib/ofononetworkoperator.h'
+--- a/lib/ofononetworkoperator.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofononetworkoperator.h	2013-04-23 05:21:32 +0000
+@@ -86,10 +86,10 @@
+     QStringList technologies() const;
+     QString additionalInfo() const;
+ 
+-public slots:
++public Q_SLOTS:
+     void registerOp();
+     
+-signals:
++Q_SIGNALS:
+     void registerComplete(bool success);
+     
+     void nameChanged(const QString &name);
+@@ -101,7 +101,7 @@
+ 
+ private:
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     
+     void registerResp();
+
+=== modified file 'a/lib/ofononetworkregistration.h'
+--- a/lib/ofononetworkregistration.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofononetworkregistration.h	2013-04-23 05:21:32 +0000
+@@ -75,12 +75,12 @@
+     uint strength() const;
+     QString baseStation() const;
+ 
+-public slots:    
++public Q_SLOTS:    
+     void registerOp();
+     void getOperators();
+     void scan();
+     
+-signals:
++Q_SIGNALS:
+     void modeChanged(const QString &mode);
+     void statusChanged(const QString &status);
+     void locationAreaCodeChanged(uint locationAreaCode);
+@@ -96,7 +96,7 @@
+     void getOperatorsComplete(bool success, const QStringList &operatorIds);
+     void scanComplete(bool success, const QStringList &operatorIds);
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void registerResp();
+     void registerErr(QDBusError error);
+
+=== modified file 'a/lib/ofonophonebook.h'
+--- a/lib/ofonophonebook.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonophonebook.h	2013-04-23 05:21:32 +0000
+@@ -45,13 +45,13 @@
+ 
+     ~OfonoPhonebook();
+ 
+-public slots:
++public Q_SLOTS:
+     void import();
+ 
+-signals:
++Q_SIGNALS:
+     void importComplete(bool success, const QString &entries);
+ 
+-private slots:
++private Q_SLOTS:
+     void importResp(const QString &entries);
+     void importErr(const QDBusError &error);
+ 
+
+=== modified file 'a/lib/ofonoradiosettings.h'
+--- a/lib/ofonoradiosettings.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonoradiosettings.h	2013-04-23 05:21:32 +0000
+@@ -50,13 +50,13 @@
+     QString gsmBand() const;
+     QString umtsBand() const;
+     bool fastDormancy() const;
+-public slots:
++public Q_SLOTS:
+     void setTechnologyPreference(QString preference);
+     void setGsmBand(QString gsmBand);
+     void setUmtsBand(QString umtsBand);
+     void setFastDormancy(bool fastDormancy);
+ 
+-signals:
++Q_SIGNALS:
+     void technologyPreferenceChanged(const QString &preference);
+     void setTechnologyPreferenceFailed();
+     void gsmBandChanged(const QString &gsmBand);
+@@ -66,7 +66,7 @@
+     void fastDormancyChanged(bool fastDormancy);
+     void setFastDormancyFailed();
+         
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void setPropertyFailed(const QString& property);    
+ };
+
+=== modified file 'a/lib/ofonosimmanager.h'
+--- a/lib/ofonosimmanager.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonosimmanager.h	2013-04-23 05:21:32 +0000
+@@ -77,7 +77,7 @@
+     bool fixedDialing() const;
+     bool barredDialing() const;
+ 
+-public slots:
++public Q_SLOTS:
+     void changePin(const QString &pintype, const QString &oldpin, const QString &newpin);
+     void enterPin(const QString &pintype, const QString &pin);
+     void resetPin(const QString &pintype, const QString &puk, const QString &newpin);
+@@ -87,7 +87,7 @@
+ 
+     void setSubscriberNumbers(const QStringList &numbers);
+ 
+-signals:
++Q_SIGNALS:
+     void presenceChanged(bool ispresent);
+     void subscriberIdentityChanged(const QString &imsi);
+     void mobileCountryCodeChanged(const QString &mcc);
+@@ -110,7 +110,7 @@
+     void unlockPinComplete(bool success);
+     void getIconComplete(bool success, const QByteArray &icon);
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString& property, const QVariant& value);
+     void setPropertyFailed(const QString& property);    
+ 
+
+=== modified file 'a/lib/ofonosupplementaryservices.h'
+--- a/lib/ofonosupplementaryservices.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonosupplementaryservices.h	2013-04-23 05:21:32 +0000
+@@ -48,12 +48,12 @@
+     /* Properties */
+     QString state() const;
+ 
+-public slots:    
++public Q_SLOTS:    
+     void initiate(const QString &command);
+     void respond(const QString &reply);
+     void cancel();
+     
+-signals:
++Q_SIGNALS:
+     void notificationReceived(const QString &message);
+     void requestReceived(const QString &message);
+ 
+@@ -71,7 +71,7 @@
+     void respondComplete(bool success, const QString &message);
+     void cancelComplete(bool success);
+     
+-private slots:
++private Q_SLOTS:
+     void pathChanged(const QString& path);
+     void propertyChanged(const QString& property, const QVariant& value);
+     void initiateResp(QString message, QDBusVariant details);
+
+=== modified file 'a/lib/ofonovoicecall.h'
+--- a/lib/ofonovoicecall.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonovoicecall.h	2013-04-23 05:21:32 +0000
+@@ -92,12 +92,12 @@
+     bool remoteHeld() const;
+     bool remoteMultiparty() const;
+ 
+-public slots:
++public Q_SLOTS:
+     void answer();
+     void hangup();
+     void deflect(const QString &number);
+ 
+-signals:
++Q_SIGNALS:
+     void answerComplete(bool status);
+     void hangupComplete(bool status);
+     void deflectComplete(bool status);
+@@ -114,7 +114,7 @@
+     void remoteHeldChanged(const bool remoteHeld);
+     void remoteMultipartyChanged(const bool remoteMultiparty);
+ 
+-private slots:
++private Q_SLOTS:
+     void propertyChanged(const QString &property, const QVariant &value);
+     void answerResp();
+     void answerErr(const QDBusError &error);
+
+=== modified file 'a/lib/ofonovoicecallmanager.h'
+--- a/lib/ofonovoicecallmanager.h	2013-04-23 05:14:42 +0000
++++ b/lib/ofonovoicecallmanager.h	2013-04-23 05:21:32 +0000
+@@ -64,7 +64,7 @@
+ 
+     Q_INVOKABLE QStringList getCalls() const;
+ 
+-public slots:
++public Q_SLOTS:
+     void dial(const QString &number, const QString &callerid_hide);
+     void hangupAll();
+     void sendTones(const QString &tonestring);
+@@ -76,7 +76,7 @@
+     void createMultiparty();
+     void hangupMultiparty();
+ 
+-signals:
++Q_SIGNALS:
+     void emergencyNumbersChanged(const QStringList &numbers);
+     void callAdded(const QString &call);
+     void callRemoved(const QString &call);
+@@ -94,7 +94,7 @@
+     void barringActive(const QString &type);
+     void forwarded(const QString &type);
+ 
+-private slots:
++private Q_SLOTS:
+     void validityChanged(bool);
+     void pathChanged(const QString& path);
+     void propertyChanged(const QString &property, const QVariant &value);
