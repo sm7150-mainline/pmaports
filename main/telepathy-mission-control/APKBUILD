@@ -1,0 +1,29 @@
+# Contributor: Bhushan Shah <bshah@kde.org>
+# Maintainer: Bhushan Shah <bshah@kde.org>
+pkgname=telepathy-mission-control
+pkgver=5.16.4
+pkgrel=0
+arch="all"
+url="http://telepathy.freedesktop.org/wiki/"
+license="LGPL"
+pkgdesc="Account Manager and Channel Dispatcher based on telepathy-glib"
+depends=""
+depends_dev="telepathy-glib-dev gstreamer-dev"
+makedepends="$depends_dev libxslt-dev dbus"
+source="https://telepathy.freedesktop.org/releases/$pkgname/$pkgname-$pkgver.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc"
+options="!check" # Fails due to requiring a running dbus daemon
+
+build() {
+	PYTHON=/usr/bin/python2 ./configure --prefix=/usr \
+		--libexecdir=/usr/lib/telepathy \
+		--enable-static=no
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="5ed624df2d041554af074c22a18db2405fa5bd41bec40edc574382eb9d8b9f93ff6f4be3042d27f950694a353f4192670e200f5f8865419701ca520a973959ed  telepathy-mission-control-5.16.4.tar.gz"
