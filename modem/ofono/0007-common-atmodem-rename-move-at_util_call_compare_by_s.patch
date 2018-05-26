@@ -1,0 +1,313 @@
+From 4c71f0ca71c74987523c68764df28840ccd3882e Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Tue, 25 Jul 2017 15:35:51 +0200
+Subject: [PATCH 07/17] common,atmodem: rename & move
+ at_util_call_compare_by_status to common.c
+
+at_util_call_compare_by_status is used by several modem drivers.
+---
+ drivers/atmodem/atutil.c        | 11 -----------
+ drivers/atmodem/atutil.h        |  2 +-
+ drivers/atmodem/voicecall.c     | 16 ++++++++--------
+ drivers/hfpmodem/voicecall.c    | 20 ++++++++++----------
+ drivers/huaweimodem/voicecall.c |  4 ++--
+ drivers/ifxmodem/voicecall.c    | 10 +++++-----
+ src/common.c                    | 11 +++++++++++
+ src/common.h                    |  1 +
+ 8 files changed, 38 insertions(+), 37 deletions(-)
+
+Index: ofono-1.21/drivers/atmodem/atutil.c
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/atutil.c
++++ ofono-1.21/drivers/atmodem/atutil.c
+@@ -69,17 +69,6 @@ void decode_at_error(struct ofono_error
+ 	}
+ }
+ 
+-gint at_util_call_compare_by_status(gconstpointer a, gconstpointer b)
+-{
+-	const struct ofono_call *call = a;
+-	int status = GPOINTER_TO_INT(b);
+-
+-	if (status != call->status)
+-		return 1;
+-
+-	return 0;
+-}
+-
+ gint at_util_call_compare_by_phone_number(gconstpointer a, gconstpointer b)
+ {
+ 	const struct ofono_call *call = a;
+Index: ofono-1.21/drivers/atmodem/atutil.h
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/atutil.h
++++ ofono-1.21/drivers/atmodem/atutil.h
+@@ -51,7 +51,7 @@ enum at_util_charset {
+ typedef void (*at_util_sim_inserted_cb_t)(gboolean present, void *userdata);
+ 
+ void decode_at_error(struct ofono_error *error, const char *final);
+-gint at_util_call_compare_by_status(gconstpointer a, gconstpointer b);
++gint ofono_call_compare_by_status(gconstpointer a, gconstpointer b);
+ gint at_util_call_compare_by_phone_number(gconstpointer a, gconstpointer b);
+ gint at_util_call_compare_by_id(gconstpointer a, gconstpointer b);
+ GSList *at_util_parse_clcc(GAtResult *result, unsigned int *mpty_ids);
+Index: ofono-1.21/drivers/atmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/voicecall.c
++++ ofono-1.21/drivers/atmodem/voicecall.c
+@@ -660,13 +660,13 @@ static void ring_notify(GAtResult *resul
+ 	/* See comment in CRING */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_WAITING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	/* RING can repeat, ignore if we already have an incoming call */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	/* Generate an incoming call of unknown type */
+@@ -698,13 +698,13 @@ static void cring_notify(GAtResult *resu
+ 	 */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_WAITING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	/* CRING can repeat, ignore if we already have an incoming call */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	g_at_result_iter_init(&iter, result);
+@@ -748,7 +748,7 @@ static void clip_notify(GAtResult *resul
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CLIP for unknown call");
+ 		return;
+@@ -810,7 +810,7 @@ static void cdip_notify(GAtResult *resul
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CDIP for unknown call");
+ 		return;
+@@ -859,7 +859,7 @@ static void cnap_notify(GAtResult *resul
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CNAP for unknown call");
+ 		return;
+@@ -913,7 +913,7 @@ static void ccwa_notify(GAtResult *resul
+ 	/* Some modems resend CCWA, ignore it the second time around */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_WAITING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	g_at_result_iter_init(&iter, result);
+Index: ofono-1.21/drivers/hfpmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/hfpmodem/voicecall.c
++++ ofono-1.21/drivers/hfpmodem/voicecall.c
+@@ -85,12 +85,12 @@ static GSList *find_dialing(GSList *call
+ 	GSList *c;
+ 
+ 	c = g_slist_find_custom(calls, GINT_TO_POINTER(CALL_STATUS_DIALING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 
+ 	if (c == NULL)
+ 		c = g_slist_find_custom(calls,
+ 					GINT_TO_POINTER(CALL_STATUS_ALERTING),
+-					at_util_call_compare_by_status);
++					ofono_call_compare_by_status);
+ 
+ 	return c;
+ }
+@@ -720,7 +720,7 @@ static void ccwa_notify(GAtResult *resul
+ 	/* CCWA can repeat, ignore if we already have an waiting call */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_WAITING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	/* some phones may send extra CCWA after active call is ended
+@@ -729,7 +729,7 @@ static void ccwa_notify(GAtResult *resul
+ 	 */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 
+@@ -772,7 +772,7 @@ static gboolean clip_timeout(gpointer us
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 
+ 	if (l == NULL)
+ 		return FALSE;
+@@ -801,12 +801,12 @@ static void ring_notify(GAtResult *resul
+ 	/* RING can repeat, ignore if we already have an incoming call */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	waiting = g_slist_find_custom(vd->calls,
+ 					GINT_TO_POINTER(CALL_STATUS_WAITING),
+-					at_util_call_compare_by_status);
++					ofono_call_compare_by_status);
+ 
+ 	/* If we started receiving RINGS but have a waiting call, most
+ 	 * likely all other calls were dropped and we just didn't get
+@@ -851,7 +851,7 @@ static void clip_notify(GAtResult *resul
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 
+ 	if (l == NULL) {
+ 		ofono_error("CLIP for unknown call");
+@@ -967,7 +967,7 @@ static void ciev_callsetup_notify(struct
+ 
+ 	waiting = g_slist_find_custom(vd->calls,
+ 					GINT_TO_POINTER(CALL_STATUS_WAITING),
+-					at_util_call_compare_by_status);
++					ofono_call_compare_by_status);
+ 
+ 	/* This is a truly bizarre case not covered at all by the specification
+ 	 * (yes, they are complete idiots).  Here we assume the other side is
+@@ -1046,7 +1046,7 @@ static void ciev_callsetup_notify(struct
+ 	{
+ 		GSList *o = g_slist_find_custom(vd->calls,
+ 					GINT_TO_POINTER(CALL_STATUS_DIALING),
+-					at_util_call_compare_by_status);
++					ofono_call_compare_by_status);
+ 
+ 		if (o) {
+ 			struct ofono_call *call = o->data;
+Index: ofono-1.21/drivers/huaweimodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/huaweimodem/voicecall.c
++++ ofono-1.21/drivers/huaweimodem/voicecall.c
+@@ -179,7 +179,7 @@ static void cring_notify(GAtResult *resu
+ 	/* CRING can repeat, ignore if we already have an incoming call */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	g_at_result_iter_init(&iter, result);
+@@ -218,7 +218,7 @@ static void clip_notify(GAtResult *resul
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CLIP for unknown call");
+ 		return;
+Index: ofono-1.21/drivers/ifxmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/ifxmodem/voicecall.c
++++ ofono-1.21/drivers/ifxmodem/voicecall.c
+@@ -545,12 +545,12 @@ static void cring_notify(GAtResult *resu
+ 	 */
+ 	if (g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_WAITING),
+-				at_util_call_compare_by_status))
++				ofono_call_compare_by_status))
+ 		return;
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CRING received before XCALLSTAT!!!");
+ 		return;
+@@ -589,7 +589,7 @@ static void clip_notify(GAtResult *resul
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CLIP for unknown call");
+ 		return;
+@@ -649,7 +649,7 @@ static void cnap_notify(GAtResult *resul
+ 	 */
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_INCOMING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CNAP for unknown call");
+ 		return;
+@@ -695,7 +695,7 @@ static void ccwa_notify(GAtResult *resul
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(CALL_STATUS_WAITING),
+-				at_util_call_compare_by_status);
++				ofono_call_compare_by_status);
+ 	if (l == NULL) {
+ 		ofono_error("CCWA received before XCALLSTAT!!!");
+ 		return;
+Index: ofono-1.21/src/common.c
+===================================================================
+--- ofono-1.21.orig/src/common.c
++++ ofono-1.21/src/common.c
+@@ -780,6 +780,17 @@ gint ofono_call_compare(gconstpointer a,
+ 	return 0;
+ }
+ 
++gint ofono_call_compare_by_status(gconstpointer a, gconstpointer b)
++{
++	const struct ofono_call *call = a;
++	int status = GPOINTER_TO_INT(b);
++
++	if (status != call->status)
++		return 1;
++
++	return 0;
++}
++
+ const char *ofono_call_status_to_string(enum call_status status)
+ {
+ 	switch (status) {
+Index: ofono-1.21/src/common.h
+===================================================================
+--- ofono-1.21.orig/src/common.h
++++ ofono-1.21/src/common.h
+@@ -185,4 +185,5 @@ const char *packet_bearer_to_string(int
+ 
+ gboolean is_valid_apn(const char *apn);
+ gint ofono_call_compare(gconstpointer a, gconstpointer b);
++gint ofono_call_compare_by_status(gconstpointer a, gconstpointer b);
+ const char *ofono_call_status_to_string(enum call_status status);

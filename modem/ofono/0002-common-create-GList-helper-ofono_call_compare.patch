@@ -1,0 +1,205 @@
+From c97a48fd4b94d4e6785dd713abe2a06da5e0d623 Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Wed, 12 Jul 2017 21:00:00 +0200
+Subject: [PATCH 02/17] common: create GList helper ofono_call_compare
+
+replaces at_util_call_compare (atmodem) and
+call_compare (rild).
+---
+ drivers/atmodem/atutil.c        | 17 ++---------------
+ drivers/atmodem/atutil.h        |  1 -
+ drivers/atmodem/voicecall.c     |  2 +-
+ drivers/hfpmodem/voicecall.c    |  2 +-
+ drivers/huaweimodem/voicecall.c |  2 +-
+ drivers/ifxmodem/voicecall.c    |  2 +-
+ drivers/rilmodem/voicecall.c    | 16 +---------------
+ drivers/stemodem/voicecall.c    |  2 +-
+ src/common.c                    | 14 ++++++++++++++
+ src/common.h                    |  2 ++
+ 10 files changed, 24 insertions(+), 36 deletions(-)
+
+Index: ofono-1.21/drivers/atmodem/atutil.c
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/atutil.c
++++ ofono-1.21/drivers/atmodem/atutil.c
+@@ -32,6 +32,7 @@
+ #define OFONO_API_SUBJECT_TO_CHANGE
+ #include <ofono/log.h>
+ #include <ofono/types.h>
++#include "../src/common.h"
+ 
+ #include "atutil.h"
+ #include "vendor.h"
+@@ -102,20 +103,6 @@ gint at_util_call_compare_by_id(gconstpo
+ 	return 0;
+ }
+ 
+-gint at_util_call_compare(gconstpointer a, gconstpointer b)
+-{
+-	const struct ofono_call *ca = a;
+-	const struct ofono_call *cb = b;
+-
+-	if (ca->id < cb->id)
+-		return -1;
+-
+-	if (ca->id > cb->id)
+-		return 1;
+-
+-	return 0;
+-}
+-
+ GSList *at_util_parse_clcc(GAtResult *result, unsigned int *ret_mpty_ids)
+ {
+ 	GAtResultIter iter;
+@@ -174,7 +161,7 @@ GSList *at_util_parse_clcc(GAtResult *re
+ 		else
+ 			call->clip_validity = 2;
+ 
+-		l = g_slist_insert_sorted(l, call, at_util_call_compare);
++		l = g_slist_insert_sorted(l, call, ofono_call_compare);
+ 
+ 		if (mpty)
+ 			mpty_ids |= 1 << id;
+Index: ofono-1.21/drivers/atmodem/atutil.h
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/atutil.h
++++ ofono-1.21/drivers/atmodem/atutil.h
+@@ -54,7 +54,6 @@ void decode_at_error(struct ofono_error
+ gint at_util_call_compare_by_status(gconstpointer a, gconstpointer b);
+ gint at_util_call_compare_by_phone_number(gconstpointer a, gconstpointer b);
+ gint at_util_call_compare_by_id(gconstpointer a, gconstpointer b);
+-gint at_util_call_compare(gconstpointer a, gconstpointer b);
+ GSList *at_util_parse_clcc(GAtResult *result, unsigned int *mpty_ids);
+ gboolean at_util_parse_reg(GAtResult *result, const char *prefix,
+ 				int *mode, int *status,
+Index: ofono-1.21/drivers/atmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/voicecall.c
++++ ofono-1.21/drivers/atmodem/voicecall.c
+@@ -132,7 +132,7 @@ static struct ofono_call *create_call(st
+ 	call->clip_validity = clip;
+ 	call->cnap_validity = CNAP_VALIDITY_NOT_AVAILABLE;
+ 
+-	d->calls = g_slist_insert_sorted(d->calls, call, at_util_call_compare);
++	d->calls = g_slist_insert_sorted(d->calls, call, ofono_call_compare);
+ 
+ 	return call;
+ }
+Index: ofono-1.21/drivers/hfpmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/hfpmodem/voicecall.c
++++ ofono-1.21/drivers/hfpmodem/voicecall.c
+@@ -128,7 +128,7 @@ static struct ofono_call *create_call(st
+ 		call->phone_number.type = num_type;
+ 	}
+ 
+-	d->calls = g_slist_insert_sorted(d->calls, call, at_util_call_compare);
++	d->calls = g_slist_insert_sorted(d->calls, call, ofono_call_compare);
+ 
+ 	call->clip_validity = clip;
+ 
+Index: ofono-1.21/drivers/huaweimodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/huaweimodem/voicecall.c
++++ ofono-1.21/drivers/huaweimodem/voicecall.c
+@@ -76,7 +76,7 @@ static struct ofono_call *create_call(st
+ 
+ 	call->clip_validity = clip;
+ 
+-	d->calls = g_slist_insert_sorted(d->calls, call, at_util_call_compare);
++	d->calls = g_slist_insert_sorted(d->calls, call, ofono_call_compare);
+ 
+ 	return call;
+ }
+Index: ofono-1.21/drivers/ifxmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/ifxmodem/voicecall.c
++++ ofono-1.21/drivers/ifxmodem/voicecall.c
+@@ -107,7 +107,7 @@ static struct ofono_call *create_call(st
+ 
+ 	call->clip_validity = clip;
+ 
+-	d->calls = g_slist_insert_sorted(d->calls, call, at_util_call_compare);
++	d->calls = g_slist_insert_sorted(d->calls, call, ofono_call_compare);
+ 
+ 	return call;
+ }
+Index: ofono-1.21/drivers/rilmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/rilmodem/voicecall.c
++++ ofono-1.21/drivers/rilmodem/voicecall.c
+@@ -117,20 +117,6 @@ done:
+ 	ofono_voicecall_disconnected(vc, reqdata->id, reason, NULL);
+ }
+ 
+-static int call_compare(gconstpointer a, gconstpointer b)
+-{
+-	const struct ofono_call *ca = a;
+-	const struct ofono_call *cb = b;
+-
+-	if (ca->id < cb->id)
+-		return -1;
+-
+-	if (ca->id > cb->id)
+-		return 1;
+-
+-	return 0;
+-}
+-
+ static void clcc_poll_cb(struct ril_msg *message, gpointer user_data)
+ {
+ 	struct ofono_voicecall *vc = user_data;
+@@ -209,7 +195,7 @@ static void clcc_poll_cb(struct ril_msg
+ 			call->id, call->status, call->type,
+ 			call->phone_number.number, call->name);
+ 
+-		calls = g_slist_insert_sorted(calls, call, call_compare);
++		calls = g_slist_insert_sorted(calls, call, ofono_call_compare);
+ 	}
+ 
+ no_calls:
+Index: ofono-1.21/drivers/stemodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/stemodem/voicecall.c
++++ ofono-1.21/drivers/stemodem/voicecall.c
+@@ -128,7 +128,7 @@ static struct ofono_call *create_call(st
+ 
+ 	call->clip_validity = clip;
+ 
+-	d->calls = g_slist_insert_sorted(d->calls, call, at_util_call_compare);
++	d->calls = g_slist_insert_sorted(d->calls, call, ofono_call_compare);
+ 
+ 	return call;
+ }
+Index: ofono-1.21/src/common.c
+===================================================================
+--- ofono-1.21.orig/src/common.c
++++ ofono-1.21/src/common.c
+@@ -765,3 +765,17 @@ const char *call_status_to_string(enum c
+ 
+ 	return "unknown";
+ }
++
++gint ofono_call_compare(gconstpointer a, gconstpointer b)
++{
++	const struct ofono_call *ca = a;
++	const struct ofono_call *cb = b;
++
++	if (ca->id < cb->id)
++		return -1;
++
++	if (ca->id > cb->id)
++		return 1;
++
++	return 0;
++}
+Index: ofono-1.21/src/common.h
+===================================================================
+--- ofono-1.21.orig/src/common.h
++++ ofono-1.21/src/common.h
+@@ -184,4 +184,5 @@ const char *registration_tech_to_string(
+ const char *packet_bearer_to_string(int bearer);
+ 
+ gboolean is_valid_apn(const char *apn);
++gint ofono_call_compare(gconstpointer a, gconstpointer b);
+ const char *call_status_to_string(enum call_status status);

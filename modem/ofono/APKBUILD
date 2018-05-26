@@ -2,13 +2,13 @@
 pkgname=ofono
 _upstreamver=1.21
 pkgver=1.21_p20180307
-pkgrel=2
+pkgrel=3
 pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications"
 url="https://01.org/ofono"
 arch="all"
 license="GPL2"
 depends="bluez mobile-broadband-provider-info"
-makedepends="glib-dev dbus-dev eudev-dev
+makedepends="autoconf automake libtool glib-dev dbus-dev eudev-dev
 	linux-headers bsd-compat-headers libexecinfo-dev
 	mobile-broadband-provider-info"
 options="!check"
@@ -18,12 +18,24 @@ source="https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$_upstreamver
 	0001-nokia-gpio-do-not-create-links-to-gpios-in-dev-cmt.patch::https://git.alpinelinux.org/cgit/aports/plain/testing/ofono/0001-nokia-gpio-do-not-create-links-to-gpios-in-dev-cmt.patch?id=014ae282b4a9152a5b64451f2815f34fcb53507c
 	support-smdpkt.patch
 	udev.rules
+	0001-doc-ofonod.8-escape-minus-sign.patch
+	0002-common-create-GList-helper-ofono_call_compare.patch
+	0003-voicecall-common-promote-call_status_to_string-publi.patch
+	0006-add-call-list-helper-to-manage-voice-call-lists.patch
+	0007-common-atmodem-rename-move-at_util_call_compare_by_s.patch
+	0008-common-atmodem-rename-move-at_util_call_compare_by_i.patch
+	0011-qmimodem-sync-the-modem-on-enable.patch
+	0014-network-ofono_netreg_status_notify-debug-output-lac-.patch
+	0015-network-debug-output-the-network-time-if-updated.patch
+	0016-voicecall-prefer-release_specific-over-hang_up_activ.patch
+	0017-RFC-qmimodem-implement-voice-calls.patch
 	"
 
 builddir="$srcdir"/$pkgname-$_upstreamver
 
 build() {
 	cd "$builddir"
+	autoreconf --install
 	./configure \
 		--prefix=/usr \
 		--sysconfdir=/etc \
@@ -45,4 +57,15 @@ sha512sums="bbc7fdb1d05294839eee5f31ec345866315a80feac8ccc2a67e0ca2c1030c55e0fb4
 fd0d303ca71df6953155aac0624c847f273030ebc5fb12efe2fa2ae7b8d75380e2885ab08d9c65c80cf756ef952569832ffdc25317e86a99552b4caac322b3ed  ofono.initd
 a1f66f3f40c1aa4af5f5b66436414408b46f3c90f2a2c88fa12e09ca6a1732334d2f47687478d652a3a176ee93c1905752635246fd01412834565626c021ca64  0001-nokia-gpio-do-not-create-links-to-gpios-in-dev-cmt.patch
 b946ac618aa2ab864876f7a81b689a0c3b776ad66657aaac508a52ea803d7031378dab0d7292ee41caba3e35b6e15d7309910c754a5762de7754be813c257b82  support-smdpkt.patch
-8f2893dfc291fc210ef217c4bc74d79436a0997001dd2773809625d52dd19d092cc75d3f9aa5ed2f3d4a6248d4a4e17013a7655323f7dad951f744c55b572417  udev.rules"
+8f2893dfc291fc210ef217c4bc74d79436a0997001dd2773809625d52dd19d092cc75d3f9aa5ed2f3d4a6248d4a4e17013a7655323f7dad951f744c55b572417  udev.rules
+e602504d41a0c28f99db138255eb9f0f020e59c26fcabc99f2bbe9f4e3d3c99b33ffb247a362569c841f55111b7fd8db0b18e98c3497ef04aa9bde467b86475d  0001-doc-ofonod.8-escape-minus-sign.patch
+1ffa1c7c0a99aabf5e064f7c99db43727942365c8b76b2d3e6278e4995570a067e73755e1111f8bcf3f1574b4d24d427c48fe2dc474ad89099d5d818b597fcb5  0002-common-create-GList-helper-ofono_call_compare.patch
+4658e7dfdb9167f97c279a55fb2b53d5c33eda87c54cd7fcaaaf489e2b6d2d6b2b487b415ee616827d4388e379a842833860809103010d8b1be75b76505cf8c8  0003-voicecall-common-promote-call_status_to_string-publi.patch
+0de8030dad134851cacc9564186aef07db94ab72c914c03326a0e8070e764a3fd47cc921a49bbf6c0828692599005e0dd412b808abb9adfd6b7bc49fcd176b93  0006-add-call-list-helper-to-manage-voice-call-lists.patch
+1ecf593363e25b51cff36d692afd12886877c82b75fce853d137dd0c5fa2910ece4a3a18744b563e898be7df254826c80861f2bb0a113d9c2d9cde686b2297ac  0007-common-atmodem-rename-move-at_util_call_compare_by_s.patch
+a1b04a014e7643105529b6060577555747c1094c0fc770c99e5fc5b8b97843ba3a23577e33ffa7a77379ef02669ebe96dbf1c25271cf2fd5ab11dabb21aeb588  0008-common-atmodem-rename-move-at_util_call_compare_by_i.patch
+1664244d301267537423f47d57b67374659c81fc073435507be6845c0a8fec776cc3dd18e3781040e173a92610b6f0cf78a59378414948eb881e8c7cdf9b7322  0011-qmimodem-sync-the-modem-on-enable.patch
+1e6bce11888ce11080a6dd07c487836104abc52be3e908c96eac412ce17941aadfd19bab386706cb9491e6ecf9666efac7cb85db98ca50dd920928a3c502157a  0014-network-ofono_netreg_status_notify-debug-output-lac-.patch
+61728285a5247e964d71d2f93d6aa62967ba9be978d41f99928829e3a753124830aede022b86eb5b39b04485afba1a1f2bb7595b0cec5a04899b74297f9297ab  0015-network-debug-output-the-network-time-if-updated.patch
+6d85d384261af82314d11310150dc37b01bbf89b6cb3c3b5576724a97cdbf96f67a02bf3828560d773a6ff1271202cf290606070f41d52af16bbea320e48f660  0016-voicecall-prefer-release_specific-over-hang_up_activ.patch
+25279f9570b4312100c87bb7d17c39bdeea04acce19414503a9274befc3ff07383488433d9900540933e8e409eed3b47996196d50c9a40f9d01e921066701b64  0017-RFC-qmimodem-implement-voice-calls.patch"

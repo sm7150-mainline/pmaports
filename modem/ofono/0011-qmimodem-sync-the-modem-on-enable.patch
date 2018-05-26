@@ -1,0 +1,123 @@
+From 32dac2f67735efa1bbfcd7c5563d5cbc980c6770 Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Tue, 25 Jul 2017 20:36:00 +0200
+Subject: [PATCH 11/17] qmimodem: sync the modem on enable
+
+The qmi sync call release all previous resources.
+---
+ drivers/qmimodem/qmi.c | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/qmimodem/qmi.h |  5 ++++-
+ plugins/gobi.c         | 12 +++++++++++-
+ 3 files changed, 62 insertions(+), 2 deletions(-)
+
+Index: ofono-1.21/drivers/qmimodem/qmi.c
+===================================================================
+--- ofono-1.21.orig/drivers/qmimodem/qmi.c
++++ ofono-1.21/drivers/qmimodem/qmi.c
+@@ -1323,6 +1323,53 @@ bool qmi_device_shutdown(struct qmi_devi
+ 	return true;
+ }
+ 
++struct sync_data {
++	qmi_sync_func_t func;
++	void *user_data;
++};
++
++static void qmi_device_sync_callback(uint16_t message, uint16_t length,
++				     const void *buffer, void *user_data)
++{
++	struct sync_data *data = user_data;
++
++	if(data->func)
++		data->func(data->user_data);
++
++	g_free(data);
++}
++
++/* sync will release all previous clients */
++bool qmi_device_sync(struct qmi_device *device,
++		     qmi_sync_func_t func, void *user_data)
++{
++	struct qmi_request *req;
++	struct qmi_control_hdr *hdr;
++	struct sync_data *func_data;
++
++	if (!device)
++		return false;
++
++	func_data = g_new0(struct sync_data, 1);
++	func_data->func = func;
++	func_data->user_data = user_data;
++
++	req = __request_alloc(QMI_SERVICE_CONTROL, 0x00,
++			QMI_CTL_SYNC, QMI_CONTROL_HDR_SIZE,
++			NULL, 0,
++			qmi_device_sync_callback, func_data, (void **) &hdr);
++
++	if (device->next_control_tid < 1)
++		device->next_control_tid = 1;
++
++	hdr->type = 0x00;
++	hdr->transaction = device->next_control_tid++;
++
++	__request_submit(device, req, hdr->transaction);
++
++	return true;
++}
++
+ static bool get_device_file_name(struct qmi_device *device,
+ 					char *file_name, int size)
+ {
+Index: ofono-1.21/drivers/qmimodem/qmi.h
+===================================================================
+--- ofono-1.21.orig/drivers/qmimodem/qmi.h
++++ ofono-1.21/drivers/qmimodem/qmi.h
+@@ -76,7 +76,7 @@ typedef void (*qmi_destroy_func_t)(void
+ struct qmi_device;
+ 
+ typedef void (*qmi_debug_func_t)(const char *str, void *user_data);
+-
++typedef void (*qmi_sync_func_t)(void *user_data);
+ typedef void (*qmi_shutdown_func_t)(void *user_data);
+ typedef void (*qmi_discover_func_t)(uint8_t count,
+ 			const struct qmi_version *list, void *user_data);
+@@ -96,6 +96,9 @@ bool qmi_device_discover(struct qmi_devi
+ bool qmi_device_shutdown(struct qmi_device *device, qmi_shutdown_func_t func,
+ 				void *user_data, qmi_destroy_func_t destroy);
+ 
++bool qmi_device_sync(struct qmi_device *device,
++		     qmi_sync_func_t func, void *user_data);
++
+ enum qmi_device_expected_data_format qmi_device_get_expected_data_format(
+ 						struct qmi_device *device);
+ bool qmi_device_set_expected_data_format(struct qmi_device *device,
+Index: ofono-1.21/plugins/gobi.c
+===================================================================
+--- ofono-1.21.orig/plugins/gobi.c
++++ ofono-1.21/plugins/gobi.c
+@@ -320,6 +320,16 @@ static void discover_cb(uint8_t count, c
+ 						create_dms_cb, modem, NULL);
+ }
+ 
++static void sync_cb(void *user_data)
++{
++	struct ofono_modem *modem = user_data;
++	struct gobi_data *data = ofono_modem_get_data(modem);
++
++	DBG("modem in sync");
++
++	qmi_device_discover(data->device, discover_cb, modem, NULL);
++}
++
+ static int gobi_enable(struct ofono_modem *modem)
+ {
+ 	struct gobi_data *data = ofono_modem_get_data(modem);
+@@ -347,7 +357,7 @@ static int gobi_enable(struct ofono_mode
+ 
+ 	qmi_device_set_close_on_unref(data->device, true);
+ 
+-	qmi_device_discover(data->device, discover_cb, modem, NULL);
++	qmi_device_sync(data->device, sync_cb, modem);
+ 
+ 	return -EINPROGRESS;
+ }

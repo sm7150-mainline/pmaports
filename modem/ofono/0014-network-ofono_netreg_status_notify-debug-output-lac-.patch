@@ -1,0 +1,26 @@
+From e3d6b09ab785af7e0eab4628592a8bb8239ef7a3 Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Wed, 26 Jul 2017 02:11:23 +0200
+Subject: [PATCH 14/17] network/ofono_netreg_status_notify: debug output lac
+ and ci
+
+The location are code and cell id is updated at the same time.
+---
+ src/network.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: ofono-1.21/src/network.c
+===================================================================
+--- ofono-1.21.orig/src/network.c
++++ ofono-1.21/src/network.c
+@@ -1351,8 +1351,8 @@ void ofono_netreg_status_notify(struct o
+ 	if (netreg == NULL)
+ 		return;
+ 
+-	DBG("%s status %d tech %d", __ofono_atom_get_path(netreg->atom),
+-							status, tech);
++	DBG("%s status %d tech %d lac %d ci %d",
++	    __ofono_atom_get_path(netreg->atom), status, tech, lac, ci);
+ 
+ 	if (netreg->status != status) {
+ 		struct ofono_modem *modem;

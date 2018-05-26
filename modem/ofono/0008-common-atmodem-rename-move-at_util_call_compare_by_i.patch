@@ -1,0 +1,156 @@
+From 3bba30fd23705dc8817b2eb0f28c9be03b8f7892 Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Tue, 25 Jul 2017 15:39:36 +0200
+Subject: [PATCH 08/17] common,atmodem: rename & move
+ at_util_call_compare_by_id to common.c
+
+at_util_call_compare_by_id is used by several modem drivers.
+---
+ drivers/atmodem/atutil.c        | 14 --------------
+ drivers/atmodem/atutil.h        |  2 +-
+ drivers/huaweimodem/voicecall.c |  6 +++---
+ drivers/ifxmodem/voicecall.c    |  4 ++--
+ drivers/stemodem/voicecall.c    |  2 +-
+ src/common.c                    | 14 ++++++++++++++
+ src/common.h                    |  1 +
+ 7 files changed, 22 insertions(+), 21 deletions(-)
+
+Index: ofono-1.21/drivers/atmodem/atutil.c
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/atutil.c
++++ ofono-1.21/drivers/atmodem/atutil.c
+@@ -78,20 +78,6 @@ gint at_util_call_compare_by_phone_numbe
+ 				sizeof(struct ofono_phone_number));
+ }
+ 
+-gint at_util_call_compare_by_id(gconstpointer a, gconstpointer b)
+-{
+-	const struct ofono_call *call = a;
+-	unsigned int id = GPOINTER_TO_UINT(b);
+-
+-	if (id < call->id)
+-		return -1;
+-
+-	if (id > call->id)
+-		return 1;
+-
+-	return 0;
+-}
+-
+ GSList *at_util_parse_clcc(GAtResult *result, unsigned int *ret_mpty_ids)
+ {
+ 	GAtResultIter iter;
+Index: ofono-1.21/drivers/atmodem/atutil.h
+===================================================================
+--- ofono-1.21.orig/drivers/atmodem/atutil.h
++++ ofono-1.21/drivers/atmodem/atutil.h
+@@ -53,7 +53,7 @@ typedef void (*at_util_sim_inserted_cb_t
+ void decode_at_error(struct ofono_error *error, const char *final);
+ gint ofono_call_compare_by_status(gconstpointer a, gconstpointer b);
+ gint at_util_call_compare_by_phone_number(gconstpointer a, gconstpointer b);
+-gint at_util_call_compare_by_id(gconstpointer a, gconstpointer b);
++gint ofono_call_compare_by_id(gconstpointer a, gconstpointer b);
+ GSList *at_util_parse_clcc(GAtResult *result, unsigned int *mpty_ids);
+ gboolean at_util_parse_reg(GAtResult *result, const char *prefix,
+ 				int *mode, int *status,
+Index: ofono-1.21/drivers/huaweimodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/huaweimodem/voicecall.c
++++ ofono-1.21/drivers/huaweimodem/voicecall.c
+@@ -347,7 +347,7 @@ static void conf_notify(GAtResult *resul
+ 	ofono_info("Call setup: id %d", call_id);
+ 
+ 	l = g_slist_find_custom(vd->calls, GINT_TO_POINTER(call_id),
+-				at_util_call_compare_by_id);
++				ofono_call_compare_by_id);
+ 	if (l == NULL) {
+ 		ofono_error("Received CONF for untracked call");
+ 		return;
+@@ -384,7 +384,7 @@ static void conn_notify(GAtResult *resul
+ 	ofono_info("Call connect: id %d type %d", call_id, call_type);
+ 
+ 	l = g_slist_find_custom(vd->calls, GINT_TO_POINTER(call_id),
+-				at_util_call_compare_by_id);
++				ofono_call_compare_by_id);
+ 	if (l == NULL) {
+ 		ofono_error("Received CONN for untracked call");
+ 		return;
+@@ -428,7 +428,7 @@ static void cend_notify(GAtResult *resul
+ 				call_id, duration, end_status);
+ 
+ 	l = g_slist_find_custom(vd->calls, GINT_TO_POINTER(call_id),
+-				at_util_call_compare_by_id);
++				ofono_call_compare_by_id);
+ 	if (l == NULL) {
+ 		ofono_error("Received CEND for untracked call");
+ 		return;
+Index: ofono-1.21/drivers/ifxmodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/ifxmodem/voicecall.c
++++ ofono-1.21/drivers/ifxmodem/voicecall.c
+@@ -135,7 +135,7 @@ static void xcallstat_notify(GAtResult *
+ 		return;
+ 
+ 	l = g_slist_find_custom(vd->calls, GINT_TO_POINTER(id),
+-				at_util_call_compare_by_id);
++				ofono_call_compare_by_id);
+ 
+ 	if (l == NULL && status != CALL_STATUS_DIALING &&
+ 				status != CALL_STATUS_INCOMING &&
+@@ -773,7 +773,7 @@ static void xcolp_notify(GAtResult *resu
+ 
+ 	l = g_slist_find_custom(vd->calls,
+ 				GINT_TO_POINTER(call_id),
+-				at_util_call_compare_by_id);
++				ofono_call_compare_by_id);
+ 	if (l == NULL) {
+ 		ofono_error("XCOLP for unknown call");
+ 		return;
+Index: ofono-1.21/drivers/stemodem/voicecall.c
+===================================================================
+--- ofono-1.21.orig/drivers/stemodem/voicecall.c
++++ ofono-1.21/drivers/stemodem/voicecall.c
+@@ -462,7 +462,7 @@ static void ecav_notify(GAtResult *resul
+ 	 * If it doesn't exists we make a new one
+ 	 */
+ 	l = g_slist_find_custom(vd->calls, GUINT_TO_POINTER(id),
+-				at_util_call_compare_by_id);
++				ofono_call_compare_by_id);
+ 
+ 	if (l)
+ 		existing_call = l->data;
+Index: ofono-1.21/src/common.c
+===================================================================
+--- ofono-1.21.orig/src/common.c
++++ ofono-1.21/src/common.c
+@@ -791,6 +791,20 @@ gint ofono_call_compare_by_status(gconst
+ 	return 0;
+ }
+ 
++gint ofono_call_compare_by_id(gconstpointer a, gconstpointer b)
++{
++	const struct ofono_call *call = a;
++	unsigned int id = GPOINTER_TO_UINT(b);
++
++	if (id < call->id)
++		return -1;
++
++	if (id > call->id)
++		return 1;
++
++	return 0;
++}
++
+ const char *ofono_call_status_to_string(enum call_status status)
+ {
+ 	switch (status) {
+Index: ofono-1.21/src/common.h
+===================================================================
+--- ofono-1.21.orig/src/common.h
++++ ofono-1.21/src/common.h
+@@ -186,4 +186,5 @@ const char *packet_bearer_to_string(int
+ gboolean is_valid_apn(const char *apn);
+ gint ofono_call_compare(gconstpointer a, gconstpointer b);
+ gint ofono_call_compare_by_status(gconstpointer a, gconstpointer b);
++gint ofono_call_compare_by_id(gconstpointer a, gconstpointer b);
+ const char *ofono_call_status_to_string(enum call_status status);

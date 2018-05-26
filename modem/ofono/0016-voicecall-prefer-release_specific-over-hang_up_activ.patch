@@ -1,0 +1,53 @@
+From d43fde3c5e6165b8a977c8917c11e4d1a55eac3f Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Tue, 25 Jul 2017 16:43:03 +0200
+Subject: [PATCH 16/17] voicecall: prefer release_specific() over
+ hang_up_active/hangup_all
+
+release_specific() has the call_id as parameter in difference to the more unspecific
+calls hangup_all and hangup_active.
+---
+ src/voicecall.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+Index: ofono-1.21/src/voicecall.c
+===================================================================
+--- ofono-1.21.orig/src/voicecall.c
++++ ofono-1.21/src/voicecall.c
+@@ -542,10 +542,18 @@ static DBusMessage *voicecall_hangup(DBu
+ 	if (vc->dial_req && vc->dial_req->call != v)
+ 		return __ofono_error_busy(msg);
+ 
+-	switch (call->status) {
+-	case CALL_STATUS_DISCONNECTED:
++	if (call->status == CALL_STATUS_DISCONNECTED)
+ 		return __ofono_error_failed(msg);
+ 
++	if (vc->driver->release_specific) {
++		vc->pending = dbus_message_ref(msg);
++		vc->driver->release_specific(vc, call->id,
++					     generic_callback, vc);
++
++		return NULL;
++	}
++
++	switch (call->status) {
+ 	case CALL_STATUS_INCOMING:
+ 		if (vc->driver->hangup_all == NULL &&
+ 				vc->driver->hangup_active == NULL)
+@@ -615,14 +623,7 @@ static DBusMessage *voicecall_hangup(DBu
+ 		break;
+ 	}
+ 
+-	if (vc->driver->release_specific == NULL)
+-		return __ofono_error_not_implemented(msg);
+-
+-	vc->pending = dbus_message_ref(msg);
+-	vc->driver->release_specific(vc, call->id,
+-					generic_callback, vc);
+-
+-	return NULL;
++	return __ofono_error_not_implemented(msg);
+ }
+ 
+ static DBusMessage *voicecall_answer(DBusConnection *conn,

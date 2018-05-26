@@ -1,0 +1,25 @@
+From 8f00ef8b3b9be29ad6f58769234a30c6c5ae0d27 Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Wed, 26 Jul 2017 02:12:16 +0200
+Subject: [PATCH 15/17] network: debug output the network time if updated
+
+---
+ src/network.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+Index: ofono-1.21/src/network.c
+===================================================================
+--- ofono-1.21.orig/src/network.c
++++ ofono-1.21/src/network.c
+@@ -1407,6 +1407,11 @@ void ofono_netreg_time_notify(struct ofo
+ 	if (info == NULL)
+ 		return;
+ 
++	DBG("net time %d-%02d-%02d %02d:%02d:%02d utcoff %d dst %d",
++	    info->year, info->mon, info->mday,
++	    info->hour, info->min, info->sec,
++	    info->utcoff, info->dst);
++
+ 	__ofono_nettime_info_received(modem, info);
+ }
+ 
