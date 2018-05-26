@@ -1,0 +1,47 @@
+# Contributor: Bhushan Shah <bshah@kde.org>
+# Maintainer: Bhushan Shah <bshah@kde.org>
+pkgname=libphonenumber
+pkgver=8.9.6
+pkgrel=0
+pkgdesc="Library for parsing, formatting, and validating international phone numbers."
+url="https://github.com/googlei18n/libphonenumber"
+arch="all"
+license="Apache"
+depends_dev="boost-dev protobuf-dev icu-dev"
+makedepends="$depends_dev cmake gtest-dev"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/googlei18n/${pkgname}/archive/v${pkgver}.tar.gz
+		googletest-1.8.0.tar.gz::https://github.com/google/googletest/archive/release-1.8.0.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	# this package doesn't play nicely when built with ccache and distcc
+	# this is mainly due to usage of boost templates and gtest library which also uses the templates.
+	export CCACHE_DISABLE=1
+	cd "$builddir/cpp"
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DGTEST_SOURCE_DIR="$srcdir"/googletest-release-1.8.0/googletest \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		${CMAKE_CROSSOPTS}
+	make
+}
+
+check() {
+	cd "$builddir/cpp"
+	./libphonenumber_test
+}
+package() {
+	cd "$builddir/cpp"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="7b6bc66b4d7c3137eb97bbae1a28f072612c27df80ba355e3b3db680e0315f1af0c186559a15a46306cb184619049c30da623f9448b3c64a28cfb94474903fdf  libphonenumber-8.9.6.tar.gz
+1dbece324473e53a83a60601b02c92c089f5d314761351974e097b2cf4d24af4296f9eb8653b6b03b1e363d9c5f793897acae1f0c7ac40149216035c4d395d9d  googletest-1.8.0.tar.gz"
