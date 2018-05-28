@@ -1,8 +1,8 @@
-# Kernel config based on: arch/arm/configs/tegra_android_defconfig
+# Kernel config based on: arch/arm/configs/tegra_defconfig
 
 pkgname="linux-samsung-p4wifi"
 pkgver=4.16.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Galaxy Tab 10.1 kernel"
 arch="armhf"
 _carch="arm"
@@ -10,13 +10,13 @@ _flavor="samsung-p4wifi"
 url="https://kernel.org"
 license="GPL2"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz flex bison openssl-dev"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz flex bison libressl-dev"
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="linux"
-_rev="503aa31b667507c7adf02c45e74d743f03119b1c"
+_rev="b40b7265e2e3ec66e460e5615e7804f7a5d9db67"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_rev.tar.gz::https://github.com/decatf/${_repository}/archive/${_rev}.tar.gz
@@ -98,6 +98,6 @@ package() {
 }
 
 
-sha512sums="50f462c42a8cade2c83445f730db4ed1eb229139fd38a7c19bd69fc0e3aecf8849e5ce94f2ae7c24e8da0e72b339d521f3fb4b505c9b84472eb10e3b96921c37  linux-samsung-p4wifi-503aa31b667507c7adf02c45e74d743f03119b1c.tar.gz
-2c0cbdea23cb50d8c7ceb06b0bfd5241516ac5fa9bd7a8c8cf05619abad38dcb2849692f89951645398f782696d125f3c31e01e2cdc3095e4cc1656e05d6a4e9  config-samsung-p4wifi.armhf
+sha512sums="1678192f73cf4a0bba8e4aba4b7e90ce0e5a61d47a952328725e773ccc9060d42dc299e887e6398454442dfa1580bd68c7edd479a51ec0d91b9a7d8a06014b67  linux-samsung-p4wifi-b40b7265e2e3ec66e460e5615e7804f7a5d9db67.tar.gz
+287c414d87431ca00fb455b4cc3325d243d01d75a819054053a28899152f1b0143707c10ac050b7daeac03e8d79d40886f30bca22b5272ff06963ef7d3026c97  config-samsung-p4wifi.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
