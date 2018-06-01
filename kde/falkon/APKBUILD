@@ -1,18 +1,18 @@
 pkgname=falkon
 pkgver=3.0.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Cross-platform web browser using QtWebEngine rendering engine"
 url="https://www.falkon.org/"
 arch="all"
 license="GPL-3.0-or-later"
 depends="qt5-qtbase-sqlite"
 makedepends="cmake extra-cmake-modules qt5-qtdeclarative-dev qt5-qtwebengine-dev qt5-qtx11extras-dev qt5-qttools-dev xcb-util-dev ki18n-dev ttf-freefont"
-#checkdepends="ttf-freefont"
 source="https://download.kde.org/stable/falkon/$pkgver/falkon-$pkgver.tar.xz
 	disable-ld-fatal-warnings.patch
 	disable-backtraces.patch
 	"
 builddir="$srcdir/$pkgname-$pkgver"
+options="!check" # require X1
 
 build () {
 	mkdir -p "$builddir/build"
@@ -22,12 +22,6 @@ build () {
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make
-}
-
-check() {
-	cd "$builddir/build"
-	# GUI tests fail (SEGV_MAPERR)
-	CTEST_OUTPUT_ON_FAILURE=TRUE QT_QPA_PLATFORM=offscreen ctest || true
 }
 
 package() {
