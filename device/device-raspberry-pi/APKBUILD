@@ -2,7 +2,7 @@
 pkgname="device-raspberry-pi"
 pkgdesc="Raspberry Pi"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
@@ -12,6 +12,7 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-rpi:kernel_rpi
 	$pkgname-kernel-rpi2:kernel_rpi2
+	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="deviceinfo config.txt usercfg.txt cmdline.txt 95-vchiq-permissions.rules"
 
@@ -39,6 +40,12 @@ kernel_rpi2() {
 	pkgdesc="Kernel for the Raspberry Pi 2 & 3"
 	depends="$pkgname linux-rpi2"
 	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware() {
+	pkgdesc="Bluetooth firmware for raspberry pi zero w, 3b/3b+"
+	depends="firmware-pi-bluetooth"
 	mkdir "$subpkgdir"
 }
 

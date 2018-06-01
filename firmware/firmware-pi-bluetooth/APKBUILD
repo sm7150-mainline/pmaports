@@ -1,0 +1,36 @@
+# Maintainer: He Yangxuan <yangxuan8282@gmail.com>
+
+pkgname=firmware-pi-bluetooth
+pkgver=1
+pkgrel=0
+pkgdesc="Services, firmware to make built-in bluetooth work on Raspberry Pi zero w, 3B, 3B plus"
+url="https://github.com/RPi-Distro/bluez-firmware"
+arch="armhf"
+license="multiple"
+depends="bluez-deprecated"
+install="$pkgname.post-install"
+source="https://raw.githubusercontent.com/RPi-Distro/bluez-firmware/master/broadcom/BCM43430A1.hcd
+	https://raw.githubusercontent.com/RPi-Distro/bluez-firmware/master/broadcom/BCM4345C0.hcd
+	https://github.com/RPi-Distro/firmware-nonfree/raw/master/LICENCE.broadcom_bcm43xx
+	pi-bluetooth.openrc
+	50-bluetooth-hci-auto-poweron.rules
+	$install"
+options="!check"
+
+package() {
+	cd "$srcdir"
+
+	mkdir -p "$pkgdir"/lib/firmware/brcm
+
+	cp *.hcd "$pkgdir"/lib/firmware/brcm/
+	install -Dm644 50-bluetooth-hci-auto-poweron.rules "$pkgdir"/etc/udev/rules.d/50-bluetooth-hci-auto-poweron.rules
+	install -Dm755 pi-bluetooth.openrc "$pkgdir"/etc/init.d/$pkgname
+	install -Dm644 LICENCE.broadcom_bcm43xx "$pkgdir"/usr/share/licenses/$pkgname/LICENCE.broadcom_bcm43xx
+}
+
+sha512sums="a7b37bce092367125e390017bb0329c3b7f8fa891cf30d422ee73ce53d0592d4ff0fc2e2a94a87eefb641d5dd8631fae1cc46664224dea987ca04b68a8af8519  BCM43430A1.hcd
+253317b2dd182f9111fa9c5f6ab924fa6708b35dca87f2039933f4e1f5a56e4172527b0ed3ef33e1a992beb5146be9e21e00d6f91458dea3ff98d1d38a80a58c  BCM4345C0.hcd
+bc2975793764bbd287f9f207d5b5abf49606dc65cfdebf1783e1e660f9872b409c4ab98287da9a3926aea657e00439f3f946d253e1cf7666a3a7e527543dc1a6  LICENCE.broadcom_bcm43xx
+34a50554466dd6096cbee9b14fc0d77b268b731cd45981e69394343dad25d6006dbe44bee30700d71b80c593d38699dfc870983ae7d862b9c09afb39c5d3b383  pi-bluetooth.openrc
+511281ae8cbebd4390836ba83049a7fb793121d60ebd6c436bf36330e0aab738a827daf7fd6721cc71681e72b7ddaa581814264cc3bf759f07148fe5b657b981  50-bluetooth-hci-auto-poweron.rules
+7741b6b560a6bea27da80c027bee55136e4873f535dd0261d0cf9670df250c1bd72b1fd92fc353381cec6f87056a9ad4cf5b3eea3f6c7b44cd23e12a1edc287a  firmware-pi-bluetooth.post-install"
