@@ -1,0 +1,41 @@
+# Forked from Alpine to update to support latest raspberry pi 3B+
+# Contributor: He Yangxuan <yangxuan8282@gmail.com>
+
+pkgname=raspberrypi-bootloader
+pkgver=20180518
+_commit=a46b1f9521229ec26a1377aab7d013df1ade2791
+pkgrel=0
+pkgdesc="Bootloader files for the Raspberry Pi"
+url=https://github.com/raspberrypi/firmware
+arch="armhf"
+license="custom"
+depends=""
+makedepends=""
+install=
+options="!check !strip"
+source="$url/raw/$_commit/boot/bootcode.bin
+	$url/raw/$_commit/boot/fixup.dat
+	$url/raw/$_commit/boot/start.elf
+	$url/raw/$_commit/boot/fixup_x.dat
+	$url/raw/$_commit/boot/start_x.elf"
+subpackages="$pkgname-x:bootloader_x"
+
+package() {
+	cd "$srcdir"
+	mkdir -p "$pkgdir"/boot
+	cp bootcode.bin fixup.dat start.elf "$pkgdir"/boot/
+}
+
+bootloader_x() {
+	pkgdesc="Extra codecs for the Raspberry Pi"
+	depends="$pkgname"
+	cd "$srcdir"
+	mkdir -p "$subpkgdir"/boot
+	cp start_x.elf fixup_x.dat "$subpkgdir"/boot/
+}
+
+sha512sums="c72ca625e16e0a11524f77b5b7a764fec9c93178d4c8fe5ba60225dcfacd3fe5c363542c452829f9e5458282cbe607ca3027c80f9d9599523eb9a3443976b8db  bootcode.bin
+7e51fc705abf5606205963028abf20324c153a2db8ed63e48ad4ef7fe42bf5cc30f41a49e361b222ef6cbf29a4c8103063f40e2397abfb37911c87f52399b330  fixup.dat
+ddb0933ca1db3037b0c9f0b9d718605f039063cf140518c6bc2c10e54c75285f812775207829a226822a3e076e4f3f540bd51520ad4166aa99aedf2a1b240fe3  start.elf
+e43857bddd1e033645b4da6cf8cff0169db27112d0c60a778734c2133f6a61a780952045e6a02206f36d97d70e0dafa18b83818cd49e0cafd524f72768b5a5ff  fixup_x.dat
+b8324d841ca3a27ad788c10b2513666341f0c7d8d0b58ca30bf752ad87715bbf19561796fd2a3b7436b4a11d973506d5addc238ffff084a07264d6a2b5336631  start_x.elf"
