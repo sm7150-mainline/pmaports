@@ -2,15 +2,16 @@
 
 pkgname=firmware-pi-bluetooth
 pkgver=1
-pkgrel=0
+pkgrel=1
+_commit=ade2bae1aaaebede09abb8fb546f767a0e4c7804
 pkgdesc="Services, firmware to make built-in bluetooth work on Raspberry Pi zero w, 3B, 3B plus"
 url="https://github.com/RPi-Distro/bluez-firmware"
 arch="armhf"
 license="multiple"
-depends="bluez-deprecated"
+depends="bluez bluez-deprecated"
 install="$pkgname.post-install"
-source="https://raw.githubusercontent.com/RPi-Distro/bluez-firmware/master/broadcom/BCM43430A1.hcd
-	https://raw.githubusercontent.com/RPi-Distro/bluez-firmware/master/broadcom/BCM4345C0.hcd
+source="$url/raw/$_commit/broadcom/BCM43430A1.hcd
+	$url/raw/$_commit/broadcom/BCM4345C0.hcd
 	https://github.com/RPi-Distro/firmware-nonfree/raw/master/LICENCE.broadcom_bcm43xx
 	pi-bluetooth.openrc
 	50-bluetooth-hci-auto-poweron.rules
@@ -24,12 +25,12 @@ package() {
 
 	cp *.hcd "$pkgdir"/lib/firmware/brcm/
 	install -Dm644 50-bluetooth-hci-auto-poweron.rules "$pkgdir"/etc/udev/rules.d/50-bluetooth-hci-auto-poweron.rules
-	install -Dm755 pi-bluetooth.openrc "$pkgdir"/etc/init.d/$pkgname
+	install -Dm755 pi-bluetooth.openrc "$pkgdir"/etc/init.d/pi-bluetooth
 	install -Dm644 LICENCE.broadcom_bcm43xx "$pkgdir"/usr/share/licenses/$pkgname/LICENCE.broadcom_bcm43xx
 }
 
 sha512sums="a7b37bce092367125e390017bb0329c3b7f8fa891cf30d422ee73ce53d0592d4ff0fc2e2a94a87eefb641d5dd8631fae1cc46664224dea987ca04b68a8af8519  BCM43430A1.hcd
-253317b2dd182f9111fa9c5f6ab924fa6708b35dca87f2039933f4e1f5a56e4172527b0ed3ef33e1a992beb5146be9e21e00d6f91458dea3ff98d1d38a80a58c  BCM4345C0.hcd
+2e91c6e7f79fa5c33bc103614311656631b4c595e5a25cdbee048aa810244f604b0bbae0e6f4e9294a0c332401f8347549a42424c19a27580b3cdc9f6b9f8e2c  BCM4345C0.hcd
 bc2975793764bbd287f9f207d5b5abf49606dc65cfdebf1783e1e660f9872b409c4ab98287da9a3926aea657e00439f3f946d253e1cf7666a3a7e527543dc1a6  LICENCE.broadcom_bcm43xx
 34a50554466dd6096cbee9b14fc0d77b268b731cd45981e69394343dad25d6006dbe44bee30700d71b80c593d38699dfc870983ae7d862b9c09afb39c5d3b383  pi-bluetooth.openrc
 511281ae8cbebd4390836ba83049a7fb793121d60ebd6c436bf36330e0aab738a827daf7fd6721cc71681e72b7ddaa581814264cc3bf759f07148fe5b657b981  50-bluetooth-hci-auto-poweron.rules
