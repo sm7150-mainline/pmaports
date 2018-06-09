@@ -74,16 +74,6 @@ prepare() {
 		oldconfig
 }
 
-
-
-# this is so we can do: 'abuild menuconfig' to reconfigure kernel
-menuconfig() {
-	cd "$srcdir"/build || return 1
-	echo "--[ menuconfig ]--"
-	make ARCH="$_carch" menuconfig
-	cp .config "$startdir"/$_config
-}
-
 build() {
 	cd "$srcdir"/build
 	unset LDFLAGS

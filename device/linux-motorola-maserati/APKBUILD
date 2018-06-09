@@ -60,12 +60,6 @@ prepare() {
 	sed -i "s/\$(shell git describe --dirty)/$_wlan_commit/g" drivers/net/wireless/wl12xx/Makefile
 }
 
-menuconfig() {
-	cd "$builddir"
-	make ARCH="$_carch" menuconfig
-	cp .config "$startdir"/$_config
-}
-
 build() {
 	cd "$builddir"
 	unset LDFLAGS

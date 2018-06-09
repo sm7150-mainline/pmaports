@@ -53,12 +53,6 @@ prepare() {
 	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
 }
 
-menuconfig() {
-	cd "$builddir"
-	make ARCH="$_carch" menuconfig
-	cp .config "$startdir"/$_config
-}
-
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \

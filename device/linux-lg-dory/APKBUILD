@@ -58,13 +58,6 @@ prepare() {
 	make ARCH="$_carch" HOSTCC="$HOSTCC" silentoldconfig
 }
 
-# this is so we can do: 'abuild menuconfig' to reconfigure kernel
-menuconfig() {
-	cd "$builddir"
-	make ARCH="$_carch" menuconfig
-	cp .config "$startdir"/$_config
-}
-
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \

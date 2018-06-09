@@ -102,16 +102,6 @@ prepare() {
 		silentoldconfig
 }
 
-
-
-# this is so we can do: 'abuild menuconfig' to reconfigure kernel
-menuconfig() {
-	cd "$srcdir"/build
-	make ARCH="$_carch" menuconfig
-	#ARCH="$_carch" "$ksrcdir"/scripts/kconfig/merge_config.sh "$ksrcdir"/arch/arm/config/latona_defconfig "$ksrcdir"/android/configs/android-base.cfg "$ksrcdir"/android/configs/android-recommended.cfg
-	cp .config "$startdir"/$_config
-}
-
 build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
