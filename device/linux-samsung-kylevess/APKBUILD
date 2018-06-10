@@ -1,0 +1,83 @@
+# Kernel config based on: arch/arm/configs/bcm21664_hawaii_ss_kylevess_rev00_defconfig
+pkgname="linux-samsung-kylevess"
+pkgver=3.4.5
+pkgrel=4
+pkgdesc="Samsung Trend Lite kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-kylevess"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="kernel_samsung_kylevess_f2fs"
+_commit="17667b5c69eaf3db40ca2040d965d14cfd09a427"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/opensource591/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_return_address.patch
+	01_patch_lifebook_detect.patch
+	02_patch_fsp_detect.patch
+	03_fix_to_state.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="ef1881e26be013a4f58eac86c884b3f2d50e7b742e97d7655832865089a4776e83b19df64ecda332a4cb44c5ce8006679428b22248590be881948821c45f469f  linux-samsung-kylevess-17667b5c69eaf3db40ca2040d965d14cfd09a427.tar.gz
+60e4b9a3745d9ad99469aea3a27383f38e24e441f05c6242a3cf4bbc862a9d15b6f9f8a01df9fd83ea3a135fbfe4b0f8544dcf003603e740e5840abf80048087  config-samsung-kylevess.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+c40eaa11547f5bc2b1ff965506bdfe3015ff16e4b5ad9ccb3b8134ceafd1d32407c4ef2b213e02e036ce1e9bdcbfe768dff7d4b054bec77705a176c1f783b6f5  00_return_address.patch
+36418ec3d31d1d6d9915afcf3d38d4549aeeb49c3825414b51b67db7a1ab6482f22d2723da3b258b671956809949278a51f6507df9b0052aec0bd0c59f56919a  01_patch_lifebook_detect.patch
+9da951bb0391564f33bdb0a97c339997eda7b15ec2f160da8af237cc87c233b8c3dcdc1a12759e04d69d075ae9b0afaf726101ef356e788d7f4606a03db2e248  02_patch_fsp_detect.patch
+7bc5894a412d45e45e308915dbe3a964419f443f149ef390d2f09151dd15ca86767c7fdd4e927cfb602d6d455755d4941d68a9f139a1cd3f89f0d90088dafde4  03_fix_to_state.patch"
