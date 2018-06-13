@@ -30,6 +30,16 @@ ui_print() {
 	echo "ui_print" > /proc/self/fd/"$OUTFD"
 }
 
+# $1: fstab filename
+# $2: partition
+get_fstab_device() {
+	src_column=$(awk '{for (i=1; i<=NF; ++i) { if ($i ~ /^\/dev/) {print i; exit;} }}' /"$1")
+	[ -z "$src_column" ] && src_column=3
+	# Warning: partition name is not escaped
+	awk -v src="$src_column" \
+		'!/^#/ && /(^|\s*)\/'"$2"'/ {print $src; exit;}' /"$1"
+}
+
 extract_partition_table() {
 	fstab_recovery="recovery.fstab"
 	# TWRP can use twrp.fstab instead of recovery.fstab (device specific)
@@ -38,24 +48,13 @@ extract_partition_table() {
 		fstab_recovery="twrp.fstab"
 	fi
 
-	case "$INSTALL_PARTITION" in
-		"system")
-			_INSTALL_DEVICE=$(findfs PARTLABEL="$SYSTEM_PARTLABEL") || \
-				# We need to resolve symlinks, to make set_subpartitions() work.
-				_INSTALL_DEVICE=$(readlink -fn "$(awk '$1 == "/system" {print $3; exit;}' /$fstab_recovery)")
-			;;
-		"external_sd")
-			_INSTALL_DEVICE=$(readlink -fn "$(awk '$1 == "/external_sd" {print $4; exit;}' /$fstab_recovery)")
-			;;
-		*)
-			echo "No support for flashing $INSTALL_PARTITION."
-			return 1
-			;;
-	esac
-	if [ ! -z "$_INSTALL_DEVICE" ]
+	dev=$(findfs PARTLABEL="$SYSTEM_PARTLABEL") || \
+		# We need to resolve symlinks, to make set_subpartitions() work.
+		dev=$(readlink -fn "$(get_fstab_device "$fstab_recovery" "$INSTALL_PARTITION")")
+	if [ -n "$dev" ]
 	then
-		echo "install device found at $_INSTALL_DEVICE"
-		export INSTALL_DEVICE=$_INSTALL_DEVICE
+		echo "install device found at $dev"
+		export INSTALL_DEVICE=$dev
 	else
 		echo "Couldn't find $INSTALL_PARTITION partition."
 		return 1
@@ -67,12 +66,12 @@ extract_partition_table() {
 		export INITFS_PARTITION
 		INITFS_PARTITION=$(findfs PARTLABEL="$INITFS_PARTLABEL")
 	else
-		_BOOT_PARTITION=$(findfs PARTLABEL="boot") || \
-			_BOOT_PARTITION=$(awk '$1 == "/boot" {print $3; exit;}' /$fstab_recovery)
-		if [ ! -z "$_BOOT_PARTITION" ]
+		dev=$(findfs PARTLABEL="boot") || \
+			dev=$(readlink -fn "$(get_fstab_device "$fstab_recovery" boot)")
+		if [ -n "$dev" ]
 		then
-			echo "boot partition found at $_BOOT_PARTITION"
-			export BOOT_PARTITION=$_BOOT_PARTITION
+			echo "boot partition found at $dev"
+			export BOOT_PARTITION=$dev
 		else
 			echo "Couldn't find boot partition."
 			return 1
@@ -89,7 +88,7 @@ partition_install_device() {
 		parted -s "$INSTALL_DEVICE" "$command"
 	done
 	partprobe
-	if [ "$INSTALL_PARTITION" = "system" ]
+	if [ "$INSTALL_PARTITION" != "external_sd" ]
 	then
 		kpartx -afs "$INSTALL_DEVICE"
 	fi
