@@ -1,0 +1,81 @@
+# Kernel config based on: arch/arm/configs/(CHANGEME!)
+
+pkgname="linux-semc-smultron"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Xperia mini kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="semc-smultron"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_semc_msm7x30"
+_commit="9c6f07f81e2c0bcb2bef75fa9716cc30f8942286"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LegacyXperia/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_msm-fix-perf_trace_counters.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	mkdir -p "$srcdir"/build
+        cp "$srcdir"/$_config "$builddir"/.config
+        yes "" | make O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="234e8973236e6056c60a312340ef4ccb7598adc43bd1f0c2ca0e89d03f4e16ecfdd5ad4658d76993c7bae24242a7e134a9ed2fda662dfe229b61f3a88ea6c2f0  linux-semc-smultron-9c6f07f81e2c0bcb2bef75fa9716cc30f8942286.tar.gz
+170e9ff569175ab31f124ac7571875c091d315717c96b5a5eacb00b1f62763388807821ecf69fc3c7e10485f8dfec1befcf63fd6b07e3f9fb1752c80b4b4ccb0  config-semc-smultron.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+f85ced49ee2f2461adea68dac0a10452aa809a7d41d869092d94eb085344919a9a385dec0c48011f4601ca4f441700f7fe49075c7eca4fb2d66b01f7d413ccb7  01_msm-fix-perf_trace_counters.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"

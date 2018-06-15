@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-semc-smultron"
+pkgdesc="Xperia mini"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-semc-smultron mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="a65054f9ba26f2455daf36d9bc499185c867bb32cabc0d64ce30ff93f37a0539ceb997369292a2774a8f934cd43ffad1c8ac3ef38770584381b922852838ce2f  deviceinfo"
