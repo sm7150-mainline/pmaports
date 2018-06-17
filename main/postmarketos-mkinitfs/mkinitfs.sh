@@ -232,7 +232,7 @@ create_uboot_files()
 create_bootimg()
 {
 	[ "${deviceinfo_generate_bootimg}" == "true" ] || return
-	require_package "mkbootimg" "mkbootimg" "generate_bootimg"
+	require_package "mkbootimg-osm0sis" "mkbootimg" "generate_bootimg"
 
 	echo "==> initramfs: creating boot.img"
 	_base="${deviceinfo_flash_offset_base}"
@@ -256,7 +256,7 @@ create_bootimg()
 			exit 1
 		fi
 	fi
-	mkbootimg \
+	mkbootimg-osm0sis \
 		--kernel "${kernelfile}" \
 		--ramdisk "$outfile" \
 		--base "${_base}" \
