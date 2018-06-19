@@ -1,30 +1,27 @@
 pkgname=device-amazon-thor
 pkgver=1
-pkgrel=7
+pkgrel=8
 pkgdesc="Amazon KFHDX 7inch 2013"
 url="https://github.com/postmarketOS"
 arch="noarch"
 license="MIT"
 depends="postmarketos-base linux-amazon-thor mkbootimg msm-fb-refresher mesa-dri-swrast"
-makedepends=""
-install="$pkgname.post-install"
+makedepends="devicepkg-dev"
+install=""
 subpackages=""
 source="
 	deviceinfo
-	90-android-touch-dev.rules
 	fb.modes
 "
 options="!check"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
-	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-	install -Dm644 "$srcdir"/fb.modes \
-		"$pkgdir"/etc/fb.modes
+	devicepkg_package $startdir $pkgname
 }
 
 sha512sums="72f3e47ae416b625d0c82d0450dc3260675978ba3817fd6a157bcae8caacd6ea86364f525a11297bf6d4909846eecbff256119af940cffac99bcf7aa9abb1788  deviceinfo
-7ed015f42c445cbfa34a26ec33da8d72bcba818eecd3fae91fb418132472e739edaeed021e942d30f7d64593ffe17b61bc75e89fd45ffc44c2cdf0d1827942cb  90-android-touch-dev.rules
-762d712485f581113dd70bf2a4e0602f8b9ac8c05cf519ffc2d9a4a5c7bdb387c150cee087e7523e90f598c0cde3dce89975dadc2d651b770f7f80e480848ed4  fb.modes"
+e96725e631ba474980274266fd5af85c72fcd31543d0b5f5dbe7bd610f9650f881708a41887d61ba3e1d821b88668c3ca3d18667e9a1de918560a1ff762dda3d  fb.modes"
