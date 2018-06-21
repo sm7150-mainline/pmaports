@@ -241,6 +241,14 @@ start_udhcpd() {
 	# Only run once
 	[ -e /etc/udhcpd.conf ] && return
 
+	# Skip if disabled
+	# shellcheck disable=SC2154
+	if [ "$deviceinfo_disable_dhcpd" = "true" ]; then
+		echo "NOTE: start of dhcpd is disabled (deviceinfo_disable_dhcpd)"
+		touch /etc/udhcpcd.conf
+		return
+	fi
+
 	# Get usb interface
 	INTERFACE=""
 	ifconfig rndis0 "$IP" && INTERFACE=rndis0
