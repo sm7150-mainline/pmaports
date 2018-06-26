@@ -1,6 +1,6 @@
 pkgname=qemu
 pkgver=2.12.0
-pkgrel=3
+pkgrel=4
 pkgdesc="QEMU is a generic machine emulator and virtualizer"
 url="http://qemu.org/"
 arch="all"
@@ -28,6 +28,7 @@ makedepends="
 	lzo-dev
 	ncurses-dev
 	paxmark
+	sdl-dev
 	sdl2-dev
 	snappy-dev
 	spice-dev
@@ -35,10 +36,12 @@ makedepends="
 	usbredir-dev
 	util-linux-dev
 	vde2-dev
+	virglrenderer-dev
 	vte3-dev
 	xfsprogs-dev
 	zlib-dev
 	"
+depends="virglrenderer mesa-dri-virtio mesa-dri-swrast"
 pkggroups="qemu"
 install="$pkgname.pre-install $pkgname.post-install"
 # suid needed for qemu-bridge-helper
@@ -255,6 +258,7 @@ build() {
 		--enable-linux-aio \
 		--enable-lzo \
 		--enable-modules \
+		--enable-opengl \
 		--enable-pie \
 		--enable-sdl \
 		--enable-snappy \
@@ -263,6 +267,7 @@ build() {
 		--enable-usb-redir \
 		--enable-vde \
 		--enable-vhost-net \
+		--enable-virglrenderer \
 		--enable-virtfs \
 		--enable-vnc \
 		--enable-vnc-jpeg \
