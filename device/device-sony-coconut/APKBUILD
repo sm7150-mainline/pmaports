@@ -1,0 +1,27 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-sony-coconut"
+pkgdesc="Live with Walkman"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-sony-coconut mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# Install initfs hook
+	install -v -Dm644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+}
+
+sha512sums="e89e445c7b0e531ee223bf9b43c70d769e453f0f8585030f98ca5a3eb2c1fadb88792e6827d11e4c31c666c11ad282d1597f6cf89601b463d02e903a1963c3a9  deviceinfo
+e73652d96960c86c291d87aa62b74f7006330654eac0afa907f51cdf03e4c77cd2488b16a12fc7e2c407757657cebec77787372579c09e6d10c5d7c2c5e2f0b8  initfs-hook.sh"
