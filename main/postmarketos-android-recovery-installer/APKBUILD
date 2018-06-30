@@ -2,7 +2,7 @@ pkgname=postmarketos-android-recovery-installer
 pkgver=0.1.7
 pkgrel=0
 pkgdesc="TWRP compatible postmarketOS installer script"
-url="https://github.com/postmarketOS"
+url="https://postmarketos.org"
 # multipath-tools: kpartx
 depends="busybox-extras lddtree cryptsetup multipath-tools device-mapper parted util-linux zip e2fsprogs tar"
 source="build_zip.sh
