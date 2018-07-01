@@ -2,14 +2,14 @@ pkgname=postmarketos-splash
 pkgver=1
 pkgrel=4
 pkgdesc="Splash screen for postmarketOS"
-url="https://github.com/postmarketos"
+url="https://gitlab.com/postmarketos"
 arch="noarch"
 license="mit"
 depends="ttf-dejavu ttf-droid py3-pillow"
 makedepends=""
 install=""
 subpackages=""
-source="make-splash.py config.ini https://github.com/postmarketOS/artwork/raw/master/logo/pmos.ttf"
+source="make-splash.py config.ini https://gitlab.com/postmarketOS/artwork/raw/master/logo/pmos.ttf"
 
 package() {
 	install -D -m755 "$srcdir"/make-splash.py \
