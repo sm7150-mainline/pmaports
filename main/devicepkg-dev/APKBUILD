@@ -1,5 +1,5 @@
 pkgname="devicepkg-dev"
-pkgver=0.2
+pkgver=0.3
 pkgrel=0
 pkgdesc="Provides default device package functions"
 url="https://postmarketos.org"
@@ -8,6 +8,7 @@ license="MIT"
 source="
 	devicepkg_build.sh
 	devicepkg_package.sh
+	downstreamkernel_prepare.sh
 "
 
 package() {
@@ -15,6 +16,9 @@ package() {
 		"$pkgdir/usr/bin/devicepkg_build"
 	install -Dm755 "$srcdir/devicepkg_package.sh" \
 		"$pkgdir/usr/bin/devicepkg_package"
+	install -Dm755 "$srcdir/downstreamkernel_prepare.sh" \
+		"$pkgdir/usr/bin/downstreamkernel_prepare"
 }
 sha512sums="638d50e6388eabf0da6bf0cff2fe9719ad8a808946f0077228db57fa13a26d9eeb39c1f2689c9a6f93ff9b3bcfdcfb7c358b180bba90e5bba8b9a9e78d25ed18  devicepkg_build.sh
-c732792596f56860f6ab9ddd53b9a7a80224400dd20097b20cebe17a6e7330e9178783f09db16132a28a555f83e29ef3643bfe069638b62998912a9a7ffefdc0  devicepkg_package.sh"
+c732792596f56860f6ab9ddd53b9a7a80224400dd20097b20cebe17a6e7330e9178783f09db16132a28a555f83e29ef3643bfe069638b62998912a9a7ffefdc0  devicepkg_package.sh
+9f240217084215e6a085616ae7dbe4ed7446f9cd4a1ca32631c083a1c74ea380bb8585a32a506491e54db091683bbe7300e94dba3a0d994a580017686386abc8  downstreamkernel_prepare.sh"
