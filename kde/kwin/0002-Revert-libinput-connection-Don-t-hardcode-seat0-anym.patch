@@ -1,0 +1,30 @@
+From dd721ba4d51d0c090f765fb6acd8fa86ede6b806 Mon Sep 17 00:00:00 2001
+From: Bhushan Shah <bhush94@gmail.com>
+Date: Mon, 2 Jul 2018 11:50:37 +0530
+Subject: [PATCH 2/2] Revert "libinput/connection: Don't hardcode seat0
+ anymore"
+
+This reverts commit ddda524974d99249570e72d17f34215a735b2acc.
+---
+ libinput/connection.cpp | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/libinput/connection.cpp b/libinput/connection.cpp
+index 7664659d6..82c374d71 100644
+--- a/libinput/connection.cpp
++++ b/libinput/connection.cpp
+@@ -135,8 +135,9 @@ Connection *Connection::create(QObject *parent)
+             s_context = nullptr;
+             return nullptr;
+         }
+-        if (!s_context->assignSeat(LogindIntegration::self()->seat().toUtf8().constData())) {
+-            qCWarning(KWIN_LIBINPUT) << "Failed to assign seat" << LogindIntegration::self()->seat();
++        // TODO: don't hardcode seat name
++        if (!s_context->assignSeat("seat0")) {
++            qCWarning(KWIN_LIBINPUT) << "Failed to assign seat seat0";
+             delete s_context;
+             s_context = nullptr;
+             return nullptr;
+-- 
+2.17.1
+

@@ -1,8 +1,8 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwin
-pkgver=5.13.0
-pkgrel=1
+pkgver=5.13.2
+pkgrel=0
 pkgdesc='An easy to use, but flexible, composited Window Manager'
 arch="all"
 url='https://www.kde.org/workspaces/plasmadesktop/'
@@ -19,7 +19,8 @@ depends_dev="kdecoration-dev kjobwidgets-dev kcmutils-dev kscreenlocker-dev bree
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev libxkbcommon-dev
 			libepoxy-dev libinput-dev xcb-util-cursor-dev libdrm-dev eudev-dev xcb-util-wm-dev"
 source="https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz
-		0001-Revert-udev-Only-handle-devices-from-the-current-sea.patch"
+		0001-Revert-udev-Only-handle-devices-from-the-current-sea.patch
+        0002-Revert-libinput-connection-Don-t-hardcode-seat0-anym.patch"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -42,5 +43,6 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="0ccd927e0745a0afc831f59882f3e33169b276ed79c7e42721842ab2fbf2f8b17ac451943d140ce98ee89478b476f900f9004a3f513fe4d8753666be4a4375e2  kwin-5.13.0.tar.xz
-a34ff6926f020117fafd8a31c18a183eecb3e0a5fe6c3f2784f531171552350615fb06cbac2f3a1248011eb83ec32fc9df4b64f82443dee1d8e90c1be49e2690  0001-Revert-udev-Only-handle-devices-from-the-current-sea.patch"
+sha512sums="70b11e39f2e6186fa955bf338f96cdf363fc562b130839f1f82b9950ccff3707c6056c2bfc364f2d62ea5bfec8cfe3c2c215073928849d2a15d3c11bd9ebfcc7  kwin-5.13.2.tar.xz
+a34ff6926f020117fafd8a31c18a183eecb3e0a5fe6c3f2784f531171552350615fb06cbac2f3a1248011eb83ec32fc9df4b64f82443dee1d8e90c1be49e2690  0001-Revert-udev-Only-handle-devices-from-the-current-sea.patch
+a534a3d388f066f84813148743eda1da1be000907ddf2c762c098a7ce38fcc1992eaa74763c47d98e82b83e38a03a828f4f3368e7e7ab733714f993646af7c8b  0002-Revert-libinput-connection-Don-t-hardcode-seat0-anym.patch"
