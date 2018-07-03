@@ -9,6 +9,7 @@ arch="noarch"
 options="!check"
 depends="postmarketos-base linux-samsung-kylepro mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo"
 
 build() {
@@ -17,6 +18,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-kylepro"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="4d22f454781115de15df651a46964b7770f08f4d027d7edae6624945eef02cea76ddeec30370ca58902a246cba872af02372f4ff197f786782cdd638b0e0eec6  deviceinfo"
