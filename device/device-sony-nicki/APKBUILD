@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-sony-nicki"
+pkgdesc="Sony Xperia M"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-sony-nicki mkbootimg mesa-dri-swrast mdss-fb-init-hack msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo 90-android-touch-dev.rules screen-workaround.sh fb.modes pointercal"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+	install -D -m644 "$srcdir"/screen-workaround.sh \
+		"$pkgdir"/etc/profile.d/screen-workaround.sh
+	install -D -m644 "$srcdir"/fb.modes \
+		"$pkgdir"/etc/fb.modes
+	install -D -m644 "$srcdir"/pointercal \
+		"$pkgdir"/etc/pointercal
+
+	#I have no idea what it does but it's included in sony-yuga and
+	#if I do same on here, segfaults stop appearing in dmesg
+	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
+}
+
+sha512sums="ca821636f50ad0991ce24aa25edd6b961be747941de234d5190d08dc4962815ade591a5fd648ce6476512d37f7373ab4b2d3ff76d6783af81eaa66e487c14dde  deviceinfo
+a3d3a0cf43c5f216279666143d6042f2669dbe3dc5ecec2817b6118a0c122f5b927799b37432bee3167359c118d0142fd8e8e8d67374e8ab1d837673f217e1ae  90-android-touch-dev.rules
+8cecfb3c726a59ebdf2a9e53df11e784d662329b50f288344121e7774368ee782c27229d94aee1f2f4d43eb6ef764ccb63af547beb43438b9750b2b888be61ff  screen-workaround.sh
+aac9a5d4c856b6feaf4f2961251fbc81d9173e24c3b20806e803711b40e388a173abf2651d5d828d36a504ef2de12c1c1eacea1f1b9479e31f55234012140405  fb.modes
+016111b7618e2509186fd91dd238cdfb51c37a02af98ba01d3cf27358ff901f71f7ff5e798752334e720bf8108b907a31e9242085c8c915748f2d9391f86dfc4  pointercal"

@@ -1,0 +1,89 @@
+# Kernel config based on: arch/arm/configs/lineageos_nicki_defconfig
+
+pkgname="linux-sony-nicki"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Sony Xperia M kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="sony-nicki"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_sony_msm8x27"
+_commit="627687e4625d208248fe5fa40dcaaeb3363dfce7"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	00_fix_return_address.patch
+	01_fix_video_argb_setting.patch
+	02_mdss_fb_refresh_rate.patch
+	03_kgsl_iommu_sync_lock.patch
+	04_psmouse_base.patch
+	05_try_to_make_kgsl_work.patch
+	compiler-gcc6.h
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+
+	# Remove -Werror from all makefiles
+	local i
+	local makefiles="$(find . -type f -name Makefile)
+		$(find . -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	mkdir -p "$srcdir"/build
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="cb1132c1add4c87490889ca20924f92bc89d646b2efefe023802c22e0167a2cfd39fdcbf7316f957ba4c93fe7318079df8dea5657aac92710ddcd45bfa7977f8  linux-sony-nicki-627687e4625d208248fe5fa40dcaaeb3363dfce7.tar.gz
+935391d48e4880f76acb90525c2455c07e14b6e90c73c4334c735ac03e79de93e909705b3a3700443964594c8b06ea619f80271d2ea51e2590b567d78d780417  config-sony-nicki.armhf
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+e3083c260ed9c4fc0d83f43106700b6173876dbfae072f6e6696ac6785a4dc17771fbcb3e21601e04ed29a11bf0f7a2a09ad549375e0c34cea245c7f2e2bcbbd  01_fix_video_argb_setting.patch
+a8c955bf718f155011e980f3d0948be98e1fee5649f418299a4851780543019daf7afa406aa7b0829375645107e4e6fbf241026b0cabe2b2ac895a47df83d2d8  02_mdss_fb_refresh_rate.patch
+448bad436377a22c93ac401b9aecb504fe8e84b9511a3dd28f3cc125f3725cc1168ef03dee9f8f1085a9fbb7910b9e75cd25a382ccce626b427c8e27f7c17ffc  03_kgsl_iommu_sync_lock.patch
+f7e31cfe422696922aec52002e56c58103183966edee3bb8e1995d33f8d37b07c32280a8ecc213874e358a6ff367418556a4542fba7e3c17e4b8e82e05c3a543  04_psmouse_base.patch
+270aa134a7040409cf2ec5502939b8aa68470c47eeb2bef8f378aa2758a8b546b79018298a81625351f1c06241d8f76bf016793474f58b888db7871a5d745801  05_try_to_make_kgsl_work.patch
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
