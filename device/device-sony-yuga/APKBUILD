@@ -1,15 +1,15 @@
 pkgname=device-sony-yuga
 pkgver=1
-pkgrel=10
+pkgrel=11
 pkgdesc="Sony Xperia Z"
 url="https://postmarketos.org"
 arch="noarch"
 license="MIT"
-depends="postmarketos-base linux-sony-yuga mkbootimg mesa-dri-swrast"
+depends="postmarketos-base linux-sony-yuga mkbootimg msm-fb-refresher mesa-dri-swrast"
 makedepends=""
 install=""
 subpackages=""
-source="deviceinfo 90-android-touch-dev.rules fb-workaround.sh"
+source="deviceinfo 90-android-touch-dev.rules"
 options="!check"
 
 package() {
@@ -17,8 +17,6 @@ package() {
 		"$pkgdir/etc/deviceinfo"
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-	install -D -m644 "$srcdir"/fb-workaround.sh \
-		"$pkgdir"/etc/profile.d/fb-workaround.sh
 
 	# Disable v4l (video4linux), because without the camera firmware
 	# blobs this makes dev hang with the kernel this device uses (#1033)
@@ -26,5 +24,4 @@ package() {
 }
 
 sha512sums="052fe308e049c11aa6ee9d1e40d797b7d46295e950736cd26e406584863794b692273a5c27f757bd2cdac467bc866504ff3bfa3f66a96244bf146abb2e131b1d  deviceinfo
-8b6034c0338ab4c7d648f47983aad6da07e427e7dba47baabf85a1b3ddeeda47c8d7fbcd547a302c9a759b2943ee30d3e82c3b368d8582833a058e4671638a9e  90-android-touch-dev.rules
-281937447a73c18e8eec195cbf485fcd513aec20b8df559c26b89fbefa5872c41865cba2440e2cc8a9cc76801bca9ab61f9562c536c6f5f10c925e3ca7f372f3  fb-workaround.sh"
+8b6034c0338ab4c7d648f47983aad6da07e427e7dba47baabf85a1b3ddeeda47c8d7fbcd547a302c9a759b2943ee30d3e82c3b368d8582833a058e4671638a9e  90-android-touch-dev.rules"
