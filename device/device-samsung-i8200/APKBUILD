@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-i8200"
+pkgdesc="Samsung SIII mini Value Edition"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-samsung-i8200 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+nonfree_firmware() {
+	pkgdesc="Wi-Fi and bluetooth firmware"
+	depends="linux-firmware-mrvl"
+	mkdir "$subpkgdir"
+}
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="a97b8e8b53708b8390858f45ad0fb23e39e0acbf80a351a4be502bb12c9ec81f6ae2dda423b6225ac7e6c9dee75b82668a73cadbd0369303ea052d62effffdc6  deviceinfo"

@@ -1,0 +1,63 @@
+# Kernel config based on: arch/arm/configs/pxa986_golden_rev02_defconfig
+
+pkgname="linux-samsung-i8200"
+pkgver=3.4.5
+pkgrel=0
+pkgdesc="Samsung SIII mini Value Edition kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-i8200"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev"
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="kernel_i8200"
+_commit="5e4d8b5f27fb90d5a3f8aad13d9afe63e586c82d"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/MasterPlexus/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	timeconst_fix.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="425d76c48862f3662826518e44164769e3ea959aed569329bafd951b2124d2ea3318de8ed65cb5f45635e0f3a13fa99b1ffa1df913126a1a5ecd1fa0ad988668  linux-samsung-i8200-5e4d8b5f27fb90d5a3f8aad13d9afe63e586c82d.tar.gz
+738888a5e773436d8574e57caebb69f0a4ecebd59377c3c579715521cec9ea9ffe7165b936e69676b7303d977d24b22d5b1cab5612978095bceb940e16fdea65  config-samsung-i8200.armhf
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+7191d532df8f6a8bf64b5b5bcaa7343c8d1b844c891a67fc6d29f421903ddd46c3e779a6f5a5833a6a8f635d1582f5224fa795b3912b8b211a90ee561ad31469  timeconst_fix.patch"
