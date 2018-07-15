@@ -299,7 +299,7 @@ generate_splash_screens()
 	set -- "splash-loading"          "Loading..." "--center" \
 	       "splash-noboot"           "boot partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
 	       "splash-noinitramfsextra" "initramfs-extra not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-nosystem"         "system partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
+	       "splash-norootfs"         "rootfs not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
 	       "splash-mounterror"       "unable to mount root partition\\nhttps://postmarketos.org/troubleshooting" "--center" \
 	       "splash-debug-shell"      "WARNING\\ndebug-shell is active\\nhttps://postmarketos.org/debug-shell" "--center"
 

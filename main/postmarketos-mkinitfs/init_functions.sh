@@ -121,8 +121,8 @@ extract_initramfs_extra() {
 
 wait_root_partition() {
 	while [ -z "$(find_root_partition)" ]; do
-		show_splash /splash-nosystem.ppm.gz
-		echo "Could not find the root partition."
+		show_splash /splash-norootfs.ppm.gz
+		echo "Could not find the rootfs."
 		echo "Maybe you need to insert the sdcard, if your device has"
 		echo "any? Trying again in one second..."
 		sleep 1
