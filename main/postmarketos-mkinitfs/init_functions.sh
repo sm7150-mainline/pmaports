@@ -301,6 +301,7 @@ start_charging_mode(){
 		androidboot.huawei_type=oem_rtc
 		startup=0x00010004
 		lpcharge=1
+		androidboot.bootchg=true
 	"
 	# shellcheck disable=SC2086
 	grep -Eq "$(echo $chargingmodes | tr ' ' '|')" /proc/cmdline || return
