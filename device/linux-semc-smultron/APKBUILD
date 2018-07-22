@@ -1,4 +1,4 @@
-# Kernel config based on: arch/arm/configs/(CHANGEME!)
+# Kernel config based on: arch/arm/configs/lx_smultron_defconfig
 
 pkgname="linux-semc-smultron"
 pkgver=3.4.0
@@ -10,7 +10,7 @@ _flavor="semc-smultron"
 url="https://kernel.org"
 license="GPL2"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev xz"
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
@@ -29,23 +29,7 @@ builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
 	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	local i
-	local makefiles="$(find . -type f -name Makefile)
-		$(find . -type f -name Kbuild)"
-	for i in $makefiles; do
-		sed -i 's/-Werror-/-W/g' "$i"
-		sed -i 's/-Werror//g' "$i"
-	done
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	mkdir -p "$srcdir"/build
-        cp "$srcdir"/$_config "$builddir"/.config
-        yes "" | make O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
