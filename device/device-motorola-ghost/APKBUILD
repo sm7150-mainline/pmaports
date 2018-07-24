@@ -1,0 +1,21 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-motorola-ghost"
+pkgdesc="Moto X (2013)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-motorola-ghost mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="83662fbe0050eef207149f99afcc42cac4c0bf7e148e4519ee5a6c854eb69525baaff050a68213f076b9706c50a7d46a47235322addec93d21bfabd25caf60d9  deviceinfo"
