@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-nokia-rm885"
+pkgdesc="Lumia 720"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-nokia-rm885 mkbootimg mdss-fb-init-hack mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="731f3a6be1fec2f141ebe254f02edb404c053b2021da07be414582f95218ca05f934e8a37615cf4ec8139007fc37c1f8c578a21e7f49e76fbf16bf6869e0a0d3  deviceinfo"
