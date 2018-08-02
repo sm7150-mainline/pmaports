@@ -4,7 +4,7 @@
 # /etc/inittab by postmarketos-base post-install.hook).
 # This is a temporary solution, we'll need something like a
 # display manager in the long run (#656).
-if [ "$(id -u)" = "1000" ] && [ "$(tty)" = "/dev/tty1" ]; then
+if [ "$(id -u)" = "10000" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# Start X11 with Mate
 	startx /usr/bin/matchbox-session 2>&1 | logger -t "$(whoami):x11"
 

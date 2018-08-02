@@ -12,7 +12,7 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 
 	# Weston autostart on tty1 (Autologin on tty1 is enabled in
 	# /etc/inittab by postmarketos-base post-install.hook)
-	if [ "$(id -u)" = "1000" ] && [ $(tty) = "/dev/tty1" ]; then
+	if [ "$(id -u)" = "10000" ] && [ $(tty) = "/dev/tty1" ]; then
 
 		# Find right weston.ini
 		cfg="/etc/xdg/weston/weston.ini"

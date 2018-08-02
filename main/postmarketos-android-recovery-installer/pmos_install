@@ -113,9 +113,9 @@ unzip -p pmos.zip rootfs.tar.gz | tar -xz -C /mnt/pmOS
 
 ui_print "Creating home folder..."
 mkdir /mnt/pmOS/home
-user="$(awk -F ':' '$3 == "1000" {print $1}' /mnt/pmOS/etc/passwd)"
+user="$(awk -F ':' '$3 == "10000" {print $1}' /mnt/pmOS/etc/passwd)"
 cp -a /mnt/pmOS/etc/skel /mnt/pmOS/home/"$user"
-chown -R 1000 /mnt/pmOS/home/"$user"
+chown -R 10000 /mnt/pmOS/home/"$user"
 
 ui_print "Configuring apk..."
 sed -i '/\/mnt\/pmbootstrap-packages/d' /mnt/pmOS/etc/apk/repositories
