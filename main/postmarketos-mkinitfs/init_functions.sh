@@ -313,7 +313,10 @@ start_charging_mode(){
 		echo "KEY_POWER 1 pgrep -x charging-sdl || charging-sdl -pcf $fontpath"
 	} >/etc/triggerhappy.conf
 	# Start it once and then start triggerhappy
-	charging-sdl -pcf "$fontpath" &
+	(
+		charging-sdl -pcf "$fontpath" \
+			|| show_splash /splash-charging-error.ppm.gz
+	) &
 	thd --deviceglob /dev/input/event* --triggers /etc/triggerhappy.conf
 }
 
