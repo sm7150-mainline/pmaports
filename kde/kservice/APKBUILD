@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kservice
-pkgver=5.48.0
+pkgver=5.49.0
 pkgrel=0
 pkgdesc="Advanced plugin and service introspection"
 arch="all"
@@ -14,24 +14,29 @@ source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkg
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to test suites not building
 
+prepare() {
+	mkdir "$builddir"/build
+}
+
 build() {
+	cd "$builddir"/build
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON \
-		-DBUILD_TESTING=OFF
+		-DBUILD_TESTING=OFF ..
 	make
 }
 
 check() {
-	cd "$builddir"
+	cd "$builddir"/build
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"
+	cd "$builddir"/build
 	make DESTDIR="${pkgdir}" install
 }
 
-sha512sums="3c781f0634e646ad287a02d3fc65ef1850984e637a9a01c2f5f86805c6962429a2cfeedb7e3d81ac12c60b6786b5c51545a15a049d5dcf2d339a235c060e34e9  kservice-5.48.0.tar.xz"
+sha512sums="7b64c941d1d96ff683eee44dec932bb02b94bc26e7472ddc4d6a2a4646101563653d7ded72356881baf221743c0f74fc28f7e01fcbea077a411b790c1a834ee0  kservice-5.49.0.tar.xz"
