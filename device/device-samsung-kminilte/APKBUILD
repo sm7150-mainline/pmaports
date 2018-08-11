@@ -2,14 +2,17 @@
 pkgname="device-samsung-kminilte"
 pkgdesc="Samsung Galaxy S5 Mini"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
 depends="postmarketos-base linux-samsung-kminilte mkbootimg mesa-dri-swrast"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	fb.modes
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -17,6 +20,8 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
 }
 
-sha512sums="a8ba2bf24f35da0c831f90aad91ce1ae925e67ea18638af012741fefcfc0449454a51f92e18bb97b4e1c90ef14a20776f4addbb3401b0fcf9c747cb0582ec22f  deviceinfo"
+sha512sums="a8ba2bf24f35da0c831f90aad91ce1ae925e67ea18638af012741fefcfc0449454a51f92e18bb97b4e1c90ef14a20776f4addbb3401b0fcf9c747cb0582ec22f  deviceinfo
+245efec73f85ef715c877d6c24eb4b7b677d250bd38167dc19b1b0ed84c3ea91049576adbbf21dd48940c08e40f0294a1a01b0ab3e56efd794109a7e7ebc1104  fb.modes"
