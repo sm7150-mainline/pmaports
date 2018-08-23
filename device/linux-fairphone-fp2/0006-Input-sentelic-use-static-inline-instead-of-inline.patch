@@ -1,7 +1,7 @@
-From bde304575f3ecaa9570a9329196dffaadf3adafa Mon Sep 17 00:00:00 2001
+From 8aced5520b9c1ec1f23e004aae59a2a88ad74764 Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Fri, 22 May 2015 09:56:29 -0700
-Subject: [PATCH] Input: sentelic - use "static inline" instead of "inline"
+Subject: [PATCH 6/6] Input: sentelic - use "static inline" instead of "inline"
 
 gcc-5 defaults to gnu11 which used c99 inline semantics in c99 'inline' is
 not externally visible unlike gnu89, therefore we use 'static inline' which
@@ -14,10 +14,10 @@ Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/input/mouse/sentelic.h b/drivers/input/mouse/sentelic.h
-index aa697ece405b..42df9e3beae8 100644
+index 334de19e5ddb..a821628244b9 100644
 --- a/drivers/input/mouse/sentelic.h
 +++ b/drivers/input/mouse/sentelic.h
-@@ -123,11 +123,11 @@ struct fsp_data {
+@@ -115,11 +115,11 @@ struct fsp_data {
  extern int fsp_detect(struct psmouse *psmouse, bool set_properties);
  extern int fsp_init(struct psmouse *psmouse);
  #else
@@ -32,5 +32,5 @@ index aa697ece405b..42df9e3beae8 100644
  	return -ENOSYS;
  }
 -- 
-2.14.1
+2.18.0
 

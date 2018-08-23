@@ -5,30 +5,31 @@ deviceinfo_format_version="0"
 deviceinfo_name="Fairphone 2"
 deviceinfo_manufacturer="Fairphone"
 deviceinfo_date=""
-deviceinfo_keyboard="false"
-deviceinfo_nonfree="????"
 deviceinfo_dtb=""
-deviceinfo_modules=""
 deviceinfo_modules_initfs=""
-deviceinfo_external_storage="true"
-deviceinfo_flash_method="fastboot"
-deviceinfo_flash_sparse="true"
 deviceinfo_arch="armhf"
 
-# Splash screen
+# Device related
+deviceinfo_keyboard="false"
+deviceinfo_external_storage="true"
 deviceinfo_screen_width="1080"
 deviceinfo_screen_height="1920"
+deviceinfo_dev_touchscreen="/dev/input/event0"
+deviceinfo_dev_touchscreen_calibration=""
+deviceinfo_dev_keyboard=""
 
-# Fastboot related
+# Bootloader related
+deviceinfo_flash_method="fastboot"
+deviceinfo_kernel_cmdline="console=ttyHSL0,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3b7 ehci-hcd.park=3 androidboot.bootdevice=msm_sdcc.1"
 deviceinfo_generate_bootimg="true"
 deviceinfo_bootimg_qcdt="true"
-
-deviceinfo_kernel_cmdline="console=ttyHSL0,115200,n8 PMOS_NO_OUTPUT_REDIRECT"
-deviceinfo_flash_offset_kernel="0x00000000"
-deviceinfo_flash_offset_ramdisk="0x02000000"
+deviceinfo_flash_offset_base="0x00000000"
+deviceinfo_flash_offset_kernel="0x00008000"
+deviceinfo_flash_offset_ramdisk="0x01000000"
 deviceinfo_flash_offset_second="0x00f00000"
-deviceinfo_flash_offset_tags="0x01E00000"
+deviceinfo_flash_offset_tags="0x00000100"
 deviceinfo_flash_pagesize="2048"
 
 # Weston red screen workaround (see issue #54)
 deviceinfo_weston_pixman_type="2"
+

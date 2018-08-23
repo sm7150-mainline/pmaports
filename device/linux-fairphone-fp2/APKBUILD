@@ -1,122 +1,80 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
-# Kernel config based on: arch/arm/configs/fairphone-perf_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
+# Kernel config based on: arch/arm/configs/lineageos_FP2_defconfig
 
-_vendor=fairphone
-_flavor=fairphone-fp2
-_hash="8c73c363d1cd11624ddda9a1ef08b9dc7a5569e4"
-_config="config-${_flavor}.armhf"
-
-pkgname=linux-${_flavor}
+pkgname="linux-fairphone-fp2"
 pkgver=3.4.0
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=6
+pkgrel=7
+pkgdesc="Fairphone 2 kernel fork"
 arch="armhf"
-pkgdesc="LineageOS kernel for Fairphone 2"
-url="https://github.com/LineageOS/android_kernel_fairphone_msm8974"
-depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev python2 dtbtool"
-options="!strip !check !tracedeps"
-install=
-source="
-	https://github.com/LineageOS/android_kernel_fairphone_msm8974/archive/${_hash}.zip
-	${_config}
-	compiler-gcc6.h
-	00_fix_return_address.patch
-	00_Input-lifebook-use-static-inline-instead-of-inline-i.patch
-	00_Input-sentelic-use-static-inline-instead-of-inline.patch
-	gpu-msm-fix-gcc5-compile.patch
-"
-
-subpackages=""
-license="GPL2"
-
-_abi_release=${pkgver}
 _carch="arm"
+_flavor="fairphone-fp2"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool xz"
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-ksrcdir="$srcdir/android_kernel_fairphone_msm8974-${_hash}"
+# Source
+_repository="android_kernel_fairphone_msm8974"
+_commit="284400aea4b9f8a3c97a34408f48d0971897ae02"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	0001-ARM-8158-1-LLVMLinux-use-static-inline-in-ARM-ftrace.patch
+	0002-gpu-msm-Fix-compilation.patch
+	0003-Fix-includes.patch
+	0004-msm-fix-trace.patch
+	0005-Input-lifebook-use-static-inline-instead-of-inline-i.patch
+	0006-Input-sentelic-use-static-inline-instead-of-inline.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	echo "--[ silentoldconfig ]--"
-	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		oldconfig
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
-	echo "--[ Build modules ]--"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
+	# Generate master DTB (deviceinfo_bootimg_qcdt)
 	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/dt.img" \
-		"$pkgdir/boot/dt.img"
-
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$srcdir/build/include/config/kernel.release" \
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-	cd "$srcdir"/build
-	unset LDFLAGS
-	echo "--[ Installing modules ]--"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" modules_install
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
 }
 
-sha512sums="acddc069c3e8aa5b58c82eddc6e335946695e618fe5756e81a730cbcfbba0fd256b6e46024c46a66f8551d67608edd6d55b5a7cfa8ea98b064ca1ddaa1d7238d  8c73c363d1cd11624ddda9a1ef08b9dc7a5569e4.zip
-ab13d17b292081ecaa607e52b424eedea3e2c02678e5b329f3c8b5267cc844b4c40e7cd7244ede0d4fa4d5722b9e0a1cfd23498b34859b5702534d51954dc41a  config-fairphone-fp2.armhf
+sha512sums="6b440c5d087b790894606d4736af815204d9e6f682b7c1ba78f5852fa7aecd74cb276f4953d270f14c96d5418f4e2a83c5179c54d50e2e5afc9084f83ab54200  linux-fairphone-fp2-284400aea4b9f8a3c97a34408f48d0971897ae02.tar.gz
+aa8c8dd8502b7ecbfc7d8aee2146a5b613dbea3f071d8f0a48f213a5be0f4026a596d3c55d72ebdef1897f93133f4111aac50f62f3c560a7a49c838b4bbf6413  config-fairphone-fp2.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
-5c49f6ff6773a7dc3067d2b1359648fe7a9f758b6c068d6fa69d9aaf24a291ba8022c960317d926aabc11d020a71b20c4e81a6fcf9b21ef66d9b6d065bae23e9  00_Input-lifebook-use-static-inline-instead-of-inline-i.patch
-2d77d90b501aa8afbf81629e73fc0a2055b373942975f58277e43f398d0835b3dbbff4a1118137ec82873ba90a254fea87c1d73ba7708578f1779bd0b4c6ff2d  00_Input-sentelic-use-static-inline-instead-of-inline.patch
-7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  gpu-msm-fix-gcc5-compile.patch"
+19d21a15d5470ba0a77ddfac2ea662f6424bca4af66d310019ba3c3d7d976cae6b7f88422d64e564c47a7347a7338459f61f3ac94d13d7b981defc206f99a120  0001-ARM-8158-1-LLVMLinux-use-static-inline-in-ARM-ftrace.patch
+6f806c8e2a5b6e7e503c2b98ff55cd90f4e77cb7d82b9a3e3f85f4d718265be06f03a81ab9c0d88a95508b4192713c98f3959b18c6119edf209722c3002d19fe  0002-gpu-msm-Fix-compilation.patch
+403d4999e98ddf73e083076c130a7c9de265096b7abeaabe1ba4305403202e651289a538d104cb37adf783fcecea009f3ed2b722d8640d8d3f12e6cbb8ebe97d  0003-Fix-includes.patch
+432099f87fbcd66fa801ecaedb06715754198761c709cbb40b0dc8ffef14a6d6d5f0df27823229b731b18438c705c60c0ce44728b192d8e0f20c285bf761b7f3  0004-msm-fix-trace.patch
+fdc336206dedc11f560849738903f18ffa28ea5387b8764cae37c981a5e1bc610d32f041c0cde4ff246fb24cb79cb3f5d7820a40ea33aac75b9660897299b03f  0005-Input-lifebook-use-static-inline-instead-of-inline-i.patch
+ea45a9faa3320410b76409b373dc4a2d41ef2f815c48cdfe5ca8072df402ecab87bbd2021f116a4d93827bc62f59bce4c5defc10758134a1e054a66822371a77  0006-Input-sentelic-use-static-inline-instead-of-inline.patch"
