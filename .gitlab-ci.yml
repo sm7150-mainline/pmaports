@@ -1,0 +1,69 @@
+---
+
+# global settings
+image: alpine:3.8
+after_script:
+  - .gitlab-ci/move_logs.sh $CI_PROJECT_DIR
+stages:
+  - first
+  - second
+
+# device documentation
+wiki:
+  stage: first
+  before_script:
+    - apk -q add python3
+  script:
+    - .gitlab-ci/check_devices_in_wiki.py --booting
+
+# static code analysis (shellcheck is not in Alpine, so we use Debian)
+py-sh-static:
+  stage: first
+  image: python:3.6-slim-stretch
+  before_script:
+    - apt -q update >/dev/null
+    - apt -y install flake8 shellcheck >/dev/null
+  script:
+    - .gitlab-ci/static_code_analysis.sh
+
+# aports checks (generic)
+aports-static:
+  stage: first
+  before_script:
+    - .gitlab-ci/install_pmbootstrap.sh pytest
+  script:
+    - su pmos -c ".gitlab-ci/run_testcases.sh
+        -m 'not pmaports_upstream_compat'"
+  artifacts:
+    when: on_failure
+    paths:
+      - log.txt
+      - log_testsuite_pmaports.txt
+      - pmbootstrap.cfg
+    expire_in: 1 week
+
+# aports checks (upstream compatibility)
+aports-static-upstream:
+  stage: second
+  before_script:
+    - .gitlab-ci/install_pmbootstrap.sh pytest
+  script:
+    - su pmos -c ".gitlab-ci/run_testcases.sh
+        -m 'pmaports_upstream_compat'"
+  artifacts:
+    when: on_failure
+    paths:
+      - log.txt
+      - log_testsuite_pmaports.txt
+      - pmbootstrap.cfg
+    expire_in: 1 week
+  only:
+    - master
+
+# build changed aports
+aports-build:
+  stage: second
+  before_script:
+    - .gitlab-ci/install_pmbootstrap.sh git
+  script:
+    - su pmos -c ".gitlab-ci/build_changed_aports.py"
