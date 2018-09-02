@@ -1,0 +1,40 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=click
+pkgver=0_git20190129
+_commit="cc108942faa348a155e665a5c07828dd36954d6a"
+pkgrel=0
+pkgdesc="Click is a simplified packaging format"
+url="https://github.com/ubports/click"
+arch="x86_64"
+license="GPL-3.0"
+depends=""
+depends_dev="libgee-dev gobject-introspection-dev"
+makedepends="$depends_dev cmake intltool vala gobject-introspection autoconf libtool automake json-glib-dev"
+subpackages="$pkgname-dev $pkgname-doc"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # Needs dpkg
+
+build() {
+	cd "$builddir"
+	./autogen.sh
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--disable-packagekit \
+		--disable-systemd
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir/" PYTHON_INSTALL_FLAGS="--root=$pkgdir/" install
+}
+
+sha512sums="c7b2aed6bd14a791cde5ea97d6558c29a6e86e5da48ea15cd008e0811fab254ce6c0e289eb7e00554a5522e1f5562ed0d4e24e057ea4d1bd37b9a11580ef69d7  click-cc108942faa348a155e665a5c07828dd36954d6a.tar.gz"

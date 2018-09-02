@@ -1,0 +1,13 @@
+diff --git a/tests/privileged-tests/ui_get_sysname_ioctl_override.cpp b/tests/privileged-tests/ui_get_sysname_ioctl_override.cpp
+index 98b2c7d3db..a4760875d6 100644
+--- a/tests/privileged-tests/ui_get_sysname_ioctl_override.cpp
++++ b/tests/privileged-tests/ui_get_sysname_ioctl_override.cpp
+@@ -99,7 +99,7 @@ auto request_param_type(int (*ioctl)(int, Param1, ...)) -> Param1;
+ 
+ using ioctl_request_t = decltype(request_param_type(&ioctl));
+ 
+-extern "C" int ioctl(int fd, ioctl_request_t request, ...) noexcept
++extern "C" int ioctl(int fd, ioctl_request_t request, ...)
+ {
+     va_list vargs;
+     va_start(vargs, request);

@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=libqtdbustest
+pkgver=0_git20180611
+_commit="24e410ea77c9fa08894365c60bf08811a3b60bc0"
+pkgrel=0
+pkgdesc='Library for testing DBus interactions using Qt'
+url='https://github.com/ubports/libqtdbustest'
+arch="x86_64"
+license=LGPL-3.0
+depends=""
+makedepends="cmake cmake-extras gmock gtest-dev qt5-qtbase-dev"
+checkdepends="procps py3-dbusmock dbus-x11"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+	SuicidalSleep.patch"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cd "$builddir"
+	cmake -DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBEXECDIR=lib .
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="e587a3342879cf11543529cf2e6ad9f6266963afdad29f91bcf2742086cb9f889eca36f335280a658ecbf9a5e5319154e0b7ea842a008b3d2fb7740488ed442e  libqtdbustest-24e410ea77c9fa08894365c60bf08811a3b60bc0.tar.gz
+4ce1c9a23784412b7e171129db2dc13e39a515249edc73bdbd835996d76670eeafead55dbaa197ec8614d560038f6bf9fa999be3e5989d4d7134172e9dcf25bb  SuicidalSleep.patch"

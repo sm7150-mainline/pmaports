@@ -1,0 +1,45 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=platform-api
+pkgver=0_git20180218
+pkgrel=0
+_commit="464a38b496ec499ed19fb93aefd6770abd5c19b8"
+pkgdesc="Platform API for system level capabilities"
+arch="x86_64"
+url='https://unity8.io'
+license="GPL-3.0 LGPL-3.0"
+depends=""
+depends_dev="process-cpp-dev url-dispatcher-dev location-service-dev"
+makedepends="$depends_dev cmake cmake-extras dbus-cpp-dev"
+checkdepends="gtest-dev gmock"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+	0001-Use-proper-GTest.patch
+	0002-Use-getenv-instead-of-secure_getenv.patch
+	0003-Only-use-hybris-if-available.patch"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	mkdir -p build
+	cd build
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib ..
+	make
+}
+
+check() {
+	cd "$builddir"/build
+	make test
+}
+
+package() {
+	cd "$builddir"/build
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="e2218778bdef261b0b1e16e70eb720c1ab2f369d410dbb24edd4acc9ab882ffdcc9a96e16b5e703960dae63c49d82912bb5671e678c1caf6c4f4bc6b9784b7ee  platform-api-464a38b496ec499ed19fb93aefd6770abd5c19b8.tar.gz
+45825a297eadafc4ad51cc989785704e974f4b6d714753a120165b40868fb7b0addd0d473bd97b01d248082817605128ddc4909ab0c0f81162129fa322d20d64  0001-Use-proper-GTest.patch
+c7eb662fd843ac73d91366d11fd331281c040dd8a58665419fad155f0af2054c66496ee58c3db40040736a2673efe44d2343f5bb11cb5188965ee04a1bc36907  0002-Use-getenv-instead-of-secure_getenv.patch
+2cf7c3d05c9f8f100afcb0d921729cb9479250e7b8ad3f9d00be3689ed0026a990d1a6ce5d3fcc24c930880aaefe33f0236509fae6e22a2563cab27127cefc3e  0003-Only-use-hybris-if-available.patch"

@@ -1,0 +1,26 @@
+From 526ac3f293fa9c6afcf1e4db3c12ee271ffc206b Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Tue, 29 Jan 2019 19:23:11 +0100
+Subject: [PATCH 2/5] NoDpkgParse
+
+---
+ data/CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/data/CMakeLists.txt b/data/CMakeLists.txt
+index f13c6b639..ea0d788f1 100644
+--- a/data/CMakeLists.txt
++++ b/data/CMakeLists.txt
+@@ -20,7 +20,7 @@ install(FILES
+     DESTINATION ${CMAKE_INSTALL_DATADIR}/lightdm/lightdm.conf.d
+     )
+ 
+-add_custom_target(pkgversion ALL COMMAND dpkg-parsechangelog -l${CMAKE_SOURCE_DIR}/debian/changelog --show-field version > ${CMAKE_CURRENT_BINARY_DIR}/version)
++#add_custom_target(pkgversion ALL COMMAND dpkg-parsechangelog -l${CMAKE_SOURCE_DIR}/debian/changelog --show-field version > ${CMAKE_CURRENT_BINARY_DIR}/version)
+ 
+ install(FILES com.canonical.Unity8.gschema.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas)
+-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version DESTINATION ${CMAKE_INSTALL_LOCALSTATEDIR}/lib/unity8)
++#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version DESTINATION ${CMAKE_INSTALL_LOCALSTATEDIR}/lib/unity8)
+-- 
+2.20.1
+

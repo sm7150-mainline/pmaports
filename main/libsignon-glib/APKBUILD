@@ -1,0 +1,38 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=libsignon-glib
+pkgver=2.1
+_spec_commit="67487954653006ebd0743188342df65342dc8f9b"
+pkgrel=0
+pkgdesc="GLib library to interface with the Signon Daemon"
+url="https://gitlab.com/accounts-sso/libsignon-glib"
+arch="x86_64"
+license="LGPL-2.1"
+depends=""
+makedepends="meson glib-dev check-dev gobject-introspection-dev vala py3-gobject3 gtk-doc"
+subpackages="$pkgname-dev"
+source="https://gitlab.com/accounts-sso/$pkgname/-/archive/VERSION_$pkgver/$pkgname-VERSION_$pkgver.tar.gz
+		https://gitlab.com/accounts-sso/signon-dbus-specification/-/archive/$_spec_commit/signon-dbus-specification-$_spec_commit.tar.gz"
+builddir="$srcdir/$pkgname-VERSION_$pkgver"
+options="!check"
+
+prepare() {
+	default_prepare
+	mkdir "$builddir"/build
+	cp "$srcdir"/signon-dbus-specification-$_spec_commit/* "$builddir"/libsignon-glib/interfaces/
+}
+
+build() {
+	cd "$builddir"/build
+	meson \
+		--prefix=/usr \
+		--buildtype=release \
+		--sysconfdir=/etc ..
+	ninja
+}
+
+package() {
+	cd "$builddir"/build
+	DESTDIR="$pkgdir" ninja install
+}
+sha512sums="45d8e26263a16b98517cda0fff8e46fb1ffcc4bb833a6364454f120eb9819b48ee04bdb338bf5e9f0b0fe344af5940f35ed56f0765ca3605dead5b3755657dcf  libsignon-glib-VERSION_2.1.tar.gz
+8b65019e2793dd58b2b60f8893ab999513a6aa2374f5d1053341fcdec6e2debb4d729abbbef17c8a2cb0b905893f06118649f17698bb91dc4e2681b2fe99e4b3  signon-dbus-specification-67487954653006ebd0743188342df65342dc8f9b.tar.gz"

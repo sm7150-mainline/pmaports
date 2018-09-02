@@ -1,0 +1,40 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=gmenuharness
+pkgver=0_git20161202
+_commit="a5380607d3b494fd221add2837f5824327f77dff"
+pkgrel=0
+pkgdesc="Library to test GMenuModel structures."
+url="https://github.com/unity8-team/gmenuharness"
+arch="x86_64"
+license="LGPL-3.0"
+depends=""
+depends_dev=""
+makedepends="$depends_dev cmake cmake-extras qt5-qtbase-dev unity-api-dev glib-dev gtest-dev gmock libqtdbustest"
+checkdepends=""
+source="$pkgname-$_commit.tar.gz::https://github.com/unity8-team/$pkgname/archive/$_commit.tar.gz
+	0001-Add-missing-header-include.patch"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # something with dbus - 0% tests passed, 1 tests failed out of 1
+
+build() {
+	mkdir "$builddir"/build
+	cd "$builddir"/build
+
+	cmake -DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib ..
+	make
+}
+
+check() {
+	cd "$builddir"/build/tests
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"/build
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="c86f45f94deb106280508b74b2f33ff5aa50c47f98bb6f26587f0c21709abd13dc9bf905857be7510809622b8d10b03facc184d56bd0557630865f93d3d52605  gmenuharness-a5380607d3b494fd221add2837f5824327f77dff.tar.gz
+3b4d93b57a6b4c440e98d5dc08e3b1e67857662b12dbee27912f442dc7daffc0b2fb1703da42dba09b2c3d81eaa7a2130aea7c69964abf8f03bf49e5e9cf1712  0001-Add-missing-header-include.patch"

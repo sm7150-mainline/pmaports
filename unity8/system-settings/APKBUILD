@@ -1,0 +1,48 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=system-settings
+_pkgname=system-settings
+pkgver=0_git20180920
+_commit="10e0e8c96890cd4924e63b84ba883b9ad330e071"
+pkgrel=0
+pkgdesc="System Settings application for Unity8"
+url="https://github.com/ubports/system-settings"
+arch="x86_64"
+license="GPL-3.0"
+depends=""
+makedepends="cmake qt5-qtbase-dev upower-dev networkmanager-dev accountsservice-ubuntu-dev geonames-dev icu-dev libqtdbusmock gsettings-qt-dev click-dev gnome-desktop-dev trust-store-dev qt5-qtdeclarative-dev qt5-qtdeclarative intltool"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+	qmltestrunner.patch"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # Needs xvfb-run
+
+prepare() {
+	default_prepare
+	mkdir "$builddir"/build
+
+	# Don't build the update page, needs apt libraries
+	sed -i 's/update.cpp//g' plugins/system-update/CMakeLists.txt
+	sed -i 's/apt-pkg//g' plugins/system-update/CMakeLists.txt
+	sed -i 's/apt-pkg//g' tests/mocks/Ubuntu/SystemSettings/Update/CMakeLists.txt
+	truncate -s 0 "$builddir"/tests/plugins/system-update/CMakeLists.txt
+}
+
+build() {
+	cd "$builddir"/build
+
+	cmake -DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib ..
+	make
+}
+
+check() {
+	cd "$builddir"/build
+	CTEST_OUTPUT_ON_FAILURE=true ctest
+}
+
+package() {
+	cd "$builddir"/build
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="6243ac823871c93636d0b0ea8da3283bea885f532f190e7252f395cc2836af73442d679f5baf2b1abadbcf7c8f11522b6eb52ea891ac2b19cdaefd61328321da  system-settings-10e0e8c96890cd4924e63b84ba883b9ad330e071.tar.gz
+d839e01038301ecccaba86407f0b82c56cac175992d7900893a5aa6a71468a7a78a6458ba56a39c949947be7c9b705409db9f8e70e08ddf3155259ceb5327d31  qmltestrunner.patch"

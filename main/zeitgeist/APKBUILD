@@ -1,0 +1,50 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=zeitgeist
+pkgver=1.0.1
+pkgrel=0
+pkgdesc="Activity logging framework"
+arch="x86_64"
+url="https://zeitgeist.freedesktop.org/"
+license="LGPL-2.1"
+depends=""
+depends_dev="sqlite-dev gobject-introspection-dev xapian-core-dev telepathy-glib-dev gtk+3.0-dev json-glib-dev"
+makedepends="$depends_dev autoconf automake gettext gettext-dev libtool python3 vala git raptor2 py-rdflib"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.freedesktop.org/$pkgname/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check" # Needs D-Bus server, see https://gitlab.freedesktop.org/zeitgeist/zeitgeist/issues/4
+
+prepare() {
+	default_prepare
+
+	cd "$builddir"
+	NOCONFIGURE=1 ./autogen.sh
+}
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--libexecdir=/usr/lib \
+		--enable-fts
+
+	sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="58c190daf705141ac06df53d8b928ed615ea98eeaec23f6418a8cff447e9ab32955166266f62175b1ce01fefcef80f46a6095c1df240b00f06a3f1fc73b07ae6  zeitgeist-1.0.1.tar.gz"

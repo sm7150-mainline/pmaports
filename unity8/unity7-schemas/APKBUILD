@@ -1,0 +1,21 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=unity7-schemas
+pkgver=1
+pkgrel=0
+pkgdesc="Some glib schema file required by Unity 8"
+arch="x86_64"
+url="https://unity8.io"
+license="GPL-3.0 LGPL-3.0"
+depends=""
+makedepends=""
+# See https://github.com/vanyasem/Unity8-Arch/blob/95e949261f37eece33d4695a884e8269ed113113/unity7-schemas/PKGBUILD
+source="com.canonical.Unity.gschema.xml"
+options="!check"
+
+package() {
+	install -Dm644 com.canonical.Unity.gschema.xml \
+		"$pkgdir"/usr/share/glib-2.0/schemas/com.canonical.Unity.gschema.xml
+}
+
+sha512sums="06d55abde653f72508bf2a71ff780d4f6b51a2e2d3544cf242dc2d5adc2b3728e86653958f719a9135c35263c2d43a964fbe29e5c8adf00e5296af0a2e88cc5a  com.canonical.Unity.gschema.xml"

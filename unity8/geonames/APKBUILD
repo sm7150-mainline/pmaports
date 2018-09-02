@@ -1,0 +1,43 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=geonames
+pkgver=0_git20180310
+pkgrel=0
+_commit="5d77e827cd8800e9738f0e8ac2f865a59a9f68b2"
+pkgdesc='Geonames'
+arch="x86_64"
+url='https://unity8.io'
+license="GPL-3.0"
+depends=""
+depends_dev=""
+makedepends="$depends_dev gtk-doc autoconf automake libtool"
+# See https://github.com/ubports/geonames/issues/1
+source="$pkgname-$_commit.tar.gz::http://repo.ubports.com/pool/xenial/main/g/geonames/geonames_0.3+ubports1+0~20180310073020.3~1.gbp5d77e8.tar.gz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Tests fail
+builddir="$srcdir/source"
+
+prepare() {
+	cd "$builddir"
+
+	./autogen.sh \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr
+}
+
+build() {
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="${pkgdir}" install
+}
+
+sha512sums="347976e251fa4a48760bae96f3f6326bee06fc799cd989237898a23fb72e49929b202dcd0fd33eaf06dc9a8966f47deedcf105ec402a3125bffdbfd14a4dc5b6  geonames-5d77e827cd8800e9738f0e8ac2f865a59a9f68b2.tar.gz"

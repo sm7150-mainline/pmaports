@@ -1,0 +1,39 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=indicator-network
+pkgver=0_git20181231
+_commit="3cb4ada3d87303e6b981cf1307244f3a88017fec"
+pkgrel=0
+pkgdesc="The 'Network' indicator for Ubuntu Touch"
+arch="x86_64"
+url="https://unity8.io"
+license="GPL-3.0"
+depends=""
+depends_dev="glib-dev unity-api-dev ofono-dev networkmanager-dev libsecret-dev url-dispatcher-dev qt5-qtdeclarative-dev libqofono-dev"
+makedepends="$depends_dev cmake-extras gtest-dev gmock libqtdbustest libqtdbusmock gmenuharness-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # Tests hang
+
+build() {
+	mkdir -p "$builddir"/build
+	cd "$builddir"/build
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib ..
+	make
+}
+
+check() {
+	cd "$builddir"/build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"/build
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="a5ce04d9a896b2887592caf6f3bab8962569cdc5ba09a77c7799ce42b1b3cc78f8f2bb66d704a9b1487784755854188dcf012ca0515cdd79e418c51afad78b72  indicator-network-3cb4ada3d87303e6b981cf1307244f3a88017fec.tar.gz"

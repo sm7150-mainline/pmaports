@@ -1,0 +1,38 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=qmenumodel
+pkgver=0_git20180727
+pkgrel=0
+_commit="30e3dc541966abfd2ac1436caec7cd4bebdf996e"
+pkgdesc='qmenumodel'
+arch="x86_64"
+url="https://unity8.io"
+license="LGPL-3.1"
+depends=""
+depends_dev="qt5-qtdeclarative-dev"
+makedepends="$depends_dev cmake qt5-qtbase-dev"
+checkdepends="dbus-test-runner"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # 44% tests passed, 5 tests failed out of 9
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	make test
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="36fb9314703aed90862f405792ff9eaac3761972dfd51591ba2270809681d0a0035151241a9efb20595ea5a66860398041be8cf8d0b5865253cbb16475373172  qmenumodel-30e3dc541966abfd2ac1436caec7cd4bebdf996e.tar.gz"

@@ -1,0 +1,49 @@
+diff --git a/test/gtest/CMakeLists.txt b/test/gtest/CMakeLists.txt
+index b2e105c..b1fa79e 100644
+--- a/test/gtest/CMakeLists.txt
++++ b/test/gtest/CMakeLists.txt
+@@ -1,7 +1,6 @@
+ find_package(Threads REQUIRED)
+-set(TESTLIBDIR ${CMAKE_BINARY_DIR}/test/gtest/libgtest/build)
+-set(LIBGTEST gtest)
+-set(TESTLIBS ${TESTLIBS} ${LIBGTEST} ${CMAKE_THREAD_LIBS_INIT})
++find_package(GMock REQUIRED)
++set(TESTLIBS ${TESTLIBS} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+ 
+ # gtest does weird things with its own implementation of tr1::tuple. For clang, we need to
+ # set this macro, otherwise anything that includes gtest.h won't compile.
+@@ -9,7 +8,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGTEST_USE_OWN_TR1_TUPLE=1")
+ endif()
+ 
+-add_subdirectory(libgtest)
+ add_subdirectory(unity)
+ 
+ set(TEST_SRC
+diff --git a/test/gtest/libgtest/CMakeLists.txt b/test/gtest/libgtest/CMakeLists.txt
+deleted file mode 100644
+index e4b4074..0000000
+--- a/test/gtest/libgtest/CMakeLists.txt
++++ /dev/null
+@@ -1,21 +0,0 @@
+-if (NOT DEFINED GTEST_ROOT)
+-    set(GTEST_ROOT /usr/src/gtest)
+-endif()
+-
+-# Do not use -Wsuggest-override here, we can't fix gtest
+-string (REPLACE "-Wsuggest-override" ""     CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+-
+-set(GTEST_SRC_DIR "${GTEST_ROOT}/src")
+-set(GTEST_INCLUDE_DIR ${GTEST_ROOT})
+-
+-add_library(gtest STATIC
+-${GTEST_SRC_DIR}/gtest-all.cc
+-${GTEST_SRC_DIR}/gtest_main.cc
+-)
+-
+-set_target_properties(gtest PROPERTIES INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIR})
+-
+-# Clang complains about unused private field 'pretty_' in gtest-internal-inl.h.
+-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+-    set_target_properties(gtest PROPERTIES COMPILE_FLAGS "-Wno-unused-private-field")
+-endif()

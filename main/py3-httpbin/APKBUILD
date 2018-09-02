@@ -1,0 +1,26 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=py3-httpbin
+_pkgname=httpbin
+pkgver=0.7.0
+pkgrel=0
+pkgdesc="HTTP Request and Response Service"
+url="https://github.com/requests/httpbin"
+arch="x86_64"
+license="MIT"
+depends="python3 py3-flask py3-six py3-raven py3-blinker py3-brotlipy py3-decorator"
+makedepends="python3-dev"
+source="https://files.pythonhosted.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	python3 setup.py build
+}
+
+package() {
+	cd "$builddir"
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="82e80058b58943637e9f8191764cea79bf7a6e40f36069f9b5d3f908585dbef20a03ef070d1f865d350920b6e874a93a48a544b05c14ff4911038ec2c20f6f63  httpbin-0.7.0.tar.gz"

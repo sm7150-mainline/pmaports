@@ -1,0 +1,79 @@
+From a70ffba3209f6b2cf497db060bddd2f21dec2a2b Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Tue, 29 Jan 2019 22:19:51 +0100
+Subject: [PATCH 5/5] Link against libintl
+
+---
+ plugins/LightDM/FullLightDM/CMakeLists.txt             | 1 +
+ src/CMakeLists.txt                                     | 1 +
+ tests/mocks/AccountsService/CMakeLists.txt             | 1 +
+ tests/plugins/LightDM/IntegratedLightDM/CMakeLists.txt | 3 +++
+ 4 files changed, 6 insertions(+)
+
+diff --git a/plugins/LightDM/FullLightDM/CMakeLists.txt b/plugins/LightDM/FullLightDM/CMakeLists.txt
+index 0d0154172..e9c804bff 100644
+--- a/plugins/LightDM/FullLightDM/CMakeLists.txt
++++ b/plugins/LightDM/FullLightDM/CMakeLists.txt
+@@ -27,6 +27,7 @@ target_link_libraries(FullLightDM-qml
+     ${LIBLIGHTDM_LDFLAGS}
+     ${LIBUSERMETRICSOUTPUT_LDFLAGS}
+     Qt5::DBus Qt5::Gui Qt5::Qml
++    intl
+     )
+ 
+ add_unity8_plugin(FullLightDM 0.1 LightDM/FullLightDM TARGETS FullLightDM-qml)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 8dd6614f5..386493848 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -52,6 +52,7 @@ target_link_libraries(${SHELL_APP}
+     Qt5::DBus Qt5::Gui Qt5::Qml Qt5::Quick Qt5::Test
+     ${ANDROID_PROPERTIES_LDFLAGS} ${GSETTINGS_QT_LDFLAGS}
+     UbuntuGestures connectivity-qt1 unity8-private
++    intl
+     )
+ 
+ if (ENABLE_TOUCH_EMULATION)
+diff --git a/tests/mocks/AccountsService/CMakeLists.txt b/tests/mocks/AccountsService/CMakeLists.txt
+index c10e2dab8..b6a3a4563 100644
+--- a/tests/mocks/AccountsService/CMakeLists.txt
++++ b/tests/mocks/AccountsService/CMakeLists.txt
+@@ -17,6 +17,7 @@ add_library(MockAccountsService-qml MODULE
+ target_link_libraries(MockAccountsService-qml
+     Qt5::DBus Qt5::Qml
+     MockLightDM
++    intl
+     )
+ 
+ add_unity8_mock(AccountsService 0.1 AccountsService
+diff --git a/tests/plugins/LightDM/IntegratedLightDM/CMakeLists.txt b/tests/plugins/LightDM/IntegratedLightDM/CMakeLists.txt
+index c35cbff8f..67918cfc8 100644
+--- a/tests/plugins/LightDM/IntegratedLightDM/CMakeLists.txt
++++ b/tests/plugins/LightDM/IntegratedLightDM/CMakeLists.txt
+@@ -15,6 +15,7 @@ add_dependencies(GreeterDBusTestExec MockLightDM)
+ target_link_libraries(GreeterDBusTestExec
+     Qt5::Core Qt5::DBus Qt5::Quick Qt5::Test
+     MockLightDM
++    intl
+     )
+ target_include_directories(GreeterDBusTestExec PUBLIC
+     ${CMAKE_SOURCE_DIR}/plugins/LightDM
+@@ -87,6 +88,7 @@ add_dependencies(GreeterUsersModelTestExec MockLightDM)
+ target_link_libraries(GreeterUsersModelTestExec
+     Qt5::Core Qt5::Test
+     MockLightDM
++    intl
+     )
+ target_include_directories(GreeterUsersModelTestExec PUBLIC
+     ${CMAKE_SOURCE_DIR}/plugins/LightDM
+@@ -114,6 +116,7 @@ add_dependencies(GreeterPromptsModelTestExec MockLightDM)
+ target_link_libraries(GreeterPromptsModelTestExec
+     Qt5::Core Qt5::Test
+     MockLightDM
++    intl
+     )
+ target_include_directories(GreeterPromptsModelTestExec PUBLIC
+     ${CMAKE_SOURCE_DIR}/plugins/LightDM
+-- 
+2.20.1
+

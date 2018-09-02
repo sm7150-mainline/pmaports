@@ -1,0 +1,46 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=content-hub
+pkgver=0_git20190129
+_commit="3f046207beec0441a5e2cd567e63becaafd181eb"
+pkgrel=0
+pkgdesc="Content sharing/picking infrastructure and service, designed to allow apps to securely and efficiently exchange content"
+url="https://github.com/ubports/content-hub"
+arch="x86_64"
+license="GPL-3.0 LGPL-3.0"
+depends=""
+depends_dev="qt5-qtdeclarative-dev ubuntu-app-launch-dev gsettings-qt-dev libnih-dev ubuntu-download-manager-dev libnotify-dev libapparmor-dev ubuntu-ui-toolkit-dev"
+makedepends="$depends_dev cmake cmake-extras libapparmor"
+checkdepends="gtest-dev gmock dbus-test-runner"
+options="!check" # 92% tests passed, 1 tests failed out of 12 (xfvb-run script is missing, see https://bugs.alpinelinux.org/issues/9617)
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+	0001-Use-qmlplugindump-qt5.patch"
+subpackages="$pkgname-dev $pkgname-lang"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	# Don't build tests
+	truncate -s 0 "$builddir"/tests/CMakeLists.txt
+}
+
+build() {
+	mkdir "$builddir"/build
+	cd "$builddir"/build
+
+	cmake -DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib ..
+	make
+}
+
+check() {
+	cd "$builddir"/build/tests
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"/build
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="b0d7b0c7d47941f88e4aa6ce5e57f900419c16d1cbd8efa07dcdd8f50194f4961e6263e59ca37ddb671e4ce6c5aa55d292887765a3f98ea20d40a5c71602d19b  content-hub-3f046207beec0441a5e2cd567e63becaafd181eb.tar.gz
+f5a13fbbf2a26342a043474b5911ad4949e6b61f36116197e9c614d2e399f4dcb6adbab08376764756d68d45cfd55215dd49aa5cdfe5926b61d928a8424ba767  0001-Use-qmlplugindump-qt5.patch"

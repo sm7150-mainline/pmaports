@@ -1,0 +1,25 @@
+From 49fe9d5aaef907d309710577699d788b53bde15c Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Wed, 3 Oct 2018 17:07:51 +0200
+Subject: [PATCH 2/5] Fix "Missing sentinel in function call" warning
+
+---
+ src/UbuntuToolkit/ucurihandler.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/UbuntuToolkit/ucurihandler.cpp b/src/UbuntuToolkit/ucurihandler.cpp
+index ad752f80c..c9f0566c9 100644
+--- a/src/UbuntuToolkit/ucurihandler.cpp
++++ b/src/UbuntuToolkit/ucurihandler.cpp
+@@ -75,7 +75,7 @@ UCUriHandler::UCUriHandler()
+         qWarning() << "UCUriHandler: Empty \"APP_ID\" environment variable, ignoring.";
+         return;
+     }
+-    char* path = nih_dbus_path(NULL, "", applicationId.constData(), NULL);
++    char* path = nih_dbus_path(NULL, "", applicationId.constData(), (char *)NULL);
+     objectPath = QString::fromLocal8Bit(path);
+     nih_free(path);
+ 
+-- 
+2.20.1
+

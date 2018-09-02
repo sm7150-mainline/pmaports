@@ -1,0 +1,83 @@
+From 90ed6b991b0cf11599ac6ede2e03d952368d588d Mon Sep 17 00:00:00 2001
+From: William Wold <wm@wmww.sh>
+Date: Sat, 12 Jan 2019 14:58:44 +0100
+Subject: [PATCH 6/7] William enters the dlvsym fray
+
+---
+ src/common/sharedlibrary/CMakeLists.txt     | 27 +++++++++++++++++++++
+ src/common/sharedlibrary/shared_library.cpp |  9 +++++++
+ 2 files changed, 36 insertions(+)
+
+diff --git a/src/common/sharedlibrary/CMakeLists.txt b/src/common/sharedlibrary/CMakeLists.txt
+index 0889ccc2f3..27436c5701 100644
+--- a/src/common/sharedlibrary/CMakeLists.txt
++++ b/src/common/sharedlibrary/CMakeLists.txt
+@@ -14,6 +14,33 @@
+ #
+ # Authored by: Alexandros Frantzis <alexandros.frantzis@canonical.com>
+ 
++include(CheckCXXSymbolExists)
++
++list(APPEND CMAKE_REQUIRED_LIBRARIES dl)
++list(APPEND CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
++
++check_cxx_symbol_exists("dlvsym" "dlfcn.h" HAS_DLVSYM)
++check_cxx_symbol_exists("dlsym" "dlfcn.h" HAS_DLSYM)
++
++if (NOT HAS_DLVSYM)
++  if (NOT HAS_DLSYM)
++    message(
++      FATAL_ERROR
++      "Could not detect dlvsym or dlsym"
++    )
++  endif()
++
++  set_source_files_properties (
++    "shared_library.cpp"
++    PROPERTIES COMPILE_DEFINITIONS MIR_DONT_USE_DLVSYM="1"
++  )
++
++  message(
++    WARNING
++    "dlvsym() not supported by libc. Mir may attempt to load ABI-incompatible platform modules"
++  )
++endif()
++
+ add_library(mirsharedsharedlibrary OBJECT
+   module_deleter.cpp
+   shared_library.cpp
+diff --git a/src/common/sharedlibrary/shared_library.cpp b/src/common/sharedlibrary/shared_library.cpp
+index c97e26b040..80cbdb4186 100644
+--- a/src/common/sharedlibrary/shared_library.cpp
++++ b/src/common/sharedlibrary/shared_library.cpp
+@@ -17,6 +17,7 @@
+  */
+ 
+ #include "mir/shared_library.h"
++#include <mir/log.h>
+ 
+ #include <boost/throw_exception.hpp>
+ #include <boost/exception/info.hpp>
+@@ -56,6 +57,13 @@ void* mir::SharedLibrary::load_symbol(char const* function_name) const
+ 
+ void* mir::SharedLibrary::load_symbol(char const* function_name, char const* version) const
+ {
++    // Some libc implementations (such as musl) do not support dlvsym
++
++#ifdef MIR_DONT_USE_DLVSYM
++    // Load the function without checking the version
++    log_debug("Cannot check \"%s\" symbol version is \"%s\": dlvsym() is unavailable", function_name, version);
++    return load_symbol(function_name);
++#else
+     if (void* result = dlvsym(so, function_name, version))
+     {
+         return result;
+@@ -64,4 +72,5 @@ void* mir::SharedLibrary::load_symbol(char const* function_name, char const* ver
+     {
+         BOOST_THROW_EXCEPTION(std::runtime_error(dlerror()));
+     }
++#endif
+ }
+-- 
+2.20.1
+

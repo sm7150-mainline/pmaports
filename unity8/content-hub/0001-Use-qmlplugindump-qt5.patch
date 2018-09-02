@@ -1,0 +1,26 @@
+From 96d2928d15ee0506573866f367762c9deea75542 Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Sun, 30 Dec 2018 23:59:16 +0100
+Subject: [PATCH] Use qmlplugindump-qt5
+
+Fixes #4
+---
+ import/Ubuntu/Content/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/import/Ubuntu/Content/CMakeLists.txt b/import/Ubuntu/Content/CMakeLists.txt
+index 1322309..5cd18bf 100644
+--- a/import/Ubuntu/Content/CMakeLists.txt
++++ b/import/Ubuntu/Content/CMakeLists.txt
+@@ -95,7 +95,7 @@ endif()
+ 
+ if(NOT CMAKE_CROSSCOMPILING)
+ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/plugins.qmltypes
+-    COMMAND qmlplugindump -qt=qt5 -noinstantiate -notrelocatable Ubuntu.Content 1.1 ../../ > ${CMAKE_CURRENT_BINARY_DIR}/plugins.qmltypes
++    COMMAND qmlplugindump-qt5 -noinstantiate -notrelocatable Ubuntu.Content 1.1 ../../ > ${CMAKE_CURRENT_BINARY_DIR}/plugins.qmltypes
+     DEPENDS ${PLUGIN}
+     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+ )
+-- 
+2.20.1
+

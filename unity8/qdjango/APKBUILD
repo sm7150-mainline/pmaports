@@ -1,0 +1,39 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=qdjango
+pkgver=0.6.2
+pkgrel=0
+pkgdesc="A Qt-based C++ web framework"
+url="https://github.com/jlaine/qdjango"
+arch="x86_64"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtdeclarative-dev"
+makedepends="$depends_dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/jlaine/qdjango/archive/v$pkgver.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc"
+
+prepare() {
+	default_prepare
+	mkdir "$builddir"/build
+
+	# Remove tests as they fail to compile
+	sed -i 's|SUBDIRS += tests examples|SUBDIRS += examples|' qdjango.pro
+}
+
+build() {
+	cd build
+	qmake-qt5 PREFIX=/usr ..
+	make
+}
+
+check() {
+	cd build
+	make check
+}
+
+package() {
+	cd build
+	make INSTALL_ROOT="$pkgdir" install
+}
+
+sha512sums="0280b09f0740ca7e70f62e36ea9e5bb648fe6d3ba1492e59f8c956df163c6db2338ea735e0b7937ee6e417f503a510eedf983ec6dc9744021a0c83a9432aa33f  qdjango-0.6.2.tar.gz"

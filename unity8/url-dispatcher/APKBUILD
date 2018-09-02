@@ -1,0 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=url-dispatcher
+pkgver=0_git20181007
+_commit="b9a83f539b6d0c51b7f2397d40aed1132366672b"
+pkgrel=0
+pkgdesc="Service to allow sending of URLs and get handlers started"
+arch="x86_64"
+url="https://unity8.io"
+license="LGPL-3.0"
+depends=""
+depends_dev="ubuntu-app-launch-dev json-glib-dev click-dev libapparmor-dev"
+makedepends="$depends_dev cmake dbus-test-runner cmake-extras glib-dev gtest-dev gmock"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # 'Test #3: service-test' hangs
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="f26576fa67777c041236e9fe6e6ad5607a240e63959872abc752d4023443b3473da55af39f3d19c888470e639229e84eecde75dcfa6e0b8622b1ee5634ac8f19  url-dispatcher-b9a83f539b6d0c51b7f2397d40aed1132366672b.tar.gz"

@@ -1,0 +1,46 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=ubuntu-app-launch
+pkgver=0_git20181230
+pkgrel=0
+_commit="55c0338a110a10994de4efc220d36293080770e2"
+pkgdesc="Session init system job for Launching Applications"
+arch="x86_64"
+url="https://unity8.io"
+license="GPL-3.0"
+depends_dev="gobject-introspection-dev lttng-ust-dev json-glib-dev zeitgeist-dev unity-api-dev curl-dev properties-cpp-dev"
+makedepends="$depends_dev cmake cmake-extras dbus-test-runner qt5-qtdeclarative gtest-dev glib-dev mir-dev"
+checkdepends="gtest-dev gmock py3-dbusmock"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+	libual-test_libertine.patch"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # Tests have to be adjusted for POSIX backend
+
+prepare() {
+	default_prepare
+
+	# Don't build tests, see above
+	truncate -s 0 "$builddir"/tests/CMakeLists.txt
+}
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	make test
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="0834277bd0cf14255bbf67a558933044a3daa04b62de4df1bf540dad63f2a03411ec3b1833c1ef7b97a26051064a37e9b1c9a2078caad8bd4d389425f0fd091e  ubuntu-app-launch-55c0338a110a10994de4efc220d36293080770e2.tar.gz
+aaec2d03930b85ea4298c056670ecc1e7855ecb951ecaa13cc94a762524928aacdd86a8d89cf86fa16f44bd8a6064e2f8cc3450a9f06cc57e1fa8bbd1a21c2d9  libual-test_libertine.patch"

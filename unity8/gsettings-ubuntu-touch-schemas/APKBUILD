@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=gsettings-ubuntu-touch-schemas
+pkgver=0_git20181006
+pkgrel=0
+_commit="b3bdf178e4226c91c567b84f1adf9202b2492ca2"
+pkgdesc='Collection of GSettings schemas for settings shared by various components of an Ubuntu environment'
+arch="noarch"
+url='https://unity8.io'
+license="LGPL-2.1"
+depends=""
+makedepends="gnome-common automake autoconf glib-dev intltool"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cd "$builddir"
+	./autogen.sh \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--localstatedir=/var
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="9cb68efeda62d4802345292b75593658eed28e8068aa0361bafdc3c9fd1d4212cf1f0ad8cf9350aa438ecc3c937e1952ea9f89c85be418594e01febe6c8a70c8  gsettings-ubuntu-touch-schemas-b3bdf178e4226c91c567b84f1adf9202b2492ca2.tar.gz"

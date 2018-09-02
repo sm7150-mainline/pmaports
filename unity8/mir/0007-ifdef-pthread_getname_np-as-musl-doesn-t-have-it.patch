@@ -1,0 +1,166 @@
+From ab4b2a5863f475a39485cf1a6931418c2510981a Mon Sep 17 00:00:00 2001
+From: Alan Griffiths <alan@octopull.co.uk>
+Date: Sat, 12 Jan 2019 14:59:59 +0100
+Subject: [PATCH 7/7] ifdef pthread_getname_np as musl doesn't have it
+
+---
+ tests/CMakeLists.txt                           |  7 +++++++
+ tests/mir_test/CMakeLists.txt                  |  6 ++++++
+ tests/mir_test/current_thread_name.cpp         |  5 +++++
+ tests/unit-tests/CMakeLists.txt                | 18 +++++++++++++++++-
+ .../dispatch/test_threaded_dispatcher.cpp      |  9 ++++++---
+ .../frontend/test_basic_connector.cpp          |  4 ++++
+ 6 files changed, 45 insertions(+), 4 deletions(-)
+
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 2f4b848a59..05f9e596ea 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -105,6 +105,13 @@ endif()
+ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-lto")
+ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-lto")
+ 
++include(CheckSymbolExists)
++list(APPEND CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
++list(APPEND CMAKE_REQUIRED_LIBRARIES "-lpthread")
++string(REPLACE " -Werror " " " CMAKE_C_FLAGS ${CMAKE_C_FLAGS})    # This flag breaks check_symbol_exists()
++check_symbol_exists(pthread_getname_np pthread.h HAVE_PTHREAD_GETNAME_NP)
++list(REMOVE_ITEM CMAKE_REQUIRED_LIBRARIES "-lpthread")
++
+ if (MIR_BUILD_PLATFORM_MESA_KMS)
+   add_definitions(-DMIR_BUILD_PLATFORM_MESA_KMS)
+ endif()
+diff --git a/tests/mir_test/CMakeLists.txt b/tests/mir_test/CMakeLists.txt
+index 4eb15aefed..1f9a464abd 100644
+--- a/tests/mir_test/CMakeLists.txt
++++ b/tests/mir_test/CMakeLists.txt
+@@ -23,3 +23,9 @@ add_library(mir-test-static STATIC
+   wait_object.cpp
+   $<TARGET_OBJECTS:mir-public-test>
+ )
++
++if (NOT HAVE_PTHREAD_GETNAME_NP)
++    set_source_files_properties (current_thread_name.cpp PROPERTIES COMPILE_DEFINITIONS MIR_DONT_USE_PTHREAD_GETNAME_NP
++    )
++    message(WARNING "pthread_getname_np() not supported by libc. Stubbing out mir::test::current_thread_name() that relies on it")
++endif()
+diff --git a/tests/mir_test/current_thread_name.cpp b/tests/mir_test/current_thread_name.cpp
+index 26edf0a708..a3c05e36cc 100644
+--- a/tests/mir_test/current_thread_name.cpp
++++ b/tests/mir_test/current_thread_name.cpp
+@@ -19,13 +19,18 @@
+ #include "mir/test/current_thread_name.h"
+ 
+ #include <pthread.h>
++#include <stdexcept>
+ 
+ std::string mir::test::current_thread_name()
+ {
++#ifndef MIR_DONT_USE_PTHREAD_GETNAME_NP
+     static size_t const max_thread_name_size = 16;
+     char thread_name[max_thread_name_size];
+ 
+     pthread_getname_np(pthread_self(), thread_name, sizeof thread_name);
+ 
+     return {thread_name};
++#else
++    throw std::logic_error("mir::test::current_thread_name() is not supported on this system");
++#endif
+ }
+diff --git a/tests/unit-tests/CMakeLists.txt b/tests/unit-tests/CMakeLists.txt
+index 5bfd401cdc..23e801b03f 100644
+--- a/tests/unit-tests/CMakeLists.txt
++++ b/tests/unit-tests/CMakeLists.txt
+@@ -61,7 +61,6 @@ set(
+   shared_library_test.cpp
+   test_raii.cpp
+   test_variable_length_array.cpp
+-  test_thread_name.cpp
+   test_default_emergency_cleanup.cpp
+   test_thread_safe_list.cpp
+   test_fatal.cpp
+@@ -77,6 +76,12 @@ set(
+   test_edid.cpp
+ )
+ 
++if (HAVE_PTHREAD_GETNAME_NP)
++  list(APPEND UNIT_TEST_SOURCES test_thread_name.cpp)
++else()
++  message(WARNING "pthread_getname_np() not supported: Omitting test_thread_name.cpp which relies on it")
++endif()
++
+ CMAKE_DEPENDENT_OPTION(
+   MIR_RUN_UNIT_TESTS
+   "Run unit tests as part of default testing"
+@@ -101,6 +106,17 @@ add_subdirectory(dispatch/)
+ add_subdirectory(renderers/gl)
+ add_subdirectory(wayland/)
+ 
++if (NOT HAVE_PTHREAD_GETNAME_NP)
++  set_source_files_properties (
++    ${CMAKE_CURRENT_SOURCE_DIR}/dispatch/test_threaded_dispatcher.cpp
++    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/test_basic_connector.cpp
++
++    PROPERTIES COMPILE_DEFINITIONS MIR_DONT_USE_PTHREAD_GETNAME_NP
++  )
++  message(WARNING "pthread_getname_np() not supported: Disabling test_threaded_dispatcher.cpp tests that rely on it")
++  message(WARNING "pthread_getname_np() not supported: Disabling test_basic_connector.cpp tests that rely on it")
++endif()
++
+ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+ 
+ mir_add_wrapped_executable(mir_unit_tests NOINSTALL
+diff --git a/tests/unit-tests/dispatch/test_threaded_dispatcher.cpp b/tests/unit-tests/dispatch/test_threaded_dispatcher.cpp
+index 2ac50b1002..382699ab35 100644
+--- a/tests/unit-tests/dispatch/test_threaded_dispatcher.cpp
++++ b/tests/unit-tests/dispatch/test_threaded_dispatcher.cpp
+@@ -19,6 +19,7 @@
+ #include "mir/dispatch/threaded_dispatcher.h"
+ #include "mir/dispatch/dispatchable.h"
+ #include "mir/fd.h"
++#include "mir/test/current_thread_name.h"
+ #include "mir/test/death.h"
+ #include "mir/test/pipe.h"
+ #include "mir/test/signal.h"
+@@ -278,7 +279,11 @@ TEST_F(ThreadedDispatcherDeathTest, exceptions_in_threadpool_trigger_termination
+     }, KilledBySignal(SIGABRT), (std::string{".*"} + exception_msg + ".*").c_str());
+ }
+ 
++#ifndef MIR_DONT_USE_PTHREAD_GETNAME_NP
+ TEST_F(ThreadedDispatcherTest, sets_thread_names_appropriately)
++#else
++TEST_F(ThreadedDispatcherTest, DISABLED_sets_thread_names_appropriately)
++#endif
+ {
+     using namespace testing;
+     using namespace std::chrono_literals;
+@@ -290,9 +295,7 @@ TEST_F(ThreadedDispatcherTest, sets_thread_names_appropriately)
+ 
+     auto dispatchable = std::make_shared<mt::TestDispatchable>([dispatched, &dispatch_count]()
+     {
+-        char buffer[80] = {0};
+-        pthread_getname_np(pthread_self(), buffer, sizeof(buffer));
+-        EXPECT_THAT(buffer, StartsWith(threadname_base));
++        EXPECT_THAT(mt::current_thread_name(), StartsWith(threadname_base));
+ 
+         if (++dispatch_count == threadcount)
+         {
+diff --git a/tests/unit-tests/frontend/test_basic_connector.cpp b/tests/unit-tests/frontend/test_basic_connector.cpp
+index 5c553c91d8..623cf98184 100644
+--- a/tests/unit-tests/frontend/test_basic_connector.cpp
++++ b/tests/unit-tests/frontend/test_basic_connector.cpp
+@@ -41,7 +41,11 @@ struct StubConnectorReport : mir::report::null::ConnectorReport
+ 
+ }
+ 
++#ifndef MIR_DONT_USE_PTHREAD_GETNAME_NP
+ TEST(BasicConnector, names_ipc_threads)
++#else
++TEST(BasicConnector, DISABLED_names_ipc_threads)
++#endif
+ {
+     using namespace testing;
+ 
+-- 
+2.20.1
+

@@ -1,0 +1,70 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=py-rdflib
+pkgbase=${pkgname#py-}
+pkgver=4.2.2
+pkgrel=0
+pkgdesc="A Python library for working with RDF, a simple yet powerful language for representing information"
+arch=noarch
+url="https://rdflib.readthedocs.org/"
+license='BSD'
+depends="py-isodate py2-six"
+makedepends="py-setuptools py3-setuptools"
+provides="py2-rdflib=$pkgver-r$pkgrel"
+source="$pkgbase-$pkgver.tar.gz::https://github.com/RDFLib/$pkgbase/archive/$pkgver.tar.gz"
+subpackages="py3-$pkgbase:_py3"
+options="!check"
+builddir="$srcdir/$pkgbase-$pkgver"
+
+build() {
+	cd "$builddir"
+	python setup.py build
+	python2 setup.py build
+}
+
+check() {
+	cd "$builddir"
+	# Not running "python setup.py test", because it will download and install rdflib again
+	nosetests3 --where=./build/src \
+		--with-doctest \
+		--doctest-extension=.doctest \
+		--doctest-tests
+	cd ../python2-rdflib
+
+	python2 run_tests.py --with-xunit
+}
+
+package() {
+	cd "$builddir"
+	python2 setup.py install --root="$pkgdir" --optimize=1
+	install -Dm644  LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+	cd "$pkgdir/usr/bin"
+	for i in * ; do
+		mv $i $i-py2
+	done
+}
+
+_py() {
+	pkgdesc="$pkgdesc (for python)"
+	depends="python2 py-isodate py2-six"
+	install_if="$pkgname=$pkgver-r$pkgrel python2"
+
+	cd "$builddir"
+	pytho2n setup.py install --root="$subpkgdir" --optimize=1
+	install -Dm644  LICENSE "$subpkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+	cd "$subpkgdir/usr/bin"
+	for i in * ; do
+		mv $i $i-py2
+	done
+}
+
+_py3() {
+	depends="python3 py3-isodate py3-six"
+
+	cd "$builddir"
+	python setup.py install --root="$subpkgdir" --optimize=1
+	install -Dm644  LICENSE "$subpkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+sha512sums="12ae2f48ab343c8f8ecce74f419b7171ddd9d38b325d8da3c29a0b5964030596cf18c947faaf526e7656b9b421e5cf9f0e1c0c6b81a8b2b2d0232a7f70454992  rdflib-4.2.2.tar.gz"

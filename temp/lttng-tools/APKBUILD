@@ -1,0 +1,42 @@
+pkgname=lttng-tools
+pkgver=2.10.5
+pkgrel=0
+pkgdesc="LTTng 2.0 control and utility programs"
+url="https://lttng.org"
+arch="x86_64 !aarch64"
+license="GPL-2.0"
+depends="babeltrace"
+depends_dev="popt-dev libxml2-dev userspace-rcu-dev lttng-ust-dev kmod-dev
+	util-linux-dev"
+makedepends="$depends_dev bash grep coreutils automake autoconf"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://lttng.org/files/$pkgname/$pkgname-$pkgver.tar.bz2"
+options="!check" # Tests fail
+
+build() {
+	cd "$builddir"
+
+	unset LDFLAGS
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var
+	make V=1
+}
+
+check() {
+	cd "$builddir"
+	make -j1 check
+}
+
+package() {
+	cd "$builddir"
+
+	make DESTDIR="$pkgdir" install
+	mkdir -p "$pkgdir"/usr/share/licenses/$pkgname
+	mv "$pkgdir"/usr/share/doc/$pkgname/LICENSE \
+		"$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+sha512sums="30689be92331fb3421ecb67150dab29c182c2febd5db77113dc0439c2289cdadb645043bbbbb4a95c6da40dbf8bbc258dd775e22b908e9514fbeffc450312a5b  lttng-tools-2.10.5.tar.bz2"

@@ -1,0 +1,42 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=qt5-qtfeedback
+pkgver=0_git20180122
+_commit="a14bd0bb1373cde86e09e3619fb9dc70f34c71f2"
+pkgrel=0
+arch="x86_64"
+url='http://qt-project.org/'
+license="LGPL-3.0"
+pkgdesc='Qt Tactile Feedback'
+depends=""
+depends_dev="qt5-qtdeclarative-dev"
+makedepends="$depends_dev git"
+source="$pkgname-$_commit.tar.gz::https://github.com/qt/${pkgname/qt5-/}/archive/$_commit.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc"
+builddir="$srcdir/${pkgname/qt5-/}-$_commit"
+options="!check"
+
+prepare() {
+	default_prepare
+	# Something in the build system only runs the syncqt.pl script when it's in a git repo
+	git init
+}
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	make INSTALL_ROOT="$pkgdir" install
+
+	# Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+	find "$pkgdir/usr/lib" -type f -name '*.prl' \
+		-exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+	install -d "$pkgdir"/usr/share/licenses
+	ln -s /usr/share/licenses/qt5-base "$pkgdir"/usr/share/licenses/$pkgname
+}
+sha512sums="40f58a55bdbeaec91d31a7e7c4ec54e84c002d4b22f607b4b99985b6629bbe90dc98570f36bb736f7b90f078db42481c44b2fd2730f8e6102ebcf8e3e70a847f  qt5-qtfeedback-a14bd0bb1373cde86e09e3619fb9dc70f34c71f2.tar.gz"

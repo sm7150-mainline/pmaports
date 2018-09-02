@@ -1,0 +1,54 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=ubuntu-ui-toolkit
+pkgver=0_git20180422
+_commit="2f541e8b5e509ad40cd8dc70d634434e7ab8fc42"
+pkgrel=0
+pkgdesc='The Ubuntu UI toolkit used in Ubuntu Touch'
+arch="x86_64"
+url="https://unity8.io"
+license="LGPL-3.0"
+depends="qt5-qtfeedback"
+depends_dev="libnih-dev qt5-qtsvg-dev qt5-qtpim-dev qt5-qtsystems-dev lttng-ust-dev libxi-dev eudev-dev mir-dev libevdev-dev qt5-qtgraphicaleffects qt5-qtfeedback-dev"
+makedepends="$depends_dev qt5-qttools-dev qt5-qtdeclarative-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+	0001-Adapt-to-QtPim-API-changes.patch
+	0002-Fix-Missing-sentinel-in-function-call-warning.patch
+	0003-Add-option-to-disable-building-of-docs.patch
+	0004-Make-it-compile-with-Qt-5.12.patch
+	0005-Adjust-for-removed-QTest-waitForEvents-method.patch
+	replace-bash-for-sh.patch"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Complaining about a non-existing file
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	# Lets warnings be warnings and not errors
+	sed -i 's|warning_clean|warn_off|' "$builddir"/.qmake.conf
+}
+
+build() {
+	cd "$builddir"
+	qmake-qt5 "CONFIG+=no_docs"
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make INSTALL_ROOT="$pkgdir" install
+}
+
+sha512sums="9f2d4707db936eb262893b226ffda71c886dcb2a99cb3c2e169f12f80ba04836717322a43f28919a75f43c57c8a6b1ebf52cd74cca50af0d8a657708faf81502  ubuntu-ui-toolkit-2f541e8b5e509ad40cd8dc70d634434e7ab8fc42.tar.gz
+d293464a334fdbdf6a61700002a692d2e101803b8aa46effd004c84341fca993f4a17fda55ba22eb1bd628a400e54b8f1e6c4cb1f690f49405e6f3f3122f1475  0001-Adapt-to-QtPim-API-changes.patch
+7dbdc3d2d3de42820cd628f59f959c18f26189e3c690cacbefdc51c4913186d954137b0997da206a2004ba837fb7f6bdce64c9ab4fe013044ce857507bb8e7d6  0002-Fix-Missing-sentinel-in-function-call-warning.patch
+13109d75e1922a9b750e0d528d120d85a164be045f2db728a5cdf637eebc8aca0633ca7d4e766c71f57a1ee10892f36841ad3351a2db72289059ae7d00e43da1  0003-Add-option-to-disable-building-of-docs.patch
+5b5c00bd365ee4068e2e0622a0ce31c7b67b0c6cf136b0d717dd68ac9559bc2d9c54e1e0c9106fa1d6e3438de974fa8b44c023888fe87bc1d1ed584023184eba  0004-Make-it-compile-with-Qt-5.12.patch
+402f529c6eba4e384ba0c7789fd6c23757b278befa24f9b8b23a0d11b6a1ffe4abab28d188e77f606708a2e23a89bf4ec0c04e65e51efb82b448d4257b276381  0005-Adjust-for-removed-QTest-waitForEvents-method.patch
+e01567f2426f78b0862e7b09cd99cabf3d885b600592e6a4f0e07dc077fae2ba8dd1d2deba3bb89d31171a90db6de909281664bcbc7736b9432f2bc0b26544e1  replace-bash-for-sh.patch"

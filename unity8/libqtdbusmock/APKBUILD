@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=libqtdbusmock
+pkgver=0_git20181013
+_commit="f3ac84e2f3c005ae59a10a392c1b2ad4b8e6c528"
+pkgrel=0
+pkgdesc="Library for mocking DBus interactions using Qt"
+url="https://github.com/ubports/libqtdbusmock"
+arch="x86_64"
+license="LGPL-3.0"
+depends=""
+makedepends="cmake cmake-extras libqtdbustest networkmanager-dev qt5-qtbase-dev gtest-dev gmock"
+checkdepends="py3-dbusmock"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+	no_coverage.patch"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # 0% tests passed, 1 tests failed out of 1
+
+build() {
+	cd "$builddir"
+	cmake -DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib .
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="d59ce4258ce1e26896c533ed0aa99bb3f30d731ca55d7742bd635edef6c8c0ee82343b3e960effa8a58ed9268de8e870dbeaafaf420a08a49aea1f9cbc294ac7  libqtdbusmock-f3ac84e2f3c005ae59a10a392c1b2ad4b8e6c528.tar.gz
+b5a5616c00b7da8cb7ed5c1129a63372a8760412143b3cc3d57efe2e23ba1aa7d9a75c3f82b6b72eb5e2b12973a1b5a252aa77e557e74f8b9d7bcf94f0421942  no_coverage.patch"

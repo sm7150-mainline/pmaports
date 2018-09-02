@@ -1,0 +1,46 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=location-service
+pkgver=0_git20180614
+pkgrel=0
+_commit="142f6ca0e4243448a43110453d22dae31f57b617"
+pkgdesc="Location service aggregating position/velocity/heading updates and exporting them over dbus"
+arch="x86_64"
+url="https://unity8.io"
+license="GPL-3.0 LGPL-3.0"
+depends=""
+depends_dev="boost-dev dbus-dev net-cpp-dev process-cpp-dev properties-cpp-dev json-c-dev libapparmor-dev gflags-dev glog-dev trust-store-dev"
+makedepends="$depends_dev cmake-extras gettext gtest-dev gmock dbus-cpp-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
+		missing_includes.patch"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+options="!check" # Several failures
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+	mkdir -p "$builddir"/build
+}
+
+build() {
+	cd "$builddir"/build
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DLOCATION_SERVICE_ENABLE_GPS_PROVIDER=OFF ..
+	make
+}
+
+check() {
+	cd "$builddir"/build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"/build
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="07fc5288370290cdfa1d8af5b14ef8f682ea899027be8d91bdd084fd58ccffbf946aa4dd9a2d654ec8f93ba6c47350f7e4a313646d8baba48f1e5305100de433  location-service-142f6ca0e4243448a43110453d22dae31f57b617.tar.gz
+e22591651b49f222487203cc292b592d6dbcc485ac1731977ad1354bd14cbcef7a054ae188f5d09da5da2def1a491aa902da58d2057f9dad69d7fedd39e5cf04  missing_includes.patch"

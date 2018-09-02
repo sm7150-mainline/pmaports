@@ -1,0 +1,51 @@
+diff --git a/tests/libual-test.cc b/tests/libual-test.cc
+index 623911a..7e11034 100644
+--- a/tests/libual-test.cc
++++ b/tests/libual-test.cc
+@@ -32,7 +32,7 @@
+ #include "ubuntu-app-launch.h"
+ 
+ #include "eventually-fixture.h"
+-#include "libertine-service.h"
++//#include "libertine-service.h"
+ #include "mir-mock.h"
+ #include "snapd-mock.h"
+ #include "systemd-mock.h"
+@@ -46,7 +46,7 @@ protected:
+     DbusTestService *service = NULL;
+     DbusTestDbusMock *mock = NULL;
+     DbusTestDbusMock *cgmock = NULL;
+-    std::shared_ptr<LibertineService> libertine;
++    //std::shared_ptr<LibertineService> libertine;
+     std::shared_ptr<SystemdMock> systemd;
+     GDBusConnection *bus = NULL;
+     std::string last_focus_appid;
+@@ -122,8 +122,8 @@ protected:
+         dbus_test_service_add_task(service, *systemd);
+ 
+         /* Add in Libertine */
+-        libertine = std::make_shared<LibertineService>();
+-        dbus_test_service_add_task(service, *libertine);
++        //libertine = std::make_shared<LibertineService>();
++        //dbus_test_service_add_task(service, *libertine);
+ 
+         dbus_test_service_start_tasks(service);
+ 
+@@ -131,7 +131,7 @@ protected:
+         g_dbus_connection_set_exit_on_close(bus, FALSE);
+         g_object_add_weak_pointer(G_OBJECT(bus), (gpointer *)&bus);
+ 
+-        ASSERT_EVENTUALLY_FUNC_EQ(false, std::function<bool()>{[&] { return libertine->getUniqueName().empty(); }});
++        //ASSERT_EVENTUALLY_FUNC_EQ(false, std::function<bool()>{[&] { return libertine->getUniqueName().empty(); }});
+ 
+         ASSERT_TRUE(ubuntu_app_launch_observer_add_app_focus(focus_cb, this));
+         ASSERT_TRUE(ubuntu_app_launch_observer_add_app_resume(resume_cb, this));
+@@ -145,7 +145,7 @@ protected:
+         ubuntu::app_launch::Registry::clearDefault();
+ 
+         systemd.reset();
+-        libertine.reset();
++        //libertine.reset();
+         g_clear_object(&service);
+ 
+         g_object_unref(bus);
