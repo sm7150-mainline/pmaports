@@ -9,7 +9,7 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=0
+pkgrel=1
 
 arch="x86_64 armhf aarch64"
 pkgdesc="Linux for pmOS supported chipsets (stable)"
@@ -172,14 +172,21 @@ dev() {
 	if [ -n "$CROSS_COMPILE" ]; then
 		msg "Symlinking binary scripts..."
 		depends="$depends kernel-scripts"
+		local found="false"
 		cd "$dir/scripts"
 		local i
 		for i in $(find . -type f); do
 			local type="$(file -b --mime-type "$i")"
-			[ "$type" != "application/x-sharedlib" ] && continue
+			[ "$type" != "application/x-pie-executable" ] && continue
 			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
 			ln -svf "$native" "$i"
+			found="true"
 		done
+		if [ "$found" = "false" ]; then
+			error "Failed to symlink binary scripts!"
+			error "Did the mime-type change (see #1659)?"
+			return 1
+		fi
 	fi
 }
 

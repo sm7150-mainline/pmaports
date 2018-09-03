@@ -4,7 +4,7 @@ _config="config-${_flavor}.${CARCH}"
 pkgname=linux-${_flavor}
 
 pkgver=4.17_rc3
-pkgrel=4
+pkgrel=5
 
 arch="armhf"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm devices"
@@ -38,7 +38,7 @@ builddir="$srcdir/linux-postmarketos-${_commit}"
 
 prepare() {
 	local _patch_failed=
-    ls "$srcdir"
+	ls "$srcdir"
 	cd "$builddir"
 	# first apply patches in specified order
 	for i in $source; do
@@ -164,14 +164,21 @@ dev() {
 	if [ -n "$CROSS_COMPILE" ]; then
 		msg "Symlinking binary scripts..."
 		depends="$depends kernel-scripts"
+		local found="false"
 		cd "$dir/scripts"
 		local i
 		for i in $(find . -type f); do
 			local type="$(file -b --mime-type "$i")"
-			[ "$type" != "application/x-sharedlib" ] && continue
+			[ "$type" != "application/x-pie-executable" ] && continue
 			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
 			ln -svf "$native" "$i"
+			found="true"
 		done
+		if [ "$found" = "false" ]; then
+			error "Failed to symlink binary scripts!"
+			error "Did the mime-type change (see #1659)?"
+			return 1
+		fi
 	fi
 }
 sha512sums="02fd136d24914e30decd207c3b2e0168cc9d6e4a0fc981abf8d537cd95c70583f5239d0dc7f2ae94a2ddd2ba82d822933159167801a035731a24aa1300c5ceec  linux-09efb4857f1a4119eced855912043817bd96e064.tar.gz
