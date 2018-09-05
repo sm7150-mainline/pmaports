@@ -4,7 +4,7 @@
 # usage: install_pmbootstrap.sh [ADDITIONAL_PACKAGE, ...]
 
 # Config: pmbootstrap tag (or branch)
-tag="feature/split-aports"
+tag="master"
 
 # Get download URL and pmaports path
 url="https://gitlab.com/postmarketOS/pmbootstrap/-/archive/$tag/pmbootstrap-$tag.tar.bz2"
