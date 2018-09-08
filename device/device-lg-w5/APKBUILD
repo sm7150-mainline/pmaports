@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-lg-w5"
+pkgdesc="L70"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-lg-w5 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="08cfba4197362c6c0dc21a3f2906bbf9952ea4077020c9c0fa837f37cb83c0d01fadab85acd8147c1398b74a58bfa7d1f9d3ee10efbec52502df6b3a090b9d4e  deviceinfo"
