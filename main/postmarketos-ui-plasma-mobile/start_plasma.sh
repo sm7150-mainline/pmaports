@@ -18,6 +18,7 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 		export XDG_CURRENT_DESKTOP=KDE
 		export KDE_SESSION_VERSION=5
 		export PLASMA_PLATFORM=phone
+		export QT_VIRTUALKEYBOARD_STYLE=Plasma
 
 		sleep 2
 
