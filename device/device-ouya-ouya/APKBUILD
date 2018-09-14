@@ -1,0 +1,27 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-ouya-ouya
+pkgver=1
+pkgdesc="Ouya"
+pkgrel=5
+url="https://postmarketos.org"
+arch="armhf"
+license="MIT"
+options="!check !archcheck"
+depends="postmarketos-base linux-ouya-ouya mkbootimg"
+makedepends=""
+install=""
+subpackages=""
+source="deviceinfo initfs-hook.sh fb.modes"
+
+package() {
+	install -Dm644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	install -D -m644 "$srcdir/deviceinfo" \
+		"$pkgdir/etc/deviceinfo"
+	install -D -m644 "$srcdir"/fb.modes \
+		"$pkgdir/etc/fb.modes"
+}
+
+sha512sums="410596c22551c6927d18593e63ee7f3eda9074e31d4a53a8ffc8aad4fdc08fd552306fef3cfb9690f9764a764be3fe64f1146ab913f5df446390b80fa813501a  deviceinfo
+c7253d5d6f53b7acbb1c2358e95ecba86ccbaa2bb5e99ad8db9f59e453209ddad55b13d8c1dc67f634cc4f997283b4079fa1b5b60f6d1440b13f39e5b1646d81  initfs-hook.sh
+bf442fac4dc0594e055ed7a7d8232b5c884e2e77543273e8c4f32b5fe3c199561c86d8a5f665e17406057ca7863fabb93e789fe5e168fcd89d2982e0046232ad  fb.modes"
