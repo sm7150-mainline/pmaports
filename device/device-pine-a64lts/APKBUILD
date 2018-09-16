@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-pine-a64lts"
+pkgdesc="PINE A64-LTS"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-postmarketos-allwinner mesa-dri-swrast u-boot-pine64 uboot-tools"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	uboot-script.cmd
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+
+}
+
+sha512sums="b168306e0efd7d0a1d139d63d1a3c5ee44c656f128429ecdc8ae289aedf5f5267ed315ec6ce57c0da2dfacbcbd43a021760230defe36f62068d0937dfed13b1c  deviceinfo
+ef7d21144b8c33f80968a6a089dcc6b568abd54f66f30d21d5befc10e51217484440aa8edb1065cd871ffba7bc599f44502bb6d240ee01f59dc92706ec6eabfd  uboot-script.cmd"
