@@ -1,15 +1,3 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
-# Kernel config based on: arch/arm/configs/lineageos_mako_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
-
 _vendor=motorola
 _flavor=motorola-osprey
 _hash="ac87541051278c7ea7f494c0b689d08e4a5cdd4f"
@@ -21,12 +9,12 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=3
+pkgrel=4
 arch="armhf"
 pkgdesc="Moto G (2015) kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_motorola_msm8916"
 depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool"
 options="!strip !check !tracedeps"
 install=
 source="
@@ -83,14 +71,39 @@ build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+	# Generate dt.img
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$srcdir/build/include/config/kernel.release" \
+	export builddir="$srcdir"/build
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+
+        cd "$srcdir"/build
+
+        make -j1 modules_install \
+                ARCH="$_carch" \
+                INSTALL_MOD_PATH="$pkgdir"
 }
 
 sha512sums="fbc2e1fa6ff33dd4c20bb063c655fe85ee20c194a9c19a5fadd3434b8ade4b95377848349ce9266d74ca34882446e1e257c0e1a3e35bd23ff05813918dc74750  linux-motorola-osprey-ac87541051278c7ea7f494c0b689d08e4a5cdd4f.tar.gz
