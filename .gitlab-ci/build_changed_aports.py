@@ -32,14 +32,16 @@ def get_changed_files():
         commit that was used for the diff.
         :returns: list of changed files
     """
-    # Current branch
-    branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"])[:-1]
-    print("branch: " + branch)
+    commit_head = run_git(["rev-parse", "HEAD"])[:-1]
+    commit_upstream_master = run_git(["rev-parse", "upstream/master"])[:-1]
+    print("commit HEAD: " + commit_head)
+    print("commit upstream/master: " + commit_upstream_master)
 
-    # Commit to diff against
-    commit = "HEAD~1"
-    if branch != "master":
-        commit = run_git(["merge-base", "master", "HEAD"])[:-1]
+    # Check if we are latest upstream/master
+    if commit_head == commit_upstream_master:
+        commit = "HEAD~1"  # then compare with previous commit
+    else:
+        commit = run_git(["merge-base", "upstream/master", "HEAD"])[:-1]  # otherwise compare with latest common ancestor
     print("comparing HEAD with: " + commit)
 
     # Changed files
@@ -77,13 +79,18 @@ def get_changed_packages():
 def check_build(packages):
     # Initialize build environment with less logging
     run_pmbootstrap(["build_init"])
-    run_pmbootstrap(["--details-to-stdout", "build", "--strict"] +
+    run_pmbootstrap(["--details-to-stdout", "build", "--strict", "--force"] +
                     list(packages))
 
 
 if __name__ == "__main__":
-    packages = get_changed_packages()
+    # Add a remote pointing to postmarketOS/pmaports for later
+    run_git(["remote", "add", "upstream",
+             "https://gitlab.com/postmarketOS/pmaports.git"])
+    run_git(["fetch", "upstream"])
 
+    # Build changed packages
+    packages = get_changed_packages()
     if len(packages) == 0:
         print("no aports changed in this branch")
     else:
