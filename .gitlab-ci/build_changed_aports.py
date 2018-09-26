@@ -87,7 +87,7 @@ if __name__ == "__main__":
     # Add a remote pointing to postmarketOS/pmaports for later
     run_git(["remote", "add", "upstream",
              "https://gitlab.com/postmarketOS/pmaports.git"])
-    run_git(["fetch", "upstream"])
+    run_git(["fetch", "-q", "upstream"])
 
     # Build changed packages
     packages = get_changed_packages()
