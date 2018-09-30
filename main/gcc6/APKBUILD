@@ -1,6 +1,6 @@
 pkgname=gcc6
 pkgver=6.4.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Old GCC for old vendor kernels (C compiler only)"
 url="http://gcc.gnu.org"
 arch="all"
@@ -401,7 +401,7 @@ package() {
 		# Link binutils to gcc6-* (so 'CROSS_COMPILE=gcc6-...' works)
 		echo "Link binutils to gcc6-*"
 		mkdir -p "$pkgdir/usr/bin"
-		for i in "ld" "ar" "nm"; do
+		for i in "ld" "ar" "nm" "objcopy"; do
 			ln -sv "/usr/bin/$CTARGET-$i" \
 				"$pkgdir/usr/bin/gcc6-$CTARGET-$i"
 		done
