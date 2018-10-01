@@ -24,7 +24,7 @@ _cross_configure="--disable-bootstrap --with-sysroot=/usr/$CTARGET"
 
 pkgname="gcc6-armhf"
 pkgver=6.4.0
-pkgrel=3
+pkgrel=4
 pkgdesc="Stage2 cross-compiler for armhf"
 url="http://gcc.gnu.org"
 arch="aarch64 x86_64 x86"
@@ -413,7 +413,8 @@ package() {
 		# failing and causes many headaches). See also: '-B' in 'man gcc'.
 		echo "Link binutils binaries to /usr/gcc6"
 		mkdir -p "$pkgdir$prefix/$CTARGET/bin"
-		for i in "as" "ld"; do
+		for i in "elfedit" "gprof" "addr2line" "strings" "as" "ld" "size" "ld.bfd" \
+			"readelf" "nm" "ar" "strip" "dwp" "objdump" "objcopy" "c++filt" "ranlib"; do
 			ln -sv "/usr/$CTARGET/bin/$i" \
 				"$pkgdir$prefix/$CTARGET/bin/$i"
 		done

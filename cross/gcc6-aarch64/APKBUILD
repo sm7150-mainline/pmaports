@@ -24,7 +24,7 @@ _cross_configure="--disable-bootstrap --with-sysroot=/usr/$CTARGET"
 
 pkgname="gcc6-aarch64"
 pkgver=6.4.0
-pkgrel=3
+pkgrel=4
 pkgdesc="Stage2 cross-compiler for aarch64"
 url="http://gcc.gnu.org"
 arch="armhf x86_64 x86"
@@ -421,7 +421,8 @@ package() {
 		# Link binutils to gcc6-* (so 'CROSS_COMPILE=gcc6-...' works)
 		echo "Link binutils to gcc6-*"
 		mkdir -p "$pkgdir/usr/bin"
-		for i in "ld" "ar" "nm" "objcopy" "objdump"; do
+		for i in "elfedit" "gprof" "addr2line" "strings" "as" "ld" "size" "ld.bfd" \
+			"readelf" "nm" "ar" "strip" "dwp" "objdump" "objcopy" "c++filt" "ranlib"; do
 			ln -sv "/usr/bin/$CTARGET-$i" \
 				"$pkgdir/usr/bin/gcc6-$CTARGET-$i"
 		done
