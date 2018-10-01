@@ -28,7 +28,7 @@ arch="armhf"
 pkgdesc="Samsung Galaxy SIII LTE kernel from LineageOS"
 url="https://github.com/LineageOS/android_kernel_samsung_smdk4412"
 depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz busybox-static-armhf"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz busybox-static-armhf gcc6"
 options="!strip !check !tracedeps"
 install=
 source="
@@ -41,8 +41,15 @@ license="GPL2"
 
 _abi_release=${pkgver}
 _carch="arm"
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
+# request if you find out that it is booting working with newer GCCs as
+# well. See <https://postmarketos.org/vendorkernel> for instructions.
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
 
 ksrcdir="$srcdir/android_kernel_${_vendor}_smdk4412-${_hash}"
 
