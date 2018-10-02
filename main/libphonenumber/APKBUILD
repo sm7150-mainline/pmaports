@@ -2,7 +2,8 @@
 # Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=libphonenumber
 pkgver=8.9.6
-pkgrel=3
+pkgrel=4
+_gtestversion=1.8.1
 pkgdesc="Library for parsing, formatting, and validating international phone numbers."
 url="https://github.com/googlei18n/libphonenumber"
 arch="all"
@@ -11,7 +12,7 @@ depends_dev="boost-dev protobuf-dev icu-dev"
 makedepends="$depends_dev cmake gtest-dev"
 subpackages="$pkgname-dev"
 source="$pkgname-$pkgver.tar.gz::https://github.com/googlei18n/${pkgname}/archive/v${pkgver}.tar.gz
-		googletest-1.8.0.tar.gz::https://github.com/google/googletest/archive/release-1.8.0.tar.gz"
+	googletest-$_gtestversion.tar.gz::https://github.com/google/googletest/archive/release-$_gtestversion.tar.gz"
 builddir="$srcdir/$pkgname-$pkgver"
 
 build() {
@@ -25,11 +26,11 @@ build() {
 	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DGTEST_SOURCE_DIR="$srcdir"/googletest-release-1.8.0/googletest \
 		-DBUILD_SHARED_LIBS=True \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
 		-DCMAKE_C_FLAGS="$CFLAGS" \
+		-DGTEST_SOURCE_DIR="$srcdir"/googletest-release-$_gtestversion/googletest \
 		${CMAKE_CROSSOPTS}
 	make
 }
@@ -44,4 +45,4 @@ package() {
 }
 
 sha512sums="7b6bc66b4d7c3137eb97bbae1a28f072612c27df80ba355e3b3db680e0315f1af0c186559a15a46306cb184619049c30da623f9448b3c64a28cfb94474903fdf  libphonenumber-8.9.6.tar.gz
-1dbece324473e53a83a60601b02c92c089f5d314761351974e097b2cf4d24af4296f9eb8653b6b03b1e363d9c5f793897acae1f0c7ac40149216035c4d395d9d  googletest-1.8.0.tar.gz"
+e6283c667558e1fd6e49fa96e52af0e415a3c8037afe1d28b7ff1ec4c2ef8f49beb70a9327b7fc77eb4052a58c4ccad8b5260ec90e4bceeac7a46ff59c4369d7  googletest-1.8.1.tar.gz"
