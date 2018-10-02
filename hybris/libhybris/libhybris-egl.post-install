@@ -1,0 +1,6 @@
+#!/bin/sh
+ARCH=$(uname -m)
+
+if [ ! -f /etc/ld-musl-$ARCH.path ]; then
+	echo "/usr/lib/libhybris-egl:/lib:/usr/local/lib:/usr/lib" > /etc/ld-musl-$ARCH.path
+fi

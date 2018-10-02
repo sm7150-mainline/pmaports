@@ -1,0 +1,56 @@
+#!/sbin/openrc-run
+# Copyright 1999-2012 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvsroot/gentoo-x86/app-emulation/lxc/files/lxc.initd.2,v 1.5 2012/07/21 05:07:15 flameeyes Exp $
+
+extra_started_commands="reboot"
+
+description="Android/Halium LXC container"
+
+CONTAINER=android
+: ${logdir:=/var/log/lxc}
+: ${systemimage:=/var/lib/lxc/android/system.img}
+
+command="/usr/bin/lxc-start"
+pidfile="/var/run/lxc/$CONTAINER.pid"
+
+depend() {
+	need localmount sysfs cgroups
+	after firewall net
+}
+
+start() {
+	checkpath -d /data
+	checkpath -d /system
+
+	ebegin "Mounting Android filesystems and starting Halium LXC container"
+	mount -o ro,loop $systemimage /system
+
+	/usr/lib/lxc-android/mount-android
+
+	rm -f "$logdir"/${CONTAINER}.log
+
+	checkpath -d -m 750 -o root:wheel $logdir
+
+	checkpath -d ${pidfile%/*}
+	start-stop-daemon --start $command \
+		--pidfile $pidfile \
+		-- \
+		--daemon \
+		--pidfile $pidfile \
+		--name ${CONTAINER} \
+		--logpriority WARN \
+		--logfile $logdir/${CONTAINER}.log \
+		|| eend $? || return $?
+	lxc-wait -n ${CONTAINER} -t 5 -s RUNNING
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping container ${CONTAINER}"
+	lxc-stop -k --name ${CONTAINER}
+	start-stop-daemon --stop --pidfile ${pidfile} \
+		--retry ${POWEROFF_SIGNAL:-SIGUSR2}/${TIMEOUT:-30} \
+		--progress
+	eend $?
+}

@@ -1,32 +1,32 @@
-From b9251827932545a455bfecea7b259eba5677c3bd Mon Sep 17 00:00:00 2001
+From ae11619430c59ba4a23acd8659157f43b863d2ed Mon Sep 17 00:00:00 2001
 From: NeKit <nekit1000@gmail.com>
 Date: Wed, 18 Oct 2017 23:12:51 +0300
 Subject: [PATCH 3/3] Implement X11 EGL platform based on wayland code.
 
-Allow window system to hook eglGetConfigAttrib (needed for X11
-EGL_NATIVE_VISUAL_ID)
+* Allow window system to hook eglGetConfigAttrib (needed for X11 EGL_NATIVE_VISUAL_ID)
 
-Use custom DRIHYBRIS Xorg extension for buffer sharing to Xorg/glamor when
-possible
+* Use custom DRIHYBRIS Xorg extension for buffer sharing to Xorg/glamor when possible
+  Gives huge speedup over XShmPutImage, but requires patched Glamor and DDX driver to
+  utilize it
 
-Gives huge speedup over XShmPutImage, but requires patched Glamor and DDX driver
-to utilize it
+* Check for window resizes using Present extension when possible
 
-Check for window resizes using Present extension when possible
+* x11nativewindow: use same depth as target window for pixmap.
+  Call xcb_present_pixmap instead of xcb_copy_area to present pixmap
 ---
- hybris/configure.ac                               |   1 +
- hybris/egl/egl.c                                  |  13 +-
- hybris/egl/platforms/Makefile.am                  |   2 +-
- hybris/egl/platforms/common/eglplatformcommon.cpp |   2 +-
- hybris/egl/platforms/x11/Makefile.am              |  43 ++
- hybris/egl/platforms/x11/eglplatform_x11.cpp      | 235 +++++++
- hybris/egl/platforms/x11/x11_window.cpp           | 728 ++++++++++++++++++++++
- hybris/egl/platforms/x11/x11_window.h             | 201 ++++++
- hybris/egl/platforms/x11/xcb_drihybris.c          | 167 +++++
- hybris/egl/platforms/x11/xcb_drihybris.h          | 122 ++++
- hybris/egl/ws.c                                   |   9 +
- hybris/egl/ws.h                                   |   2 +
- 12 files changed, 1522 insertions(+), 3 deletions(-)
+ hybris/configure.ac                           |   1 +
+ hybris/egl/egl.c                              |  13 +-
+ hybris/egl/platforms/Makefile.am              |   2 +-
+ .../platforms/common/eglplatformcommon.cpp    |   2 +-
+ hybris/egl/platforms/x11/Makefile.am          |  43 +
+ hybris/egl/platforms/x11/eglplatform_x11.cpp  | 235 ++++++
+ hybris/egl/platforms/x11/x11_window.cpp       | 742 ++++++++++++++++++
+ hybris/egl/platforms/x11/x11_window.h         | 206 +++++
+ hybris/egl/platforms/x11/xcb_drihybris.c      | 167 ++++
+ hybris/egl/platforms/x11/xcb_drihybris.h      | 122 +++
+ hybris/egl/ws.c                               |   9 +
+ hybris/egl/ws.h                               |   2 +
+ 12 files changed, 1541 insertions(+), 3 deletions(-)
  create mode 100644 hybris/egl/platforms/x11/Makefile.am
  create mode 100644 hybris/egl/platforms/x11/eglplatform_x11.cpp
  create mode 100644 hybris/egl/platforms/x11/x11_window.cpp
@@ -390,10 +390,10 @@ index 0000000..001b733
 +};
 diff --git a/hybris/egl/platforms/x11/x11_window.cpp b/hybris/egl/platforms/x11/x11_window.cpp
 new file mode 100644
-index 0000000..4363e80
+index 0000000..26e8844
 --- /dev/null
 +++ b/hybris/egl/platforms/x11/x11_window.cpp
-@@ -0,0 +1,728 @@
+@@ -0,0 +1,742 @@
 +/****************************************************************************************
 + **
 + ** Copyright (C) 2013 Jolla Ltd.
@@ -440,8 +440,8 @@ index 0000000..4363e80
 +void X11NativeWindow::resize(unsigned int width, unsigned int height)
 +{
 +    lock();
-+    this->m_defaultWidth = width;
-+    this->m_defaultHeight = height;
++    this->m_defaultWidth = this->m_width = width;
++    this->m_defaultHeight = this->m_height = height;
 +    unlock();
 +}
 +
@@ -489,6 +489,7 @@ index 0000000..4363e80
 +
 +    m_width = window_attributes.width;
 +    m_height = window_attributes.height;
++    m_depth = window_attributes.depth;
 +
 +    const char *env = getenv("HYBRIS_X11_FORCE_WIDTH");
 +    if (env != NULL)
@@ -694,6 +695,7 @@ index 0000000..4363e80
 +
 +void X11NativeWindow::finishSwap()
 +{
++    static int serial = 0;
 +    int ret = 0;
 +    lock();
 +
@@ -707,7 +709,7 @@ index 0000000..4363e80
 +    m_lastBuffer = wnb;
 +    wnb->busy = 1;
 +
-+    fronted.push_back(wnb);
++    // fronted.push_back(wnb);
 +
 +    m_damage_rects = NULL;
 +    m_damage_n_rects = 0;
@@ -717,9 +719,21 @@ index 0000000..4363e80
 +        if (wnb->pixmap == 0)
 +            wnb->pixmap_from_buffer(m_connection, m_window);
 +
-+        xcb_copy_area(m_connection, wnb->pixmap, m_window, m_xcb_gc,
-+                        0, 0, 0, 0, /* src_x, src_y, dst_x, dst_y */
-+                        m_width, m_height);
++        xcb_present_pixmap(m_connection,
++                            m_window,
++                            wnb->pixmap,
++                            (uint32_t) serial++,
++                            0,                                    /* valid */
++                            0,                                    /* update */
++                            0,                                    /* x_off */
++                            0,                                    /* y_off */
++                            None,                                 /* target_crtc */
++                            None,
++                            NULL,
++                            XCB_PRESENT_OPTION_NONE,
++                            0,
++                            0,
++                            0, 0, NULL);
 +        xcb_flush(m_connection);
 +
 +        lock();
@@ -917,7 +931,7 @@ index 0000000..4363e80
 +
 +    X11NativeWindowBuffer *wnb;
 +
-+    wnb = new ClientX11Buffer(m_alloc, m_width, m_height, m_format, m_usage);
++    wnb = new ClientX11Buffer(m_alloc, m_width, m_height, m_format, m_usage, m_depth);
 +    m_bufList.push_back(wnb);
 +    ++m_freeBufs;
 +
@@ -1112,7 +1126,7 @@ index 0000000..4363e80
 +                               drawable,
 +                               stride * height * 4,
 +                               this->width, height, stride,
-+                               32, 32,
++                               windowDepth, 32,
 +                               handle->numInts,
 +                               handle->numFds,
 +                               (const uint32_t *)(handle->data + handle->numFds),
@@ -1124,10 +1138,10 @@ index 0000000..4363e80
 +// vim: noai:ts=4:sw=4:ss=4:expandtab
 diff --git a/hybris/egl/platforms/x11/x11_window.h b/hybris/egl/platforms/x11/x11_window.h
 new file mode 100644
-index 0000000..cceaee5
+index 0000000..e5be070
 --- /dev/null
 +++ b/hybris/egl/platforms/x11/x11_window.h
-@@ -0,0 +1,201 @@
+@@ -0,0 +1,206 @@
 +/****************************************************************************************
 + **
 + ** Copyright (C) 2013 Jolla Ltd.
@@ -1191,6 +1205,7 @@ index 0000000..cceaee5
 +    int busy;
 +    int youngest;
 +    ANativeWindowBuffer *other;
++    int windowDepth;
 +    xcb_pixmap_t pixmap;
 +
 +    void pixmap_from_buffer(xcb_connection_t *connection, xcb_drawable_t drawable);
@@ -1208,7 +1223,8 @@ index 0000000..cceaee5
 +                            unsigned int width,
 +                            unsigned int height,
 +                            unsigned int format,
-+                            unsigned int usage)
++                            unsigned int usage,
++                            unsigned int windowDepth)
 +    {
 +        // Base members
 +        ANativeWindowBuffer::width = width;
@@ -1226,6 +1242,8 @@ index 0000000..cceaee5
 +        assert(alloc_ok == 0);
 +        this->youngest = 0;
 +        this->common.incRef(&this->common);
++
++        this->windowDepth = windowDepth;
 +        this->pixmap = 0;
 +    }
 +
@@ -1312,6 +1330,7 @@ index 0000000..cceaee5
 +    X11NativeWindowBuffer *m_lastBuffer;
 +    unsigned int m_width;
 +    unsigned int m_height;
++    unsigned int m_depth;
 +    unsigned int m_format;
 +    unsigned int m_defaultWidth;
 +    unsigned int m_defaultHeight;
@@ -1668,5 +1687,5 @@ index c4811c0..92b221a 100644
  
  #endif
 -- 
-2.15.1
+2.17.0
 
