@@ -1,125 +1,93 @@
-# Based on linux-lg-mako. Changes:
-# - add findutils makedepend (necessary for the initramfs)
-# - it builds an initramfs - do not use ramdisk.cpio and
-#	ramdisk-recovery-device.cpio, in there, always use the
-#	initramfs from the recovery partition ("isorec")
-# - directly boot to that initramfs, not only when the recovery
-#	key combination was pressed.
-# - use Alpine's busybox-static instead of the pre-compiled
-#	binary, that comes with the source
-#
-# Kernel config changes, based on: arch/arm/configs/i9100_defconfig
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - change compression from CONFIG_KERNEL_LZMA=y to
-#	CONFIG_KERNEL_GZIP=y (so it works with busybox)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/i9100_defconfig
 
-_vendor=samsung
-_flavor=samsung-i9100
-_hash="349a3e91e76d17e67ef6213e1f6712e700695631"
-_config="config-${_flavor}.armhf"
-
-pkgname=linux-${_flavor}
+pkgname=linux-samsung-i9100
 pkgver=3.0.101
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=11
+pkgrel=12
+pkgdesc="Samsung Galaxy SII kernel fork"
 arch="armhf"
-pkgdesc="Samsung Galaxy SII kernel from LineageOS"
-url="https://github.com/LineageOS/android_kernel_samsung_smdk4412"
-depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
-findutils busybox-static-armhf gcc6"
+_carch="arm"
+_flavor="samsung-i9100"
+url="https://kernel.org"
+license="GPL-2.0-only"
 options="!strip !check !tracedeps"
-install=
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev
+	findutils busybox-static-armhf"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_smdk4412"
+_commit="349a3e91e76d17e67ef6213e1f6712e700695631"
+_config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_samsung_smdk4412/archive/${_hash}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
 	$_config
-	compiler-gcc6.h
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
 	init
 "
-subpackages=""
-license="GPL2"
 
-_abi_release=${pkgver}
-_carch="arm"
+builddir="$srcdir/$_repository-${_commit}"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
-
-ksrcdir="$srcdir/android_kernel_samsung_smdk4412-${_hash}"
-
-prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
+prepare_isorec() {
 	# Use Alpine's busybox.static instead of the pre-compiled busybox shipped
 	# with the source
 	cp -v /usr/$(arch_to_hostspec $arch)/bin/busybox.static \
-		"$ksrcdir"/usr/galaxys2_initramfs_files/busybox
+		"$builddir"/usr/galaxys2_initramfs_files/busybox
 
 	# do not use ramdisk.cpio and ramdisk-recovery-device.cpio, always use
 	# the initramfs from the recovery partition ("isorec"), so we can build
 	# it later and independently from the kernel. also directly boot that
 	# partition, not only when the recovery key combination was used.
-	cd "$ksrcdir"/usr/
+	cd "$builddir"/usr/
 	mv galaxys2_initramfs.list galaxys2_initramfs.list_old
 	grep -v "../../ramdisk" galaxys2_initramfs.list_old > galaxys2_initramfs.list
-	cp -v "$srcdir"/init "$ksrcdir"/usr/galaxys2_initramfs_files/init
+	cp -v "$srcdir"/init "$builddir"/usr/galaxys2_initramfs_files/init
 
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
+	# Paths supplied to gen_initramfs_list.sh are prefixed with "source/".
+	ln -s "$builddir" ln -s "$builddir"/source
+}
 
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+prepare() {
+	default_prepare
+	prepare_isorec
+
+	cd "$builddir"
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$srcdir/build/include/config/kernel.release" \
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
 }
 
 sha512sums="285ffd2c82d0444b99da583573d19443b73de22d7382aae54413af229a28bebf4ea32ecbe248ae54ae64bbbc0af7d722b1ef86d5dd099e2990dcc6284fb195fa  linux-samsung-i9100-349a3e91e76d17e67ef6213e1f6712e700695631.tar.gz
 087372ce82f8eae44694d7c6288822e5565c6bbed3a07cb42a6b009fa25a84a16ec44d76fe5f504bcf945e28237e1d62cf3686d1a60126525e3fdea2613cbb3c  config-samsung-i9100.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+0b33408a0c024c6a9103cc1006bf1534d0146333815a91406a8ae87ce5ec09da0ec427f2c7df211ecbd0a0a59206b3757f6196b9f2d3963734acc69807a5bbf2  gcc8-fix-put-user.patch
 dd4094d5f4ec281d32f12af88cb22a782e497c8e52f69cf60b73ac7d6171fc95f1f8040b3d0ad2ff3f016d22ac1d91c5b522e5d03203534a76742bc55a082af5  init"
