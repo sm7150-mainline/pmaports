@@ -13,8 +13,8 @@ if [ -z "$srcdir" ] || [ -z "$builddir" ] || [ -z "$_config" ] ||
 	exit 1
 fi
 
-# gcc6 support
-cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+# support newer GCC versions
+cp -v "/usr/share/devicepkg-dev/compiler-gcc.h" "$builddir/include/linux/"
 
 # Remove -Werror from all makefiles
 makefiles="$(find . -type f -name Makefile)
