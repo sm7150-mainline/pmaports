@@ -1,0 +1,20 @@
+diff --git a/applications/kube/main.cpp b/applications/kube/main.cpp
+index e0d37fc..8bbe555 100644
+--- a/applications/kube/main.cpp
++++ b/applications/kube/main.cpp
+@@ -58,6 +58,7 @@
+ void printStacktrace()
+ {
+ #ifndef Q_OS_WIN
++#if defined(__GNU_LIBRARY__)
+     int skip = 1;
+     void *callstack[128];
+     const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
+@@ -93,6 +94,7 @@ void printStacktrace()
+     }
+     std::cerr << trace_buf.str();
+ #endif
++#endif
+ }
+ 
+ static int sCounter = 0;

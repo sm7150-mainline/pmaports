@@ -1,0 +1,50 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=okular
+pkgver=18.08.1
+pkgrel=0
+arch="all"
+url="https://github.com/KDE/koko"
+pkgdesc="KDE document viewer"
+license="GPL-2.0 LGPL-2.1 GFDL-1.2"
+depends=""
+makedepends="extra-cmake-modules qt5-qtbase-dev kparts-dev threadweaver-dev kjs-dev kwallet-dev
+	kactivities-dev kpty-dev qca-qt5-dev kirigami2-dev kdoctools-dev khtml-dev libzip-dev
+	libpng-dev"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz
+	musl-fixes.patch
+	enable-kirigami-desktop-file.patch"
+subpackages="$pkgname-doc $pkgname-lang $pkgname-mobile"
+options="!check" # Requires running X11
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_OKULARKIRIGAMI=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+mobile() {
+	depends="kirigami2"
+	mkdir -p "$subpkgdir"/usr/bin
+	mkdir -p "$subpkgdir"/usr/share/applications
+	
+	mv "$pkgdir"/usr/bin/okularkirigami "$subpkgdir"/usr/bin/
+	mv "$pkgdir"/usr/share/applications/org.kde.okular.kirigami.desktop "$subpkgdir"/usr/share/applications/
+}
+
+sha512sums="4114c614c3d773de158469a201c976ad36d706a0eb00b238af49d5e5a97fb272ce6033f744101c7e26110a7ac6b9c6cda26e3fc8c9c1bde22277f3ba2c55a375  okular-18.08.1.tar.xz
+41245d4e13603d82047ef8222f212d7f0ac72de4415a8c6409e537249da52a5669e1f3d64b99db376fe384b36abfa6362ccf5686a4f0558837b7b5a8f61530b9  musl-fixes.patch
+63d8f3ea3515e70cc015f2deaaee9d61313177656ee56a9a5a3d3a71823fbdabd0da9a3b57c02ba8d1e8d71d2886fdf628bdb70650d14589e8de8f38c19f439f  enable-kirigami-desktop-file.patch"

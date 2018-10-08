@@ -1,0 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=pimcommon
+pkgver=18.08.1
+pkgrel=0
+pkgdesc='Common lib for KDEPim'
+arch="all"
+url='https://community.kde.org/KDE_PIM'
+license="GPL-2.0 LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev karchive-dev kcodecs-dev kcompletion-dev kconfigwidgets-dev kdbusaddons-dev
+	kiconthemes-dev kitemmodels-dev kjobwidgets-dev kio-dev knewstuff-dev akonadi-dev akonadi-contacts-dev
+	kimap-dev libkdepim-dev kpimtextedit-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+		make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="3a2eede674a8f442e18f9d3d301dbccb3686307e37d1974dc565fd27d75b6560acb1cd6150a996063794dd891c2562bf0e2ee6eb6b13c66783eba019bd93470d  pimcommon-18.08.1.tar.xz"

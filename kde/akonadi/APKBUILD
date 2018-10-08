@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=akonadi
+pkgver=18.08.1
+pkgrel=0
+pkgdesc='A cross-desktop storage service for PIM data and meta data providing concurrent read, write, and query access.'
+arch="all"
+url='https://community.kde.org/KDE_PIM'
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev kcompletion-dev kconfigwidgets-dev kdbusaddons-dev kiconthemes-dev
+	kitemmodels-dev kio-dev shared-mime-info boost-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="50d5711e2b78ed512efa771c4852885c5464dc7cea3563cabd79bcbff7847906f300c453f863b1f1b6d3d3508a060eb2a69e3e94f75d2079eca66a0ff15c581c  akonadi-18.08.1.tar.xz"

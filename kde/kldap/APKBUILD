@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kldap
+pkgver=18.08.1
+pkgrel=0
+pkgdesc='LDAP access API for KDE'
+arch="all"
+url='https://github.com/kde/kldap'
+license="LGPL-2.1"
+depends=""
+depends_dev="kio-dev openldap-dev"
+makedepends="$depends_dev extra-cmake-modules cyrus-sasl-dev"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+#options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="2055ef5d1950501b41bae76b048cd3b77c19a9969ebc5e5a50f2eae173c6161348d8bc5675dcae827b99a29979acd2f5f165889108f7faefa8dba4b0bf31f47b  kldap-18.08.1.tar.xz"

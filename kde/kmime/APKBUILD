@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kmime
+pkgver=18.08.1
+pkgrel=0
+pkgdesc='Library for handling mail messages and newsgroup articles'
+arch="all"
+url='https://community.kde.org/KDE_PIM'
+license="LGPL-2.0"
+depends=""
+depends_dev="qt5-qtbase-dev ki18n-dev kcodecs-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+options="!check" # Fails on aarch64 on Outlook attachement naming
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="2a3ab2f7e69e14f8ad86ac9f6a9c33a3fd3da703da82ec7b53d126f6d8c7a51608b4f221a7903d37c2db429b444e643130a8687b1e02d5cc746d5c8d34c151d4  kmime-18.08.1.tar.xz"

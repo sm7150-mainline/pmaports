@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kholidays
+pkgver=5.49.0
+pkgrel=0
+pkgdesc="Support for icon themes"
+arch="all"
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+
+package() {
+	cd "$builddir"
+	make DESTDIR="${pkgdir}" install
+}
+
+sha512sums="f64607c874456f2a289d9af2629f838b6d32a3c5af89c261f4010db63ece90513194ee6770170aa06e75f9c99abbd8292425d7164bcb57d89c3a77b1e14344ad  kholidays-5.49.0.tar.xz"

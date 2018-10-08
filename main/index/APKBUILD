@@ -1,0 +1,26 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=index
+pkgver=0_git20180903
+pkgrel=0
+_commit="113d6e0ba138d31c746421271b927efed8a7b25e"
+pkgdesc="Index file manager based on MauiKit"
+arch="all"
+url="https://github.com/maui-project/index"
+license="unknown"
+depends="mauikit"
+makedepends="qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/maui-project/$pkgname/archive/$_commit.tar.gz"
+options="!check" # No tests available
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	make INSTALL_ROOT="$pkgdir" install
+}
+sha512sums="b46e93013c62ff9cc2e520e46012ae3a21823b3e2dadeddc2afc07d9c537de0be9a4823047dd203a3a344bd6e4ecf9e26d9a0813020effe759ef5ba8a2c37c4a  index-113d6e0ba138d31c746421271b927efed8a7b25e.tar.gz"

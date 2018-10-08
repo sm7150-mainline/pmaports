@@ -1,0 +1,29 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kdepim-apps-libs
+pkgver=18.08.1
+pkgrel=0
+pkgdesc="KDE PIM mail related libraries"
+arch="all"
+url="https://kontact.kde.org/"
+license="GPL-2.0 LGPL-2.1"
+depends=
+makedepends="extra-cmake-modules grantleetheme-dev akonadi-dev akonadi-contacts-dev libkleo-dev
+	gpgme-dev pimcommon-dev"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cd "$builddir"
+	cmake ../$pkgname-$pkgver \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib	
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="f30e3183b5212993a41eafce081f7d6f7e5636ba9996b6ec4af0f6ca69e68d7bc5b53151c03203b556c01e3325ccab01f3742ab3ca54e339187df391b2757b04  kdepim-apps-libs-18.08.1.tar.xz"

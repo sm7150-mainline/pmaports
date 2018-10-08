@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kidentitymanagement
+pkgver=18.08.1
+pkgrel=0
+pkgdesc=' '
+arch="all"
+url='https://github.com/kde/kidentitymanagement'
+license="LGPL-2.1"
+depends=""
+depends_dev="kcompletion-dev ktextwidgets-dev kxmlgui-dev kio-dev kpimtextedit-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="cada5292dbaab54fe41a2bd8967ddc023d1334210c79cf78fc1657bb24c80e1d2232d49a250de98f9092272c122690ad6eb86534aec370a95c93fce19f46b829  kidentitymanagement-18.08.1.tar.xz"

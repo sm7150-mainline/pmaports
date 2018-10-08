@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=akonadi-mime
+pkgver=18.08.1
+pkgrel=0
+pkgdesc='Libraries and daemons to implement basic email handling.'
+arch="all"
+url='https://community.kde.org/KDE_PIM'
+license="GPL-2.0 LGPL-2.1 BSD"
+depends=""
+depends_dev="qt5-qtbase-dev kdbusaddons-dev kio-dev kmime-dev kitemmodels-dev akonadi-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+options="!check" # Broken
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="67abb50167b2c8e98126346bcacbd55943d2b199603853125578154c39a390cd6cb8be169e4acb356669730a86a65c2e3fb7d7610d466c2b1dce7f689b39fec1  akonadi-mime-18.08.1.tar.xz"

@@ -1,0 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=mauikit
+pkgver=0_git20180903
+pkgrel=0
+_commit="e05cd66bed119df7ea9331194728c5c76b081804"
+pkgdesc="Kit for developing MAUI Apps"
+arch="all"
+url="https://github.com/maui-project/mauikit"
+license="unknown"
+depends=""
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev ki18n-dev
+	knotifications-dev kconfig-dev kservice-dev kio-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="$pkgname-$_commit.tar.gz::https://github.com/maui-project/$pkgname/archive/$_commit.tar.gz"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DKDE_INSTALL_LIBEXECDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="766ff1b51f15c34ad22c3a6bcf39f80c71acebd02764ec06a09c5519d7beaa1e1974885c6424f28529e45af9076678e79e3a05b19256c4fb69c392f5f1651771  mauikit-e05cd66bed119df7ea9331194728c5c76b081804.tar.gz"

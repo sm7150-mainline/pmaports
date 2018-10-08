@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kpkpass
+pkgver=18.08.1
+pkgrel=0
+pkgdesc='Apple Wallet Pass reader'
+arch="all"
+url='https://github.com/kde/kpkpass'
+license="LGPL-2.1"
+depends=""
+depends_dev=""
+makedepends="$depends_dev extra-cmake-modules qt5-qtbase-dev karchive-dev shared-mime-info"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+#options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+		make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="19c07f6e38ce7fd9c8cd1ebb138181ebb3e741e8f9c9cd45f0f210b1bd490cabc7a214f795cdc9a32b6f975a67a08df24f351a3801c327f0b98c2580c3364f24  kpkpass-18.08.1.tar.xz"

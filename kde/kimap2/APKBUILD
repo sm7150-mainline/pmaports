@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kimap2
+pkgver=0.2.1
+pkgrel=0
+pkgdesc='Job-based API for interacting with IMAP servers'
+arch="all"
+url='https://community.kde.org/KDE_PIM'
+license="GPL-2.0 LGPL-2.0"
+depends=""
+depends_dev="qt5-qtbase-dev kcoreaddons-dev kcodecs-dev kmime-dev cyrus-sasl-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/v$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+options="!check" # LoginJobTest fails
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+		make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="a7e9b4e6cea2de6c792aba7634f35780ea5417ed66c26bed1c78743b9753225886f88f06ce892fa3bfee0db911719108b6b702d5470bbbea17b5b764260e55f4  kimap2-0.2.1.tar.gz"

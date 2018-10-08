@@ -1,0 +1,46 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kitinerary
+pkgver=18.08.0_git20180806
+pkgrel=0
+_commit="2256e363e6bde732d940759451ca299e26e2adcf"
+pkgdesc="Data Model and Extraction System for Travel Reservation information"
+url="https://github.com/KDE/kitinerary"
+arch="all"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev ki18n-dev kmime-dev kpkpass-dev kcontacts-dev
+	kcalcore-dev"
+makedepends="$depends_dev extra-cmake-modules"
+#source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+source="$pkgname-$pkgver.tar.gz::https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
+subpackages="$pkgname-dev" # $pkgname-lang
+options="!check" # Requires running X11 server
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cd "$builddir"
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		${CMAKE_CROSSOPTS}
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="e2850c59a169b6bae2e289687f6378e94465a25e99bd51928c221192ec75c823996b7acead6cd99dbc52d3f949e361db1514fd7bba0c7f94fed86af964aaae36  kitinerary-18.08.0_git20180806.tar.gz"

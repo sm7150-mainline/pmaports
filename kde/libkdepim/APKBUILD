@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libkdepim
+pkgver=18.08.1
+pkgrel=0
+pkgdesc='Lib for common KDEPim apps'
+arch="all"
+url='https://community.kde.org/KDE_PIM'
+license="GPL-2.0 LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev kcodecs-dev kcompletion-dev kconfigwidgets-dev kiconthemes-dev kjobwidgets-dev
+	kcmutils-dev kwallet-dev akonadi-dev akonadi-contacts-dev akonadi-search-dev kldap-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="541659a7a46def63275e584d20453885f3ee6aa944229740e9d6494568d4a3808020367bd8484083f00694696fb589f077844a2c33265a8ba89ca319b55b5501  libkdepim-18.08.1.tar.xz"

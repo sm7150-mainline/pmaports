@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kpimtextedit
+pkgver=18.08.1
+pkgrel=0
+pkgdesc="Advanced text editor which provide advanced html feature"
+arch="all"
+url="https://api.kde.org/kdepim/kpimtextedit/html"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev grantlee-dev kcodecs-dev kconfig-dev kconfigwidgets-dev kemoticons-dev
+	kiconthemes-dev kio-dev syntax-highlighting-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="e7830227a74331e399d030dfd8058382329512b85ccd36061d7ddeba2c1eca287d41890847203afb6df254e2d9927fda7974feb4c48ab433f5b037fe48c588f5  kpimtextedit-18.08.1.tar.xz"

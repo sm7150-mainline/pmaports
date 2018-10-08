@@ -1,0 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kube
+pkgver=0.7.0
+pkgrel=0
+pkgdesc="A modern groupware client based on QtQuick and Sink"
+arch="all"
+url='https://kube.kde.org'
+license="LGPL-2.0"
+depends="qgpgme"
+depends_dev="qt5-qtbase-dev qt5-qtquickcontrols2-dev qt5-qtwebengine-dev kmime-dev sink-dev gpgme-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/v$pkgver.tar.gz
+	musl-lacks-backtrace.patch"
+subpackages="$pkgname-dev"
+options="!check" # Requires running X11 server
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+		make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="0399eba9c39b1d35be00c502c84cb7e903ab3f23b0b9dffd154e8fb2c071d8bdfdd16b606c66e5e7d52c5440a60008771d15d8e6abf866df86d2bb3733f34deb  kube-0.7.0.tar.gz
+f7b26a8028a8e546bba0be7874ce06ec82cf32ba971cf74913527d96fd0337fa857f2100991f6d40ee18f012cbe8c7c1265db824aed31456813d8f0941edaab9  musl-lacks-backtrace.patch"

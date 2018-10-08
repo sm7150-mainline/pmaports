@@ -1,0 +1,26 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=pix
+pkgver=0_git20180903
+pkgrel=0
+_commit="d242bf6304a562abd17bf5f75b65d962e0f67622"
+pkgdesc="Image gallery manager built with MauiKit"
+arch="all"
+url="https://github.com/maui-project/vvave"
+license="GPL-3.0"
+depends="mauikit"
+makedepends="qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/maui-project/$pkgname/archive/$_commit.tar.gz"
+options="!check" # No tests available
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	make INSTALL_ROOT="$pkgdir" install
+}
+sha512sums="beee43d5b2f890b4f8817e2573490acf8d54fe7e2157a13fb51e47e21c92b0f3349f6f0b3e4dee38053ed069b9cba0a6a60059eae7b492b59f1ebea9716c1906  pix-d242bf6304a562abd17bf5f75b65d962e0f67622.tar.gz"
