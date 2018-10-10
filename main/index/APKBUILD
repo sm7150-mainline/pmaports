@@ -2,15 +2,16 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=index
 pkgver=0_git20180903
-pkgrel=0
+pkgrel=1
 _commit="113d6e0ba138d31c746421271b927efed8a7b25e"
 pkgdesc="Index file manager based on MauiKit"
 arch="all"
 url="https://github.com/maui-project/index"
 license="unknown"
-depends="mauikit"
+depends="mauikit qmltermwidget"
 makedepends="qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
-source="$pkgname-$_commit.tar.gz::https://github.com/maui-project/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/maui-project/$pkgname/archive/$_commit.tar.gz
+	remove-included-qmltermwidget.patch"
 options="!check" # No tests available
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -23,4 +24,5 @@ package() {
 	cd "$builddir"
 	make INSTALL_ROOT="$pkgdir" install
 }
-sha512sums="b46e93013c62ff9cc2e520e46012ae3a21823b3e2dadeddc2afc07d9c537de0be9a4823047dd203a3a344bd6e4ecf9e26d9a0813020effe759ef5ba8a2c37c4a  index-113d6e0ba138d31c746421271b927efed8a7b25e.tar.gz"
+sha512sums="b46e93013c62ff9cc2e520e46012ae3a21823b3e2dadeddc2afc07d9c537de0be9a4823047dd203a3a344bd6e4ecf9e26d9a0813020effe759ef5ba8a2c37c4a  index-113d6e0ba138d31c746421271b927efed8a7b25e.tar.gz
+e371184dd4e2a03f232cfde3911ec7f76c715f056d650dbd1458606720d63bb699448b8bc7acde36fa77934956384a08b2664ea8afe1f4746a1be39559b9ddad  remove-included-qmltermwidget.patch"
