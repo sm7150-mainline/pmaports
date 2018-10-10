@@ -12,11 +12,10 @@ mount_proc_sys_dev
 setup_log
 # shellcheck disable=SC2154,SC2086
 [ -d /lib/modules ] && modprobe -a ${deviceinfo_modules_initfs} ext4
+
 setup_mdev
 mount_subpartitions
-
-# Fix for framebuffer drivers, which do not have a default mode
-set_framebuffer_mode
+setup_framebuffer
 
 # Hooks
 for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do

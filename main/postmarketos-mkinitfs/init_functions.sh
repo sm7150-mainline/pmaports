@@ -42,25 +42,34 @@ mount_subpartitions() {
 	# Do not create subpartition mappings if pmOS_boot
 	# already exists (e.g. installed on an sdcard)
 	blkid |grep -q "pmOS_boot"  && return
-
-	for i in /dev/mmcblk*; do
-		case "$(kpartx -l "$i" 2>/dev/null | wc -l)" in
-			2)
-				echo "Mount subpartitions of $i"
-				kpartx -afs "$i"
-				# Ensure that this was the *correct* subpartition
-				# Some devices have mmc partitions that appear to have
-				# subpartitions, but aren't our subpartition.
-				if blkid | grep -q "pmOS_boot"; then
-					break
-				fi
-				kpartx -d "$i"
-				continue
-				;;
-			*)
-				continue
-				;;
-		esac
+	attempt_count=0
+	echo "Trying to mount subpartitions for 10 seconds..."
+	while [ -z "$(find_boot_partition)" ]; do
+		for i in /dev/mmcblk*; do
+			case "$(kpartx -l "$i" 2>/dev/null | wc -l)" in
+				2)
+					echo "Mount subpartitions of $i"
+					kpartx -afs "$i"
+					# Ensure that this was the *correct* subpartition
+					# Some devices have mmc partitions that appear to have
+					# subpartitions, but aren't our subpartition.
+					if blkid | grep -q "pmOS_boot"; then
+						break
+					fi
+					kpartx -d "$i"
+					continue
+					;;
+				*)
+					continue
+					;;
+			esac
+		done
+		attempt_count=$(( attempt_count + 1 ));
+		if [ "$attempt_count" -gt "100" ]; then
+			echo "ERROR: failed to mount subpartitions!"
+			return;
+		fi
+		sleep 0.1;
 	done
 }
 
@@ -333,6 +342,30 @@ set_framebuffer_mode() {
 	_mode="$(cat /sys/class/graphics/fb0/modes)"
 	echo "Setting framebuffer mode to: $_mode"
 	echo "$_mode" > /sys/class/graphics/fb0/mode
+}
+
+setup_framebuffer() {
+	# Skip for non-framebuffer devices
+	# shellcheck disable=SC2154
+	if [ "$deviceinfo_no_framebuffer" = "true" ]; then
+		echo "NOTE: Skipping framebuffer setup (deviecinfo_no_framebuffer)"
+		return
+	fi
+
+	# Wait for /dev/fb0
+	echo "NOTE: Waiting 10 seconds for the framebuffer /dev/fb0."
+	echo "If your device does not have a framebuffer, disable this with:"
+	echo "no_framebuffer=true in <https://postmarketos.org/deviceinfo>"
+	for i in $(seq 1 100); do
+		[ -e "/dev/fb0" ] && break
+		sleep 0.1
+	done
+	if ! [ -e "/dev/fb0" ]; then
+		echo "ERROR: /dev/fb0 did not appear!"
+		return
+	fi
+
+	set_framebuffer_mode
 }
 
 loop_forever() {
