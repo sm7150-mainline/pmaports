@@ -2,15 +2,17 @@
 pkgname="device-fairphone-fp2"
 pkgdesc="Fairphone 2"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="noarch"
 options="!check"
 depends="postmarketos-base linux-fairphone-fp2 mkbootimg mesa-dri-swrast"
 makedepends="devicepkg-dev"
-source="deviceinfo"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	FP2.conf
+	hifi"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-alsa"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -21,9 +23,17 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="WCNSS firmware (WiFi, Bluetooth, FM)"
-	depends="firmware-fairphone-fp2"
+	pkgdesc="Firmware for WiFi, Audio, etc."
+	depends="firmware-fairphone-fp2-adsp firmware-fairphone-fp2-wcnss $pkgname-alsa"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="fe35eb83d1eb5bc0d6bfced5db30238730a2309e8266556f36ca2a9e34ecc2b3825b9533416e93d147ff5488455db7b760d059fde07a714137aae57d0e227e2c  deviceinfo"
+alsa() {
+	mkdir -p "$subpkgdir"/usr/share/alsa/ucm/FP2
+	install -Dm644 "$srcdir"/FP2.conf "$subpkgdir"/usr/share/alsa/ucm/FP2/
+	install -Dm644 "$srcdir"/hifi "$subpkgdir"/usr/share/alsa/ucm/FP2/
+}
+
+sha512sums="fe35eb83d1eb5bc0d6bfced5db30238730a2309e8266556f36ca2a9e34ecc2b3825b9533416e93d147ff5488455db7b760d059fde07a714137aae57d0e227e2c  deviceinfo
+55360b1ba4ddadea341c9edb13c32ba5f19aabf75ab28602f30cfb79b9df8834f115ef979c70569f23ec1293b1fcd408baf320d87803293ce7106bdc73a26c9f  FP2.conf
+b834461c6866bb0c473dd089dd5da641dd42a00f610aad6503117aa50fe6e200db9ad0a264bb609f12350d59faee1f772907bacd75439f702ea7d52f6f85e2b1  hifi"
