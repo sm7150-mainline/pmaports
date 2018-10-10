@@ -17,8 +17,8 @@ fi
 cp -v "/usr/share/devicepkg-dev/compiler-gcc.h" "$builddir/include/linux/"
 
 # Remove -Werror from all makefiles
-makefiles="$(find . -type f -name Makefile)
-	$(find . -type f -name Kbuild)"
+makefiles="$(find "$builddir" -type f -name Makefile)
+	$(find "$builddir" -type f -name Kbuild)"
 for i in $makefiles; do
 	sed -i 's/-Werror-/-W/g' "$i"
 	sed -i 's/-Werror//g' "$i"
@@ -26,4 +26,4 @@ done
 
 # Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
 cp "$srcdir/$_config" "$builddir"/.config
-yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+yes "" | make -C "$builddir" ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
