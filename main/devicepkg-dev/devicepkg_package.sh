@@ -4,7 +4,7 @@ pkgname=$2
 
 if [ -z "$startdir" ] || [ -z "$pkgname" ]; then
 	echo "ERROR: missing argument!"
-	echo "Please call devicepkg_default_package() with \$startdir and \$pkgname as arguments."
+	echo "Please call $0 with \$startdir \$pkgname as arguments."
 	exit 1
 fi
 

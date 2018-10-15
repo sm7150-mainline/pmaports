@@ -1,6 +1,6 @@
 pkgname="devicepkg-dev"
-pkgver=0.4
-pkgrel=1
+pkgver=0.5
+pkgrel=0
 pkgdesc="Provides default device package functions"
 url="https://postmarketos.org"
 arch="all"
@@ -10,7 +10,39 @@ source="
 	devicepkg_build.sh
 	devicepkg_package.sh
 	downstreamkernel_prepare.sh
+	devicepkg_subpackage_kernel.sh
+	testdata/deviceinfo
+	testdata/expected-deviceinfo-downstream
+	testdata/expected-deviceinfo-mainline
 "
+
+check() {
+	# Prepare a temporary dir to run the tests
+	testdir=$(mktemp -d)
+	install -Dm644 "$srcdir/deviceinfo" \
+		"$testdir/src/deviceinfo"
+
+	# Execute the script to create the subpackage deviceinfo
+	sh devicepkg_subpackage_kernel.sh \
+		$testdir linux-test linux-test-kernel-downstream
+	sh devicepkg_subpackage_kernel.sh \
+		$testdir linux-test linux-test-kernel-mainline
+
+	# Compare the result with the expected files
+	if ! cmp -s "$srcdir/expected-deviceinfo-downstream" \
+		"$testdir/pkg/linux-test-kernel-downstream/etc/deviceinfo"; then
+		echo "ERROR: unexpected result with downstream deviceinfo"
+		exit 1
+	fi
+	if ! cmp -s "$srcdir/expected-deviceinfo-mainline" \
+		"$testdir/pkg/linux-test-kernel-mainline/etc/deviceinfo"; then
+		echo "ERROR: unexpected result with mainline deviceinfo"
+		exit 1
+	fi
+
+	# Cleanup
+	rm -r "$testdir"
+}
 
 package() {
 	install -Dm755 "$srcdir/devicepkg_build.sh" \
@@ -19,10 +51,16 @@ package() {
 		"$pkgdir/usr/bin/devicepkg_package"
 	install -Dm755 "$srcdir/downstreamkernel_prepare.sh" \
 		"$pkgdir/usr/bin/downstreamkernel_prepare"
+	install -Dm755 "$srcdir/devicepkg_subpackage_kernel.sh" \
+		"$pkgdir/usr/bin/devicepkg_subpackage_kernel"
 	install -Dm644 "$srcdir/compiler-gcc.h" \
 		"$pkgdir/usr/share/devicepkg-dev/compiler-gcc.h"
 }
 sha512sums="d69930dd790b00fb39760a37d95a10899f0d167e10e2804feb05d9ce04f94185dc32d36edc90214aba2ea2aa09bf18f7dab93f1d2eff23f67beb2cc83be30e7c  compiler-gcc.h
-638d50e6388eabf0da6bf0cff2fe9719ad8a808946f0077228db57fa13a26d9eeb39c1f2689c9a6f93ff9b3bcfdcfb7c358b180bba90e5bba8b9a9e78d25ed18  devicepkg_build.sh
-c732792596f56860f6ab9ddd53b9a7a80224400dd20097b20cebe17a6e7330e9178783f09db16132a28a555f83e29ef3643bfe069638b62998912a9a7ffefdc0  devicepkg_package.sh
-b04289881f9358cdfb2b1b62909bc828fee25e67082c0496525ba344f402c79b0632248d4980bd0e6b6895f20754fcdd0349a86b4baffcf546a7049e48ea69f3  downstreamkernel_prepare.sh"
+55943344e6c6192642f20246566c8468dba33d4ec4223c4e930f723fdb0fa248001c65a9bbaa5f15c18e9a42811c9b9decedfd5586f481aa762b6423b55d55bb  devicepkg_build.sh
+cc35989539781da2bc847fe68448863174a79db3853f836c61da064030cb729a16681cb6ffa16add558a7dba8563cb7fab495a6db811dcc3a1af5123dc0e6f72  devicepkg_package.sh
+b04289881f9358cdfb2b1b62909bc828fee25e67082c0496525ba344f402c79b0632248d4980bd0e6b6895f20754fcdd0349a86b4baffcf546a7049e48ea69f3  downstreamkernel_prepare.sh
+bedf319a74bff01780192cd11c872c41a451915cc7e7542c467cd84fa1784236401f57e197258c3aae734f478c31a2052129838861ea204c0985630501f152ca  devicepkg_subpackage_kernel.sh
+9bb7f2a0930f397a713e9f4b6d5b83a426d9a2a3f692dcc42ac30717bf26ead869d8823a38f3ad388af12b2b9a02e8ec4d4418e9c2062389ed06d2b891a49ff3  deviceinfo
+136247a16ec91dc0c7241eeddb28c2196ae3b29946a9bc7e9566f848491ef1c53b12d05bf2dbc1cc352986712fd76f25c1510bcc8f301af540a2f01c33b299e1  expected-deviceinfo-downstream
+8cdbf149e1bdfaf4d4a246a208732836956fd81a3aa01ef968e4c2e2cca4027f71cfc38e22debade83ddfca4e05267983c1c8a9c1aa9461a8cf493ef7e893097  expected-deviceinfo-mainline"
