@@ -1,22 +1,13 @@
 pkgname=postmarketos-ui-hildon
 pkgver=1
-pkgrel=5
+pkgrel=6
 pkgdesc="(X11) Lightweight GTK+2 UI (optimized for single-touch touchscreens)"
 url="https://postmarketos.org"
 arch="x86_64 armhf aarch64"
 license="GPL3+"
-depends="
-	dbus-x11
-	gtk+2.0-maemo
-	hildon-desktop
-	hildon-theme-alpha
-	mesa
-	xorg-server
-"
-makedepends=""
-install="$pkgname.post-install"
-subpackages=""
-source="start_hildon.sh xinitrc_hildon.sh $install"
+depends="dbus-x11 gtk+2.0-maemo hildon-desktop hildon-theme-alpha mesa xorg-server lightdm"
+install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall"
+source="60-lightdm-autologin.conf hildon.desktop xinitrc_hildon.sh"
 options="!check"
 
 package() {
@@ -24,12 +15,15 @@ package() {
 	mkdir -p "$pkgdir"/usr/share/themes
 	ln -s /usr/share/themes/alpha "$pkgdir"/usr/share/themes/default
 
-	# Autostart via autologin on TTY0 (until we have a display manager #656)
-	install -D -m644 "$srcdir"/start_hildon.sh \
-		"$pkgdir"/etc/profile.d/start_hildon.sh
-	install -D -m644 "$srcdir"/xinitrc_hildon.sh \
+	install -Dm644 "$srcdir"/hildon.desktop \
+		"$pkgdir"/usr/share/xsessions/hildon.desktop
+
+	install -Dm755 "$srcdir"/xinitrc_hildon.sh \
 		"$pkgdir"/etc/postmarketos-ui/xinitrc_hildon.sh
+
+	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
 }
-sha512sums="614c36acb7932f86db4e189411404fac2d56bec7c4ebc0f4de336e7d46e1bde786a0f1b42be916ac43b47d3e7e7b32f4b5991212b0d452195e61ceba55d358f8  start_hildon.sh
-5ef5710bee7bde99e1f240eb8873239c452b55c6dc943930e181d091835824094cf56bf29ae1b34d792ba0ce27f76e30ea69f3c125dda3bf286eaaaba8c8e6ae  xinitrc_hildon.sh
-733b9374e60bf6972d26da717dda039ab21b4052fe1a80881941971b9e1e99e315d184b48e9a064c36b1de5cbe3cfcf7b4819925b0a8948d447951ae8e580078  postmarketos-ui-hildon.post-install"
+sha512sums="7abdefbffd24c5c7cd1400045895ee2c2cad933398bf37c749594efb698767efdac95aced9c1e7ea26f2333a2e9c877a0698ab5d086d7fbbd2972f261f6beb87  60-lightdm-autologin.conf
+c191ccc783d6d1acfdfb6c93214458323d784533257fa90cc5daeff605983b97fe016c5d3a62cb2e09645bd2016648529f7f699a38b2c3383aa9cc0b6ce9a4ac  hildon.desktop
+5ef5710bee7bde99e1f240eb8873239c452b55c6dc943930e181d091835824094cf56bf29ae1b34d792ba0ce27f76e30ea69f3c125dda3bf286eaaaba8c8e6ae  xinitrc_hildon.sh"

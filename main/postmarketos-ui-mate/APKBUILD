@@ -1,24 +1,23 @@
 pkgname=postmarketos-ui-mate
 pkgver=1
-pkgrel=4
+pkgrel=5
 pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
 url="http://mate-desktop.org/"
 arch="noarch"
 license="GPL3+"
-depends="mate-desktop-environment xorg-server dbus-x11 mesa-egl postmarketos-artwork-wallpapers gtk+2.0"
-makedepends=""
-install="$pkgname.post-install"
+depends="mate-desktop-environment xorg-server dbus-x11 mesa-egl postmarketos-artwork-wallpapers gtk+2.0 lightdm"
+install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall"
 subpackages=""
-source="start_mate.sh 000-system-background.gschema.override"
+source="000-system-background.gschema.override 60-lightdm-autologin.conf"
 options="!check"
 
 package() {
-	# Autostart via autologin on TTY0 (until we have a display manager #656)
-	install -D -m644 "$srcdir"/start_mate.sh \
-		"$pkgdir"/etc/profile.d/start_mate.sh
 	install -Dm644 "$srcdir"/000-system-background.gschema.override \
 		"$pkgdir"/usr/share/glib-2.0/schemas/000-system-background.gschema.override
+
+	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
 }
 
-sha512sums="bc4d0fda2c95d375433b7a6ba327e747e0b58fb69dda12dbdd44fe99ebd961a78793e4fa17bc719d681aa2afdd7ab0c823ae874c3b7c5a6a254301cb9e6cb289  start_mate.sh
-b4eded3d1aba2086d53507d434da6f2d5aae24fa49c7a8619abb1d81f87898d7a6d813be777a285ce988d78db236bea7507e7868c39fe020e5d23c230dd36242  000-system-background.gschema.override"
+sha512sums="b4eded3d1aba2086d53507d434da6f2d5aae24fa49c7a8619abb1d81f87898d7a6d813be777a285ce988d78db236bea7507e7868c39fe020e5d23c230dd36242  000-system-background.gschema.override
+225c4d1bccad4bdacad34958322015147077158b395b8db095b7afd47e18638044780b381124c3b82bf639af66ea565e1763c54ab9599ec13177c289e0d2a000  60-lightdm-autologin.conf"
