@@ -48,6 +48,9 @@ do
 	mount --bind "$mountpoint" "$CHROOT""$mountpoint"
 done
 
+# Copy Mediatek /emmc@partitionname symlinks to the chroot
+cp -d /emmc@* "$CHROOT" || true
+
 # Set permissions and start the installation script
 chmod 755 "$CHROOT"/bin/*
 chmod 755 "$CHROOT"/lib/*
