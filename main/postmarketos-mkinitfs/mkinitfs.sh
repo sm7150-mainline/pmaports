@@ -239,6 +239,12 @@ create_bootimg()
 	_base="${deviceinfo_flash_offset_base}"
 	[ -z "$_base" ] && _base="0x10000000"
 
+	if [ "${deviceinfo_bootimg_mtk_mkimage}" == "true" ]; then
+		require_package "mtk-mkimage" "mtk-mkimage" "bootimg_mtk_mkimage"
+		mv $outfile $outfile-orig
+		mtk-mkimage ROOTFS $outfile-orig $outfile
+	fi
+
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
 	if [ -n "${deviceinfo_dtb}" ]; then
 		kernelfile="${kernelfile}-dtb"
