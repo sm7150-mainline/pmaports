@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-wingtech-wt88047"
+pkgdesc="Xiaomi Redmi 2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="noarch"
+options="!check"
+depends="postmarketos-base linux-wingtech-wt88047 mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="653f975a24ad2382a99f44ea5a63f9f31cb484f893f81690f72840e85dd1249018c2259a86be139b9b0cae410a99f3c34df3100d4c42aee1fc92953f5167aedc  deviceinfo"
