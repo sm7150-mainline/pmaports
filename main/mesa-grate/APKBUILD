@@ -1,24 +1,21 @@
-pkgname=mesa
-pkgver=18.1.7
+# Maintainer: Robert Yang <decatf@gmail.com>
+pkgname=mesa-grate
+pkgver=18.1.0
 pkgrel=0
 pkgdesc="Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
-arch="all"
+arch="armhf"
 license="MIT SGI-B-2.0 BSL-1.0"
 subpackages="
 	$pkgname-dev
-	$pkgname-dri-ati:_dri
-	$pkgname-dri-nouveau:_dri
-	$pkgname-dri-freedreno:_dri
 	$pkgname-dri-swrast:_dri
-	$pkgname-dri-virtio:_dri
 	$pkgname-glapi $pkgname-egl $pkgname-gl $pkgname-gles
 	$pkgname-xatracker $pkgname-osmesa $pkgname-gbm
-	$pkgname-vulkan-ati:_vulkan
 	"
 _llvmver=5
+depends="ldpath libdrm-grate"
 depends_dev="
-	libdrm-dev
+	libdrm-grate-dev
 	libxext-dev
 	libxdamage-dev
 	libxcb-dev
@@ -53,18 +50,25 @@ makedepends="
 	xorgproto
 	zlib-dev
 	"
+install="$pkgname.post-install $pkgname.pre-deinstall"
 source="
 	https://mesa.freedesktop.org/archive/mesa-$pkgver.tar.xz
 	glx_ro_text_segm.patch
 	musl-fix-includes.patch
 	drmdeps.patch
+	0001-Revert-autotools-add-tegra-header-files.patch
+	0002-Revert-autotools-Add-tegra-to-AM_DISTCHECK_CONFIGURE.patch
+	0003-Revert-drm-uapi-bump-headers.patch
+	0004-Revert-tegra-Initial-support.patch
+	0005-grate-driver.patch
 	"
-replaces="mesa-dricore"
+replaces="mesa mesa-dricore"
 
-_dri_driverdir=/usr/lib/xorg/modules/dri
-_dri_drivers="r200,radeon,nouveau,swrast"
-_gallium_drivers="r300,r600,radeonsi,nouveau,freedreno,swrast,virgl"
-_vulkan_drivers="radeon"
+_dri_driverdir=/usr/lib/xorg/modules/dri/grate
+_dri_drivers="swrast"
+_gallium_drivers="swrast"
+_vulkan_drivers=""
+
 _arch_opts=
 
 case "$CARCH" in
@@ -83,13 +87,16 @@ x86*)
 	esac
 	;;
 armhf|aarch64)
-	_gallium_drivers="${_gallium_drivers},vc4"
-	subpackages="$subpackages $pkgname-dri-vc4:_dri"
+	_gallium_drivers="${_gallium_drivers},grate"
+	subpackages="$subpackages $pkgname-dri-tegra:_dri"
 	;;
 esac
 
+builddir="$srcdir/mesa-$pkgver"
+
 prepare() {
 	cd "$builddir"
+	export PKG_CONFIG_PATH="/usr/lib/pkgconfig/libdrm-grate:${PKG_CONFIG_PATH}"
 	default_prepare
 	libtoolize --force \
 		&& aclocal \
@@ -107,13 +114,13 @@ build() {
 		--prefix=/usr \
 		--sysconfdir=/etc \
 		--with-dri-driverdir=$_dri_driverdir \
+		--with-dri-searchpath=$_dri_driverdir \
 		--with-gallium-drivers=${_gallium_drivers} \
 		--with-dri-drivers=${_dri_drivers} \
 		--with-vulkan-drivers=${_vulkan_drivers} \
-		--with-llvm-prefix=/usr/lib/llvm$_llvmver \
-		--with-platforms=x11,drm,wayland \
-		--enable-llvm \
-		--enable-llvm-shared-libs \
+		--with-platforms=x11,drm \
+		--disable-llvm \
+		--disable-llvm-shared-libs \
 		--enable-shared-glapi \
 		--enable-gbm \
 		--enable-dri \
@@ -138,62 +145,62 @@ package() {
 	make DESTDIR="$pkgdir" install
 
 	# provided by wayland
-	rm -v "$pkgdir"/usr/lib/libwayland-egl.so*
-	rm -v "$pkgdir"/usr/lib/pkgconfig/wayland-egl.pc
+	# rm -v "$pkgdir"/usr/lib/libwayland-egl.so*
+	# rm -v "$pkgdir"/usr/lib/pkgconfig/wayland-egl.pc
 }
 
 egl() {
 	pkgdesc="Mesa libEGL runtime libraries"
 	replaces="mesa"
 
-	install -d "$subpkgdir"/usr/lib
-	mv "$pkgdir"/usr/lib/libEGL.so* "$subpkgdir"/usr/lib/
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	mv "$pkgdir"/usr/lib/libEGL.so* "$subpkgdir"/usr/lib/mesa-grate/
 }
 
 gl() {
 	pkgdesc="Mesa libGL runtime libraries"
 	replaces="mesa"
 
-	install -d "$subpkgdir"/usr/lib
-	mv "$pkgdir"/usr/lib/libGL.so* "$subpkgdir"/usr/lib/
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	mv "$pkgdir"/usr/lib/libGL.so* "$subpkgdir"/usr/lib/mesa-grate/
 }
 
 glapi() {
 	pkgdesc="Mesa shared glapi"
 	replaces="$pkgname-gles"
 
-	install -d "$subpkgdir"/usr/lib
-	mv "$pkgdir"/usr/lib/libglapi.so.* "$subpkgdir"/usr/lib/
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	mv "$pkgdir"/usr/lib/libglapi.so.* "$subpkgdir"/usr/lib/mesa-grate/
 }
 
 gles() {
 	pkgdesc="Mesa libGLESv2 runtime libraries"
 	replaces="mesa"
 
-	install -d "$subpkgdir"/usr/lib
-	mv "$pkgdir"/usr/lib/libGLES*.so* "$subpkgdir"/usr/lib/
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	mv "$pkgdir"/usr/lib/libGLES*.so* "$subpkgdir"/usr/lib/mesa-grate/
 }
 
 xatracker() {
 	pkgdesc="Mesa XA state tracker for vmware"
 
-	install -d "$subpkgdir"/usr/lib
-	mv "$pkgdir"/usr/lib/libxatracker*.so.* "$subpkgdir"/usr/lib/
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	mv "$pkgdir"/usr/lib/libxatracker*.so.* "$subpkgdir"/usr/lib/mesa-grate/
 }
 
 osmesa() {
 	pkgdesc="Mesa offscreen rendering libraries"
 
-	install -d "$subpkgdir"/usr/lib
-	mv "$pkgdir"/usr/lib/libOSMesa.so.* "$subpkgdir"/usr/lib/
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	mv "$pkgdir"/usr/lib/libOSMesa.so.* "$subpkgdir"/usr/lib/mesa-grate/
 }
 
 gbm() {
 	pkgdesc="Mesa gbm library"
 	replaces="mesa"
 
-	install -d "$subpkgdir"/usr/lib
-	mv "$pkgdir"/usr/lib/libgbm.so.* "$subpkgdir"/usr/lib/
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	mv "$pkgdir"/usr/lib/libgbm.so.* "$subpkgdir"/usr/lib/mesa-grate/
 }
 
 _mv_dri() {
@@ -208,10 +215,10 @@ _mv_dri() {
 
 _mv_vdpau() {
 	local i
-	install -d "$subpkgdir"/usr/lib/vdpau
+	install -d "$subpkgdir"/usr/lib/mesa-grate/vdpau
 	for i in "$@"; do
 		mv "$pkgdir"/usr/lib/vdpau/libvdpau_$i.* \
-			"$subpkgdir"/usr/lib/vdpau/
+			"$subpkgdir"/usr/lib/mesa-grate/vdpau/
 	done
 }
 
@@ -220,29 +227,29 @@ _mv_gpipe() {
 	# http://cgit.freedesktop.org/mesa/mesa/commit/?id=44ec468e8033553c26a112cebba41c343db00eb1
 	# https://code.google.com/p/chromium/issues/detail?id=412089
 #	local i
-#	install -d "$subpkgdir"/usr/lib/gallium-pipe
+#	install -d "$subpkgdir"/usr/lib/mesa-grate/gallium-pipe
 #	for i in "$@"; do
 #		mv "$pkgdir"/usr/lib/gallium-pipe/pipe_$i.* \
-#			"$subpkgdir"/usr/lib/gallium-pipe/
+#			"$subpkgdir"/usr/lib/mesa-grate/gallium-pipe/
 #	done
 }
 
 _mv_vulkan() {
 	local i
-	install -d "$subpkgdir"/usr/lib
-	install -d "$subpkgdir"/usr/share/vulkan/icd.d
+	install -d "$subpkgdir"/usr/lib/mesa-grate/
+	install -d "$subpkgdir"/usr/share/mesa-grate/vulkan/icd.d
 	for i in "$@"; do
-		mv "$pkgdir"/usr/lib/libvulkan_${i}.so "$subpkgdir"/usr/lib/
-		mv "$pkgdir"/usr/share/vulkan/icd.d/${i}* "$subpkgdir"/usr/share/vulkan/icd.d/
+		mv "$pkgdir"/usr/lib/libvulkan_${i}.so "$subpkgdir"/usr/lib/mesa-grate/
+		mv "$pkgdir"/usr/share/mesa-grate/vulkan/icd.d/${i}* "$subpkgdir"/usr/share/mesa-grate/vulkan/icd.d/
 	done
 }
 
 _mv_va() {
 	local i
-	install -d "$subpkgdir"/usr/lib/dri
+	install -d "$subpkgdir"/usr/lib/mesa-grate/dri
 	for i in "$@"; do
 		mv "$pkgdir"/usr/lib/dri/${i}_drv_video.so \
-			"$subpkgdir"/usr/lib/dri/
+			"$subpkgdir"/usr/lib/mesa-grate/dri/
 	done
 }
 
@@ -252,10 +259,10 @@ _dri() {
 
 	case $n in
 	ati)
-		_mv_dri radeon_dri r200_dri r300_dri r600_dri radeonsi_dri \
-			&& _mv_vdpau r300 r600 radeonsi \
+		_mv_dri radeon_dri r200_dri r300_dri r600_dri \
+			&& _mv_vdpau r300 r600 \
 			&& _mv_gpipe r300 r600 \
-			&& _mv_va r600 radeonsi
+			&& _mv_va r600
 		;;
 	intel)
 		_mv_dri i915_dri i965_dri
@@ -271,6 +278,9 @@ _dri() {
 		;;
 	swrast)
 		_mv_dri swrast_dri kms_swrast_dri && _mv_gpipe swrast
+		;;
+	tegra)
+		_mv_dri tegra_dri
 		;;
 	vc4)
 		_mv_dri vc4_dri
@@ -295,7 +305,38 @@ _vulkan() {
 		_mv_vulkan intel ;;
 	esac
 }
-sha512sums="697c4f441ae52bc867d9d73b103094a29102168c248a502c4ea0fc48f51bcb86b2e741da39e882f24131326d460cdb1416415604c6994d1b8c09fb8a153a5c77  mesa-18.1.7.tar.xz
+
+dev() {
+	default_dev
+
+	cd "$subpkgdir"/usr/lib
+	install -d mesa-grate/
+	mv lib*.so mesa-grate/
+
+	install -d pkgconfig/mesa-grate/
+	mv pkgconfig/*.pc pkgconfig/mesa-grate
+
+	# Move headers (to /usr/include/mesa-grate)
+	cd "$subpkgdir"/usr
+	mv include include_
+	mkdir include
+	mv include_ include/mesa-grate
+
+	# Redirect pkgconfig to alternate lib/header directory
+	local pc
+	cd "$subpkgdir"/usr/lib/pkgconfig/mesa-grate
+	for pc in *; do
+		sed -i "s./include$./include/mesa-grate.g" $pc
+		sed -i "s./lib$./lib/mesa-grate.g" $pc
+	done
+}
+
+sha512sums="8b26af2df8b94373cbc339521974cd568c1d4ff4204986ee7b439e4cf3ebe14d822ea081a7769b68eca9263b7bc6dbca01836b8bb0d6495d2e2614c4e3d601ad  mesa-18.1.0.tar.xz
 8a434ffefdc6ce924d613727a8649b9a77ad9f0ed0674c9cfb8f6ff0fec483f9318e681254535b62c957db1d0432f96427f917e2f139f4c65ef761bffb528255  glx_ro_text_segm.patch
 2c9cb0fa890d29e4140d956ee52a74b4522e29e44fadfc2dd144e581c2701a1d8842ab5c8ff0b68e14b2242e2812a9d4ac0aed1c3314a2143333bc37f2323b58  musl-fix-includes.patch
-3409483217dbec732286e628e268e1e8cd392b7e8efb13c7651b38e6563aa5a4988279efb029096dcd092ebe7a92eece103014ed420d2b242eab8d0237f056fd  drmdeps.patch"
+3409483217dbec732286e628e268e1e8cd392b7e8efb13c7651b38e6563aa5a4988279efb029096dcd092ebe7a92eece103014ed420d2b242eab8d0237f056fd  drmdeps.patch
+d046ef1fec03648349ec321e93dd6f1718d84de6c080216f7158e1c918058307abcc6866af31a2be0aea1afb0d6f5863cf247638cc2ec93c37d885b1b0c1d728  0001-Revert-autotools-add-tegra-header-files.patch
+ba0d498779302e01c36abfcf9eacf187e87063ca4ab4a2ac0fed63c331f765c254cd92a43fd4fde9c5a86235d8a8c766b4bbfe0e240df884522dc99dc4d3625a  0002-Revert-autotools-Add-tegra-to-AM_DISTCHECK_CONFIGURE.patch
+498b9286bffc55e5fae6fa5e1459977c3b3ac1b85202975ae8555c3c551bef634f631ece083dc55e16cd8aac536aa82563760cb53c744cfe63f7b431c538df77  0003-Revert-drm-uapi-bump-headers.patch
+01feb831b3227ff06feebee2a5f5a408a7d3710031853644b72d0dc32dfa139396553972435d1b9f3448f7589de782586f227e2ae8b239a47ddfd1b56d9cd1e9  0004-Revert-tegra-Initial-support.patch
+ecdd537af62ea8e9d4e6361eafbfc09d315b9084af5af48d761e1713500e08ff965fa62f4a52aea9bd6ab98a3179fa7e4c9a31a647cbe503e820f525e33fd4d2  0005-grate-driver.patch"
