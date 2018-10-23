@@ -1,0 +1,47 @@
+pkgname=libdrm
+pkgver=2.4.92
+pkgrel=0
+pkgdesc="Userspace interface to kernel DRM services"
+url="https://dri.freedesktop.org/"
+arch="all"
+# Requires a computer with gfx, no X running, build user in 'video' group..
+options="!check"
+license="MIT"
+depends=""
+depends_dev="linux-headers"
+makedepends="$depends_dev libpthread-stubs eudev-dev libpciaccess-dev xmlto"
+checkdepends="cunit-dev bash"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://dri.freedesktop.org/$pkgname/$pkgname-$pkgver.tar.bz2
+	ioctl.patch
+	"
+
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-freedreno \
+		--enable-udev \
+		--disable-valgrind
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="9b75584d8957d298125884d490b74c0a641725d17088ba47f3dc2ec9d06519d8387eb464c024ee11712b31b17fb84e1a9a52bd4ebc7c316beb7d2f8711dc9eb2  libdrm-2.4.92.tar.bz2
+af52fef51aaa05a4dd17919371cb9d92a77480402730bf53ba223e54df52f3825be05a7f28e6aef8c904db5ee59fe38a6c15bc6aafa7f8d31a719e80399dd51f  ioctl.patch"
