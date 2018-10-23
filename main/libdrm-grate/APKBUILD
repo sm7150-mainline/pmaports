@@ -1,33 +1,46 @@
-pkgname=libdrm
-pkgver=2.4.92
+# Maintainer: Robert Yang <decatf@gmail.com>
+pkgname=libdrm-grate
+pkgver=2.4.91
 pkgrel=0
 pkgdesc="Userspace interface to kernel DRM services"
-url="https://dri.freedesktop.org/"
-arch="all"
+url="https://github.com/grate-driver/libdrm"
+arch="armhf"
 # Requires a computer with gfx, no X running, build user in 'video' group..
-options="!check"
+options="!check !tracedeps"
 license="MIT"
-depends=""
+depends="ldpath"
 depends_dev="linux-headers"
-makedepends="$depends_dev libpthread-stubs eudev-dev libpciaccess-dev xmlto"
+makedepends="$depends_dev libpthread-stubs eudev-dev libpciaccess-dev xmlto
+	autoconf automake libtool m4 util-macros"
 checkdepends="cunit-dev bash"
 subpackages="$pkgname-dev $pkgname-doc"
-source="https://dri.freedesktop.org/$pkgname/$pkgname-$pkgver.tar.bz2
+install="$pkgname.post-install $pkgname.pre-deinstall"
+_commit=4dd67e4459f8b0977e79bba96912b42ff3c709b5
+source="https://github.com/grate-driver/libdrm/archive/$_commit.tar.gz
 	ioctl.patch
 	"
+replaces_doc="libdrm-doc"
 
-builddir="$srcdir/$pkgname-$pkgver"
+_pkgname=libdrm
+builddir="$srcdir/$_pkgname-$_commit"
 
 build() {
 	cd "$builddir"
-	./configure \
+	export VALGRIND_CFLAGS="$VALGRIND_CFLAGS -I/usr/include/valgrind/"
+	./autogen.sh \
 		--build=$CBUILD \
 		--host=$CHOST \
 		--prefix=/usr \
 		--sysconfdir=/etc \
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
-		--enable-freedreno \
+		--disable-radeon \
+		--disable-amdgpu \
+		--disable-nouveau \
+		--disable-vmwgfx \
+		--disable-freedreno \
+		--disable-vc4 \
+		--enable-tegra-experimental-api \
 		--enable-udev \
 		--disable-valgrind
 	make
@@ -41,7 +54,42 @@ check() {
 package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
+
+	cd "$pkgdir"/usr/lib
+	install -d libdrm-grate/
+	mv lib*.so.* libdrm-grate/
+	mv lib*.la libdrm-grate/
 }
 
-sha512sums="9b75584d8957d298125884d490b74c0a641725d17088ba47f3dc2ec9d06519d8387eb464c024ee11712b31b17fb84e1a9a52bd4ebc7c316beb7d2f8711dc9eb2  libdrm-2.4.92.tar.bz2
+dev() {
+	default_dev
+
+	cd "$subpkgdir"/usr/lib
+	install -d libdrm-grate/
+	mv lib*.so libdrm-grate/
+
+	install -d pkgconfig/libdrm-grate/
+	mv pkgconfig/*.pc pkgconfig/libdrm-grate/
+
+	# Move headers (to /usr/include/libdrm-grate)
+	cd "$subpkgdir"/usr
+	mv include include_
+	mkdir include
+	mv include_ include/libdrm-grate
+
+	# Redirect pkgconfig to alternate lib/header directory
+	local pc
+	cd "$subpkgdir"/usr/lib/pkgconfig/libdrm-grate
+	for pc in *; do
+		sed -i "s./include$./include/libdrm-grate.g" $pc
+		sed -i "s./lib$./lib/libdrm-grate.g" $pc
+	done
+}
+
+doc() {
+	default_doc
+	replaces="libdrm-doc"
+}
+
+sha512sums="95b6f89bdf6ea836f4ad2c61adb68998591c6d2098ed1d36063f633169966bb5edad9294165e4cd22fa8df27c7c00294a88597e32af34e335f30de7fdfda461a  4dd67e4459f8b0977e79bba96912b42ff3c709b5.tar.gz
 af52fef51aaa05a4dd17919371cb9d92a77480402730bf53ba223e54df52f3825be05a7f28e6aef8c904db5ee59fe38a6c15bc6aafa7f8d31a719e80399dd51f  ioctl.patch"
