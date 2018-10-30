@@ -1,5 +1,14 @@
 #!/bin/sh
-ARCH=$(uname -m)
+KARCH=$(uname -m)
+
+case "$KARCH" in
+	armv7l)
+		ARCH=armhf
+		;;
+	*)
+		ARCH="$KARCH"
+		;;
+esac
 
 if [ ! -f /etc/ld-musl-$ARCH.path ]; then
 	echo "/usr/lib/libhybris-egl:/lib:/usr/local/lib:/usr/lib" > /etc/ld-musl-$ARCH.path
