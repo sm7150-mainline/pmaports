@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-sony-tulip"
+pkgdesc="Sony Xperia M4 Aqua"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-sony-tulip mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="17c9409c7c6284632bc71ff1b9022afa7cb9ff9333cd8820787bde99cef1e3ec03f4910d297106e7706374c6d9406ce197c33fd371858e96e8e34c086dd863ff  deviceinfo"

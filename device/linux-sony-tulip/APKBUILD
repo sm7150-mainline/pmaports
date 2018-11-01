@@ -1,0 +1,66 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/aosp_kanuti_tulip_defconfig
+
+pkgname="linux-sony-tulip"
+pkgver=3.10
+pkgrel=0
+pkgdesc="Sony Xperia M4 Aqua kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="sony-tulip"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev libressl libressl-dev gcc6"
+
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+
+# Source
+_repository="kernel_kanuti"
+_commit="d8e51bc7dd6bde228f1d9a7ddcf664845c4f07fb"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/bartcubbins/${_repository}/archive/${_commit}.tar.gz
+	$_config
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="7372b4fdfca2fef3c8ae48c9353a6d7ea658fc8412e2b288ee1097d902f5d9b81a0b76f3fc0e1bc74a015ec34e84c4942608f0e522d628b3deb288f4b177428c  linux-sony-tulip-d8e51bc7dd6bde228f1d9a7ddcf664845c4f07fb.tar.gz
+7ed4290977b393fa5111eaff6c5513a0eb0dd7cf4447d70e26a38e670e45331ccd2fd1b4e56b0598019121ca08116e057304aa36c932a454616e8b0956c095c8  config-sony-tulip.aarch64"
