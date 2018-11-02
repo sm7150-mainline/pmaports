@@ -45,18 +45,20 @@ mount_subpartitions() {
 	attempt_count=0
 	echo "Trying to mount subpartitions for 10 seconds..."
 	while [ -z "$(find_boot_partition)" ]; do
-		for i in /dev/mmcblk*; do
-			case "$(kpartx -l "$i" 2>/dev/null | wc -l)" in
+		partitions="$(grep -v "loop\|ram" < /proc/diskstats |\
+			sed 's/\(\s\+[0-9]\+\)\+\s\+//;s/ .*//;s/^/\/dev\//')"
+		echo "$partitions" | while read -r partition; do
+			case "$(kpartx -l "$partition" 2>/dev/null | wc -l)" in
 				2)
-					echo "Mount subpartitions of $i"
-					kpartx -afs "$i"
+					echo "Mount subpartitions of $partition"
+					kpartx -afs "$partition"
 					# Ensure that this was the *correct* subpartition
 					# Some devices have mmc partitions that appear to have
 					# subpartitions, but aren't our subpartition.
 					if blkid | grep -q "pmOS_boot"; then
 						break
 					fi
-					kpartx -d "$i"
+					kpartx -d "$partition"
 					continue
 					;;
 				*)
@@ -356,7 +358,7 @@ setup_framebuffer() {
 	echo "NOTE: Waiting 10 seconds for the framebuffer /dev/fb0."
 	echo "If your device does not have a framebuffer, disable this with:"
 	echo "no_framebuffer=true in <https://postmarketos.org/deviceinfo>"
-	for i in $(seq 1 100); do
+	for _ in $(seq 1 100); do
 		[ -e "/dev/fb0" ] && break
 		sleep 0.1
 	done
