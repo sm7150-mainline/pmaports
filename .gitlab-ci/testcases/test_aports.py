@@ -83,6 +83,15 @@ def test_aports_device(args):
                                    " subpackages now, see"
                                    " <https://postmarketos.org/devicepkg>.")
 
+        # Architecture
+        device = apkbuild["pkgname"][len("device-"):]
+        deviceinfo = pmb.parse.deviceinfo(args, device)
+        if "".join(apkbuild["arch"]) != deviceinfo["arch"]:
+            raise RuntimeError("wrong architecture, please change to arch=\"" +
+                               deviceinfo["arch"] + "\": " + path)
+        if "!archcheck" not in apkbuild["options"]:
+            raise RuntimeError("!archcheck missing in options= line: " + path)
+
 
 def test_aports_device_kernel(args):
     """
