@@ -3,14 +3,14 @@ pkgver=1
 pkgrel=13
 pkgdesc="Mozilla Flame"
 url="https://postmarketos.org"
-arch="noarch"
+arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-t2m-flame mkbootimg mesa-dri-swrast"
 makedepends=""
 install="$pkgname.post-install"
 source="deviceinfo 90-android-touch-dev.rules $install"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-options="!check"
+options="!check !archcheck"
 
 package() {
 	install -Dm644 "$srcdir"/deviceinfo \

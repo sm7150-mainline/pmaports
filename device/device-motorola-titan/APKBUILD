@@ -3,14 +3,14 @@ pkgver=1
 pkgrel=27
 pkgdesc="Motorola Moto G 2014"
 url="https://postmarketos.org"
-arch="noarch"
+arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-motorola-titan mkbootimg msm-fb-refresher mesa-dri-swrast"
 makedepends=""
 install="$pkgname.post-install"
 subpackages="$pkgname-weston $pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo 90-android-touch-dev.rules profile.sh weston.ini"
-options="!check"
+options="!check !archcheck"
 
 package() {
 	install -Dm644 "$srcdir/deviceinfo" \

@@ -3,7 +3,7 @@ pkgver=2
 pkgrel=9
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
-arch="noarch"
+arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-postmarketos-stable uboot-tools kbd kbd-bkeymaps ofono mesa-dri-swrast"
 makedepends="uboot-tools kbd kbd-bkeymaps"
@@ -33,7 +33,7 @@ source="
 	i3wm/bq27200_status.sh
 	xorg.conf
 "
-options="!check"
+options="!check !archcheck"
 
 build() {
 	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"

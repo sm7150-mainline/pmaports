@@ -3,14 +3,14 @@ pkgver=1
 pkgrel=13
 pkgdesc="Simulated device in qemu with vexpress soc"
 url="https://postmarketos.org"
-arch="noarch"
+arch="aarch64"
 license="MIT"
 # NOTE: 'pmbootstrap init' allows you to choose the mesa-dri-* package
 depends="postmarketos-base linux-postmarketos-stable"
 makedepends=""
 subpackages="$pkgname-weston"
 source="deviceinfo weston.ini"
-options="!check"
+options="!check !archcheck"
 
 package() {
 	install -D -m644 "$srcdir"/deviceinfo \
