@@ -1,6 +1,6 @@
 pkgname=kernel-scripts
 pkgver=4.15.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Binary scripts needed to build kernel packages"
 url="http://kernel.org"
 depends=""
@@ -35,7 +35,8 @@ prepare() {
 	cd "$builddir"
 
 	# Apply patch
-	if [ "$_kernver" != "$pkgver" ]; then
+	local patch="$srcdir/patch-$pkgver.xz"
+	if [ -e "$patch" ]; then
 		msg "Applying patch-$pkgver.xz"
 		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N
 	fi
@@ -49,14 +50,29 @@ build() {
 }
 
 package() {
-	cd "$srcdir/build/scripts"
-	msg "Finding and installing binaries..."
+	local type_bin="application/x-pie-executable"
+	msg "Finding and installing $type_bin files..."
+
 	local i
+	local found=false
+	cd "$srcdir/build/scripts"
 	for i in $(find . -type f); do
 		local type="$(file -b --mime-type "$i")"
-		[ "$type" != "application/x-sharedlib" ] && continue
-		echo "$i"
+		if [ "$type" != "$type_bin" ]; then
+			echo "$i: different mime-type ($type)"
+			continue
+		fi
+		echo "$i: matched!"
 		install -Dm755 "$i" "$pkgdir/usr/bin/kernel-scripts/$i"
+		found=true
 	done
+	if [ "$found" = "false" ]; then
+		error "Could not find any binaries! 'file' probably prints out a"
+		error "different mime-type now. This is easy to fix, just figure out"
+		error "the correct one from the output above (look at the"
+		error "./basic/fixdep line for example) then adjust type_bin= in"
+		error "package()."
+		return 1
+	fi
 }
 sha512sums="c00d92659df815a53dcac7dde145b742b1f20867d380c07cb09ddb3295d6ff10f8931b21ef0b09d7156923a3957b39d74d87c883300173b2e20690d2b4ec35ea  linux-4.15.tar.xz"
