@@ -3,9 +3,10 @@ from PIL import Image, ImageFont, ImageDraw
 import configparser
 import os
 import sys
+import itertools
 
 
-def make_splash(width, height, filename, landscape=False, text="", config_file=None, center=False):
+def make_splash(width, height, filename, landscape=False, text="", config_file=None, center=False, raw=False):
     print("Creating ({}x{}) splashscreen {}".format(width, height, os.path.basename(filename)))
 
     config = configparser.ConfigParser()
@@ -60,7 +61,14 @@ def make_splash(width, height, filename, landscape=False, text="", config_file=N
                 text_top += line_height + (text_size * 0.4)
 
     del draw
-    im.save(filename, format='PPM')
+
+    if raw:
+        data = list(im.getdata())  # [(R,G,B), (R,G,B)]
+        flat = list(itertools.chain.from_iterable(data))  # [R, G, B, R, G, B]
+        with open(filename, 'wb') as handle:
+            handle.write(bytes(flat))
+    else:
+        im.save(filename, format='PPM')
 
 
 def check_font(config, section):
@@ -110,6 +118,7 @@ if __name__ == '__main__':
     parser.add_argument('--text', type=str, help='Additional text for the splash screen')
     parser.add_argument('--center', action='store_true', help='Center text')
     parser.add_argument('--config', type=str, help='Config file for splash screen style')
+    parser.add_argument('--raw', action='store_true', help='Output raw rgb instead of ppm')
     args = parser.parse_args()
 
-    make_splash(args.width, args.height, args.filename, args.landscape, args.text, args.config, args.center)
+    make_splash(args.width, args.height, args.filename, args.landscape, args.text, args.config, args.center, args.raw)
