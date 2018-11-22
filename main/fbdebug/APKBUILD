@@ -1,7 +1,7 @@
 # Contributor: drebrez <drebrez@gmail.com>
 # Maintainer: drebrez <drebrez@gmail.com>
 pkgname=fbdebug
-pkgver=0.2
+pkgver=0.3
 pkgrel=0
 pkgdesc="Framebuffer debugging tool"
 url="https://postmarketos.org"
@@ -22,4 +22,4 @@ package() {
 		"${pkgdir}/usr/sbin/fbdebug"
 }
 
-sha512sums="d6e581f1de822ecac3a392ecd1a555d559fa28315006a94dbe86be2589137584b558e20abc5ae912e4b00c9d8a35db5139eb514b2c95dd2b2299a3fcd47cda46  fbdebug.c"
+sha512sums="c75972faa180567fccabf63723693a3dfe6240f891eee9d580a1bfce2a8858cb746a4cc9704990f90abe94f3759ac47ca5203f1309e525d880a8663235a7e209  fbdebug.c"

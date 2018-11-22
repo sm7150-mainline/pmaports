@@ -27,16 +27,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void usage(char* appname)
 {
-    printf("Usage: %s [-d DEV] [-i] [-p] [-h]\n\
+    printf("Usage: %s [-d DEV] [-i] [-c length] [-p] [-m mode] [-h]\n\
     -d  Framebuffer device (default /dev/fb0)\n\
     -i  Show fixed and variable screen info\n\
+    -c  Show colormap values (length 0-256)\n\
     -p  Perform the panning of the display\n\
+    -m  Set mode: 0 => Normal\n\
+                  2 => Standby\n\
+                  3 => Suspend\n\
+                  4 => Off\n\
     -h  Show this help\n", appname);
 }
 
 void print_fix_screeninfo(struct fb_fix_screeninfo* scr_fix)
 {
-    // ref: http://elixir.free-electrons.com/linux/latest/ident/fb_fix_screeninfo
+    // ref: https://elixir.bootlin.com/linux/latest/ident/fb_fix_screeninfo
     printf("Fixed screen info:\n");
     printf("\tid           = %s\n", scr_fix->id);
     printf("\tsmem_start   = %lu\n", scr_fix->smem_start);
@@ -58,7 +63,7 @@ void print_fix_screeninfo(struct fb_fix_screeninfo* scr_fix)
 
 void print_var_screeninfo(struct fb_var_screeninfo* scr_var)
 {
-    // ref: http://elixir.free-electrons.com/linux/latest/ident/fb_var_screeninfo
+    // ref: https://elixir.bootlin.com/linux/latest/ident/fb_var_screeninfo
     printf("Variable screen info:\n");
     printf("\txres             = %u\n", scr_var->xres);
     printf("\tyres             = %u\n", scr_var->yres);
@@ -102,17 +107,62 @@ void print_var_screeninfo(struct fb_var_screeninfo* scr_var)
     printf("\treserved[3]      = %u\n", scr_var->reserved[3]);
 }
 
+void print_cmap(struct fb_cmap* scr_cmap)
+{
+    // ref: https://elixir.bootlin.com/linux/latest/ident/fb_cmap
+    printf("Colormap:\n");
+    printf("\tstart  = %u\n", scr_cmap->start);
+    printf("\tlen    = %u\n", scr_cmap->len);
+    printf("\tred    = ");
+    for (int i = 0; i < scr_cmap->len; i++) {
+        if (i > 0 && i % 8 == 0) {
+            printf("\n\t\t ");
+        }
+        printf("0x%04hX ", scr_cmap->red[i]);
+    }
+    printf("\n");
+    printf("\tgreen  = ");
+    for (int i = 0; i < scr_cmap->len; i++) {
+        if (i > 0 && i % 8 == 0) {
+            printf("\n\t\t ");
+        }
+        printf("0x%04hX ", scr_cmap->green[i]);
+    }
+    printf("\n");
+    printf("\tblue   = ");
+    for (int i = 0; i < scr_cmap->len; i++) {
+        if (i > 0 && i % 8 == 0) {
+            printf("\n\t\t ");
+        }
+        printf("0x%04hX ", scr_cmap->blue[i]);
+    }
+    printf("\n");
+    printf("\ttransp = ");
+    for (int i = 0; i < scr_cmap->len; i++) {
+        if (i > 0 && i % 8 == 0) {
+            printf("\n\t\t ");
+        }
+        printf("0x%04hX ", scr_cmap->transp[i]);
+    }
+    printf("\n");
+}
+
 int main(int argc, char** argv)
 {
     const char *fb_device;
     struct fb_fix_screeninfo scr_fix;
     struct fb_var_screeninfo scr_var;
+    struct fb_cmap scr_cmap;
     int fb_fd;
 
     // parse command line options
     fb_device = "/dev/fb0";
     bool show_info = false;
+    bool show_cmap = false;
+    int cmap_len;
     bool pan_display = false;
+    bool set_fbmode = false;
+    int fbmode;
 
     if (argc < 2)
     {
@@ -120,7 +170,7 @@ int main(int argc, char** argv)
         exit(1);
     }
     int opt;
-    while ((opt = getopt(argc, argv, "d:iph")) != -1)
+    while ((opt = getopt(argc, argv, "d:ic:pm:h")) != -1)
     {
         switch (opt)
         {
@@ -130,8 +180,16 @@ int main(int argc, char** argv)
             case 'i':
                 show_info = true;
                 break;
+            case 'c':
+                show_cmap = true;
+                cmap_len = atoi(optarg);
+                break;
             case 'p':
                 pan_display = true;
+                break;
+            case 'm':
+                set_fbmode = true;
+                fbmode = atoi(optarg);
                 break;
             case 'h':
             default:
@@ -174,12 +232,51 @@ int main(int argc, char** argv)
     if (show_info)
         print_var_screeninfo(&scr_var);
 
+    // call ioctl. retrieve colormap
+    if (show_cmap) {
+        scr_cmap.start = 0;
+        scr_cmap.len = cmap_len;
+        scr_cmap.red = calloc(256, sizeof(unsigned short));
+        scr_cmap.green = calloc(256, sizeof(unsigned short));
+        scr_cmap.blue = calloc(256, sizeof(unsigned short));
+        scr_cmap.transp = calloc(256, sizeof(unsigned short));
+        if (ioctl(fb_fd, FBIOGETCMAP, &scr_cmap) < 0)
+        {
+            printf("Unable to retrieve cmap info: %s\n",
+                strerror(errno));
+            free(scr_cmap.red);
+            free(scr_cmap.green);
+            free(scr_cmap.blue);
+            free(scr_cmap.transp);
+            close(fb_fd);
+            return 1;
+        }
+
+        // print all the cmap values
+        print_cmap(&scr_cmap);
+
+        free(scr_cmap.red);
+        free(scr_cmap.green);
+        free(scr_cmap.blue);
+        free(scr_cmap.transp);
+    }
+
     if (pan_display)
     {
         // call ioctl. pan the display
         if (ioctl(fb_fd, FBIOPAN_DISPLAY, &scr_var) < 0)
         {
             printf("Unable to pan the display: %s\n",
+                strerror(errno));
+            close(fb_fd);
+            return 1;
+        }
+    }
+
+    if (set_fbmode) {
+        if (ioctl(fb_fd, FBIOBLANK, (void *)fbmode) < 0)
+        {
+            printf("Unable to set fb mode: %s\n",
                 strerror(errno));
             close(fb_fd);
             return 1;
