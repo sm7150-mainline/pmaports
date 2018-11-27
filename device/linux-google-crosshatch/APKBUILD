@@ -1,0 +1,74 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/b1c1_defconfig
+
+pkgname="linux-google-crosshatch"
+pkgver=4.9.96
+pkgrel=0
+pkgdesc="Google Pixel 3 XL kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="google-crosshatch"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool openssl-dev lz4 dtc"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_google_crosshatch"
+# AOSP December 2018.1 from android-msm-bluecross-4.9-pie-qpr1 branch
+_commit="641303def9a59cbf05c4068df5c30f0bb538dee0"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	clk-qcom-mdss-fix-in-tree-build.patch
+	init-initramfs-disable-do_skip_initramfs.patch
+	arm64-boot-disable-building-DTBO-images.patch
+	init-ignore-dm-parameter.patch
+	sec_ts-disable-touchscreen-firmware-upgrade.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	# Pixel 3 XL uses lz4 to compress kernel.
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in Image.lz4-dtb zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="21098a14515f5d4f2415950fbced8152607d47e0021d867a54450f2914e95a8ab862d18be6487723dd4c9f179eb691e7a734a173df94fc94f46341b1ee74a478  linux-google-crosshatch-641303def9a59cbf05c4068df5c30f0bb538dee0.tar.gz
+77569c52862efc83ecf9b28bdc6ce7357185014a947e86c3805b50204bb86ebb04669ccb193b9b240f1e05f4eb0d86afb39b2313b8b3f485806da2685dfb455f  config-google-crosshatch.aarch64
+720c5856b7d1d8b3cb20f77507818b7fe1b4950d444f7ed20cb02d255987d8860d5ed293e81ea326f147af13004b524886c733123794ac62978fda13689a5189  clk-qcom-mdss-fix-in-tree-build.patch
+0f536e5acd0f5e6d6774918d8e226ae1f4edc486596fc5c93a110b4eb2555e0f1281f460065928a7f7a272b886f61f7967fe60cc4952ed1f4b37143bd2a28962  init-initramfs-disable-do_skip_initramfs.patch
+43b1c1bcdd653366a5d0196bf6171f67914c3c417eeba04f4f071e095e8b3191e67ec8e03b1ed1701a9a0efe5b3e134ed7fb464439e9a389aafdcf0064f20a10  arm64-boot-disable-building-DTBO-images.patch
+66ac924e2619994dad71a88223d62e911cc90c20f578eb1b0544f115de8367ea9767e7955245c70699f7af040bb8c42f9fa7aff60d4638f1e568a3b3662d30a6  init-ignore-dm-parameter.patch
+7c941332085c6a2372ad083400e354c61f38752c2706d07592a7ce6a72aa5d8bb9cb10521fe0c941ac4e49aa3dbd2f9473c42ed2a10ec66b1b50b65e8ad1e0a8  sec_ts-disable-touchscreen-firmware-upgrade.patch"

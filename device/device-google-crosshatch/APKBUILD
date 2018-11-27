@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-google-crosshatch"
+pkgdesc="Google Pixel 3 XL"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-google-crosshatch mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="44fb4321e619ede8de66221a16e2264b5ae9960230167a6d4e52cf6e957c31bc2b87a6dce6a752e5a0c9b29392696b03f76ef7d5e1e97c42dc79c224f3a96e8c  deviceinfo"
