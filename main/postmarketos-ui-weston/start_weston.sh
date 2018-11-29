@@ -19,11 +19,6 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 		[ -e "$cfg" ] || cfg="$cfg.default"
 		WESTON_OPTS="-c $cfg"
 
-		# Weston "red screen bug" workaround
-		if test -n "${deviceinfo_weston_pixman_type}"; then
-			WESTON_OPTS="${WESTON_OPTS} --pixman-type=${deviceinfo_weston_pixman_type}"
-		fi
-
 		# #633: Weston doesn't support autostarting applications (yet), so
 		# we try to run postmarketos-demos for 10 seconds, until it succeeds.
 		(
