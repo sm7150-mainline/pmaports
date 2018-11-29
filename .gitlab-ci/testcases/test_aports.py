@@ -27,6 +27,19 @@ def args(request):
     return args
 
 
+def deviceinfo_obsolete(info):
+    """
+    Test for obsolete options used in the deviceinfo file. They must still be
+    defined in pmbootstrap's config/__init__.py.
+    """
+    obsolete_options = ["weston_pixman_type"]
+    for option in obsolete_options:
+        if info[option]:
+            raise RuntimeError("option '" + option + "' is obsolete, please"
+                               " remove it (reasons for removal are at"
+                               " <https://postmarketos.org/deviceinfo>)")
+
+
 def test_deviceinfo(args):
     """
     Parse all deviceinfo files successfully and run checks on the parsed data.
@@ -38,8 +51,9 @@ def test_deviceinfo(args):
         device = folder[len(args.aports):].split("-", 1)[1]
 
         try:
-            # Check for successful deviceinfo parsing
+            # Successfull deviceinfo parsing / obsolete options
             info = pmb.parse.deviceinfo(args, device)
+            deviceinfo_obsolete(info)
 
             # deviceinfo_name must start with manufacturer
             name = info["name"]
