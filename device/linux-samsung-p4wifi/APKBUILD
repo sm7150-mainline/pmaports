@@ -1,8 +1,8 @@
 # Kernel config based on: arch/arm/configs/tegra_defconfig
 
 pkgname="linux-samsung-p4wifi"
-pkgver=4.16.0
-pkgrel=1
+pkgver=4.19.0
+pkgrel=0
 pkgdesc="Galaxy Tab 10.1 kernel"
 arch="armhf"
 _carch="arm"
@@ -18,37 +18,16 @@ HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="linux"
-_rev="b40b7265e2e3ec66e460e5615e7804f7a5d9db67"
+_rev="50d736b2875a8e777d2328ecffddf36f169d858a"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_rev.tar.gz::https://github.com/decatf/${_repository}/archive/${_rev}.tar.gz
 	$_config
-	compiler-gcc6.h
 "
 builddir="$srcdir/${_repository}-${_rev}"
 
 prepare() {
-	local _patch_failed=
-	cd "$builddir"
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch|*.patch::*)
-			_patch=${i%::*}
-			msg "Applying $_patch..."
-			if ! patch -s -p1 -N -i "$srcdir"/$_patch; then
-				echo $_patch >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
+	default_prepare
 
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
@@ -93,6 +72,5 @@ package() {
 }
 
 
-sha512sums="1678192f73cf4a0bba8e4aba4b7e90ce0e5a61d47a952328725e773ccc9060d42dc299e887e6398454442dfa1580bd68c7edd479a51ec0d91b9a7d8a06014b67  linux-samsung-p4wifi-b40b7265e2e3ec66e460e5615e7804f7a5d9db67.tar.gz
-287c414d87431ca00fb455b4cc3325d243d01d75a819054053a28899152f1b0143707c10ac050b7daeac03e8d79d40886f30bca22b5272ff06963ef7d3026c97  config-samsung-p4wifi.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
+sha512sums="cf0d8ac1d2d57ecc8f2f866c43cf07cdb1e6d200e25a08c366b695734a50aeae1bc60e4f41340c4b9f1681ee901955ddee9443700df0e11f1c0cc4864007178a  linux-samsung-p4wifi-50d736b2875a8e777d2328ecffddf36f169d858a.tar.gz
+a347502fa0fb42b423e9f569cae18e118007478d962f423d12e491b6cfe6d5b6ac7cc9eec430f65658d55c15be47e8f91f88704f73210f859708c5d146d14b35  config-samsung-p4wifi.armhf"
