@@ -1,25 +1,21 @@
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/jf_defconfig
 
 pkgname="linux-samsung-jflte"
 pkgver=3.4.112
-pkgrel=6
+pkgrel=7
 pkgdesc="Samsung Galaxy S4 kernel fork"
 arch="armhf"
 _carch="arm"
 _flavor="samsung-jflte"
 url="https://kernel.org"
-license="GPL2"
+license="GPL-2.0-only"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev gcc6"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="android_kernel_samsung_jf"
@@ -28,31 +24,20 @@ _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
 	$_config
-	compiler-gcc6.h
 	00_fix_return_address.patch
 	patch_lifebook_detect.patch
 	patch_fsp_detect.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 	03-fix-video-argb-setting.patch
 	gpu_msm2_fix_compile.patch
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
 	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	find . -type f -name Makefile -print0 | \
-		xargs -0 sed -i 's/-Werror-/-W/g'
-	find . -type f -name Makefile -print0 | \
-		xargs -0 sed -i 's/-Werror//g'
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/.config
-	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
@@ -83,10 +68,11 @@ package() {
 
 sha512sums="7b73724636d9fb2a19e6405b1c6acd9f08020cb2d8c51f209eab2dea90616f15e88e96cdea62931864a6a3f6d4ad1c0b0b9b5cae3e3a690c20f5a9dcb4b33d82  linux-samsung-jflte-e8d93e03563e42d7c762d4e9a87d77115102b301.tar.gz
 db5954f282c568fd635df81f463712849571c0148233dd883c80cf42ad7b948dd42247032d513e600e4952d58a44fb76f57e1b7bc9502be9698a164c3933c0c5  config-samsung-jflte.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 36418ec3d31d1d6d9915afcf3d38d4549aeeb49c3825414b51b67db7a1ab6482f22d2723da3b258b671956809949278a51f6507df9b0052aec0bd0c59f56919a  patch_lifebook_detect.patch
 9da951bb0391564f33bdb0a97c339997eda7b15ec2f160da8af237cc87c233b8c3dcdc1a12759e04d69d075ae9b0afaf726101ef356e788d7f4606a03db2e248  patch_fsp_detect.patch
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
 e3083c260ed9c4fc0d83f43106700b6173876dbfae072f6e6696ac6785a4dc17771fbcb3e21601e04ed29a11bf0f7a2a09ad549375e0c34cea245c7f2e2bcbbd  03-fix-video-argb-setting.patch
-8ab0ed40315a22b046e6250df7ad0f7834ed011598c85d34500b6fc047f1c830b998f9fa3b1d5150d98ba34f3924cd62576e0e7d3d62fcc9832319eafc533c96  gpu_msm2_fix_compile.patch"
+8ab0ed40315a22b046e6250df7ad0f7834ed011598c85d34500b6fc047f1c830b998f9fa3b1d5150d98ba34f3924cd62576e0e7d3d62fcc9832319eafc533c96  gpu_msm2_fix_compile.patch
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"
