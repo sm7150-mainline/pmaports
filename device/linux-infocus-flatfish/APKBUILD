@@ -59,7 +59,8 @@ build() {
 	unset LDFLAGS
 
 	# The standby code needs to be built separately
-	make ARCH="$_carch" CC="${CC:-gcc}" \
+	# Without -j1, this fails the build sometimes!
+	make -j1 ARCH="$_carch" CC="${CC:-gcc}" \
 		KDIR=$builddir \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
 		-C $builddir/arch/arm/mach-sun6i/pm/standby
