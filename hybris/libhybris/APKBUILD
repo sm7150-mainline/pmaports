@@ -1,26 +1,27 @@
 pkgname=libhybris
 pkgver=1.0_git20180212
-pkgrel=3
+pkgrel=4
 arch="x86 armhf aarch64"
 url="https://github.com/libhybris/libhybris"
 license="Apache"
 makedepends="autoconf automake libtool wayland-dev linux-headers bsd-compat-headers
 	libx11-dev libxcb-dev libxext-dev
-	android-headers-7.1 android-headers-7.1-caf android-headers-4.4"
+	android-headers-7.1 android-headers-4.4"
 depends_dev="bsd-compat-headers android-headers-7.1"
 _rev=4a7d95b73bf40bf6d03d12bf270974c3d0278099
 source="$pkgname-$_rev.tar.gz::https://github.com/libhybris/libhybris/archive/$_rev.tar.gz
 	0001-Make-libhybris-compile-with-musl.patch
 	0002-tests-Regression-test-for-EGL-glibc-TLS-conflict.patch
-	0003-Implement-X11-EGL-platform-based-on-wayland-code.patch"
+	0003-Implement-X11-EGL-platform-based-on-wayland-code.patch
+	0004-Build-test-hwcomposer-7-caf.patch"
 
 pkgdesc="libhybris allows to use bionic-based HW adaptations"
 subpackages="$pkgname-dev $pkgname-egl $pkgname-gles $pkgname-libwayland-egl:_wayland
-	$pkgname-7.1:_specific $pkgname-7.1-caf:_specific $pkgname-4.4:_specific"
+	$pkgname-7.1:_specific $pkgname-4.4:_specific"
 
 if [ "$CARCH" == "aarch64" ]; then
 subpackages="$pkgname-dev $pkgname-egl $pkgname-gles $pkgname-libwayland-egl:_wayland
-	$pkgname-7.1:_specific $pkgname-7.1-caf:_specific"
+	$pkgname-7.1:_specific"
 elif [ "$CARCH" == "x86" ]; then
 subpackages="$pkgname-dev $pkgname-egl $pkgname-gles $pkgname-libwayland-egl:_wayland
 	$pkgname-7.1:_specific $pkgname-4.4:_specific"
@@ -33,7 +34,7 @@ _tmppkgdir="$srcdir/tmpinstall"
 _main_headers_ver=7.1
 
 _bins_specific="test_audio test_camera test_egl_configs	test_gps
-	test_hwcomposer	test_input test_lights test_media test_nfc
+	test_hwcomposer	test_hwcomposer_7_caf test_input test_lights test_media test_nfc
 	test_recorder test_sensors test_sf test_vibrator test_wifi"
 
 _libs_specific="libcamera.so.1.0.0 libhardware.so.2.0.0
@@ -52,11 +53,11 @@ build() {
 	NOCONFIGURE=1 ./autogen.sh
 
 	if [ "$CARCH" == "armhf" ]; then
-		_vers="7.1 7.1-caf 4.4"
+		_vers="7.1 4.4"
 		_ldpath="/usr/libexec/droid-hybris/system/lib:/vendor/lib:/system/lib"
 		_arch="arm"
 	elif [ "$CARCH" == "aarch64" ]; then
-		_vers="7.1 7.1-caf"
+		_vers="7.1"
 		_ldpath="/usr/libexec/droid-hybris/system/lib64:/vendor/lib64:/system/lib64"
 		_arch="arm64"
     elif [ "$CARCH" == "x86" ]; then
@@ -77,6 +78,7 @@ build() {
 			--with-default-hybris-ld-library-path=$_ldpath \
 			--enable-arch=$_arch \
 			--enable-property-cache
+		make clean
 		make DESTDIR="${_tmppkgdir}/$pkgname-$_headers_ver" install
 	done
 }
@@ -89,7 +91,7 @@ package() {
 	cp -a ${_tmppkgdir}/$pkgname-$_main_headers_ver/* "${pkgdir}"
 
 	for _bin in ${_bins_specific}; do
-		rm "${pkgdir}/usr/bin/${_bin}"
+		rm "${pkgdir}/usr/bin/${_bin}" || true
 	done
 
 	for _lib in ${_libs_specific}; do
@@ -102,7 +104,7 @@ _specific() {
 
 	for _bin in ${_bins_specific}; do
 		install -Dm755 "${_tmppkgdir}/${subpkgname}/usr/bin/${_bin}" \
-			"${subpkgdir}/usr/bin/${_bin}"
+			"${subpkgdir}/usr/bin/${_bin}" || true
 	done
 
 	for _lib in ${_libs_specific}; do
@@ -162,4 +164,5 @@ dev() {
 sha512sums="378ad6815f2c17dec7c0043499833e55498f48634aa6dc8d5a5c2e8bfc4281f76690bca6f35e74f47a41b364baab1533ff8d8898d61a9e5b53897deb7d180f97  libhybris-4a7d95b73bf40bf6d03d12bf270974c3d0278099.tar.gz
 9655816dc3d89f329801a74f4499c3752cbc96f7ba2e052765335a2cbd7e74cdf45064260ab27537bcd9d64673144eac6f89e31af4b4c6b4a4792ad7b398555d  0001-Make-libhybris-compile-with-musl.patch
 1355a4403d1af8bdf75b9e4502cbfc093b9788224ce7c24a1f6a53dd7996d385d31a3362577a4293db6b6d0dd0ae4e88140b38c658ff0a288d9acfc2753859bb  0002-tests-Regression-test-for-EGL-glibc-TLS-conflict.patch
-865ad86b297dcd09416a9df4e366d58429f737aeaa380308fd04943451cefd8500a18857e61c8de43cb4595c59d438d3f12855e189932ab7df8a2f354086a21c  0003-Implement-X11-EGL-platform-based-on-wayland-code.patch"
+865ad86b297dcd09416a9df4e366d58429f737aeaa380308fd04943451cefd8500a18857e61c8de43cb4595c59d438d3f12855e189932ab7df8a2f354086a21c  0003-Implement-X11-EGL-platform-based-on-wayland-code.patch
+eda57804fefa1d586e90fb2198c310f65e6dbc7e09b5d1dd7d15df4ab152c4c8915c212230a92c35ec8a013d3ec7a7b1d289653bedb46b7eb2850a477ccebe16  0004-Build-test-hwcomposer-7-caf.patch"
