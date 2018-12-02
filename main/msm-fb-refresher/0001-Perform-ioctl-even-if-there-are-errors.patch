@@ -1,0 +1,31 @@
+From 56589e6d0da89d687e1d84f0cf2a1efbc8d05adc Mon Sep 17 00:00:00 2001
+From: drebrez <drebrez@gmail.com>
+Date: Sun, 2 Dec 2018 02:15:32 +0100
+Subject: [PATCH] Perform ioctl even if there are errors
+
+---
+ refresher.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+ mode change 100644 => 100755 refresher.c
+
+diff --git a/refresher.c b/refresher.c
+old mode 100644
+new mode 100755
+index 997a1ec..a49e7cb
+--- a/refresher.c
++++ b/refresher.c
+@@ -38,8 +38,10 @@ int main(int argc, char *argv[])
+ 
+     if(argc > 1 && !strcmp(argv[1], "--loop"))
+     {
+-        while(ioctl(fd, FBIOPAN_DISPLAY, &var) >= 0)
++        while(1) {
++            ioctl(fd, FBIOPAN_DISPLAY, &var);
+             usleep(16666);
++        }
+         perror("Failed FBIOPAN_DISPLAY");
+         return 1;
+     }
+-- 
+2.19.1
+
