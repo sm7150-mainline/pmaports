@@ -1,20 +1,21 @@
-# Kernel config based on: arch/arm/configs/boeffla_defconfig
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/msm8974_sec_defconfig
+#                         arch/arm/configs/msm8974pro_sec_klte_eur_defconfig
+#                         arch/arm/configs/selinux_defconfig
 
 pkgname="linux-samsung-klte"
-pkgver=3.4.0
-pkgrel=2
+pkgver=3.4.113
+pkgrel=0
 pkgdesc="Samsung Galaxy S5 kernel fork"
 arch="armhf"
 _carch="arm"
 _flavor="samsung-klte"
-url="https://github.com/andip71/boeffla-kernel-samsung-s5"
-license="GPL2"
+url="https://kernel.org"
+license="GPL-2.0-only"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz dtbtool gcc6"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz dtbtool devicepkg-dev gcc6"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
 if [ "${CC:0:5}" != "gcc6-" ]; then
 	CC="gcc6-$CC"
 	HOSTCC="gcc6-gcc"
@@ -22,41 +23,26 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 fi
 
 # Source
-_repository="boeffla-kernel-samsung-s5"
-_commit="4f0aa338c54103b7d7744dd3a8202081883512b5"
+_repository="android_kernel_samsung_msm8974"
+_commit="7a3b6080ee8d411acc2bb4a08de479aa8cc9c77a"
 _config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/andip71/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
 	$_config
-	compiler-gcc6.h
 	00_fix_return_address.patch
-	01_timeconst_fix.patch
-	02_gpu-msm-fix-gcc5-compile.patch
-	03_msm_fix_trace.patch
+	01_gpu-msm-fix-gcc5-compile.patch
+	02-Reduce-battery-and-touchscreen-log-spam.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
 	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	find . -type f -name Makefile -print0 | \
-		xargs -0 sed -i 's/-Werror-/-W/g'
-	find . -type f -name Makefile -print0 | \
-		xargs -0 sed -i 's/-Werror//g'
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/.config
-	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		C_INCLUDE_PATH="./arch/arm/mach-msm:./sound/soc/msm/qdsp6v2"
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
 	# Generate master DTB
@@ -85,12 +71,16 @@ package() {
 	# Master DTB
 	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
 		"$pkgdir/boot/dt.img"
+
+	# External modules install
+	cd "$builddir"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
-sha512sums="c4bee8ae1f9a6d3126c54395e5640ec7d2750b82cb83c515d132a2fa769667d9795d5cff8ae9bf41118d61d4311dbba50328f31804bee901f5cd6ff899d2040b  linux-samsung-klte-4f0aa338c54103b7d7744dd3a8202081883512b5.tar.gz
-dbd294dccaaf1d94b8cb235ad54e9f72af1a0e7e31184c25e4b24685419d01f4420dd6e4af5080b47d12f719531cee97e037e305e7eb7371980d8c90d67b60c0  config-samsung-klte.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
-a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch
-7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
-657630a1ebd5a9aff872530022e83b1087ef3c0eb7a214d350c9caf779c2691f92de6630a40d735b5f7a34ba6a3e9e7eb708d3deb52f134d53164836c312e5e9  03_msm_fix_trace.patch"
+sha512sums="a0ed01d4beb4fd1b304ea1409e4e3d7ff60662de34999dcdb2901cb10eef217a6679d5cc42dfcc9c3e2b9fb96bc38a8adc431444092310e22af29c7d581f60af  linux-samsung-klte-7a3b6080ee8d411acc2bb4a08de479aa8cc9c77a.tar.gz
+3045e613475bcdb454315450c86ca3198787ff0f4573a61118a6a600048d1d9b45d6c83c1804d4945bcf24af8759a038d9f2b5bf57aa7ab8b3585be65ffd4f7a  config-samsung-klte.armhf
+3b4913415bcfe0ff222969f993890c656c7e12b6ee06532bded485d5201c9855b2c87996c5b63423702b89b6b0ca214b5aceeb402571d9c5af084093c157ccb4  00_fix_return_address.patch
+0fc4b1782dfd3bd94fa9ae8ab74b19713f25e9f4a48dcf830072634f247aa3dd8847f001a3e87e9728e057657efd4ae751510e7c408d9b960c907665ca64e61f  01_gpu-msm-fix-gcc5-compile.patch
+b55fc9ab3e21bc85d66ee08d7e1cd7fdc3b236249212fbcd0055e60ed3e6cef3e4d2b8058a4b7d70c78b2bbc7a11111b55d4d82490b4e3579b8e61657806ac09  02-Reduce-battery-and-touchscreen-log-spam.patch"
