@@ -24,7 +24,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=13
+pkgrel=14
 arch="armhf"
 pkgdesc="Samsung Galaxy SI SLC kernel"
 url="https://github.com/dhiru1602/android_kernel_samsung_latona"
@@ -114,7 +114,8 @@ build() {
 	unset LDFLAGS
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
+		CFLAGS_MODULE=-fno-pic
 }
 
 package() {
@@ -123,6 +124,14 @@ package() {
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+		
+	cd "$srcdir"/build
+	unset LDFLAGS
+
+	echo "--[ Installing modules ]--"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" \
+		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
 sha512sums="b7ca46b856a0c160ae36a98da39147deb85c054e902447ab68bcd4a011986eee486fb681d0bb832b9b57797aca35332483e99379b792bd467b1f030328bd83c7  linux-samsung-i9003-7b8d73dd32e6cd21107f9a963a32a5ed237a6e78.tar.gz
