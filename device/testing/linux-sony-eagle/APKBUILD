@@ -1,0 +1,79 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/eagle_ss_defconfig
+
+pkgname=linux-sony-eagle
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Sony Xperia M2 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="sony-eagle"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl dtbtool gcc4"
+
+# Compiler: this kernel was only tested with GCC4. Feel free to make a merge
+# request if you find out that it is booting working with newer GCCs as
+# well. See <https://postmarketos.org/vendorkernel> for instructions.
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_sony_msm8226"
+_commit="53fc207771ed87a44d9f7c73058f4638b883e474"
+_primacommit="79403896e1c410582044c50dfce92d5e97233e0c"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/ilpianista/$_repository/archive/$_commit.tar.gz
+	$pkgname-prima-$_primacommit.tar.gz::https://source.codeaurora.org/external/wlan/prima/snapshot/$_primacommit.tar.gz
+	$_config
+	01_timeconst_fix.patch
+	02_reduce_lzo_compression.patch
+	03_fix_add_uevent_var.patch
+	06_fix_too_many_levels_of_symlinks.patch
+	gcc-wrapper-port-to-py3.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_primadir="$srcdir/$_primacommit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		-C "$builddir" M="$_primadir" CONFIG_PRONTO_WLAN=m CONFIG_PRIMA_WLAN_LFR=y \
+		CONFIG_QCOM_TDLS=y CONFIG_ENABLE_LINUX_REG=y \
+		KERNEL_BUILD=1 WLAN_ROOT="$_primadir" modules
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+
+	mkdir -p "$pkgdir"/lib/modules/$pkgver
+	install -Dm644 "$_primadir"/wlan.ko "$pkgdir"/lib/modules/$pkgver/
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -p scripts/dtc/ -o "$_outdir/arch/$_carch/boot"/dt.img "$_outdir/arch/$_carch/boot/"
+	install -Dm644 "$_outdir/arch/$_carch/boot"/dt.img "$pkgdir"/boot/dt.img
+}
+
+sha512sums="4c5a675e2583480cf91ddd73527cb26480fd0d385427b5d6fd6a4e975cfe8d979a647451291c8d123cff66efbc1f97baa87b4eb8be4d7745f739d4bda5ea081e  linux-sony-eagle-53fc207771ed87a44d9f7c73058f4638b883e474.tar.gz
+f9e75725bd2c8e8e65af0ed07601aa9cfb3404653b94cb249d2e063be2877e0738fcbcdfb8bfefeaba7aafc2f542735e0af56a586a22340889922e7db469f0fb  linux-sony-eagle-prima-79403896e1c410582044c50dfce92d5e97233e0c.tar.gz
+856279742befeab228787ae5f3fef30429586cdadfd202daee4bb70fdca32d49317dcfde5844d63c70f69adbffbbe4023152c3a8cc6ddd2e0e1ee82f2cd4f5d2  config-sony-eagle.armv7
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst_fix.patch
+30ac7171fe2a5aa90c15e56465b35bfc84015079296df2ebbb4287a2848ac5e8cf8e0dbb00dfdf84acb6692587eefdfc338e65ef3170a1a3e5b279b317ba43f3  02_reduce_lzo_compression.patch
+72553b9283552fd003ee50e93a96c358184503e02500ca0b1790eb5e5e16c308193c04ee881dbf447424bba50afa2d1e38ad01a1d34482dcc17e73a337e07026  03_fix_add_uevent_var.patch
+18a413d0fc91aa95640b0d073fa1ab510056a87a541f9fc5a9272943bb2971492e51eedb84f2cbef56584c1f1c6dfdeb6b5984bbb8161f70409bdd5028f400d3  06_fix_too_many_levels_of_symlinks.patch
+13e289c889a48946cd3d976932f06f749bed5c6596776f4b683aada4e3e2f50b66286d6f550b8f2e260b58867b759591bbf8b54cc07ad9d3bb761ff477f036a1  gcc-wrapper-port-to-py3.patch"
