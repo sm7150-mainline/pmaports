@@ -16,7 +16,7 @@ parser.add_argument('--id', help='id of the job in the queue, value for the X-Id
 parser.add_argument('--json', action='store_true', help='datafile is a json file, do extra sanity checks')
 parser.add_argument('--verbose', '-v', action='store_true', help='show more debug info')
 parser.add_argument('endpoint', help='endpoint name on the API')
-parser.add_argument('datafile', help='file containing the data to be submitted')
+parser.add_argument('datafile', help='file containing the data to be submitted', nargs='+')
 args = parser.parse_args()
 
 if args.commit is None:
@@ -33,8 +33,12 @@ with open(os.path.expanduser(args.token), encoding="utf-8") as handle:
 url = '{}/api/{}'.format(args.host, args.endpoint)
 
 if args.json:
+    if len(args.datafile) > 1:
+        print("json mode doesn't support multiple input files")
+        exit(1)
+
     # Send contents of file as HTTP POST with json payload
-    with open(args.datafile, encoding="utf-8") as handle:
+    with open(args.datafile[0], encoding="utf-8") as handle:
         data = handle.read()
     data = json.loads(data)
 
@@ -45,13 +49,15 @@ if args.json:
         'X-Arch': args.arch
     })
 else:
-    filename = os.path.basename(args.datafile)
-    # Send contents of file as HTTP POST with multipart/formdata payload
-    files = {
-        'file': (filename, open(args.datafile, 'rb'), 'application/octet-stream')
-    }
+    files = []
 
-    print('Uploading {} to {}'.format(filename, url))
+    for file in args.datafile:
+        filename = os.path.basename(file)
+        # Send contents of file as HTTP POST with multipart/formdata payload
+        files.append(('file[]', (filename, open(args.datafile, 'rb'), 'application/octet-stream')))
+
+        print('Uploading {} to {}'.format(filename, url))
+
     response = requests.post(url, files=files, headers={
         'X-Secret': secret,
         'X-Commit': args.commit,
