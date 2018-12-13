@@ -11,10 +11,15 @@ def get_pmaports_dir():
     return os.path.realpath(os.path.join(os.path.dirname(__file__) + "/.."))
 
 
-def run_git(parameters):
+def run_git(parameters, check=True):
     """ Run git in the pmaports dir and return the output """
     cmd = ["git", "-C", get_pmaports_dir()] + parameters
-    return subprocess.check_output(cmd).decode()
+    try:
+        return subprocess.check_output(cmd).decode()
+    except subprocess.CalledProcessError:
+        if check:
+            raise
+        return None
 
 
 def run_pmbootstrap(parameters):
@@ -93,7 +98,7 @@ def check_build(packages):
 if __name__ == "__main__":
     # Add a remote pointing to postmarketOS/pmaports for later
     run_git(["remote", "add", "upstream",
-             "https://gitlab.com/postmarketOS/pmaports.git"])
+             "https://gitlab.com/postmarketOS/pmaports.git"], False)
     run_git(["fetch", "-q", "upstream"])
 
     # Build changed packages
