@@ -50,7 +50,10 @@ def get_changed_files():
     ret = run_git(["diff", "--name-only", commit, "HEAD"]).splitlines()
     print("changed file(s):")
     for file in ret:
-        print("  " + file)
+        message = "  " + file
+        if not os.path.exists(file):
+            message += " (deleted)"
+        print(message)
     return ret
 
 
@@ -58,9 +61,11 @@ def get_changed_packages():
     files = get_changed_files()
     ret = set()
     for file in files:
-        # Skip files in the root dir of pmaports as well as dirs beginning with
-        # a dot (.gitlab-ci/)
-        if "/" not in file or file.startswith("."):
+        # Skip files:
+        # * in the root dir of pmaports (e.g. README.md)
+        # * path beginning with a dot (e.g. .gitlab-ci/)
+        # * non-existing files (deleted packages)
+        if "/" not in file or file.startswith(".") or not os.path.exists(file):
             continue
 
         # Add to the ret set (removes duplicated automatically)
