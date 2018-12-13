@@ -12,13 +12,13 @@ def get_pmaports_dir():
 
 
 def run_git(parameters):
-    """ Run git in the pmaports folder and return the output """
+    """ Run git in the pmaports dir and return the output """
     cmd = ["git", "-C", get_pmaports_dir()] + parameters
     return subprocess.check_output(cmd).decode()
 
 
 def run_pmbootstrap(parameters):
-    """ Run pmbootstrap with the pmaports folder as --aports """
+    """ Run pmbootstrap with the pmaports dir as --aports """
     cmd = ["pmbootstrap", "--aports", get_pmaports_dir()] + parameters
     process = subprocess.Popen(cmd)
     process.communicate()
@@ -39,9 +39,11 @@ def get_changed_files():
 
     # Check if we are latest upstream/master
     if commit_head == commit_upstream_master:
-        commit = "HEAD~1"  # then compare with previous commit
+        # then compare with previous commit
+        commit = "HEAD~1"
     else:
-        commit = run_git(["merge-base", "upstream/master", "HEAD"])[:-1]  # otherwise compare with latest common ancestor
+        # otherwise compare with latest common ancestor
+        commit = run_git(["merge-base", "upstream/master", "HEAD"])[:-1]
     print("comparing HEAD with: " + commit)
 
     # Changed files
@@ -56,8 +58,8 @@ def get_changed_packages():
     files = get_changed_files()
     ret = set()
     for file in files:
-        # Skip files in the root folder of pmaports as well as folders
-        # beginning with a dot (.gitlab-ci/)
+        # Skip files in the root dir of pmaports as well as dirs beginning with
+        # a dot (.gitlab-ci/)
         if "/" not in file or file.startswith("."):
             continue
 
