@@ -54,7 +54,7 @@ else:
     for file in args.datafile:
         filename = os.path.basename(file)
         # Send contents of file as HTTP POST with multipart/formdata payload
-        files.append(('file[]', (filename, open(args.datafile, 'rb'), 'application/octet-stream')))
+        files.append(('file[]', (filename, open(file, 'rb'), 'application/octet-stream')))
 
         print('Uploading {} to {}'.format(filename, url))
 
