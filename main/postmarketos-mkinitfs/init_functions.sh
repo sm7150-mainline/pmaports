@@ -333,6 +333,13 @@ start_charging_mode(){
 
 # $1: path to ppm.gz file
 show_splash() {
+	# Skip for non-framebuffer devices
+	# shellcheck disable=SC2154
+	if [ "$deviceinfo_no_framebuffer" = "true" ]; then
+		echo "NOTE: Skipping framebuffer splashscreen (deviceinfo_no_framebuffer)"
+		return
+	fi
+
 	gzip -c -d "$1" >/tmp/splash.ppm
 	fbsplash -s /tmp/splash.ppm
 }
@@ -350,7 +357,7 @@ setup_framebuffer() {
 	# Skip for non-framebuffer devices
 	# shellcheck disable=SC2154
 	if [ "$deviceinfo_no_framebuffer" = "true" ]; then
-		echo "NOTE: Skipping framebuffer setup (deviecinfo_no_framebuffer)"
+		echo "NOTE: Skipping framebuffer setup (deviceinfo_no_framebuffer)"
 		return
 	fi
 
