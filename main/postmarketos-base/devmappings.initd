@@ -1,0 +1,33 @@
+#!/sbin/openrc-run
+
+description="Add partition devmappings"
+
+depend()
+{
+        before root
+}
+
+start()
+{
+        partitions="$(grep -v "loop\|ram" < /proc/diskstats |\
+                sed 's/\(\s\+[0-9]\+\)\+\s\+//;s/ .*//;s/^/\/dev\//')"
+        echo "$partitions" | while read -r partition; do
+                case "$(kpartx -l "$partition" 2>/dev/null | wc -l)" in
+                        2)
+                                einfo "Mount subpartitions of $partition"
+                                kpartx -afs "$partition"
+                                # Ensure that this was the *correct* subpartition
+                                # Some devices have mmc partitions that appear to have
+                                # subpartitions, but aren't our subpartition.
+                                if blkid | grep -q "pmOS_boot"; then
+                                        break
+                                fi
+                                kpartx -d "$partition"
+                                continue
+                                ;;
+                        *)
+                                continue
+                                ;;
+                esac
+        done
+}

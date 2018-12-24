@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
 pkgver=3
-pkgrel=19
+pkgrel=20
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -32,7 +32,9 @@ source="
 	networkmanager.conf
 	swapfile/swapfile
 	swapfile/swapfile.init
-	swapfile/swapfile.conf"
+	swapfile/swapfile.conf
+	devmappings.initd
+	"
 options="!check"
 
 package() {
@@ -54,6 +56,8 @@ package() {
 	install -D -m644 "$srcdir"/networkmanager.conf \
 		"$pkgdir"/etc/NetworkManager/conf.d/postmarketos.conf
 
+	install -Dm755 "$srcdir"/devmappings.initd \
+		"$pkgdir"/etc/init.d/devmappings
 }
 
 x11() {
@@ -70,4 +74,5 @@ sha512sums="38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b
 a525bd9716aff2ded60ae5e6f7c369d73b03d984b09f12e65d32e2fb3f1538ca0e330752b2c55df6a1ab29867cbf2d22e38c32523af9e9b46bb06085fcb3fcec  networkmanager.conf
 3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  swapfile
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  swapfile.init
-e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  swapfile.conf"
+e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  swapfile.conf
+aa93a0e664354bbcfdfc7dc35fdbf5f31d5e8866d0d8e5c2374e9e87fa146e7afc45294d6eabb4d7b5f28bca608e0366ebbc8d1677a8746677d5075c1d44610d  devmappings.initd"
