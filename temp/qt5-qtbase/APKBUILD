@@ -1,4 +1,5 @@
 # Forked from Alpine to use OpenGL ES2
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
 pkgname=qt5-qtbase
 _pkgname=${pkgname/qt5-//}-everywhere-src
 pkgver=9999
@@ -8,7 +9,7 @@ _ver=${_ver/_/-}
 _ver=${_ver/beta0/beta}
 _ver=${_ver/rc0/rc}
 _V=${_ver/rc/RC}
-pkgrel=8
+pkgrel=9
 pkgdesc="Qt5 - QtBase components"
 url="http://qt-project.org/"
 arch="all"
@@ -57,7 +58,6 @@ case $_pkgver in
 esac
 source="http://download.qt-project.org/$_rel/qt/${_pkgver%.*}/$_ver/submodules/$_pkgname-$_V.tar.xz
 	qt-musl-iconv-no-bom.patch
-	libressl-compat.patch
 	"
 
 _qt5_prefix=/usr/lib/qt5
@@ -210,5 +210,4 @@ x11() {
 }
 
 sha512sums="8e6c51b754840d17e694b5b4a0d732afe04ebe48d166bca429db01ce3ac9014bb0ed35fe99ad165973889d96919f6b6774429585bae9a7fdba6b07f4c1eb3570  qtbase-everywhere-src-5.12.0.tar.xz
-7d68421a14f0259535c977d8a521c98918193c107b76ac664571b12f5b0d7588a0d0e1297af412a26753a393b21f3f44c3274fa8ab5bc87f03705a3a03acb444  qt-musl-iconv-no-bom.patch
-c23ceb261aeefdd1ba2b51a6487893b1a5d88e031646b06741e2f52f045bd0e387d1f9c033391bb187fedbb74add3e495909f9ebcc9da61617b21be33c597d57  libressl-compat.patch"
+7d68421a14f0259535c977d8a521c98918193c107b76ac664571b12f5b0d7588a0d0e1297af412a26753a393b21f3f44c3274fa8ab5bc87f03705a3a03acb444  qt-musl-iconv-no-bom.patch"
