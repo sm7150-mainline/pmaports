@@ -2,6 +2,10 @@
 # Copyright 2018 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+""" Make sure that components of frameworks (Qt, KDE, ...) have the same
+    version in all packages. We scan all packages, categorize them by URL
+    and then compare the versions of all packages in each category. """
+
 import glob
 import logging
 import os
@@ -28,22 +32,25 @@ def args(request):
     return args
 
 
-def get_categorized_kde_packages(args):
+def get_categorized_packages(args):
     """
-    Parse all aports in the kde folder, and categorize them.
+    Parse all aports and categorize them.
 
     :returns: {"plasma": {"kwin": "5.13.3", ...},
                "kde": {"kcrash": "5.48.0", ...},
+               "qt": {"qt5-qtbase": "5.12.0", ...},
                "other": {"konsole": "1234", ...}}
     """
-    ret = {"plasma": {}, "kde": {}, "other": {}}
+    ret = {}
 
-    for path in glob.glob(args.aports + "/kde/*/APKBUILD"):
+    for path in glob.glob(args.aports + "/*/*/APKBUILD"):
         # Parse APKBUILD
         apkbuild = pmb.parse.apkbuild(args, path)
         url = apkbuild["url"]
         pkgname = apkbuild["pkgname"]
         pkgver = apkbuild["pkgver"]
+        if pkgver == "9999":
+            pkgver = apkbuild["_pkgver"]
 
         # Categorize by URL
         category = "other"
@@ -51,18 +58,24 @@ def get_categorized_kde_packages(args):
             category = "plasma"
         elif "https://community.kde.org/Frameworks" in url:
             category = "kde"
+        elif url in ["http://qt-project.org/",
+                     "https://www.qt.io/developers/"]:
+            category = "qt"
 
         # Save result
+        if category not in ret:
+            ret[category] = {}
         ret[category][pkgname] = pkgver
     return ret
 
 
 def check_categories(categories):
     """
-    Make sure that all packages in one framework (kde, plasma) have the same
-    package version (and that there is at least one package in each category).
+    Make sure that all packages in one framework (kde, plasma, ...) have the
+    same package version (and that there is at least one package in each
+    category).
 
-    :param categories: see return of get_categorized_kde_packages()
+    :param categories: see return of get_categorized_packages()
     :returns: True when the check passed, False otherwise
     """
     ret = True
@@ -73,17 +86,20 @@ def check_categories(categories):
             # Use the first package as reference and print a summary
             if not reference:
                 logging.info("---")
-                logging.info("KDE package category: " + category)
-                logging.info("Packages (" + str(len(packages)) + "): " +
-                             ", ".join(sorted(packages.keys())))
-                reference = {"pkgname": pkgname, "pkgver": pkgver}
+                logging.info("Package category: " + category)
+                logging.info("Packages count: " + str(len(packages)))
 
-                # Category "other": done after printing the summary, no need to
-                # compare the package versions
+                # Category "other": done after printing the basic summary, no
+                # need to print each package or compare the package versions
                 if category == "other":
+                    reference = True
                     break
 
+                # Print all packages
+                logging.info("Packages: " + ", ".join(sorted(packages.keys())))
+
                 # Print the reference and skip checking it against itself
+                reference = {"pkgname": pkgname, "pkgver": pkgver}
                 logging.info("Reference pkgver: " + pkgver + " (from '" +
                              pkgname + "')")
                 continue
@@ -101,10 +117,10 @@ def check_categories(categories):
     return ret
 
 
-def test_kde_versions(args):
+def test_framework_versions(args):
     """
-    Make sure that KDE packages of the same framework have the same version.
+    Make sure that packages of the same framework have the same version.
     """
-    categories = get_categorized_kde_packages(args)
+    categories = get_categorized_packages(args)
     if not check_categories(categories):
-        raise RuntimeError("KDE version check failed!")
+        raise RuntimeError("Framework version check failed!")
