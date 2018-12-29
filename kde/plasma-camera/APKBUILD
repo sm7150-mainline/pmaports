@@ -1,23 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-camera
-pkgver=0_git20150717
+pkgver=0_git20181118
 pkgrel=0
-_commit=0a68cd2b1954cca245f857a7dc72aef577b37fdb
+_commit="2783a773856083a5ff4a17d3a64955662e230020"
 pkgdesc="Simple camera application for mobile devices"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
 license="GPL-2.0"
 depends=""
-makedepends="extra-cmake-modules qt5-qtbase-dev kpackage-dev kcoreaddons-dev"
-source="https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
-builddir="$srcdir/build"
+makedepends="extra-cmake-modules qt5-qtbase-dev kpackage-dev kcoreaddons-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit/build"
 
 prepare() {
+	default_prepare
+
 	mkdir "$builddir"
 }
 
 build() {
 	cd "$builddir"
-	cmake "$srcdir"/$pkgname-$_commit \
+	cmake "$builddir"/.. \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
@@ -32,6 +36,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir/" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="f3a6b362fb2fff50c36bfaf5f939a8a80964d1132524c43e1e5cc12143a5a3ef3f4c04cb19ad18a8039c704f793c326865f02b082eaa9dc48499b0ce69059880  0a68cd2b1954cca245f857a7dc72aef577b37fdb.tar.gz"
+sha512sums="e61f72baaef6b5243b639d39745044c715e0b869445148c16e663a81f5bebddba14539e42b0c73edb5c1e2382e98f2c210589e6103f3b73b0c1be238b8814b8c  plasma-camera-2783a773856083a5ff4a17d3a64955662e230020.tar.gz"

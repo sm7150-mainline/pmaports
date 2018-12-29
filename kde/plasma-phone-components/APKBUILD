@@ -1,9 +1,9 @@
 # Contributor Bart Ribbers <bribbers@disroot.org>
 # Maintainer Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-phone-components
-pkgver=0_git20181028
-pkgrel=1
-_commit="306512efe93f925b5e5f35cac0eb76b6ba7afa77"
+pkgver=0_git20181128
+pkgrel=0
+_commit="c614e3229a090960790f8f311898e63ac2911382"
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
@@ -19,7 +19,7 @@ makedepends="extra-cmake-modules kpeople-dev qt5-qtdeclarative-dev kactivities-d
 install="$pkgname.post-install
 	$pkgname.post-upgrade
 	$pkgname.post-deinstall"
-source="$pkgname-$pkgver.tar.gz::https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$pkgver.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
@@ -39,7 +39,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir/" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="e10ce977055331c3db41bd66cdfc6cc66a1b334b4bc46333a4cd29345a62def9b23ea8252ecc9af4bf96bbbaf3ba5d38f3e0f0e072bab59212fc14ccfe198ff0  plasma-phone-components-0_git20181028.tar.gz"
+sha512sums="22d09ffe938bbf3460c522642cb8640a897fd134d604fd6b89544168f0e1560a706ffc07811eca43b61eb0a00461bcd75a7947d82e79a75ff2a4dfe86abeb3f5  plasma-phone-components-0_git20181128.tar.gz"

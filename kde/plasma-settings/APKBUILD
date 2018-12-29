@@ -1,7 +1,9 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-settings
-pkgver=0_git20180221
+pkgver=0_git20181205
 pkgrel=0
-_commit=f8e452ed202d81e836b0af1e008afb351b4c1e54
+_commit="bd252d8caf4b0d296fdd8aaac83234fc14bded70"
 pkgdesc="Plasma Settings"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
@@ -13,8 +15,8 @@ makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kwindowsys
 	kbookmarks-dev kcrash-dev kcompletion-dev kdesignerplugin-dev kdesignerplugin
 	kjobwidgets-dev kdoctools-dev kemoticons-dev kguiaddons-dev kitemmodels-dev
 	kinit-dev knotifications-dev kparts-dev kunitconversion-dev plasma-framework-dev"
-source="https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
-builddir="$srcdir/build"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit/build"
 
 prepare() {
 	mkdir "$builddir"
@@ -22,7 +24,7 @@ prepare() {
 
 build() {
 	cd "$builddir"
-	cmake "$srcdir"/$pkgname-$_commit \
+	cmake "$builddir"/.. \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
 		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
@@ -37,6 +39,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir/" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="6381512594e8adb0510856ffd087a07839000122b5401517111ea13673132685acf2cd607151bc874d7d9162a32796e9571f6337d77c0a1331a9a587da71de01  f8e452ed202d81e836b0af1e008afb351b4c1e54.tar.gz"
+sha512sums="ff255ef8f17a462eb6bd6c4eae6a731cc70368677da9cf7f3990495b59636bbacdf3b8815589ffeb8729dc1b8cb45430db299886fc95c9d3b1049d49a0fc55df  plasma-settings-bd252d8caf4b0d296fdd8aaac83234fc14bded70.tar.gz"
