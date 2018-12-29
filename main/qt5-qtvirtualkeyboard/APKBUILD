@@ -8,10 +8,9 @@ url='http://qt-project.org/'
 license="GPL-3.0 GPL-2.0 LGPL-3.0"
 pkgdesc='Virtual keyboard framework'
 depends=""
-depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev"
-makedepends="$depends_dev hunspell-dev"
-source="http://download.qt.io/official_releases/qt/${pkgver%.*}/$pkgver/submodules/${pkgname/qt5-/}-everywhere-src-$pkgver.tar.xz
-	0001-include-sys-time.h-for-timeval.patch"
+depends_dev="qt5-qtsvg-dev"
+makedepends="$depends_dev hunspell-dev qt5-qtbase-dev qt5-qtdeclarative-dev"
+source="http://download.qt.io/official_releases/qt/${pkgver%.*}/$pkgver/submodules/${pkgname/qt5-/}-everywhere-src-$pkgver.tar.xz"
 subpackages="$pkgname-dev"
 builddir="$srcdir/${pkgname/qt5-/}-everywhere-src-$pkgver"
 options="!check"
@@ -32,5 +31,4 @@ package() {
 	install -d "$pkgdir"/usr/share/licenses
 	ln -s /usr/share/licenses/qt5-base "$pkgdir"/usr/share/licenses/$pkgname
 }
-sha512sums="984a4d8eb7fd4aaaee956c65e818467be93540769867023f6a9bb8a6d53bab7fe30d372aaa21cc3fb3642b9e6fa672669d4caacfaa0ed7500dcb126ee4be40f8  qtvirtualkeyboard-everywhere-src-5.12.0.tar.xz
-e801336b9aaf0facdcf7347fa8cf7223362312c92ea5725c5260d777045cc9da9a6de514dc4c17904aab77ae799bdd154c4615b8f2a39d92ce55ca10ad218efb  0001-include-sys-time.h-for-timeval.patch"
+sha512sums="984a4d8eb7fd4aaaee956c65e818467be93540769867023f6a9bb8a6d53bab7fe30d372aaa21cc3fb3642b9e6fa672669d4caacfaa0ed7500dcb126ee4be40f8  qtvirtualkeyboard-everywhere-src-5.12.0.tar.xz"
