@@ -1,12 +1,12 @@
 pkgname=telepathy-glib
 pkgver=0.24.1
-pkgrel=0
+pkgrel=1
 pkgdesc="GLib bindings for the Telepathy D-Bus protocol"
 arch="all"
 url="http://telepathy.freedesktop.org"
 license="LGPL2.1"
 depends="dbus-glib"
-depends_dev="dbus-glib-dev gobject-introspection-dev"
+depends_dev="dbus-glib-dev gobject-introspection-dev vala"
 makedepends="$depends_dev python2 diffutils libxslt"
 source="https://telepathy.freedesktop.org/releases/$pkgname/$pkgname-$pkgver.tar.gz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-libs"
@@ -15,6 +15,7 @@ options="!check"
 build() {
 	PYTHON=/usr/bin/python2 ./configure --prefix=/usr \
 		--libexecdir=/usr/lib/telepathy \
+		--enable-vala-bindings=yes \
 		--enable-static=no
 	make
 }
