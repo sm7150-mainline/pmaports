@@ -1,0 +1,39 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-asus-me176c"
+pkgdesc="Asus MeMo Pad 7"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="x86_64"
+options="!check !archcheck"
+depends="postmarketos-base linux-asus-me176c mesa-dri-intel"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-x11
+"
+
+x11() {
+	install_if="$pkgname xorg-server"
+	depends="xf86-video-intel"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi, Bluetooth, and sound firmware"
+	depends="linux-firmware-intel linux-firmware-brcm firmware-asus-me176c"
+	mkdir "$subpkgdir"
+}
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="1281e7dafedf566c983e9d682ca8fccdb9dd4fdb1d8b9dc7d80e180a917e242d61e4e0c1bf70ddfd1cf53ef590ba6f973ec24dafbe143f93ebb8e52e0500b2db  deviceinfo"

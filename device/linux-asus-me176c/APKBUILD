@@ -1,0 +1,82 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: https://github.com/me176c-dev/me176c-archlinux/blob/master/linux-me176c/config
+
+pkgname="linux-asus-me176c"
+pkgver=4.19.9
+pkgrel=0
+pkgdesc="Asus MeMo Pad 7 kernel fork"
+arch="x86_64"
+_carch="x86_64"
+_flavor="asus-me176c"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev bison flex libressl-dev iasl xz"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="me176c-kernel"
+_commit="961c8ea95f2febdaceb2d31940b48932aea0e782"
+_dsdt_commit="18a1fe0c450375c16e17429b429955e068f83945"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/me176c-dev/${_repository}/archive/${_commit}.tar.gz
+	https://raw.githubusercontent.com/me176c-dev/me176c-acpi/${_dsdt_commit}/dsdt.dsl
+	$_config
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+
+	iasl -tc $srcdir/dsdt.dsl
+	sed -i s/dsdt_aml_code/AmlCode/ $srcdir/dsdt.hex
+	cp $srcdir/dsdt.hex $builddir/include/
+
+	# Remove -Werror from all makefiles
+	makefiles="$(find "$builddir" -type f -name Makefile)
+		$(find "$builddir" -type f -name Kbuild)"
+	for i in $makefiles; do
+		sed -i 's/-Werror-/-W/g' "$i"
+		sed -i 's/-Werror//g' "$i"
+	done
+
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir/$_config" "$builddir"/.config
+	yes "" | make -C "$builddir" ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		INSTALL_MOD_PATH="$pkgdir/" INSTALL_MOD_STRIP=1 modules_install
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="f9f71e546e3eb2496dc7bedb0510bca1be5ffefdc595217cf185a2544b928bfb089da0f71459b541bd3d2caa4969198ed55addc743e192b08d58ada3b6e49db3  linux-asus-me176c-961c8ea95f2febdaceb2d31940b48932aea0e782.tar.gz
+9f3d8691252dbbc06e8c9ce1f26aaf1803b5fe5647bee7ee80ca89d8bac52ec91bffeb629f41f0babad1b27a33bff766754ed151f2886684b0c6022c190b0907  dsdt.dsl
+c2f1b5be9b58779f03cd2f063d5749b15fe28eb638987eff186b21b818aac2807a26eaee9d82f9c4c19848e06495c9bd290e2700348eb7bf7cc36688c88384fc  config-asus-me176c.x86_64"

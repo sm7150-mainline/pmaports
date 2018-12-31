@@ -1,0 +1,23 @@
+pkgname=firmware-asus-me176c
+pkgver=12.10.1.36
+pkgrel=0
+arch="x86_64"
+pkgdesc="Firmware for asus-me176c"
+license="unknown"
+options="!check !strip !checkarch"
+url="http://dlcdnet.asus.com/pub/ASUS/EeePAD/ME176C/UL-K013-WW-$pkgver-user.zip"
+
+source="
+	http://dlcdnet.asus.com/pub/ASUS/EeePAD/ME176C/UL-K013-WW-$pkgver-user.zip
+"
+
+package() {
+	cd "$srcdir"
+	
+	# WiFi NVRAM file
+	install -Dm644 system/etc/nvram.txt "$pkgdir/lib/firmware/brcm/brcmfmac43362-sdio.txt"
+
+	# Bluetooth firmware
+	install -Dm644 system/etc/firmware/BCM2076B1_002.002.004.0132.0141_reduced_2dB.hcd "$pkgdir/lib/firmware/brcm/BCM.hcd"
+}
+sha512sums="4bfb30fcc872b9e3d57f251bff7a3fe9349d90a02c2c9ef8af938fad9d84ff3367723a2fee0dc7a5a10c3df1d4e28a766ae69f967b6a45e1835f284e61762404  UL-K013-WW-12.10.1.36-user.zip"
