@@ -35,30 +35,30 @@ fi
 #   - CVE-2017-7614
 
 build() {
-        _target="$(arch_to_hostspec armv7)"
-        cd "$builddir"
-        "$builddir"/configure \
-            --build="$CBUILD" \
-            --target=$_target \
-            --with-lib-path=/usr/lib \
-            --prefix=/usr \
-            --with-sysroot=/usr/$_target \
-            --enable-ld=default \
-            --enable-gold=yes \
-            --enable-plugins \
-            --enable-deterministic-archives \
-            --disable-multilib \
-            --disable-werror \
-            --disable-nls
-        make
+	_target="$(arch_to_hostspec armv7)"
+	cd "$builddir"
+	"$builddir"/configure \
+		--build="$CBUILD" \
+		--target=$_target \
+		--with-lib-path=/usr/lib \
+		--prefix=/usr \
+		--with-sysroot=/usr/$_target \
+		--enable-ld=default \
+		--enable-gold=yes \
+		--enable-plugins \
+		--enable-deterministic-archives \
+		--disable-multilib \
+		--disable-werror \
+		--disable-nls
+	make
 }
 
 package() {
-        cd "$builddir"
-        make install DESTDIR="$pkgdir"
+	cd "$builddir"
+	make install DESTDIR="$pkgdir"
 
-        # remove man, info folders
-        rm -rf "$pkgdir"/usr/share
+	# remove man, info folders
+	rm -rf "$pkgdir"/usr/share
 }
 
 
