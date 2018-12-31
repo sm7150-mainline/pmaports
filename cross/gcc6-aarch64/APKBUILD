@@ -23,13 +23,14 @@ CBUILDROOT="/"
 _cross_configure="--disable-bootstrap --with-sysroot=/usr/$CTARGET"
 
 pkgname="gcc6-aarch64"
-pkgver=6.4.0
+pkgver=9999
+_pkgver=6.4.0
 pkgrel=5
 pkgdesc="Stage2 cross-compiler for aarch64"
 url="http://gcc.gnu.org"
 arch="x86_64"
 license="GPL LGPL"
-_gccrel=$pkgver-r$pkgrel
+_gccrel=$_pkgver-r$pkgrel
 depends="isl binutils-aarch64"
 makedepends_build="gcc g++ paxmark bison flex texinfo gawk zip gmp-dev mpfr-dev mpc1-dev zlib-dev"
 makedepends_host="linux-headers gmp-dev mpfr-dev mpc1-dev isl-dev zlib-dev musl-dev-aarch64 binutils-aarch64"
@@ -160,7 +161,7 @@ if $LANG_ADA; then
 fi
 makedepends="$makedepends_build $makedepends_host"
 
-source="http://gcc.gnu.org/pub/gcc/releases/gcc-${_pkgbase:-$pkgver}/gcc-${_pkgbase:-$pkgver}.tar.xz
+source="http://gcc.gnu.org/pub/gcc/releases/gcc-${_pkgbase:-$_pkgver}/gcc-${_pkgbase:-$_pkgver}.tar.xz
 	http://sourceware.org/pub/java/ecj-4.9.jar
 
 	001_all_default-ssp-strong.patch
@@ -223,9 +224,9 @@ source="http://gcc.gnu.org/pub/gcc/releases/gcc-${_pkgbase:-$pkgver}/gcc-${_pkgb
 	"
 
 # we build out-of-tree
-_gccdir="$srcdir"/gcc-${_pkgbase:-$pkgver}
-_gcclibdir=/usr/lib/gcc/${CTARGET}/$pkgver
-_gcclibexec=/usr/libexec/gcc/${CTARGET}/$pkgver
+_gccdir="$srcdir"/gcc-${_pkgbase:-$_pkgver}
+_gcclibdir=/usr/lib/gcc/${CTARGET}/$_pkgver
+_gcclibexec=/usr/libexec/gcc/${CTARGET}/$_pkgver
 
 prepare() {
 	cd "$_gccdir"
@@ -251,7 +252,7 @@ prepare() {
 	# see http://gcc.gnu.org/ml/java/2008-04/msg00027.html
 	mv "$srcdir"/ecj-*.jar ecj.jar
 
-	echo ${pkgver} > gcc/BASE-VER
+	echo ${_pkgver} > gcc/BASE-VER
 }
 
 build() {
@@ -328,7 +329,7 @@ build() {
 		--build=${CBUILD} \
 		--host=${CHOST} \
 		--target=${CTARGET} \
-		--with-pkgversion="postmarketOS ${pkgver}" \
+		--with-pkgversion="postmarketOS ${_pkgver}" \
 		--enable-checking=release \
 		--disable-fixed-point \
 		--disable-libstdcxx-pch \
