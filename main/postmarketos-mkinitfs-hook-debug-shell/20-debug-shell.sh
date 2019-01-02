@@ -1,5 +1,6 @@
 #!/bin/sh
 # shellcheck disable=SC1091
+. /etc/deviceinfo
 . ./init_functions.sh
 TELNET_PORT=23
 
