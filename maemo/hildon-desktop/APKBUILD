@@ -1,6 +1,6 @@
 pkgname=hildon-desktop
 pkgver=2.2.157.10
-pkgrel=0
+pkgrel=1
 pkgdesc="Hildon desktop for Fremantle"
 arch="all"
 url="https://github.com/maemo-leste/hildon-desktop"
@@ -14,11 +14,15 @@ makedepends="
 	libmatchbox2-dev
 	mce-headers
 	profiled-dev"
-source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/hildon-desktop/archive/$pkgver.tar.gz"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/hildon-desktop/archive/$pkgver.tar.gz
+	0001-hd-task-navigator-Remove-old-i386-ifdef.patch
+"
 
 builddir="$srcdir/hildon-desktop-$pkgver"
 
 prepare() {
+	default_prepare
 	cd "$builddir"
 	sed -i -e 's/g_return_if_fail (!render_manager->priv->zoomed);//g' src/home/hd-render-manager.c
 }
@@ -34,4 +38,5 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="307bee2290031bfde4fce22b1c451bcc7e32bb784aa53f4d32f99fcd64cf3d3d796598908befe5878db4b40f66479faf2465981bf4e2ae71efcda1d94efeffdf  hildon-desktop-2.2.157.10.tar.gz"
+sha512sums="307bee2290031bfde4fce22b1c451bcc7e32bb784aa53f4d32f99fcd64cf3d3d796598908befe5878db4b40f66479faf2465981bf4e2ae71efcda1d94efeffdf  hildon-desktop-2.2.157.10.tar.gz
+672dbde79f9d56a38320c4daf6a646a77d145192cc5439e2d3789f115cf60e213dbcb137306561140557eff3c031296194d4814902dd235e5778f115fbe6bdb9  0001-hd-task-navigator-Remove-old-i386-ifdef.patch"

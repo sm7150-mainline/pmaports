@@ -1,0 +1,65 @@
+From d3d39d70824a16dfc28e0dbf5810b5af3e3b1044 Mon Sep 17 00:00:00 2001
+From: Grant Miller <GrantM11235@gmail.com>
+Date: Fri, 4 Jan 2019 11:27:35 -0600
+Subject: [PATCH] hd-task-navigator: Remove old i386 ifdef
+
+This ifdef causes a compiler error when compiling for 32 bit x86.
+According to Wizzup and freemangordon on IRC, this code can simply be
+removed.
+
+There are still more instances of `#ifdef __386__` but they don't seem
+to cause compiler errors, so I left them alone.
+
+```
+$ git grep -n __i386__
+src/hildon-desktop.h:35:#if defined (__i386__) || defined (DEBUG)
+src/mb/hd-comp-mgr.c:2022:#ifdef __i386__
+src/tidy/tidy-cached-group.c:79:#ifdef __i386__
+src/tidy/tidy-desaturation-group.c:183:#ifdef __i386__
+src/tidy/tidy-desaturation-group.c:308:#ifdef __i386__
+```
+---
+ src/home/hd-task-navigator.c | 20 --------------------
+ 1 file changed, 20 deletions(-)
+
+diff --git a/src/home/hd-task-navigator.c b/src/home/hd-task-navigator.c
+index d558b32a..5268fe49 100644
+--- a/src/home/hd-task-navigator.c
++++ b/src/home/hd-task-navigator.c
+@@ -1309,25 +1309,6 @@ check_and_move (ClutterActor * actor, gfloat xpos_new, gfloat ypos_new)
+     free_effect (closure->timeline, closure);
+ }
+ 
+-/* On the gadget (or maybe in general if we're accelerated) we can't
+- * resize continously because it blocks all effects and doesn't come
+- * about anyway.  It's so even if we don't clip_on_resize(). */
+-#ifdef __i386__
+-DEFINE_RMS_EFFECT(resize, gfloat,
+-                  clutter_actor_get_size, clutter_actor_set_size);
+-static void
+-check_and_resize (ClutterActor * actor, gint width_new, gint height_new)
+-{
+-  EffectClosure *closure;
+-  guint width_now, height_now;
+-
+-  clutter_actor_get_size (actor, &width_now, &height_now);
+-  if (width_now != width_new || height_now != height_new)
+-    resize (actor, width_new, height_new);
+-  else if ((closure = has_effect (actor, resize_effect_frame)) != NULL)
+-    free_effect (closure->timeline, closure);
+-}
+-#else /* __armel__ */
+ static void resize_effect_complete (ClutterTimeline * timeline,
+                                     EffectClosure * closure)
+ {
+@@ -1391,7 +1372,6 @@ check_and_resize (ClutterActor * actor, gfloat width_new, gfloat height_new)
+   else if ((closure = has_effect (actor, resize_effect_complete)) != NULL)
+     free_effect (closure->timeline, closure);
+ }
+-#endif /* __armel__ */
+ 
+ DEFINE_RMS_EFFECT(scale, gdouble,
+                   clutter_actor_get_scale, clutter_actor_set_scale);
+-- 
+2.19.1
+
