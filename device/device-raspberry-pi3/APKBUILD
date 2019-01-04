@@ -2,17 +2,15 @@
 pkgname="device-raspberry-pi3"
 pkgdesc="Raspberry Pi 3B/3B+"
 pkgver=0.1
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base raspberrypi-bootloader mesa-dri-vc4 bluetooth-raspberry-pi"
+depends="postmarketos-base raspberrypi-bootloader linux-rpi mesa-dri-vc4 bluetooth-raspberry-pi"
 makedepends="devicepkg-dev"
-subpackages="
-	$pkgname-kernel-rpi:kernel_rpi
-	$pkgname-weston
-"
+install="$pkgname.post-install"
+subpackages="$pkgname-weston"
 source="deviceinfo config.txt usercfg.txt cmdline.txt 95-vchiq-permissions.rules weston.ini"
 
 build() {
@@ -28,19 +26,11 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/95-vchiq-permissions.rules
 }
 
-kernel_rpi() {
-	pkgdesc="Kernel for the Raspberry Pi 3B/3B+ (from Alpine, depends on non free firmware!)"
-	depends="$pkgname linux-rpi"
-	install="$subpkgname.post-install"
-	mkdir "$subpkgdir"
-}
-
 weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
-
 
 sha512sums="fea20d9e3818801ddaa627a0291291a7145c9eaba09a4ddadfff85d80c6ebf6e6fc77dc9d2ee2790c1eed49c6d2bf5055d50395541c61eb0dea6ffe172d4f52e  deviceinfo
 b95a66c8fa165aca2170ebb3f8688e78e1dd78d3ddb4d26c289ea77e406eec3bbfecb5a32997df86a692b674128d5b4f673c47f8e12013f33b765a69fec1cb51  config.txt
