@@ -1,6 +1,6 @@
 pkgname=libhildondesktop
 pkgver=2.1.43
-pkgrel=3
+pkgrel=4
 pkgdesc="Hildon Desktop library"
 arch="all"
 url="https://github.com/maemo-leste/libhildondesktop"
@@ -8,19 +8,22 @@ license="GPL"
 depends="libhildon iphbd dbus-glib"
 makedepends="autoconf automake libhildon-dev iphbd-dev dbus-glib-dev"
 subpackages="$pkgname-dev $pkgname-examples"
-source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libhildondesktop/archive/$pkgver.tar.gz"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libhildondesktop/archive/$pkgver.tar.gz
+	stop-deprecated-functions-from-breaking-compilation.patch
+"
 
-builddir="$srcdir/libhildondesktop-$pkgver"
+builddir="$srcdir/$pkgname-$pkgver"
 
 build() {
 	cd "$builddir"
-    ./autogen.sh --prefix=/usr CFLAGS="${CFLAGS} -Wno-error=unused-but-set-variable"
-    make
+	./autogen.sh --prefix=/usr CFLAGS="${CFLAGS} -Wno-error=unused-but-set-variable"
+	make
 }
 
 package() {
 	cd "$builddir"
-    make DESTDIR="$pkgdir/" install
+	make DESTDIR="$pkgdir/" install
 }
 
 examples() {
@@ -30,4 +33,5 @@ examples() {
 	mv "$pkgdir/usr/share" "$subpkgdir/usr/"
 }
 
-sha512sums="5766cfc600a2711ecb88d55a67a95e92555608b54217d8d83b8191e9c1d14ea0c3150e5c7ac2251acf83d7e200e80bfcd877c66a993e509c353b76da1136450f  libhildondesktop-2.1.43.tar.gz"
+sha512sums="5766cfc600a2711ecb88d55a67a95e92555608b54217d8d83b8191e9c1d14ea0c3150e5c7ac2251acf83d7e200e80bfcd877c66a993e509c353b76da1136450f  libhildondesktop-2.1.43.tar.gz
+05f3c10ff2dcccd86ced633ec78593cd933aa7a53d2c8a0aca6a6e6ed5bf9c20bd87325ac22ec4bf536bfbeb247ae58ddc07cd1b2f6da7004a72f846e35dd3f2  stop-deprecated-functions-from-breaking-compilation.patch"
