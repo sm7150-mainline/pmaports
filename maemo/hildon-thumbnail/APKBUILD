@@ -17,6 +17,8 @@ build() {
 	cd "$builddir"
 	./autogen.sh
 	./configure --prefix=/usr --sysconfdir=/etc
+	# Work around "No rule to make target '../daemon/libshared.la', needed by 'hildon-thumbnailerd'"
+	make -C daemon/ libshared.la -j1
 	# Compilation fails with multiple threads
 	make -j1
 }
