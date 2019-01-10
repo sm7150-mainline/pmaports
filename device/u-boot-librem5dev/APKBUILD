@@ -1,0 +1,112 @@
+pkgname=u-boot-librem5dev
+pkgver=0.1
+pkgrel=1
+_atfversion="6a83ae04c8e5b37ef7eb9bc039d85be39ed1f0a4"
+_ubootversion="09baa61e93b08647a664cebd716ebe267df1ffa0"
+_mkimageversion="7bb910903a657c25421a06ccc9e20239fbf4e173"
+_ddrversion="b6b0ea5366a4dc882c1009baab531bb37eea1e6d"
+_m4build="11"
+pkgdesc="u-boot bootloader for the Purism Librem5 devkit"
+url="http://www.denx.de/wiki/U-Boot/"
+arch="aarch64"
+license="GPL-2.0"
+depends=""
+makedepends="$depends_dev bc dtc python2-dev swig binutils coreutils zlib-dev"
+install=""
+options="!check"
+source="
+	uboot.tar.gz::https://source.puri.sm/Librem5/uboot-imx/-/archive/${_ubootversion}/uboot-imx-${_ubootversion}.tar.gz
+	m4.bin::https://arm01.puri.sm/job/u-boot_builds/job/devkit_uboot_build/${_m4build}/artifact/files/uboot-devkit/m4.bin
+        arm-trusted-firmware-${_atfversion}.tar.gz::https://source.codeaurora.org/external/imx/imx-atf/snapshot/${_atfversion}.tar.gz
+	mkimage.tar.gz::https://source.codeaurora.org/external/imx/imx-mkimage/snapshot/${_mkimageversion}.tar.gz
+	ddr4_firmware.tar.gz::https://source.puri.sm/Librem5/image-builder/raw/${_ddrversion}/build/files/imx-mkimage-emcraft.tar.gz
+	0001-remove-dependency-on-git.patch
+	"
+_ubootbuilddir="$srcdir"/uboot-imx-${_ubootversion}
+_atfbuilddir="$srcdir"/${_atfversion}
+_mkimagebuilddir="$srcdir"/${_mkimageversion}
+_ddr4dir="$srcdir/imx-mkimage"
+
+builddir="$_mkimagebuilddir"
+
+build() {
+	export LDFLAGS=""
+	msg "Building ARM trusted firmware"
+	cd "$_atfbuilddir"
+	make PLAT=imx8mq bl31
+	_bl31="$_atfbuilddir"/build/imx8mq/release/bl31.bin
+
+	msg "Building u-boot"
+	cd "$_ubootbuilddir"
+	make distclean
+	make ARCH=arm librem5_devkit_defconfig
+	make ARCH=arm
+
+
+	msg "Building u-boot image"
+	# Copy binaries to build final image
+	cp -v "$_bl31" "$_mkimagebuilddir"/iMX8M/
+	cp -v "$_ubootbuilddir"/u-boot-nodtb.bin "$_mkimagebuilddir"/iMX8M/
+	cp -v "$_ubootbuilddir"/u-boot.bin "$_mkimagebuilddir"/iMX8M/
+	cp -v "$_ubootbuilddir"/spl/u-boot-spl.bin "$_mkimagebuilddir"/iMX8M/
+	cp -v "$_ubootbuilddir"/arch/arm/dts/librem5-evk.dtb "$_mkimagebuilddir"/iMX8M/fsl-imx8mq-evk.dtb
+	cp -v "$_ddr4dir"/iMX8M/*.bin "$_mkimagebuilddir"/iMX8M/
+	cp -v "$_ubootbuilddir"/tools/mkimage "$_mkimagebuilddir"/iMX8M/
+	mv -v "$_mkimagebuilddir"/iMX8M/mkimage "$_mkimagebuilddir"/iMX8M/mkimage_uboot
+	cd "$_mkimagebuilddir"
+	make SOC=iMX8M flash_hdmi_spl_uboot
+	msg "done!"
+}
+
+package() {
+	install -D -m644 "$builddir"/iMX8M/flash.bin \
+		"$pkgdir/usr/share/firmware/librem5dev/u-boot.bin"
+	install -D -m644 "$srcdir"/m4.bin \
+		"$pkgdir/usr/share/firmware/librem5dev/m4.bin"
+}
+
+_all() {
+	pkgdesc="u-boot for all boards (meta package)"
+	depends="$_allboards"
+
+	mkdir -p "$subpkgdir"/
+}
+
+_split_boards() {
+	cd "$builddir"/build
+	pkgdesc="u-boot for $1"
+	depends="u-boot"
+	shift
+	local board
+	for board; do
+		msg "Including board $board"
+		mkdir -p "$subpkgdir"/usr/share/$pkgname/$board
+		export BUILD_DIR="$builddir"/build/$board
+		local ok=no
+		for image in u-boot-sunxi-with-spl.bin -- MLO SPL u-boot.img -- u-boot.bin; do
+			if [ "$image" = "--" ]; then
+				[ "$ok" = yes ] && break
+				continue
+			fi
+			if [ -e "$BUILD_DIR"/$image ]; then
+				cp "$BUILD_DIR"/$image "$subpkgdir"/usr/share/$pkgname/$board \
+					|| return 1
+				ok=yes
+			fi
+		done
+		[ "$ok" = yes ] || return 1
+	done
+}
+
+for board_config in $board_configs; do
+	_board="${board_config%%:*}"
+	_configs="${board_config#*:}"
+	eval "${_board}() { _split_boards $_board ${_configs//,/ }; }"
+done
+
+sha512sums="86647032e36d8a2e18241277962ca3df5c974c40a1019dac7557801d6a378694491889464f727a185627d66359c0bb11f81d970dea4991798faa34190289135a  uboot.tar.gz
+01a0c3085411fb40aff136866c288a8cf331a27f5f6f722e51e1016cc335c71b4c9e8175116a3748c7d0cece8dc861c77373d87813da1f83c84872e80aa15483  m4.bin
+4c178965773e98d83b3c00518c2aeec399c05310460bc280800a243e2292fc94bd11e0392fc25161f5431cef91d2be2befb75c18cbaf8e3a5da2d3f4c82fafd9  arm-trusted-firmware-6a83ae04c8e5b37ef7eb9bc039d85be39ed1f0a4.tar.gz
+e17a6c245706eb17950a8136121c58dc8810010c974f5183e920d5bfc689d6fe578f1faba5d408c62887081d34fa130bbc0c50e3a4cdab9da58554ff91caa71b  mkimage.tar.gz
+a03f0fdb3541f95bf6d4c767c02378ae82d6ef1a85a1bbe70f124b72d497f23515469f7dde20f59102a5d81fa507136912bcf39e184f6765cfd1592a738e4a2a  ddr4_firmware.tar.gz
+0410f8c7a3d122c0be9da969880fb5996e8bd2a91be1d06c6624f16d6f1ff9dbc948c0274a521419e743ca46331e9e9bd0e234a422ccf23e42bc2bd6daedbc05  0001-remove-dependency-on-git.patch"
