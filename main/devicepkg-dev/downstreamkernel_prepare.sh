@@ -14,7 +14,9 @@ if [ -z "$srcdir" ] || [ -z "$builddir" ] || [ -z "$_config" ] ||
 fi
 
 # support newer GCC versions
-cp -v "/usr/share/devicepkg-dev/compiler-gcc.h" "$builddir/include/linux/"
+if [ ! -f "$builddir/include/linux/compiler-gcc.h" ]; then
+        cp -v "/usr/share/devicepkg-dev/compiler-gcc.h" "$builddir/include/linux/"
+fi
 
 # Remove -Werror from all makefiles
 makefiles="$(find "$builddir" -type f -name Makefile)
