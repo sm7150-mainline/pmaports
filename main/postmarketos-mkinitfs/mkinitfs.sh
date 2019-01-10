@@ -213,11 +213,16 @@ require_package()
 # Legacy u-boot images
 create_uboot_files()
 {
+        arch="arm"
+        if [ "${deviceinfo_arch}" == "aarch64" ]; then
+                arch="arm64"
+        fi
+
 	[ "${deviceinfo_generate_legacy_uboot_initfs}" == "true" ] || return
 	require_package "mkimage" "uboot-tools" "generate_legacy_uboot_initfs"
 
 	echo "==> initramfs: creating uInitrd"
-	mkimage -A arm -T ramdisk -C none -n uInitrd -d "$outfile" \
+	mkimage -A $arch -T ramdisk -C none -n uInitrd -d "$outfile" \
 		"${outfile/initramfs-/uInitrd-}" || exit 1
 
 	echo "==> kernel: creating uImage"
@@ -225,7 +230,7 @@ create_uboot_files()
 	if [ -n "${deviceinfo_dtb}" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
-	mkimage -A arm -O linux -T kernel -C none -a 80008000 -e 80008000 \
+	mkimage -A $arch -O linux -T kernel -C none -a 80008000 -e 80008000 \
 		-n postmarketos -d $kernelfile "${outfile/initramfs-/uImage-}" || exit 1
 }
 
