@@ -1,0 +1,38 @@
+pkgname=unixbench
+pkgver=5.1.3
+pkgrel=0
+pkgdesc="The original BYTE UNIX benchmark suite"
+url="https://github.com/kdlucas/byte-unixbench"
+arch="all"
+license="GPL2"
+depends="perl make"
+makedepends=""
+install=""
+options="!check"
+source="
+	${pkgname}-${pkgver}.tar.gz::https://github.com/kdlucas/byte-unixbench/archive/v${pkgver}.tar.gz
+	modern_compiler_optimizations.patch
+	unreasonable_multicore-whetstone_results_fix.patch
+	use_volatile.patch
+	ubench
+"
+builddir="$srcdir/byte-unixbench-${pkgver}/UnixBench"
+
+build() {
+	cd "$builddir"
+	make
+}
+
+package() {
+	cd "$builddir"
+	install -Dm775 ${srcdir}/ubench "${pkgdir}/usr/bin/ubench"
+	install -Dm775 Run "${pkgdir}/usr/share/unixbench/Run"
+
+	cp -a pgms testdir Makefile src ${pkgdir}/usr/share/unixbench
+}
+
+sha512sums="12a88f1606aba156e96b8addf9a6fbf1de4ddbb4b9163548554c16d78f4af167d148b27688b2e367cff01e9f8d776ff96c486577b5336c36686480f4002b4dce  unixbench-5.1.3.tar.gz
+5cee4101cb49c58d24e2dc453de5bac05e9f2f5e396d0220d5d811ea1b0ad67c009de4bddad1d62dbfb3491b0f6840058c571f67c21b41653e4301ab9fa27a04  modern_compiler_optimizations.patch
+831f466284336cb7462cadfd4440364ea7ed543b94dd559e58497a81b1d58e35d567fb8d13885245bea250b29ae187e58e139ea27010009243f541bc6cff7405  unreasonable_multicore-whetstone_results_fix.patch
+264de2ca75ef7d0977613f3dc86b8fcfbabb18bd3153214f5ba78aa256eed496f3ae88b4ebfc4399395db91fcb1bb5cd88acde735508c7fd38b4c88bfbf88bb7  use_volatile.patch
+91590bfaac3b118ad9a7ec66200ecc7b5ff88b84f5e8552c6b30fcc4436669eb4467d6b9a89d0be8682903e88b843fc4e40e3c7f90406c398449edb187ad6771  ubench"
