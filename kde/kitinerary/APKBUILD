@@ -1,9 +1,8 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kitinerary
-pkgver=18.08.0_git20180806
-pkgrel=1
-_commit="2256e363e6bde732d940759451ca299e26e2adcf"
+pkgver=18.12.0
+pkgrel=0
 pkgdesc="Data Model and Extraction System for Travel Reservation information"
 url="https://github.com/KDE/kitinerary"
 arch="all"
@@ -21,11 +20,10 @@ depends_dev="
 	libxml2-dev
 "
 makedepends="$depends_dev extra-cmake-modules"
-#source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
-source="$pkgname-$pkgver.tar.gz::https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
+source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev" # $pkgname-lang
 options="!check" # Requires running X11 server
-builddir="$srcdir/$pkgname-$_commit"
+builddir="$srcdir/$pkgname-$pkgver"
 
 build() {
 	cd "$builddir"
@@ -52,4 +50,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="e2850c59a169b6bae2e289687f6378e94465a25e99bd51928c221192ec75c823996b7acead6cd99dbc52d3f949e361db1514fd7bba0c7f94fed86af964aaae36  kitinerary-18.08.0_git20180806.tar.gz"
+sha512sums="3a39949dc600daaa4f71ae1fb92dc3e2d2fa04058184e23fc42d2002529b521c54dc27ba51222df0569dbd0616dd687781441af989534faf6a1e74feaa4026dd  kitinerary-18.12.0.tar.xz"
