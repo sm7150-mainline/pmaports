@@ -1,7 +1,7 @@
 # Maintainer: Robert Yang <decatf@gmail.com>
 pkgname=mesa-grate
 pkgver=18.1.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
 arch="armhf"
@@ -10,7 +10,7 @@ subpackages="
 	$pkgname-dev
 	$pkgname-dri-swrast:_dri
 	$pkgname-glapi $pkgname-egl $pkgname-gl $pkgname-gles
-	$pkgname-xatracker $pkgname-osmesa $pkgname-gbm
+	$pkgname-osmesa $pkgname-gbm
 	"
 _llvmver=5
 depends="ldpath libdrm-grate"
@@ -23,13 +23,10 @@ depends_dev="
 	"
 makedepends="
 	$depends_dev
-	autoconf
-	automake
 	bison
 	eudev-dev
 	expat-dev
 	flex
-	gettext
 	libelf-dev
 	libtool
 	libxfixes-dev
@@ -39,8 +36,7 @@ makedepends="
 	libxxf86vm-dev
 	libxt-dev
 	libxvmc-dev
-	llvm$_llvmver-dev
-	makedepend
+	meson
 	py-mako
 	py3-libxml2
 	python3
@@ -61,11 +57,14 @@ source="
 	0003-Revert-drm-uapi-bump-headers.patch
 	0004-Revert-tegra-Initial-support.patch
 	0005-grate-driver.patch
+	0001-meson-Add-glx-tls-option.patch
+	0001-meson-correct-gallium-grate-variable.patch
 	"
 replaces="mesa mesa-dricore"
 
-_dri_driverdir=/usr/lib/xorg/modules/dri/grate
-_dri_drivers="swrast"
+_prefix=/usr
+_dri_driverdir=${_prefix}/lib/xorg/modules/dri/grate
+_dri_drivers=""
 _gallium_drivers="swrast"
 _vulkan_drivers=""
 
@@ -80,10 +79,10 @@ x86*)
 			$pkgname-dri-intel:_dri \
 			$pkgname-dri-vmwgfx:_dri \
 			$pkgname-vulkan-intel:_vulkan"
-	_arch_opts="--enable-dri3"
+	_arch_opts="-Ddri3=true"
 	case "$CARCH" in
 	x86)
-		_arch_opts="$_arch_opts --enable-glx-rts --disable-asm";;
+		_arch_opts="$_arch_opts -Dglx-rts=true -Dasm=false";;
 	esac
 	;;
 armhf|aarch64)
@@ -96,53 +95,48 @@ builddir="$srcdir/mesa-$pkgver"
 
 prepare() {
 	cd "$builddir"
-	export PKG_CONFIG_PATH="/usr/lib/pkgconfig/libdrm-grate:${PKG_CONFIG_PATH}"
 	default_prepare
-	libtoolize --force \
-		&& aclocal \
-		&& automake --add-missing \
-		&& autoreconf
 }
 
 build() {
 	cd "$builddir"
 
+	export PKG_CONFIG_PATH="/usr/lib/pkgconfig/libdrm-grate:${PKG_CONFIG_PATH}"
 	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE=700"
-	./configure \
-		--build=$CBUILD \
-		--host=$CHOST \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--with-dri-driverdir=$_dri_driverdir \
-		--with-dri-searchpath=$_dri_driverdir \
-		--with-gallium-drivers=${_gallium_drivers} \
-		--with-dri-drivers=${_dri_drivers} \
-		--with-vulkan-drivers=${_vulkan_drivers} \
-		--with-platforms=x11,drm \
-		--disable-llvm \
-		--disable-llvm-shared-libs \
-		--enable-shared-glapi \
-		--enable-gbm \
-		--enable-dri \
-		--enable-glx \
-		--enable-gallium-osmesa \
-		--enable-gles1 \
-		--enable-gles2 \
-		--enable-egl \
-		--enable-texture-float \
-		--enable-xa \
-		--enable-vdpau \
-		--enable-va \
-		--disable-xvmc \
-		--disable-glx-tls \
-		--disable-nine \
+	meson build \
+		-Dbuild=$CBUILD \
+		-Dhost=$CHOST \
+		-Dprefix=$_prefix \
+		-Dsysconfdir=/etc \
+		-Ddri-drivers-path=${_dri_driverdir} \
+		-Ddri-search-path=${_dri_driverdir} \
+		-Dgallium-drivers=${_gallium_drivers} \
+		-Ddri-drivers=${_dri_drivers} \
+		-Dvulkan-drivers=${_vulkan_drivers} \
+		-Dplatforms=x11,drm \
+		-Dllvm=false \
+		-Dshared-glapi=true \
+		-Dgbm=true \
+		-Ddri=true \
+		-Dglx=auto \
+		-Dosmesa=gallium \
+		-Dgles1=true \
+		-Dgles2=true \
+		-Degl=true \
+		-Dtexture-float=true \
+		-Dgallium-xa=false \
+		-Dgallium-vdpau=false \
+		-Dgallium-va=false \
+		-Dgallium-xvmc=false \
+		-Dgallium-nine=false \
+		-Dglx-tls=false \
 		$_arch_opts
-	make
+	ninja -C build/
 }
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" ninja -C build/ install
 
 	# provided by wayland
 	# rm -v "$pkgdir"/usr/lib/libwayland-egl.so*
@@ -204,11 +198,11 @@ gbm() {
 }
 
 _mv_dri() {
-	install -d "$subpkgdir"/$_dri_driverdir
+	install -d "$subpkgdir"${_dri_driverdir}
 
 	while [ $# -gt 0 ]; do
-		mv "$pkgdir"/$_dri_driverdir/${1}.so \
-			"$subpkgdir"/$_dri_driverdir/
+		mv "$pkgdir"${_dri_driverdir}/${1}.so \
+			"$subpkgdir"${_dri_driverdir}/
 		shift
 	done
 }
@@ -339,4 +333,6 @@ d046ef1fec03648349ec321e93dd6f1718d84de6c080216f7158e1c918058307abcc6866af31a2be
 ba0d498779302e01c36abfcf9eacf187e87063ca4ab4a2ac0fed63c331f765c254cd92a43fd4fde9c5a86235d8a8c766b4bbfe0e240df884522dc99dc4d3625a  0002-Revert-autotools-Add-tegra-to-AM_DISTCHECK_CONFIGURE.patch
 498b9286bffc55e5fae6fa5e1459977c3b3ac1b85202975ae8555c3c551bef634f631ece083dc55e16cd8aac536aa82563760cb53c744cfe63f7b431c538df77  0003-Revert-drm-uapi-bump-headers.patch
 01feb831b3227ff06feebee2a5f5a408a7d3710031853644b72d0dc32dfa139396553972435d1b9f3448f7589de782586f227e2ae8b239a47ddfd1b56d9cd1e9  0004-Revert-tegra-Initial-support.patch
-ecdd537af62ea8e9d4e6361eafbfc09d315b9084af5af48d761e1713500e08ff965fa62f4a52aea9bd6ab98a3179fa7e4c9a31a647cbe503e820f525e33fd4d2  0005-grate-driver.patch"
+ecdd537af62ea8e9d4e6361eafbfc09d315b9084af5af48d761e1713500e08ff965fa62f4a52aea9bd6ab98a3179fa7e4c9a31a647cbe503e820f525e33fd4d2  0005-grate-driver.patch
+05e7ce9f69b9fe2d1691b40a7ec93e05de9043a7953bdd7189c5f90b406f4b72e6aaa1aaba3fa7cb53de5c8943bffaaa49df0a354f7e8ba4be725bf6b8da143a  0001-meson-Add-glx-tls-option.patch
+2e1d5fcf239b7f7a8fc5e8f64819079c4b7ad8d2f83c033faffa2226b53bd16fb8db39fa67f9f0e7b81650749306a796e6db75237ad597c56575df9feca12e06  0001-meson-correct-gallium-grate-variable.patch"
