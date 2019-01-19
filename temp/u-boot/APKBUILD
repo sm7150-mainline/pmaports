@@ -3,29 +3,28 @@
 # Contributor: Timo Teras <timo.teras@iki.fi>
 # Maintainer: Leonardo Arena <rnalrd@alpinelinux.org>
 pkgname=u-boot
-pkgver=2018.05
-pkgrel=3
-_atfversion="c9f55c023164a6c8c49f70f7ac6c68c626839d6f"
+pkgver=2019.01
+pkgrel=0
+_atfversion="f0bfe15b81e50c6561a3a9a8e269db0267778910"
 pkgdesc="u-boot bootloader common files"
 url="http://www.denx.de/wiki/U-Boot/"
-arch="armhf aarch64"
-license="GPL-2.0"
+arch="armhf armv7 aarch64"
+license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
+	ISC LGPL-2.0-only LGPL-2.1-only X11"
 depends=""
 depends_dev=""
-makedepends="$depends_dev bc dtc python2-dev swig binutils coreutils"
+makedepends="$depends_dev bc dtc python2-dev swig binutils coreutils bison flex"
 install=""
-source="ftp://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
-        arm-trusted-firmware-${_atfversion}.tar.gz::https://github.com/apritzel/arm-trusted-firmware/archive/${_atfversion}.tar.gz
+source="http://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
+	arm-trusted-firmware-${_atfversion}.tar.gz::https://github.com/ARM-software/arm-trusted-firmware/archive/${_atfversion}.tar.gz
 	README.txt
 	update-u-boot
-	sopine-baseboard.patch
 	"
-
 builddir="$srcdir"/u-boot-${pkgver//_/-}
 atfbuilddir="$srcdir"/arm-trusted-firmware-${_atfversion}
 
 case "$CARCH" in
-armhf) board_configs="
+arm*) board_configs="
 	beagleboard:am335x_boneblack
 	cubieboard:Cubieboard,Cubieboard2
 	cuboxi:mx6cuboxi
@@ -35,7 +34,8 @@ armhf) board_configs="
 aarch64) board_configs="
 	thunderx:thunderx_88xx
 	raspberrypi:rpi_3
-	pine64:sopine_baseboard
+	odroid:odroid-c2
+	pine64:pine64-lts
 	";;
 esac
 
@@ -50,8 +50,13 @@ build() {
 		export LDFLAGS=""
 		msg "Building ARM trusted firmware for allwinner"
 		cd "$atfbuilddir"
-		make PLAT=sun50iw1p1 DEBUG=1 bl31
-		export BL31="$atfbuilddir"/build/sun50iw1p1/debug/bl31.bin
+		make PLAT=sun50i_a64 DEBUG=1 bl31
+		export BL31="$atfbuilddir"/build/sun50i_a64/debug/bl31.bin
+		# Sanity check $BL31
+		if [ ! -f "$BL31" ]; then
+			echo 'The $BL31 variable is invalid. Please adjust.'
+			return 1
+		fi
 	fi
 
 	cd "$builddir"
@@ -118,8 +123,7 @@ for board_config in $board_configs; do
 	eval "${_board}() { _split_boards $_board ${_configs//,/ }; }"
 done
 
-sha512sums="218f71282c9d027b0faf210ce2d4d713779e0c61ea4a23f03d5dec0ca8836a3c26b46c5e258d583834f5b5a2f4663f98729ca4b0101a60f85457eb892f8370d2  u-boot-2018.05.tar.bz2
-e964f0903f29a08d3a4a3177bcbfa9df68f47d30cac7f0d2597a7101c00632efdcd2c6ecba7f8be2e66a9689388bf2fa03087c0023ef99a5e1d080af5518d53c  arm-trusted-firmware-c9f55c023164a6c8c49f70f7ac6c68c626839d6f.tar.gz
+sha512sums="d9699cd22afe9bc747d64208068c2cf8a2c3143d161ede24536f6fd6adfd6b81e28920589722639e2e48fcf34e8dbde3ead7f691f14cbcc38cd75694d14d719b  u-boot-2019.01.tar.bz2
+732b806bf3a612ded9351226c8fae78d02741220034009350be1c2237341584bcb366c0db2a19b64e4548e9a720d9380d1240680459b831943d3936077eecb13  arm-trusted-firmware-f0bfe15b81e50c6561a3a9a8e269db0267778910.tar.gz
 f8c9bb6e84d6f0620c976ac7ad5dd7ec7ff9dfdd4b1d03d2bf6653e7beccf80bdf2debfc92fb1f696dba92fb40287d3c45897e0078951451d0835cb61a5f16d1  README.txt
-f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot
-50b19c0452d58ff80dfd2643330bbfe2349db687af258e5cb61f3872e0cac800df160baee7d6b0133bcc8b60d743a03e513db62a1917388101cfdea634424ae4  sopine-baseboard.patch"
+f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot"
