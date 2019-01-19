@@ -1,0 +1,44 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-planet-geminipda"
+pkgdesc="Gemini PDA"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-planet-geminipda mkbootimg"
+makedepends="devicepkg-dev"
+source="deviceinfo
+	10-geminipda-loopback-device.sh
+	20-fbdev.conf
+	40-hwcomposer.conf"
+subpackages="$pkgname-hybris"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/10-geminipda-loopback-device.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/10-geminipda-loopback-device.sh
+
+	install -Dm644 "$srcdir"/20-fbdev.conf \
+		"$pkgdir"/etc/X11/xorg.conf.d/20-fbdev.conf
+}
+
+hybris() {
+	depends="lxc-android
+		libhybris-7.1 libhybris-egl libhybris-gles libhybris-libwayland-egl
+		xf86-video-hwcomposer xf86-video-hwcomposer-7.1"
+
+	install -Dm644 "$srcdir"/40-hwcomposer.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/40-hwcomposer.conf
+}
+
+sha512sums="273a79f621df7d40f4b10e4845fbd7147b060e5b2eadd3e5c93d25b5cc029b0e4dfe32fd0f1f827b2512ee7da942aa4186d872e4174e90dd08370dfae312784d  deviceinfo
+a8b6623a0a8bea1ab3e28582f203426e42aed477be9ca1d6147d090f9f9d080a69c262a47f9dd5cd8ce99a9bf64912d902dc881f97967873466ebe73d9bba587  10-geminipda-loopback-device.sh
+07bda3435dffec7f8e8e158266cb619fb41c6b04a49a605e76fa88bc33be3cb27fdc54c8664be0738bab2c7a8054ce3d7563036323bf04762dcf735064ac10a2  20-fbdev.conf
+785bd225025fb73900dca06b70b2d62fdf4145d1c035b1b03fb0f82a10cc09eff63ec551ead4e1ee780a6b6f348c3f82fd068f6efa6f4e34205600d752f38913  40-hwcomposer.conf"
