@@ -1,0 +1,45 @@
+From 88d497212226cd63501e79e5031c6fca843e46a1 Mon Sep 17 00:00:00 2001
+From: Ion Agorria <ion@agorria.com>
+Date: Sat, 19 Jan 2019 12:07:10 +0100
+Subject: [PATCH] Cancel dm-setup if skip_initramfs is not present
+
+dm parameter might interfere on linux booting
+so we only use it when not doing a normal boot.
+---
+ init/do_mounts_dm.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/init/do_mounts_dm.c b/init/do_mounts_dm.c
+index ecda58df9a19..53cda0b0317b 100644
+--- a/init/do_mounts_dm.c
++++ b/init/do_mounts_dm.c
+@@ -272,6 +272,15 @@ parse_fail:
+ 	return 1;
+ }
+ 
++static int __initdata skip_initramfs;
++static int __init skip_initramfs_param(char *str)
++{
++        if (*str) return 0;
++        skip_initramfs = 1;
++        return 0;
++}
++__setup("skip_initramfs", skip_initramfs_param);
++
+ /*
+  * Parse the command-line parameters given our kernel, but do not
+  * actually try to invoke the DM device now; that is handled by
+@@ -283,6 +292,10 @@ parse_fail:
+ 
+ static int __init dm_setup(char *str)
+ {
++	if (skip_initramfs) {
++		printk(KERN_INFO "dm: skip_initramfs present, ignoring dm setup\n");
++		return 1;
++	}
+ 	dm_setup_args_init();
+ 
+ 	str = dm_setup_parse_device_args(str);
+-- 
+2.19.2
+

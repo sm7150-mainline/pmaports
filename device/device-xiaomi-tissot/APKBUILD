@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-xiaomi-tissot"
+pkgdesc="Xiaomi A1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-tissot mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="176aa6496dd4bc335fec4ba986348390b60233ba303d3b170650dbe3020e2a15438ca8708f2d9e5fc92e9dc8f3301fe7ba0f8840e953e4591a7bd7da22c0b459  deviceinfo"

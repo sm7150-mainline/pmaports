@@ -1,0 +1,32 @@
+diff --git a/drivers/net/ethernet/msm/Makefile b/drivers/net/ethernet/msm/Makefile
+index 5bf934e82fce..6d252a523be3 100644
+--- a/drivers/net/ethernet/msm/Makefile
++++ b/drivers/net/ethernet/msm/Makefile
+@@ -2,6 +2,8 @@
+ # Makefile for the msm networking support.
+ #
+ 
++CFLAGS_rndis_ipa.o := -I$(src)
++
+ obj-$(CONFIG_MSM_RMNET_MHI) += msm_rmnet_mhi.o
+ obj-$(CONFIG_ECM_IPA) += ecm_ipa.o
+ obj-$(CONFIG_RNDIS_IPA) += rndis_ipa.o
+diff --git a/drivers/platform/msm/ipa/ipa_v2/Makefile b/drivers/platform/msm/ipa/ipa_v2/Makefile
+index 69b8a4c94461..8bb29f9774f6 100644
+--- a/drivers/platform/msm/ipa/ipa_v2/Makefile
++++ b/drivers/platform/msm/ipa/ipa_v2/Makefile
+@@ -1,3 +1,4 @@
++CFLAGS_ipa.o := -I$(src)
+ obj-$(CONFIG_IPA) += ipat.o
+ ipat-y := ipa.o ipa_debugfs.o ipa_hdr.o ipa_flt.o ipa_rt.o ipa_dp.o ipa_client.o \
+ 	ipa_utils.o ipa_nat.o ipa_intf.o teth_bridge.o ipa_interrupts.o \
+diff --git a/drivers/platform/msm/ipa/ipa_v3/Makefile b/drivers/platform/msm/ipa/ipa_v3/Makefile
+index a4faaea715a8..9862cad0d43f 100644
+--- a/drivers/platform/msm/ipa/ipa_v3/Makefile
++++ b/drivers/platform/msm/ipa/ipa_v3/Makefile
+@@ -6,3 +6,5 @@ ipat-y := ipa.o ipa_debugfs.o ipa_hdr.o ipa_flt.o ipa_rt.o ipa_dp.o ipa_client.o
+ 	ipa_uc.o ipa_uc_wdi.o ipa_dma.o ipa_uc_mhi.o ipa_mhi.o ipa_uc_ntn.o
+ 
+ obj-$(CONFIG_RMNET_IPA3) += rmnet_ipa.o ipa_qmi_service_v01.o ipa_qmi_service.o rmnet_ipa_fd_ioctl.o
++
++CFLAGS_ipa.o := -I$(src)
