@@ -1,12 +1,13 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname="device-pine-a64lts"
 pkgdesc="PINE A64-LTS"
-pkgver=0.1
-pkgrel=4
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 depends="postmarketos-base linux-postmarketos-allwinner mesa-dri-swrast u-boot-pine64 uboot-tools"
 makedepends="devicepkg-dev"
 source="
@@ -23,7 +24,12 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
+}
 
+nonfree_firmware() {
+	pkgdesc="Wifi and Bluetooth firmware"
+	depends="linux-firmware-rtlwifi linux-firmware-rtl_bt firmware-rtl8723bt"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="b550ace9ce15ad574d011d1e966bd040a93a8bf26980b61928059d6328f1b4b7ef7d12e90e6ac78c7b6e4b99c4924b0d49f3b5813f9275c3982ff9df2be7ffef  deviceinfo

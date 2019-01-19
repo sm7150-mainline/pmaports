@@ -1,0 +1,18 @@
+pkgname=firmware-rtl8723bt
+pkgver=0_git20181104
+pkgrel=0
+pkgdesc="Firmware for rtl8723bs and rtl8723cs"
+url="https://github.com/anarsoul/rtl8723bt-firmware/"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck"
+_commit=39da5959deff5041160fa85e62dddb89066471b3
+source="$pkgname-$_commit.tar.gz::https://github.com/anarsoul/rtl8723bt-firmware/archive/$_commit.tar.gz"
+
+package() {
+	cd "$srcdir"/rtl8723bt-firmware-$_commit
+	mkdir -p "$pkgdir"/lib/firmware
+	cp -r rtl_bt "$pkgdir"/lib/firmware
+}
+
+sha512sums="8c25196e68eca60e9c14d77a472335187706b1fa0a98da8b3c5afd4d08ea8d430b0ae3187080901bd6917531914096b18fe7e69c048a05140d44cd8689c941fb  firmware-rtl8723bt-39da5959deff5041160fa85e62dddb89066471b3.tar.gz"
