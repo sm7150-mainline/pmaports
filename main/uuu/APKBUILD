@@ -1,0 +1,28 @@
+pkgname=uuu
+pkgver=1.2.31
+pkgrel=0
+pkgdesc="Universal Update Utility: Freescale/NXP I.MX Chip image deploy tools"
+url="https://source.puri.sm/Librem5/mfgtools"
+arch="all"
+license="BSD"
+depends="libusb-compat"
+makedepends="libzip-dev libusb-compat-dev libusb-dev bzip2-dev cmake"
+source="https://source.puri.sm/Librem5/mfgtools/-/archive/${pkgname}_${pkgver}/mfgtools-${pkgname}_${pkgver}.tar.bz2"
+options="!check"
+
+builddir="$srcdir"/mfgtools-"$pkgname"_"$pkgver"
+build() {
+	cd "$builddir"
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
+        mkdir -p "$builddir"/libuuu/gen
+        echo "#define GIT_VERSION \"libuuu_${pkgver}\"" > "$builddir"/libuuu/gen/gitversion.h
+        make
+	DESTDIR="${pkgdir}" make install
+}
+
+package() {
+	cd "$builddir"
+	make PREFIX=/usr DESTDIR="$pkgdir"/ install
+}
+
+sha512sums="c23cb6fd5007710974cf89eadeb613f81f64e478063c64117c8105870f78c099e399a11877378013657ed4b21e1a4f682822adff9e676da71f7b7625d3ada88f  mfgtools-uuu_1.2.31.tar.bz2"
