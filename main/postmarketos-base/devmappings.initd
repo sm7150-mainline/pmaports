@@ -15,7 +15,11 @@ start()
                 case "$(kpartx -l "$partition" 2>/dev/null | wc -l)" in
                         2)
                                 einfo "Mount subpartitions of $partition"
-                                kpartx -afs "$partition"
+                                # On some devices (e. g. htc vision) this kpartx command can fail
+                                # with a non-zero exit code on some unrelated partitions, which would
+                                # normally cause the loop to abort. But we still need to find the
+                                # root partition, hence the "|| continue"
+                                kpartx -afs "$partition" || continue
                                 # Ensure that this was the *correct* subpartition
                                 # Some devices have mmc partitions that appear to have
                                 # subpartitions, but aren't our subpartition.
