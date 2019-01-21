@@ -1,0 +1,24 @@
+_pkgname=start
+pkgname=start-coreapps
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="An activity viewer from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$_pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$_pkgname/-/archive/v$pkgver/$_pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-v$pkgver"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="8bba517ff82fa0488f1b03cf03bb89a808ebeab679bc0d7cd9f8bb302fc73d017ce454e5065864a6c54e4230436015b4566f2b44a627d46f5f20e5317e216fc2  start-2.3.0.tar.gz"

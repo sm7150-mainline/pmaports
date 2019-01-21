@@ -1,0 +1,24 @@
+pkgname=corepaint
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="A paint app from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="3264b972864438caa99c546cb4de7a90518f111d524b04a4cc845ea8812b1e835634525888f118c405be7e428f3e6ef019c405ea87fd46facf9299f11f90de18  corepaint-2.3.0.tar.gz"

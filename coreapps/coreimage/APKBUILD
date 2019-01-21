@@ -1,0 +1,24 @@
+pkgname=coreimage
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="An image viewer from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="f34af15a197484f95335663cc10bd13d7f5163055794bf6b7000e17bb9906059f9070ec4af30ca30f263d77e52688c92b0e0856b4b0fdd1c6bb866ee40f4d2b7  coreimage-2.3.0.tar.gz"

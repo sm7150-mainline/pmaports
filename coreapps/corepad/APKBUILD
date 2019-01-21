@@ -1,0 +1,24 @@
+pkgname=corepad
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="A document editor from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="f28c53e116cf6d8fdad71fb9491304be824d69b6ad5c8093b4d4ef233976a7a1496b91bb61f5a7ee41d2b30862ed4e6d5c09726b2aa4ab35d9c3ef1a15dc80e3  corepad-2.3.0.tar.gz"

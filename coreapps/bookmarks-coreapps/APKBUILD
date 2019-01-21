@@ -1,0 +1,26 @@
+_pkgname=bookmarks
+pkgname=bookmarks-coreapps
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="A bookmarking app from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$_pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$_pkgname/-/archive/v$pkgver/$_pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="683983b89ec0ed0be31452e122de2aee63ecba24b325d0886323a4578b6e62743fca8bc417c8ca6cf255afb9345bc8fb17ebc6a4a88980057f06c8c3c9b24ebb  bookmarks-2.3.0.tar.gz"

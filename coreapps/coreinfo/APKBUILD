@@ -1,0 +1,24 @@
+pkgname=coreinfo
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="A file information tool from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase libzen-dev libmediainfo-dev"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="9b83ec254e7193f5242f90d10d4047e8c3747a3c4e05443e8fcdff3d76664834fc25e5e32c1700605973e70beb2f6dcb584ee54bd4c31e994aa5502b429c554f  coreinfo-2.3.0.tar.gz"

@@ -1,0 +1,25 @@
+pkgname=coreshot
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="A screen capture utility from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase qt5-qtx11extras-dev"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="01769e47cc2c748e083588f61380045bd90522bae6e373d4d82ec50f8c65e68ff06fa61f7bdc2a3f36375967dd13710907ef296d454d92fca9c471788208b938  coreshot-2.3.0.tar.gz"

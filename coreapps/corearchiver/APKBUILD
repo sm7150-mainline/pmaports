@@ -1,0 +1,24 @@
+pkgname=corearchiver
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="Archiver from the CoreApps family to create and extract archives."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="LGPL-2.1"
+depends="libcprime qt5-qtbase xz-dev libarchive-dev zlib-dev lzip bzip2-dev"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="5178480893362f3aa10162660c13e9db01ac37114df105be89dcee7c8f887a8f1f8bcc07f544ff77ae3bae6b1c138ef59cd6afe72725682d4a7df3b7e18497f8  corearchiver-2.3.0.tar.gz"

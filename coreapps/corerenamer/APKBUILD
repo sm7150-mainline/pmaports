@@ -1,0 +1,24 @@
+pkgname=corerenamer
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="A batch file renamer from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="d3c6e4f3eb3916bc6f6f694246fa4c632c8d44327ecd5cdfbf9efbddaaac5d277a65c83d1089b63da297671e793cafebe284f0a1ef4b30ae0b11e0ae41d9dd23  corerenamer-2.3.0.tar.gz"

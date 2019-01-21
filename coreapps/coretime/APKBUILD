@@ -1,0 +1,24 @@
+pkgname=coretime
+pkgver=2.3.0
+pkgrel=0
+pkgdesc="A time related task manager from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime qt5-qtbase qt5-qtmultimedia-dev"
+makedepends="qt5-qtbase-dev libcprime-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="7633c8bde8bae9c571070361bb94b76cc27b827f8b2d8973abbcf576b45210a0a969c1e9921c8e05b5da890d3d1f812717e649016f5e127cc0bb43877f0b4b2e  coretime-2.3.0.tar.gz"
