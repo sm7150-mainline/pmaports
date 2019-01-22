@@ -32,5 +32,18 @@ mv pmbootstrap-* pmbootstrap
 # Install to $PATH and init
 ln -s /tmp/pmbootstrap/pmbootstrap.py /usr/local/bin/pmbootstrap
 echo "Initializing pmbootstrap"
-su pmos -c "yes '' | pmbootstrap -q --aports '$pmaports' init"
+if ! su pmos -c "yes '' | pmbootstrap -q --aports '$pmaports' init"; then
+	echo "ERROR: pmbootstrap init failed!"
+	echo
+	echo "Most likely, this means that pmbootstrap requires a newer"
+	echo "pmaports version. Please rebase on the official pmaports.git"
+	echo "master branch and try again."
+	echo
+	echo "Let us know in the chat or issues if you have trouble with that"
+	echo "and we will be happy to help. Sorry for the inconvenience."
+	echo
+	echo "(If that does not help, click on 'Browse' in the 'Job artifacts'"
+	echo "next to this log output, and have a look at log.txt.)"
+	exit 1
+fi
 echo ""
