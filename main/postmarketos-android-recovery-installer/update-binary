@@ -1,6 +1,6 @@
 #!/sbin/sh
 
-# Copyright 2017 Attila Szollosi
+# Copyright 2017-2019 Attila Szollosi
 #
 # This file is part of postmarketos-android-recovery-installer.
 #
@@ -34,3 +34,8 @@ mkdir -p /tmp/postmarketos/
 unzip -o "$ZIP" "pmos_chroot" -d /tmp/postmarketos/
 chmod 755 /tmp/postmarketos/pmos_chroot
 /tmp/postmarketos/pmos_chroot || { fail_info ; exit 1 ; }
+
+# Disable No OS warning
+unzip -o "$ZIP" "disable-warning" -d /tmp/postmarketos/
+chmod 755 /tmp/postmarketos/disable-warning
+/tmp/postmarketos/disable-warning
