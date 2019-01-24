@@ -3,7 +3,7 @@
 
 pkgname="linux-xiaomi-tissot"
 pkgver=3.18.71
-pkgrel=0
+pkgrel=1
 pkgdesc="Xiaomi A1 kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -13,9 +13,9 @@ license="GPL-2.0-only"
 options="!strip !check !tracedeps"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
+# Compiler: GCC 6 (doesn't boot when compiled with GCC 8):
+# Unhandled fault: alignment fault (0x96000061) at 0xffffff800062a03c
+# PC is at smp2p_init_header+0x28/0x38
 if [ "${CC:0:5}" != "gcc6-" ]; then
 	CC="gcc6-$CC"
 	HOSTCC="gcc6-gcc"
@@ -29,7 +29,6 @@ _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
 	$_config
-	compiler-gcc6.h
 	fix-include-msm_isp.patch
 	fix-include-msm_camera_i2c.patch
 	fix-rndis_ipa.patch
@@ -39,27 +38,13 @@ source="
 	init-reverse-skip_initramfs.patch
 	init-ignore-dm-if-skip_initramfs.patch
 	tweak-warn-once-skb_release_head_state.patch
+	fix-xorg-mdss-update-fb-info.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
 	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	local i
-	local makefiles="$(find . -type f -name Makefile)
-		$(find . -type f -name Kbuild)"
-	for i in $makefiles; do
-		sed -i 's/-Werror-/-W/g' "$i"
-		sed -i 's/-Werror//g' "$i"
-	done
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/.config
-	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
@@ -96,7 +81,6 @@ package() {
 
 sha512sums="f0bba3e19e8cad92cabaeba63db75af9b2cf1e5fa7e79c7688c487c55db0230840ab838628b8aaf6a39a03d403237ab224aa94fac88eb538b82cb7909f35e43d  linux-xiaomi-tissot-80cb3f607eb78280642c3b9b6e89f676e9c263bf.tar.gz
 54ad078eb8b54037fb1d4191a45a8ebded6ac5e95e7bea41d0f20a75feed5b0dd0654ee1fd17a942939f8953e4f25781559e5f8fb170c58d2e2e6783f0405375  config-xiaomi-tissot.aarch64
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 a7acfa838563cb3a0da85b0b580b8b6873e87a21c83d060bbacf0f159672353db65d2f5d1d74cfd3b8640336db1b56aa4868dea8dd5eaba6366bc7050624608f  fix-include-msm_isp.patch
 e4a9fca760b22c71ecc6b749afeec0bf2e5571bcde9c3d25612402ee406e2ccdebc6fb1e353851190e948bcda00ed37f7d1bb6c26c08557fda02f37811c80cc7  fix-include-msm_camera_i2c.patch
 c35a7337ddee41ea355bc3040e258c111b92c62413e355d7fe1329f516f8bdf724bab0cb8f426aee96fc776a8297e7a3ec5414120248538e0ee0ac3265790fbd  fix-rndis_ipa.patch
@@ -105,4 +89,5 @@ b408f157cc025d410b38f5aee9be977e670e1ac3f195f6c3a6681446fa0c3887067d62a4f729cfcd
 7e765cb696fa8c3dfbc305b05cbf1fad85fb9572613d5391e945341dae5974a745f4906c795dc841e5562b19ab77d5257f9741e514af2c2573aa4bb8b262ce51  fix_msm_dba.patch
 32f8180ae59351835f91ead8e38ae4933658c13bfe62bdbb32de82aecb16e1ff9e96333f4f129423ae8be4dc3210ee3bbf3fd0ea199df0f397ecb2f2efe37bcb  init-reverse-skip_initramfs.patch
 d97b343970bba978b0c99222e01d3a66abba9d7fe5725705021b4ab2895dd18df2c68bfbb894f05f2894714b958e1aa63ed5e09d19cbbff1204fdc7f246891b4  init-ignore-dm-if-skip_initramfs.patch
-170a979908156f740d32fc3a8f74c2b2cb54420e12b81f2373fed1eb095159f1e03d3c24116a345f41ccd927fd93594b0a0e4b58a57ffe6869288f1ec030078c  tweak-warn-once-skb_release_head_state.patch"
+170a979908156f740d32fc3a8f74c2b2cb54420e12b81f2373fed1eb095159f1e03d3c24116a345f41ccd927fd93594b0a0e4b58a57ffe6869288f1ec030078c  tweak-warn-once-skb_release_head_state.patch
+a277af28a718f5caf94257005393aa92d62c96110a8ec6368ff62f2e0d871b69c56c4ce00174db637204d53fa63ad3a79b8d6141713dca0878e1f06fe0379caa  fix-xorg-mdss-update-fb-info.patch"
