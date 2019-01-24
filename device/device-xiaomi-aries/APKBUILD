@@ -1,0 +1,26 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-xiaomi-aries"
+pkgdesc="Xiaomi Mi 2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armhf"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-aries mkbootimg mesa-dri-swrast mdss-fb-init-hack"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	install -Dm644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="5fff1fdbd8303870bd7368ed3817f184bb28e0467af3a5efbd0ac471448d967cd4eab471af953eb0f01bff9bc2292aad75ff670b7f61b10ce1a4fab5bff93c2b  deviceinfo
+73d199fdf7eccc2041ea8fabecc8b833d845791d5e7740b9d8e81e8fb917a0db55958f8c0d5499142a5726cf1ee40d6eb0ca16f7dc160276354d940b5abeeedc  initfs-hook.sh"
