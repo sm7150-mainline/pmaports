@@ -2,21 +2,24 @@
 pkgname="device-motorola-athene"
 pkgdesc="Motorola Moto G4"
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-motorola-athene mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="deviceinfo initfs-hook.sh"
 
 build() {
 	devicepkg_build $startdir $pkgname
 }
 
 package() {
+	install -Dm644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 	devicepkg_package $startdir $pkgname
 }
 
-sha512sums="d62b63160279f45cde855b0ed83382a3011b366d860a4718ba9f32d358fe855eb4d84996acf83417e760eb3749f6cddf0083ee797d1a8a2648d79410b6119c46  deviceinfo"
+sha512sums="d62b63160279f45cde855b0ed83382a3011b366d860a4718ba9f32d358fe855eb4d84996acf83417e760eb3749f6cddf0083ee797d1a8a2648d79410b6119c46  deviceinfo
+c6764223c9c19a71a8bcbf86bf738a13ed01e318cd8b5ad7aa521f27cc85d78f469d92f5725767fe507ef6338f20dbc107ed3fc5811e465c8335df57437d877e  initfs-hook.sh"
