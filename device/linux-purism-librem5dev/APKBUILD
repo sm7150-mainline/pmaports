@@ -30,7 +30,8 @@ builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
 	default_prepare
-	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+	REPLACE_GCCH=0 \
+		downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
