@@ -21,7 +21,7 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 		sleep 2
 
 		if [ -d "/dev/dri" ]; then
-			ck-launch-session kwin_wayland --drm --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
+			dbus-run-session ck-launch-session kwin_wayland --drm --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
 		else
 			# NOTE: using GALLIUM_DRIVER=llvmpipe might give you better performance (or not work at all.)
 			# If it does give you a performance gain, please open an issue to discuss how to implement this properly.
@@ -30,7 +30,7 @@ if test -z "${XDG_RUNTIME_DIR}"; then
 			export LIBGL_ALWAYS_SOFTWARE=1
 
 			echo "start_plasma.sh: using software rendering with: ${GALLIUM_DRIVER}" | logger -t "$(whoami):plasma-mobile"
-			ck-launch-session kwin_wayland --framebuffer --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
+			dbus-run-session ck-launch-session kwin_wayland --framebuffer --xwayland plasma-phone 2>&1 | logger -t "$(whoami):plasma-mobile"
 		fi
 	fi
 fi
