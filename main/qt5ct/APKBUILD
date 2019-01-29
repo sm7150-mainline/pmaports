@@ -1,0 +1,27 @@
+pkgname=qt5ct
+pkgver=0.37
+pkgrel=0
+pkgdesc="Qt5 Configuration Tool."
+arch="all"
+url="http://qt5ct.sourceforge.net"
+license="BSD-2-Clause"
+depends="qt5-qtsvg-dev"
+makedepends="$depends_dev qt5-qtbase-dev qt5-qttools-dev"
+source="http://downloads.sourceforge.net/project/qt5ct/qt5ct-$pkgver.tar.bz2"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	cd "$builddir"
+	qmake-qt5 qt5ct.pro 
+	make
+}
+
+check() {
+	cd "$builddir"	
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="685716b2e756ff433f5092cda981ef665ca5a44ad009745f51b38278c3d8eed6939fc52c6cf1f09046ab0a3910261892d7cf5250360874e2d7e4f12bff692da7  qt5ct-0.37.tar.bz2"
