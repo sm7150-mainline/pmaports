@@ -1,9 +1,9 @@
 # Reference: <https://postmarketos.org/vendorkernel>
-# Kernel config based on: arch/arm64/configs/b1c1_defconfig
+# Kernel config based on: arch/arm64/configs/lineageos_crosshatch_defconfig
 
 pkgname="linux-google-crosshatch"
 pkgver=4.9.96
-pkgrel=0
+pkgrel=1
 pkgdesc="Google Pixel 3 XL kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -19,8 +19,8 @@ HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="android_kernel_google_crosshatch"
-# AOSP December 2018.1 from android-msm-bluecross-4.9-pie-qpr1 branch
-_commit="641303def9a59cbf05c4068df5c30f0bb538dee0"
+# Lineage 16.0 branch
+_commit="f8cb98bcb606f94a2307f39c21dfb705fe7868d2"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
@@ -65,7 +65,7 @@ package() {
 	fi
 }
 
-sha512sums="21098a14515f5d4f2415950fbced8152607d47e0021d867a54450f2914e95a8ab862d18be6487723dd4c9f179eb691e7a734a173df94fc94f46341b1ee74a478  linux-google-crosshatch-641303def9a59cbf05c4068df5c30f0bb538dee0.tar.gz
+sha512sums="e5f840cc4f5a1c68150d397de079db51d51943b0ed2858011ed38b834d2fdfa1f88344b3dcbe886dea2a1b5ee959d6e7b918b009762d5e06a9edf807294647e1  linux-google-crosshatch-f8cb98bcb606f94a2307f39c21dfb705fe7868d2.tar.gz
 77569c52862efc83ecf9b28bdc6ce7357185014a947e86c3805b50204bb86ebb04669ccb193b9b240f1e05f4eb0d86afb39b2313b8b3f485806da2685dfb455f  config-google-crosshatch.aarch64
 720c5856b7d1d8b3cb20f77507818b7fe1b4950d444f7ed20cb02d255987d8860d5ed293e81ea326f147af13004b524886c733123794ac62978fda13689a5189  clk-qcom-mdss-fix-in-tree-build.patch
 0f536e5acd0f5e6d6774918d8e226ae1f4edc486596fc5c93a110b4eb2555e0f1281f460065928a7f7a272b886f61f7967fe60cc4952ed1f4b37143bd2a28962  init-initramfs-disable-do_skip_initramfs.patch
