@@ -25,3 +25,8 @@ if [ -f "$srcdir/90-$pkgname.rules" ]; then
 	install -Dm644 "$srcdir/90-$pkgname.rules" \
 		"$pkgdir/etc/udev/rules.d/90-$pkgname.rules"
 fi
+
+if [ -f "$srcdir/initfs-hook.sh" ]; then
+	install -Dm644 "$srcdir/initfs-hook.sh" \
+		"$pkgdir/etc/postmarketos-mkinitfs/hooks/00-$pkgname.sh"
+fi
