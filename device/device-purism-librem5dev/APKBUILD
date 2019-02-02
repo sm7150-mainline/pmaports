@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname="device-purism-librem5dev"
 pkgdesc="Purism Librem 5 Devkit"
-pkgver=0.2
-pkgrel=1
+pkgver=0.3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,23 +12,23 @@ makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	uboot-script.cmd
+	modprobe.d_rsi.conf
 "
 install="$pkgname.post-install"
 
 build() {
 	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
-	#  This disables bluetooth, but enables wifi.
-	echo "options rsi_91x dev_oper_mode=13 rsi_zone_enabled=1" > "$srcdir/rsi.conf"
 	devicepkg_build $startdir $pkgname
 }
 
 package() {
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
-	install -D -m644 "$srcdir/rsi.conf" "$pkgdir/etc/modprobe.d/rsi.conf"
+	install -D -m644 "$srcdir/modprobe.d_rsi.conf" "$pkgdir/etc/modprobe.d/rsi.conf"
 	devicepkg_package $startdir $pkgname
 }
 
 
 sha512sums="273eb3660542bdf97f7aa6362f10ba61bfe8146021cb694eb2ddaa3d9ed0180da03665c09164df5340f89cb4e21bd7133ef6bf1ffe6c97b0ca78e264608e0192  deviceinfo
-e52cbb518677070d5933d0d1415916b9a570d80f270edab4f14bd193716fd064b389ff1fed5db7efd9966ea953569a7922c5bee6f15405eaa93838e1c01ae2aa  uboot-script.cmd"
+e52cbb518677070d5933d0d1415916b9a570d80f270edab4f14bd193716fd064b389ff1fed5db7efd9966ea953569a7922c5bee6f15405eaa93838e1c01ae2aa  uboot-script.cmd
+d10531ad6646ad6cfaf8ee1b0cc38f4e5e2eb39599251b75f25e954f1105761d5480d92cbe06ad52560207b883439071db89b19babf046a810360bd07c52c655  modprobe.d_rsi.conf"
