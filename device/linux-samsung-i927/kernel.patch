@@ -1,0 +1,3087 @@
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index b0e966d625b9..0c4e7e5e27ba 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1078,7 +1078,8 @@ dtb-$(CONFIG_ARCH_TEGRA_2x_SOC) += \
+ 	tegra20-seaboard.dtb \
+ 	tegra20-tec.dtb \
+ 	tegra20-trimslice.dtb \
+-	tegra20-ventana.dtb
++	tegra20-ventana.dtb \
++	tegra20-glide.dtb
+ dtb-$(CONFIG_ARCH_TEGRA_3x_SOC) += \
+ 	tegra30-apalis-eval.dtb \
+ 	tegra30-apalis-v1.1-eval.dtb \
+diff --git a/arch/arm/boot/dts/tegra20-glide.dts b/arch/arm/boot/dts/tegra20-glide.dts
+new file mode 100644
+index 000000000000..76493614f6df
+--- /dev/null
++++ b/arch/arm/boot/dts/tegra20-glide.dts
+@@ -0,0 +1,1305 @@
++// SPDX-License-Identifier: GPL-2.0
++/dts-v1/;
++
++#include <dt-bindings/input/input.h>
++#include "tegra20.dtsi"
++
++// GPS
++&uarta {
++	status = "okay";
++
++	gnss {
++		// Actual chip is unknown
++		// (I don't want to teardown this thing)
++		compatible = "wi2wi,w2sg0084i";
++
++		sirf,onoff-gpios = <&gpio TEGRA_GPIO(N, 6) GPIO_ACTIVE_HIGH>;
++		// reset GPIO: B2
++		// Also depends on this, but no way to specify it
++		clocks = <&tegra_car TEGRA20_CLK_BLINK>;
++	};
++
++};
++
++// Debug console
++&uartb {
++	status = "okay";
++};
++
++// Bluetooth
++&uartc {
++	status = "okay";
++
++	bluetooth {
++		// can be changed to 4330 in linux v5.0
++		compatible = "brcm,bcm43438-bt";
++		max-speed = <921600>;
++		shutdown-gpios = <&gpio TEGRA_GPIO(J, 5) GPIO_ACTIVE_HIGH>;
++		device-wakeup-gpios = <&gpio TEGRA_GPIO(S, 1) GPIO_ACTIVE_HIGH>;
++		host-wakeup-gpios = <&gpio TEGRA_GPIO(S, 2) GPIO_ACTIVE_HIGH>;
++		clock-names = "lpo";
++		clocks = <&tegra_car TEGRA20_CLK_BLINK>;
++	};
++};
++
++/ {
++	model = "Samsung SGH-I927 Captivate Glide";
++	compatible = "samsung,i927", "nvidia,tegra20";
++
++	aliases {
++		rtc0 = "/i2c@7000d000/max8907@3c";
++		rtc1 = "/rtc@7000e000";
++		serial0 = &uartb;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x00000000 0x40000000>;
++	};
++
++
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		/* bootloader reads/writes magic values in this region */
++		bootloader_data: bootloader_data@1FF00000 {
++			reg = <0x1FF00000 0x00100000>;
++			no-map;
++		};
++	};
++
++	host1x@50000000 {
++		dc@54200000 {
++			rgb {
++				status = "okay";
++				nvidia,panel = <&panel>;
++			};
++		};
++#if 0
++		hdmi@54280000 {
++			status = "okay";
++
++			vdd-supply = <&hdmi_vdd_reg>;
++			pll-supply = <&hdmi_pll_reg>;
++			hdmi-supply = <&vdd_5v0_hdmi>;
++
++			nvidia,ddc-i2c-bus = <&hdmi_ddc>;
++			nvidia,hpd-gpio = <&gpio TEGRA_GPIO(N, 7) GPIO_ACTIVE_HIGH>;
++
++			port {
++				hdmi_to_mhl: endpoint {
++					remote-endpoint = <&mhl_to_hdmi>;
++				};
++			};
++		};
++#endif
++	};
++
++	pinmux@70000014 {
++		pinctrl-names = "default";
++		pinctrl-0 = <&state_default>;
++
++		state_default: pinmux {
++			ata {
++				nvidia,pins = "ata", "atc", "atd", "ate",
++					"gmb", "gmd", "irrx", "irtx",
++					"spid", "spie";
++				nvidia,function = "gmi";
++			};
++			atb {
++				nvidia,pins = "atb", "gma", "gme";
++				nvidia,function = "sdio4";
++			};
++			cdev1 {
++				nvidia,pins = "cdev1";
++				nvidia,function = "plla_out";
++			};
++			cdev2 {
++				nvidia,pins = "cdev2";
++				nvidia,function = "pllp_out4";
++			};
++			crtp {
++				nvidia,pins = "crtp";
++				nvidia,function = "crt";
++			};
++			csus {
++				nvidia,pins = "csus";
++				nvidia,function = "vi_sensor_clk";
++			};
++			dap1 {
++				nvidia,pins = "dap1";
++				nvidia,function = "dap1";
++			};
++			dap2 {
++				nvidia,pins = "dap2";
++				nvidia,function = "dap2";
++			};
++			dap3 {
++				nvidia,pins = "dap3";
++				nvidia,function = "dap3";
++			};
++			dap4 {
++				nvidia,pins = "dap4";
++				nvidia,function = "dap4";
++			};
++			spif {
++				nvidia,pins = "spif", "uac";
++				nvidia,function = "rsvd4";
++			};
++			dta {
++				nvidia,pins = "dta", "dtb", "dtc", "dtd", "dte";
++				nvidia,function = "vi";
++			};
++			dtf {
++				nvidia,pins = "dtf";
++				nvidia,function = "i2c3";
++			};
++			gmc {
++				nvidia,pins = "gmc";
++				nvidia,function = "uartd";
++			};
++			gpu {
++				nvidia,pins = "gpu", "uaa", "uab";
++				nvidia,function = "uarta";
++			};
++			gpu7 {
++				nvidia,pins = "gpu7";
++				nvidia,function = "rtck";
++			};
++			gpv {
++				nvidia,pins = "gpv", "slxa", "slxk";
++				nvidia,function = "pcie";
++			};
++			hdint {
++				nvidia,pins = "hdint", "spdi", "spdo";
++				nvidia,function = "rsvd2";
++			};
++			i2cp {
++				nvidia,pins = "i2cp";
++				nvidia,function = "i2cp";
++			};
++			kbca {
++				nvidia,pins = "kbca", "kbcb", "kbcc", "kbcd", "kbce", "kbcf";
++				nvidia,function = "kbc";
++			};
++			lcsn {
++				nvidia,pins = "lcsn", "lsck", "lsda", "lsdi";
++				nvidia,function = "spi3";
++			};
++			ld0 {
++				nvidia,pins = "ld0", "ld1", "ld2",
++					"ld3", "ld4", "ld5", "ld6", "ld7",
++					"ld8", "ld9", "ld10", "ld11", "ld12",
++					"ld13", "ld14", "ld15", "ld16", "ld17",
++					"ldc", "ldi", "lhp0", "lhp1", "lhp2",
++					"lhs", "lm0", "lm1", "lpp", "lpw0",
++					"lpw1", "lpw2", "lsc0", "lsc1", "lspi",
++					"lvp0", "lvp1", "lvs";
++				nvidia,function = "displaya";
++			};
++			owc {
++				nvidia,pins = "owc";
++				nvidia,function = "owr";
++			};
++			pmc {
++				nvidia,pins = "pmc";
++				nvidia,function = "pwr_on";
++			};
++			rm {
++				nvidia,pins = "rm";
++				nvidia,function = "i2c1";
++			};
++			sdb {
++				nvidia,pins = "sdb", "sdc", "sdd";
++				nvidia,function = "sdio3";
++			};
++			sdio1 {
++				nvidia,pins = "sdio1";
++				nvidia,function = "sdio1";
++			};
++			slxc {
++				nvidia,pins = "slxc", "slxd";
++				nvidia,function = "spi4";
++			};
++			spdi {
++				nvidia,pins = "spdi", "spdo";
++				nvidia,function = "rsvd2";
++			};
++			spig {
++				nvidia,pins = "spig", "spih";
++				nvidia,function = "spi2_alt";
++			};
++			uda {
++				nvidia,pins = "uda";
++				nvidia,function = "spi1";
++			};
++			uad {
++				nvidia,pins = "uad";
++				nvidia,function = "irda";
++			};
++			uca {
++				nvidia,pins = "uca", "ucb";
++				nvidia,function = "uartc";
++			};
++			spia {
++				nvidia,pins = "spia", "spib", "spic";
++				nvidia,function = "spi2";
++			};
++			conf_cdev1 {
++				nvidia,pins = "cdev1", "cdev2", "dap1", "dap2",
++					"dap3", "dap4", "ddc", "dte", "gma",
++					"gmc", "gmd", "gme", "gpu7", "gpv",
++					"i2cp", "pta", "rm", "sdio1", // "sdb",
++					"uac", "uda";
++				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
++				nvidia,tristate = <TEGRA_PIN_DISABLE>;
++			};
++			conf_ck32 {
++				nvidia,pins = "ck32", "ddrc", "pmca", "pmcb",
++					"pmcc", "pmcd", "xm2c", "xm2d";
++				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
++			};
++			conf_crtp {
++				nvidia,pins = "crtp";
++				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
++				nvidia,tristate = <TEGRA_PIN_ENABLE>;
++			};
++			conf_csus {
++				nvidia,pins = "csus", "spid";
++				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
++				nvidia,tristate = <TEGRA_PIN_ENABLE>;
++			};
++			conf_ata {
++				nvidia,pins = "ata", "atb", "atc", "ate",
++					"dtf", "gmb", "gpu", "irrx", "irtx",
++					"kbca", "kbcc", "kbcd", "kbce",
++					"kbcf", "sdc", "sdd", "spdi",
++					"spib", "spig", "spih", "uaa", "uab",
++					"uad", "uca", "ucb";
++				nvidia,pull = <TEGRA_PIN_PULL_UP>;
++				nvidia,tristate = <TEGRA_PIN_DISABLE>;
++			};
++			conf_owc {
++				nvidia,pins = "owc";
++				nvidia,pull = <TEGRA_PIN_PULL_UP>;
++				nvidia,tristate = <TEGRA_PIN_ENABLE>;
++			};
++			conf_hdint {
++				nvidia,pins = "hdint", "lcsn", "lhs", "lm0",
++					"lm1", "lpw1", "lsc0", "lsck", "lsda",
++					"lsdi", "lspi", "lvs", "pmc", "sdb",
++					"ldc", "lpw0", "lpw2", "lsc1", "ld0",
++					"ld1", "ld10", "ld11", "ld12", "ld13",
++					"ld14", "ld15", "ld16", "ld17", "ld2",
++					"ld3", "ld4", "ld5", "ld6", "ld7",
++					"ld8", "ld9", "ldi", "lhp0", "lhp1",
++					"lhp2", "lpp", "lvp1";
++				nvidia,tristate = <TEGRA_PIN_DISABLE>;
++			};
++			conf_lvp0 {
++				nvidia,pins = "lvp0";
++				nvidia,tristate = <TEGRA_PIN_ENABLE>;
++			};
++			conf_atd {
++				nvidia,pins = "atd", "dta", "dtb", "dtc",
++					"kbcb", "slxa", "slxc", "slxd", "slxk",
++					"spdo", "spia", "spic", "spie", "spif";
++				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
++				nvidia,tristate = <TEGRA_PIN_DISABLE>;
++			};
++			conf_pmce {
++				nvidia,pins = "pmce";
++				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
++			};
++
++			drive_ao1 {
++				nvidia,pins = "drive_ao1";
++				nvidia,high-speed-mode = <TEGRA_PIN_DISABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++
++			drive_at1 {
++				nvidia,pins = "drive_at1";
++				nvidia,high-speed-mode = <TEGRA_PIN_DISABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++
++			drive_dbg {
++				nvidia,pins = "drive_dbg";
++				nvidia,high-speed-mode = <TEGRA_PIN_DISABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++
++			drive_vi1 {
++				nvidia,pins = "drive_vi1";
++				nvidia,high-speed-mode = <TEGRA_PIN_DISABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++
++			drive_vi2 {
++				nvidia,pins = "drive_vi2";
++				nvidia,high-speed-mode = <TEGRA_PIN_DISABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++
++			drive_sdio1 {
++				nvidia,pins = "drive_sdio1";
++				nvidia,high-speed-mode = <TEGRA_PIN_DISABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++
++			drive_ddc {
++				nvidia,pins = "drive_ddc";
++				nvidia,high-speed-mode = <TEGRA_PIN_DISABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_FASTEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_FASTEST>;
++			};
++
++			/*
++			 * DTF, I2CP and RM drive pingroups originaly specified, but they're
++			 * nonexistent here...
++			 */
++
++			drive_dap2 {
++				nvidia,pins = "drive_dap2";
++				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++
++			drive_dap3 {
++				nvidia,pins = "drive_dap3";
++				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
++				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
++				nvidia,low-power-mode = <TEGRA_PIN_LP_DRIVE_DIV_1>;
++				nvidia,pull-down-strength = <31>;
++				nvidia,pull-up-strength = <31>;
++				nvidia,slew-rate-rising = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++				nvidia,slew-rate-falling = <TEGRA_PIN_SLEW_RATE_SLOWEST>;
++			};
++		};
++
++		state_i2cmux_ddc: pinmux_i2cmux_ddc {
++			ddc {
++				nvidia,pins = "ddc";
++				nvidia,function = "i2c2";
++			};
++			pta {
++				nvidia,pins = "pta";
++				nvidia,function = "rsvd4";
++			};
++		};
++
++		state_i2cmux_pta: pinmux_i2cmux_pta {
++			ddc {
++				nvidia,pins = "ddc";
++				nvidia,function = "rsvd4";
++			};
++			pta {
++				nvidia,pins = "pta";
++				nvidia,function = "i2c2";
++			};
++		};
++
++		state_i2cmux_idle: pinmux_i2cmux_idle {
++			ddc {
++				nvidia,pins = "ddc";
++				nvidia,function = "rsvd4";
++			};
++			pta {
++				nvidia,pins = "pta";
++				nvidia,function = "rsvd4";
++			};
++		};
++
++		state_isa1200_on: state_isa1200_on {
++			cdev2 {
++				nvidia,pins = "cdev2";
++				nvidia,pull = <TEGRA_PIN_PULL_UP>;
++				nvidia,tristate = <TEGRA_PIN_DISABLE>;
++			};
++		};
++
++		state_isa1200_off: state_isa1200_off {
++			cdev2 {
++				nvidia,pins = "cdev2";
++				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
++				nvidia,tristate = <TEGRA_PIN_ENABLE>;
++			};
++		};
++
++	};
++
++	i2s@70002800 {
++		status = "okay";
++	};
++
++	serial@70006040 {
++		status = "okay";
++	};
++
++	i2c@7000c000 {
++		status = "okay";
++		clock-frequency = <400000>;
++
++		gyro@68 {
++			compatible = "invensense,mpu3050";
++			reg = <0x68>;
++			interrupt-parent = <&gpio>;
++			interrupts = <TEGRA_GPIO(A, 0) IRQ_TYPE_EDGE_FALLING>;
++			mount-matrix = "0", "1", "0",
++				"-1", "0", "0",
++				"0", "0", "-1";
++
++			i2c-gate {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				accel@f {
++					compatible = "kionix,kxtf9";
++					reg = <0xf>;
++					mount-matrix = "1", "0", "0",
++						"0", "1", "0",
++						"0", "0", "1";
++				};
++			};
++		};
++	};
++
++	i2c@7000c400 {
++		status = "okay";
++		clock-frequency = <100000>;
++	};
++
++	i2cmux {
++		compatible = "i2c-mux-pinctrl";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		i2c-parent = <&{/i2c@7000c400}>;
++
++		pinctrl-names = "ddc", "pta", "idle";
++		pinctrl-0 = <&state_i2cmux_ddc>;
++		pinctrl-1 = <&state_i2cmux_pta>;
++		pinctrl-2 = <&state_i2cmux_idle>;
++
++		i2c@0 {
++			reg = <0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			mxt224e@4a {
++				compatible = "atmel,maxtouch";
++				reg = <0x4a>;
++				interrupt-parent = <&gpio>;
++				interrupts = <TEGRA_GPIO(D, 7) IRQ_TYPE_LEVEL_LOW>;
++
++				avdd-supply = <&tsp_avdd>;
++				lvsio-supply = <&tsp_lvsio>;
++				vdd-supply = <&tsp_vdd>;
++			};
++		};
++
++		// Unused?
++		i2c@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++	};
++
++	i2c@7000c500 {
++		status = "okay";
++		clock-frequency = <400000>;
++
++		/* Not supported - no DT binding */
++		/* m5mo@1f {
++			reg = <0x1f>;
++		}; */
++
++		/* Not supported - no DT binding */
++		/* s5k6aafx@3c {
++			reg = <0x3c>;
++		}; */
++	};
++
++	i2c@7000d000 {
++		status = "okay";
++		clock-frequency = <400000>;
++
++		pmic: max8907@3c {
++			compatible = "maxim,max8907";
++			reg = <0x3c>;
++			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
++
++			maxim,system-power-controller;
++
++			mbatt-supply = <&usb0_vbus_reg>;
++			in-v1-supply = <&mbatt_reg>;
++			in-v2-supply = <&mbatt_reg>;
++			in-v3-supply = <&mbatt_reg>;
++			in1-supply = <&mbatt_reg>;
++			in2-supply = <&mbatt_reg>;
++			in3-supply = <&mbatt_reg>;
++			in4-supply = <&mbatt_reg>;
++			in5-supply = <&mbatt_reg>;
++			in6-supply = <&mbatt_reg>;
++			in7-supply = <&mbatt_reg>;
++			in8-supply = <&mbatt_reg>;
++			in9-supply = <&mbatt_reg>;
++			in10-supply = <&mbatt_reg>;
++			in11-supply = <&mbatt_reg>;
++			in12-supply = <&mbatt_reg>;
++			in13-supply = <&mbatt_reg>;
++			in14-supply = <&mbatt_reg>;
++			in15-supply = <&mbatt_reg>;
++			in16-supply = <&mbatt_reg>;
++			in17-supply = <&mbatt_reg>;
++			in18-supply = <&mbatt_reg>;
++			in19-supply = <&mbatt_reg>;
++			in20-supply = <&mbatt_reg>;
++
++			regulators {
++				mbatt_reg: mbatt {
++					regulator-name = "vbat_pmu";
++					regulator-always-on;
++				};
++
++				sd1 {
++					regulator-name = "nvvdd_sv1";
++					regulator-min-microvolt = <637500>;
++					regulator-max-microvolt = <1425000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				sd2 {
++					regulator-name = "nvvdd_sv2,vdd_core,vdd_aon";
++					regulator-min-microvolt = <637500>;
++					regulator-max-microvolt = <1425000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				cpu_reg_supply: sd3 {
++					regulator-name = "nvvdd_sv3";
++					regulator-min-microvolt = <750000>;
++					regulator-max-microvolt = <3900000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				reg_thrm: ldo1 {
++					regulator-name = "nvvdd_ldo1,vadc_3v3";
++					regulator-min-microvolt = <3300000>;
++					regulator-max-microvolt = <3300000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				ldo2 {
++					regulator-name = "nvvdd_ldo2,vap_pll_1v1";
++					regulator-min-microvolt = <1100000>;
++					regulator-max-microvolt = <1100000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				vlcd_1v8: ldo3 {
++					regulator-name = "nvvdd_ldo3,vlcd_1v8";
++					regulator-min-microvolt = <1800000>;
++					regulator-max-microvolt = <1800000>;
++				};
++
++				vbus1_reg: ldo4 {
++					regulator-name = "nvvdd_ldo4,vap_usb_3v3";
++					regulator-min-microvolt = <3300000>;
++					regulator-max-microvolt = <3300000>;
++				};
++
++				vcc_3v3_mhl: ldo5 {
++					regulator-name = "nvvdd_ldo5,vcc_3v3_mhl";
++					regulator-min-microvolt = <3300000>;
++					regulator-max-microvolt = <3300000>;
++				};
++
++				hdmi_pll_reg: ldo6 {
++					regulator-name = "nvvdd_ldo6,avdd_hdmi_pll_1v8";
++					regulator-min-microvolt = <1800000>;
++					regulator-max-microvolt = <1800000>;
++				};
++
++				vcc_1v8_mhl: ldo7 {
++					regulator-name = "nvvdd_ldo7,vcc_1v8_mhl";
++					regulator-min-microvolt = <1800000>;
++					regulator-max-microvolt = <1800000>;
++				};
++
++				ldo8 {
++					regulator-name = "nvvdd_ldo8,led_a_2v8";
++					regulator-min-microvolt = <2800000>;
++					regulator-max-microvolt = <2800000>;
++				};
++
++				ldo9 {
++					regulator-name = "nvvdd_ldo9";
++					regulator-min-microvolt = <3300000>;
++					regulator-max-microvolt = <3300000>;
++				};
++
++				ldo10 {
++					regulator-name = "nvvdd_ldo10,vsensor_1v8";
++					regulator-min-microvolt = <1800000>;
++					regulator-max-microvolt = <1800000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				ldo11 {
++					regulator-name = "nvvdd_ldo11,vcc_2v8_pda";
++					regulator-min-microvolt = <2800000>;
++					regulator-max-microvolt = <2800000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				vlcd_3v0: ldo12 {
++					regulator-name = "nvvdd_ldo12,vlcd_3v0";
++					regulator-min-microvolt = <3000000>;
++					regulator-max-microvolt = <3000000>;
++				};
++
++				tsp_avdd: ldo13 {
++					regulator-name = "nvvdd_ldo13,tsp_avdd_3v3";
++					regulator-min-microvolt = <3300000>;
++					regulator-max-microvolt = <3300000>;
++					regulator-always-on;
++				};
++
++				ldo14 {
++					regulator-name = "nvvdd_ldo14";
++					regulator-min-microvolt = <2800000>;
++					regulator-max-microvolt = <2800000>;
++				};
++
++				tsp_lvsio: ldo15 {
++					regulator-name = "nvvdd_ldo15,tsp_vdd_lvsio";
++					regulator-min-microvolt = <1800000>;
++					regulator-max-microvolt = <1800000>;
++					regulator-always-on;
++				};
++
++				vmmc_reg: ldo16 {
++					regulator-name = "nvvdd_ldo16,vtf_3v3,vmmc";
++					regulator-min-microvolt = <3300000>;
++					regulator-max-microvolt = <3300000>;
++				};
++
++				ldo17 {
++					regulator-name = "nvvdd_ldo17,vap_mipi_1v2";
++					regulator-min-microvolt = <1200000>;
++					regulator-max-microvolt = <1200000>;
++				};
++
++				tsp_vdd: ldo18 {
++					regulator-name = "nvvdd_ldo18,tsp_vdd_1v8";
++					regulator-min-microvolt = <1800000>;
++					regulator-max-microvolt = <1800000>;
++					regulator-always-on;
++				};
++
++				hdmi_vdd_reg: ldo19 {
++					regulator-name = "nvvdd_ldo19,avdd_hdmi_3v3";
++					regulator-min-microvolt = <3300000>;
++					regulator-max-microvolt = <3300000>;
++				};
++
++				ldo20 {
++					regulator-name = "nvvdd_ldo20,t_key_3v0";
++					regulator-min-microvolt = <3000000>;
++					regulator-max-microvolt = <3000000>;
++				};
++
++				out5v {
++					regulator-name = "usb0_vbus_reg";
++					regulator-min-microvolt = <5000000>;
++					regulator-max-microvolt = <5000000>;
++					regulator-always-on;
++					regulator-boot-on;
++				};
++
++				out33v {
++					regulator-name = "out33v";
++				};
++
++				bbat {
++					regulator-name = "bbat";
++					regulator-always-on;
++				};
++
++				sdby {
++					regulator-name = "sdby";
++				};
++
++				vrtc {
++					regulator-name = "vrtc";
++				};
++			};
++		};
++
++		max8952@60 {
++			compatible = "maxim,max8952";
++			reg = <0x60>;
++			max8952,dvs-mode-microvolt = <1100000>, <1100000>, <1100000>, <1100000>;
++			max8952,default-mode = <1>;
++			vin-supply = <&cpu_reg_supply>;
++
++			regulator-name = "vdd_arm";
++			regulator-min-microvolt = <770000>;
++			regulator-max-microvolt = <1100000>;
++			regulator-always-on;
++		};
++	};
++
++	i2c@5 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(O, 0) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(O, 7) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		//interrupt-parent = <&gpio>;
++		//interrupts = <TEGRA_GPIO(I, 5) IRQ_TYPE_LEVEL_HIGH>;
++
++		// Use 17040 as 17043 is compatible - no ALRT feature
++		max17043@36 {
++			compatible = "maxim,max17040";
++			reg = <0x36>;
++		};
++	};
++
++	i2c@7 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(O, 4) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(O, 2) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <2>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ak8975@c {
++			compatible = "asahi-kasei,ak8975";
++			reg = <0xc>;
++			interrupt-parent = <&gpio>;
++			interrupts = <TEGRA_GPIO(K, 4) IRQ_TYPE_LEVEL_HIGH>;
++		};
++	};
++
++	i2c@8 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(G, 3) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(I, 0) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		wm8994: wm8994@1a {
++			compatible = "wlf,wm8994";
++			reg = <0x1a>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++
++			wlf,ldo1ena =  <&gpio TEGRA_GPIO(X, 5) GPIO_ACTIVE_HIGH>;
++
++		};
++	};
++
++	i2c@9 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(Y, 2) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(Y, 0) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <2>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		interrupt-parent = <&gpio>;
++		interrupts = <TEGRA_GPIO(O, 1) IRQ_TYPE_LEVEL_HIGH>;
++
++		/* Not supported - no driver */
++		/* cm3663@11 {
++			reg = <0x11>;
++		}; */
++	};
++
++	i2c@11 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(BB, 4) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(BB, 1) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		interrupt-parent = <&gpio>;
++		interrupts = <TEGRA_GPIO(L, 1) IRQ_TYPE_LEVEL_HIGH>;
++
++		/* Not supported - no DT bindings */
++		/* fsa9480@25 {
++			reg = <0x25>;
++		}; */
++	};
++
++	hdmi_ddc: i2c@13 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(D, 4) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(D, 3) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <5>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++	i2c@14 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(K, 3) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(J, 0) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <5>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++#if 0
++		sii9234@39 {
++			compatible = "sil,sii9234";
++			reg = <0x39>;
++			avcc33-supply = <&vcc_3v3_mhl>;
++			iovcc18-supply = <&vcc_1v8_mhl>;
++			avcc12-supply = <&vdd_hdmi_ldo>;
++			cvcc12-supply = <&vdd_hdmi_ldo>;
++			interrupt-parent = <&gpio>;
++			interrupts = <TEGRA_GPIO(H, 0) IRQ_TYPE_LEVEL_HIGH>;
++			reset-gpios = <&gpio TEGRA_GPIO(H, 1) GPIO_ACTIVE_LOW>;
++
++			port {
++				mhl_to_hdmi: endpoint {
++					remote-endpoint = <&hdmi_to_mhl>;
++				};
++			};
++		};
++#endif
++	};
++
++	i2c@15 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(Y, 3) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(Y, 1) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		interrupt-parent = <&gpio>;
++		interrupts = <TEGRA_GPIO(U, 6) IRQ_TYPE_LEVEL_HIGH>;
++
++		nct1008@4c {
++			compatible = "onnn,nct1008";
++			reg = <0x4c>;
++			vcc-supply = <&reg_thrm>;
++			interrupt-parent = <&gpio>;
++			interrupts = <TEGRA_GPIO(U, 6) IRQ_TYPE_LEVEL_LOW>;
++			#thermal-sensor-cells = <1>;
++		};
++	};
++
++	i2c@16 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(L, 7) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(L, 6) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Not supported - no driver?/no DT binding? */
++		/* m5mo_pmic@3e {
++			reg = <0x3e>;
++		}; */
++	};
++
++	i2c@17 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(Z, 3) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(C, 6) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		isa1200@48 {
++			compatible = "samsung_p3,isa1200_vibrator";
++			reg = <0x48>;
++			enable-gpio = <&gpio TEGRA_GPIO(R, 6) GPIO_ACTIVE_HIGH>;
++
++			max-timeout = <10000>;
++			ctrl0 = <17>;
++			ctrl1 = <192>;
++			ctrl2 = <0>;
++			ctrl4 = <0>;
++			pll = <0x23>;
++			duty = <0x85>;
++			period = <0x86>;
++
++			clocks = <&tegra_car TEGRA20_CLK_CDEV2>;
++			clock-names = "vibrator-clk";
++
++			pinctrl-names = "on", "off";
++			pinctrl-0 = <&state_isa1200_on>;
++			pinctrl-1 = <&state_isa1200_off>;
++		};
++	};
++
++	i2c@19 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(T, 6) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(T, 5) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Not supported - no driver */
++		/* melfas-touchkey@20 {
++			reg = <0x20>;
++		}; */
++	};
++
++	i2c@20 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpio TEGRA_GPIO(X, 2) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpio TEGRA_GPIO(X, 0) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		i2c-gpio,delay-us = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		stmpe1801@40 {
++			compatible = "st,stmpe1801";
++			reg = <0x40>;
++			interrupt-parent = <&gpio>;
++			interrupts = <TEGRA_GPIO(C, 7) IRQ_TYPE_EDGE_FALLING>;
++
++			stmpe_keypad {
++				compatible = "st,stmpe-keypad";
++				debounce-interval = <10>;
++				st,scan-count = <5>;
++				st,no-autorepeat;
++				keypad,num-rows = <8>;
++				keypad,num-columns = <6>;
++
++				linux,keymap = <
++					/* row, col, code */
++					MATRIX_KEY(0, 0, KEY_R)
++					MATRIX_KEY(0, 1, KEY_G)
++					MATRIX_KEY(0, 2, KEY_V)
++					MATRIX_KEY(0, 3, KEY_LEFTCTRL /* KEY_LEFTMETA */)
++					MATRIX_KEY(0, 4, KEY_MENU)
++					MATRIX_KEY(0, 5, KEY_HOME)
++
++					MATRIX_KEY(1, 0, KEY_T)
++					MATRIX_KEY(1, 1, KEY_H)
++					MATRIX_KEY(1, 2, KEY_B)
++					MATRIX_KEY(1, 3, KEY_TAB /* KEY_RIGHTMETA */)
++					MATRIX_KEY(1, 4, KEY_Q)
++					MATRIX_KEY(1, 5, KEY_FN)
++
++					MATRIX_KEY(2, 0, KEY_Y)
++					MATRIX_KEY(2, 1, KEY_J)
++					MATRIX_KEY(2, 2, KEY_N)
++					MATRIX_KEY(2, 3, KEY_SPACE)
++					MATRIX_KEY(2, 4, KEY_A)
++					MATRIX_KEY(2, 5, KEY_LEFTSHIFT)
++
++					MATRIX_KEY(3, 0, KEY_U)
++					MATRIX_KEY(3, 1, KEY_K)
++					MATRIX_KEY(3, 2, KEY_M)
++					MATRIX_KEY(3, 3, KEY_COMMA)
++					MATRIX_KEY(3, 4, KEY_S)
++					MATRIX_KEY(3, 5, KEY_Z)
++
++					MATRIX_KEY(4, 0, KEY_I)
++					MATRIX_KEY(4, 1, KEY_L)
++					MATRIX_KEY(4, 2, KEY_LEFT)
++					MATRIX_KEY(4, 3, KEY_DOT)
++					MATRIX_KEY(4, 4, KEY_W)
++					MATRIX_KEY(4, 5, KEY_X)
++
++					MATRIX_KEY(5, 0, KEY_O)
++					MATRIX_KEY(5, 1, KEY_UP)
++					MATRIX_KEY(5, 2, KEY_OK)
++					MATRIX_KEY(5, 3, KEY_QUESTION)
++					MATRIX_KEY(5, 4, KEY_E)
++					MATRIX_KEY(5, 5, KEY_C)
++
++					MATRIX_KEY(6, 0, KEY_P)
++					MATRIX_KEY(6, 1, KEY_ENTER)
++					MATRIX_KEY(6, 2, KEY_RIGHT)
++					MATRIX_KEY(6, 3, KEY_DOWN)
++					MATRIX_KEY(6, 4, KEY_D)
++
++					MATRIX_KEY(7, 0, KEY_BACKSPACE /* KEY_DELETE */)
++					MATRIX_KEY(7, 1, KEY_BACK)
++					MATRIX_KEY(7, 2, KEY_SEARCH)
++					MATRIX_KEY(7, 3, KEY_SLASH /* KEY_WWW */)
++					MATRIX_KEY(7, 4, KEY_F)
++					MATRIX_KEY(7, 5, KEY_FN) >;
++			};
++
++			stmpegpio: stmpe_gpio {
++				compatible = "st,stmpe-gpio";
++				gpio-controller;
++				#gpio-cells = <2>;
++			};
++		};
++	};
++
++	pmc@7000e400 {
++		nvidia,invert-interrupt;
++		nvidia,suspend-mode = <0>;
++		nvidia,cpu-pwr-good-time = <2000>;
++		nvidia,cpu-pwr-off-time = <0>;
++		nvidia,core-pwr-good-time = <0x7e7e 0x7e7e>;
++		nvidia,core-pwr-off-time = <0>;
++		nvidia,core-power-req-active-high;
++		nvidia,sys-clock-req-active-high;
++		nvidia,combined-power-req;
++		nvidia,lp0-vec = <0x1819E000 8192>;
++	};
++
++	usb@c5000000 {
++		compatible = "nvidia,tegra20-udc";
++		status = "okay";
++		dr_mode = "peripheral"; // otg
++	};
++
++	usb-phy@c5000000 {
++		status = "okay";
++		vbus-supply = <&vbus1_reg>;
++	};
++
++#if 0
++	usb@c5004000 {
++		status = "okay";
++	};
++
++	usb-phy@c5004000 {
++		status = "okay";
++	};
++#endif
++
++	wifi_pwrseq: bcm4330_pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		clocks = <&tegra_car TEGRA20_CLK_BLINK>;
++		clock-names = "ext_clock";
++		power-off-delay-us = <100000>;
++		post-power-on-delay-ms = <100>;
++	};
++
++	sdhci@c8000000 {
++		status = "okay";
++		bus-width = <4>;
++		power-gpios = <&gpio TEGRA_GPIO(J, 2) GPIO_ACTIVE_HIGH>;
++		mmc-pwrseq = <&wifi_pwrseq>;
++		non-removable;
++		wakeup-source;
++		post-power-on-delay-ms = <100>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		bcm4330@1 {
++			reg = <1>;
++			comaptible = "brcm,bcm4329-fmac";
++			interrupt-parent = <&gpio>;
++			interrupts = <TEGRA_GPIO(S, 2) IRQ_TYPE_EDGE_BOTH>;
++			interrupt-names = "host-wake";
++		};
++
++	};
++
++	// SD card
++	sdhci@c8000400 {
++		status = "okay";
++		bus-width = <4>;
++		// cd-gpios = <&stmpegpio 16 GPIO_ACTIVE_HIGH>;
++		cd-gpios = <&gpio TEGRA_GPIO(V, 6) GPIO_ACTIVE_HIGH>;
++		vmmc-supply = <&vmmc_reg>;
++		broken-cd;
++		keep-power-in-suspend;
++	};
++
++	// internal memory
++	sdhci@c8000600 {
++		status = "okay";
++		bus-width = <8>;
++		non-removable;
++		keep-power-in-suspend;
++	};
++
++	clocks {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		clk32k_in: clock@0 {
++			compatible = "fixed-clock";
++			reg = <0>;
++			#clock-cells = <0>;
++			clock-frequency = <32768>;
++		};
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++
++		power {
++			label = "Power";
++			gpios = <&gpio TEGRA_GPIO(U, 5) GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_POWER>;
++			debounce-interval = <10>;
++			wakeup-source;
++		};
++
++		vol_up {
++			label = "Volume up";
++			gpios = <&gpio TEGRA_GPIO(Q, 1) GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_VOLUMEUP>;
++			debounce-interval = <10>;
++		};
++
++		vol_down {
++			label = "Volume down";
++			gpios = <&gpio TEGRA_GPIO(Q, 2) GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_VOLUMEDOWN>;
++			debounce-interval = <10>;
++		};
++	};
++
++	spi@7000d800 {
++		status = "okay";
++		spi-max-frequency = <1000000>;
++
++		panel: panel@2 {
++			compatible = "samsung,s6e63m0";
++			reg = <2>;
++			spi-max-frequency = <1000000>;
++			spi-cpol;
++			spi-cpha;
++			vdd3-supply = <&vlcd_1v8>;
++			vci-supply = <&vlcd_3v0>;
++			reset-gpios = <&gpio TEGRA_GPIO(C, 1) GPIO_ACTIVE_HIGH>;
++			panel-width-mm = <52>;
++			panel-height-mm = <87>;
++			/* 25 + 1 for regulator */
++			power-on-delay = <26>;
++			reset-delay = <10>;
++
++			display-timings {
++				timing {
++					clock-frequency = <25000000>;
++					hactive = <480>;
++					vactive = <800>;
++					hfront-porch = <16>;
++					vfront-porch = <27>; // 28
++					hback-porch = <16>;
++					vback-porch = <2>; // 1
++					hsync-len = <2>;
++					vsync-len = <2>;
++					hsync-active = <0>;
++					vsync-active = <0>;
++					nvidia,h-ref-to-sync = <1>; // 0
++					nvidia,v-ref-to-sync = <1>;
++				};
++			};
++		};
++
++	};
++
++	regulators {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		usb0_vbus_reg: regulator@0 {
++			compatible = "regulator-fixed";
++			reg = <0>;
++			regulator-name = "usb0_vbus";
++			regulator-min-microvolt = <5000000>;
++			regulator-max-microvolt = <5000000>;
++			regulator-always-on;
++			regulator-boot-on;
++		};
++
++		vdd_5v0_hdmi: regulator@4 {
++			compatible = "regulator-fixed";
++			reg = <4>;
++			regulator-name = "+5V_HDMI_CON";
++			regulator-min-microvolt = <5000000>;
++			regulator-max-microvolt = <5000000>;
++		};
++
++		vdd_hdmi_ldo: regulator@5 {
++			compatible = "regulator-fixed";
++			reg = <5>;
++			regulator-name = "vdd-hdmi-ldo";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			gpio = <&gpio TEGRA_GPIO(H, 2) GPIO_ACTIVE_HIGH>;
++			enable-active-high;
++		};
++	};
++
++	sound {
++		compatible = "nvidia,tegra-audio-wm8994";
++		nvidia,model = "wm8994-aif1";
++
++		nvidia,i2s-controller = <&tegra_i2s1>;
++		nvidia,audio-codec = <&wm8994>;
++
++		clocks = <&tegra_car TEGRA20_CLK_PLL_A>,
++			 <&tegra_car TEGRA20_CLK_PLL_A_OUT0>,
++			 <&tegra_car TEGRA20_CLK_CDEV1>;
++		clock-names = "pll_a", "pll_a_out0", "mclk";
++	};
++};
+diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
+index 6020c30a33b3..d99e84c5613a 100644
+--- a/drivers/gpu/drm/panel/Kconfig
++++ b/drivers/gpu/drm/panel/Kconfig
+@@ -186,4 +186,10 @@ config DRM_PANEL_SITRONIX_ST7789V
+ 	  Say Y here if you want to enable support for the Sitronix
+ 	  ST7789V controller for 240x320 LCD panels
+ 
++config DRM_PANEL_SAMSUNG_S6E63M0
++	tristate "Samsung S6E63M0 RGB/SPI panel"
++	depends on OF && SPI
++	select VIDEOMODE_HELPERS
++
++
+ endmenu
+diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
+index 5ccaaa9d13af..d2bc2bae2188 100644
+--- a/drivers/gpu/drm/panel/Makefile
++++ b/drivers/gpu/drm/panel/Makefile
+@@ -19,3 +19,4 @@ obj-$(CONFIG_DRM_PANEL_SEIKO_43WVF1G) += panel-seiko-43wvf1g.o
+ obj-$(CONFIG_DRM_PANEL_SHARP_LQ101R1SX01) += panel-sharp-lq101r1sx01.o
+ obj-$(CONFIG_DRM_PANEL_SHARP_LS043T1LE01) += panel-sharp-ls043t1le01.o
+ obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7789V) += panel-sitronix-st7789v.o
++obj-$(CONFIG_DRM_PANEL_SAMSUNG_S6E63M0) += panel-samsung-s6e63m0.o
+diff --git a/drivers/gpu/drm/panel/panel-samsung-s6e63m0.c b/drivers/gpu/drm/panel/panel-samsung-s6e63m0.c
+new file mode 100644
+index 000000000000..c66cc46e0f44
+--- /dev/null
++++ b/drivers/gpu/drm/panel/panel-samsung-s6e63m0.c
+@@ -0,0 +1,376 @@
++/*
++ * s6e63m0 AMOLED LCD drm_panel driver.
++ *
++ * Copyright (c) 2014 Samsung Electronics Co., Ltd
++ * Derived from drivers/gpu/drm/panel/panel-samsung-ld9040.c
++ *
++ * Andrzej Hajda <a.hajda@samsung.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++*/
++
++#include <drm/drmP.h>
++#include <drm/drm_panel.h>
++
++#include <linux/gpio/consumer.h>
++#include <linux/regulator/consumer.h>
++#include <linux/spi/spi.h>
++
++#include <video/mipi_display.h>
++#include <video/of_videomode.h>
++#include <video/videomode.h>
++
++/* Manufacturer Command Set */
++#define MCS_ELVSS_CON		0xb1
++#define MCS_TEMP_SWIRE		0xb2
++#define MCS_ETC_B3		0xb3
++#define MCS_ETC_B5		0xb5
++#define MCS_ETC_B6		0xb6
++#define MCS_ETC_B7		0xb7
++#define MCS_ETC_B8		0xb8
++#define MCS_ETC_B9		0xb9
++#define MCS_ETC_BA		0xba
++#define MCS_ACL_CON		0xc0
++#define MCS_ACL_LUT		0xc1
++#define MCS_USER_SETTING	0xf0
++#define MCS_DISPCTL		0xf2
++#define MCS_ETC_F6		0xf6
++#define MCS_GTCON		0xf7
++#define MCS_PANEL_CON		0xf8
++#define MCS_GAMMA_CTL		0xfa
++
++struct s6e63m0 {
++	struct device *dev;
++	struct drm_panel panel;
++
++	struct regulator_bulk_data supplies[2];
++	struct gpio_desc *reset_gpio;
++	u32 power_on_delay;
++	u32 reset_delay;
++	struct videomode vm;
++	u32 width_mm;
++	u32 height_mm;
++
++	/* This field is tested by functions directly accessing bus before
++	 * transfer, transfer is skipped if it is set. In case of transfer
++	 * failure or unexpected response the field is set to error value.
++	 * Such construct allows to eliminate many checks in higher level
++	 * functions.
++	 */
++	int error;
++};
++
++static inline struct s6e63m0 *panel_to_s6e63m0(struct drm_panel *panel)
++{
++	return container_of(panel, struct s6e63m0, panel);
++}
++
++static int s6e63m0_clear_error(struct s6e63m0 *ctx)
++{
++	int ret = ctx->error;
++
++	ctx->error = 0;
++	return ret;
++}
++
++static int s6e63m0_spi_write_word(struct s6e63m0 *ctx, u16 data)
++{
++	struct spi_device *spi = to_spi_device(ctx->dev);
++	struct spi_transfer xfer = {
++		.len		= 2,
++		.tx_buf		= &data,
++	};
++	struct spi_message msg;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++
++	return spi_sync(spi, &msg);
++}
++
++static void s6e63m0_dcs_write(struct s6e63m0 *ctx, const u8 *data, size_t len)
++{
++	int ret = 0;
++
++	if (ctx->error < 0 || len == 0)
++		return;
++
++	dev_dbg(ctx->dev, "writing dcs seq: %*ph\n", (int)len, data);
++	ret = s6e63m0_spi_write_word(ctx, *data);
++
++	while (!ret && --len) {
++		++data;
++		ret = s6e63m0_spi_write_word(ctx, *data | 0x100);
++	}
++
++	if (ret) {
++		dev_err(ctx->dev, "error %d writing dcs seq: %*ph\n", ret,
++			(int)len, data);
++		ctx->error = ret;
++	}
++
++	usleep_range(300, 310);
++}
++
++#define s6e63m0_dcs_write_seq_static(ctx, seq...) \
++({\
++	static const u8 d[] = { seq };\
++	s6e63m0_dcs_write(ctx, d, ARRAY_SIZE(d));\
++})
++
++static void s6e63m0_init(struct s6e63m0 *ctx)
++{
++	/* Panel condition */
++	s6e63m0_dcs_write_seq_static(ctx, MCS_PANEL_CON, 0x01,
++			0x27, 0x27, 0x07, 0x07, 0x54, 0x9f, 0x63, 0x86,
++			0x1a, 0x33, 0x0d, 0x00, 0x00);
++	/* Display condition */
++	s6e63m0_dcs_write_seq_static(ctx, MCS_DISPCTL, 0x02, 0x03, 0x1c,
++			0x10, 0x10);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_GTCON, 0x00, 0x00, 0x00);
++	/* Gamma setting */
++	s6e63m0_dcs_write_seq_static(ctx, MCS_GAMMA_CTL, 0x02, 0x18, 0x08,
++			0x24, 0x70, 0x6e, 0x4e, 0xbc, 0xc0, 0xaf, 0xb3,
++			0xb8, 0xa5, 0xc5, 0xc7, 0xbb, 0x00, 0xb9, 0x00,
++			0xb8, 0x00, 0xfc);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_GAMMA_CTL, 0x03);
++	/* ETC condition */
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_F6, 0x00, 0x8e, 0x07);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_B3, 0x6c);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_B5, 0x2c, 0x12, 0x0c,
++			0x0a, 0x10, 0x0e, 0x17, 0x13, 0x1f, 0x1a, 0x2a,
++			0x24, 0x1f, 0x1b, 0x1a, 0x17, 0x2b, 0x26, 0x22,
++			0x20, 0x3a, 0x34, 0x30, 0x2c, 0x29, 0x26, 0x25,
++			0x23, 0x21, 0x20, 0x1e, 0x1e);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_B6, 0x00, 0x00, 0x11,
++			0x22, 0x33, 0x44, 0x44, 0x44, 0x55, 0x55, 0x66,
++			0x66, 0x66, 0x66, 0x66, 0x66);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_B7, 0x2c, 0x12, 0x0c,
++			0x0a, 0x10, 0x0e, 0x17, 0x13, 0x1f, 0x1a, 0x2a,
++			0x24, 0x1f, 0x1b, 0x1a, 0x17, 0x2b, 0x26, 0x22,
++			0x20, 0x3a, 0x34, 0x30, 0x2c, 0x29, 0x26, 0x25,
++			0x23, 0x21, 0x20, 0x1e, 0x1e);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_B8, 0x00, 0x00, 0x11,
++			0x22, 0x33, 0x44, 0x44, 0x44, 0x55, 0x55, 0x66,
++			0x66, 0x66, 0x66, 0x66, 0x66);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_B9, 0x2c, 0x12, 0x0c,
++			0x0a, 0x10, 0x0e, 0x17, 0x13, 0x1f, 0x1a, 0x2a,
++			0x24, 0x1f, 0x1b, 0x1a, 0x17, 0x2b, 0x26, 0x22,
++			0x20, 0x3a, 0x34, 0x30, 0x2c, 0x29, 0x26, 0x25,
++			0x23, 0x21, 0x20, 0x1e, 0x1e);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ETC_BA, 0x00, 0x00, 0x11,
++			0x22, 0x33, 0x44, 0x44, 0x44, 0x55, 0x55, 0x66,
++			0x66, 0x66, 0x66, 0x66, 0x66);
++#if 1
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ACL_LUT, 0x4d, 0x96, 0x1d,
++			0x00, 0x00, 0x01, 0xdf, 0x00, 0x00, 0x03, 0x1f,
++			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			0x03, 0x06, 0x09, 0x0d, 0x0f, 0x12, 0x15, 0x18);
++	s6e63m0_dcs_write_seq_static(ctx, MCS_TEMP_SWIRE, 0x10, 0x10,
++			0x0b, 0x05);
++	/* ACL on */
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ACL_CON, 0x00);
++	/* ELVSS on */
++	s6e63m0_dcs_write_seq_static(ctx, MCS_ELVSS_CON, 0x0b);
++#endif
++	s6e63m0_dcs_write_seq_static(ctx, 0x11);
++	msleep(120);
++	s6e63m0_dcs_write_seq_static(ctx, MIPI_DCS_SET_DISPLAY_ON);
++}
++
++static int s6e63m0_power_on(struct s6e63m0 *ctx)
++{
++	int ret;
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
++	if (ret < 0)
++		return ret;
++
++	msleep(ctx->power_on_delay);
++	gpiod_set_value(ctx->reset_gpio, 0);
++	msleep(ctx->reset_delay);
++	gpiod_set_value(ctx->reset_gpio, 1);
++	msleep(ctx->reset_delay);
++
++	return 0;
++}
++
++static int s6e63m0_power_off(struct s6e63m0 *ctx)
++{
++	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
++}
++
++static int s6e63m0_disable(struct drm_panel *panel)
++{
++	return 0;
++}
++
++static int s6e63m0_unprepare(struct drm_panel *panel)
++{
++	struct s6e63m0 *ctx = panel_to_s6e63m0(panel);
++
++	s6e63m0_dcs_write_seq_static(ctx, MIPI_DCS_SET_DISPLAY_OFF);
++	msleep(25);
++	s6e63m0_dcs_write_seq_static(ctx, MIPI_DCS_ENTER_SLEEP_MODE);
++	msleep(150);
++
++	s6e63m0_clear_error(ctx);
++
++	return s6e63m0_power_off(ctx);
++}
++
++static int s6e63m0_prepare(struct drm_panel *panel)
++{
++	struct s6e63m0 *ctx = panel_to_s6e63m0(panel);
++	int ret;
++
++	ret = s6e63m0_power_on(ctx);
++	if (ret < 0)
++		return ret;
++
++	s6e63m0_init(ctx);
++
++	ret = s6e63m0_clear_error(ctx);
++
++	if (ret < 0)
++		s6e63m0_unprepare(panel);
++
++	return ret;
++}
++
++static int s6e63m0_enable(struct drm_panel *panel)
++{
++	struct s6e63m0 *ctx = panel_to_s6e63m0(panel);
++
++	s6e63m0_dcs_write_seq_static(ctx, MIPI_DCS_EXIT_SLEEP_MODE);
++	s6e63m0_dcs_write_seq_static(ctx, MIPI_DCS_SET_DISPLAY_ON);
++	return 0;
++}
++
++static int s6e63m0_get_modes(struct drm_panel *panel)
++{
++	struct drm_connector *connector = panel->connector;
++	struct s6e63m0 *ctx = panel_to_s6e63m0(panel);
++	struct drm_display_mode *mode;
++
++	mode = drm_mode_create(connector->dev);
++	if (!mode) {
++		DRM_ERROR("failed to create a new display mode\n");
++		return 0;
++	}
++
++	drm_display_mode_from_videomode(&ctx->vm, mode);
++	mode->width_mm = ctx->width_mm;
++	mode->height_mm = ctx->height_mm;
++	connector->display_info.width_mm = mode->width_mm;
++	connector->display_info.height_mm = mode->height_mm;
++
++	mode->type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
++	drm_mode_probed_add(connector, mode);
++
++	return 1;
++}
++
++static const struct drm_panel_funcs s6e63m0_drm_funcs = {
++	.disable = s6e63m0_disable,
++	.unprepare = s6e63m0_unprepare,
++	.prepare = s6e63m0_prepare,
++	.enable = s6e63m0_enable,
++	.get_modes = s6e63m0_get_modes,
++};
++
++static int s6e63m0_parse_dt(struct s6e63m0 *ctx)
++{
++	struct device *dev = ctx->dev;
++	struct device_node *np = dev->of_node;
++	int ret;
++
++	ret = of_get_videomode(np, &ctx->vm, 0);
++	if (ret < 0)
++		return ret;
++
++	of_property_read_u32(np, "power-on-delay", &ctx->power_on_delay);
++	of_property_read_u32(np, "reset-delay", &ctx->reset_delay);
++	of_property_read_u32(np, "panel-width-mm", &ctx->width_mm);
++	of_property_read_u32(np, "panel-height-mm", &ctx->height_mm);
++
++	return 0;
++}
++
++static int s6e63m0_probe(struct spi_device *spi)
++{
++	struct device *dev = &spi->dev;
++	struct s6e63m0 *ctx;
++	int ret;
++
++	ctx = devm_kzalloc(dev, sizeof(struct s6e63m0), GFP_KERNEL);
++	if (!ctx)
++		return -ENOMEM;
++
++	spi_set_drvdata(spi, ctx);
++
++	ctx->dev = dev;
++
++	ret = s6e63m0_parse_dt(ctx);
++	if (ret < 0)
++		return ret;
++
++	ctx->supplies[0].supply = "vdd3";
++	ctx->supplies[1].supply = "vci";
++	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(ctx->supplies),
++				      ctx->supplies);
++	if (ret < 0)
++		return ret;
++
++	ctx->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(ctx->reset_gpio)) {
++		dev_err(dev, "cannot get reset-gpios %ld\n",
++			PTR_ERR(ctx->reset_gpio));
++		return PTR_ERR(ctx->reset_gpio);
++	}
++
++	spi->bits_per_word = 9;
++	ret = spi_setup(spi);
++	if (ret < 0) {
++		dev_err(dev, "spi setup failed.\n");
++		return ret;
++	}
++
++	drm_panel_init(&ctx->panel);
++	ctx->panel.dev = dev;
++	ctx->panel.funcs = &s6e63m0_drm_funcs;
++
++	return drm_panel_add(&ctx->panel);
++}
++
++static int s6e63m0_remove(struct spi_device *spi)
++{
++	struct s6e63m0 *ctx = spi_get_drvdata(spi);
++
++	s6e63m0_power_off(ctx);
++	drm_panel_remove(&ctx->panel);
++
++	return 0;
++}
++
++static const struct of_device_id s6e63m0_of_match[] = {
++	{ .compatible = "samsung,s6e63m0" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, s6e63m0_of_match);
++
++static struct spi_driver s6e63m0_driver = {
++	.probe = s6e63m0_probe,
++	.remove = s6e63m0_remove,
++	.driver = {
++		.name = "panel-samsung-s6e63m0",
++		.of_match_table = s6e63m0_of_match,
++	},
++};
++module_spi_driver(s6e63m0_driver);
++
++MODULE_AUTHOR("Andrzej Hajda <a.hajda@samsung.com>");
++MODULE_DESCRIPTION("s6e63m0 LCD Driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/gpu/drm/tegra/rgb.c b/drivers/gpu/drm/tegra/rgb.c
+index 28a78d3120bc..a61c01b1b6f5 100644
+--- a/drivers/gpu/drm/tegra/rgb.c
++++ b/drivers/gpu/drm/tegra/rgb.c
+@@ -39,9 +39,17 @@ static const struct reg_entry rgb_enable[] = {
+ 	{ DC_COM_PIN_OUTPUT_ENABLE(2),   0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_ENABLE(3),   0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(0), 0x00000000 },
++#ifdef CONFIG_DRM_PANEL_SAMSUNG_S6E63M0
++	{ DC_COM_PIN_OUTPUT_POLARITY(1), 0x51000000 },
++#else
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(1), 0x01000000 },
++#endif
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(2), 0x00000000 },
++#ifdef CONFIG_DRM_PANEL_SAMSUNG_S6E63M0
++	{ DC_COM_PIN_OUTPUT_POLARITY(3), 0x00000100 },
++#else
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(3), 0x00000000 },
++#endif
+ 	{ DC_COM_PIN_OUTPUT_DATA(0),     0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_DATA(1),     0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_DATA(2),     0x00000000 },
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index af53a1084ee5..3e13a837eb85 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1504,13 +1504,23 @@ static const struct i2c_device_id kxcjk1013_id[] = {
+ 	{"SMO8500",   KXCJ91008},
+ 	{}
+ };
+-
+ MODULE_DEVICE_TABLE(i2c, kxcjk1013_id);
+ 
++static const struct of_device_id kxcjk1013_of_match[] = {
++	{ .compatible = "kionix,kxcjk1013", },
++	{ .compatible = "kionix,kxcj91008", },
++	{ .compatible = "kionix,kxtj21009", },
++	{ .compatible = "kionix,kxtf9", },
++	{ .compatible = "kionix,SMO8500", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, kxcjk1013_of_match);
++
+ static struct i2c_driver kxcjk1013_driver = {
+ 	.driver = {
+ 		.name	= KXCJK1013_DRV_NAME,
+ 		.acpi_match_table = ACPI_PTR(kx_acpi_match),
++		.of_match_table = of_match_ptr(kxcjk1013_of_match),
+ 		.pm	= &kxcjk1013_pm_ops,
+ 	},
+ 	.probe		= kxcjk1013_probe,
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index 77fac81a3adc..0c541cbf13a4 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -29,7 +29,7 @@
+ 
+ #include "mpu3050.h"
+ 
+-#define MPU3050_CHIP_ID		0x69
++#define MPU3050_CHIP_ID		0x68
+ 
+ /*
+  * Register map: anything suffixed *_H is a big-endian high byte and always
+@@ -1176,8 +1176,8 @@ int mpu3050_common_probe(struct device *dev,
+ 		goto err_power_down;
+ 	}
+ 
+-	if (val != MPU3050_CHIP_ID) {
+-		dev_err(dev, "unsupported chip id %02x\n", (u8)val);
++	if ((val & 0x7E) != MPU3050_CHIP_ID) {
++		dev_err(dev, "unsupported chip id %02x\n", (u8)(val & 0x7E));
+ 		ret = -ENODEV;
+ 		goto err_power_down;
+ 	}
+diff --git a/drivers/input/keyboard/stmpe-keypad.c b/drivers/input/keyboard/stmpe-keypad.c
+index d69e631cfa0a..1e2423a0a598 100644
+--- a/drivers/input/keyboard/stmpe-keypad.c
++++ b/drivers/input/keyboard/stmpe-keypad.c
+@@ -13,7 +13,7 @@
+ #include <linux/input/matrix_keypad.h>
+ #include <linux/mfd/stmpe.h>
+ 
+-/* These are at the same addresses in all STMPE variants */
++/* These are at the same addresses in all STMPE variants, except 1801 */
+ #define STMPE_KPC_COL			0x60
+ #define STMPE_KPC_ROW_MSB		0x61
+ #define STMPE_KPC_ROW_LSB		0x62
+@@ -42,14 +42,15 @@
+ #define STMPE_KEYPAD_MAX_DEBOUNCE	127
+ #define STMPE_KEYPAD_MAX_SCAN_COUNT	15
+ 
+-#define STMPE_KEYPAD_MAX_ROWS		8
+-#define STMPE_KEYPAD_MAX_COLS		8
++#define STMPE_KEYPAD_MAX_ROWS		10
++#define STMPE_KEYPAD_MAX_COLS		12
+ #define STMPE_KEYPAD_ROW_SHIFT		3
+ #define STMPE_KEYPAD_KEYMAP_MAX_SIZE \
+ 	(STMPE_KEYPAD_MAX_ROWS * STMPE_KEYPAD_MAX_COLS)
+ 
+ 
+ #define STMPE1601_NUM_DATA	5
++#define STMPE1801_NUM_DATA	5
+ #define STMPE2401_NUM_DATA	3
+ #define STMPE2403_NUM_DATA	5
+ 
+@@ -67,6 +68,12 @@
+  * @max_rows: maximum number of rows supported
+  * @col_gpios: bitmask of gpios which can be used for columns
+  * @row_gpios: bitmask of gpios which can be used for rows
++ * @col_regs: registers for setting column pins
++ * @row_regs: registers for setting row pins
++ * @data_regs: registers for reading key data
++ * @ctrl_msb_reg: register for setting scan count
++ * @ctrl_lsb_reg: register for setting debounce time
++ * @cmd_reg: register for toggling scan mode
+  */
+ struct stmpe_keypad_variant {
+ 	bool		auto_increment;
+@@ -77,6 +84,18 @@ struct stmpe_keypad_variant {
+ 	int		max_rows;
+ 	unsigned int	col_gpios;
+ 	unsigned int	row_gpios;
++
++#define MAX_COL_REGS 3
++#define MAX_ROW_REGS 3
++#define MAX_DATA_REGS 5
++
++	u8 col_regs[MAX_COL_REGS];
++	u8 row_regs[MAX_ROW_REGS];
++	u8 data_regs[MAX_DATA_REGS];
++	u8 ctrl_msb_reg;
++	u8 ctrl_lsb_reg;
++	u8 cmd_reg;
++	bool read_inverted;
+ };
+ 
+ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
+@@ -88,6 +107,29 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
+ 		.max_rows		= 8,
+ 		.col_gpios		= 0x000ff,	/* GPIO 0 - 7 */
+ 		.row_gpios		= 0x0ff00,	/* GPIO 8 - 15 */
++		.col_regs		= { 0x60 },
++		.row_regs		= { 0x62, 0x61 },
++		.data_regs		= { 0x68, 0x69, 0x6a, 0x6b, 0x6c },
++		.ctrl_msb_reg		= 0x63,
++		.ctrl_lsb_reg		= 0x64,
++		.cmd_reg		= 0x64,
++		.read_inverted		= 0,
++	},
++	[STMPE1801] = {
++		.auto_increment		= true,
++		.num_data		= STMPE1801_NUM_DATA,
++		.num_normal_data	= 3,
++		.max_cols		= 10,
++		.max_rows		= 8,
++		.col_gpios		= 0x3ff00,	/* GPIO 8 - 17 */
++		.row_gpios		= 0x000ff,	/* GPIO 0 - 7 */
++		.col_regs		= { 0x31, 0x32 },
++		.row_regs		= { 0x30 },
++		.data_regs		= { 0x3a, 0x3b, 0x3c, 0x3d, 0x3e },
++		.ctrl_msb_reg		= 0x33,
++		.ctrl_lsb_reg		= 0x34,
++		.cmd_reg		= 0x36,
++		.read_inverted		= 1,
+ 	},
+ 	[STMPE2401] = {
+ 		.auto_increment		= false,
+@@ -98,6 +140,13 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
+ 		.max_rows		= 12,
+ 		.col_gpios		= 0x0000ff,	/* GPIO 0 - 7*/
+ 		.row_gpios		= 0x1f7f00,	/* GPIO 8-14, 16-20 */
++		.col_regs		= { 0x60 },
++		.row_regs		= { 0x62, 0x61 },
++		.data_regs		= { 0x68, 0x69, 0x6a, 0x6b, 0x6c },
++		.ctrl_msb_reg		= 0x63,
++		.ctrl_lsb_reg		= 0x64,
++		.cmd_reg		= 0x64,
++		.read_inverted		= 0,
+ 	},
+ 	[STMPE2403] = {
+ 		.auto_increment		= true,
+@@ -108,6 +157,13 @@ static const struct stmpe_keypad_variant stmpe_keypad_variants[] = {
+ 		.max_rows		= 12,
+ 		.col_gpios		= 0x0000ff,	/* GPIO 0 - 7*/
+ 		.row_gpios		= 0x1fef00,	/* GPIO 8-14, 16-20 */
++		.col_regs		= { 0x60 },
++		.row_regs		= { 0x62, 0x61 },
++		.data_regs		= { 0x68, 0x69, 0x6a, 0x6b, 0x6c },
++		.ctrl_msb_reg		= 0x63,
++		.ctrl_lsb_reg		= 0x64,
++		.cmd_reg		= 0x64,
++		.read_inverted		= 0,
+ 	},
+ };
+ 
+@@ -145,11 +201,11 @@ static int stmpe_keypad_read_data(struct stmpe_keypad *keypad, u8 *data)
+ 	int i;
+ 
+ 	if (variant->auto_increment)
+-		return stmpe_block_read(stmpe, STMPE_KPC_DATA_BYTE0,
++		return stmpe_block_read(stmpe, variant->data_regs[0],
+ 					variant->num_data, data);
+ 
+ 	for (i = 0; i < variant->num_data; i++) {
+-		ret = stmpe_reg_read(stmpe, STMPE_KPC_DATA_BYTE0 + i);
++		ret = stmpe_reg_read(stmpe, variant->data_regs[i]);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -176,7 +232,9 @@ static irqreturn_t stmpe_keypad_irq(int irq, void *dev)
+ 		u8 data = fifo[i];
+ 		int row = (data & STMPE_KPC_DATA_ROW) >> 3;
+ 		int col = data & STMPE_KPC_DATA_COL;
+-		int code = MATRIX_SCAN_CODE(row, col, STMPE_KEYPAD_ROW_SHIFT);
++		int code = variant->read_inverted ?
++			MATRIX_SCAN_CODE(col, row, STMPE_KEYPAD_ROW_SHIFT):
++			MATRIX_SCAN_CODE(row, col, STMPE_KEYPAD_ROW_SHIFT);
+ 		bool up = data & STMPE_KPC_DATA_UP;
+ 
+ 		if ((data & STMPE_KPC_DATA_NOKEY_MASK)
+@@ -265,7 +323,7 @@ static int stmpe_keypad_chip_init(struct stmpe_keypad *keypad)
+ {
+ 	const struct stmpe_keypad_variant *variant = keypad->variant;
+ 	struct stmpe *stmpe = keypad->stmpe;
+-	int ret;
++	int ret, val, i;
+ 
+ 	if (keypad->debounce_ms > STMPE_KEYPAD_MAX_DEBOUNCE)
+ 		return -EINVAL;
+@@ -281,33 +339,37 @@ static int stmpe_keypad_chip_init(struct stmpe_keypad *keypad)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = stmpe_reg_write(stmpe, STMPE_KPC_COL, keypad->cols);
+-	if (ret < 0)
+-		return ret;
+-
+-	ret = stmpe_reg_write(stmpe, STMPE_KPC_ROW_LSB, keypad->rows);
+-	if (ret < 0)
+-		return ret;
++	val = keypad->cols;
++	i = 0;
++	do {
++		ret = stmpe_reg_write(stmpe, variant->col_regs[i++], val & 0xff);
++		if (ret < 0)
++			return ret;
++	} while ((val >>= 8) != 0);
+ 
+-	if (variant->max_rows > 8) {
+-		ret = stmpe_set_bits(stmpe, STMPE_KPC_ROW_MSB,
+-				     STMPE_KPC_ROW_MSB_ROWS,
+-				     keypad->rows >> 8);
++	val = keypad->rows;
++	i = 0;
++	do {
++		ret = stmpe_reg_write(stmpe, variant->row_regs[i++], val & 0xff);
+ 		if (ret < 0)
+ 			return ret;
+-	}
++	} while ((val >>= 8) != 0);
+ 
+-	ret = stmpe_set_bits(stmpe, STMPE_KPC_CTRL_MSB,
++	ret = stmpe_set_bits(stmpe, variant->ctrl_msb_reg,
+ 			     STMPE_KPC_CTRL_MSB_SCAN_COUNT,
+ 			     keypad->scan_count << 4);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return stmpe_set_bits(stmpe, STMPE_KPC_CTRL_LSB,
+-			      STMPE_KPC_CTRL_LSB_SCAN |
++	ret = stmpe_set_bits(stmpe, variant->ctrl_lsb_reg,
+ 			      STMPE_KPC_CTRL_LSB_DEBOUNCE,
+-			      STMPE_KPC_CTRL_LSB_SCAN |
+ 			      (keypad->debounce_ms << 1));
++	if (ret < 0)
++		return ret;
++
++	return stmpe_set_bits(stmpe, variant->cmd_reg,
++			      STMPE_KPC_CTRL_LSB_SCAN,
++			      STMPE_KPC_CTRL_LSB_SCAN);
+ }
+ 
+ static void stmpe_keypad_fill_used_pins(struct stmpe_keypad *keypad,
+diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
+index a72f97fca57b..d659f0174b92 100644
+--- a/drivers/leds/Kconfig
++++ b/drivers/leds/Kconfig
+@@ -766,6 +766,14 @@ config LEDS_NIC78BX
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called leds-nic78bx.
+ 
++config LEDS_ISA1200
++	tristate "LES support for the ISA1200 motor"
++	default n
++	depends on I2C
++	help
++	  Say Y to enalbe the ISA1200 IC.
++
++
+ comment "LED Triggers"
+ source "drivers/leds/trigger/Kconfig"
+ 
+diff --git a/drivers/leds/Makefile b/drivers/leds/Makefile
+index 4c1b0054f379..0ec7806479e9 100644
+--- a/drivers/leds/Makefile
++++ b/drivers/leds/Makefile
+@@ -79,6 +79,7 @@ obj-$(CONFIG_LEDS_MT6323)		+= leds-mt6323.o
+ obj-$(CONFIG_LEDS_LM3692X)		+= leds-lm3692x.o
+ obj-$(CONFIG_LEDS_SC27XX_BLTC)		+= leds-sc27xx-bltc.o
+ obj-$(CONFIG_LEDS_LM3601X)		+= leds-lm3601x.o
++obj-$(CONFIG_LEDS_ISA1200)		+= leds-isa1200.o
+ 
+ # LED SPI Drivers
+ obj-$(CONFIG_LEDS_CR0014114)		+= leds-cr0014114.o
+diff --git a/drivers/leds/leds-isa1200.c b/drivers/leds/leds-isa1200.c
+new file mode 100644
+index 000000000000..3f14a38a4cbd
+--- /dev/null
++++ b/drivers/leds/leds-isa1200.c
+@@ -0,0 +1,565 @@
++/*
++ * drivers/motor/isa1200_vibrator.c
++ *
++ * Copyright (C) 2011 Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ * This software is licensed under the terms of the GNU General Public
++ * License version 2, as published by the Free Software Foundation, and
++ * may be copied, distributed, and modified under those terms.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++#include <linux/leds.h>
++#include <linux/slab.h>
++
++#include <linux/mfd/core.h>
++#include <linux/module.h>
++
++
++#include <linux/hrtimer.h>
++#include <linux/err.h>
++#include <linux/gpio.h>
++#include <linux/pwm.h>
++#include <linux/mutex.h>
++#include <linux/clk.h>
++#include <linux/workqueue.h>
++
++#include <linux/of_gpio.h>
++#include <linux/platform_device.h>
++#include <linux/module.h>
++#include <linux/device.h>
++#include <linux/vmalloc.h>
++#include <linux/fs.h>
++#include <linux/mm.h>
++#include <linux/slab.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/pinctrl/consumer.h>
++
++#include <asm/mach-types.h>
++#include "leds-isa1200.h"
++
++#define AMPLITUDE_MIN     0
++#define AMPLITUDE_MAX     254
++
++
++struct isa1200_vibrator_drvdata {
++	struct i2c_client *client;
++	struct led_classdev cdev;
++
++	struct clk *vib_clk;
++	struct gpio_desc *enable_gpio;
++
++	struct pinctrl* pinctrl;
++	struct pinctrl_state *on_state;
++	struct pinctrl_state *off_state;
++
++	struct workqueue_struct *wq;
++	struct delayed_work work;
++
++	struct hrtimer timer;
++	spinlock_t lock;
++	int timeout;
++	int max_timeout;
++
++	bool running;
++
++	u8 amplitude;
++
++	u8 ctrl0;
++	u8 ctrl1;
++	u8 ctrl2;
++	u8 ctrl4;
++	u8 pll;
++	u8 duty;
++	u8 period;
++};
++
++/////////////////////////////////////////////////////////////////////////////////////
++
++static int amplitude_to_duty(int period, int amplitude)
++{
++	int duty = (period * (amplitude + AMPLITUDE_MAX)) /
++		(2 *(AMPLITUDE_MAX - AMPLITUDE_MIN));
++	return duty;
++}
++
++static int isa1200_vibrator_i2c_write(struct i2c_client *client,
++					u8 addr, u8 val)
++{
++	int error = 0;
++	error = i2c_smbus_write_byte_data(client, addr, val);
++	if (error)
++		printk(KERN_ERR "[VIB] Failed to write addr=[0x%x], val=[0x%x]\n",
++				addr, val);
++
++	return error;
++}
++
++static void isa1200_vibrator_hw_init(struct isa1200_vibrator_drvdata *vib)
++{
++	msleep(20);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_CONTROL_REG0, vib->ctrl0);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_CONTROL_REG1, vib->ctrl1);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_CONTROL_REG2, vib->ctrl2);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_PLL_REG, vib->pll);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_CONTROL_REG4, vib->ctrl4);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_PWM_DUTY_REG, vib->period/2);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_PWM_PERIOD_REG, vib->period);
++
++#ifdef MOTOR_DEBUG
++	printk(KERN_DEBUG "[VIB] ctrl0 = 0x%x\n", vib->ctrl0);
++	printk(KERN_DEBUG "[VIB] ctrl1 = 0x%x\n", vib->ctrl1);
++	printk(KERN_DEBUG "[VIB] ctrl2 = 0x%x\n", vib->ctrl2);
++	printk(KERN_DEBUG "[VIB] pll = 0x%x\n", vib->pll);
++	printk(KERN_DEBUG "[VIB] ctrl4 = 0x%x\n", vib->ctrl4);
++	printk(KERN_DEBUG "[VIB] duty = 0x%x\n", vib->period/2);
++	printk(KERN_DEBUG "[VIB] period = 0x%x\n", vib->period);
++#endif
++
++}
++
++static void isa1200_vibrator_on(struct isa1200_vibrator_drvdata *vib)
++{
++	int duty = vib->duty;
++
++	pr_debug("%s\n", __func__);
++
++	if (vib->duty >= vib->period) {
++		duty -= 3;
++	}
++
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_CONTROL_REG0, vib->ctrl0 | CTL0_NORMAL_OP);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_PWM_DUTY_REG, vib->duty);
++#ifdef MOTOR_DEBUG
++	printk(KERN_DEBUG "[VIB] ctrl0 = 0x%x\n", vib->ctrl0 | CTL0_NORMAL_OP);
++	printk(KERN_DEBUG "[VIB] duty = 0x%x\n", duty);
++#endif
++}
++
++static void isa1200_vibrator_off(struct isa1200_vibrator_drvdata *vib)
++{
++	pr_debug("%s\n", __func__);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_PWM_DUTY_REG, vib->period/2);
++	isa1200_vibrator_i2c_write(vib->client,
++		HAPTIC_CONTROL_REG0, vib->ctrl0);
++}
++
++static void isa1200_vibrator_work(struct work_struct *work)
++{
++	struct isa1200_vibrator_drvdata *vib =
++		container_of(to_delayed_work(work), struct isa1200_vibrator_drvdata, work);
++	struct i2c_client* client = vib->client;
++	int err;
++
++	pr_debug("%s\n", __func__);
++
++	if (vib->timeout == 0) {
++		if (!vib->running)
++			return;
++
++		vib->running = false;
++		isa1200_vibrator_off(vib);
++		clk_disable_unprepare(vib->vib_clk);
++
++		if (vib->pinctrl && vib->off_state) {
++			err = pinctrl_select_state(vib->pinctrl, vib->off_state);
++			if (err != 0)
++				dev_err(&client->dev,
++					"%s: error setting pinctrl off state. err=%d\n", __func__, err);
++		}
++
++	} else {
++		if (vib->running)
++			return;
++
++		vib->running = true;
++
++		if (vib->pinctrl && vib->on_state) {
++			err = pinctrl_select_state(vib->pinctrl, vib->on_state);
++			if (err != 0) {
++				dev_err(&client->dev,
++					"%s: error setting pinctrl on state. err=%d\n", __func__, err);
++				return;
++			}
++		}
++
++		clk_prepare_enable(vib->vib_clk);
++		mdelay(1);
++		isa1200_vibrator_on(vib);
++	}
++}
++
++static enum hrtimer_restart isa1200_vibrator_timer_func(struct hrtimer *_timer)
++{
++	struct isa1200_vibrator_drvdata *vib =
++		container_of(_timer, struct isa1200_vibrator_drvdata, timer);
++
++	vib->timeout = 0;
++
++	queue_delayed_work(vib->wq, &vib->work, 0);
++	return HRTIMER_NORESTART;
++}
++
++/////////////////////////////////////////////////////////////////////////////////////
++
++static void isa1200_brightness_set(struct led_classdev *led_cdev,
++	enum led_brightness value)
++{
++	pr_info("%s: value=%d\n", __func__, value);
++
++	led_cdev->brightness = value;
++}
++
++static int isa1200_blink_set(struct led_classdev *cdev,
++	unsigned long *delay_on,
++	unsigned long *delay_off)
++{
++	pr_info("%s\n", __func__);
++	return 0;
++}
++
++static ssize_t enable_store(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t size)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct isa1200_vibrator_drvdata *vib =
++			container_of(led_cdev, struct isa1200_vibrator_drvdata, cdev);
++	unsigned long	flags;
++	int value;
++
++	sscanf(buf, "%d", &value);
++	pr_debug("%s timeout=%d\n", __func__, value);
++
++#ifdef MOTOR_DEBUG
++	printk(KERN_DEBUG "[VIB] time = %dms\n", value);
++#endif
++	cancel_delayed_work(&vib->work);
++	hrtimer_cancel(&vib->timer);
++	vib->timeout = value;
++	queue_delayed_work(vib->wq, &vib->work, 0);
++	spin_lock_irqsave(&vib->lock, flags);
++	if (value > 0) {
++		if (value > vib->max_timeout)
++			value = vib->max_timeout;
++
++		hrtimer_start(&vib->timer,
++			ns_to_ktime((u64)value * NSEC_PER_MSEC),
++			HRTIMER_MODE_REL);
++	}
++	spin_unlock_irqrestore(&vib->lock, flags);
++
++	return size;
++}
++
++static ssize_t amplitude_show(struct device *dev,
++		struct device_attribute *attr, char *buf)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct isa1200_vibrator_drvdata *vib =
++			container_of(led_cdev, struct isa1200_vibrator_drvdata, cdev);
++
++	return sprintf(buf, "%d\n", vib->amplitude);
++}
++
++static ssize_t amplitude_store(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t size)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct isa1200_vibrator_drvdata *vib =
++			container_of(led_cdev, struct isa1200_vibrator_drvdata, cdev);
++	int amplitude;
++
++	sscanf(buf, "%d", &amplitude);
++
++	if (amplitude > AMPLITUDE_MAX)
++		amplitude = AMPLITUDE_MAX;
++	else if (amplitude < AMPLITUDE_MIN)
++		amplitude = AMPLITUDE_MIN;
++
++	vib->duty = amplitude_to_duty(vib->period, amplitude);
++	vib->amplitude = amplitude;
++
++	pr_debug("%s: amplitude=%d duty_cycle=%d\n", __func__, amplitude, vib->duty);
++
++	return size;
++}
++
++
++static struct device_attribute isa1200_device_attrs[] = {
++	__ATTR(enable, S_IWUSR,
++			NULL,
++			enable_store),
++	__ATTR(amplitude, S_IRUGO | S_IWUSR,
++			amplitude_show,
++			amplitude_store),
++};
++
++static int isa1200_init_pinctrl(struct isa1200_vibrator_drvdata *ddata)
++{
++	struct i2c_client *client = ddata->client;
++	struct pinctrl *pinctrl;
++	struct pinctrl_state *on_state, *off_state;
++	int err = 0;
++
++	pinctrl = devm_pinctrl_get(&client->dev);
++	if (IS_ERR(pinctrl)) {
++		dev_info(&client->dev,
++			"%s: not using pinctrl.\n", __func__);
++		return 0;
++	}
++
++	off_state = pinctrl_lookup_state(pinctrl, "off");
++	if (IS_ERR(off_state)) {
++		dev_err(&client->dev,
++			"%s: error getting pinctrl off state\n", __func__);
++		err = -ENODEV;
++		goto err;
++	}
++
++	on_state = pinctrl_lookup_state(pinctrl, "on");
++	if (IS_ERR(on_state)) {
++		dev_err(&client->dev,
++			"%s: error getting pinctrl on state\n", __func__);
++		err = -ENODEV;
++		goto err;
++	}
++
++	err = pinctrl_select_state(pinctrl, off_state);
++	if (err) {
++		dev_err(&client->dev,
++			"%s: error setting pinctrl off state. err=%d\n", __func__, err);
++		err = -ENODEV;
++		goto err;
++	}
++
++	ddata->pinctrl = pinctrl;
++	ddata->off_state = off_state;
++	ddata->on_state = on_state;
++
++	return 0;
++
++err:
++	devm_pinctrl_put(pinctrl);
++	return err;
++}
++
++#ifdef CONFIG_OF
++static int isa1200_parse_dt(struct i2c_client *client,
++		struct isa1200_vibrator_drvdata *drvdata)
++{
++	struct device_node *np = client->dev.of_node;
++	struct clk *vib_clk;
++	int val, error;
++
++	drvdata->enable_gpio = devm_gpiod_get_optional(&client->dev,
++		"enable", GPIOD_OUT_HIGH);
++	if (IS_ERR(drvdata->enable_gpio)) {
++		error = PTR_ERR(drvdata->enable_gpio);
++		dev_err(&client->dev, "Failed to get enable gpio: %d\n", error);
++		return error;
++	}
++
++	if (!of_property_read_u32(np, "max-timeout", &val))
++		drvdata->max_timeout = val;
++	if (!of_property_read_u32(np, "ctrl0", &val))
++		drvdata->ctrl0 = val;
++	if (!of_property_read_u32(np, "ctrl1", &val))
++		drvdata->ctrl1 = val;
++	if (!of_property_read_u32(np, "ctrl2", &val))
++		drvdata->ctrl2 = val;
++	if (!of_property_read_u32(np, "ctrl4", &val))
++		drvdata->ctrl4 = val;
++	if (!of_property_read_u32(np, "pll", &val))
++		drvdata->pll = val;
++	if (!of_property_read_u32(np, "duty", &val))
++		drvdata->duty = val;
++	if (!of_property_read_u32(np, "period", &val))
++		drvdata->period = val;
++
++	vib_clk = of_clk_get_by_name(np, "vibrator-clk");
++	if (vib_clk == NULL) {
++		pr_err("%s: error getting clk.\n", __func__);
++		return -ENODEV;
++	}
++	drvdata->vib_clk = vib_clk;
++
++	return 0;
++}
++#else
++static int isa1200_parse_dt(struct i2c_client *client,
++		struct isa1200_vibrator_drvdata *drvdata)
++{
++	return -EINVAL;
++}
++#endif
++
++static int isa1200_vibrator_i2c_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct isa1200_vibrator_platform_data *pdata = NULL;
++	struct isa1200_vibrator_drvdata *ddata;
++	int i, ret = 0;
++
++	printk(KERN_DEBUG "[VIB] %s\n", __func__);
++
++	ddata = kzalloc(sizeof(struct isa1200_vibrator_drvdata), GFP_KERNEL);
++	if (NULL == ddata) {
++		printk(KERN_ERR "[VIB] Failed to alloc memory\n");
++		ret = -ENOMEM;
++		goto err_free_mem;
++	}
++
++	if (client->dev.platform_data) {
++		pdata = client->dev.platform_data;
++
++		ddata->enable_gpio = pdata->enable_gpio;
++		ddata->vib_clk = pdata->get_clk();
++		ddata->ctrl0 = pdata->ctrl0;
++		ddata->ctrl1 = pdata->ctrl1;
++		ddata->ctrl2 = pdata->ctrl2;
++		ddata->ctrl4 = pdata->ctrl4;
++		ddata->pll = pdata->pll;
++		ddata->duty = pdata->duty;
++		ddata->period = pdata->period;
++	} else if (client->dev.of_node) {
++		ret = isa1200_parse_dt(client, ddata);
++		if (ret) {
++			pr_err("%s: error parsing device tree\n", __func__);
++			goto err_free_mem;
++		}
++	}
++
++	ddata->client = client;
++
++	ddata->cdev.name = "isa1200";
++	ddata->cdev.flags = LED_CORE_SUSPENDRESUME;
++	ddata->cdev.brightness_set = isa1200_brightness_set;
++	ddata->cdev.blink_set = isa1200_blink_set;
++	ddata->cdev.default_trigger = "none";
++	i2c_set_clientdata(client, ddata);
++
++	ret = isa1200_init_pinctrl(ddata);
++	if (ret)
++		goto err_free_mem;
++
++	isa1200_vibrator_hw_init(ddata);
++
++
++	hrtimer_init(&ddata->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++	ddata->timer.function = isa1200_vibrator_timer_func;
++
++	ddata->wq = create_singlethread_workqueue("isa1200");
++	INIT_DELAYED_WORK(&ddata->work, isa1200_vibrator_work);
++
++	ret = led_classdev_register(&client->dev, &ddata->cdev);
++	if (ret < 0)
++		goto err_free_mem;
++
++	for (i = 0; i < ARRAY_SIZE(isa1200_device_attrs); i++) {
++		ret = device_create_file(ddata->cdev.dev, &isa1200_device_attrs[i]);
++		if (ret < 0) {
++			dev_err(&client->dev,
++					"%s: failed to create sysfs attributes\n", __func__);
++			goto err_free_mem;
++		}
++	}
++
++	return 0;
++
++err_free_mem:
++	kfree(ddata);
++	return ret;
++
++}
++
++static int isa1200_vibrator_i2c_remove(struct i2c_client *client)
++{
++	struct isa1200_vibrator_drvdata *ddata  = i2c_get_clientdata(client);
++	struct led_classdev *led_cdev = &ddata->cdev;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(isa1200_device_attrs); i++) {
++		 device_remove_file(led_cdev->dev, &isa1200_device_attrs[i]);
++	}
++
++	led_classdev_unregister(led_cdev);
++
++	flush_workqueue(ddata->wq);
++	destroy_workqueue(ddata->wq);
++	ddata->wq = NULL;
++
++	kfree(ddata);
++
++	return 0;
++}
++
++#if 0
++static int isa1200_vibrator_suspend(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct isa1200_vibrator_drvdata *vib  = i2c_get_clientdata(client);
++	gpio_direction_output(vib->gpio_en, 0);
++	return 0;
++}
++
++static int isa1200_vibrator_resume(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct isa1200_vibrator_drvdata *vib  = i2c_get_clientdata(client);
++	// isa1200_vibrator_hw_init(ddata);
++	gpio_direction_output(vib->gpio_en, 1);
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(isa1200_pm,
++	isa1200_vibrator_suspend, isa1200_vibrator_resume);
++#define ISA1200_PM &isa1200_pm
++#else
++#define ISA1200_PM NULL
++#endif
++
++static const struct i2c_device_id isa1200_vibrator_device_id[] = {
++	{"isa1200_vibrator", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, isa1200_vibrator_device_id);
++
++#ifdef CONFIG_OF
++static const struct of_device_id isa1200_dt_match[] = {
++	{ .compatible = "samsung_p3,isa1200_vibrator" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, isa1200_dt_match);
++#endif
++
++static struct i2c_driver isa1200_vibrator_i2c_driver = {
++	.driver = {
++		.name = "isa1200_vibrator",
++		.pm = ISA1200_PM,
++		.of_match_table = of_match_ptr(isa1200_dt_match),
++		.owner = THIS_MODULE,
++	},
++	.probe     = isa1200_vibrator_i2c_probe,
++	.remove    = isa1200_vibrator_i2c_remove,
++	.id_table  = isa1200_vibrator_device_id,
++};
++
++module_i2c_driver(isa1200_vibrator_i2c_driver);
+diff --git a/drivers/leds/leds-isa1200.h b/drivers/leds/leds-isa1200.h
+new file mode 100755
+index 000000000000..50713449003c
+--- /dev/null
++++ b/drivers/leds/leds-isa1200.h
+@@ -0,0 +1,71 @@
++/* arch/arm/mach-tegra/sec_vibrator.c
++ *
++ * Copyright (C) 2011 Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ * This software is licensed under the terms of the GNU General Public
++ * License version 2, as published by the Free Software Foundation, and
++ * may be copied, distributed, and modified under those terms.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#ifndef _LINUX_SEC_VIBRATOR_H
++#define _LINUX_SEC_VIBRATOR_H
++
++#define HAPTIC_CONTROL_REG0		0x30
++#define HAPTIC_CONTROL_REG1		0x31
++#define HAPTIC_CONTROL_REG2		0x32
++#define HAPTIC_PLL_REG				0x33
++#define HAPTIC_CONTROL_REG4		0x34
++#define HAPTIC_PWM_DUTY_REG		0x35
++#define HAPTIC_PWM_PERIOD_REG	0x36
++#define HAPTIC_AMPLITUDE_REG		0x37
++
++/* HAPTIC_CONTROL_REG0 */
++#define CTL0_DIVIDER128				0
++#define CTL0_DIVIDER256				1
++#define CTL0_DIVIDER512				2
++#define CTL0_DIVIDER1024			3
++#define CTL0_13MHZ					1 << 2
++#define CTL0_PWM_INPUT			1 << 3
++#define CTL0_PWM_GEN				2 << 3
++#define CTL0_WAVE_GEN				3 << 3
++#define CTL0_HIGH_DRIVE			1 << 5
++#define CTL0_OVER_DR_EN			1 << 6
++#define CTL0_NORMAL_OP			1 << 7
++
++/* HAPTIC_CONTROL_REG1 */
++#define CTL1_HAPTICOFF_16U			0
++#define CTL1_HAPTICOFF_32U			1
++#define CTL1_HAPTICOFF_64U			2
++#define CTL1_HAPTICOFF_100U		3
++#define CTL1_HAPTICON_1U			1 << 2
++#define CTL1_SMART_EN				1 << 3
++#define CTL1_PLL_EN					1 << 4
++#define CTL1_ERM_TYPE				1 << 5
++#define CTL1_DEFAULT				1 << 6
++#define CTL1_EXT_CLOCK				1 << 7
++
++/* HAPTIC_CONTROL_REG2 */
++#define CTL2_EFFECT_EN				1
++#define CTL2_START_EFF_EN			1 << 2
++#define CTL2_SOFT_RESET_EN			1 << 7
++
++struct isa1200_vibrator_platform_data {
++	struct gpio_desc *enable_gpio;
++	int max_timeout;
++	u8 ctrl0;
++	u8 ctrl1;
++	u8 ctrl2;
++	u8 ctrl4;
++	u8 pll;
++	u8 duty;
++	u8 period;
++	struct clk *(*get_clk) (void);
++};
++
++#endif
+diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+index 55997cf84b39..643fbe58eb0f 100644
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -408,8 +408,17 @@ static int mmc_decode_ext_csd(struct mmc_card *card, u8 *ext_csd)
+ 			ext_csd[EXT_CSD_SEC_CNT + 3] << 24;
+ 
+ 		/* Cards with density > 2GiB are sector addressed */
+-		if (card->ext_csd.sectors > (2u * 1024 * 1024 * 1024) / 512)
++		if (card->ext_csd.sectors > (2u * 1024 * 1024 * 1024) / 512) {
++			if (card->host->caps & MMC_CAP_NONREMOVABLE) {
++ 				/*
++				 * Size is in 256K chunks, i.e. 512 sectors each.
++ 				 * This algorithm is defined and used by NVIDIA,
++				 * according to eMMC 4.41, size is in 128K chunks.
++				 */
++ 				card->ext_csd.sectors -= ext_csd[EXT_CSD_BOOT_MULT] * 512;
++ 			}
+ 			mmc_card_set_blockaddr(card);
++		}
+ 	}
+ 
+ 	card->ext_csd.strobe_support = ext_csd[EXT_CSD_STROBE_SUPPORT];
+diff --git a/drivers/soc/tegra/Kconfig b/drivers/soc/tegra/Kconfig
+index fe4481676da6..ad5ede8f84ce 100644
+--- a/drivers/soc/tegra/Kconfig
++++ b/drivers/soc/tegra/Kconfig
+@@ -126,6 +126,7 @@ config SOC_TEGRA_FLOWCTRL
+ 	bool
+ 
+ config SOC_TEGRA_PMC
++	select GENERIC_PINCONF
+ 	bool
+ 
+ config SOC_TEGRA_POWERGATE_BPMP
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 9cc4f1848c9b..7bc76e5ebb82 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -1255,7 +1255,7 @@ config SND_SOC_WM8993
+ 	tristate
+ 
+ config SND_SOC_WM8994
+-	tristate
++	tristate "Wolfson Microelectronics WM8994 codec driver"
+ 
+ config SND_SOC_WM8995
+ 	tristate
+diff --git a/sound/soc/tegra/Kconfig b/sound/soc/tegra/Kconfig
+index 6875fc39a575..99be3ef82d85 100644
+--- a/sound/soc/tegra/Kconfig
++++ b/sound/soc/tegra/Kconfig
+@@ -86,6 +86,17 @@ config SND_SOC_TEGRA_WM8903
+ 	  boards using the WM8093 codec. Currently, the supported boards are
+ 	  Harmony, Ventana, Seaboard, Kaen, and Aebl.
+ 
++config SND_SOC_TEGRA_WM8994
++	tristate "SoC Audio support for Tegra boards using a WM8994 codec"
++	depends on SND_SOC_TEGRA && I2C
++	select SND_SOC_TEGRA20_I2S if ARCH_TEGRA_2x_SOC
++	select SND_SOC_TEGRA30_I2S if ARCH_TEGRA_3x_SOC
++	select SND_SOC_TEGRA30_DAM if ARCH_TEGRA_3x_SOC
++	help
++	  Say Y or M here if you want to add support for SoC audio on Tegra
++	  boards using the WM8994 codec. Currently, the supported boards are
++	  Samsung P3.
++
+ config SND_SOC_TEGRA_WM9712
+ 	tristate "SoC Audio support for Tegra boards using a WM9712 codec"
+ 	depends on SND_SOC_TEGRA && GPIOLIB
+diff --git a/sound/soc/tegra/Makefile b/sound/soc/tegra/Makefile
+index 2329b72c93e3..09d0b47db5af 100644
+--- a/sound/soc/tegra/Makefile
++++ b/sound/soc/tegra/Makefile
+@@ -23,6 +23,7 @@ snd-soc-tegra-rt5640-objs := tegra_rt5640.o
+ snd-soc-tegra-rt5677-objs := tegra_rt5677.o
+ snd-soc-tegra-wm8753-objs := tegra_wm8753.o
+ snd-soc-tegra-wm8903-objs := tegra_wm8903.o
++snd-soc-tegra-wm8994-objs := tegra_wm8994.o
+ snd-soc-tegra-wm9712-objs := tegra_wm9712.o
+ snd-soc-tegra-trimslice-objs := trimslice.o
+ snd-soc-tegra-alc5632-objs := tegra_alc5632.o
+@@ -33,6 +34,7 @@ obj-$(CONFIG_SND_SOC_TEGRA_RT5640) += snd-soc-tegra-rt5640.o
+ obj-$(CONFIG_SND_SOC_TEGRA_RT5677) += snd-soc-tegra-rt5677.o
+ obj-$(CONFIG_SND_SOC_TEGRA_WM8753) += snd-soc-tegra-wm8753.o
+ obj-$(CONFIG_SND_SOC_TEGRA_WM8903) += snd-soc-tegra-wm8903.o
++obj-$(CONFIG_SND_SOC_TEGRA_WM8994) += snd-soc-tegra-wm8994.o
+ obj-$(CONFIG_SND_SOC_TEGRA_WM9712) += snd-soc-tegra-wm9712.o
+ obj-$(CONFIG_SND_SOC_TEGRA_TRIMSLICE) += snd-soc-tegra-trimslice.o
+ obj-$(CONFIG_SND_SOC_TEGRA_ALC5632) += snd-soc-tegra-alc5632.o
+diff --git a/sound/soc/tegra/tegra_wm8994.c b/sound/soc/tegra/tegra_wm8994.c
+new file mode 100755
+index 000000000000..87cb36df3bcf
+--- /dev/null
++++ b/sound/soc/tegra/tegra_wm8994.c
+@@ -0,0 +1,297 @@
++/*
++ * tegra_wm8994.c - Tegra machine ASoC driver for boards using WM8994 codec.
++ *
++ * Author: Stephen Warren <swarren@nvidia.com>
++ * Copyright (C) 2010-2011 - NVIDIA, Inc.
++ *
++ * Based on code copyright/by:
++ *
++ * (c) 2009, 2010 Nvidia Graphics Pvt. Ltd.
++ *
++ * Copyright 2007 Wolfson Microelectronics PLC.
++ * Author: Graeme Gregory
++ *         graeme.gregory@wolfsonmicro.com or linux@wolfsonmicro.com
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
++ * 02110-1301 USA
++ *
++ */
++
++#include <asm/mach-types.h>
++
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/gpio.h>
++#include <linux/of.h>
++
++#include <sound/core.h>
++#include <sound/pcm.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++
++#include "tegra_pcm.h"
++#include "tegra_asoc_utils.h"
++
++#ifdef CONFIG_ARCH_TEGRA_2x_SOC
++#include "tegra20_das.h"
++#endif
++
++#define DRV_NAME "tegra-snd-wm8994"
++
++struct tegra_wm8994 {
++	struct tegra_asoc_utils_data util_data;
++};
++
++static int tegra_wm8994_hw_params(struct snd_pcm_substream *substream,
++					struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_dai *codec_dai = rtd->codec_dai;
++	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
++	struct snd_soc_card *card = rtd->card;
++	struct tegra_wm8994 *machine = snd_soc_card_get_drvdata(card);
++	int srate, mclk, i2s_daifmt;
++	int err;
++
++	srate = params_rate(params);
++	switch (srate) {
++	case 64000:
++	case 88200:
++	case 96000:
++		mclk = 128 * srate;
++		break;
++	default:
++		mclk = 256 * srate;
++		break;
++	}
++	/* FIXME: Codec only requires >= 3MHz if OSR==0 */
++	while (mclk < 6000000)
++		mclk *= 2;
++
++	err = tegra_asoc_utils_set_rate(&machine->util_data, srate, mclk);
++	if (err < 0) {
++		if (!(machine->util_data.set_mclk % mclk))
++			mclk = machine->util_data.set_mclk;
++		else {
++			dev_err(card->dev, "Can't configure clocks\n");
++			return err;
++		}
++	}
++
++	i2s_daifmt = SND_SOC_DAIFMT_NB_NF |
++		     SND_SOC_DAIFMT_CBS_CFS;
++
++	/* Use DSP mode for mono on Tegra20 */
++	// if ((params_channels(params) != 2) &&
++	//     (machine_is_ventana() || machine_is_harmony() ||
++	//     machine_is_kaen() || machine_is_aebl()))
++	// 	i2s_daifmt |= SND_SOC_DAIFMT_DSP_A;
++	// else
++		i2s_daifmt |= SND_SOC_DAIFMT_I2S;
++
++	err = snd_soc_dai_set_fmt(codec_dai, i2s_daifmt);
++	if (err < 0) {
++		dev_err(card->dev, "codec_dai fmt not set\n");
++		return err;
++	}
++
++	err = snd_soc_dai_set_fmt(cpu_dai, i2s_daifmt);
++	if (err < 0) {
++		dev_err(card->dev, "cpu_dai fmt not set\n");
++		return err;
++	}
++	/* Need to check clk id */
++	err = snd_soc_dai_set_sysclk(codec_dai, 1, mclk,
++					SND_SOC_CLOCK_IN);
++	if (err < 0) {
++		dev_err(card->dev, "codec_dai clock not set\n");
++		return err;
++	}
++
++#ifdef CONFIG_ARCH_TEGRA_2x_SOC
++	err = tegra20_das_connect_dac_to_dap(TEGRA20_DAS_DAP_SEL_DAC1,
++					TEGRA20_DAS_DAP_ID_1);
++	if (err < 0) {
++		dev_err(card->dev, "failed to set dap-dac path\n");
++		return err;
++	}
++
++	err = tegra20_das_connect_dap_to_dac(TEGRA20_DAS_DAP_ID_1,
++					TEGRA20_DAS_DAP_SEL_DAC1);
++	if (err < 0) {
++		dev_err(card->dev, "failed to set dac-dap path\n");
++		return err;
++	}
++#endif
++	return 0;
++}
++
++static int tegra_hw_free(struct snd_pcm_substream *substream)
++{
++	return 0;
++}
++
++static struct snd_soc_ops tegra_wm8994_ops = {
++	.hw_params = tegra_wm8994_hw_params,
++	.hw_free = tegra_hw_free,
++};
++
++static int tegra_wm8994_init(struct snd_soc_pcm_runtime *rtd)
++{
++	pr_info("%s\n", __func__);
++	return 0;
++}
++
++static int tegra_wm8994_remove(struct snd_soc_card *card)
++{
++	pr_info("%s\n", __func__);
++	return 0;
++}
++
++static struct snd_soc_dai_link tegra_wm8994_dai[] = {
++	{
++		.name = "WM8994",
++		.stream_name = "WM8994 PCM",
++		.codec_dai_name = "wm8994-aif1",
++		.init = tegra_wm8994_init,
++
++		// .codec_name = "WM8994 I2C Codec.8-001b",
++		// .platform_name = "tegra-pcm-audio",
++		// .cpu_dai_name = "tegra20-i2s.0",
++		// .codec_dai_name = "WM8994 PAIFRX",
++		.ops = &tegra_wm8994_ops,
++	},
++};
++
++static struct snd_soc_card snd_soc_tegra_wm8994 = {
++	.name = "tegra-wm8994",
++	.dai_link = tegra_wm8994_dai,
++	.num_links = ARRAY_SIZE(tegra_wm8994_dai),
++	.remove = tegra_wm8994_remove,
++};
++
++static int tegra_wm8994_driver_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct snd_soc_card *card = &snd_soc_tegra_wm8994;
++	struct tegra_wm8994 *machine;
++	int ret;
++
++	pr_info("%s\n", __func__);
++
++	if (!pdev->dev.platform_data && !pdev->dev.of_node) {
++		dev_err(&pdev->dev, "No platform data supplied\n");
++		return -EINVAL;
++	}
++
++	machine = devm_kzalloc(&pdev->dev, sizeof(struct tegra_wm8994),
++			GFP_KERNEL);
++	if (!machine) {
++		dev_err(&pdev->dev, "Can't allocate tegra_wm8994 struct\n");
++		ret = -ENOMEM;
++		goto err;
++	}
++
++	card->dev = &pdev->dev;
++	platform_set_drvdata(pdev, card);
++	snd_soc_card_set_drvdata(card, machine);
++
++	// Parse device tree nodes
++
++	// ...
++
++	ret = snd_soc_of_parse_card_name(card, "nvidia,model");
++	if (ret)
++		goto err;
++
++
++	tegra_wm8994_dai[0].codec_of_node = of_parse_phandle(np,
++						"nvidia,audio-codec", 0);
++	if (!tegra_wm8994_dai[0].codec_of_node) {
++		dev_err(&pdev->dev,
++			"Property 'nvidia,audio-codec' missing or invalid\n");
++		ret = -EINVAL;
++		goto err;
++	}
++
++	tegra_wm8994_dai[0].cpu_of_node = of_parse_phandle(np,
++			"nvidia,i2s-controller", 0);
++	if (!tegra_wm8994_dai[0].cpu_of_node) {
++		dev_err(&pdev->dev,
++			"Property 'nvidia,i2s-controller' missing or invalid\n");
++		ret = -EINVAL;
++		goto err;
++	}
++
++	tegra_wm8994_dai[0].platform_of_node = tegra_wm8994_dai[0].cpu_of_node;
++	ret = tegra_asoc_utils_init(&machine->util_data, &pdev->dev);
++	if (ret) {
++		dev_err(&pdev->dev, "tegra_asoc_utils_init failed (%d)\n",
++			ret);
++		goto err;
++	}
++
++	ret = snd_soc_register_card(card);
++	if (ret) {
++		dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n",
++			ret);
++		goto err_fini_utils;
++	}
++
++		pr_info("%s: probed\n", __func__);
++
++
++	return 0;
++
++err_fini_utils:
++	tegra_asoc_utils_fini(&machine->util_data);
++err:
++	return ret;
++}
++
++static int tegra_wm8994_driver_remove(struct platform_device *pdev)
++{
++	struct snd_soc_card *card = platform_get_drvdata(pdev);
++	struct tegra_wm8994 *machine = snd_soc_card_get_drvdata(card);
++	snd_soc_unregister_card(card);
++
++	tegra_asoc_utils_fini(&machine->util_data);
++
++	return 0;
++}
++
++static const struct of_device_id tegra_wm8994_of_match[] = {
++	{ .compatible = "nvidia,tegra-audio-wm8994", },
++	{},
++};
++
++static struct platform_driver tegra_wm8994_driver = {
++	.driver = {
++		.name = DRV_NAME,
++		.owner = THIS_MODULE,
++		.pm = &snd_soc_pm_ops,
++		.of_match_table = tegra_wm8994_of_match,
++	},
++	.probe = tegra_wm8994_driver_probe,
++	.remove = tegra_wm8994_driver_remove,
++};
++
++module_platform_driver(tegra_wm8994_driver);
++
++MODULE_AUTHOR("Stephen Warren <swarren@nvidia.com>");
++MODULE_DESCRIPTION("Tegra+WM8994 machine ASoC driver");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:" DRV_NAME);
++MODULE_DEVICE_TABLE(of, tegra_wm8994_of_match);

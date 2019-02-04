@@ -1,0 +1,28 @@
+pkgname=firmware-samsung-i927
+pkgver=1
+pkgrel=1
+pkgdesc="Samsung SGH-i927 Firmware"
+url="https://github.com/The-Covenant"
+arch="armhf"
+license="proprietary"
+options="!check"
+
+# Source
+_fw_file="bcm4330_sta.bin"
+_nvram_file="nvram_net.txt"
+_commit="73d33be8ff2323eb51aa7f8c4916e946850e8bfe"
+_url_fw="https://github.com/The-Covenant/proprietary_vendor_samsung/raw/$_commit/i927/proprietary/$_fw_file"
+_url_nvram="https://github.com/The-Covenant/proprietary_vendor_samsung/raw/$_commit/i927/proprietary/$_nvram_file"
+
+source=""
+source="$source $pkgname-$_commit-$_fw_file::$_url_fw";
+source="$source $pkgname-$_commit-$_nvram_file::$_url_nvram";
+
+package() {
+	install -Dm644 "$srcdir/$pkgname-$_commit-$_fw_file" \
+		"$pkgdir/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.bin"
+	install -Dm644 "$srcdir/$pkgname-$_commit-$_nvram_file" \
+		"$pkgdir/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.txt"
+}
+sha512sums="3ae32e0c27a9143fa07e823c414639387aced9bdc149762806059b9dd3ebd3358675657a3cae25572db4e40e4f682d446aadd87c7d459269fc7d2ccf99a2c449  firmware-samsung-i927-73d33be8ff2323eb51aa7f8c4916e946850e8bfe-bcm4330_sta.bin
+1fac44f6c1d312cefc5c5bc2b66be41c877a0be6448359b95e7a966553acbf249b193a531a1d4dbdb1d8ec58dd43215d9f3d6c869374612593eb88a70d1a6d93  firmware-samsung-i927-73d33be8ff2323eb51aa7f8c4916e946850e8bfe-nvram_net.txt"

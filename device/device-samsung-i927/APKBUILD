@@ -1,0 +1,45 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-i927"
+pkgdesc="Samsung Captivate Glide"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armhf"
+options="!check !archcheck"
+depends="postmarketos-base
+	linux-samsung-i927
+	mkbootimg
+	alsa-utils
+	libdrm-grate
+	mesa-grate
+	mesa-grate-gl
+	mesa-grate-egl
+	mesa-grate-dri-swrast
+	mesa-grate-dri-tegra
+	xf86-video-opentegra
+	libvdpau-tegra"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	modules-load.conf"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -D -m644 "$srcdir"/modules-load.conf \
+		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="bcm4330 wifi firmware"
+	depends="firmware-samsung-i927"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="7edacfb24ec729bcf354ad3516aca0b17bceadef4090d848d30fb2fa77494a50d4e5901033222094c758a8b81d97710df1d460fd613541da11f566110ea4b9b0  deviceinfo
+d8ce60ea7acaabf627ddca2f0887a4cda46f313b7aaf7934bef2fef8a6e0798ccefab849e4571e4e3fcd06ae34c1a6efe3b58b401e2e443416f6200e6d4ea769  modules-load.conf"
