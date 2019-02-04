@@ -219,8 +219,8 @@ setup_usb_network_configfs() {
 	[ -e "$CONFIGFS" ] || return
 
 	mkdir $CONFIGFS/g1
-	printf "%s" "18D1" >"$CONFIGFS/g1/idVendor"
-	printf "%s" "D001" >"$CONFIGFS/g1/idProduct"
+	printf "%s" "0x18D1" >"$CONFIGFS/g1/idVendor"
+	printf "%s" "0xD001" >"$CONFIGFS/g1/idProduct"
 
 	mkdir $CONFIGFS/g1/strings/0x409
 
