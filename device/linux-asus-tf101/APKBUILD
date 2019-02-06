@@ -2,7 +2,7 @@
 
 pkgname="linux-asus-tf101"
 pkgver=3.1.10
-pkgrel=2
+pkgrel=3
 pkgdesc="Asus Eee Pad Transformer kernel fork"
 arch="armhf"
 _carch="arm"
@@ -27,12 +27,15 @@ _commit="5ddd9654ec52599fbef71657ad2e03b3cdacee31"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/jmrohwer/${_repository}/archive/${_commit}.tar.gz
-	$_config
 	compiler-gcc6.h
-	00_fix_return_address.patch
+	00-fix_return_address.patch
 	01-fix-alignment.patch
-	02_fix_static_vma_address.patch
-	03_remove_deprecated_perl.patch
+	02-fix_static_vma_address.patch
+	04-Revert-Update-TF101.patch
+	05-Revert-Update-TF101.patch
+	06-Enable-USB-Networking.patch
+	07-Added-Parameters-to-Atmel-TouchScreen-Drivers.patch
+	$_config
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
@@ -83,17 +86,19 @@ package() {
 	# Modules
 	cd "$builddir"
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		CONFIG_NO_ERROR_ON_MISMATCH=y \
+	make modules_install \
+		ARCH="$_carch" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
-		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
-		modules_install
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1
 }
 
 sha512sums="44a2bccef4f5d9258aee8d7c8cdb2572f7136cf1a3487e6290457a21de28ecc4201951f5ea89d9392a44d0980f66a590cf23696209639b63dafefd4d39662902  linux-asus-tf101-5ddd9654ec52599fbef71657ad2e03b3cdacee31.tar.gz
-533575b9b66d99eb4237325ed7972f68adb01c0d3948f58e8c014f7f26338c3e224dea738d76e3ebdd35816f16bacb1ee46abcaeeeee52adec1aee2b43d8b805  config-asus-tf101.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00-fix_return_address.patch
 cdddc37d3c173c931631037d7c337e45589420eba956231436b8d3b857b942db7fd33e4800d0badaa6f09d33a5373a9f0bf173748e8e72b237bd7d699e7fe4a8  01-fix-alignment.patch
-59231af0dee68fc424d1ad78f62c491ace795d4cc4af4c26e59b08da5c10cfc406dfc980305f851254bbfa7f03b1bc75f8072f4b4d0f06629ebdbb9ca5a6fea9  02_fix_static_vma_address.patch
-cd0bc463eae0372554d09dac7914ae391f999ca4a77238f761dee636a398eb45e6c02280b7035c8d162ce539f646f3e4170f180ba2e78262c22e308f094d2cd2  03_remove_deprecated_perl.patch"
+59231af0dee68fc424d1ad78f62c491ace795d4cc4af4c26e59b08da5c10cfc406dfc980305f851254bbfa7f03b1bc75f8072f4b4d0f06629ebdbb9ca5a6fea9  02-fix_static_vma_address.patch
+3644b617593740112732fdfda50814889e0d23bed1b53666138efa2eaae2c73568c8d60c4eda7a5d3a041eb81baaef5935421548791ee92f53868314f58f3242  04-Revert-Update-TF101.patch
+bc8d62c7bf3de7074b5526906716326dede61f7358278b0a88f33e8fa235dc5305e0fbb45e751817db2aec1fca9ea116962527a2d772fe3892e176a07a8635bd  05-Revert-Update-TF101.patch
+60067a14f1b8f71c7cd32f7eaf09c086b0641240ffee55cf4363ba050526625f55e1601fc4702b115f0a301e4526effe487fd1b6cfa85790b20e26fb09ca4f08  06-Enable-USB-Networking.patch
+59d9c2b365123acd6eca7b78403a893d8d78867db182ddc1fda2c521e85bb86f871fcb32ecc3ae5248a2cbb93a644a9d665085defe07987ece70326323329953  07-Added-Parameters-to-Atmel-TouchScreen-Drivers.patch
+e0118841755fcd2e93fdbead56b7e2825819f0295a44a5456eef05fd058481074e706eb8de4ef3dae043b405a878b013bc013ca31ecd63273cecadb2801b6373  config-asus-tf101.armhf"
