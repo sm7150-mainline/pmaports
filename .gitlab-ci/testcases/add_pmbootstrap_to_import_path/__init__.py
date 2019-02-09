@@ -5,6 +5,7 @@
 import shutil
 import sys
 import os
+from distutils.sysconfig import get_python_lib
 
 
 def path_pmbootstrap():
@@ -20,6 +21,10 @@ def path_pmbootstrap():
 
     # Resolve the symlink and verify the folder
     dir = os.path.dirname(os.path.realpath(bin))
+    if os.path.exists(dir + "/pmb/__init__.py"):
+        return dir
+
+    dir = get_python_lib()
     if os.path.exists(dir + "/pmb/__init__.py"):
         return dir
 
