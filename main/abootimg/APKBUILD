@@ -1,4 +1,4 @@
-_hash="1ebeb393252ab5aeed62e34bc439b6728444f06e"
+_commit="1ebeb393252ab5aeed62e34bc439b6728444f06e"
 
 pkgname=abootimg
 pkgver=0.6_git20150325
@@ -10,14 +10,14 @@ url="https://gitlab.com/ajs124/abootimg"
 depends=""
 makedepends="linux-headers util-linux-dev"
 subpackages="$pkgname-doc"
-source="${pkgname}-${_hash}.tar.bz2::https://gitlab.com/ajs124/${pkgname}/repository/${_hash}/archive.tar.bz2"
+source="${pkgname}-${_commit}.tar.bz2::https://gitlab.com/ajs124/${pkgname}/repository/${_commit}/archive.tar.bz2"
 options="!check"
 
-builddir="${srcdir}/abootimg-${_hash}-${_hash}"
+builddir="${srcdir}/abootimg-${_commit}-${_commit}"
 
 prepare() {
 	# Makefile tries to run git otherwise
-	echo "#define VERSION_STR \"$pkgver-$_hash\"" > "$builddir"/version.h
+	echo "#define VERSION_STR \"$pkgver-$_commit\"" > "$builddir"/version.h
 }
 
 build() {
