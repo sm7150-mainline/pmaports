@@ -1,0 +1,38 @@
+From 6dfb5189947dc913e9e643a82dd0f69efe7b16d7 Mon Sep 17 00:00:00 2001
+From: Sergey Larin <cerg2010cerg2010@mail.ru>
+Date: Sat, 26 Jan 2019 10:41:50 +0300
+Subject: [PATCH 03/34] drm/tegra: Hacks for S6E63M0
+
+Pins DATA_ENABLE, H_SYNC, V_SYNC, PIXEL_CLOCK are low polarity,
+set this in the registers to make the panel working.
+
+Signed-off-by: Sergey Larin <cerg2010cerg2010@mail.ru>
+---
+ drivers/gpu/drm/tegra/rgb.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/gpu/drm/tegra/rgb.c b/drivers/gpu/drm/tegra/rgb.c
+index 28a78d3120bc..a61c01b1b6f5 100644
+--- a/drivers/gpu/drm/tegra/rgb.c
++++ b/drivers/gpu/drm/tegra/rgb.c
+@@ -39,9 +39,17 @@ static const struct reg_entry rgb_enable[] = {
+ 	{ DC_COM_PIN_OUTPUT_ENABLE(2),   0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_ENABLE(3),   0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(0), 0x00000000 },
++#ifdef CONFIG_DRM_PANEL_SAMSUNG_S6E63M0
++	{ DC_COM_PIN_OUTPUT_POLARITY(1), 0x51000000 },
++#else
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(1), 0x01000000 },
++#endif
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(2), 0x00000000 },
++#ifdef CONFIG_DRM_PANEL_SAMSUNG_S6E63M0
++	{ DC_COM_PIN_OUTPUT_POLARITY(3), 0x00000100 },
++#else
+ 	{ DC_COM_PIN_OUTPUT_POLARITY(3), 0x00000000 },
++#endif
+ 	{ DC_COM_PIN_OUTPUT_DATA(0),     0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_DATA(1),     0x00000000 },
+ 	{ DC_COM_PIN_OUTPUT_DATA(2),     0x00000000 },
+-- 
+2.20.1
+

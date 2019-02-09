@@ -1,0 +1,71 @@
+From 2b9e681359e72c3ee0387dfc9b10ec9a7f548c97 Mon Sep 17 00:00:00 2001
+From: Jonathan Bakker <xc-racer2@live.ca>
+Date: Tue, 12 Jun 2018 11:32:26 -0700
+Subject: [PATCH 01/34] dt-bindings: drm: panel: Add Samsung s6e63m0 panel
+ documentation
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This commit adds documentation for Samsung s6e63m0 AMOLED LCD panel
+driver.
+
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Signed-off-by: Paweł Chmiel <pawel.mikolaj.chmiel@gmail.com>
+---
+Changes from v1:
+  - Add missing subject prefix
+  - Rename reset-gpio to reset-gpios
+  - Add link to spi properites documentation. They're required
+    for driver to work
+  - Removed delay properties, which are now hardcoded in driver
+  - Removed display timings, which are now hardcoded in driver
+
+Signed-off-by: Sergey Larin <cerg2010cerg2010@mail.ru>
+---
+ .../display/panel/samsung,s6e63m0.txt         | 33 +++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/panel/samsung,s6e63m0.txt
+
+diff --git a/Documentation/devicetree/bindings/display/panel/samsung,s6e63m0.txt b/Documentation/devicetree/bindings/display/panel/samsung,s6e63m0.txt
+new file mode 100644
+index 000000000000..9fb9ebeef8e4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/panel/samsung,s6e63m0.txt
+@@ -0,0 +1,33 @@
++Samsung s6e63m0 AMOLED LCD panel
++
++Required properties:
++  - compatible: "samsung,s6e63m0"
++  - reset-gpios: GPIO spec for reset pin
++  - vdd3-supply: VDD regulator
++  - vci-supply: VCI regulator
++
++The panel must obey rules for SPI slave device specified in document [1].
++
++The device node can contain one 'port' child node with one child
++'endpoint' node, according to the bindings defined in [2]. This
++node should describe panel's video bus.
++
++[1]: Documentation/devicetree/bindings/spi/spi-bus.txt
++[2]: Documentation/devicetree/bindings/media/video-interfaces.txt
++
++Example:
++
++		s6e63m0: display@0 {
++			compatible = "samsung,s6e63m0";
++			reg = <0>;
++			reset-gpio = <&mp05 5 1>;
++			vdd3-supply = <&ldo12_reg>;
++			vci-supply = <&ldo11_reg>;
++			spi-max-frequency = <1200000>;
++
++			port {
++				lcd_ep: endpoint {
++					remote-endpoint = <&fimd_ep>;
++				};
++			};
++		};
+-- 
+2.20.1
+

@@ -1,0 +1,83 @@
+From c4ff1dc8430861193f894aa5cb7d4a816dc95b0d Mon Sep 17 00:00:00 2001
+From: Beomho Seo <beomho.seo@samsung.com>
+Date: Mon, 13 Oct 2014 11:46:26 +0900
+Subject: [PATCH 28/34] input: keyboard: mcs_touchkey:Convert to devm_* managed
+ functions
+
+Tis patch use the devm_* managed functions to allocate resources.
+
+Change-Id: I9351869922b481a6791ca98f6dd3328d84424906
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+---
+ drivers/input/keyboard/mcs_touchkey.c | 27 +++++++++++----------------
+ 1 file changed, 11 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/input/keyboard/mcs_touchkey.c b/drivers/input/keyboard/mcs_touchkey.c
+index 2c9d7f63b562..933429c165b5 100644
+--- a/drivers/input/keyboard/mcs_touchkey.c
++++ b/drivers/input/keyboard/mcs_touchkey.c
+@@ -174,14 +174,14 @@ static int mcs_touchkey_probe(struct i2c_client *client,
+ 		return PTR_ERR(pdata);
+ 	}
+ 
+-	data = kzalloc(sizeof(struct mcs_touchkey_data) +
++	data = devm_kzalloc(&client->dev, sizeof(struct mcs_touchkey_data) +
+ 			sizeof(data->keycodes[0]) * (pdata->key_maxval + 1),
+ 			GFP_KERNEL);
+-	input_dev = input_allocate_device();
++	input_dev = devm_input_allocate_device(&client->dev);
+ 	if (!data || !input_dev) {
+ 		dev_err(&client->dev, "Failed to allocate memory\n");
+ 		error = -ENOMEM;
+-		goto err_free_mem;
++		return error;
+ 	}
+ 
+ 	data->client = client;
+@@ -204,7 +204,7 @@ static int mcs_touchkey_probe(struct i2c_client *client,
+ 	if (fw_ver < 0) {
+ 		error = fw_ver;
+ 		dev_err(&client->dev, "i2c read error[%d]\n", error);
+-		goto err_free_mem;
++		return error;
+ 	}
+ 	dev_info(&client->dev, "Firmware version: %d\n", fw_ver);
+ 
+@@ -237,27 +237,22 @@ static int mcs_touchkey_probe(struct i2c_client *client,
+ 		data->poweron(true);
+ 	}
+ 
+-	error = request_threaded_irq(client->irq, NULL, mcs_touchkey_interrupt,
+-				     IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+-				     client->dev.driver->name, data);
++	error = devm_request_threaded_irq(&client->dev, client->irq, NULL,
++					mcs_touchkey_interrupt,
++					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++					client->dev.driver->name, data);
+ 	if (error) {
+ 		dev_err(&client->dev, "Failed to register interrupt\n");
+-		goto err_free_mem;
++		return error;
+ 	}
+ 
+ 	error = input_register_device(input_dev);
+ 	if (error)
+-		goto err_free_irq;
++		return error;
+ 
+ 	i2c_set_clientdata(client, data);
+-	return 0;
+ 
+-err_free_irq:
+-	free_irq(client->irq, data);
+-err_free_mem:
+-	input_free_device(input_dev);
+-	kfree(data);
+-	return error;
++	return 0;
+ }
+ 
+ static int mcs_touchkey_remove(struct i2c_client *client)
+-- 
+2.20.1
+

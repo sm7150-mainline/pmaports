@@ -1,0 +1,33 @@
+From 191217e9006ab051cd2f18accc02582737fe0a38 Mon Sep 17 00:00:00 2001
+From: Sergey Larin <cerg2010cerg2010@mail.ru>
+Date: Sat, 9 Feb 2019 20:13:26 +0300
+Subject: [PATCH 25/34] drm/panel: s6e63m0: Increase back porch
+
+Original timings cause issues on Tegra hardware - image is
+shifted and colors are wrong.
+
+Signed-off-by: Sergey Larin <cerg2010cerg2010@mail.ru>
+---
+ drivers/gpu/drm/panel/panel-samsung-s6e63m0.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-samsung-s6e63m0.c b/drivers/gpu/drm/panel/panel-samsung-s6e63m0.c
+index dbd57239359e..b77e3a774291 100644
+--- a/drivers/gpu/drm/panel/panel-samsung-s6e63m0.c
++++ b/drivers/gpu/drm/panel/panel-samsung-s6e63m0.c
+@@ -112,9 +112,9 @@ static const struct drm_display_mode default_mode = {
+ 	.hsync_end	= 480 + 16 + 2,
+ 	.htotal		= 480 + 16 + 2 + 16,
+ 	.vdisplay	= 800,
+-	.vsync_start	= 800 + 28,
+-	.vsync_end	= 800 + 28 + 2,
+-	.vtotal		= 800 + 28 + 2 + 1,
++	.vsync_start	= 800 + 27,
++	.vsync_end	= 800 + 27 + 2,
++	.vtotal		= 800 + 27 + 2 + 2,
+ 	.vrefresh	= 60,
+ 	.width_mm	= 53,
+ 	.height_mm	= 89,
+-- 
+2.20.1
+

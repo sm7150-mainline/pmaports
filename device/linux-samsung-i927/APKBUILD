@@ -3,7 +3,7 @@
 
 pkgname="linux-samsung-i927"
 pkgver=4.20.4
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Captivate Glide kernel fork"
 arch="armhf"
 _carch="arm"
@@ -23,7 +23,40 @@ _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$pkgver.tar.gz::https://kernel.org/pub/linux/kernel/v4.x/linux-$pkgver.tar.gz
 	$_config
-	kernel.patch
+	0001-dt-bindings-drm-panel-Add-Samsung-s6e63m0-panel-docu.patch
+	0002-drm-panel-Add-driver-for-Samsung-S6E63M0-panel.patch
+	0003-drm-tegra-Hacks-for-S6E63M0.patch
+	0004-iio-gyro-mpu3050-get-chip-ID-correctly.patch
+	0005-soc-tegra-fix-build-for-Tegra.patch
+	0006-mmc-core-Add-a-quirk-for-NVIDIA-Tegra-EMMC.patch
+	0007-leds-Add-led-class-support-isa1200-vibration-motor.patch
+	0008-iio-accel-kxcjk-Add-device-tree-support.patch
+	0009-ARM-dts-tegra20-glide-Samsung-SGH-I927-support.patch
+	0010-Input-stmpe-keypad-add-STMPE1801-support.patch
+	0011-Add-tegra_wm8994-driver.patch
+	0012-HACK-Fix-wm8994-Kconfig.patch
+	0013-ASoC-tegra_wm8994-cleanup.patch
+	0014-ARM-dts-tegra20-glide-Device-Tree-changes.patch
+	0015-ARM-dts-tegra20-glide-add-memory-node-address.patch
+	0016-ARM-dts-tegra20-glide-comment-out-MHL.patch
+	0017-ARM-dts-tegra20-glide-fix-duplicate-i2c-bus-address.patch
+	0018-ARM-dts-tegra20-glide-fix-USB-gadget-mode.patch
+	0019-ARM-dts-tegra20-glide-change-display-timings.patch
+	0020-ARM-dts-tegra20-glide-add-intrrupt-binding-for-charg.patch
+	0021-drm-panel-s6e63m0-disable-rotation.patch
+	0022-ARM-dts-tegra20-glide-set-panel-reset-GPIO-pin-to-ac.patch
+	0023-power-supply-max17040-Fix-voltage-reporting.patch
+	0024-power-supply-max17040-Set-initial-RCOMP-value.patch
+	0025-drm-panel-s6e63m0-Increase-back-porch.patch
+	0026-ARM-dts-tegra20-glide-fix-AK8975.patch
+	0027-Input-mcs_touchkey-Add-parse-DT-function-from-device.patch
+	0028-input-keyboard-mcs_touchkey-Convert-to-devm_-managed.patch
+	0029-input-keyboard-mcs_touchkey-add-sentinel-into-array-.patch
+	0030-TRATS2-dts-exynos4412-m0.dts-Add-mcs-touchkey-node.patch
+	0031-ARM-dts-tegra20-glide-Add-touchkey-binding.patch
+	0032-ARM-dts-tegra20-glide-Add-keyboard-backlight-LED.patch
+	0033-input-keyboard-mcs_touchkey-LED-support.patch
+	0034-ARM-dts-tegra20-glide-Add-HALL-GPIO-binding.patch
 "
 builddir="$srcdir/${_repository}-${pkgver}"
 
@@ -71,5 +104,38 @@ package() {
 }
 
 sha512sums="5f9eb065932e404091dd9e4afd5a92b6382ddbc81488684c42981cdfe227da9a423356c19ec236ca1a9a7f4bf042cf351aa8b3cd4f7488b0d8b1245d69221a5c  linux-samsung-i927-4.20.4.tar.gz
-fb556670c376c85f6c0ad0105179298e8d7b1564e32c7a50152924112407dcc294b5e322eb207e801f61e81f9511e28c52dcd663152c2e5a1ea1a9e0100d09ba  config-samsung-i927.armhf
-c65a89a07b20b3720d6187c6049f215823b07fd4ba647984691bf37d2488a71f4e00ce8bc9521c499b7e15f13fb1473289a8eeea42899d5a6c0c3247b0a94549  kernel.patch"
+c676893a5062a0cc1e4cfe2ad4f73087ae787e301d2f17a20cecc9cbce76fdd564517068ea063b07c26065107ac6e27e7c2be51b018796a1a982ec47cc852fa5  config-samsung-i927.armhf
+8791c158836bd8db5b8b557138dd4b5ca9ffd94d0bc441c1fde649733c18a6ee73dde47aef96582edc844e059acd501ff4f8a6aad5157833b41e6e15bbf12f81  0001-dt-bindings-drm-panel-Add-Samsung-s6e63m0-panel-docu.patch
+f8f1bf6944898b06fdec922eb97a674d2edcf58f1dac02aff6761674ec5b615b5432553e98bbb39b2b9110534b5a9a57f8f1a107e39ced48edd61cd194ac4935  0002-drm-panel-Add-driver-for-Samsung-S6E63M0-panel.patch
+75bf4aaf46de8d56de9348c7c772a1063637aae9dc77f8da397d7e1220d4b29d5ccde3242b38b31d483f07f1c2a2b4e075cf04bfedcf0cf2ded09114b18b1bdb  0003-drm-tegra-Hacks-for-S6E63M0.patch
+498796860ca706cb2d6914f6677942567782434887cdeb5872a7a03fa5f08c45ea3180fa2ab4e9976327b1a8786092a12171143c32182d88a0aee327b43ef2b0  0004-iio-gyro-mpu3050-get-chip-ID-correctly.patch
+547215e283c4b6b5c390f4e954ffcfffa89da9037eab7dd59cf339bbda8a0bc2136bc515a5b3518b6161bf81ba59df5675dacf7a48a811a2c1391037ba6a2a36  0005-soc-tegra-fix-build-for-Tegra.patch
+c3e771e046f76f516cbefb5aeae4064279dfb6a0b76c2f05d577753ab1150ca2f3c6201e8903b8a174997028f935287fe2a5f6727d1fe07cba56331b18763f21  0006-mmc-core-Add-a-quirk-for-NVIDIA-Tegra-EMMC.patch
+ff287c7938489f96e3a2a31f7fcd55bfb3945984dbd89796684c820ca19ceb7275307517925939fa5d9b03a42f9bea649d3baf4c9c26d835c9ff2f98bd898403  0007-leds-Add-led-class-support-isa1200-vibration-motor.patch
+f9d1e22735cc8c3e8300f05a63527dcf78ce74da1ec9538155a66eb34d2421a4f449ca8c6bc7b62fa146e762b4ec997aa563da5c6f1586285aec5f79ee3cda2f  0008-iio-accel-kxcjk-Add-device-tree-support.patch
+4c829deef770aab5c17314853af10c8acb913be3ed839a6b926680da54bc7e3f3d85c12862dd4b530ef57a569cceb55693fc269e9fd232636070cb6d8676891e  0009-ARM-dts-tegra20-glide-Samsung-SGH-I927-support.patch
+4740867e900e05c3db66ec4069ba2b8a371a05ebb11b9e40349fe3f94466a7f80596bdf809d90a9a3389f861db4d272f4913069323c17144411fa831a4ec03ae  0010-Input-stmpe-keypad-add-STMPE1801-support.patch
+af1cee099fe35eef22fb77889f9e9784f6bcc2606e16d837824e9fc0e0a6a33e2d58565cad8daa362de5a1fe9dd32e229ec4a7323aa61e823bb7f4a0c06fd9df  0011-Add-tegra_wm8994-driver.patch
+cf0b473400968f7b8472a5657855df18a2240b3335cc21c2d1207e634ecfce9565b57407eab6dee432d60ddc6418e1638d67c156881f92acf382afe8542f1e02  0012-HACK-Fix-wm8994-Kconfig.patch
+41ea8f9e714b6809d52ab0e3d7da655746f73715ae5ef1e1b108c2f569491056530f128b5acc5ece1800b578f558e014f1fc016a0116a76b039c665a440308a4  0013-ASoC-tegra_wm8994-cleanup.patch
+dc36fa11439f24bff01f0f098d396bd7ec53e25bc9528e80227d197607f7def6383bb7780abb01c6bd544dc2718b587472f7367a02eb758ca28ee2de3285974a  0014-ARM-dts-tegra20-glide-Device-Tree-changes.patch
+93caaa3cc90c45614aa4f1659933cd7dd81baaf473a9c13aa6ebc2092dd15f02121df4a2af6cb0d0b4d0db4c0e348a3e775834011378b0a693f0cf47cf25b722  0015-ARM-dts-tegra20-glide-add-memory-node-address.patch
+392c7d65c94d7fd8d7c745b2cc9f4352683e5026d29e985c49ba8aaf381b0383ba6aaf85222715de0c8ee95f36b6f7609e7dc464bde47a6f919b808504080dc0  0016-ARM-dts-tegra20-glide-comment-out-MHL.patch
+a47ff803d2c1df850bf5ad75ae0a8c1fe9275e6252ba679cd62f37abe7a4fe100aa48eb1f494104846facdb74d6fd77aed7658bcbc17501d05375cc2b04c31e8  0017-ARM-dts-tegra20-glide-fix-duplicate-i2c-bus-address.patch
+3637e6b7231183cd0953c06c698ec54790615dc9dadaa91b7633adf41bf300c006be35665ff02bb5c1f7324329f859c9dd82876eeeeb8a3203290473904e4bfb  0018-ARM-dts-tegra20-glide-fix-USB-gadget-mode.patch
+171563e46a6b1ca9be9cf105ea8f601a1d113ee8d007cee4abe54f4c025dc933497b0070b3e5e2401ce04206b7a477924d26f2615e17f8f2a7c6128e3172c93a  0019-ARM-dts-tegra20-glide-change-display-timings.patch
+b3981b1f88b70ec59289171e75b462edfebf918f229cb3c549febdfecb0d0efc1842e4820b8c172a372ba136d5939cdf81f9dd24441168400688626288e29fbd  0020-ARM-dts-tegra20-glide-add-intrrupt-binding-for-charg.patch
+222fedee563f19ba5e6fba7393099f061040065ea690f597743dab4f5851dc9d559c949f975025444720f320496195e5cd027f37a1bf4ce591537e9e64c45135  0021-drm-panel-s6e63m0-disable-rotation.patch
+2014b13ab9ebb1ade4e3d882916922365fa663adecf4a1b8da4ca2f433bf26352b80eab69e79af72285a6a1bb1d0848e33fe032ff644d94496c98247ef775728  0022-ARM-dts-tegra20-glide-set-panel-reset-GPIO-pin-to-ac.patch
+ccaa18e3d4b27d6f8c07e968abafc006067b1150993e167f725e06af3cd6884cfcf502ac4cc758638b170a212a28e66a670ba85429ca2c2143e0f607243bc9ad  0023-power-supply-max17040-Fix-voltage-reporting.patch
+de6f1efea36f66d360e5ff542982ff47d696ac81ff4328f50fc96a37eb8c446d13d52035c4e097e19938c3e9e7b9fc423c4d9d4801de0937b5f6be0b125a4d64  0024-power-supply-max17040-Set-initial-RCOMP-value.patch
+e48f47d145f6312cbed5fcd9a907c3037704634f027c85fe03e7a3e90402d2172f8734bbfc14858a9238e6ff84fb7f136a7187349a62786171feeb1b54ef87d7  0025-drm-panel-s6e63m0-Increase-back-porch.patch
+3dd3fcc3d607b584bab5407346c65f2ba5650ae34e39e913809bd6eaf8b2fe3e6a79973efde0cca4024dab5e9c3f8e9c66293bb3d99a55c5bf81875ca1779f85  0026-ARM-dts-tegra20-glide-fix-AK8975.patch
+4a448e378bdfcca1292bbc877581984d64205429ed7f61e80cb22422714b15fe1691e2234475c3ee84e744580f5e4e6ef5e8023d683332f4f2acce0779978469  0027-Input-mcs_touchkey-Add-parse-DT-function-from-device.patch
+caf9e44d8b6f8efa414d21a0fa74cdbb0df0902651dc18e26969b91c411ec8826223b2bda5b96e2df669c4f1901e4bcfa7a5e6beb4f15e33f6aa016f15589b4f  0028-input-keyboard-mcs_touchkey-Convert-to-devm_-managed.patch
+993192bd8675f942b0fd5f378a7653b94d190f05ee8f883888aa8d58b9a355b8ad3d85ad97b75a553fe415e1a394acd9c248cf734340609b767ded90b7f56343  0029-input-keyboard-mcs_touchkey-add-sentinel-into-array-.patch
+43a5695a1fd999acb4f6dc5e0d0af17b8b2c74995db2ce0082a69876a285256c992ab4090cc09571897446a7fe85c706a7131ca951a83e033a6f8cba77013fdb  0030-TRATS2-dts-exynos4412-m0.dts-Add-mcs-touchkey-node.patch
+a1ab752a0aab1b53108cc0ec7ead852d97ccab3c43fb682bed77e1e4d62098268214d06aa8e058ab96f8634de6233c5934743f5e7d8345ae158a7409ec4e9d24  0031-ARM-dts-tegra20-glide-Add-touchkey-binding.patch
+7eebe202647b5d7308a67892d9fa981b2e87044786665f46133effde406c02f0a4c1f73158850ce4551f57f5fcefccbec51b342ece3c60bb4c7d7193435cd146  0032-ARM-dts-tegra20-glide-Add-keyboard-backlight-LED.patch
+92c7416647fe780ef1b2a3dda5468e0c13b10c40937f0a620d666d4785a4354d88e2d4c12fdaa1e2399322caebd625c198c22ac74e646b097642e3d5ae241910  0033-input-keyboard-mcs_touchkey-LED-support.patch
+679cbe5d74515fbdeb55c3a4aeb0571d6b0096483cbb93ef3fc645c5aa80ab3f3731f52001c08979f2742ad90c8dedf5231f40fecef55d7b5761004373cfeb58  0034-ARM-dts-tegra20-glide-Add-HALL-GPIO-binding.patch"

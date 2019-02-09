@@ -1,0 +1,28 @@
+From baee924a1eb54c7b4283948f7a141134a351a188 Mon Sep 17 00:00:00 2001
+From: Sergey Larin <cerg2010cerg2010@mail.ru>
+Date: Sat, 26 Jan 2019 19:32:58 +0300
+Subject: [PATCH 05/34] soc/tegra: fix build for Tegra
+
+Last changes to Linux 4.20 kernel broke the build. Fix it by adding a
+config option.
+
+Signed-off-by: Sergey Larin <cerg2010cerg2010@mail.ru>
+---
+ drivers/soc/tegra/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/soc/tegra/Kconfig b/drivers/soc/tegra/Kconfig
+index fe4481676da6..ad5ede8f84ce 100644
+--- a/drivers/soc/tegra/Kconfig
++++ b/drivers/soc/tegra/Kconfig
+@@ -126,6 +126,7 @@ config SOC_TEGRA_FLOWCTRL
+ 	bool
+ 
+ config SOC_TEGRA_PMC
++	select GENERIC_PINCONF
+ 	bool
+ 
+ config SOC_TEGRA_POWERGATE_BPMP
+-- 
+2.20.1
+
