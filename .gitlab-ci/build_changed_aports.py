@@ -22,6 +22,10 @@ def run_git(parameters, check=True):
         return None
 
 
+def commit_message_has_string(needle):
+    return needle in run_git(["show", "-s", "--format=full", "HEAD"])
+
+
 def run_pmbootstrap(parameters):
     """ Run pmbootstrap with the pmaports dir as --aports """
     cmd = ["pmbootstrap", "--aports", get_pmaports_dir()] + parameters
@@ -62,6 +66,38 @@ def get_changed_files():
     return ret
 
 
+def get_changed_packages_sanity_check(count):
+    if commit_message_has_string("[ci:ignore-count]"):
+        print("NOTE: package count sanity check skipped ([ci:ignore-count]).")
+        return
+    if count <= 10:
+        return
+
+    print()
+    print("ERROR: Too many packages have changed!")
+    print()
+    print("This is a sanity check, so we don't end up building packages that")
+    print("have not been modified. CI won't run for more than one hour")
+    print("anyway.")
+    print()
+    print("Your options:")
+    print("a) If you *did not* modify everything listed above, then rebase")
+    print("   your branch on the official postmarketOS/pmaports.git master")
+    print("   branch. Feel free to ask in the chat for help if you need any.")
+    print("b) If you *did* modify all these packages, and you assume that")
+    print("   they will build within one hour: skip this sanity check by")
+    print("   adding '[ci:ignore-count]' to the commit message (then force")
+    print("   push).")
+    print("c) If you *did* modify all these packages, and you are sure that")
+    print("   they won't build in time, please add '[ci:skip-build]' to the")
+    print("   commit message (then force push). Make sure that all packages")
+    print("   build with 'pmbootstrap build --strict'!")
+    print()
+    print("Thank you and sorry for the inconvenience.")
+
+    sys.exit(1)
+
+
 def get_changed_packages():
     files = get_changed_files()
     ret = set()
@@ -75,16 +111,6 @@ def get_changed_packages():
 
         # Add to the ret set (removes duplicated automatically)
         ret.add(file.split("/")[1])
-
-    if len(ret) > 10:
-        print("ERROR: Too many packages have changed!")
-        print("This is a sanity check, so we don't end up building packages"
-              " that have not been modified. CI won't run for more than one"
-              " hour anyway.")
-        print("If you see this message on your personal fork of the"
-              " pmbootstrap repository, try to update your fork's master"
-              " branch to the upstream master branch.")
-        sys.exit(1)
     return ret
 
 
@@ -101,8 +127,16 @@ if __name__ == "__main__":
              "https://gitlab.com/postmarketOS/pmaports.git"], False)
     run_git(["fetch", "-q", "upstream"])
 
-    # Build changed packages
+    # Get and print modified packages
     packages = get_changed_packages()
+
+    # Stop here if desired
+    if commit_message_has_string("[ci:skip-build]"):
+        print("WARNING: not building changed packages ([ci:skip-build])!")
+        exit(0)
+
+    # Build changed packages
+    get_changed_packages_sanity_check(len(packages))
     if len(packages) == 0:
         print("no aports changed in this branch")
     else:
