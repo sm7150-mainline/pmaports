@@ -32,6 +32,7 @@ aports-static:
   before_script:
     - .gitlab-ci/install_pmbootstrap.sh pytest
   script:
+    - su pmos -c "pmbootstrap kconfig check"
     - su pmos -c ".gitlab-ci/run_testcases.sh
         -m 'not pmaports_upstream_compat'"
   artifacts:
