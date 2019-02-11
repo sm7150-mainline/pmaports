@@ -7,7 +7,6 @@ pkgdesc='A C++ library for controlling asynchronous tasks'
 arch="all"
 url='https://community.kde.org/KDE_PIM'
 license="GPL-2.0 LGPL-2.1"
-depends=""
 depends_dev="qt5-qtbase-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/unstable/$pkgname/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -17,7 +16,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 		make
 }

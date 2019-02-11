@@ -1,20 +1,17 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 # Contributor: Bart Ribbers <bribbers@disroot.org>
-
 pkgname=kactivities-stats
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 arch="all"
 pkgdesc="A library for accessing the usage data collected by the activities system"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="boost-dev qt5-qtbase-dev kconfig-dev kactivities-dev
-			graphviz-dev qt5-qttools-dev qt5-qtdeclarative-dev"
+depends_dev="boost-dev qt5-qtbase-dev kconfig-dev kactivities-dev graphviz-dev qt5-qttools-dev qt5-qtdeclarative-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
-builddir="$srcdir/build"
+builddir="$srcdir/$pkgname-$pkgver/build"
 
 prepare() {
 	mkdir "$builddir"
@@ -23,10 +20,10 @@ prepare() {
 build() {
 	cd "$builddir"
 
-	cmake "$srcdir"/$pkgname-$pkgver \
+	cmake .. \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -38,6 +35,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="142a8e92bef7069eae70187e1c04a29f65ab4bc12b7e146d21e8da3c4818941af59844e702e9682d8bcd64d6e76b30f012db2cdd1476962b59e0b27c1114c311  kactivities-stats-5.54.0.tar.xz"
+sha512sums="09f90120f16738e2aacfcc597ea3c4594451b5033b6f6fe2f6c10266ab9fc199ae062680aa1a250e75caa85a65e21a7c32283410081589b50aa6d13ca9fa2f13  kactivities-stats-5.55.0.tar.xz"

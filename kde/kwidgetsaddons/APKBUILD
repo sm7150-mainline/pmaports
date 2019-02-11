@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwidgetsaddons
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Addons to QtWidgets"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="GPL-2.0"
-depends=""
 depends_dev="qt5-qtbase-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,7 +29,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="e52375a10af10bd1134d33e793511fa91c135079d2479686ce0f559e31e2e6a71de311773c6c6353343b8ebd3c29e35aa604402cf6cc0b53169775c3babc6bc8  kwidgetsaddons-5.54.0.tar.xz"
+sha512sums="efce530c903ebfcee4a5b3d785d10f23b89e6f130494b59d89c869b3486f22a787fc09f8655f79ad5eb3d276e155462eef8f9655a56fd0292fe6319efa516925  kwidgetsaddons-5.55.0.tar.xz"

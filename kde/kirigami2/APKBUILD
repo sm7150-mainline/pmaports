@@ -1,20 +1,19 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kirigami2
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="A QtQuick based components set"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL"
 depends="qt5-qtgraphicaleffects"
-depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev
-			kpackage-dev kcoreaddons-dev kservice-dev kconfig-dev kwindowsystem-dev"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kpackage-dev kcoreaddons-dev kservice-dev kconfig-dev kwindowsystem-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-libs $pkgname-lang"
 options="!check"
-builddir="$srcdir/build"
+builddir="$srcdir/$pkgname-$pkgver/build"
 
 prepare() {
 	mkdir "$builddir"
@@ -22,7 +21,7 @@ prepare() {
 
 build() {
 	cd "$builddir"
-	cmake "$srcdir"/$pkgname-$pkgver \
+	cmake .. \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_LIBDIR=lib \
@@ -39,4 +38,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="c85dbc8790faed84e7b59f703966f4404fe6a7c7d7e83ba4ae6d6469cd01d2a594aa7b5fbda460839df504a23a38b1881748c9a21071cc68de050e3760f25406  kirigami2-5.54.0.tar.xz"
+sha512sums="b63521e1d5e057f40299b3e54791b7bc408a30757ba6261c9a92ff76314e12e008b09bbe417b0c8d6752ee3b962c7dfd188f474e054572a4871d3ddfcf3ea1e9  kirigami2-5.55.0.tar.xz"

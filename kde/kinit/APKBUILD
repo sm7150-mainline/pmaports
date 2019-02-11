@@ -1,19 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kinit
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Process launcher to speed up launching KDE applications"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="kio-dev kservice-dev kcrash-dev kbookmarks-dev qt5-qtbase-dev
-			 kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfig-dev
-			 kcoreaddons-dev kwidgetsaddons-dev kconfigwidgets-dev kauth-dev kcodecs-dev ki18n-dev
-			 kwindowsystem-dev"
+depends_dev="kio-dev kservice-dev kcrash-dev kbookmarks-dev qt5-qtbase-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfig-dev kcoreaddons-dev kwidgetsaddons-dev kconfigwidgets-dev kauth-dev kcodecs-dev ki18n-dev kwindowsystem-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="suid"
 
@@ -21,8 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -34,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="ad7fa0228a4595cce754e65227ab979859827e1773148dd00de95e95ad25d78dae80a4cf04106a1bba5953c6c0acdcaea5e966c83de2f402be33dcc588106ecb  kinit-5.54.0.tar.xz"
+sha512sums="505fdc629290d6967c0c8e9206e28c91a4145cc82c4207800319acf2136001e329caaf4825ef3dda2d0b8989d46fd9b7eb6d28a6ade647c512df832095fcd84c  kinit-5.55.0.tar.xz"

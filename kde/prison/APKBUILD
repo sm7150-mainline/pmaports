@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=prison
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="A barcode API to produce QRCode barcodes and DataMatrix barcodes"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="MIT"
-depends=""
 depends_dev="qt5-qtbase-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev libqrencode-dev libdmtx-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
@@ -17,7 +16,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -31,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="6ffdeb4c8196a9ec6c845ebe1d58801c02d570f831bf5c1a2bd8f30d048cc0d62aa8e8273fc8db4689c6ac45caa35906bad82b211e58108b7ed8cf42649acf16  prison-5.54.0.tar.xz"
+sha512sums="bfceab1b2b289595dcfe356f50f5c426f4f8ad8624d3edbd28ac9c7c4aa76bb45a6c40871ee078a7433fceb4e3c863445f0fd8ffa18ecd66101fd24d900557e1  prison-5.55.0.tar.xz"

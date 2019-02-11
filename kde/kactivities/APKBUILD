@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kactivities
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 arch="all"
 pkgdesc="Core components for the KDE's Activities"
@@ -12,29 +12,30 @@ depends_dev="kcoreaddons-dev kconfig-dev kwindowsystem-dev qt5-qtdeclarative-dev
 makedepends="$depends_dev extra-cmake-modules boost doxygen qt5-qttools-dev boost-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-libs $pkgname-doc"
+builddir="$srcdir/$pkgname-$pkgver/build"
 
 prepare() {
-	mkdir -p "$srcdir"/build
+	mkdir "$builddir"
 }
 
 build() {
-	cd "$srcdir"/build
-	cmake "$builddir" \
+	cd "$builddir"
+	cmake .. \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DQML_INSTALL_DIR=lib/qt/qml \
 		-DBUILD_QCH=ON
 	make
 }
 
 check() {
-	cd "$srcdir"/build
+	cd "$builddir"
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$srcdir"/build
-	make DESTDIR="${pkgdir}" install
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="d397c087f740e044a14f02bca47da2c267b4c9d9ab8231e240addf41eec6d716fc6d2a85bc3760636a69be55a058ba8d380c4555aa16ba43fff7fd2dfcb20a64  kactivities-5.54.0.tar.xz"
+sha512sums="84a48e658fcfe58c2878df27c90073b16682eedbde26311a8a3029203b69ffd3d75e2b61a870efd77a2ff0a4b520ae009e745d3ed85a60ebd723fcdf03aff61b  kactivities-5.55.0.tar.xz"

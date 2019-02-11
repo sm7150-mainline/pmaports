@@ -1,15 +1,14 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kcoreaddons
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Addons to QtCore"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 makedepends="extra-cmake-modules qt5-qttools-dev doxygen shared-mime-info"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # armhf problems
 
@@ -17,7 +16,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 		make
 }
@@ -29,6 +28,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="8e4a2cd59a0ecdf09317e67aa20b96f37562035beb744d189856094bcb06944e175c78515374a8a090446e63c8174b2a949b744dff36f0e21c455a2cb5df5df9  kcoreaddons-5.54.0.tar.xz"
+sha512sums="d643248abe8769eb19a4c443edcf8dd488cea18de80be1b9669dac09cefc6aaa9b2aa68decb7abc66f9ade6cf099246face692f1eb99b84244b3cdefec11bdb6  kcoreaddons-5.55.0.tar.xz"

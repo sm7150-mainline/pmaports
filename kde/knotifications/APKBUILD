@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=knotifications
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Abstraction for system notifications"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtx11extras-dev kwindowsystem-dev kconfig-dev kcodecs-dev kcoreaddons-dev qt5-qtbase-dev phonon-qt5-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen dbus-libs"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running dbus-daemon
 
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="66098068d707f4b5b5147b2e02dec7b4a11c95af1dcc02ec933d1b5b63d8dab1e7776a34aae80cfb5671ae7e27cfd50dad5566e26152fb94de076384b77cdcfa  knotifications-5.54.0.tar.xz"
+sha512sums="6055f7e7a82a9b33e25a8930042cce8120d3203c7b20543e3db76417b97cf9ac2d9ea5650035835376cd7d5867a3d466e5a96f58846801544b7bab34e432b4da  knotifications-5.55.0.tar.xz"

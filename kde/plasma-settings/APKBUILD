@@ -1,20 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-settings
-pkgver=0_git20181205
+pkgver=0_git20190208
 pkgrel=0
-_commit="bd252d8caf4b0d296fdd8aaac83234fc14bded70"
+_commit="e4f4d768c1603799add19d1471927b9131cefe1e"
 pkgdesc="Plasma Settings"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
 license="LGPL-2.0+"
 depends="kirigami2 kded"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kwindowsystem-dev kcoreaddons-dev
-	solid-dev kconfig-dev kauth-dev kdbusaddons-dev ki18n-dev kdeclarative-dev
-	kio-dev kdelibs4support-dev karchive-dev kservice-dev kpackage-dev kconfigwidgets-dev
-	kbookmarks-dev kcrash-dev kcompletion-dev kdesignerplugin-dev kdesignerplugin
-	kjobwidgets-dev kdoctools-dev kemoticons-dev kguiaddons-dev kitemmodels-dev
-	kinit-dev knotifications-dev kparts-dev kunitconversion-dev plasma-framework-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kwindowsystem-dev kcoreaddons-dev solid-dev kconfig-dev kauth-dev kdbusaddons-dev ki18n-dev kdeclarative-dev kio-dev kdelibs4support-dev karchive-dev kservice-dev kpackage-dev kconfigwidgets-dev kbookmarks-dev kcrash-dev kcompletion-dev kdesignerplugin-dev kdesignerplugin kjobwidgets-dev kdoctools-dev kemoticons-dev kguiaddons-dev kitemmodels-dev kinit-dev knotifications-dev kparts-dev kunitconversion-dev plasma-framework-dev"
 source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit/build"
 
@@ -24,21 +19,21 @@ prepare() {
 
 build() {
 	cd "$builddir"
-	cmake "$builddir"/.. \
+	cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-		-DCMAKE_BUILD_TYPE=Release
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON
 	make
 }
 
 check() {
 	cd "$builddir"
-	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+	CTEST_OUTPUT_ON_FAILURE=true ctest
 }
 
 package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="ff255ef8f17a462eb6bd6c4eae6a731cc70368677da9cf7f3990495b59636bbacdf3b8815589ffeb8729dc1b8cb45430db299886fc95c9d3b1049d49a0fc55df  plasma-settings-bd252d8caf4b0d296fdd8aaac83234fc14bded70.tar.gz"
+sha512sums="734df9d1cf515d7a8efa87c992e43eaaa321ba36445a5206f43140ce12a43b60a4e51ed1fe29c3c8294b542b3db35e0c6eb2e2c35fececa232f777ed71271532  plasma-settings-e4f4d768c1603799add19d1471927b9131cefe1e.tar.gz"

@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kdesu
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Integration with su for elevated privileges"
 arch="all"
@@ -11,16 +11,14 @@ depends=""
 depends_dev="kpty-dev kservice-dev kconfig-dev kcoreaddons-dev ki18n-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
-subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-options="suid"
+subpackages="$pkgname-dev $pkgname-lang"
+options="suid !check" # Tests requires running X11
 
 build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib \
-		-DBUILD_QCH=ON
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -31,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="6491ec9b13d802fa78917cb95aad80cd3de746fbb37f1fb9bef56a53021be95adb15156352cfc96664fcee0c5ef90a9045e1b2086d2af9b2c657ecc50146285f  kdesu-5.54.0.tar.xz"
+sha512sums="9369b54991082468c24426ebc500dbd5e9a7cae7e4359f73f297b95b8b41c1591e5c2b6e9f3dbbe809440e589b8f24d000b31f51580844b2c0766f5b4709cbd8  kdesu-5.55.0.tar.xz"

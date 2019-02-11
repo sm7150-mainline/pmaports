@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwindowsystem
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Access to the windowing system"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtx11extras-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen libxrender-dev xcb-util-keysyms-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,7 +29,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="144181636b5f272a4a248bfa90ebc2410ab4b0adca034b086ce86fc208d63607f00f1b8e2193647d5fc72c696f3b02d5d718a3125d4703c548e7a8a85da47690  kwindowsystem-5.54.0.tar.xz"
+sha512sums="6738a9fd4878740cfe1c8aeae89ef62e76b8b7e9b920376248a01883959729ebabbde15552c7e5176a889f24a67559169e9f8e5f4773e06445520055f0414384  kwindowsystem-5.55.0.tar.xz"

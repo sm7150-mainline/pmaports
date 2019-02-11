@@ -1,19 +1,16 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=knewstuff
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Support for downloading application assets from the network"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
 depends="qt5-qtquickcontrols2"
-depends_dev="karchive-dev kio-dev kservice-dev kbookmarks-dev kjobwidgets-dev solid-dev kxmlgui-dev
-			qt5-qtdeclarative-dev kcompletion-dev kcoreaddons-dev ki18n-dev kiconthemes-dev
-			kitemviews-dev kconfigwidgets-dev kauth-dev kcodecs-dev ktextwidgets-dev sonnet-dev
-			attica-qt-dev kconfig-dev kwidgetsaddons-dev"
+depends_dev="karchive-dev kio-dev kservice-dev kbookmarks-dev kjobwidgets-dev solid-dev kxmlgui-dev qt5-qtdeclarative-dev kcompletion-dev kcoreaddons-dev ki18n-dev kiconthemes-dev kitemviews-dev kconfigwidgets-dev kauth-dev kcodecs-dev ktextwidgets-dev sonnet-dev attica-qt-dev kconfig-dev kwidgetsaddons-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -21,7 +18,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,6 +30,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="96fd8100c78e7d4f9c0ca26ad12587f952455b302ae195184e6fb0ae601b2806668cf2b6dca012e08441622fd72e99c30a52fe901d7af60c4b59701d72b1196a  knewstuff-5.54.0.tar.xz"
+sha512sums="3ad6c14ed2e39afccfd825b7e67afe2bc62c530db46f531c6580e187b81ce8527005f2288517e213b6a73bee13d1d61ac9d3ee38759798f9c686e20fd619d72a  knewstuff-5.55.0.tar.xz"

@@ -1,25 +1,22 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kcmutils
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Utilities for interacting with KCModules"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="kdeclarative-dev kiconthemes-dev kxmlgui-dev kpackage-dev qt5-qtdeclarative-dev
-			kitemviews-dev kconfigwidgets-dev kauth-dev kcoreaddons-dev kcodecs-dev kconfig-dev
-			kwidgetsaddons-dev ki18n-dev kservice-dev"
+depends_dev="kdeclarative-dev kiconthemes-dev kxmlgui-dev kpackage-dev qt5-qtdeclarative-dev kitemviews-dev kconfigwidgets-dev kauth-dev kcoreaddons-dev kcodecs-dev kconfig-dev kwidgetsaddons-dev ki18n-dev kservice-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 
 build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -31,6 +28,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="dbb8e24a86378ab283cb934fc27caa4dc3a91e3f90d70a12d64bb08dc669427e64469720507265c2cc2276133bbfe4f57c48c7a7498b5f020d503d0fcba9c3ea  kcmutils-5.54.0.tar.xz"
+sha512sums="1b6c519ebe45560dc8d0d816f8151857c72aba56f1cbb25ce97d7b0890d8326d497eeaee170db90e1a2b48fcc6ab05a444e47a3570ca935ad18b959d17528f4b  kcmutils-5.55.0.tar.xz"

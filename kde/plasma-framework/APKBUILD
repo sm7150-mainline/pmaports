@@ -1,19 +1,14 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-framework
-pkgver=5.54.0
-pkgrel=1
+pkgver=5.55.0
+pkgrel=0
 pkgdesc="Plasma library and runtime components based upon KF5 and Qt5"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="GPL-2.0"
 depends=""
-depends_dev="kdoctools-dev kactivities-dev kwindowsystem-dev ki18n-dev kiconthemes-dev kpackage-dev
-			 kdeclarative-dev knotifications-dev qt5-qtdeclarative-dev qt5-qtsvg-dev kio-dev
-			 kwayland-dev kdbusaddons-dev qt5-qtx11extras-dev karchive-dev kguiaddons-dev
-			 kservice-dev kbookmarks-dev kcompletion-dev kitemviews-dev kjobwidgets-dev
-			 solid-dev kxmlgui-dev kglobalaccel-dev kconfig-dev kconfigwidgets-dev kauth-dev
-			 kcoreaddons-dev kcodecs-dev kwidgetsaddons-dev kirigami2-dev"
+depends_dev="kdoctools-dev kactivities-dev kwindowsystem-dev ki18n-dev kiconthemes-dev kpackage-dev kdeclarative-dev knotifications-dev qt5-qtdeclarative-dev qt5-qtsvg-dev kio-dev kwayland-dev kdbusaddons-dev qt5-qtx11extras-dev karchive-dev kguiaddons-dev kservice-dev kbookmarks-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kglobalaccel-dev kconfig-dev kconfigwidgets-dev kauth-dev kcoreaddons-dev kcodecs-dev kwidgetsaddons-dev kirigami2-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
@@ -23,7 +18,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -35,6 +30,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="618f2beb3b8a25cacf7c11339ba15cae10db461c61e278a5ba845e9afac7e9edb48fde16bd78b4bb7d16c07001f8d9fbdbf5bfd58593488a544fa183b3df8c15  plasma-framework-5.54.0.tar.xz"
+sha512sums="2372196d5bcb4d4fbabf17e1aa9bffe6e2754d07c6cb6bc540512804c0ab8f298f7365d0779be4288f0b3262ffa2519602d66aa357873415b79972f2068f770b  plasma-framework-5.55.0.tar.xz"

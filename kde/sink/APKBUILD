@@ -7,9 +7,7 @@ pkgdesc="An offline-cache, synchronizaqtion and indexing system for PIM data"
 arch="all"
 url="https://community.kde.org/KDE_PIM"
 license="LGPL-2.0"
-depends=""
-depends_dev="qt5-qtbase-dev kmime-dev kcontacts-dev kasync-dev kimap2-dev kdav2-dev lmdb-dev
-	xapian-core-dev curl-dev readline-dev flatbuffers-dev libexecinfo-dev kcalcore-dev"
+depends_dev="qt5-qtbase-dev kmime-dev kcontacts-dev kasync-dev kimap2-dev kdav2-dev lmdb-dev xapian-core-dev curl-dev readline-dev flatbuffers-dev libexecinfo-dev kcalcore-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/unstable/$pkgname/$pkgver/src/$pkgname-$pkgver.tar.xz
 	musl-lacks-backtrace.patch"
@@ -20,9 +18,9 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
-		make
+	make
 }
 
 check() {

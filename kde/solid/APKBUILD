@@ -1,24 +1,22 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=solid
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Hardware integration and detection"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtdeclarative-dev"
-makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen eudev-dev flex-dev bison upower-dev
-			udisks2-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen eudev-dev flex-dev bison upower-dev udisks2-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
 
 build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,6 +28,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="5728b617d5d6ec6acc71cd4707ab25e3c753c9616c2b5b1d4b1c66899faa526b395c206c3d3b3f36cb4e2f005f1267c12c9f73cf4d9fffd486eae64fbf78d855  solid-5.54.0.tar.xz"
+sha512sums="899207e88dc896c30030b7d8d8361d8535cb895a92c4b3f6ae27b535d5633df25dc2d93dd0519d1c7679f33e49981b22d76438d71a1461c2a9a098f93ca53c40  solid-5.55.0.tar.xz"

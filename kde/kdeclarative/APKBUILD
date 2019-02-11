@@ -1,19 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kdeclarative
-pkgver=5.54.0
-pkgrel=1
+pkgver=5.55.0
+pkgrel=0
 pkgdesc="Provides integration of QML and KDE Frameworks"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="kpackage-dev kconfig-dev kiconthemes-dev kglobalaccel-dev kwindowsystem-dev
-			 kio-dev kguiaddons-dev qt5-qtdeclarative-dev ki18n-dev kcoreaddons-dev kservice-dev
-			 kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev
-			 solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev libepoxy-dev"
+depends_dev="kpackage-dev kconfig-dev kiconthemes-dev kglobalaccel-dev kwindowsystem-dev kio-dev kguiaddons-dev qt5-qtdeclarative-dev ki18n-dev kcoreaddons-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev libepoxy-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -21,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="57a042a3c9be486b9582f133a0d6688758d1ae2dd4079168d3830cbd6b2d656b22d7b1fa321f77c1d14e216e2714984303db943df623b71d29c87d7c410871c2  kdeclarative-5.54.0.tar.xz"
+sha512sums="27530b0c512a3087804bf1c54bffe56ad3a178ccb77da65c750f150d892208845e344136edf20e6fb3cb6f3acb2e7b9cab7896f7ae94890a102f0a46682eba6c  kdeclarative-5.55.0.tar.xz"

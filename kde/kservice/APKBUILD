@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kservice
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Advanced plugin and service introspection"
 arch="all"
@@ -10,33 +10,33 @@ license="LGPL-2.1"
 depends=""
 depends_dev="kcrash-dev kconfig-dev kdbusaddons-dev ki18n-dev kcoreaddons-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev doxygen qt5-qttools-dev flex-dev bison"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
-options="!check" # Fails due to test suites not building
+options="!check"
+builddir="$srcdir/$pkgname-$pkgver/build"
 
 prepare() {
-	mkdir "$builddir"/build
+	mkdir "$builddir"
 }
 
 build() {
-	cd "$builddir"/build
-	cmake \
+	cd "$builddir"
+	cmake .. \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_QCH=ON \
-		-DBUILD_TESTING=OFF ..
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
 	make
 }
 
 check() {
-	cd "$builddir"/build
+	cd "$builddir"
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"/build
-	make DESTDIR="${pkgdir}" install
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="df64846676aa7877a34d245adb612b938eaa220e30f58ae9ea7800e97e1278f83b6777a8e65a3841535b450145dce194c45c5d3fad1c366d334f4cdfe8058475  kservice-5.54.0.tar.xz"
+sha512sums="e2ab490edbbe0ff4a96253eccb8356c858714cc265b854244d350f0b28c5ceb096494d7b1ac285d2b854d135171b40de247f49d866a53a5528182c6c72fbc68c  kservice-5.55.0.tar.xz"

@@ -1,16 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=baloo
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="A framework for searching and managing metadata"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev kconfig-dev kdbusaddons-dev
-	ki18n-dev kidletime-dev solid-dev kfilemetadata-dev kcrash-dev kio-dev kservice-dev
-	kbookmarks-dev kcompletion-dev kjobwidgets-dev lmdb-dev"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev kconfig-dev kdbusaddons-dev ki18n-dev kidletime-dev solid-dev kfilemetadata-dev kcrash-dev kio-dev kservice-dev kbookmarks-dev kcompletion-dev kjobwidgets-dev lmdb-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
@@ -20,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -31,6 +28,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="ec610aa2ab6409cf206623e08eb78d7ccc3b278ca94d6f8ba79d6d705459eb5cb9d74ed9ffc4cc20c337582b12517fb59da1570aa689111c0f105746234333de  baloo-5.54.0.tar.xz"
+sha512sums="3d08c8279702e9cbd58d9768fa3a2456303cadc5ef06e9d839264a532a218e3aa35a8547c3fe74113661e9fb7630cf69b56a7037e250dacf651abfd3ab2f1ed6  baloo-5.55.0.tar.xz"

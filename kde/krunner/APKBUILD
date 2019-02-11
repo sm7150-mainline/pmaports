@@ -1,19 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=krunner
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Framework for providing different actions given a string query"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="plasma-framework-dev threadweaver-dev kactivities-dev kbookmarks-dev kcompletion-dev
-			kjobwidgets-dev solid-dev kxmlgui-dev kpackage-dev qt5-qtdeclarative-dev kconfig-dev
-			kcoreaddons-dev ki18n-dev kservice-dev kwidgetsaddons-dev kitemviews-dev kconfigwidgets-dev
-			kauth-dev kcodecs-dev kwindowsystem-dev kio-dev"
+depends_dev="plasma-framework-dev threadweaver-dev kactivities-dev kbookmarks-dev kcompletion-dev kjobwidgets-dev solid-dev kxmlgui-dev kpackage-dev qt5-qtdeclarative-dev kconfig-dev kcoreaddons-dev ki18n-dev kservice-dev kwidgetsaddons-dev kitemviews-dev kconfigwidgets-dev kauth-dev kcodecs-dev kwindowsystem-dev kio-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
 options="!check" # Fails due to requiring running X11
 
@@ -21,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="1ed1590424736d0d38249740435e6a1e289089bdb650b5fc7eaff05c86e296b372a1dc7833f7fbaa8dcf1ca33653d6ff1241929abf8795f87e73ab85ac6299b1  krunner-5.54.0.tar.xz"
+sha512sums="ccd17b079537426aecc2446d34cce428caead3f9e07a5e5023a2a468c5657cbc48572179c44c485051545de6416971238b7de652f10dcf1312e2bd76f4d4f394  krunner-5.55.0.tar.xz"

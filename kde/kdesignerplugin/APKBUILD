@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kdesignerplugin
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Integration of Frameworks widgets in Qt Designer/Creator"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="kcoreaddons-dev kconfig-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev"
 source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
@@ -15,10 +14,11 @@ subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
 build() {
+	cd "$builddir"
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DKF5WebKit_FOUND=OFF
 	make
 }
@@ -34,4 +34,4 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="ac566101b0b991376d31612033a86a8db6bce30734fed3a6022f6d6cfde812b6df6a65f73578ebd6fa31b3954a1af7b134e38bf795b512cf5aa4af684b87c1a7  kdesignerplugin-5.54.0.tar.xz"
+sha512sums="fffb687a5b1e60ad9c41b825a907f18d23822a336133b855fbcd3be5f679b8dab4f36bc6bde48c4bfba9b402d998824b208d9670d697770b85088119e14f4574  kdesignerplugin-5.55.0.tar.xz"

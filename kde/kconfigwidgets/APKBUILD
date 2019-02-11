@@ -1,17 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kconfigwidgets
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Widgets for KConfig"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="kcoreaddons-dev kauth-dev kguiaddons-dev kwidgetsaddons-dev kcodecs-dev kconfig-dev 
-			ki18n-dev"
+depends_dev="kcoreaddons-dev kauth-dev kguiaddons-dev kwidgetsaddons-dev kcodecs-dev kconfig-dev ki18n-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -19,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -31,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="c6ec2d90c3c227eb9b092bf5b33c39f99ca4f68b1337cc0655d679648710987d13e1c8d9622ad5683ba5b2b3037aca510d96ff64d04a41dd442f3bed74398b73  kconfigwidgets-5.54.0.tar.xz"
+sha512sums="9a7fcf1deaa29d44af6683e811f0a11936cc3617f886ecda760c0ccc019f0d785210b10061dc57cadf8644041bfbdeddc8b847337358aa305458301c312e8e68  kconfigwidgets-5.55.0.tar.xz"

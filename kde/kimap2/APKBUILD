@@ -3,11 +3,10 @@
 pkgname=kimap2
 pkgver=0.2.1
 pkgrel=0
-pkgdesc='Job-based API for interacting with IMAP servers'
+pkgdesc="Job-based API for interacting with IMAP servers"
 arch="all"
 url='https://community.kde.org/KDE_PIM'
 license="GPL-2.0 LGPL-2.0"
-depends=""
 depends_dev="qt5-qtbase-dev kcoreaddons-dev kcodecs-dev kmime-dev cyrus-sasl-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="$pkgname-$pkgver.tar.gz::https://github.com/KDE/$pkgname/archive/v$pkgver.tar.gz"
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 		make
 }

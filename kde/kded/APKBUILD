@@ -1,23 +1,22 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kded
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Extensible deamon for providing system level services"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="kinit-dev kcrash-dev kdbusaddons-dev kcoreaddons-dev kservice-dev qt5-qtbase-dev kconfig-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
 
 build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -29,6 +28,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="696f98b222616200a308c97c04d3fcc1f941bd46bf4ff8913d5d3e95c46f385906dc71c43e55d44938aab21a572786130370b5a1210a811390c356a50a2ccc77  kded-5.54.0.tar.xz"
+sha512sums="5f4d78e05fd19a12976238bb1faf806510e75a5bd0192494d182d7d42e97bbdcae748edced544c9195a9b484f616e1c151d932f961a54f216ee1d5206c8528ee  kded-5.55.0.tar.xz"

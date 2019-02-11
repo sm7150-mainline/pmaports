@@ -1,18 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kparts
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Document centric plugin system"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="kio-dev kiconthemes-dev ktextwidgets-dev sonnet-dev kbookmarks-dev kwidgetsaddons-dev
-			kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev
-			kauth-dev kcodecs-dev kconfig-dev kcoreaddons-dev ki18n-dev kservice-dev"
+depends_dev="kio-dev kiconthemes-dev ktextwidgets-dev sonnet-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kconfig-dev kcoreaddons-dev ki18n-dev kservice-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -20,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -32,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="607a9a89b9d3b4434a46fe84fd13588bb2d99a43b6cc7a85abc1c336613834743f0b6ef832f31126cbf3a0ea6260c8e889927d7cc9d7cb0ad61215d1c6c4e272  kparts-5.54.0.tar.xz"
+sha512sums="1469754cc8588d66428e853ff55c8fa4a1a5722f9101192f043023d1cf91ac469ee461c57dc580d74b1b476eb544faa9ea7d3268ede42f582cc99acdc0af57c1  kparts-5.55.0.tar.xz"

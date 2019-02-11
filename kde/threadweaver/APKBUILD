@@ -1,23 +1,22 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=threadweaver
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="High-level multithreading framework"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
 
 build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -29,7 +28,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="aaea9474d1015748600c97ec18d2cac888b468ce6fe66e9c7c8ca4f0a176795839ad74df2a5292bd4ba6004ed6f563825d3be00f87fd56124de0e8765e11c842  threadweaver-5.54.0.tar.xz"
+sha512sums="6468d80e9e049e53ae9713f82517ce17b15d5ab0b9f34b1ef60b6a81c322ccde1329fc63e03b6a41ffdca9aaa06173de4186aa4069d98aaa4d8a6a5c5f9e722c  threadweaver-5.55.0.tar.xz"

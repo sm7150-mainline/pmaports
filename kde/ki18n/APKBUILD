@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ki18n
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Advanced internationalization framework"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtdeclarative-dev qt5-qtscript-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check"
 
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -31,7 +30,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="1c974a8445cac7474b989b641b154c131f6231d97979d3c54e04b6182b10f87d3412d9e75503ead09499e83d30e2eafeeff9ddd8683fd2005889e675311a5bb6  ki18n-5.54.0.tar.xz"
+sha512sums="2ecc7493b594e18abccb828bb3d7da63fb5d6f6920829443758ed4745f1a2f5f45852ab71badaaf9109e1daa404ced905135d8a0cda02229e38de6399b3d3cc7  ki18n-5.55.0.tar.xz"

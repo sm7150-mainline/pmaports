@@ -7,22 +7,16 @@ pkgdesc="Track and control the processes running in your system"
 arch="all"
 url="https://userbase.kde.org/KSysGuard"
 license="GPL-2.0"
-depends=""
-depends_dev="libksysguard-dev attica-qt-dev kinit-dev kxmlgui-dev kconfig-dev kcoreaddons-dev
-			kdbusaddons-dev ki18n-dev kiconthemes-dev kitemviews-dev kio-dev knotifications-dev
-			kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kjobwidgets-dev
-			qt5-qtbase-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev
-			kwindowsystem-dev knewstuff-dev"
+depends_dev="libksysguard-dev attica-qt-dev kinit-dev kxmlgui-dev kconfig-dev kcoreaddons-dev kdbusaddons-dev ki18n-dev kiconthemes-dev kitemviews-dev kio-dev knotifications-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kjobwidgets-dev qt5-qtbase-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kwindowsystem-dev knewstuff-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
-source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-doc $pkgname-lang"
 
 build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_TESTING=OFF
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 

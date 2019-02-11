@@ -1,24 +1,24 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kplotting
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Lightweight plotting framework"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtbase-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
 options="!check" # Fails due to requiring running X11
 
 build() {
-	cmake "$srcdir"/${pkgname}-${pkgver} \
+	cd "$builddir"
+	cmake . \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,7 +30,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="85cec93bd25a673bcaed993c9130529c1f16e726b3c40f84395f1c2e4810b85503dc3f015ef5cdc1289b793cc19abd956d54a61c2f8e1626ab73b9112107b61d  kplotting-5.54.0.tar.xz"
+sha512sums="4e7dcec142a3cf5855a8e14246f8878b077a819b5cb73407da3534a97a11336b902d6185dba256fe2df834e5aec686dedc7a3ce6a64ed6a73a75bd370954822a  kplotting-5.55.0.tar.xz"

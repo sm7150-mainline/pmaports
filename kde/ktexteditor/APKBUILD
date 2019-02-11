@@ -1,20 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ktexteditor
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Advanced embeddable text editor"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="qt5-qtxmlpatterns-dev qt5-qtdeclarative-dev qt5-qtscript-dev kparts-dev karchive-dev
-			kguiaddons-dev ktextwidgets-dev sonnet-dev kconfig-dev ki18n-dev kio-dev kcoreaddons-dev
-			kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev
-			kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kiconthemes-dev
-			syntax-highlighting-dev"
+depends_dev="qt5-qtxmlpatterns-dev qt5-qtdeclarative-dev qt5-qtscript-dev kparts-dev karchive-dev kguiaddons-dev ktextwidgets-dev sonnet-dev kconfig-dev ki18n-dev kio-dev kcoreaddons-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kiconthemes-dev syntax-highlighting-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -22,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -34,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="8402fb036887ef853e455b4c80b3f4ff7fa6a65fc37e94d4fb2e94c09a59f2e49d7403dbf94aa3f2b2eb7ac6f43c5aede9aaa45ab5e9597a62b8a5d9b7ad0500  ktexteditor-5.54.0.tar.xz"
+sha512sums="27fd0726fba0f0161576bc0de60055c2d657b2a91c0ff2109bb2ef44718650a76502bc438deaae1b35448c290ac076a469804e4611ba6923b6939269612f22a8  ktexteditor-5.55.0.tar.xz"

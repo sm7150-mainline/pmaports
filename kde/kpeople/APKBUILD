@@ -1,17 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kpeople
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="A library that provides access to all contacts and the people who hold them"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="qt5-qtdeclarative-dev kcoreaddons-dev kwidgetsaddons-dev ki18n-dev kitemviews-dev
-			kservice-dev kconfig-dev"
+depends_dev="qt5-qtdeclarative-dev kcoreaddons-dev kwidgetsaddons-dev ki18n-dev kitemviews-dev kservice-dev kconfig-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Not sure
 
@@ -19,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="8f4709cfb256eb7f836d64ee5dcec9962323a8d2d4b362a01fb140af53b7b16db5dd6bd4c8246af67086bee4e2baa9b40e66e877486900c32eb51cb3483a899c  kpeople-5.54.0.tar.xz"
+sha512sums="25ddf41ffc43b86515e0cf9ab89c37190007ef30ee1ee119c5a8760e023d16e66fb8911ff5b6cd05f015bce8fcea31eeef7eeb085076b4a2037a302f4a1380dd  kpeople-5.55.0.tar.xz"

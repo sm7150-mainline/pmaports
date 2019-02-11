@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kunitconversion
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Support for unit conversion"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="ki18n-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Check always fails
 
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,7 +29,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="657b13bf4d49fcceab6005ccbbe439f011be5865ac95c3a06317edda8f2fca90cda2dcb8d415235f2edf4af3616ab35e55a9b40b94d29d0dbfc6b5e74fc3fbb5  kunitconversion-5.54.0.tar.xz"
+sha512sums="6e5d5c8deedc8b611ef5417cfd233624833c8720671716dd9ce7296e56d3bfeb70cd84c2008426f2064d98eaecf68e60a7e1fbb775dd24573c1329386bc1ee5c  kunitconversion-5.55.0.tar.xz"

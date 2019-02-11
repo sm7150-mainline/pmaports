@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kpackage
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Framework that lets applications manage user installable packages of non-binary assets"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="kcoreaddons-dev karchive-dev ki18n-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring installed Plasma, which causes a circular dependency
 
@@ -18,8 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -31,7 +29,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="d26f5dad3634a442d55bae94903ec6d781fa1984a780eec4b1f9ea0f9d3ae50b0defd3ddb078d7b0410626250ded1ee1e5ca1f5ea7ecee1ede4a0ef30463a8c8  kpackage-5.54.0.tar.xz"
+sha512sums="28656d175fc20ebab4d585737df20860c485b3f22e08c7b44054aea8dce50720d236b496c103b21dbdf773e41652022ff0247a3946dae533f225bbc8f0ff8ddf  kpackage-5.55.0.tar.xz"

@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kpty
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Pty abstraction"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="kcoreaddons-dev ki18n-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Not sure: "Can't open a pseudo teletype"
 
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="1eb83b3034d950a7561a043f68eea17322f6547a19f399bd500c9ce28bdf02b86d60ed6b4aa976ae4b75cb674ebaa3e4c9c1642601d4470b884ba4ca0ba249c6  kpty-5.54.0.tar.xz"
+sha512sums="e7f00ccbcf4b29103d53c763d5f6274065b2f2a79aec6260dee9a5824d5b8f806404e6234125b54310e2d646353e263e4703721bf51e581a46c66cb1e9f5767e  kpty-5.55.0.tar.xz"

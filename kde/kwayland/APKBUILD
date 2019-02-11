@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwayland
-pkgver=5.54.0
-pkgrel=3
+pkgver=5.55.0
+pkgrel=0
 pkgdesc="Qt-style Client and Server library wrapper for the Wayland libraries"
 arch="all"
 url="https://www.kde.org"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtbase-dev wayland-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
 options="!check" # Fails due to requiring running Wayland compositor
 
@@ -18,8 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -34,4 +32,4 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="8b6eaa2f57b09857447f702e2e0f253413edd6938459d407437aac7dddf1313002f6c4c4f32df861c723479fdf4642084a360cd6406729cb42c627f488ac6aa7  kwayland-5.54.0.tar.xz"
+sha512sums="ab76f74784bcda078eaac6c6efaeb0f6158439bc1d51eca3f70f721b2acd8bc5c12bd2a81e4b289c881b95fd186336517903adf30803e76cf4795eaf38761b05  kwayland-5.55.0.tar.xz"

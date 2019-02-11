@@ -1,20 +1,16 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=khtml
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="KHTML APIs"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="GPL-3.0"
 depends=""
-depends_dev="qt5-qtbase-dev karchive-dev kcodecs-dev kglobalaccel-dev ki18n-dev kiconthemes-dev kio-dev
-			kcoreaddons-dev kconfig-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev
-			kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kjs-dev kwallet-dev
-			knotifications-dev kparts-dev ktextwidgets-dev sonnet-dev kwindowsystem-dev qt5-qtx11extras-dev
-			phonon-qt5-dev giflib-dev libjpeg-turbo-dev"
+depends_dev="qt5-qtbase-dev karchive-dev kcodecs-dev kglobalaccel-dev ki18n-dev kiconthemes-dev kio-dev kcoreaddons-dev kconfig-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kjs-dev kwallet-dev knotifications-dev kparts-dev ktextwidgets-dev sonnet-dev kwindowsystem-dev qt5-qtx11extras-dev phonon-qt5-dev giflib-dev libjpeg-turbo-dev"
 makedepends="$depends_dev extra-cmake-modules gperf"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/portingAids/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/portingAids/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -22,7 +18,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -33,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="622b4c3de23ae3424c9d15651479a7c23fd2011fc81256eba56b9e4b7f7b405b57710903f098475dd46771aaf865b973253a7a16b6074c6aed211c2567d3ff83  khtml-5.54.0.tar.xz"
+sha512sums="bca0bdfbfdfc0e02e711aa1fd5943c088704929000fc8c489d764cbb3caa0952049cee5b56fb28497f8c85de9c46c9c6ecad11c096472c08d02c066fc5061731  khtml-5.55.0.tar.xz"

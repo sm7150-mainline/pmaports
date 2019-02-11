@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kcompletion
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Text completion helpers and widgets"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="kwidgetsaddons-dev kconfig-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -30,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="af813411090d25f85d1b409bd971d9f610cc7c1ce01463f70cf57791af9dafe88957d74be0b63c4ca8f7d2a790c48d34613a03bed03552cae30346576849f654  kcompletion-5.54.0.tar.xz"
+sha512sums="cfcf6e0ad5548f31fb9edafe2640379bae6f1cb40444a2a1929c8959dd46b1093f81dcfb9da216add826f7c1bbe645cd5562bbef61e66824592d94c072d1c44d  kcompletion-5.55.0.tar.xz"

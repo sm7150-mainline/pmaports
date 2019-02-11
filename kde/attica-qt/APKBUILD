@@ -1,27 +1,25 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=attica-qt
-pkgver=5.54.0
+_pkgname="${pkgname/-qt/}"
+pkgver=5.55.0
 pkgrel=0
 arch="all"
 pkgdesc="Qt5 library that implements the Open Collaboration Services API"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtbase-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/attica-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$_pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc"
-builddir="$srcdir/${pkgname/-qt/}-$pkgver"
-
-# ProviderTest::testFetchInvalidProvider() fails with: Could not fetch provider
-options="!check"
+options="!check" # ProviderTest::testFetchInvalidProvider() fails with: Could not fetch provider
+builddir="$srcdir/$_pkgname-$pkgver"
 
 build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,6 +31,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="f278423e5bcbd1899d6c41caceee740e3caee01dd1af20303827ec5a807e262e560b068dcb6619f5410ebe815b71b1244ccc453c49956c3bfd1452a88ecf5b18  attica-5.54.0.tar.xz"
+sha512sums="09fc4c00a4543af82f3fe4d8bddf16fbb8675545623d9f851714b03fca4b7ba18643f471f251ccbcb577824ae1b9a680383094c884f2f3ffd07a3067a7afa0cb  attica-5.55.0.tar.xz"

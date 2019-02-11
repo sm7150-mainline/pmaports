@@ -1,17 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ktextwidgets
-pkgver=5.54.0
+pkgver=5.55.0
 pkgrel=0
 pkgdesc="Advanced text editing widgets"
 arch="all"
 url="https://community.kde.org/Frameworks"
 license="LGPL-2.1"
-depends=""
-depends_dev="sonnet-dev kauth-dev kiconthemes-dev kservice-dev kcompletion-dev kconfig-dev
-			kconfigwidgets-dev kcoreaddons-dev kcodecs-dev kwidgetsaddons-dev ki18n-dev kwindowsystem-dev"
+depends_dev="sonnet-dev kauth-dev kiconthemes-dev kservice-dev kcompletion-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev kcodecs-dev kwidgetsaddons-dev ki18n-dev kwindowsystem-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
-source="https://download.kde.org/stable/frameworks/${pkgver%.*}/${pkgname}-${pkgver}.tar.xz"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -19,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -31,6 +29,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="0a3e12a422bb8aa1c79cf96cbd95d7544ba812e12b9a9b838efc014336e56c3f21bce80084ec9ed3c164b317dd9588db3ef28a729b01bdd05e9ea024d47ce767  ktextwidgets-5.54.0.tar.xz"
+sha512sums="63f72c7430369961b359a14410d7e1c5fc2a598ca8b32885fac71bc685fc8dd6d7d49c06bbd8429eb6ff943c57e2d76971b73f4a87e69ab9ad346b2515431242  ktextwidgets-5.55.0.tar.xz"
