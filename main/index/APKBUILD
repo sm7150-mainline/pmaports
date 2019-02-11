@@ -1,26 +1,29 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=index
-pkgver=0_git20190105
-pkgrel=1
-_commit="88b6569e27b9b08f36141cb8fbca7941c897dd08"
+pkgver=0_git20190208
+pkgrel=0
+_commit="f0859b889c5ed30771fdb2078330e361ecc8b4ca"
 pkgdesc="Index file manager based on MauiKit"
 arch="all"
 url="https://github.com/mauikit/index"
 license="unknown"
 depends="mauikit qmltermwidget"
-makedepends="qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
 source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
 options="!check" # No tests available
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	qmake-qt5
+	cd "$builddir"
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr
 	make
 }
 
 package() {
 	cd "$builddir"
-	make INSTALL_ROOT="$pkgdir" install
+	DESTDIR="$pkgdir" make install
 }
-sha512sums="325a6f8e6d9d1e64afac4e2037539f210e9dbf2dee3aeba71faa6497f37b1b54bb98228a48a4a23f469e61b26afe54c411d04dc50730b3d9d50a88d5ac6a77b9  index-88b6569e27b9b08f36141cb8fbca7941c897dd08.tar.gz"
+sha512sums="b3782105dfb7af47d5ea3855b94e977ec9da4bdeea1e32bfe5fc0e91c1e252c1ef8f5c541e39f7f7610278f2e515ecc6f3face5469f2c4adcecdea1f54079f9c  index-f0859b889c5ed30771fdb2078330e361ecc8b4ca.tar.gz"
