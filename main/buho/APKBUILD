@@ -1,0 +1,26 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=buho
+pkgver=0_git20190105
+pkgrel=0
+_commit="17f53d30f8c957a781f4332c5754f424baec2532"
+pkgdesc="Note taking app based on MauiKit"
+arch="all"
+url="https://github.com/mauikit/buho"
+license="unknown"
+depends="mauikit"
+makedepends="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtquickcontrols2-dev qt5-qtwebengine-dev mauikit-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+options="!check" # No tests available
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	make INSTALL_ROOT="$pkgdir" install
+}
+sha512sums="0b8843fb8a7062a6d4666a6cf4657aa50178bff350ea08bd1fd108859293f823f9f8a718215c53fbec00369107a9ae7cdd3d334eb78f94f88330599b0df5490a  buho-17f53d30f8c957a781f4332c5754f424baec2532.tar.gz"
