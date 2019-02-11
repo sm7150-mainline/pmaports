@@ -1,0 +1,29 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=nota
+pkgver=0_git20190205
+pkgrel=0
+_commit="89356cdcd02abfcad3ee15ce0da8b3cd5081e451"
+pkgdesc="Nota is a simple and convergent text editor"
+arch="all"
+url="https://github.com/mauikit/nota"
+license="unknown"
+depends="mauikit"
+makedepends="extra-cmake-modules qt5-qtbase-dev mauikit-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+options="!check" # No tests available
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="b9358e309ce1088cbf6ebab7098d8efc4d7b4870b7eb6c007973822b95c0d01103609a06fa95c6eb20c82c95fea26f8c8a6fd8e3e94cb379d0881dd40b28ac6e  nota-89356cdcd02abfcad3ee15ce0da8b3cd5081e451.tar.gz"
