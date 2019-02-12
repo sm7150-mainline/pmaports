@@ -1,19 +1,14 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-nm
-pkgver=5.14.5
-pkgrel=4
+pkgver=5.15.0
+pkgrel=0
 pkgdesc="Plasma applet written in QML for managing network connections"
 arch="all"
 url="https://www.kde.org/workspaces/plasmadesktop/"
 license="GPL-2.0"
 depends="networkmanager"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qttools-dev
-	ki18n-dev kwindowsystem-dev kservice-dev kcompletion-dev kwidgetsaddons-dev
-	kio-dev kcoreaddons-dev kwallet-dev kitemviews-dev kxmlgui-dev kconfigwidgets-dev
-	kiconthemes-dev solid-dev kdbusaddons-dev knotifications-dev plasma-workspace-dev
-	kdeclarative-dev kinit-dev kdelibs4support-dev networkmanager-qt-dev modemmanager-qt-dev
-	qca-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qttools-dev ki18n-dev kwindowsystem-dev kservice-dev kcompletion-dev kwidgetsaddons-dev kio-dev kcoreaddons-dev kwallet-dev kitemviews-dev kxmlgui-dev kconfigwidgets-dev kiconthemes-dev solid-dev kdbusaddons-dev knotifications-dev plasma-workspace-dev kdeclarative-dev kinit-dev kdelibs4support-dev networkmanager-qt-dev modemmanager-qt-dev qca-dev"
 source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-lang"
 
@@ -21,8 +16,8 @@ build() {
 	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_MOBILE=ON
 	make
 }
 
@@ -35,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="54667ff01db16bfadc1663dcf51668aed4eabcb70c3903538044bb478aeb4625d27777df13867cdf03048b6575a540de5c7baaef9e2dc2c41f458d2800daba96  plasma-nm-5.14.5.tar.xz"
+sha512sums="4de7a60d6a0b6b67d5d26f0f21e969022b4b4785551a4894aa493c31b3ada8c3dd979b3131784c2ead0af9c5b09c5efee3e0b6ff18e75556927b2fbdb818b5a0  plasma-nm-5.15.0.tar.xz"

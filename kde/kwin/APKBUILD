@@ -1,27 +1,20 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kwin
-pkgver=5.14.5
-pkgrel=2
+pkgver=5.15.0
+pkgrel=0
 pkgdesc="An easy to use, but flexible, composited Window Manager"
 arch="all"
 url="https://www.kde.org/workspaces/plasmadesktop/"
 license="GPL-2.0"
 depends="xorg-server-xwayland qt5-qtmultimedia breeze"
-depends_dev="kdecoration-dev kjobwidgets-dev kcmutils-dev kscreenlocker-dev breeze-dev
-			qt5-qtdeclarative-dev qt5-qtscript-dev kcompletion-dev plasma-framework-dev 
-			kinit-dev kio-dev xcb-util-keysyms-dev qt5-qtx11extras-dev kcrash-dev kglobalaccel-dev
-			knotifications-dev kiconthemes-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev
-			ki18n-dev kpackage-dev kwidgetsaddons-dev kwindowsystem-dev kidletime-dev
-			kauth-dev kcodecs-dev ktextwidgets-dev knewstuff-dev kservice-dev kxmlgui-dev
-			kbookmarks-dev kwayland-dev attica-qt-dev sonnet-dev kitemviews-dev solid-dev
-			kdeclarative-dev kactivities-dev qt5-qtsensors-dev"
+depends_dev="qt5-qtdeclarative-dev qt5-qtscript-dev qt5-qtsensors-dev qt5-qtx11extras-dev kdecoration-dev kjobwidgets-dev kcmutils-dev kscreenlocker-dev breeze-dev kcompletion-dev plasma-framework-dev kinit-dev kio-dev xcb-util-keysyms-dev kcrash-dev kglobalaccel-dev knotifications-dev kiconthemes-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev ki18n-dev kpackage-dev kwidgetsaddons-dev kwindowsystem-dev kidletime-dev kauth-dev kcodecs-dev ktextwidgets-dev knewstuff-dev kservice-dev kxmlgui-dev kbookmarks-dev kwayland-dev attica-qt-dev sonnet-dev kitemviews-dev solid-dev kdeclarative-dev kactivities-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev kdoctools-dev libxkbcommon-dev
-			libepoxy-dev libinput-dev xcb-util-cursor-dev libdrm-dev eudev-dev xcb-util-wm-dev"
-source="https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz
-		0001-Revert-udev-Only-handle-devices-from-the-current-sea.patch
-        0002-Revert-libinput-connection-Don-t-hardcode-seat0-anym.patch
-        0001-Disable-finding-of-qml-modules.patch"
+	libepoxy-dev libinput-dev xcb-util-cursor-dev libdrm-dev eudev-dev xcb-util-wm-dev"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz
+	0001-Revert-udev-Only-handle-devices-from-the-current-sea.patch
+	0002-Revert-libinput-connection-Don-t-hardcode-seat0-anym.patch
+	0001-Disable-finding-of-qml-modules.patch"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
 
@@ -29,10 +22,8 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib \
-		-DLIBC_IS_GLIBC=0
-	SKIP_AUTOMOC=main.cpp make
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
 }
 
 check() {
@@ -44,7 +35,7 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="b098d131bb2117c6f96950b14896a60e46d3de858ba537e91890405d10e40e20fce26644dfb55d8b01136c8a8f4c30d825beaaaded9be49aeba1b70bfc945546  kwin-5.14.5.tar.xz
+sha512sums="806e6ecc844f4aac87903239443866dd90fcb2971a6ddb70286a5155cd93a0bc2dabe94ce3cad30244317f409adc507b00c3f8bab8c65c749ab2cbc395700cc1  kwin-5.15.0.tar.xz
 a34ff6926f020117fafd8a31c18a183eecb3e0a5fe6c3f2784f531171552350615fb06cbac2f3a1248011eb83ec32fc9df4b64f82443dee1d8e90c1be49e2690  0001-Revert-udev-Only-handle-devices-from-the-current-sea.patch
 a534a3d388f066f84813148743eda1da1be000907ddf2c762c098a7ce38fcc1992eaa74763c47d98e82b83e38a03a828f4f3368e7e7ab733714f993646af7c8b  0002-Revert-libinput-connection-Don-t-hardcode-seat0-anym.patch
 d9e5900b4349d2869be51e89ebcf8e9ea73a830196f40f682ea9d6f56719ae9f54025d7f33c68e71c56e128aa7c6014388d18a6572c1a8c33341c405285156b2  0001-Disable-finding-of-qml-modules.patch"

@@ -1,42 +1,38 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kactivitymanagerd
-pkgver=5.14.5
+pkgver=5.15.0
 pkgrel=0
 pkgdesc="System service to manage user's activities and track the usage patterns"
 arch="all"
 url="https://www.kde.org/workspaces/plasmadesktop/"
 license="GPL-2.0"
-depends=""
-depends_dev="kio-dev kdbusaddons-dev ki18n-dev
-			kconfig-dev kcoreaddons-dev kwindowsystem-dev kglobalaccel-dev kxmlgui-dev
-			kconfigwidgets-dev kauth-dev kcodecs-dev kwidgetsaddons-dev kservice-dev
-			kbookmarks-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev
-			qt5-qtbase-dev"
+depends_dev="qt5-qtbase-dev kio-dev kdbusaddons-dev ki18n-dev kconfig-dev kcoreaddons-dev kwindowsystem-dev kglobalaccel-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kwidgetsaddons-dev kservice-dev kbookmarks-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev"
 makedepends="$depends_dev extra-cmake-modules boost-dev"
 source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-lang"
+builddir="$srcdir/$pkgname-$pkgver/build"
 
 prepare() {
-	mkdir "$srcdir"/build
+	mkdir "$builddir"
 }
 
 build() {
-	cd "$srcdir"/build
-	cmake "$builddir" \
+	cd "$builddir"
+	cmake .. \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 check() {
-	cd "$srcdir"/build
+	cd "$builddir"
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$srcdir"/build
+	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="a2eeb45c260eb11714f73f534867a5c6c1c5f4d8c14fdab71251f570b212ed6549f94f214a836d486d952f0b8b1effb346ad49f60a6d66edf84d977457d9a0af  kactivitymanagerd-5.14.5.tar.xz"
+sha512sums="aa8d53b22cf2fd56945f13a25ce14732c6d419917b557ab13b77864d46f768c399d390bada16bedcb45b2e0d6d524cba32fe096c86c8bc92012c10cec4ddb9a4  kactivitymanagerd-5.15.0.tar.xz"

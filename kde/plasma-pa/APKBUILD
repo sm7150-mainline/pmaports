@@ -1,25 +1,22 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-pa
-pkgver=5.14.5
+pkgver=5.15.0
 pkgrel=0
 pkgdesc="Plasma applet for audio volume management using PulseAudio"
 arch="all"
 url="https://www.kde.org/workspaces/plasmadesktop/"
 license="GPL-2.0"
 depends="pulseaudio"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev
-		kcoreaddons-dev kdeclarative-dev kdoctools-dev kglobalaccel-dev
-		ki18n-dev plasma-workspace-dev pulseaudio-dev libcanberra-dev gconf-dev"
-source="https://download.kde.org/stable/plasma/${pkgver}/$pkgname-$pkgver.tar.xz"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev kdeclarative-dev kdoctools-dev kglobalaccel-dev ki18n-dev plasma-workspace-dev pulseaudio-dev libcanberra-dev gconf-dev"
+source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-doc $pkgname-lang"
 
 build() {
 	cmake \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_LIBEXECDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -32,4 +29,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="436ef77d61d37bc4cb166ebffbbd0b0f51780008e902f791af66bebd0429f8cda608674790c87e89ddd40dd614eeb61eeb11e173c02f43d03cab420a2ffa196c  plasma-pa-5.14.5.tar.xz"
+sha512sums="5d44455962f8c172ffea58b0aa4a1b2fde5807b8a0d5a169c289a4d8e1f1d0eb29d6fe9e7f64d58af1513fe174886c16432f18165d1490e31a5862a118a0600e  plasma-pa-5.15.0.tar.xz"

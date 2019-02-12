@@ -1,14 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ksysguard
-pkgver=5.14.5
+pkgver=5.15.0
 pkgrel=0
 pkgdesc="Track and control the processes running in your system"
 arch="all"
 url="https://userbase.kde.org/KSysGuard"
 license="GPL-2.0"
-depends_dev="libksysguard-dev attica-qt-dev kinit-dev kxmlgui-dev kconfig-dev kcoreaddons-dev kdbusaddons-dev ki18n-dev kiconthemes-dev kitemviews-dev kio-dev knotifications-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kjobwidgets-dev qt5-qtbase-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kwindowsystem-dev knewstuff-dev"
-makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
+makedepends="extra-cmake-modules kdoctools-dev qt5-qtbase-dev libksysguard-dev attica-qt-dev kinit-dev kxmlgui-dev kconfig-dev kcoreaddons-dev kdbusaddons-dev ki18n-dev kiconthemes-dev kitemviews-dev kio-dev knotifications-dev kservice-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kwindowsystem-dev knewstuff-dev"
 source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-doc $pkgname-lang"
 
@@ -27,6 +26,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="fb04538b500f3d3dd0a3f6fa1a0adf1d3a72e2647bb48eebff8fac2c00d5f3a1de18cf4ea35bb6daa210976514bfe3d8adf8a6785d279535b0e2b4b82f25ba67  ksysguard-5.14.5.tar.xz"
+sha512sums="6d8dc6c0db1a8c3fe39c5fb6ac3376f067b96b6d0d5eab636d9b864c6c1db510827a3e4f1a07b6890e98944dd9a3525fbd6e9aae150d14658b6de4bc315afd31  ksysguard-5.15.0.tar.xz"

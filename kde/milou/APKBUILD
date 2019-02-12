@@ -1,16 +1,14 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=milou
-pkgver=5.14.5
+pkgver=5.15.0
 pkgrel=0
 pkgdesc="A dedicated search application built on top of Baloo"
 arch="all"
 url="https://www.kde.org/workspaces/plasmadesktop/"
 license="GPL-2.0"
 depends="krunner"
-depends_dev="qt5-qtbase-dev qt5-qtscript-dev qt5-qtdeclarative-dev kcoreaddons-dev
-		ki18n-dev kdeclarative-dev kservice-dev krunner-dev kpackage-dev plasma-framework-dev
-		kconfig-dev kwindowsystem-dev"
+depends_dev="qt5-qtbase-dev qt5-qtscript-dev qt5-qtdeclarative-dev kcoreaddons-dev ki18n-dev kdeclarative-dev kservice-dev krunner-dev kpackage-dev plasma-framework-dev kconfig-dev kwindowsystem-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
 source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-lang"
@@ -19,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -30,6 +28,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="${pkgdir}" install
+	make DESTDIR="$pkgdir" install
 }
-sha512sums="ed77a9550df216bf6a62ddc5af4c9d73a2a453a12f927c8964465eef8d4e60c1ac870e8e59215a0e0c288caf40f5714c904dcb9daa2054de94329fa781c1294f  milou-5.14.5.tar.xz"
+sha512sums="2b415e5efb1deda5ca8ac7cd8f46695b3051a5ca079a822ef0d5e4e13c599dca30943db418475edd598f3663bcfc93e169e9953c9c1e62d54ba32a93fb0d0967  milou-5.15.0.tar.xz"

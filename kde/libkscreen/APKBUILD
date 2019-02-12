@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libkscreen
-pkgver=5.14.5
-pkgrel=3
+pkgver=5.15.0
+pkgrel=0
 pkgdesc="KDE screen management software"
 arch="all"
 url="https://www.kde.org/workspaces/plasmadesktop/"
 license="GPL-2.0"
-depends=""
 depends_dev="qt5-qtbase-dev qt5-qtx11extras-dev kwayland-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
@@ -18,8 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DCMAKE_INSTALL_LIBEXECDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -32,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="de83b98771548e96a2addfd9426624f47d3000e328ccb78011b6b7c9f8f9004c66954eb16848f73cb779cebfa40d7aeeb13fc98ab4b4f8966dfd88ccfd475276  libkscreen-5.14.5.tar.xz"
+sha512sums="6485488437decfbe6624a572f48cc335be5940ccd6add59cd5f6882de4201aa407a9062348fb2863d6b55aac5939387ea19ccf4101477aee77606a9297af7e60  libkscreen-5.15.0.tar.xz"
