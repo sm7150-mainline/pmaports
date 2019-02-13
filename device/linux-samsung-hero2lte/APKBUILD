@@ -1,0 +1,71 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/exynos8890-hero2lte_defconfig
+
+pkgname="linux-samsung-hero2lte"
+pkgver=3.18.133
+pkgrel=0
+pkgdesc="Samsung Galaxy S7 edge kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-hero2lte"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source - use Ivan Meler's 3.18 upstream kernel
+_repository="android_kernel_samsung_herolte"
+_commit="24b577569468748591f7be6435af67e17b532886"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/ivanmeler/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	01-remove-android-defines.patch
+	02-fix-dtbtool.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	# Note: the DTB for this kernel is built in tree, we just need to copy it.
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Copy the in-tree DTBH block image
+	install -Dm644 "$builddir/arch/arm64/boot/dtb.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="59c128754698259ad7f759def8a82b3f0756404bfe8b474df375c6af0a45b9875ba9a00acca5605b8dcebff4fa5ca1cd20d84d3f398999fe38c3f5837690848c  linux-samsung-hero2lte-24b577569468748591f7be6435af67e17b532886.tar.gz
+5d70395fec802bc2f925ec2b5f2f138ae988aa61720c82b986310a23ed401949bdca263401918a4f769a477aa98ca4ec2aab1b3dbe0eabfbb856af9f2d99e129  config-samsung-hero2lte.aarch64
+66e27a174e12d56f5b77932985f0001b551c834d68b2a1bcc1d0b7d04e555757fc9137c182bd4cf5ffd57bf2cb0918d758dfe153a6140b77f02e7b9f33ecfb2c  01-remove-android-defines.patch
+59b7151edece9fec879c12fe53fa4a7d34563c9b7ed45fa5e96036bde7616cac0976adeef54a5f36d883d51747831881b2586ac02ac47db4123c399cf98e93d8  02-fix-dtbtool.patch"
