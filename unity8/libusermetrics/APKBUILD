@@ -1,8 +1,8 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=libusermetrics
-pkgver=0_git20180919
-_commit="a50ce9f3d4c428646c0a7063e11c7dff82d5983b"
+pkgver=0_git20190101
+_commit="ed7dd5d3fb5b01c345f942561008c4ca86568b34"
 pkgrel=0
 pkgdesc='Library for exporting anonymous metrics about users'
 arch="x86_64"
@@ -11,14 +11,13 @@ license="GPL-3.0 LGPL-3.0 LGPL-2.1"
 depends=""
 depends_dev="qt5-qtxmlpatterns-dev libapparmor-dev gsettings-qt-dev qt5-qtdeclarative-dev click-dev qdjango-dev"
 makedepends="$depends_dev cmake-extras qt5-qtbase-dev libapparmor libqtdbustest intltool"
-source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz
-		fix_linking.patch"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/$pkgname/archive/$_commit.tar.gz"
 subpackages="$pkgname-dev $pkgname-lang"
 builddir="$srcdir/$pkgname-$_commit"
 
 prepare() {
 	default_prepare
-	
+
 	mkdir "$builddir"/build
 
 	# Don't build tests
@@ -45,5 +44,4 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="d3863df6b68c8fac0f2afc70dff943f8db293aaffea61031b8d3242f5652a8d55994172b32defaccfe825922d7980bb59f610f06ec16bffbf5bf54aa725c2ad5  libusermetrics-a50ce9f3d4c428646c0a7063e11c7dff82d5983b.tar.gz
-f1ff2e49c67507cc8930e14f63c49e67bbc259d9fccf074999f18c5f2017dc34c4830aa350cf5f27e10e3ba43794b2d3d184c74a1ce0807ba59d775fa2383a33  fix_linking.patch"
+sha512sums="39a61b1afd4e91eacd1d01322a0c505dbc14b557bd802b41d050fd2e93280ebc77bb2c66608496f06c970324d84bd215d8f8de9cbdc421d6061443a9d2554dc2  libusermetrics-ed7dd5d3fb5b01c345f942561008c4ca86568b34.tar.gz"
