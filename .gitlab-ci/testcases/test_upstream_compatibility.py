@@ -53,6 +53,11 @@ def test_qt_versions(args):
         if pkgver == "9999":
             pkgver = apkbuild["_pkgver"]
 
+        # We had to add a few qt5 git packages for unity8 (!27), obviously we
+        # can't compare the version there.
+        if "_git" in pkgver:
+            continue
+
         # Compare
         if pkgver == pkgver_upstream:
             continue
