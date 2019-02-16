@@ -3,7 +3,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Config: pmbootstrap tag (or branch)
-tag="master"
+
+if [ "$1" != "" ]; then
+	tag="$1"
+else
+	tag="master"
+fi
 
 # Get download URL and pmaports path
 url="https://gitlab.com/postmarketOS/pmbootstrap/-/archive/$tag/pmbootstrap-$tag.tar.bz2"
