@@ -1,0 +1,60 @@
+# Wrapper for the "crossdirect" compilation method.
+# pmbootstrap mounts the native chroot in the foreign arch (e.g. armhf) chroot
+# as /native. This package gets installed into the native chroot, and creates
+# wrappers like:
+#
+# /native/usr/lib/crossdirect/armhf/gcc
+# -> /native/usr/bin/armv6-alpine-linux-muslgnueabihf-gcc
+#
+# When building packages in the armhf chroot, PATH will get prepended with
+# "/native/usr/lib/crossdirect/armhf". The end game is of course invoking the
+# cross compiler from the native chroot, running at native speed, whenever
+# calling the compiler from the foreign arch chroot. See crossdirect.c for
+# implementation details (llvm, fakeroot, rpath).
+
+pkgname=crossdirect
+pkgver=1
+pkgrel=0
+pkgdesc="Wrappers to launch native cross compilers in foreign chroots"
+url="https://postmarketOS.org"
+arch="all"
+license="MIT"
+options=""
+source="crossdirect.c"
+
+build() {
+	cd "$srcdir"
+	# Architectures and binaries
+	_archs="x86_64 armhf armv7 aarch64"
+	for _arch in $_archs; do
+		[ "$_arch" == "$CARCH" ] && continue
+		_hostspec="$(arch_to_hostspec $_arch)"
+		$CC -o "crossdirect-$_arch" -static -DHOSTSPEC="\"$_hostspec\"" \
+			crossdirect.c
+	done
+}
+
+package() {
+	# Architectures and binaries
+	_archs="x86_64 armhf armv7 aarch64"
+	_bins="c++ cc cpp g++ gcc clang clang++"
+
+	# Iterate over architectures
+	for _arch in $_archs; do
+		[ "$_arch" == "$CARCH" ] && continue
+
+		# Put arch-specific crossdirect wrapper in arch-specific bin folder
+		_bindir="$pkgdir/usr/lib/crossdirect/$_arch"
+		_hostspec="$(arch_to_hostspec $_arch)"
+		mkdir -p "$_bindir"
+		cd "$_bindir"
+		cp "$srcdir/crossdirect-$_arch" "./"
+
+		# Create compiler symlinks
+		for _bin in $_bins; do
+			ln -s "crossdirect-$_arch" "$_bin"
+			ln -s "crossdirect-$_arch" "$_hostspec-$_bin"
+		done
+	done
+}
+sha512sums="12801031928103bd898a0d54a5c68b33da9bded10a3d145fdf5ce8b70eb0bbbcdd50764279004b6997d85d710fa581dc8b05aa5e0eb62d50c1054cc6d66db87f  crossdirect.c"
