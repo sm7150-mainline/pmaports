@@ -1,0 +1,32 @@
+pkgname=firmware-google-crosshatch-mainline-dtbo
+pkgver=1
+pkgrel=0
+pkgdesc="dtbo.img needed to boot mainline"
+url="https://gitlab.com/zhuowei/dtbo-google-crosshatch-mainline"
+arch="noarch"
+license="GPL-2.0"
+depends=""
+makedepends="dtc android-mkdtimg"
+install=""
+_commit="20324c21169622e7c68eb36524c74fb1da8837d5"
+source="
+	https://gitlab.com/zhuowei/dtbo-google-crosshatch-mainline/-/archive/$_commit/$_commit.tar.gz
+"
+builddir="$srcdir/dtbo-google-crosshatch-mainline-$_commit"
+
+build() {
+	cd "$builddir"
+	dtc -O dtb -o sdm845-c1-dvt1.1.dtbo -b 0 -@ sdm845-c1-dvt1.1.dts
+	mkdtimg cfg_create dtbo.img dtboimg.cfg
+}
+
+check() {
+	cd "$builddir"
+}
+
+package() {
+	install -D -m644 "$builddir"/dtbo.img \
+		"$pkgdir"/boot/dtbo-google-crosshatch-mainline.img
+}
+
+sha512sums="620bc391a82a427bf91c394bbf300451ad7cf452144a27f9fe40322459e6ac473ba85be5cf7e7ebab49d439d3b84b5c1c224883094c1bad5c8f5246abb6db71f  20324c21169622e7c68eb36524c74fb1da8837d5.tar.gz"
