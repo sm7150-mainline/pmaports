@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=plasma-videoplayer
+_pkgname=videoplayer
+pkgver=0_git20181102
+pkgrel=0
+_commit="50239a290c961a362426671647114f7a1c89540e"
+pkgdesc="Video Player for Plasma Mobile"
+url="https://invent.kde.org/jbbgameich/videoplayer"
+arch="all"
+license="GPL-2.0 LGPL-2.1"
+depends=""
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev plasma-framework-dev kdeclarative-dev ki18n-dev kdbusaddons-dev"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/jbbgameich/videoplayer/-/archive/50239a290c961a362426671647114f7a1c89540e/videoplayer-50239a290c961a362426671647114f7a1c89540e.tar.gz"
+builddir="$srcdir/$_pkgname-$_commit"
+
+build() {
+	cd "$builddir"
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="b2340f9b0060b3e4cc74e82587d284ec44fa582c906def1344933a4ef7ed603e3fc68611e62c599ce3311b525556237f1a3bc49c9e6dcafdff0e7da0d79ec9d3  plasma-videoplayer-50239a290c961a362426671647114f7a1c89540e.tar.gz"
