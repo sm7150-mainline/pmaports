@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kmailtransport
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
 pkgdesc="Manage mail transport"
 arch="all"
 url="https://api.kde.org/kdepim/kmailtransport/html"
 license="LGPL-2.1"
-depends=""
 depends_dev="kcmutils-dev kwallet-dev kmime-dev akonadi-dev akonadi-mime-dev ksmtp-dev libkgapi-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -32,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="7f86e84b38262fd14164f5b340ab9957efa696be72613892d666426c4ed7b1e90ce71f1e19a04ce965958ce33b93d26f84983394b99cb31668b21b4bfaf2384d  kmailtransport-18.12.0.tar.xz"
+sha512sums="3fc0a5e4b9669e09408a0291c67b419df8abaaf0185650e2b250d3cb052206a5d7d7887e8a567bcdc44ad337a9b16a75af21501ca0abd3c735233bec5878c7a2  kmailtransport-18.12.2.tar.xz"

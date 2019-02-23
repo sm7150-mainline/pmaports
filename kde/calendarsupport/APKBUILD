@@ -1,15 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=calendarsupport
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Library providing calendar support'
+pkgdesc="Library providing calendar support"
 arch="all"
 url="https://api.kde.org/kdepim/calendarsupport/html"
 license="GPL-2.0 LGPL-2.1"
-depends=""
-depends_dev="akonadi-dev kmime-dev akonadi-mime-dev kcalutils-dev kholidays-dev akonadi-calendar-dev
-	pimcommon-dev kdepim-apps-libs-dev"
+depends_dev="akonadi-dev kmime-dev akonadi-mime-dev kcalutils-dev kholidays-dev akonadi-calendar-dev pimcommon-dev kdepim-apps-libs-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
@@ -18,7 +16,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -32,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="492f353f9cb2d7c1f1296fb81afdfac8b68b477dd458c8242fdfb4379f5e317c7feeb90ce7f3533186265cfb27d4d5433cd1e43e1622efdf8c749dcb3093c844  calendarsupport-18.12.0.tar.xz"
+sha512sums="0da68881d618a6157c38e9ead1f2a9974f1d9e766709aa22841e6277c578e21e99aee6ed8a5eb118b71e46efdb80f9aad9003d4da955042e2865ade9fed53fe8  calendarsupport-18.12.2.tar.xz"

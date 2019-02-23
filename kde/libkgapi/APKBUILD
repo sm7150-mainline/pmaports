@@ -1,15 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libkgapi
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='LibKGAPI is a KDE-based library for accessing various Google services via their public API'
+pkgdesc="LibKGAPI is a KDE-based library for accessing various Google services via their public API"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="LGPL-2.1"
-depends=""
-depends_dev="qt5-qtbase-dev qt5-qtwebengine-dev kio-dev kwindowsystem-dev kwallet-dev kcalcore-dev kcontacts-dev
-	cyrus-sasl-dev"
+depends_dev="qt5-qtbase-dev qt5-qtwebengine-dev kio-dev kwindowsystem-dev kwallet-dev kcalcore-dev kcontacts-dev cyrus-sasl-dev"
 makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev"
@@ -19,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="1567d25103a120c4639926317d68f8f119fda4c003d896a47f834a0628dce0a61e64f70073976e3da2ae8abb714081aae13e882ceb3150d23b1b763d094296bf  libkgapi-18.12.0.tar.xz"
+sha512sums="6e6f2ff93d6c489e1428d611bf6c40da4b017156c39ade55fce631a5b5396d6227226b28f475a138122fe95f1c46aebdd6af5aad2ace08e9d2bcd0025f851af4  libkgapi-18.12.2.tar.xz"

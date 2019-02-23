@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kidentitymanagement
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc=' '
+pkgdesc="KDE PIM libraries"
 arch="all"
-url='https://github.com/kde/kidentitymanagement'
+url="https://kontact.kde.org"
 license="LGPL-2.1"
-depends=""
 depends_dev="kcompletion-dev ktextwidgets-dev kxmlgui-dev kio-dev kpimtextedit-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -32,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="0bc981fece6499eaa4ed8dbc7913c48a489a81e2746711964101462718cbfec863f80d012142f73850f85c313307472885d7ac1538836bdff33d75efb8630fe8  kidentitymanagement-18.12.0.tar.xz"
+sha512sums="8be6ff49803ee4c9e2b7a92cf344f5598c1bb7fe54f49e9b3238d1e82393a9403c6e7bb8d98135f96272d07886b5fc5d5074d321ca2a416d0b737669f4706740  kidentitymanagement-18.12.2.tar.xz"

@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kcontacts
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Address book API for KDE'
+pkgdesc="Address book API for KDE"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtbase-dev kcoreaddons-dev ki18n-dev kconfig-dev kcodecs-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -18,8 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_QCH=ON
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -32,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="be59dd2703bdbd42811ceba2059279d6f5ef47c839dffe72c722806ae87297caa5f5997c7600ef0a050cedda82bb31d7c5ddfed579b747aa0aa97e0929780e05  kcontacts-18.12.0.tar.xz"
+sha512sums="c5316952cc7b1cf51625af2318d03d6ab257f4dcaf9ee77cff2f754205af256c8e3ef757abb1eb605f25051cb3df86f9811b610f2581799113f0a6d32b164f3c  kcontacts-18.12.2.tar.xz"

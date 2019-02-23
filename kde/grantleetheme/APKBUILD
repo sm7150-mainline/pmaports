@@ -1,22 +1,20 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=grantleetheme
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
 pkgdesc="KDE PIM mail related libraries"
 arch="all"
 url="https://kontact.kde.org/"
 license="GPL-2.0 LGPL-2.1"
-depends=
-makedepends="extra-cmake-modules qt5-qtbase-dev ki18n-dev kiconthemes-dev knewstuff-dev
-	grantlee-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev ki18n-dev kiconthemes-dev knewstuff-dev grantlee-dev"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
 options="!check" # Requires running X11 server
 
 build() {
 	cd "$builddir"
-	cmake ../$pkgname-$pkgver \
+	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib	
@@ -32,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="852923dde7b8c0fb97fb00617b741dd1659dc9930a8b3f91ac6021e243e086c476da21ff7ce2d93e2d939a64b89301aa3ff151b351ae257d686878a0e9733ac5  grantleetheme-18.12.0.tar.xz"
+sha512sums="6972914bffcd55080564f680af64de35b14eb79feb69cfd7f2188a7d048d7d99486495aa633c9e3ba14ae25201e316e04a365168d2dbf22205d61b141cacc29c  grantleetheme-18.12.2.tar.xz"

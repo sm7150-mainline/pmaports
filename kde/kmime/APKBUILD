@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kmime
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Library for handling mail messages and newsgroup articles'
+pkgdesc="Library for handling mail messages and newsgroup articles"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="LGPL-2.0"
-depends=""
 depends_dev="qt5-qtbase-dev ki18n-dev kcodecs-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -18,8 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
-		-DBUILD_QCH=ON
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
@@ -32,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="6299c7b695c2b41ae1f35fe49d55494b2de3bd462ca15a68e3a81fd13497713472edf5bc1637c20ef290db6d29151529f09843422d6d8eb275bbf47e1228c01a  kmime-18.12.0.tar.xz"
+sha512sums="4453a563981e6e44fc8485eab99ed2df96e020ad260e8e8d9e0e99d179f613d8ca495bd96e850bc082274392aa000b8191777d661eb468aa0052214556919152  kmime-18.12.2.tar.xz"

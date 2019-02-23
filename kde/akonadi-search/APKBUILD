@@ -1,15 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=akonadi-search
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Libraries and daemons to implement searching in Akonadi'
+pkgdesc="Libraries and daemons to implement searching in Akonadi"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="GPL-2.0 LGPL-2.1"
-depends=""
-depends_dev="qt5-qtbase-dev ki18n-dev kconfig-dev kcrash-dev kcmutils-dev krunner-dev akonadi-dev
-	kcontacts-dev kmime-dev akonadi-mime-dev kcalcore-dev xapian-core-dev"
+depends_dev="qt5-qtbase-dev ki18n-dev kconfig-dev kcrash-dev kcmutils-dev krunner-dev akonadi-dev kcontacts-dev kmime-dev akonadi-mime-dev kcalcore-dev xapian-core-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
@@ -19,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="49c6aab6f55eb34debb482307f95d422e7706ee257ddf90684c77ea4f45767282325d05d3284f1336289913f09dbeaa1acc26a6f8d92e303ced7d62bef74ee9c  akonadi-search-18.12.0.tar.xz"
+sha512sums="a047059b49a4f8796301599c4698467c4fca1df5421c0c6ca605e13851b24caed283e809484a60ac15cdc9ea29d284e834d91d7e13e57f979dea17f8953011a1  akonadi-search-18.12.2.tar.xz"

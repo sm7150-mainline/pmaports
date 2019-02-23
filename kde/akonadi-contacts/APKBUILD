@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=akonadi-contacts
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Libraries and daemons to implement Contact Management in Akonadi'
+pkgdesc="Libraries and daemons to implement Contact Management in Akonadi"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="LGPL-2.1"
-depends=""
 depends_dev="qt5-qtbase-dev kio-dev prison-dev kcontacts-dev kmime-dev akonadi-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -32,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="888b14521a4e40bf68178847b4410638893a4b513088fb1fd6f7a0c28293430289a39b2c2893aed0b2200694e90addf1f6f9ddd229cd7af46b94dcb256456535  akonadi-contacts-18.12.0.tar.xz"
+sha512sums="a87886c0bce8f11d39a365b19b65081eb27bd443fbdb3d731045f22c6cb9bf75c1c2c8f30840fa3f3b345b0edbeb9fb344bd9cb41a9294c807a70dcaae273866  akonadi-contacts-18.12.2.tar.xz"

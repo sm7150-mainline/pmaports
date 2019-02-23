@@ -1,3 +1,5 @@
+# Contributor: George Hopkins <george-hopkins@null.net>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=falkon
 pkgver=3.0.1
 pkgrel=1
@@ -7,16 +9,19 @@ arch="all"
 license="GPL-3.0-or-later"
 depends="qt5-qtbase-sqlite"
 makedepends="cmake extra-cmake-modules qt5-qtdeclarative-dev qt5-qtwebengine-dev qt5-qtx11extras-dev qt5-qttools-dev xcb-util-dev ki18n-dev ttf-freefont"
-source="https://download.kde.org/stable/falkon/$pkgver/falkon-$pkgver.tar.xz
+source="https://download.kde.org/stable/falkon/$pkgver/$pkgname-$pkgver.tar.xz
 	disable-ld-fatal-warnings.patch
-	disable-backtraces.patch
-	"
-builddir="$srcdir/$pkgname-$pkgver"
-options="!check" # requires X11
+	disable-backtraces.patch"
+options="!check" # Requires X11
+
+prepare() {	
+	mkdir "$builddir"/build
+
+	default_prepare
+}
 
 build () {
-	mkdir -p "$builddir/build"
-	cd "$builddir/build"
+	cd "$builddir"/build
 	cmake ..  \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
@@ -24,8 +29,13 @@ build () {
 	make
 }
 
+check() {
+	cd "$builddir"/build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
-	cd "$builddir/build"
+	cd "$builddir"/build
 	make DESTDIR="$pkgdir" install
 }
 

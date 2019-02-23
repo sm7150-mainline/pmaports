@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kimap
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Job-based API for interacting with IMAP servers'
+pkgdesc="Job-based API for interacting with IMAP servers"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="GPL-2.0 LGPL-2.0"
-depends=""
 depends_dev="qt5-qtbase-dev kcoreaddons-dev ki18n-dev kio-dev kmime-dev cyrus-sasl-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -32,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="ca1590e54477c87585af248cb166439fd3adfdaa31feb308717bd478c6c4abcae3fae5fd0cc0f2bc316baf3ff37895ed27892a428b7ffe6631f03467cbc5f374  kimap-18.12.0.tar.xz"
+sha512sums="2fb304f6afba2d0e7f8e5d6ab685dcafea29ae487b85d44ecf4fa75257d3871ec1209fd02a1a6e54607e29b9140437e082707e3aaf9fcdcd0a7d22f5bdc0231c  kimap-18.12.2.tar.xz"

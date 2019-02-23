@@ -1,13 +1,12 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=akonadi-calendar
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Libraries and daemons to implement basic email handling.'
+pkgdesc="Libraries and daemons to implement basic email handling"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="GPL-2.0 LGPL-2.1 BSD"
-depends=""
 depends_dev="kio-dev kwallet-dev kmailtransport-dev kidentitymanagement-dev kcalutils-dev akonadi-contacts-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
@@ -18,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -32,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="3c4bd2ee46696a0ba3c84ad49bf5a57d6d6f3c0d8df07c439925eeb8ef39c4e903f7fa41262be1d9545ce9af0b289865021182a2b538d9eae99fb78826243e0c  akonadi-calendar-18.12.0.tar.xz"
+sha512sums="c41aa3d095b6c8cba16109baea81caa267a1874d99dbbc1ac84747e85bc8d7f25e30cb0ba3ce2543e36b360dc414b6c59fc04f5020b49be9976b8c30bed1f579  akonadi-calendar-18.12.2.tar.xz"

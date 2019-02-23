@@ -1,15 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=libkdepim
-pkgver=18.12.0
+pkgver=18.12.2
 pkgrel=0
-pkgdesc='Lib for common KDEPim apps'
+pkgdesc="Lib for common KDEPim apps"
 arch="all"
-url='https://community.kde.org/KDE_PIM'
+url="https://community.kde.org/KDE_PIM"
 license="GPL-2.0 LGPL-2.1"
-depends=""
-depends_dev="qt5-qtbase-dev kcodecs-dev kcompletion-dev kconfigwidgets-dev kiconthemes-dev kjobwidgets-dev
-	kcmutils-dev kwallet-dev akonadi-dev akonadi-contacts-dev akonadi-search-dev kldap-dev"
+depends_dev="qt5-qtbase-dev kcodecs-dev kcompletion-dev kconfigwidgets-dev kiconthemes-dev kjobwidgets-dev kcmutils-dev kwallet-dev akonadi-dev akonadi-contacts-dev akonadi-search-dev kldap-dev"
 makedepends="$depends_dev extra-cmake-modules"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
@@ -19,7 +17,7 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_QCH=ON
 	make
 }
@@ -33,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="c4a98ecdc1296bad6981e58aafc3761496a2c887eb73efd0ad1461df0a06ef40cec1861f3600e3d04858e6a06a0d759b3af0855e72c81077919b17e0513e707e  libkdepim-18.12.0.tar.xz"
+sha512sums="80c7440917bb74a63097a12cdc684e896476139bda54bb4c3da684e7f7d060f084a2ebd27e813b0d9859604b9973ebddca9bf4f675e29c91cb9b54a9d5b8fa12  libkdepim-18.12.2.tar.xz"
