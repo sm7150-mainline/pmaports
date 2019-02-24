@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname="device-purism-librem5dev"
 pkgdesc="Purism Librem 5 Devkit"
-pkgver=0.4
+pkgver=0.5
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -13,6 +13,7 @@ source="
 	deviceinfo
 	uboot-script.cmd
 	modprobe.d_rsi.conf
+	00-mesa.sh
 "
 install="$pkgname.post-install"
 
@@ -25,10 +26,12 @@ package() {
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
 	install -D -m644 "$srcdir/modprobe.d_rsi.conf" "$pkgdir/etc/modprobe.d/rsi.conf"
+	install -D -m644 "$srcdir/00-mesa.sh" "$pkgdir/etc/profile.d/00-mesa.sh"
 	devicepkg_package $startdir $pkgname
 }
 
 
 sha512sums="154b6d487ba8eb1fd073d8bc9db458e8c0db24a7f78102c225917aa310eda4549c8edcffae6d9d9bb88f418708f90bed461c3c69eea2302df3a6869d7c38a68b  deviceinfo
 e52cbb518677070d5933d0d1415916b9a570d80f270edab4f14bd193716fd064b389ff1fed5db7efd9966ea953569a7922c5bee6f15405eaa93838e1c01ae2aa  uboot-script.cmd
-d10531ad6646ad6cfaf8ee1b0cc38f4e5e2eb39599251b75f25e954f1105761d5480d92cbe06ad52560207b883439071db89b19babf046a810360bd07c52c655  modprobe.d_rsi.conf"
+d10531ad6646ad6cfaf8ee1b0cc38f4e5e2eb39599251b75f25e954f1105761d5480d92cbe06ad52560207b883439071db89b19babf046a810360bd07c52c655  modprobe.d_rsi.conf
+5fdf45859f2bb154bcfe7c7341de4d5b239ef43d3f865e30456af073a8ee9d6682515c7e1dd52ddbe3969669d60689ba93c08ead32aadcfb164ff72a02b2e1a4  00-mesa.sh"
