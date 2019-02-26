@@ -1,17 +1,33 @@
 # Maintainer: Robert Yang <decatf@gmail.com>
 pkgname=libvdpau-tegra
 pkgver=1.0.0
-pkgrel=0
+pkgrel=1
 pkgdesc="VDPAU backend driver for NVIDIA Tegra 20/30 SoC's"
 url="https://github.com/grate-driver/libvdpau-tegra"
-arch="armhf"
+arch="armhf armv7"
 license="GPL2"
 subpackages=""
 depends="libdrm-grate"
-makedepends="util-macros libtool m4 automake autoconf bison flex
-	libx11-dev libxext-dev xextproto libxfixes-dev
-	dri2proto libvdpau-dev pixman-dev libdrm-grate-dev libxv-dev"
-_commit="21ef1cc42b55e21246f1a4980f99bf149797fba5"
+makedepends="
+	autoconf
+	automake
+	bison
+	flex
+	gettext-dev
+	libdrm-grate-dev
+	libtool
+	libvdpau-dev
+	libx11-dev
+	libxext-dev
+	libxfixes-dev
+	libxrandr-dev
+	libxv-dev
+	m4
+	pixman-dev
+	util-macros
+	xorgproto
+	"
+_commit="46f30de86f29a0dbc8671a11240385343ae54f53"
 source="https://github.com/grate-driver/libvdpau-tegra/archive/$_commit.tar.gz"
 
 builddir="$srcdir"/$pkgname-$_commit
@@ -40,4 +56,4 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="75b7b2253b477450c0ff8813163c09313fa930ecde37a2b83409d82986c71f7a1c17b77ca7f517cddde588cbd9aff148bd6c5208be4fe7414548a14ed9c54353  21ef1cc42b55e21246f1a4980f99bf149797fba5.tar.gz"
+sha512sums="b49306d077cee811e94a8cb8c2c36588ae3e6b1df2e24fbed6ae7e5c2ac7b12c0d6e3a96b26e97ea8579e914f5fd2fc88009830563738913ab21c61144db0202  46f30de86f29a0dbc8671a11240385343ae54f53.tar.gz"

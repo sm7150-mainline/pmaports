@@ -1,10 +1,10 @@
 # Maintainer: Robert Yang <decatf@gmail.com>
 pkgname=mesa-grate
 pkgver=18.1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
-arch="armhf"
+arch="armhf armv7"
 license="MIT SGI-B-2.0 BSL-1.0"
 subpackages="
 	$pkgname-dev
@@ -59,6 +59,7 @@ source="
 	0005-grate-driver.patch
 	0001-meson-Add-glx-tls-option.patch
 	0001-meson-correct-gallium-grate-variable.patch
+	adjust-cache-deflate-buffer.patch
 	"
 replaces="mesa mesa-dricore"
 
@@ -85,7 +86,7 @@ x86*)
 		_arch_opts="$_arch_opts -Dglx-rts=true -Dasm=false";;
 	esac
 	;;
-armhf|aarch64)
+armhf|armv7|aarch64)
 	_gallium_drivers="${_gallium_drivers},grate"
 	subpackages="$subpackages $pkgname-dri-tegra:_dri"
 	;;
@@ -275,6 +276,8 @@ _dri() {
 		;;
 	tegra)
 		_mv_dri tegra_dri
+		ln -s "${_dri_driverdir}/tegra_dri.so" \
+			"${subpkgdir}${_prefix}/lib/xorg/modules/dri/tegra_dri.so"
 		;;
 	vc4)
 		_mv_dri vc4_dri
@@ -335,4 +338,5 @@ ba0d498779302e01c36abfcf9eacf187e87063ca4ab4a2ac0fed63c331f765c254cd92a43fd4fde9
 01feb831b3227ff06feebee2a5f5a408a7d3710031853644b72d0dc32dfa139396553972435d1b9f3448f7589de782586f227e2ae8b239a47ddfd1b56d9cd1e9  0004-Revert-tegra-Initial-support.patch
 ecdd537af62ea8e9d4e6361eafbfc09d315b9084af5af48d761e1713500e08ff965fa62f4a52aea9bd6ab98a3179fa7e4c9a31a647cbe503e820f525e33fd4d2  0005-grate-driver.patch
 05e7ce9f69b9fe2d1691b40a7ec93e05de9043a7953bdd7189c5f90b406f4b72e6aaa1aaba3fa7cb53de5c8943bffaaa49df0a354f7e8ba4be725bf6b8da143a  0001-meson-Add-glx-tls-option.patch
-2e1d5fcf239b7f7a8fc5e8f64819079c4b7ad8d2f83c033faffa2226b53bd16fb8db39fa67f9f0e7b81650749306a796e6db75237ad597c56575df9feca12e06  0001-meson-correct-gallium-grate-variable.patch"
+2e1d5fcf239b7f7a8fc5e8f64819079c4b7ad8d2f83c033faffa2226b53bd16fb8db39fa67f9f0e7b81650749306a796e6db75237ad597c56575df9feca12e06  0001-meson-correct-gallium-grate-variable.patch
+cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  adjust-cache-deflate-buffer.patch"
