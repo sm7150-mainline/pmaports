@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+maintainer="Piotr Halama <skrzynka@halamix2.pl>"
+pkgname="device-nokia-frt"
+pkgdesc="Nokia 1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-nokia-frt mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	fb.modes
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="2e597de63e275b133027288f10920f731d2a0b3b97ef7fafe13de1915f4bcf6abb7971cf220019042a8ff8a0361730957e5fd8510715620dac5177943cb3c0ae  deviceinfo
+0a0237d639566cdd283182f17ea3f0fb8349c2fbc2c289eae418eac6837b9f2f4acf4a3c18c540d59c19dcbf30e12ac4e83c4f8303bbb4cd7e54b66c78ecfbcb  fb.modes"

@@ -1,0 +1,60 @@
+Fixes for wrong includes paths, probably missing symlinks
+---
+
+diff --git a/drivers/misc/mediatek/cmdq/v2/cmdq_def.h b/drivers/misc/mediatek/cmdq/v2/cmdq_def.h
+index 9383c5860a00..b01dfddab473 100644
+--- a/drivers/misc/mediatek/cmdq/v2/cmdq_def.h
++++ b/drivers/misc/mediatek/cmdq/v2/cmdq_def.h
+@@ -22,7 +22,7 @@
+ #ifdef CMDQ_COMMON_ENG_SUPPORT
+ #include "cmdq_engine_common.h"
+ #else
+-#include "cmdq_engine.h"
++#include "mt6735/cmdq_engine.h"
+ #endif
+ 
+ #define CMDQ_SPECIAL_SUBSYS_ADDR (99)
+diff --git a/drivers/misc/mediatek/ext_disp/extd_factory.c b/drivers/misc/mediatek/ext_disp/extd_factory.c
+index 92c137980092..505dd793ab61 100644
+--- a/drivers/misc/mediatek/ext_disp/extd_factory.c
++++ b/drivers/misc/mediatek/ext_disp/extd_factory.c
+@@ -17,7 +17,7 @@
+ #include "extd_log.h"
+ #include "extd_factory.h"
+ #include "extd_info.h"
+-#include "external_display.h"
++#include "mt6735m/external_display.h"
+ 
+ #include "dpi_dvt_test.h"
+ 
+diff --git a/drivers/misc/mediatek/ext_disp/extd_multi_control.c b/drivers/misc/mediatek/ext_disp/extd_multi_control.c
+index 52dd1f77b6b5..e6277c4eb37c 100644
+--- a/drivers/misc/mediatek/ext_disp/extd_multi_control.c
++++ b/drivers/misc/mediatek/ext_disp/extd_multi_control.c
+@@ -16,8 +16,8 @@
+ 
+ #include "extd_multi_control.h"
+ #include "disp_drv_platform.h"
+-#include "external_display.h"
+-#include "extd_platform.h"
++#include "mt6735m/external_display.h"
++#include "mt6735m/extd_platform.h"
+ #include "extd_log.h"
+ #include "mtk_ovl.h"
+ 
+diff --git a/drivers/misc/mediatek/m4u/mt6735/m4u_priv.h b/drivers/misc/mediatek/m4u/mt6735/m4u_priv.h
+index ec1f9d6a2993..9b5fd8ba67d3 100644
+--- a/drivers/misc/mediatek/m4u/mt6735/m4u_priv.h
++++ b/drivers/misc/mediatek/m4u/mt6735/m4u_priv.h
+@@ -25,9 +25,9 @@
+ #endif
+ 
+ #include "m4u.h"
+-#include "m4u_reg.h"
++#include "mt6735m/m4u_reg.h"
+ #include "../2.0/m4u_pgtable.h"
+-#include "m4u_platform.h"
++#include "mt6735m/m4u_platform.h"
+ 
+ #define M4UMSG(string, args...)	pr_err("M4U"string, ##args)
+ #define M4UINFO(string, args...) pr_debug("M4U"string, ##args)

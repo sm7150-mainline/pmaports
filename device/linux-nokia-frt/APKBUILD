@@ -1,0 +1,82 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/FRT_defconfig
+
+maintainer="Piotr Halama <skrzynka@halamix2.pl>"
+pkgname="linux-nokia-frt"
+pkgver=3.18.79
+pkgrel=0
+pkgdesc="Nokia 1 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="nokia-frt"
+url="https://www.nokia.com/phones/en_int/opensource/"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev python"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_nokia_1"
+_commit="f17e3dc43479ed748f85080e5be04be228ed754d"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/pmsourcedump/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	gcc8-fix-put-user.patch
+	00_makefile_path.patch
+	01_drvgen_mk.patch
+	02_path_fixes.patch
+	03_vdsomunge_upstream.patch
+"
+#gcc7-give-up-on-ilog2-const-optimizations.patch
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Modules
+	cd "$builddir"
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
+		modules_install
+}
+
+sha512sums="d9026958c7f9cb7dbc56b27baab3362d6a34e975ebf933e8ee404dc76638d17fd3d2508f262f10190f646a0881d68ab0e0a40f2fce15a55409527f3af8ea9d19  linux-nokia-frt-f17e3dc43479ed748f85080e5be04be228ed754d.tar.gz
+4e4c05f4095c0490bb04b262b19033adda7d95fdec5c6c5bf1ba4b2cfa812ff159c9637f9cb6a3e854b46923467e9559d39b8b2b81f6fe6d038a6dbf5961c303  config-nokia-frt.armv7
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+ef8b9da80ca67424a02acfbf99924e3ea06574c83c6a737031f6ac41b718742ef0bd66b968b14118cac021067e29184e2199f238ace2a43dc2176d9cce796bc5  00_makefile_path.patch
+aaf7e208f307db3126202f3f3410d4f8a74b450ef719717a064c817258cb428a150a798494f57e43f9e1f747ad83527e565f8d81c3c746d1fb0b4e42e6e30d50  01_drvgen_mk.patch
+bba77598f2fc5615b21f98db7e6a43a35d9cfae0e10fb8754d3b3c198ed36def390937c766550e251ae6c9867145e13dd0d1977bc8cc259ac53e48fedc4d0fee  02_path_fixes.patch
+2bd2706f7b42a313e81bf27726ef697f0292f8f2c53ded5d344d410d25fc02375ea9659c7dab93500d4966e91efb0658d6ecf3292196350159e2cd54ed78441e  03_vdsomunge_upstream.patch"
