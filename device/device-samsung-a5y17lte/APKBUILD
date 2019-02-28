@@ -1,0 +1,26 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-a5y17lte"
+pkgdesc="Samsung Galaxy A5 (2017)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-a5y17lte mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/initfs-hook.sh \
+    		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+}
+
+
+sha512sums="6e067f910b89948c5eec9d9b2df677c085f6f322a111ee98731951b9a80e153a6ea12d8f9169919dbda03b7362ac191a78240d4b5fe39bcb13efc7fa23efa0eb  deviceinfo
+92effac4743fbcfc47461723eac7b088efb58574d76822293ba95d66edd4820886241173a84bed6a9095801d39311c29aeac409add53421bb2c5a6caf395226c  initfs-hook.sh"
