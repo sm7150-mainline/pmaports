@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=frameworkintegration
+pkgver=5.55.0
+pkgrel=0
+pkgdesc="Framework providing components to allow applications to integrate with a KDE Workspace"
+arch="all"
+url="https://www.kde.org"
+license="LGPL-2.1"
+depends=""
+depends_dev="qt5-qtbase-dev kconfig-dev kconfigwidgets-dev kiconthemes-dev knotifications-dev knewstuff-dev kpackage-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+options="!check" # Requires X11 running
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="5a16af4c0f763f52fd7c0b46853240bde7c8f95a97864dc746c19f248346754a9a893d2c916ee2d3c8164164994348f53cb3696aaba2d11763f7ba86db2fcab3  frameworkintegration-5.55.0.tar.xz"
