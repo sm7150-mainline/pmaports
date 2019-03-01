@@ -1,12 +1,12 @@
-pkgname=coreshot
+pkgname=coregarage
 pkgver=2.4.0
 pkgrel=0
-pkgdesc="A screen capture utility from the CoreApps family."
+pkgdesc="A settings manager for the CoreApps family."
 arch="all"
 url="https://gitlab.com/cubocore"
 license="GPL-2.0"
-depends="libcprime qt5-qtx11extras qt5-qtsvg"
-makedepends="qt5-qtbase-dev libcprime-dev qt5-qtx11extras-dev"
+depends="libcprime qt5-qtsvg libarchive-qt"
+makedepends="qt5-qtbase-dev libcprime-dev libarchive-qt-dev"
 source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
 builddir="$srcdir/$pkgname-v$pkgver"
 options="!check"
@@ -17,9 +17,8 @@ build() {
 	make
 }
 
-
 package() {
 	cd "$builddir"
 	INSTALL_ROOT="$pkgdir" make install
 }
-sha512sums="1188b29a063c4647db4794c5367b9ac1f1319505fca9c92e9cadb03379c73835d6062395560b78fd5fcc158b152ae425f3ddfe64e261d16295380414f967f3e7  coreshot-2.4.0.tar.gz"
+sha512sums="e744d5054d7e57347910589261bf9452b3001dc266f695d82a8669db589783e8fcb73be1b1ff3ae7e3c8484c9c88ff97587bcf201a26de887e6ca8e52b43d19b  coregarage-2.4.0.tar.gz"

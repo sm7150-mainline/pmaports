@@ -1,0 +1,24 @@
+pkgname=corepdf
+pkgver=2.4.0
+pkgrel=0
+pkgdesc="A PDF viewer from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="LGPL-2.1"
+depends="libcprime qt5-qtwebengine qt5-qtwebchannel qt5-qtsvg"
+makedepends="qt5-qtbase-dev libcprime-dev qt5-qtwebengine-dev qt5-qtwebchannel-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="b3e5de0eae6c66f10675ba1989226963003c868ca4b1f58ac531294babfd3ecf1f9f19e4524a1addb05888ae9200512269bc4307f03a25301ab44bc68b407fdf  corepdf-2.4.0.tar.gz"

@@ -1,0 +1,24 @@
+pkgname=corefm
+pkgver=2.4.0
+pkgrel=0
+pkgdesc="A lightweight file-manager from the CoreApps family."
+arch="all"
+url="https://gitlab.com/cubocore"
+license="GPL-2.0"
+depends="libcprime libcsys qt5-qtmultimedia qt5-qtsvg"
+makedepends="qt5-qtbase-dev libcprime-dev libcsys-dev qt5-qtmultimedia-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	qmake-qt5
+	make
+}
+
+package() {
+	cd "$builddir"
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="9cd9357ace799ca602c3c6637d8dc73e906675a87b0a44855a2892656bf47798ebc708c508170ade7a1d4c83437bdfc428e4c1a0baa9af9c16ee5fd328ca10f5  corefm-2.4.0.tar.gz"
