@@ -2,15 +2,17 @@
 pkgname="device-asus-grouper"
 pkgdesc="Google Nexus 7 2012 Wifi"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
 options="!check !archcheck"
 depends="postmarketos-base linux-asus-grouper mkbootimg mesa-dri-swrast"
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo
-	pointercal"
+	pointercal
+	nvram.txt"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,6 +24,14 @@ package() {
 		"$pkgdir"/etc/pointercal
 }
 
+nonfree_firmware() {
+    pkgdesc="Google Nexus 7 (2012) wifi firmware"
+    depends="firmware-aosp-broadcom-wlan"
+    mkdir "$subpkgdir"
+	install -D -m644 "$srcdir"/nvram.txt \
+		"$subpkgdir"/lib/firmware/postmarketos/bcmdhd/bcm4330/fw_bcm4330_bg.txt
+}
 
 sha512sums="a374e9681fbeaff5047820f8b7a9c249195232730a412208415243ea8bf7a87cdc4399ab86b1c08448be279f5c9dedcb47d03ac83587f908a4c51e442a97da50  deviceinfo
-ae9c145ffd745c83c73edbc486d3b9d22c6cbb8c57827b6f1ba87b6449a17a73a443be7daa0ab87de8df2dd9594e624364652c84ec1e7b536d37f52449a5a58c  pointercal"
+ae9c145ffd745c83c73edbc486d3b9d22c6cbb8c57827b6f1ba87b6449a17a73a443be7daa0ab87de8df2dd9594e624364652c84ec1e7b536d37f52449a5a58c  pointercal
+093a615250689f83c43af18a195d66d89e4b56584069a3903652e68e9da42568d2e176aa77cf23e1f23b3cb869f5c639fb1c8cdfc8af9fc6d17abe17cad7e821  nvram.txt"
