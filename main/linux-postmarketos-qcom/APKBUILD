@@ -4,9 +4,9 @@ _config="config-${_flavor}.${CARCH}"
 pkgname=linux-${_flavor}
 
 pkgver=4.17_rc3
-pkgrel=8
+pkgrel=9
 
-arch="armhf"
+arch="armhf armv7"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm devices"
 url="https://kernel.org/"
 depends=""
@@ -17,6 +17,7 @@ _commit="09efb4857f1a4119eced855912043817bd96e064"
 source="
 	linux-${_commit}.tar.gz::https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/${_commit}/linux-postmarketos-${_commit}.tar.gz
 	config-${_flavor}.armhf
+	config-${_flavor}.armv7
 	0001-Fix-Hammerhead-backlight.patch
 "
 
@@ -184,4 +185,5 @@ dev() {
 }
 sha512sums="02fd136d24914e30decd207c3b2e0168cc9d6e4a0fc981abf8d537cd95c70583f5239d0dc7f2ae94a2ddd2ba82d822933159167801a035731a24aa1300c5ceec  linux-09efb4857f1a4119eced855912043817bd96e064.tar.gz
 fc151402f33f947fdfb1a0f60f7dee621b2299678c14bbc2d3425c22b3300795cddfba8635f3d2d9a409ea506e825d00957bffe14d54cd14612d364a1d03529a  config-postmarketos-qcom.armhf
+fc151402f33f947fdfb1a0f60f7dee621b2299678c14bbc2d3425c22b3300795cddfba8635f3d2d9a409ea506e825d00957bffe14d54cd14612d364a1d03529a  config-postmarketos-qcom.armv7
 caf6d5615548dda58261c1d0fb571b93f0bd057a7dd071980e2402bae62bb951e40375693776b846a431c9ea47b8e6098f292b83b3744b23f2e5663f830b3548  0001-Fix-Hammerhead-backlight.patch"
