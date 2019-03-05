@@ -77,16 +77,27 @@ def get_mr_settings(path):
         exit(1)
 
 
-def check_allow_push(settings):
-    """ :returns: True when maintainers are allowed to push to the branch
-                  (what we want!), False otherwise """
-    if "allow_maintainer_to_push" not in settings:
-        print("ERROR: missing 'allow_maintainer_to_push' key in settings!")
+def settings_read(settings, key):
+    if key not in settings:
+        print("ERROR: missing '" + key + "' key in settings!")
         print("Here are the whole settings for debugging:")
         print("---")
         print(settings)
         exit(1)
-    return settings["allow_maintainer_to_push"]
+    return settings[key]
+
+
+def check_allow_push(settings):
+    """ :returns: True when maintainers are allowed to push to the branch
+                  (what we want!), False otherwise """
+
+    # Check if source branch is in same repository
+    source = settings_read(settings, "source_project_id")
+    target = settings_read(settings, "target_project_id")
+    if source == target:
+        return True
+
+    return settings_read(settings, "allow_maintainer_to_push")
 
 
 def main():
