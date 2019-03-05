@@ -1,0 +1,51 @@
+# Forked from Alpine, so we can upgrade the version and build etnaviv and tegra
+pkgname=libdrm
+_pkgver=2.4.97
+pkgver=9999
+pkgrel=0
+pkgdesc="[${_pkgver}] Userspace interface to kernel DRM services"
+url="https://dri.freedesktop.org/"
+arch="all"
+# Requires a computer with gfx, no X running, build user in 'video' group..
+options="!check"
+license="MIT"
+depends=""
+depends_dev="linux-headers"
+makedepends="$depends_dev libpthread-stubs eudev-dev libpciaccess-dev xmlto"
+checkdepends="cunit-dev bash"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://dri.freedesktop.org/$pkgname/$pkgname-$_pkgver.tar.bz2
+	ioctl.patch
+	"
+
+builddir="$srcdir/$pkgname-$_pkgver"
+
+build() {
+	cd "$builddir"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-freedreno \
+		--enable-etnaviv-experimental-api \
+		--enable-tegra-experimental-api \
+		--enable-udev \
+		--disable-valgrind
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="3e08ee9d6c9ce265d783a59b51e22449905ea73aa27f25a082a1e9e1532f7c99e1c9f7cb966eb0970be2a08e2e5993dc9aa55093b1bff548689fdb465e7145ed  libdrm-2.4.97.tar.bz2
+af52fef51aaa05a4dd17919371cb9d92a77480402730bf53ba223e54df52f3825be05a7f28e6aef8c904db5ee59fe38a6c15bc6aafa7f8d31a719e80399dd51f  ioctl.patch"
