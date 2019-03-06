@@ -22,7 +22,7 @@ case $pkgver in
 	*.*.*) _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=10
+pkgrel=11
 arch="armhf"
 pkgdesc="LineageOS 14.1 kernel for OnePlus One (bacon)"
 url="https://github.com/LineageOS/android_kernel_oneplus_msm8974"
@@ -35,6 +35,7 @@ source="
 	${_config}
 	compiler-gcc6.h
 	02_gpu-msm-fix-gcc5-compile.patch
+	06_fix_mdss_fb_rgb_mode.patch
 "
 subpackages=""
 license="GPL2"
@@ -124,4 +125,5 @@ package() {
 sha512sums="94d0048439e70b11637a7a122e8652d4e997ee413d6e54ea0aed7f2c68e137fcc19b6784dcc0dedf0b80240ba16060634b517d5865ec6c7222e4dea44d3c059a  linux-oneplus-bacon-dd65620ba04a8c6ba0e30553c9c95388daefae02.tar.gz
 5af9714a0cb47d5e1f72d4b691de7f52bcc1cb7907bd2f939409c626a7b2950e2dfe1c1b31adaf0b6ae3a7078554a7b52f0e73b600641507a5962168bee3641f  config-oneplus-bacon.armhf
 d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
+839062f4d8c4fafdd29039ed1c960bdcd4e649230318cd3476661cba49e3a737c0cbe63afa760b37f970e68b57910bba2a3ec3f64b729b5ad53940bef2b1ee85  06_fix_mdss_fb_rgb_mode.patch"
