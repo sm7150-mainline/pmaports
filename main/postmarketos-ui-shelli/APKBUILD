@@ -1,0 +1,29 @@
+# Contributor: Martijn Braam
+# Maintainer: Craig Comstock <craig@unreasonablefarm.org>
+pkgname=postmarketos-ui-shelli
+pkgver=0.1
+pkgrel=0
+pkgdesc="Plain console with touchscreen gesture support"
+url="https://gitlab.com/unrznbl/shelli"
+arch="armhf armv7 aarch64"
+license="GPL-3.0-only"
+makedepends="linux-headers"
+depends="gesture kbd kbd-misc"
+install="$pkgname.post-install $pkgname.pre-deinstall"
+source="
+	${url}/-/archive/v${pkgver}/shelli-v${pkgver}.tar.gz
+"
+options="!check"
+builddir="$srcdir"/shelli-v${pkgver}
+build() {
+	cd $builddir
+	make all
+}
+
+package() {
+	mkdir -p $pkgdir
+	cd $builddir
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="d62cdb8c3f7bf5c77e14c1378d1dcb6d4dc74aa1062fa07ed9a0ae2ad13022cefc3f5cdfd5bda9171f88d88d549b510eab10e169142765a8b642afa64ab01ee4  shelli-v0.1.tar.gz"

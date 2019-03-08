@@ -1,0 +1,30 @@
+# Contributor: Martijn Braam
+# Maintainer: Craig Comstock <craig@unreasonablefarm.org>
+pkgname=gesture
+pkgver=0.1
+pkgrel=0
+pkgdesc="handwriting algorithm with implementation for linux touchscreens injecting keys into a tty."
+url="https://gitlab.com/unrznbl/gesture"
+arch="all"
+license="GPL-3.0-only"
+depends=""
+makedepends="linux-headers"
+install="$pkgname.post-install $pkgname.pre-deinstall"
+options="!check"
+source="
+	${url}/-/archive/v${pkgver}/gesture-v${pkgver}.tar.gz
+"
+builddir="$srcdir"/gesture-v$pkgver
+
+build() {
+	cd "$builddir"
+	make all
+}
+
+package() {
+	mkdir -p $pkgdir
+	cd $builddir
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="bb06d5579883e441087c1162c06fabde8051efa9cf4d5327983d589d86f94a11d3d1075b49d81aa042cf0c064f7ae403f1ce607535814d316316cd42ebc1d512  gesture-v0.1.tar.gz"
