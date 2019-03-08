@@ -1,8 +1,8 @@
 # Forked from Alpine, so we can upgrade the version and build etnaviv and tegra
 pkgname=mesa
 pkgver=9999
-_pkgver=19.0
-pkgrel=0
+_pkgver=19.0.0-rc7
+pkgrel=1
 pkgdesc="[${_pkgver}] Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
 arch="all"
@@ -14,7 +14,7 @@ subpackages="
 	$pkgname-dri-freedreno:_dri
 	$pkgname-dri-virtio:_dri
 	$pkgname-glapi $pkgname-egl $pkgname-gl $pkgname-gles
-	$pkgname-osmesa $pkgname-gbm
+	$pkgname-osmesa $pkgname-gbm $pkgname-xatracker
 
 	"
 depends_dev="
@@ -54,7 +54,7 @@ makedepends="
 	ninja
 	"
 source="
-	https://gitlab.freedesktop.org/mesa/mesa/-/archive/${_pkgver}/mesa-${_pkgver}.tar.gz
+	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-${_pkgver}/mesa-mesa-${_pkgver}.tar.gz
 	10-adjust-cache-deflate-buffer.patch
 	20-musl.patch
 	meson-add-toggle-for-TLS-support-in-GLX.patch
@@ -81,7 +81,7 @@ armhf|aarch64)
 		     $pkgname-dri-tegra:_dri"
 	;;
 esac
-builddir="$srcdir/mesa-${_pkgver}"
+builddir="$srcdir/mesa-mesa-${_pkgver}"
 
 
 build() {
@@ -150,6 +150,13 @@ osmesa() {
 
 	install -d "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libOSMesa.so.* "$subpkgdir"/usr/lib/
+}
+
+xatracker() {
+	pkgdesc="Mesa XA state tracker for vmware"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libxatracker*.so.* "$subpkgdir"/usr/lib/
 }
 
 gbm() {
@@ -246,7 +253,7 @@ _dri() {
 	esac
 }
 
-sha512sums="07c0fed3dd565a025df69fc3b2c097ff324d8c2ae8177b869bfd5bb01542cd57d32d28ba00c7c091f92430a1be04c660d3cb709a0bafd039831ffc76969b874d  mesa-19.0.tar.gz
+sha512sums="27b2d15e03ac0444f576b478501b15654d6400d2769db87491eb3b2224bafcabff5d1d1c1f0165ae31272c2b4d965c6d9230703c29ef81314283a9f59ed6e3c6  mesa-mesa-19.0.0-rc7.tar.gz
 cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  10-adjust-cache-deflate-buffer.patch
 02db65893d55b5667d9c3bc193fc089e5408596431e06363fe2adea00c9e3c4e80612f3d03dc61f931d1a6ae04340bccf55e1376cf00bbf2433990713649d286  20-musl.patch
 a7bbc0d8836fe5eb7220c7b41d8af439878a3876302de32739243232f979ea9c63d2069fcd78bef370eafef0a21f491ef99219ae686e965326475764244bbe5d  meson-add-toggle-for-TLS-support-in-GLX.patch"
