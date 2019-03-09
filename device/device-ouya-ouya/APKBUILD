@@ -11,7 +11,12 @@ depends="postmarketos-base linux-ouya-ouya mkbootimg"
 makedepends=""
 install=""
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo initfs-hook.sh fb.modes"
+source="
+	deviceinfo
+	fb.modes
+	initfs-hook.sh
+	networkmanager.conf
+	"
 
 package() {
 	install -Dm644 "$srcdir"/initfs-hook.sh \
@@ -20,6 +25,8 @@ package() {
 		"$pkgdir/etc/deviceinfo"
 	install -D -m644 "$srcdir"/fb.modes \
 		"$pkgdir/etc/fb.modes"
+	install -D -m644 "$srcdir"/networkmanager.conf \
+		"$pkgdir/etc/NetworkManager/conf.d/10-ouya.conf"
 }
 
 nonfree_firmware() {
@@ -29,5 +36,6 @@ nonfree_firmware() {
 }
 
 sha512sums="f1c6befb6867ae6e2f9e42312bdd03c4c242da33a6d2e6bc6fb2df5b6437acab50fb2c51a4663a1e1799e77614a959cac40bcc59336e92d2d6ac15cfacce6e67  deviceinfo
+bf442fac4dc0594e055ed7a7d8232b5c884e2e77543273e8c4f32b5fe3c199561c86d8a5f665e17406057ca7863fabb93e789fe5e168fcd89d2982e0046232ad  fb.modes
 d01ac1f451275b1a269aab3c8f7fe20b482c952d00c4457ea496b45780c052f8ef98a5ba22a4af009ca128858374c1d3fb97e458102b09f7c40f3d7a718326c1  initfs-hook.sh
-bf442fac4dc0594e055ed7a7d8232b5c884e2e77543273e8c4f32b5fe3c199561c86d8a5f665e17406057ca7863fabb93e789fe5e168fcd89d2982e0046232ad  fb.modes"
+549e8759ef362e115103be7fedeb9b5894728a9a2d6177f4192e5f6b3962708455d37084eeb2527ff187d8acd560a4c41e30d6e1997331fab4f3a67df25a67bc  networkmanager.conf"
