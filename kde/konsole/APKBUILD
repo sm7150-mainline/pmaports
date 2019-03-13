@@ -1,18 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=konsole
-pkgver=18.04.1
-pkgrel=1
+pkgver=18.12.3
+pkgrel=0
 arch="all"
 url="https://kde.org/applications/system/konsole/"
 pkgdesc="KDE's terminal emulator"
 license="GPL-2.0"
-depends=""
-makedepends="extra-cmake-modules qt5-qtbase-dev kdoctools-dev kcompletion-dev kconfig-dev
-			kconfigwidgets-dev kcoreaddons-dev kcrash-dev kguiaddons-dev kdbusaddons-dev
-			ki18n-dev kiconthemes-dev kinit-dev kio-dev knotifications-dev knotifyconfig-dev
-			kparts-dev kpty-dev kservice-dev ktextwidgets-dev kwidgetsaddons-dev kwindowsystem-dev
-			kxmlgui-dev kdbusaddons-dev sonnet-dev knewstuff-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev kdoctools-dev kcompletion-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev kcrash-dev kguiaddons-dev kdbusaddons-dev ki18n-dev kiconthemes-dev kinit-dev kio-dev knotifications-dev knotifyconfig-dev kparts-dev kpty-dev kservice-dev ktextwidgets-dev kwidgetsaddons-dev kwindowsystem-dev kxmlgui-dev kdbusaddons-dev sonnet-dev knewstuff-dev"
 source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
 subpackages="$pkgname-doc $pkgname-lang"
 options="!check" # Fails due to requiring running X11
@@ -32,7 +27,7 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="cc73eefe0c7fe4e9ef91f4085ae19f658a5ce31e0617f2cb06c7faee57feae33fee6071aed63b6a599d8d0cad6fa9877908d64eda8573edf406205bdf70f2570  konsole-18.04.1.tar.xz"
+sha512sums="9fecd316a9bc7adaca9a3fac38a57d293286b6328e88d96ac1cf8967fcb67ef8e9a5b085e185c4373599eafd0eaa18f0d73df70df16b98a1badd9efb689e1f7c  konsole-18.12.3.tar.xz"
