@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=mir
-pkgver=1.1.0
+pkgver=1.1.2
 pkgrel=0
 pkgdesc="Canonical's display server"
 url="https://mir-server.io"
@@ -11,16 +11,7 @@ depends="xkeyboard-config dmz-cursor-theme ttf-freefont"
 depends_dev="boost-dev mesa-dev glm-dev protobuf-dev glog-dev gflags-dev eudev-dev glib-dev wayland-dev libepoxy-dev nettle-dev libinput-dev
 	capnproto-dev libxml++-2.6-dev py3-pillow freetype-dev libevdev-dev umockdev-dev lttng-ust-dev yaml-cpp-dev libxcursor-dev"
 makedepends="$depends_dev cmake libxkbcommon-dev gtest-dev gmock clang-dev"
-source="https://github.com/MirServer/mir/releases/download/v$pkgver/mir-$pkgver.tar.xz
-	0001-Add-missing-include-681.patch
-	0002-Don-t-hardcode-request-type-for-ioctl.patch
-	0003-Suppress-the-compiler-diagnostic-on-Alpine-Linux-cau.patch
-	0004-sys-poll.h-include-is-incorrect-use-poll.h.patch
-	0005-Fix-unused-parameter-type-warning-error-on-musl.patch
-	0006-William-enters-the-dlvsym-fray.patch
-	0007-ifdef-pthread_getname_np-as-musl-doesn-t-have-it.patch
-	no-werror.patch
-	ioctl_clang.patch"
+source="https://github.com/MirServer/mir/releases/download/v$pkgver/mir-$pkgver.tar.xz"
 subpackages="$pkgname-dev"
 options="!check" # Some tests fail
 
@@ -46,13 +37,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="6120ee84a0261a672e800d12e8836fc32f2bd24eb85bea703dc32adf1af94ef07b81a2e9d67d9687c68406392e249987d70987a80014bf8010c855002660cee4  mir-1.1.0.tar.xz
-9141613b5078cdce5b57a2f9e2c1bfec53996cf93e58a5522340420b9eba9c85e5cf72428e6bac0da886f27e32bb850ef468077b9f3814f6b87d427b7b9333a3  0001-Add-missing-include-681.patch
-737f6dcc91ce6fd94059c08e481b5e54e81207019ffb86c8c8de237c4632edb7842a05297d25e38aa71e9ef0993c9be8a650030d9a7f328ee6f6618be7cf03ed  0002-Don-t-hardcode-request-type-for-ioctl.patch
-4881969d4c373461d08df39d94d38a14e8a9b5ad4bf37bde4f3d7a3ef87d7df5342a35d98e564961158b5811ce293bff7c780fd98c333787c1914ab9d6cc4bec  0003-Suppress-the-compiler-diagnostic-on-Alpine-Linux-cau.patch
-561d80f7f40acd8cd92aa22bcd2d5537f3d686d1d4b77209e8633980b593a2103c4a0d1e4ccfeab34c31d7578013f52d705a933e79ef23c9944d133e93342c85  0004-sys-poll.h-include-is-incorrect-use-poll.h.patch
-26b14f5fd1a340a2163dc97d1be84d457022c4aaf2b6c25163a88cf21fb755ee87a95dd3dde02647fcece3ddc00f4542e89358ad2cdb782c6579255a10744210  0005-Fix-unused-parameter-type-warning-error-on-musl.patch
-b8aedaf28ba7bb06823628cb3428ec4acd8da0955ace5d022423db0537ce5db568e016c1c6e6df808d2c7b10bf0fb2fc850788bcf90c8ca6411fe28b4843e4e9  0006-William-enters-the-dlvsym-fray.patch
-6b974cc9beb50c2700cce70a615040d6e2639c921019ce801d0cb1e850454951df0e49509d5b4252180d7dc016389177e2703cc034824e3b1971d7dbe1a9e0b0  0007-ifdef-pthread_getname_np-as-musl-doesn-t-have-it.patch
-6369c55842c5c2a4eb4970dcafa7f09c36bb1bcaf85d20f3e021f741e7097def3685a96841e9d0a9bd5fdfdfc3016192fdacc751d3e861b51689940fc079e054  no-werror.patch
-31e87b7dafcb7e59c420b5ebc1cc6f8002f3491a89f38ee7c1aa31fe7f9c667080e15ef69bed10ba5408ef98bae0454e077b0ba67ededa3199801aa32f1e5166  ioctl_clang.patch"
+sha512sums="4431615d795b93239a83a197d61a5900f094a2108933be4e4da09220bd20e2b031e5232174805216a964279fcf8786672d5c40c3be83856d1903f128b7b814b7  mir-1.1.2.tar.xz"
