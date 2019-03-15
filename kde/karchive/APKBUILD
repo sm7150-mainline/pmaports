@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=karchive
-pkgver=5.55.0
+pkgver=5.56.0
 pkgrel=0
 pkgdesc="Qt 5 addon providing access to numerous types of archives"
 arch="all"
@@ -16,7 +16,8 @@ build() {
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_LIBDIR=lib
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
 	make
 }
 
@@ -29,4 +30,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="f7dd19d7c6cb0dd66bd2d949817b7c54e69274a623247db9dfbb52dca6b01cbfe7dc2c28e0085db3c3a2c58c04cadd7e8f9d15406686bebfb8096ad653cbb709  karchive-5.55.0.tar.xz"
+sha512sums="9c6c0b0103a06476571d6a848ebaffe89c6da602b7de0e6db44be5dee2dacab45feb5df7ff3165ef56d30f8e5fa4061d341e4ca9e46cbd7331ffb153cc36ddf7  karchive-5.56.0.tar.xz"
