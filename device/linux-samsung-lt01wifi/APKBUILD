@@ -1,0 +1,71 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/lineage_lt01wifi_defconfig
+
+pkgname="linux-samsung-lt01wifi"
+pkgver=3.0.31
+pkgrel=0
+pkgdesc="Samsung Galaxy Tab 3 8.0 kernel fork"
+arch="armhf"
+_carch="arm"
+_flavor="samsung-lt01wifi"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev xz"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_smdk4x12"
+_commit="6ad0b18a63deacaebbc3d12751c3230cedbf7335"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/gr8nole/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+#sha512sums="43c9a5cfe9a6f66d7fbdec04ea6a04c06864d2f6140f458fba7bcde7a871d0128d5f1bf45724923c6e7fc592863a1a0a01a067dd6255b5f7ee0dbef46958140c  linux-samsung-lt01wifi-6ad0b18a63deacaebbc3d12751c3230cedbf7335.tar.gz
+#86dafa426c54fb813e29295eeac1afca53049546a326311965d886ec93cf0b18130f143804105e7fbdf9f82abca3e94bdce23ef777031522acc6e1078156d701  config-samsung-lt01wifi.armhf
+#77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+#197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+#ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch"
+sha512sums="43c9a5cfe9a6f66d7fbdec04ea6a04c06864d2f6140f458fba7bcde7a871d0128d5f1bf45724923c6e7fc592863a1a0a01a067dd6255b5f7ee0dbef46958140c  linux-samsung-lt01wifi-6ad0b18a63deacaebbc3d12751c3230cedbf7335.tar.gz
+85d01f93463c67805ee88975379d6a71da2a31bbf56252f899121888c313ee375950e0fbcd78a50738f1e160c68c07dac2e3060dc9708eff10a459e0b8764025  config-samsung-lt01wifi.armhf
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"

@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-lt01wifi"
+pkgdesc="Samsung Galaxy Tab 3 8.0"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armhf"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-lt01wifi mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="6afb32e0115eea9a1955987252a62caf32eda22e3a1270830c1dd36c7d5516f98a72c4b8fabe4f99f22d9b2ff748027312d582fbba0616fd7d8b88a5db19ea36  deviceinfo"
