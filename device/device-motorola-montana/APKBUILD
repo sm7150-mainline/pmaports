@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-motorola-montana"
+pkgdesc="Motorola Moto G5s"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-motorola-montana mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="4d1d55b0205f506e0f85f00e0a02ff294ff37bac928da98d7b9935971afb6a98adf3af4099e3149cf57c4bfc8ca782885afe580ab2938883db3b2fab1eaf6e11  deviceinfo
+aa012cf1940af94fd7b9ec9da6ebe94ce9315d8fb920c4c39e9c08bf409fff3c697d0f045f2d1a2adaa40c99dc9748a0aeb64f55d1dd4ae9999276c70db3314b  initfs-hook.sh"
