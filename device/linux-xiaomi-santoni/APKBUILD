@@ -1,9 +1,9 @@
 # Kernel config based on: arch/arm64/configs/S88536AA2-perf_defconfig
 
 pkgname="linux-xiaomi-santoni"
-pkgver=3.18.31
-pkgrel=2
-pkgdesc="Xiaomi Redmi 4X kernel fork"
+pkgver=3.18.136
+pkgrel=0
+pkgdesc="Xiaomi Redmi 4X kernel fork - msm-3.18 rebased"
 arch="aarch64"
 _carch="arm64"
 _flavor="xiaomi-santoni"
@@ -12,9 +12,8 @@ license="GPL2"
 options="!strip !check !tracedeps"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev gcc6"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
+# Tested with GCC-8, won't boot, PSTORE doesn't work so no logs are provided.
+# Looks like we're stuck with GCC-6. For a while, through.
 if [ "${CC:0:5}" != "gcc6-" ]; then
 	CC="gcc6-$CC"
 	HOSTCC="gcc6-gcc"
@@ -22,15 +21,13 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 fi
 
 # Source
-_repository="Xiaomi_Kernel_OpenSource"
-_commit="09baf1a3dd0e13a81e484035f0be71dcb2ecc723"
+_repository="msm-3.18"
+_commit="adc4e69112d26b6b74c1b3f7e890109faf7c6a7e"
 _config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/MiCode/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Danct12/${_repository}/archive/${_commit}.tar.gz
 	$_config
 	compiler-gcc6.h
-	02_fix_msm_dba.patch
-	03_fix_rndis_ipa_trace_header_not_found.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
@@ -80,8 +77,6 @@ package() {
 	fi
 }
 
-sha512sums="f776fe0fbb5e155da8af9cbcb29bd7f712a74d3ae6f4617e5d31b119b5ff160e66196e8be107a7216d670cad7be89c108426fef5b2cd3f2baedbf8496db9f4f6  linux-xiaomi-santoni-09baf1a3dd0e13a81e484035f0be71dcb2ecc723.tar.gz
-e5e84c9eb1dcd14a81c00000d35b0af506869aaaa5845cb6213e9a2eaee0150f342b9e6c6f80723923b32165f7750ee05483c1f03ce763e358514b2970ec0d7f  config-xiaomi-santoni.aarch64
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-7e765cb696fa8c3dfbc305b05cbf1fad85fb9572613d5391e945341dae5974a745f4906c795dc841e5562b19ab77d5257f9741e514af2c2573aa4bb8b262ce51  02_fix_msm_dba.patch
-9c549714f03c7a7666e8aa7508a48cfdccab7cf3e97fb59c4df8fa97f75492365926f82c4a677c50780d68d4905504dcccbdd6de6344bd8d4b88b2331933ed46  03_fix_rndis_ipa_trace_header_not_found.patch"
+sha512sums="66d3fe05d7cfaae719608f349a557ca331de86d74023a26e97710e1ac756892e9f690cdfc353058e12a41ae0927aaaf7506739a009433465fe372a52964af6aa  linux-xiaomi-santoni-adc4e69112d26b6b74c1b3f7e890109faf7c6a7e.tar.gz
+4bf0b6ac007aa32c3739b6a4aeae589612995a2a333445619a4e50e3551a2ee80b6f42e31252ac5a55537bf7ce0d9a1e43a748a46bd74ead4a6e36ad34b63539  config-xiaomi-santoni.aarch64
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
