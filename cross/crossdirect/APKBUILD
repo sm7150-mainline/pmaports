@@ -13,7 +13,7 @@
 # implementation details (llvm, fakeroot, rpath).
 
 pkgname=crossdirect
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Wrappers to launch native cross compilers in foreign chroots"
 url="https://postmarketOS.org"
@@ -29,7 +29,13 @@ build() {
 	for _arch in $_archs; do
 		[ "$_arch" == "$CARCH" ] && continue
 		_hostspec="$(arch_to_hostspec $_arch)"
-		$CC -o "crossdirect-$_arch" -static -DHOSTSPEC="\"$_hostspec\"" \
+
+		# Build with -Werror, because we maintain this short program. (If
+		# upstream is elsewhere, having -Werror is usually not desired.)
+		$CC -o "crossdirect-$_arch" \
+			-static \
+			-Werror \
+			-DHOSTSPEC="\"$_hostspec\"" \
 			crossdirect.c
 	done
 }
@@ -57,4 +63,4 @@ package() {
 		done
 	done
 }
-sha512sums="12801031928103bd898a0d54a5c68b33da9bded10a3d145fdf5ce8b70eb0bbbcdd50764279004b6997d85d710fa581dc8b05aa5e0eb62d50c1054cc6d66db87f  crossdirect.c"
+sha512sums="6a94a2e0842c95b8ca862b71a7b54f280d0fe9da40fe40691628ef6089a995159c1b53513fb006589af064110a9d2592b24c772264c02d27e7bac9871428f757  crossdirect.c"

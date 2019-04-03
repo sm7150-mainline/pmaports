@@ -9,6 +9,8 @@
 #include <limits.h>
 #include <unistd.h>
 
+#define NATIVE_BIN_DIR "/native/usr/lib/ccache/bin"
+
 void exit_userfriendly() {
 	fprintf(stderr, "Please report this at: https://gitlab.com/postmarketOS/pmaports/issues\n");
 	fprintf(stderr, "As a workaround, you can compile without crossdirect.\n");
@@ -25,9 +27,9 @@ int main(int argc, char** argv) {
 	bool startsWithHostSpec = (strncmp(HOSTSPEC, executableName, sizeof(HOSTSPEC) -1) == 0);
 
 	if (isClang || startsWithHostSpec) {
-	   snprintf(newExecutable, sizeof(newExecutable), "/native/usr/bin/%s", executableName);
+	   snprintf(newExecutable, sizeof(newExecutable), NATIVE_BIN_DIR "/%s", executableName);
 	} else {
-	   snprintf(newExecutable, sizeof(newExecutable), "/native/usr/bin/" HOSTSPEC "-%s", executableName);
+	   snprintf(newExecutable, sizeof(newExecutable), NATIVE_BIN_DIR "/" HOSTSPEC "-%s", executableName);
 	}
 
 	char** newArgsPtr = newargv;
@@ -58,19 +60,23 @@ int main(int argc, char** argv) {
 	*newArgsPtr = NULL;
 
 	// new arguments prepared; now setup environmental vars
-	setenv("LD_LIBRARY_PATH", "/native/lib:/native/usr/lib", true);
+	char* env[] = {"LD_PRELOAD=",
+		"LD_LIBRARY_PATH=/native/lib:/native/usr/lib",
+		"CCACHE_PATH=/native/usr/bin",
+		NULL};
 	char* ldPreload = getenv("LD_PRELOAD");
 	if (ldPreload) {
 		if (strcmp(ldPreload, "/usr/lib/libfakeroot.so") == 0) {
-			setenv("LD_PRELOAD", "/native/usr/lib/libfakeroot.so", true);
+			env[0] = "LD_PRELOAD=/native/usr/lib/libfakeroot.so";
 		} else {
 			fprintf(stderr, "ERROR: crossdirect: can't handle LD_PRELOAD: %s\n", ldPreload);
 			exit_userfriendly();
 		}
 	}
 
-	if (execv(newExecutable, newargv) == -1) {
+	if (execve(newExecutable, newargv, env) == -1) {
 		fprintf(stderr, "ERROR: crossdirect: failed to execute %s: %s\n", newExecutable, strerror(errno));
+		fprintf(stderr, "Maybe the target arch is missing in the ccache-cross-symlinks package?\n");
 		exit_userfriendly();
 	}
 	return 1;
