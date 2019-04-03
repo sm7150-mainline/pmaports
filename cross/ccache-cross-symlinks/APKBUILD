@@ -4,8 +4,8 @@
 # ccache, which can then cache the results.
 
 pkgname=ccache-cross-symlinks
-pkgver=1
-pkgrel=4
+pkgver=2
+pkgrel=0
 pkgdesc="Enable ccache for cross-compilers with symlinks"
 url="https://ccache.samba.org/"
 arch="noarch"
@@ -14,14 +14,21 @@ depends="ccache"
 options="!check"
 
 package() {
-	local _archs="armhf aarch64"
-	local _bins="c++ cc cpp g++ gcc"
+	# Keep in sync with pmb.config.build_device_architectures
+	local _archs="armhf armv7 aarch64 x86_64 x86"
+
+	local _bins="c++ cc cpp g++ gcc clang clang++"
 	mkdir -p "$pkgdir/usr/lib/ccache/bin"
 	cd "$pkgdir/usr/lib/ccache/bin"
 	for _arch in $_archs; do
+		if [ "$_arch" = "$CARCH" ]; then
+			continue
+		fi
 		_hostspec="$(arch_to_hostspec $_arch)"
 		for _bin in $_bins; do
-			ln -v -s /usr/bin/ccache ${_hostspec}-${_bin}
+			# Relative symlink, so it works with crossdirect (pointing to
+			# /native/usr/bin/ccache)
+			ln -v -s ../../../bin/ccache ${_hostspec}-${_bin}
 		done
 	done
 }
