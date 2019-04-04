@@ -1,8 +1,9 @@
 # Forked from Alpine, so we can build our qemu fork against jemalloc to 
 # work around a deadlock while compiling mesa (pmbootstrap#1715)
 pkgname=qemu
-pkgver=3.1.0
-pkgrel=3
+pkgver=9999
+_pkgver=3.1.0
+pkgrel=0
 pkgdesc="QEMU is a generic machine emulator and virtualizer"
 url="http://qemu.org/"
 arch="x86 x86_64"
@@ -144,7 +145,7 @@ subpackages="$subpackages qemu-modules:_all_modules"
 
 subpackages="$subpackages $pkgname-img"  # -img must be declared the last
 
-source="http://wiki.qemu-project.org/download/$pkgname-$pkgver.tar.xz
+source="http://wiki.qemu-project.org/download/$pkgname-$_pkgver.tar.xz
 	0001-elfload-load-PIE-executables-to-right-address.patch
 	0006-linux-user-signal.c-define-__SIGRTMIN-MAX-for-non-GN.patch
 	0001-linux-user-fix-build-with-musl-on-aarch64.patch
@@ -164,7 +165,7 @@ source="http://wiki.qemu-project.org/download/$pkgname-$pkgver.tar.xz
 	80-kvm.rules
 	bridge.conf
 	"
-builddir="$srcdir/$pkgname-$pkgver"
+builddir="$srcdir/$pkgname-$_pkgver"
 
 # secfixes:
 #   2.8.1-r1:
