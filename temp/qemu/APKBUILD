@@ -16,6 +16,7 @@ makedepends="
 	glib-static
 	gnutls-dev
 	gtk+3.0-dev
+	jemalloc-dev
 	libaio-dev
 	libcap-dev
 	libcap-ng-dev
@@ -243,7 +244,8 @@ build() {
 		--disable-brlapi \
 		--disable-mpath \
 		--disable-libnfs \
-		--disable-capstone
+		--disable-capstone \
+		--enable-jemalloc
 
 	cd "$builddir"/build
 	_compile_common \
