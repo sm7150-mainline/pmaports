@@ -1,9 +1,9 @@
 pkgname=xf86-video-hwcomposer
 pkgver=1.0_git20180921
-pkgrel=0
+pkgrel=1
 pkgdesc="X.Org driver for Android devices rendering through HWComposer API"
 url="https://github.com/NotKit/xf86-video-hwcomposer"
-arch="armhf aarch64"
+arch="armhf armv7 aarch64"
 license="MIT"
 depends="drihybris glamor-hybris"
 makedepends="autoconf automake util-macros libtool
@@ -18,7 +18,7 @@ source="$pkgname-$_commit.tar.gz::https://github.com/NotKit/$pkgname/archive/$_c
 
 subpackages="$pkgname-doc"
 
-if [ "$CARCH" == "armhf" ]; then
+if [ "$CARCH" == "armhf" -o "$CARCH" == "armv7" ]; then
 	_vers="7.1 7.1-caf 4.4"
 elif [ "$CARCH" == "aarch64" ]; then
 	_vers="7.1 7.1-caf"

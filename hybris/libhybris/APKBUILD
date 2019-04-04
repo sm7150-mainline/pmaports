@@ -1,7 +1,7 @@
 pkgname=libhybris
 pkgver=1.0_git20180212
-pkgrel=4
-arch="x86 armhf aarch64"
+pkgrel=5
+arch="x86 armhf armv7 aarch64"
 url="https://github.com/libhybris/libhybris"
 license="Apache"
 makedepends="autoconf automake libtool wayland-dev linux-headers bsd-compat-headers
@@ -52,7 +52,7 @@ build() {
 
 	NOCONFIGURE=1 ./autogen.sh
 
-	if [ "$CARCH" == "armhf" ]; then
+	if [ "$CARCH" == "armhf" -o "$CARCH" == "armv7" ]; then
 		_vers="7.1 4.4"
 		_ldpath="/usr/libexec/droid-hybris/system/lib:/vendor/lib:/system/lib"
 		_arch="arm"
