@@ -1,7 +1,8 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=breeze
-pkgver=5.15.3
+pkgver=5.15.4
+_pkgver="$pkgver.1"
 pkgrel=0
 pkgdesc="Artwork, styles and assets for the Breeze visual style for the Plasma Desktop"
 arch="all"
@@ -9,8 +10,9 @@ url="https://www.kde.org/workspaces/plasmadesktop/"
 license="LGPL-2.1"
 depends_dev="kcoreaddons-dev kguiaddons-dev kwayland-dev kservice-dev kdecoration-dev plasma-framework-dev kcmutils-dev breeze-icons kconfigwidgets-dev kauth-dev kcodecs-dev kconfig-dev kwidgetsaddons-dev kwindowsystem-dev ki18n-dev qt5-qtx11extras-dev qt5-qtdeclarative-dev kpackage-dev fftw-dev"
 makedepends="$depends_dev extra-cmake-modules automoc4"
-source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+source="$pkgname-$_pkgver.tar.xz::https://download.kde.org/stable/plasma/$pkgver/$pkgname-$_pkgver.tar.xz"
 subpackages="$pkgname-dev $pkgname-lang"
+builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
 	cmake \
@@ -29,4 +31,4 @@ package() {
 	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="e902f8d3495d5c8a0f74831bad6a8ce553d10db1f18c5258417996d1b57213112a78e4d90b041a29ab31b9b8ed18231a11b39d977266f0510365e2c683258bab  breeze-5.15.3.tar.xz"
+sha512sums="39746114d85e720f3ebdef91232faeacbb6234d7d3ca7b89448074db130d34d842f64089f869cc07b7fdaeddd7222d4ad0bd05b94d2a432220284545b9d456ef  breeze-5.15.4.1.tar.xz"
