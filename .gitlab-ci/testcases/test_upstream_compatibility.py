@@ -81,6 +81,7 @@ def test_aportgen_versions(args):
     map = {"binutils": "binutils-*",
            "busybox": "busybox-static-*",
            "gcc": "gcc-*",
+           "grub": "grub-efi-*",
            "musl": "musl-*"}
 
     # Iterate over Alpine packages
