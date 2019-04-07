@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-htc-m7"
+pkgdesc="HTC One M7"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-htc-m7 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="586d031213dc8d2f6ea01f5fd9a21aa54bff14839a9560a358fc9ef9736ba51e1d63fd904cba55caf0e8d6e2d7f88db3d31e877c4a6956be513bf4ee07d6199b  deviceinfo"
