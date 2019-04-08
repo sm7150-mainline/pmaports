@@ -3,23 +3,23 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=4.20.0
-pkgrel=0
+pkgver=5.0.0
+pkgrel=1
 
 arch="aarch64"
-pkgdesc="Kernel close to mainline with extra patches for Allwinner devices"
+pkgdesc="Kernel fork with PinePhone Don't be evil patches"
 url="https://kernel.org/"
 depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
+makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
 install=
-_commit="585a14815d2a2620c2b673d26147ceb4491dbf65"
+_commit="a91169202e61c4876dde06a5548d76a385306d05"
 source="
-	linux-${_commit}.tar.gz::https://github.com/anarsoul/linux-2.6/archive/${_commit}.tar.gz
+	${pkgname}-${_commit}.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/${_commit}/linux-${_commit}.tar.gz
 	config-${_flavor}.aarch64
 "
 
-subpackages="$pkgname-dev"
+subpackages=""
 
 license="GPL2"
 _abi_release=$_pkgver
@@ -34,40 +34,15 @@ esac
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-builddir="$srcdir/linux-2.6-${_commit}"
+builddir="$srcdir/linux-${_commit}"
 
 prepare() {
-	local _patch_failed=
-	ls "$srcdir"
-	cd "$builddir"
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch|*.patch::*)
-			_patch=${i%::*}
-			msg "Applying $_patch..."
-			if ! patch -s -p1 -N -i "$srcdir"/$_patch; then
-				echo $_patch >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	mkdir -p "$srcdir"/build
-	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		olddefconfig
+	default_prepare
+	REPLACE_GCCH=0 \
+		downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
@@ -75,21 +50,25 @@ build() {
 }
 
 package() {
-	cd "$srcdir/build/arch/${_carch}/boot"
+        # kernel.release
+        install -D "$builddir/include/config/kernel.release" \
+                "$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-	if [ "$CARCH" == "aarch64" ]; then
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image" \
-			"$pkgdir/boot/vmlinuz-$_flavor"
-	else
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
-			"$pkgdir/boot/vmlinuz-$_flavor"
-	fi
-
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	cd "$srcdir"/build
-
+        # zImage (find the right one)
+        cd "$builddir/arch/$_carch/boot"
+        _target="$pkgdir/boot/vmlinuz-$_flavor"
+        for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+                [ -e "$_zimg" ] || continue
+                msg "zImage found: $_zimg"
+                install -Dm644 "$_zimg" "$_target"
+                break
+        done
+        if ! [ -e "$_target" ]; then
+                error "Could not find zImage in $PWD!"
+                return 1
+        fi
+	
+	cd "$builddir"
 	local _install
 	case "$CARCH" in
 	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
@@ -102,79 +81,5 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-
-dev() {
-	# copy the only the parts that we really need for build 3rd party
-	# kernel modules and install those as /usr/src/linux-headers,
-	# simlar to what ubuntu does
-	#
-	# this way you dont need to install the 300-400 kernel sources to
-	# build a tiny kernel module
-	#
-	pkgdesc="Headers and script for third party modules for postmarketos kernel"
-	depends="gmp-dev bash perl"
-	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
-
-	# first we import config, run prepare to set up for building
-	# external modules, and create the scripts
-	mkdir -p "$dir"
-	cp "$srcdir"/$_config "$dir"/.config
-	make -j1 -C "$builddir" O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
-		olddefconfig prepare modules_prepare scripts
-
-	# needed for 3rd party modules
-	# https://bugzilla.kernel.org/show_bug.cgi?id=11143
-	case "$CARCH" in
-	ppc*) (cd "$dir" && make arch/powerpc/lib/crtsavres.o);;
-	esac
-
-	# remove the stuff that points to real sources. we want 3rd party
-	# modules to believe this is the soruces
-	rm "$dir"/Makefile "$dir"/source
-
-	# copy the needed stuff from real sources
-	#
-	# this is taken from ubuntu kernel build script
-	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
-
-	cd "$builddir"
-	find . -path './include/*' -prune \
-		-o -path './scripts/*' -prune -o -type f \
-		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
-		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
-		-print | cpio -pdm "$dir"
-	cp -a scripts include "$dir"
-	find $(find arch -name include -type d -print) -type f \
-		| cpio -pdm "$dir"
-
-	install -Dm644 "$srcdir"/build/Module.symvers \
-		"$dir"/Module.symvers
-
-	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
-	ln -sf /usr/src/linux-headers-${_abi_release} \
-		"$subpkgdir"/lib/modules/${_abi_release}/build
-
-	# cross-compiling: delete binaries with host arch and replace them with
-	# symlinks to binaries with the target arch (packaged in kernel-scripts)
-	if [ -n "$CROSS_COMPILE" ]; then
-		msg "Symlinking binary scripts..."
-		depends="$depends kernel-scripts"
-		local found="false"
-		cd "$dir/scripts"
-		local i
-		for i in $(find . -type f); do
-			local type="$(file -b --mime-type "$i")"
-			[ "$type" != "application/x-pie-executable" ] && continue
-			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
-			ln -svf "$native" "$i"
-			found="true"
-		done
-		if [ "$found" = "false" ]; then
-			error "Failed to symlink binary scripts!"
-			error "Did the mime-type change (see #1659)?"
-			return 1
-		fi
-	fi
-}
-sha512sums="c8df91d946f0121f38992bddf4691b9fb999162424461c063851a685cae8329a1fc5a6add73100be197f899b6ccdb18faff2480161f5d24ce8996f35881e30fb  linux-585a14815d2a2620c2b673d26147ceb4491dbf65.tar.gz
-2a92dcf0851eb08718d6a1a20210a5efd8ba4747be0e0cedb0fb5f5f64efd3ef3d5b1e05e1ba87385c76a192c55ea266cd2fd133e860d6db227d7650c3972a1a  config-postmarketos-allwinner.aarch64"
+sha512sums="4ae10aa5f141aa82610c65d0a5100bd86551a6323b67e4316ad43b2b5f1a6a1ff6f08e9747865b65381696385d4366f22eff5591ef8bc6fc988ac3978392dbc9  linux-postmarketos-allwinner-a91169202e61c4876dde06a5548d76a385306d05.tar.gz
+232204692e8c2daae12cb8e2f12acab6a07fc14cdd59e5d9e2fb7435d9a31f150f2d05ee97b403f9ff96e6d02d314fdeb059e4528fab782d4870dcb6f3733fdb  config-postmarketos-allwinner.aarch64"

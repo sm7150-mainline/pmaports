@@ -1,0 +1,56 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-pine-dontbeevil"
+pkgdesc="PINE64 PinePhone Don't be evil devkit"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
+depends="postmarketos-base linux-postmarketos-allwinner mesa-dri-swrast u-boot-pine64 uboot-tools"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	uboot-script.cmd
+	weston.ini
+	xorg.conf
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+}
+
+x11() {
+        install_if="$pkgname xorg-server"
+        depends="
+                libinput
+                xf86-input-libinput
+                xf86-video-fbdev"
+        install -Dm644 "$srcdir"/xorg.conf \
+                "$subpkgdir"/etc/X11/xorg.conf.d/10-framebuffer.conf
+}
+
+weston() {
+        install_if="$pkgname weston"
+        install -Dm644 "$srcdir"/weston.ini \
+                "$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi and Bluetooth firmware"
+	depends="linux-firmware-rtlwifi linux-firmware-rtl_bt firmware-rtl8723bt"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="11e95b4fb8a0739559a03a21d6ab63a158538b8d6f0a97e324723b62f9c2de800fa4bd9bd0783584d723ab286a44886e745cfe620fd308cef72c5e558f18651e  deviceinfo
+ef7d21144b8c33f80968a6a089dcc6b568abd54f66f30d21d5befc10e51217484440aa8edb1065cd871ffba7bc599f44502bb6d240ee01f59dc92706ec6eabfd  uboot-script.cmd
+c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
+f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf"
