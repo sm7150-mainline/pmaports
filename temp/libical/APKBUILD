@@ -1,0 +1,50 @@
+# Forked from Alpine until this fix is merged:
+# https://github.com/alpinelinux/aports/pull/6986
+pkgname=libical
+pkgver=3.0.4
+pkgrel=1
+pkgdesc="Reference implementation of the iCalendar format"
+url="https://libical.github.io/libical/"
+arch="all"
+license="LGPL MPL"
+depends=""
+# tzdata is needed for tests
+makedepends="db-dev perl cmake glib-dev icu-dev libxml2-dev tzdata"
+subpackages="$pkgname-dev"
+source="https://github.com/libical/libical/releases/download/v$pkgver/libical-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver/build"
+
+prepare() {
+	mkdir "$builddir"
+	default_prepare
+}
+
+build() {
+	cd "$builddir"
+	cmake .. \
+		-DCMAKE_RELEASE_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DSHARED_ONLY=true
+	make
+}
+
+check() {
+	cd "$builddir"
+	make test ARGS="-V"
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+# libical-dev needs db.h from db-dev, so depend on it
+# /usr/include/libical/icalss.h:492:10: fatal error: db.h: No such file or directory
+dev() {
+	default_dev
+	depends="$depends db-dev"
+}
+
+
+sha512sums="491a1dd0c33bb823a79165eb6e4f86ef048a44642adfe44f8e69c83598b458ddf8e4365b11afc37d0b21bc1367e0a99096fc7887aae29e7ff4e3bd1cdee64dd9  libical-3.0.4.tar.gz"
