@@ -18,6 +18,19 @@ void exit_userfriendly() {
 	exit(1);
 }
 
+bool argv_has_arg(int argc, char** argv, const char* arg) {
+	size_t arg_len = strlen(arg);
+
+	for (int i=1; i < argc; i++) {
+		if (strlen(argv[i]) < arg_len)
+			continue;
+
+		if (!memcmp(argv[i], arg, arg_len))
+			return true;
+	}
+	return false;
+}
+
 int main(int argc, char** argv) {
 	// we have a max of four extra args ("-target", "HOSTSPEC", "--sysroot=/", "-Wl,-rpath-link=/lib:/usr/lib"), plus one ending null
 	char* newargv[argc + 5];
@@ -25,6 +38,16 @@ int main(int argc, char** argv) {
 	char newExecutable[PATH_MAX];
 	bool isClang = (strcmp(executableName, "clang") == 0 || strcmp(executableName, "clang++") == 0);
 	bool startsWithHostSpec = (strncmp(HOSTSPEC, executableName, sizeof(HOSTSPEC) -1) == 0);
+
+	// linker is involved: just use qemu binary (to avoid broken cross-ld, pmaports#227)
+	if (!argv_has_arg(argc, argv, "-c")) {
+		snprintf(newExecutable, sizeof(newExecutable), "/usr/bin/%s", executableName);
+		if (execv(newExecutable, argv) == -1) {
+			fprintf(stderr, "ERROR: crossdirect: failed to execute %s: %s\n", newExecutable, strerror(errno));
+			fprintf(stderr, "NOTE: this is a foreign arch binary that would run with qemu (linker is involved).\n");
+			exit_userfriendly();
+		}
+	}
 
 	if (isClang || startsWithHostSpec) {
 	   snprintf(newExecutable, sizeof(newExecutable), NATIVE_BIN_DIR "/%s", executableName);
@@ -39,22 +62,7 @@ int main(int argc, char** argv) {
 		*newArgsPtr++ = HOSTSPEC;
 	}
 	*newArgsPtr++ = "--sysroot=/";
-	bool addrpath = true;
-	if (isClang) {
-		// clang gives a warning if the rpath parameter is passed when linker isn't invoked.
-		// to avoid this warning, only add if we're actually linking at least one library.
-		addrpath = false;
-		for (int i = 1; i < argc; i++) {
-			char* arg = argv[i];
-			if (strlen(arg) >= 2 && arg[0] == '-' && arg[1] == 'l') {
-				addrpath = true;
-				break;
-			}
-		}
-	}
-	if (addrpath) {
-		*newArgsPtr++ = "-Wl,-rpath-link=/lib:/usr/lib";
-	}
+
 	memcpy(newArgsPtr, argv + 1, sizeof(char*)*(argc - 1));
 	newArgsPtr += (argc - 1);
 	*newArgsPtr = NULL;
