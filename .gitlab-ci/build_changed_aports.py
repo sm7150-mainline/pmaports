@@ -117,8 +117,8 @@ def get_changed_packages():
 def check_build(packages):
     # Initialize build environment with less logging
     run_pmbootstrap(["build_init"])
-    run_pmbootstrap(["--details-to-stdout", "--no-crossdirect", "build",
-                     "--strict", "--force"] + list(packages))
+    run_pmbootstrap(["--details-to-stdout", "build", "--strict", "--force"] +
+                    list(packages))
 
 
 if __name__ == "__main__":
