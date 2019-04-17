@@ -29,10 +29,14 @@ _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
 	$_config
-	00_fix_return_address.patch
-	01_gpu-msm-fix-gcc5-compile.patch
-	02-Reduce-battery-and-touchscreen-log-spam.patch
-	0001-fix-video-argb-setting.patch
+	0001_fix_return_address.patch
+	0002_gpu-msm-fix-gcc5-compile.patch
+	0003-Reduce-battery-and-touchscreen-log-spam.patch
+	0004-fix-video-argb-setting.patch
+	0005-mdss_fb-Always-allow-to-allocate-map-framebuffer-mem.patch
+	0006-Fix-xt_connbytes-compile-warning.patch
+	0007-usb_gadget-set-random-rndis-host-MAC-address-to-prev.patch
+	0008-Backport-vfs-make-O_PATH-file-descriptors-usable-for.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
@@ -80,9 +84,13 @@ package() {
 		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
-sha512sums="a0ed01d4beb4fd1b304ea1409e4e3d7ff60662de34999dcdb2901cb10eef217a6679d5cc42dfcc9c3e2b9fb96bc38a8adc431444092310e22af29c7d581f60af  linux-samsung-klte-7a3b6080ee8d411acc2bb4a08de479aa8cc9c77a.tar.gz
+sha512sums="fb511bc90cbdef59b98547c644a8e85282eb8b8aaad08cb94e46fad4657e3c9d62e86ae7840152a8a21cf9f2b1e26c854ef1d3321c3269aa304093cb490d960e  linux-samsung-klte-fcdaf427a423de521f75831b1a49002b9d2a3fa5.tar.gz
 2e660d0ac4ffdd5f1a63660a8b61cf83e94122f15126b134a27f58b84fc5424ce4935ef43ca5bff1ec956047b77f7fb7f67e5c1ec976c67712444b370ae6373e  config-samsung-klte.armv7
-3b4913415bcfe0ff222969f993890c656c7e12b6ee06532bded485d5201c9855b2c87996c5b63423702b89b6b0ca214b5aceeb402571d9c5af084093c157ccb4  00_fix_return_address.patch
-0fc4b1782dfd3bd94fa9ae8ab74b19713f25e9f4a48dcf830072634f247aa3dd8847f001a3e87e9728e057657efd4ae751510e7c408d9b960c907665ca64e61f  01_gpu-msm-fix-gcc5-compile.patch
-b55fc9ab3e21bc85d66ee08d7e1cd7fdc3b236249212fbcd0055e60ed3e6cef3e4d2b8058a4b7d70c78b2bbc7a11111b55d4d82490b4e3579b8e61657806ac09  02-Reduce-battery-and-touchscreen-log-spam.patch
-a48336bbfead6ad0c84d2fce0c40a3f5530aebdff356a6835cceaf59a50a6f860d2f8027703a92927955fbb18857ba78788e010d017bf67730f069b36e96fe87  0001-fix-video-argb-setting.patch"
+3b4913415bcfe0ff222969f993890c656c7e12b6ee06532bded485d5201c9855b2c87996c5b63423702b89b6b0ca214b5aceeb402571d9c5af084093c157ccb4  0001_fix_return_address.patch
+0fc4b1782dfd3bd94fa9ae8ab74b19713f25e9f4a48dcf830072634f247aa3dd8847f001a3e87e9728e057657efd4ae751510e7c408d9b960c907665ca64e61f  0002_gpu-msm-fix-gcc5-compile.patch
+b55fc9ab3e21bc85d66ee08d7e1cd7fdc3b236249212fbcd0055e60ed3e6cef3e4d2b8058a4b7d70c78b2bbc7a11111b55d4d82490b4e3579b8e61657806ac09  0003-Reduce-battery-and-touchscreen-log-spam.patch
+a48336bbfead6ad0c84d2fce0c40a3f5530aebdff356a6835cceaf59a50a6f860d2f8027703a92927955fbb18857ba78788e010d017bf67730f069b36e96fe87  0004-fix-video-argb-setting.patch
+e3a9b75de461313ee6ba0e547d7fb97d77a749a11416c44b28110673d3a6f7b01305e74f67c06c8cfea97bde5d3d0cd98a457a03a63560125f5bb84f82f116e1  0005-mdss_fb-Always-allow-to-allocate-map-framebuffer-mem.patch
+6bdb3acd4a2d10d59ea16a2147735b94f17070aecebfe55fff724c03335bf1a02cc7539c9fe0a59cb944b6835135fe64956617c8b29847397b2f4df68b602063  0006-Fix-xt_connbytes-compile-warning.patch
+27f890cf82027649ba742b606a87ce6a82f9685b075bb7b50bffec77221e70434ee78d118d39048350537c5ecdad208658967e492eeeb997e7f6884fa78ac696  0007-usb_gadget-set-random-rndis-host-MAC-address-to-prev.patch
+a2bd1b925ba0e1ba0a68dcb134604abbaddf456426a468662d77bc02f0d09d4d07c0c89001c0973e690e1f7eb9c1cfdd37c2d99ed4cc62f3398582d6b51a7013  0008-Backport-vfs-make-O_PATH-file-descriptors-usable-for.patch"
