@@ -41,11 +41,26 @@ check_whether_exists()
 	fi
 }
 
+remove_existing_zip()
+{
+	if [ ! -e "$1" ]
+	then
+		return 0
+	fi
+	rm "$1"
+}
+
 BINARIES="/bin/busybox /bin/umount /sbin/cryptsetup /sbin/findfs /sbin/kpartx /sbin/mkfs.ext2 /sbin/mkfs.ext4 \
 	/usr/sbin/parted /usr/sbin/partprobe /bin/tar"
 # shellcheck disable=SC2086
 LIBRARIES=$(lddtree -l $BINARIES | awk '/lib/ {print}' | sort -u)
+ZIP_CONTENTS="chroot META-INF disable-warning pmos_chroot rootfs.tar.gz"
+ZIP_FILE="pmos-$DEVICE.zip"
+
 copy_files "$BINARIES" chroot/bin/
 copy_files "$LIBRARIES" chroot/lib/
 check_whether_exists rootfs.tar.gz
-zip -0 -r "pmos-$DEVICE.zip" .
+remove_existing_zip "$ZIP_FILE"
+# zip command can't take a list of files wrapped in quotes
+# shellcheck disable=SC2086
+zip -0 -r "$ZIP_FILE" $ZIP_CONTENTS

@@ -1,6 +1,6 @@
 pkgname=postmarketos-android-recovery-installer
 pkgver=0.1.10
-pkgrel=0
+pkgrel=1
 pkgdesc="TWRP compatible postmarketOS installer script"
 url="https://postmarketos.org"
 # multipath-tools: kpartx
@@ -34,7 +34,7 @@ package() {
 			"$pkgdir/var/lib/postmarketos-android-recovery-installer/chroot/bin/$file"
 	done
 }
-sha512sums="924f961e1a488134d265f43724d2b06a908ac1522706dc3f7118f0dec16453aa0a928fef6d9a31a6a747910df665e64f25c94c47a9e3f1d57db19abb0fd8210d  build_zip.sh
+sha512sums="cd3c4a4bb246d8e2480a9968d3519373ab55126a5b77e975ce53333ed39349194f1afb0dea472d62bdb0ffef1ac93bbadaf3de6362db47ef34c922a1e65c95db  build_zip.sh
 bb152e86ce420761dd2dca660552131610bb8f39cb7e30c75689aacc7cccddce17a90c998097f1b63b3d68a20f9c2c4823d8d591de156dff827381fe436f3b9d  update-binary
 38c21dc80aa2530fc06c2960c1318e07d068d403af02133f09ba227106a9b23fb77c3bed904e6135b048846f2733bd5d043235e5ab04598ed9c8fa45cbb15586  disable-warning.c
 2400d18734d08b3d2f5ec2fe4e802cdcacddea851644b47505eff1aac47302699c171b880bca55dd1704cc9cef9ac26082ac89cee802b6bf57ff8cf649373328  pmos_chroot
