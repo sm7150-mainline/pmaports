@@ -2,7 +2,7 @@
 pkgname="device-samsung-klte"
 pkgdesc="Samsung Galaxy S5"
 pkgver=0.2
-pkgrel=5
+pkgrel=6
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -12,6 +12,7 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="deviceinfo"
 
@@ -33,6 +34,12 @@ kernel_mainline() {
 	pkgdesc="For kernel development only (most features aren't working)"
 	depends="linux-postmarketos-qcom"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-klte"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="186911ec5eb189826aa515e467d95270adbb1ae0eef36133a1ec3928ddab38a1cbd1bbbeaf2965bc02f5b1d1b603e360229c54fd9118b40558ab9e8066a72448  deviceinfo"
