@@ -9,7 +9,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=2
+pkgrel=3
 
 arch="x86_64 armhf aarch64"
 pkgdesc="Linux for pmOS supported chipsets (mainline, more bleeding-edge than stable)"
@@ -159,28 +159,6 @@ dev() {
 	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
-
-	# cross-compiling: delete binaries with host arch and replace them with
-	# symlinks to binaries with the target arch (packaged in kernel-scripts)
-	if [ -n "$CROSS_COMPILE" ]; then
-		msg "Symlinking binary scripts..."
-		depends="$depends kernel-scripts"
-		local found="false"
-		cd "$dir/scripts"
-		local i
-		for i in $(find . -type f); do
-			local type="$(file -b --mime-type "$i")"
-			[ "$type" != "application/x-pie-executable" ] && continue
-			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
-			ln -svf "$native" "$i"
-			found="true"
-		done
-		if [ "$found" = "false" ]; then
-			error "Failed to symlink binary scripts!"
-			error "Did the mime-type change (see #1659)?"
-			return 1
-		fi
-	fi
 }
 sha512sums="4d9de340a26155a89ea8773131c76220cc2057f2b5d031b467b60e8b14c1842518e2d60a863d8c695f0f7640f3f18d43826201984a238dade857b6cef79837db  linux-4.17.tar.xz
 da3d10fd0206e006e0d4448624cb0d5de61dce1e80dcc5272b088fa7284d360e5bac464a369bbf5d06625fc20d73991ee81f09bb1c8c271eb45646d3ce7927e7  linux-v4.17-v4.18.patch

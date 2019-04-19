@@ -13,7 +13,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=0
+pkgrel=1
 
 arch="aarch64"
 pkgdesc="Google Pixel 3 XL mainline kernel; only USB networking works, nothing else"
@@ -164,28 +164,6 @@ dev() {
 	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
-
-	# cross-compiling: delete binaries with host arch and replace them with
-	# symlinks to binaries with the target arch (packaged in kernel-scripts)
-	if [ -n "$CROSS_COMPILE" ]; then
-		msg "Symlinking binary scripts..."
-		depends="$depends kernel-scripts"
-		local found="false"
-		cd "$dir/scripts"
-		local i
-		for i in $(find . -type f); do
-			local type="$(file -b --mime-type "$i")"
-			[ "$type" != "application/x-pie-executable" ] && continue
-			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
-			ln -svf "$native" "$i"
-			found="true"
-		done
-		if [ "$found" = "false" ]; then
-			error "Failed to symlink binary scripts!"
-			error "Did the mime-type change (see #1659)?"
-			return 1
-		fi
-	fi
 }
 sha512sums="027d5a16ca9299bc3b5b51c6a6e00295c6a31f1a0f01604482bcfc93f6ce87eaa1623998b560acd4980266deedce320f0a96cf6043905c7da8136925c8900fea  linux-google-crosshatch-mainline-b14ca253ec25cde39c7b07ac3a3542838672fc15.tar.gz
 947d7ca37c57335aae5137a9dc40e983c28ddd7f2bd4ef2ec21feb5d609809a6e96e52a989e1273f466ed8d655f717e84b649a81d0c4309d7d360172faa38e6d  config-google-crosshatch-mainline.aarch64"

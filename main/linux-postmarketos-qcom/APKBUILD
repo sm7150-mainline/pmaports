@@ -4,7 +4,7 @@ _config="config-${_flavor}.${CARCH}"
 pkgname=linux-${_flavor}
 
 pkgver=4.17_rc3
-pkgrel=9
+pkgrel=10
 
 arch="armhf armv7"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm devices"
@@ -160,28 +160,6 @@ dev() {
 	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
-
-	# cross-compiling: delete binaries with host arch and replace them with
-	# symlinks to binaries with the target arch (packaged in kernel-scripts)
-	if [ -n "$CROSS_COMPILE" ]; then
-		msg "Symlinking binary scripts..."
-		depends="$depends kernel-scripts"
-		local found="false"
-		cd "$dir/scripts"
-		local i
-		for i in $(find . -type f); do
-			local type="$(file -b --mime-type "$i")"
-			[ "$type" != "application/x-pie-executable" ] && continue
-			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
-			ln -svf "$native" "$i"
-			found="true"
-		done
-		if [ "$found" = "false" ]; then
-			error "Failed to symlink binary scripts!"
-			error "Did the mime-type change (see #1659)?"
-			return 1
-		fi
-	fi
 }
 sha512sums="02fd136d24914e30decd207c3b2e0168cc9d6e4a0fc981abf8d537cd95c70583f5239d0dc7f2ae94a2ddd2ba82d822933159167801a035731a24aa1300c5ceec  linux-09efb4857f1a4119eced855912043817bd96e064.tar.gz
 fc151402f33f947fdfb1a0f60f7dee621b2299678c14bbc2d3425c22b3300795cddfba8635f3d2d9a409ea506e825d00957bffe14d54cd14612d364a1d03529a  config-postmarketos-qcom.armhf
