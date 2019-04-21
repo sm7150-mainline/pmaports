@@ -1,17 +1,19 @@
 pkgname=lxc-android
-pkgver=1.0_git20180311
+pkgver=1.0_git20190315
 pkgrel=0
 arch="noarch"
 url="https://github.com/Halium/lxc-android"
 license="Apache"
 makedepends=""
 depends="lxc"
-_commit="f490b2cd0ca0498543089d79f15c24f3801cd8b7"
+_commit="9551443e5ab11d0d21cb544f681bcb7603b870de"
 install="$pkgname.post-install"
-source="$pkgname-$_rev.tar.gz::https://github.com/Halium/$pkgname/archive/$_commit.tar.gz
+source="$pkgname-$_commit.tar.gz::https://github.com/Halium/$pkgname/archive/$_commit.tar.gz
     pre-start.sh
+    lxcconfig.patch
     lxc-android.init"
 pkgdesc="Configuration for starting Halium build of Android inside LXC container"
+options="!check"
 
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -35,6 +37,7 @@ package() {
 	install -Dm755 "${srcdir}/lxc-android.init" \
 		"${pkgdir}/etc/init.d/lxc-android"
 }
-sha512sums="aed41538bc19fd228605bef4bf089a7bbc96964211abe5932e8685d089c32fce11fa7ba1068ad28f345895fef0d02dd388c4faef3c6abdbfbdd10ba96fcbbed0  lxc-android-.tar.gz
+sha512sums="348650f24464abb7a5d2b3e86e762efbdf770bf5f91d4fb12eb62290e3e29b94bcb91fac36cb0b550f4cb1ad9941b97ea7b7c44cccdf9af51d6b35233b6fe46d  lxc-android-9551443e5ab11d0d21cb544f681bcb7603b870de.tar.gz
 ef7081ea55a1acd5a6c5a973b4a7fc79bad4d5fdc721bc481e4ed92962a8ba9b70634e2a0a8f0afd28c14bd1fd4e1956914f68239c3dc34e41e167254252b1df  pre-start.sh
+7e8981ba9c779bf893dfddbe495dcaacfa43154748e21dd14fed2696d50b55807585d7168b79d73769d1381bb9974d7661479a303bacef883da0e0cf07dd0ad7  lxcconfig.patch
 ad373e26fb4850f887ca0be76a4c5f19115e214dcbdc315cf24e41eabfd03eebf8f19085a49c97661861b16e8005355c7fd10e86acdb4593d43250e3fed998fb  lxc-android.init"
