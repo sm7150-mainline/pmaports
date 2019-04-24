@@ -247,6 +247,8 @@
 
 		touchscreen-size-x = <720>;
 		touchscreen-size-y = <1440>;
+
+		touchscreen-inverted-x;
 	};
 };
 
@@ -281,6 +283,20 @@
 &mdio {
 	ext_rgmii_phy: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <1>;
+	};
+};
+
+&mmc1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc1_pins>;
+	vmmc-supply = <&reg_dcdc1>;
+	vqmmc-supply = <&reg_dldo4>;
+	bus-width = <4>;
+	non-removable;
+	status = "okay";
+
+	rtl8723bs: wifi@1 {
 		reg = <1>;
 	};
 };
