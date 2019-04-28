@@ -3,7 +3,7 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=5.0.0_git20190420
+pkgver=5.0.0_git20190426
 pkgrel=0
 
 arch="aarch64"
@@ -13,11 +13,10 @@ depends=""
 makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
 install=
-_commit="4b05d9617e12dc72882e652307effaaa25d1a468"
+_commit="4957078e8cae0186d92172528c5a5f403239db58"
 source="
 	${pkgname}-${_commit}.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/${_commit}/linux-${_commit}.tar.gz
 	config-${_flavor}.aarch64
-	dtb-add.patch
 	sun50i-a64-dontbeevil.dts
 "
 
@@ -86,7 +85,6 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-sha512sums="42818ce72ee8ca4d5017ac2ff1d1837bd7a39b34eabeff9aca8f616aa019fd97536e906e768c1673c6afecbbe05513991d05c01a835c8f0f9e8cfa794de42ea7  linux-postmarketos-allwinner-4b05d9617e12dc72882e652307effaaa25d1a468.tar.gz
-2d48abe7f7122b726cc02a7e6d9970dfe1a5fe5d35e6b4231de29e51fcca975cff7c6613ffb3bf9f4c1b991ee6c9ad309fc40bfd452d88e05fd4b69eaa9c419f  config-postmarketos-allwinner.aarch64
-3b5580adb3c8a4c88da5cd23d1cfdb7bfad9f544207c21d7d80b2086733460a627d9a49f4d67ac4b1d954f078af655580c7fa0b8d75980ea08df319ff3e757be  dtb-add.patch
-a063fdfc5fd67de8fd6daf21bc6815fe7b4422e20484761b425ce8bc72e50d1e16c2bcad81786c58781b603c82e390150fb7065c7fd678f18fe2622ee9230f67  sun50i-a64-dontbeevil.dts"
+sha512sums="61e3d0e1d46af80bb908bef36cfaa02f90915744cfada2cbb222b69a79ca54f447c94fbebc236ba3af909d83224cbd4ef2e8c2554f1af8e37424f011ebe67d51  linux-postmarketos-allwinner-4957078e8cae0186d92172528c5a5f403239db58.tar.gz
+f0202130524298d9d4aab22ac97a7a2913bfa8bc81906789e20ae16bfa1075d6a59e2de16b25235ceb40d107fc11f154fa744a7c0b8cf816eeab5a9f0df3784d  config-postmarketos-allwinner.aarch64
+260ef303ec9f50c2a46943ba0664130da0cd98ea21d536875bd6123f30b0c859af8cfdaad38c4b28ac17b0ce0baf87899ab248cc5a1580025594eae53f24a0a4  sun50i-a64-dontbeevil.dts"
