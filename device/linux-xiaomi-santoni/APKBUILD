@@ -1,7 +1,7 @@
 # Kernel config based on: arch/arm64/configs/santoni_defconfig
 pkgname="linux-xiaomi-santoni"
 pkgver=3.18.138
-pkgrel=0
+pkgrel=1
 pkgdesc="Xiaomi Redmi 4X kernel fork - msm-3.18 rebase"
 arch="aarch64"
 _carch="arm64"
@@ -17,11 +17,12 @@ HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="msm-3.18"
-_commit="427ad2094195e9cc991cff577febbf4b12f93293"
+_commit="956c047fa31074ee76088f3f673e9fe20e086b74"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/bitrvmpd/${_repository}/archive/${_commit}.tar.gz
 	fix-xorg-mdss-update-fb-info.patch
+	disable-substream-runtime-errors.patch
 	$_config
 "
 builddir="$srcdir/${_repository}-${_commit}"
@@ -69,6 +70,7 @@ package() {
 	fi
 }
 
-sha512sums="ea99e08ab18eb39526026aba81242aeda710ec20df731a65017d90ba5b4ba47a22ea38c439572e3e37c6180d1a7d92ceb58e2d2f1d6de18d887b17f5e2175505  linux-xiaomi-santoni-427ad2094195e9cc991cff577febbf4b12f93293.tar.gz
+sha512sums="c3b48b61a51a1294f3520086a70b5f2b9fa3c1bcb61febadcb334a46abbea3e05df2ab60eb969552fe605373bde586b64ab78e2fd1a77d6a37bbfcb08d395ad5  linux-xiaomi-santoni-956c047fa31074ee76088f3f673e9fe20e086b74.tar.gz
 a277af28a718f5caf94257005393aa92d62c96110a8ec6368ff62f2e0d871b69c56c4ce00174db637204d53fa63ad3a79b8d6141713dca0878e1f06fe0379caa  fix-xorg-mdss-update-fb-info.patch
-faa75f246dae87d7db2e5f35059691194dfce5cb15e0f1d1b94d72a1ff244390373534cc39ccb5795bd3d9bcf5f6b91ade8f547b30119189a01e560af40e7208  config-xiaomi-santoni.aarch64"
+14ee08e4f93befeaabfb35e6bf0b8bb5b2eecba1c21ce4498499c377c2cf4d5fccbfe85e14ca92c704d067386ec08a06805ab886f0ec7691471cf379838545aa  disable-substream-runtime-errors.patch
+cda421f78eb8117f7f0ec94ca9d3d7d0ff6c221c0bee1c1cbf9e6f1acacb56e4c37e35760c9b3d6150ab590f9b28066315d415c7331d9ee914132d2d2dd8a6a0  config-xiaomi-santoni.aarch64"
