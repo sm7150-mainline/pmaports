@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-mobile
 pkgver=1
-pkgrel=28
+pkgrel=29
 pkgdesc="(Wayland) Mobile variant of KDE Plasma, optimized for touchscreen (slow without hardware acceleration!)"
 url="https://wiki.postmarketos.org/wiki/Plasma_Mobile"
 arch="noarch"
@@ -10,7 +10,7 @@ license="GPL-3.0-or-later"
 # dbus-x11 provides dbus-launch
 depends="plasma-phone-components dbus dbus-x11 plasma-settings breeze-icons kscreen qt5-qtvirtualkeyboard pulseaudio pulseaudio-utils consolekit2 powerdevil polkit-kde-agent kwayland-integration postmarketos-artwork-wallpapers qmlkonsole plasma-angelfish pix index plasma-camera postmarketos-demos"
 install="$pkgname.post-install"
-source="start_plasma.sh kwinrc kdeglobals qtlogging.ini org.kde.phone.homescreen.js"
+source="start_plasma.sh kwinrc kdeglobals qtlogging.ini org.kde.phone.homescreen.js unlock-plasma"
 options="!check"
 
 package() {
@@ -19,7 +19,7 @@ package() {
 
 	install -D -m644 "$srcdir"/kwinrc \
 		"$pkgdir"/etc/xdg/kwinrc
-	
+
 	install -D -m644 "$srcdir"/kdeglobals \
 		"$pkgdir"/etc/xdg/kdeglobals
 
@@ -28,9 +28,13 @@ package() {
 
 	install -D -m644 "$srcdir"/org.kde.phone.homescreen.js \
 		"$pkgdir"/usr/share/plasma/look-and-feel/org.kde.plasma.phone/contents/plasmoidsetupscripts/org.kde.phone.homescreen.js
+
+	install -D -m755 "$srcdir"/unlock-plasma \
+		"$pkgdir"/usr/bin/unlock-plasma
 }
 sha512sums="dcd92bb600895533858a55df705c832a3bd369d1e536f61d4a52b7eacd9cc4c9071b4bab38261226780b158949516fc4a209b022ff70660f2c01116ae5f06539  start_plasma.sh
 a95d3bbd1e8051c9b394ad7a26e4beb2d1be8d3c38189819da61fd42b1c7fd3948c4737bc9246eee23eaf5fd9451cd6362fb06442f3d8f967f930d3bcc5cfbe9  kwinrc
 93d6c3e76b6e8d3c8c5424fcb921595ad3569e1aba1b03255b977230b33146dc73a97327e455e8a539018cb02c3bf1a700dd951622f798b50f36c5d381a1b342  kdeglobals
 341f0b866c315f37868ef3e7137cce8b53a0e8e6164e5af71b3e8e2fa68321afbf0652d76124ef84bade1393f701748852ac939aef9daff7e272a0df827780eb  qtlogging.ini
-50dbb5e0b1550776ca6fc5b91468412b23d49aa502af77cf7d5d15af11eaf61b1632b205f42eac3274bf28a0b7b278a4d6bfc98c6c12ea29830fd258bad5107d  org.kde.phone.homescreen.js"
+50dbb5e0b1550776ca6fc5b91468412b23d49aa502af77cf7d5d15af11eaf61b1632b205f42eac3274bf28a0b7b278a4d6bfc98c6c12ea29830fd258bad5107d  org.kde.phone.homescreen.js
+41d6774c09a7f14b95ddae6df85d22c6f78960574e70e1ae653616b04f18182750aecdb66ca5c8c4b86d36845b8ab3d0d7820d86459f7967d389178108fc947f  unlock-plasma"
