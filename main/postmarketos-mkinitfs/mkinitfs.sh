@@ -192,9 +192,10 @@ replace_init_variables()
 create_cpio_image()
 {
 	cd "$1"
+	[ -z "$deviceinfo_initfs_compression" ] && deviceinfo_initfs_compression='gzip -1'
 	find . -print0 \
 		| cpio --quiet -o -H newc \
-		| gzip -1 > "$2"
+		| $deviceinfo_initfs_compression > "$2"
 }
 
 # Required command check with useful error message
