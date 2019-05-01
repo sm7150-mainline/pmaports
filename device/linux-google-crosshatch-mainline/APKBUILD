@@ -7,13 +7,13 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=5.0_rc5
+pkgver=5.1_rc7
 _pkgver=${pkgver/_/-}
 _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=1
+pkgrel=0
 
 arch="aarch64"
 pkgdesc="Google Pixel 3 XL mainline kernel; only USB networking works, nothing else"
@@ -24,7 +24,7 @@ options="!strip !check !tracedeps"
 install=
 
 _repository="linux"
-_commit="b14ca253ec25cde39c7b07ac3a3542838672fc15"
+_commit="35ce53723a6f7eb8506f4f67062f15f573e5ce46"
 
 source="
         $pkgname-$_commit.tar.gz::https://github.com/Pixel3Dev/${_repository}/archive/${_commit}.tar.gz
@@ -165,5 +165,5 @@ dev() {
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
 }
-sha512sums="027d5a16ca9299bc3b5b51c6a6e00295c6a31f1a0f01604482bcfc93f6ce87eaa1623998b560acd4980266deedce320f0a96cf6043905c7da8136925c8900fea  linux-google-crosshatch-mainline-b14ca253ec25cde39c7b07ac3a3542838672fc15.tar.gz
-947d7ca37c57335aae5137a9dc40e983c28ddd7f2bd4ef2ec21feb5d609809a6e96e52a989e1273f466ed8d655f717e84b649a81d0c4309d7d360172faa38e6d  config-google-crosshatch-mainline.aarch64"
+sha512sums="0775a75fcaa97cd3cbfc387657a547ffdab2e358f7fb4d4ed77f182acd71863298e92d16adcca1663a19f9c2c986256cd0f0069fde82a974ac64b6320be001d5  linux-google-crosshatch-mainline-35ce53723a6f7eb8506f4f67062f15f573e5ce46.tar.gz
+81e5af85a0b75caed13cd1fb5f5866c13df86ae22601d2eb0bba4195f72aab4ed78ef8a88bec2cd2554d3543c0fd58e87cfbf6fa6cac2d955a4b031fa387c0b8  config-google-crosshatch-mainline.aarch64"
