@@ -3,9 +3,9 @@
 
 pkgname="linux-fairphone-fp1"
 pkgver=3.4.5
-pkgrel=2
+pkgrel=3
 pkgdesc="Fairphone 1 kernel fork"
-arch="armhf"
+arch="armv7"
 _carch="arm"
 _flavor="fairphone-fp1"
 url="https://kernel.org"
@@ -22,20 +22,21 @@ fi
 
 # Source
 _repository="android_kernel_fairphone_FP1"
-_commit="f1a2a1f0b862cb96c669881cd31ba7729e31d90f"
+_commit="328160cf6ddec4ad417cdf648b61d26cc09f9e73"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/z3ntu/${_repository}/archive/${_commit}.tar.gz
 	$_config
 "
-builddir="$srcdir/${_repository}-${_commit}/kernel"
+builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
 	default_prepare
-	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+	downstreamkernel_prepare "$srcdir" "$builddir"/kernel "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
+	cd "$builddir"/kernel
 	unset LDFLAGS
 	TARGET_BUILD_VARIANT=user TARGET_PRODUCT=ahong89_wet_jb2 \
 		make ARCH="$_carch" CC="${CC:-gcc}" \
@@ -44,15 +45,15 @@ build() {
 
 package() {
 	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
+	install -D "$builddir/kernel/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-	cd "$builddir/arch/$_carch/boot"
+	cd "$builddir/kernel/arch/$_carch/boot"
 	# Add mediatek header to zImage
 	mtk-mkimage KERNEL zImage zImage-mtk
 	# Install modified zImage
 	install -Dm644 zImage-mtk "$pkgdir/boot/vmlinuz-$_flavor"
 }
 
-sha512sums="00f02c71ed097ba40530c000df24539234fab110d08477578ed31bd6f6c92cff2d48611e01dccba6cb54aaf83b0739df27c9684112eb7d89e21a47e538b56b8b  linux-fairphone-fp1-f1a2a1f0b862cb96c669881cd31ba7729e31d90f.tar.gz
-425d550de5aca702e269b30f2e4e9104757ade36bc9a307c023089dcb14e294a37a720070b39eb42b4ffbab4154624d40f2c883f624abc99cf08ac9670027222  config-fairphone-fp1.armhf"
+sha512sums="9ab967c0635dc5b3dca457725d25b44cfc391cb8fb5b9417fe5d6636131aecdf36575375f6151496d5269aaaf14cf15a4580aaee6a4699f0644822af66efba06  linux-fairphone-fp1-328160cf6ddec4ad417cdf648b61d26cc09f9e73.tar.gz
+425d550de5aca702e269b30f2e4e9104757ade36bc9a307c023089dcb14e294a37a720070b39eb42b4ffbab4154624d40f2c883f624abc99cf08ac9670027222  config-fairphone-fp1.armv7"
