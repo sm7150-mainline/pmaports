@@ -1,32 +1,27 @@
 pkgname=kmscube
-pkgver=1.0
+pkgver=0_git20181211
 pkgrel=0
 pkgdesc="Simple demo for testing kernel modesetting support"
-url="https://cgit.freedesktop.org/mesa/kmscube/"
+url="https://gitlab.freedesktop.org/mesa/kmscube"
 arch="all"
 license="MIT"
 depends="libdrm"
-makedepends="mesa-dev autoconf automake"
-_hash="0d8de4ce3a03f36af1817f9b0586d132ad2c5d2e"
-source="https://cgit.freedesktop.org/mesa/kmscube/snapshot/${_hash}.tar.gz"
-builddir="$srcdir/${_hash}"
+makedepends="mesa-dev meson"
+_commit="572b93d7080f1c089b8c236ad0bc932859e2712d"
+source="https://gitlab.freedesktop.org/mesa/kmscube/-/archive/${_commit}/kmscube-${_commit}.tar.gz"
+builddir="$srcdir/kmscube-${_commit}"
 
 build(){
 	cd "$builddir"
-	./autogen.sh
-	./configure \
-		--build=$CBUILD \
-		--host=$CHOST \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--mandir=/usr/share/man \
-		--localstatedir=/var
-	make
+	meson \
+		-Dprefix=/usr \
+		build
+	ninja -C build
 }
 
 package() {
-	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	cd "$builddir"/build
+	DESTDIR="$pkgdir" ninja install
 }
 
-sha512sums="5316973de5752aa02a10124900ffa92b950a045626ad68817515143e756da37c38dfaae18e3874791eca2aa094b7f51818dac60a44929c117177f65eea04d835  0d8de4ce3a03f36af1817f9b0586d132ad2c5d2e.tar.gz"
+sha512sums="235e00111dbbcf8b333fa118b3aabafb903409019e438e357a8d8e622687f216d67c331a41c19ccc251722d40b7f45321fcd0c1dc8cc8741d70aab2b464bedab  kmscube-572b93d7080f1c089b8c236ad0bc932859e2712d.tar.gz"
