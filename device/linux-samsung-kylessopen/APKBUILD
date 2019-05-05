@@ -1,57 +1,39 @@
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/franken_defconfig
 
 pkgname="linux-samsung-kylessopen"
 pkgver=3.0.101
-pkgrel=3
-pkgdesc="Galaxy Trend kernel fork"
+pkgrel=4
+pkgdesc="Samsung Galaxy Trend kernel fork"
 arch="armhf"
 _carch="arm"
 _flavor="samsung-kylessopen"
 url="https://kernel.org"
-license="GPL2"
+license="GPL-2.0-only"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev lzo xz gcc6"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev lzo xz"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-# Source
-_repository="FrankenKernel"
+# Source: backup of https://github.com/pavlepiramida/FrankenKernel
+_kernel="pavlepiramida-frankenkernel"
 _commit="d0e853abec2d7be79f5d9b319273a0b66046b125"
 _config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/pavlepiramida/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://gitlab.com/samsung-kylessopen-kernels/$_kernel/-/archive/$_commit/$_kernel-$_commit.tar.gz
 	$_config
-	compiler-gcc6.h
 	gcc5.patch
 	0001-fix-video-argb-setting.patch
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_kernel-$_commit"
 
 prepare() {
 	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	local i
-	local makefiles="$(find . -type f -name Makefile)
-		$(find . -type f -name Kbuild)"
-	for i in $makefiles; do
-		sed -i 's/-Werror-/-W/g' "$i"
-		sed -i 's/-Werror//g' "$i"
-	done
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/.config
-	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
@@ -78,14 +60,11 @@ package() {
 		error "Could not find zImage in $PWD!"
 		return 1
 	fi
-	echo "--[ Installing modules ]--"
-	cd "$builddir"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		INSTALL_MOD_PATH="$pkgdir" KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" modules_install
 }
 
-sha512sums="22c89caaae880c64fb1a9e25ff5c65813b4bfa9a27ca4310fe9da17c4a1bfff2b49b4516f48fd30a4ccb1a185fc525b0c5967b4f18bfd3c2f8cfce66c8a268bd  linux-samsung-kylessopen-d0e853abec2d7be79f5d9b319273a0b66046b125.tar.gz
+sha512sums="874957ad6a6c959b5479ece21225d9423f62e67a6a4c1f9a9e56d0c6078b6644a4ff2e490c7e43a8ef5241b148af6085b041f02268586cf8c61b1eacfd3511ad  linux-samsung-kylessopen-d0e853abec2d7be79f5d9b319273a0b66046b125.tar.gz
 b28a411506adb2540c3de93b4d7529d25efb96ab93b31417bd78c4deea3b1e4f63bd4240d090dd27c54040e9c937a27bc8702d471be414722265d2dbd1cf4630  config-samsung-kylessopen.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 db5d16e03a93b453c98882dcd08b7a4cd96c126393365d8916d9cf045e8725831f70ea841756526af7bead36a74301024e3c569c438442906e079fea2ac0a022  gcc5.patch
-e3083c260ed9c4fc0d83f43106700b6173876dbfae072f6e6696ac6785a4dc17771fbcb3e21601e04ed29a11bf0f7a2a09ad549375e0c34cea245c7f2e2bcbbd  0001-fix-video-argb-setting.patch"
+e3083c260ed9c4fc0d83f43106700b6173876dbfae072f6e6696ac6785a4dc17771fbcb3e21601e04ed29a11bf0f7a2a09ad549375e0c34cea245c7f2e2bcbbd  0001-fix-video-argb-setting.patch
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"
