@@ -1,0 +1,83 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: <https://git.archlinux.org/svntogit/packages.git/plain/trunk/config?h=packages/linux>
+
+pkgname="linux-chuwi-hi10plus"
+pkgver=5.1
+pkgrel=0
+pkgdesc="Chuwi Hi10 Plus mainline kernel"
+arch="x86_64"
+_carch="x86"
+_flavor="chuwi-hi10plus"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps !pmb:kconfigcheck"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
+	     devicepkg-dev bison flex openssl-dev xz coreutils findutils"
+subpackages="$pkgname-dev"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="linux"
+_commit="e93c9c99a629c61837d5a7fc2120cd2b6c70dbdd"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/torvalds/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	0001-input-touchscreen-gslx680_ts_acpi-Add-driver-from-on.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	REPLACE_GCCH=0 \
+		downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+	cd "$builddir"
+
+	make -j1 modules_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+
+}
+
+dev() {
+    cd $builddir
+    
+    # https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.txt
+    make -j1 headers_install \
+        ARCH="$_carch" \
+        INSTALL_HDR_PATH="$subpkgdir"/usr
+}
+
+sha512sums="a2a4463056bbec1187f2a113e514dd58ed8f8e74a4c6dbe4477ba635c12d8a8bc50d431168579ee22f720ef799b21033ea52425a0c0a79849a96783545034ff5  linux-chuwi-hi10plus-e93c9c99a629c61837d5a7fc2120cd2b6c70dbdd.tar.gz
+b477c78f842961ac1887bbaf8018030e1e9a1ff865a36e57784427884695fa923aa314d0d4abc1ebd48b2b08f18e0b0ecd9280975933eace521715a55f80c342  config-chuwi-hi10plus.x86_64
+a545d9a0cab4b30ed1a012a6a3a27df3dd9d44d096d0832c938ba5a14c54bc5c7a9cce12fe7b5a6797db676f6275b1308a2febb715a4faf653eb3c1ee3a32857  0001-input-touchscreen-gslx680_ts_acpi-Add-driver-from-on.patch"
