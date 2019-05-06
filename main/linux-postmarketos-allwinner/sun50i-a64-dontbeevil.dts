@@ -64,8 +64,8 @@
 
 	i2c-csi {
 		compatible = "i2c-gpio";
-		sda-gpios = <&pio 4 13 GPIO_ACTIVE_HIGH>; /* CSI0-SDA: PE13 */
-		scl-gpios = <&pio 4 12 GPIO_ACTIVE_HIGH>; /* CSI0-SCK: PE12 */
+		sda-gpios = <&pio 4 13 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* CSI0-SDA: PE13 */
+		scl-gpios = <&pio 4 12 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* CSI0-SCK: PE12 */
 		i2c-gpio,delay-us = <5>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -239,11 +239,13 @@
 	ft6236@38 {
 		compatible = "focaltech,ft6236", "edt,edt-6236";
 		reg = <0x38>;
-		// pinctrl-names = "default";
-		// pinctrl-0 = <&pinctrl_lcd_ctp_int>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&touch_intr_pin>;
 
 		interrupt-parent = <&pio>;
 		interrupts = <7 4 IRQ_TYPE_EDGE_FALLING>;
+		irq-gpios = <&pio 7 4 GPIO_ACTIVE_LOW>;
 
 		touchscreen-size-x = <720>;
 		touchscreen-size-y = <1440>;
@@ -251,6 +253,16 @@
 		touchscreen-inverted-x;
 	};
 };
+
+&pio {
+       touch_intr_pin: touch_intr_pin {
+               pins = "PH4";
+               // TODO: perhaps remove this bias
+               bias-pull-up;
+               function = "irq";
+       };
+};
+
 
 &i2c1 {
 	pinctrl-names = "default";
@@ -269,7 +281,7 @@
 		compatible = "st,lis3mdl-magn";
 		reg = <0x1e>;
 		interrupt-parent = <&pio>;
-		interrupts = <1 1 IRQ_TYPE_EDGE_FALLING>; /* PB1 */
+		interrupts = <1 1 IRQ_TYPE_EDGE_RISING>; /* PB1 */
 	};
 
 	stk3335@47 {
