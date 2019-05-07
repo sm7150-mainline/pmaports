@@ -1,9 +1,9 @@
 # Forked from Alpine to build Purism's source tree with vivante GPU related patches
 pkgname=mesa-purism-gc7000
 provides=mesa
-pkgver=19.0.0_git20190129
-pkgrel=1
-_sha="5d0e960787295fbd188692bdae8fe14cebfc4ef6"
+pkgver=19.0.0_git20190403
+pkgrel=0
+_sha="d6d5b5401ea604dc2e5e5c3ef50d7df2ff4a6f38"
 pkgdesc="Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
 arch="aarch64"
@@ -11,7 +11,6 @@ license="MIT SGI-B-2.0 BSL-1.0"
 subpackages="
 	$pkgname-dev
 	$pkgname-dri-etnaviv:_dri
-	$pkgname-dri-imx:_dri
 	$pkgname-dri-swrast:_dri
 	$pkgname-glapi $pkgname-egl $pkgname-gl $pkgname-gles
 	$pkgname-osmesa $pkgname-gbm
@@ -61,8 +60,10 @@ source="
 replaces="mesa-dricore"
 
 _dri_driverdir=/usr/lib/dri
-_dri_drivers="swrast"
-_gallium_drivers="swrast,imx,etnaviv"
+_dri_driverdir_x11=/usr/lib/xorg/modules/dri
+_dri_drivers=""
+_gallium_drivers="swrast,kmsro,etnaviv"
+_vulkan_drivers=""
 _arch_opts=
 
 builddir="$srcdir/mesa-${_sha}"
@@ -75,8 +76,8 @@ build() {
 	mkdir "$builddir"/build
 	meson -Ddri-search-path="$_dri_driverdir" \
 		-Dgallium-drivers="$_gallium_drivers" \
-		-Ddri-drivers= \
-		-Dvulkan-drivers= \
+		-Ddri-drivers="$_dri_drivers" \
+		-Dvulkan-drivers="$_vulkan_drivers" \
 		-Dplatforms=x11,wayland,drm \
 		-Ddri3=true \
 		-Degl=true \
@@ -98,7 +99,7 @@ package() {
 
 egl() {
 	pkgdesc="Mesa libEGL runtime libraries"
-	replaces="mesa"
+	replaces="$pkgname"
 
 	install -d "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libEGL.so* "$subpkgdir"/usr/lib/
@@ -106,7 +107,7 @@ egl() {
 
 gl() {
 	pkgdesc="Mesa libGL runtime libraries"
-	replaces="mesa"
+	replaces="$pkgname"
 
 	install -d "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libGL.so* "$subpkgdir"/usr/lib/
@@ -122,7 +123,7 @@ glapi() {
 
 gles() {
 	pkgdesc="Mesa libGLESv2 runtime libraries"
-	replaces="mesa"
+	replaces="$pkgname"
 
 	install -d "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libGLES*.so* "$subpkgdir"/usr/lib/
@@ -138,7 +139,7 @@ osmesa() {
 
 gbm() {
 	pkgdesc="Mesa gbm library"
-	replaces="mesa"
+	replaces="$pkgname"
 
 	install -d "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libgbm.so.* "$subpkgdir"/usr/lib/
@@ -146,11 +147,15 @@ gbm() {
 
 _mv_dri() {
 	install -d "$subpkgdir"/$_dri_driverdir
+	install -d "$subpkgdir"/$_dri_driverdir_x11
 
 	while [ $# -gt 0 ]; do
 		mv "$pkgdir"/$_dri_driverdir/${1}.so \
 			"$subpkgdir"/$_dri_driverdir/
 		shift
+
+		ln -s $_dri_driverdir/${1}.so \
+			"$subpkgdir"/$_dri_driverdir_x11/${1}.so
 	done
 }
 
@@ -195,15 +200,12 @@ _dri() {
 		_mv_dri swrast_dri kms_swrast_dri && _mv_gpipe swrast
 	;;
 	etnaviv)
-		_mv_dri etnaviv_dri
-		;;
-	imx)
-		_mv_dri imx-drm_dri
+		_mv_dri etnaviv_dri imx-drm_dri
 		;;
 	esac
 }
 
-sha512sums="2aa17f26a4dc31370a07d95dec72f8730ec1671e2d97e5fd151aa6d9e80e2453fdff5a94dbfd11defb9fadc1d6bc2bf333048f46d6b834f9995222c38369d208  mesa-5d0e960787295fbd188692bdae8fe14cebfc4ef6.tar.gz
+sha512sums="3ea07b0364538eac64f10ed9a10f3eb82b7aca1083b096401e114a73371f930535d05d290befeca79c5b9027c34efab0e314a16429837dff4f678ef59f2ffb1c  mesa-d6d5b5401ea604dc2e5e5c3ef50d7df2ff4a6f38.tar.gz
 cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  10-adjust-cache-deflate-buffer.patch
 02db65893d55b5667d9c3bc193fc089e5408596431e06363fe2adea00c9e3c4e80612f3d03dc61f931d1a6ae04340bccf55e1376cf00bbf2433990713649d286  20-musl.patch
 a7bbc0d8836fe5eb7220c7b41d8af439878a3876302de32739243232f979ea9c63d2069fcd78bef370eafef0a21f491ef99219ae686e965326475764244bbe5d  meson-add-toggle-for-TLS-support-in-GLX.patch"
