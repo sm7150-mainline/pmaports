@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Enable udev OpenRC services and runlevels
 # https://github.com/alpinelinux/aports/blob/master/main/eudev/setup-udev
@@ -22,10 +22,16 @@ done
 mkdir -p /run/openrc
 touch /run/openrc/shutdowntime
 
+# Replace a config file from stock Alpine, unless apk reports that the user has
+# modified it (note that this does not allow properly updating these configs
+# when postmarketos-base gets updated yet, see issue pmaports#258).
 write_unless_modified() {
 	# Redirect the stdin to the file unless it has been modified
 	# $1: file path
-	if ! apk audit "$(dirname "$1")" | grep -q "${1:1}"; then
+	if apk audit "$(dirname "$1")" | grep -q "${1:1}"; then
+		echo "- NOT modifying (file was changed before): $1"
+	else
+		echo "- Modifying: $1"
 		cat > "$1"
 	fi
 }
@@ -58,25 +64,24 @@ write_unless_modified() {
 	echo ''
 } | write_unless_modified /etc/motd
 
-# Change wpa_supplicant into dbus mode and enable both drivers
-{
-	echo 'wpa_supplicant_args="-u -Dnl80211,wext"'
-} | write_unless_modified /etc/conf.d/wpa_supplicant
-touch /etc/wpa_supplicant/wpa_supplicant.conf
-
 # Enable syslog to SHM. Note: size is 4048KiB, which *should* be More Than Enough(TM) for all but the most chattiest of devices.
+echo "- Modifying: /etc/conf.d/syslog"
 sed s/=\"/=\""-C4048 "/  -i /etc/conf.d/syslog
 
-# Enable wext, nl80211 & dbus control for wpa_supplicant
-if ! grep -q Dwext /etc/conf.d/wpa_supplicant; then
-	sed -i 's/wpa_supplicant_args=\"/wpa_supplicant_args=\" -u -Dwext,nl80211/' /etc/conf.d/wpa_supplicant
+# Enable nl80211,wext & dbus control for wpa_supplicant
+if ! grep -q Dnl80211,wext /etc/conf.d/wpa_supplicant; then
+	echo "- Modifying: /etc/conf.d/wpa_supplicant"
+	sed -i 's/wpa_supplicant_args=\"/wpa_supplicant_args=\" -u -Dnl80211,wext/' \
+		/etc/conf.d/wpa_supplicant
 fi
 touch /etc/wpa_supplicant/wpa_supplicant.conf
 
 # Enable the 'wheel' group
+echo "- Modifying: /etc/sudoers"
 sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
 
 # Set chrony to quickly correct system time on first boot, if necessary
 if ! grep -q "makestep" /etc/chrony/chrony.conf; then
+	echo "- Modifying: /etc/chrony/chrony.conf"
 	echo "makestep 1 -1" >> /etc/chrony/chrony.conf
 fi
