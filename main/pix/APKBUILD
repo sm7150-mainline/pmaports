@@ -1,26 +1,30 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=pix
-pkgver=0_git20190105
+pkgver=0_git20190423
 pkgrel=0
-_commit="9a4543b1ea31c8317a557f3e97e2437e5e625f82"
+_commit="63d0aab7d656426cabcd82dd0f3643e92fac7d7d"
 pkgdesc="Image gallery manager built with MauiKit"
 arch="all"
 url="https://github.com/mauikit/pix"
 license="GPL-3.0"
 depends="mauikit"
-makedepends="qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
 source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
 options="!check" # No tests available
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	qmake-qt5
+	cd "$builddir"
+	cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 package() {
 	cd "$builddir"
-	make INSTALL_ROOT="$pkgdir" install
+	DESTDIR="$pkgdir" make install
 }
-sha512sums="b4e641e5e0874b07da0add3d96473fecb5f11e240a3e55d33beb4da3ba78c6dacf872949fbbe127394c779c996da7920bfe1409bdda8782cf815c1f9116e961f  pix-9a4543b1ea31c8317a557f3e97e2437e5e625f82.tar.gz"
+sha512sums="48befb1dc8f914d7dd76fccfbcfe4987e99d25a85aeca923250a4705fdc342076e98cbf71ac1cf412082c78b9c82bef4745b6961e4e26e9b86fcb949c1dbf9f4  pix-63d0aab7d656426cabcd82dd0f3643e92fac7d7d.tar.gz"
