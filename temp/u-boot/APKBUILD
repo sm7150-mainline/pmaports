@@ -1,41 +1,41 @@
 # Contributor: He Yangxuan <yangxuan8282@gmail.com>
-# Contributor: William Pitcock <nenolod@dereferenced.org>
+# Contributor:
 # Contributor: Timo Teras <timo.teras@iki.fi>
 # Maintainer: Leonardo Arena <rnalrd@alpinelinux.org>
 pkgname=u-boot
-pkgver=2019.01
+pkgver=2019.04
 pkgrel=0
-_atfversion="f0bfe15b81e50c6561a3a9a8e269db0267778910"
+_atfversion="2.1"
 pkgdesc="u-boot bootloader common files"
 url="http://www.denx.de/wiki/U-Boot/"
 arch="armhf armv7 aarch64"
 license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
 	ISC LGPL-2.0-only LGPL-2.1-only X11"
-options="!tracedeps"
-depends=""
-depends_dev=""
-makedepends="$depends_dev bc dtc python2-dev swig binutils coreutils bison flex"
-install=""
+makedepends="$depends_dev bc dtc python2-dev swig bison flex"
 source="http://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
-	arm-trusted-firmware-${_atfversion}.tar.gz::https://github.com/ARM-software/arm-trusted-firmware/archive/${_atfversion}.tar.gz
+	arm-trusted-firmware-${_atfversion}.tar.gz::https://github.com/ARM-software/arm-trusted-firmware/archive/v${_atfversion}.tar.gz
 	README.txt
 	update-u-boot
 	"
 builddir="$srcdir"/u-boot-${pkgver//_/-}
 atfbuilddir="$srcdir"/arm-trusted-firmware-${_atfversion}
+options="!tracedeps"
 
 case "$CARCH" in
 arm*) board_configs="
-	beagleboard:am335x_boneblack
+	beagleboard:am335x_boneblack_vboot
 	cubieboard:Cubieboard,Cubieboard2
 	cuboxi:mx6cuboxi
 	raspberrypi:rpi_0_w,rpi,rpi_2,rpi_3_32b
 	wandboard:wandboard
+	qemu:qemu_arm
 	";;
 aarch64) board_configs="
 	thunderx:thunderx_88xx
 	raspberrypi:rpi_3
 	odroid:odroid-c2
+	libretech:libretech-cc
+	qemu:qemu_arm64
 	pine64:pine64-lts
 	";;
 esac
@@ -48,10 +48,9 @@ subpackages="$pkgname-all:_all $_allboards"
 
 build() {
 	if [ "$CARCH" = "aarch64" ]; then
-		export LDFLAGS=""
 		msg "Building ARM trusted firmware for allwinner"
 		cd "$atfbuilddir"
-		make PLAT=sun50i_a64 DEBUG=1 bl31
+		LDFLAGS="" make PLAT=sun50i_a64 DEBUG=1 bl31
 		export BL31="$atfbuilddir"/build/sun50i_a64/debug/bl31.bin
 		# Sanity check $BL31
 		if [ ! -f "$BL31" ]; then
@@ -124,7 +123,7 @@ for board_config in $board_configs; do
 	eval "${_board}() { _split_boards $_board ${_configs//,/ }; }"
 done
 
-sha512sums="d9699cd22afe9bc747d64208068c2cf8a2c3143d161ede24536f6fd6adfd6b81e28920589722639e2e48fcf34e8dbde3ead7f691f14cbcc38cd75694d14d719b  u-boot-2019.01.tar.bz2
-732b806bf3a612ded9351226c8fae78d02741220034009350be1c2237341584bcb366c0db2a19b64e4548e9a720d9380d1240680459b831943d3936077eecb13  arm-trusted-firmware-f0bfe15b81e50c6561a3a9a8e269db0267778910.tar.gz
+sha512sums="357fe94b5b043885472ea1b7dcbbac601d0c1f7c64f71026b9e1279b53160847c6478d6ec98a2f678e562db21e39037d6e6fbc1e6b19beaac02ca14e93c5de0e  u-boot-2019.04.tar.bz2
+9b557ce5f7dc272a0cc0b955ef77fe8f00c8ed01261a2cad29bb2efba3f278e81f1061c809096c97589c7075e5d39be1abd22c8c6a9cf8aaff157f640d36d22c  arm-trusted-firmware-2.1.tar.gz
 f8c9bb6e84d6f0620c976ac7ad5dd7ec7ff9dfdd4b1d03d2bf6653e7beccf80bdf2debfc92fb1f696dba92fb40287d3c45897e0078951451d0835cb61a5f16d1  README.txt
 f3bb656bbd13caf10a8ea619bc08b439e7dc27526c9cbdfa0374f4f8e277632ff4df06b34d441d6723a93d4a54aa03465d4270c44219d6a150d416b9c56edbbe  update-u-boot"

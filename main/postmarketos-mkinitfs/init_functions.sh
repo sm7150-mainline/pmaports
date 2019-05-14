@@ -31,6 +31,9 @@ mount_proc_sys_dev() {
 	# /dev/pts (needed for telnet)
 	mkdir -p /dev/pts
 	mount -t devpts devpts /dev/pts
+
+	# /run (needed for cryptsetup)
+	mkdir /run
 }
 
 setup_mdev() {
