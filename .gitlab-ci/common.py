@@ -13,11 +13,11 @@ def get_pmaports_dir():
     return os.path.realpath(os.path.join(os.path.dirname(__file__) + "/.."))
 
 
-def run_git(parameters, check=True):
+def run_git(parameters, check=True, stderr=None):
     """ Run git in the pmaports dir and return the output """
     cmd = ["git", "-C", get_pmaports_dir()] + parameters
     try:
-        return subprocess.check_output(cmd).decode()
+        return subprocess.check_output(cmd, stderr=stderr).decode()
     except subprocess.CalledProcessError:
         if check:
             raise

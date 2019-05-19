@@ -49,9 +49,11 @@ aports-static:
   before_script:
     - .gitlab-ci/install_pmbootstrap.sh pytest
   script:
+    - apk -q add git
     - su pmos -c "pmbootstrap kconfig check"
     - su pmos -c ".gitlab-ci/run_testcases.sh
         -m 'not pmaports_upstream_compat'"
+    - su pmos -c ".gitlab-ci/check_changed_aports_versions.py"
   artifacts:
     when: on_failure
     paths:
