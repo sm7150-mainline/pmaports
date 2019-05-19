@@ -32,7 +32,7 @@ def run_pmbootstrap(parameters):
     process = subprocess.Popen(cmd)
     process.communicate()
     if process.returncode != 0:
-        print("** Building failed")
+        print("** Test failed")
         exit(1)
 
 
@@ -114,11 +114,16 @@ def get_changed_packages():
     return ret
 
 
-def check_build(packages):
+def check_build(packages, verify_only=False):
     # Initialize build environment with less logging
     run_pmbootstrap(["build_init"])
-    run_pmbootstrap(["--details-to-stdout", "build", "--strict", "--force"] +
-                    list(packages))
+
+    if verify_only:
+        run_pmbootstrap(["--details-to-stdout", "checksum", "--verify"] +
+                        list(packages))
+    else:
+        run_pmbootstrap(["--details-to-stdout", "build", "--strict",
+                         "--force"] + list(packages))
 
 
 if __name__ == "__main__":
@@ -130,15 +135,15 @@ if __name__ == "__main__":
     # Get and print modified packages
     packages = get_changed_packages()
 
-    # Stop here if desired
-    if commit_message_has_string("[ci:skip-build]"):
-        print("WARNING: not building changed packages ([ci:skip-build])!")
-        exit(0)
-
     # Build changed packages
     get_changed_packages_sanity_check(len(packages))
     if len(packages) == 0:
         print("no aports changed in this branch")
     else:
-        print("building in strict mode: " + ", ".join(packages))
-        check_build(packages)
+        verify_only = commit_message_has_string("[ci:skip-build]")
+        if verify_only:
+            print("WARNING: not building changed packages ([ci:skip-build])!")
+            print("verifying checksums: " + ", ".join(packages))
+        else:
+            print("building in strict mode: " + ", ".join(packages))
+        check_build(packages, verify_only)
