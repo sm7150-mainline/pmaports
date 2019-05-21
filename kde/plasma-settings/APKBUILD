@@ -1,9 +1,9 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-settings
-pkgver=0_git20190208
+pkgver=0_git20190504
 pkgrel=0
-_commit="e4f4d768c1603799add19d1471927b9131cefe1e"
+_commit="8d9acc969ec02ee6041ced4fef63c9cc2fe66695"
 pkgdesc="Plasma Settings"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
@@ -20,9 +20,9 @@ prepare() {
 build() {
 	cd "$builddir"
 	cmake .. \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DCMAKE_BUILD_TYPE=Release \
 		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON
 	make
 }
@@ -34,6 +34,6 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" make install
 }
-sha512sums="734df9d1cf515d7a8efa87c992e43eaaa321ba36445a5206f43140ce12a43b60a4e51ed1fe29c3c8294b542b3db35e0c6eb2e2c35fececa232f777ed71271532  plasma-settings-e4f4d768c1603799add19d1471927b9131cefe1e.tar.gz"
+sha512sums="14adc4c031748d319efa1a888d0274606b590aa6d2fea4ade5d43c3736f2ddb897d93104efc41b6d67b4d5e87f47fe3e360a5b776c385338cf87da859011d171  plasma-settings-8d9acc969ec02ee6041ced4fef63c9cc2fe66695.tar.gz"

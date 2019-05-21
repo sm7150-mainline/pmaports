@@ -1,9 +1,9 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=calindori
-pkgver=0_git20193001
+pkgver=0_git20190517
 pkgrel=0
-_commit="1dcc04e8585cbc43bacc7f3a8181dfd3b7c64e73"
+_commit="a42b436f4df4c2c1b3a031125a28574b2679b96c"
 pkgdesc="Calendar for Plasma Mobile"
 arch="all"
 url="https://invent.kde.org/dkardarakos/calindori"
@@ -14,13 +14,15 @@ source="https://invent.kde.org/dkardarakos/$pkgname/-/archive/$_commit/$pkgname-
 builddir="$srcdir/$pkgname-$_commit/build"
 
 prepare() {
+	default_prepare
+
 	mkdir "$builddir"
 }
 
 build() {
 	cd "$builddir"
 	cmake .. \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON
 	make
@@ -36,4 +38,4 @@ package() {
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="5ddf4c1cd96981c984c39d8b00a6cc00d018cce43e05cee70cdad0a78c5d8133a9f60e5547eb5a6ec205f89a0e4ffce3ee6059270a5c99aa9eb72c936624d5e9  calindori-1dcc04e8585cbc43bacc7f3a8181dfd3b7c64e73.tar.gz"
+sha512sums="e91a0df9eb4737ba91252ff4b66e960d3d1a57dec613e9b5903f80a6d26c5d211fb09e447d8c30d6f3c5ecc12bf493ba2a4a7e670717ff967e974c2259691203  calindori-a42b436f4df4c2c1b3a031125a28574b2679b96c.tar.gz"

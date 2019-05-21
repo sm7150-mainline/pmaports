@@ -1,19 +1,20 @@
 # Contributor: Jonah Brüchert <jbb@kaidan.im>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-angelfish
-pkgver=0_git20190208
+pkgver=1.1
 pkgrel=0
-_commit="382cf2dbb434cdee572b451daf86810f448be5a0"
 pkgdesc="Small Webbrowser for Plasma Mobile"
 url="https://phabricator.kde.org/source/plasma-angelfish/"
 arch="all"
 license="GPL-3.0"
-depends="kirigami2 plasma-framework"
-makedepends="cmake qt5-qtwebengine-dev kdeclarative-dev kirigami2-dev plasma-framework-dev kio-dev ki18n-dev extra-cmake-modules"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/jbbgameich/$pkgname/-/archive/$_commit.tar.gz"
-builddir="$srcdir/$pkgname-$_commit/build"
+depends="kirigami2 plasma-framework purpose"
+makedepends="cmake qt5-qtwebengine-dev kdeclarative-dev kirigami2-dev plasma-framework-dev kio-dev ki18n-dev extra-cmake-modules purpose-dev"
+source="$pkgname-$pkgver.tar.gz::https://invent.kde.org/jbbgameich/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver/build"
 
 prepare() {
+	default_prepare
+
 	mkdir "$builddir"
 }
 
@@ -23,7 +24,7 @@ build() {
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_SHARED_LIBS=True \
-		-DCMAKE_BUILD_TYPE=Release
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo
 	make
 }
 
@@ -32,4 +33,4 @@ package() {
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="62c9be99752c425d9b1b19ce061a29be1c22a72e4a82f7441e9e2c248b62241026f6b992bb193e4b29ce199b78fd8ecad3b716accf5088fd8ce16f553791822e  plasma-angelfish-382cf2dbb434cdee572b451daf86810f448be5a0.tar.gz"
+sha512sums="2494104b042d9c29fcbbb943c92690d533bde4f152093b2cf67161f7536ed162590d6d11bfd40518f3496d2c12ba026cd8cecb1a882551b9a284af370daac962  plasma-angelfish-1.1.tar.gz"

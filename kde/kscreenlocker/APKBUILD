@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kscreenlocker
 pkgver=5.15.5
-pkgrel=0
+pkgrel=1
 pkgdesc="Library and components for secure lock screen architecture"
 arch="all"
 url="https://www.kde.org/workspaces/plasmadesktop/"
@@ -11,14 +11,14 @@ depends="linux-pam"
 depends_dev="kcmutils-dev consolekit2-dev linux-pam-dev kidletime-dev kwayland-dev kdeclarative-dev qt5-qtdeclarative-dev kcrash-dev kglobalaccel-dev ki18n-dev ktextwidgets-dev qt5-qtx11extras-dev kwindowsystem-dev kxmlgui-dev kconfig-dev sonnet-dev kconfigwidgets-dev kauth-dev kcoreaddons-dev kcodecs-dev kwidgetsaddons-dev kservice-dev kpackage-dev knotifications-dev solid-dev"
 makedepends="$depends_dev extra-cmake-modules kdoctools-dev libxcursor xcb-util-keysyms-dev"
 source="https://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz
-		kde.pam
-		kde-np.pam"
+	kde.pam
+	kde-np.pam"
 subpackages="$pkgname-dev $pkgname-lang"
 options="suid !check" # Fails due to requiring running X11 and loginctl
 
 build() {
 	cmake \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make

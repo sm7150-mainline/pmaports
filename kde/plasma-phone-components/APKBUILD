@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-phone-components
 pkgver=0_git20190505
-pkgrel=1
+pkgrel=2
 _commit="cec97e231b6106eb5c69fd9b774769cd3c8e72b1"
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all"
@@ -19,9 +19,9 @@ builddir="$srcdir/$pkgname-$_commit"
 build() {
 	cd "$builddir"
 	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DCMAKE_BUILD_TYPE=RELEASE \
 		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON
 	make
 }

@@ -1,16 +1,16 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qmlkonsole
-pkgver=0_git20190105
+pkgver=0_git20190224
 pkgrel=0
-_commit="9476213a11e16c6155c324fa4a21190369464bad"
+_commit="eac8318020e3881dac6d930fefd278b1f4a98617"
 pkgdesc="Terminal app for Plasma Mobile"
 arch="all"
 url="https://invent.kde.org/jbbgameich/qmlkonsole"
 license="GPL-3.0-or-later"
 depends="qmltermwidget"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev"
-source="https://invent.kde.org/jbbgameich/qmlkonsole/-/archive/9476213a11e16c6155c324fa4a21190369464bad/qmlkonsole-9476213a11e16c6155c324fa4a21190369464bad.tar.gz"
+source="https://invent.kde.org/jbbgameich/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit/build"
 
 prepare() {
@@ -20,7 +20,7 @@ prepare() {
 build() {
 	cd "$builddir"
 	cmake .. \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr
 	make
 }
@@ -35,4 +35,4 @@ package() {
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="3adade1839da9ab395c79645036cf9ef6ae481c644926f5bfcf8f7cb53a89790d207442aae0ca0d68d28fb207187f57e76a6ea0031d309f6b8cda09b7629cf81  qmlkonsole-9476213a11e16c6155c324fa4a21190369464bad.tar.gz"
+sha512sums="578906c656c04f89bd632d2c2638e955d2f72893073f19c7c7a14b7944f91268ae349d158e5117c9e8089fab798243a2a65469e3972aeb36df988b5219e26ded  qmlkonsole-eac8318020e3881dac6d930fefd278b1f4a98617.tar.gz"
