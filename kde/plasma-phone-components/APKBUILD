@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-phone-components
 pkgver=0_git20190505
-pkgrel=2
+pkgrel=3
 _commit="cec97e231b6106eb5c69fd9b774769cd3c8e72b1"
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all"
@@ -13,7 +13,9 @@ makedepends="extra-cmake-modules kpeople-dev qt5-qtdeclarative-dev kactivities-d
 install="$pkgname.post-install
 	$pkgname.post-upgrade
 	$pkgname.post-deinstall"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz
+	startplasmamobile
+	plasma-mobile.desktop"
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
@@ -33,6 +35,14 @@ check() {
 
 package() {
 	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" make install
+
+	install -D -m755 "$srcdir"/startplasmamobile \
+		"$pkgdir"/usr/bin/startplasmamobile
+
+	install -Dm644 "$srcdir"/plasma-mobile.desktop \
+		"$pkgdir"/usr/share/wayland-sessions/plasma-mobile-2.desktop
 }
-sha512sums="2c941ecc1b4c054c09753c19db1cf00157d5d51b3f2f0067125e67a6311eb26419a295df6fec52467e1019a833ee054e62db2ca58ad0219061bbcb7ca961393a  plasma-phone-components-cec97e231b6106eb5c69fd9b774769cd3c8e72b1.tar.gz"
+sha512sums="2c941ecc1b4c054c09753c19db1cf00157d5d51b3f2f0067125e67a6311eb26419a295df6fec52467e1019a833ee054e62db2ca58ad0219061bbcb7ca961393a  plasma-phone-components-cec97e231b6106eb5c69fd9b774769cd3c8e72b1.tar.gz
+bfa5df2bb635899b6b88816dd02073d6949303f1282c3acd91fd8bc1e92b10db2fbfa167d2df6c6e11ecb763b6b94ed0451b5b1ddc504543402e6a9ce6bb985c  startplasmamobile
+7f4bdbd30cda4c9e23293b7bb1eb6e8536ada056cb3bcc9a6cc3db7bbc2277eac67b519992b7e46afdf5c720df9c696b43a6a9e9f82ed7ebe3937d8c0bf4d55d  plasma-mobile.desktop"
