@@ -1,15 +1,17 @@
 #!/bin/sh
-groupadd -g 1000 aid_system
-groupadd -g 1003 aid_graphics
-groupadd -g 1004 aid_input
-groupadd -g 1005 aid_audio
-groupadd -g 3001 aid_net_bt_admin
-groupadd -g 3002 aid_net_bt
-groupadd -g 3003 aid_inet
-groupadd -g 3004 aid_inet_raw
-groupadd -g 3005 aid_inet_admin
+# Add all Android groups with their predefined IDs
+echo "Adding android groups to system"
+/usr/sbin/add_android_groups.sh
 
-usermod -a -G aid_system,aid_graphics,aid_input,aid_audio,aid_net_bt_admin,aid_net_bt,aid_inet,aid_inet_raw,aid_inet_admin user
+# Add user to all needed Android groups
+username=$(getent passwd 10000 | cut -d ":" -f 1)
+if [ x$username == "x" ]; then
+	echo "Warning: no user with ID 10000 found!"
+else
+	echo "Adding $username to android groups"
+	usermod -a -G aid_system,aid_graphics,aid_input,aid_audio,aid_net_bt_admin,aid_net_bt,aid_inet,aid_net_raw,aid_net_admin $username
+fi
+
 
 rc-update add cgroups default
 rc-update add lxc-android default
