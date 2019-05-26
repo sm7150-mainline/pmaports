@@ -4,7 +4,7 @@
 maintainer="Piotr Halama <skrzynka@halamix2.pl>"
 pkgname="linux-nokia-frt"
 pkgver=3.18.79
-pkgrel=0
+pkgrel=1
 pkgdesc="Nokia 1 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -20,15 +20,15 @@ HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="android_kernel_nokia_1"
-_commit="f17e3dc43479ed748f85080e5be04be228ed754d"
+_commit="588ea962d4c9c21d20a7109273587e49c7da9235"
 _config="config-${_flavor}.${arch}"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/pmsourcedump/${_repository}/archive/${_commit}.tar.gz
 	$_config
 	gcc8-fix-put-user.patch
-	00_makefile_path.patch
-	01_drvgen_mk.patch
-	02_path_fixes.patch
+	00_symlinks.patch
+	01_makefile_path.patch
+	02_drvgen_mk.patch
 	03_vdsomunge_upstream.patch
 "
 #gcc7-give-up-on-ilog2-const-optimizations.patch
@@ -73,10 +73,10 @@ package() {
 		modules_install
 }
 
-sha512sums="d9026958c7f9cb7dbc56b27baab3362d6a34e975ebf933e8ee404dc76638d17fd3d2508f262f10190f646a0881d68ab0e0a40f2fce15a55409527f3af8ea9d19  linux-nokia-frt-f17e3dc43479ed748f85080e5be04be228ed754d.tar.gz
+sha512sums="676be1813c0886c509591a4940b9fdbd91243aaf84a8efebd7229f681e84211d86cc3466079808eb2fba45c0ada4bc7d43a4b5ab599326702c1d4830fa16d630  linux-nokia-frt-588ea962d4c9c21d20a7109273587e49c7da9235.tar.gz
 4e4c05f4095c0490bb04b262b19033adda7d95fdec5c6c5bf1ba4b2cfa812ff159c9637f9cb6a3e854b46923467e9559d39b8b2b81f6fe6d038a6dbf5961c303  config-nokia-frt.armv7
 197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
-ef8b9da80ca67424a02acfbf99924e3ea06574c83c6a737031f6ac41b718742ef0bd66b968b14118cac021067e29184e2199f238ace2a43dc2176d9cce796bc5  00_makefile_path.patch
-aaf7e208f307db3126202f3f3410d4f8a74b450ef719717a064c817258cb428a150a798494f57e43f9e1f747ad83527e565f8d81c3c746d1fb0b4e42e6e30d50  01_drvgen_mk.patch
-bba77598f2fc5615b21f98db7e6a43a35d9cfae0e10fb8754d3b3c198ed36def390937c766550e251ae6c9867145e13dd0d1977bc8cc259ac53e48fedc4d0fee  02_path_fixes.patch
-2bd2706f7b42a313e81bf27726ef697f0292f8f2c53ded5d344d410d25fc02375ea9659c7dab93500d4966e91efb0658d6ecf3292196350159e2cd54ed78441e  03_vdsomunge_upstream.patch"
+1d1a99de49b29069eb1711ad884e3f0db0956d8eeb81bdb332e6aa13fb7f5cdd48cd75791cebc08b1aa0644cdd643d7632791a272333547a6ffe68a75295e7a8  00_symlinks.patch
+ef8b9da80ca67424a02acfbf99924e3ea06574c83c6a737031f6ac41b718742ef0bd66b968b14118cac021067e29184e2199f238ace2a43dc2176d9cce796bc5  01_makefile_path.patch
+aaf7e208f307db3126202f3f3410d4f8a74b450ef719717a064c817258cb428a150a798494f57e43f9e1f747ad83527e565f8d81c3c746d1fb0b4e42e6e30d50  02_drvgen_mk.patch
+19a6c3445bfd8057e4fabe1709f3d2344f3a99fef49b44636c07a18ba8791fab1bcff77f93aadff887946ae6f83c9d86e1c28f9b88d03c6ba156704d430b4470  03_vdsomunge_upstream.patch"
