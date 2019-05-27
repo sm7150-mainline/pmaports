@@ -1,0 +1,19 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=postmarketos-ui-phosh
+pkgver=1
+pkgrel=0
+pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (x86 and x86_64 only for now)"
+url="https://puri.sm"
+arch="noarch !armhf !armv7 !aarch64"
+license="GPL-3.0-or-later"
+depends="phosh lightdm xorg-server"
+install="$pkgname.post-install"
+source="60-lightdm-autologin.conf"
+options="!check"
+
+package() {
+	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
+}
+sha512sums="c51a5cf93495069d71900dd1c6fbddfa3bdfb70dbab8141d1b115b6150975a12206c63517f18dc516e0366028b32e014b6d37a20e19ff73d5f0934c518d3ab39  60-lightdm-autologin.conf"
