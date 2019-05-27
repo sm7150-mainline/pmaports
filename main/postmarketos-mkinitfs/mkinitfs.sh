@@ -228,7 +228,7 @@ create_uboot_files()
 
 	echo "==> kernel: creating uImage"
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
-	if [ -n "${deviceinfo_dtb}" ]; then
+	if [ "${deviceinfo_append_dtb}" == "true" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
 	mkimage -A $arch -O linux -T kernel -C none -a 80008000 -e 80008000 \
@@ -252,7 +252,7 @@ create_bootimg()
 	fi
 
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
-	if [ -n "${deviceinfo_dtb}" ]; then
+	if [ "${deviceinfo_append_dtb}" == "true" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
 	_dt=""
@@ -356,20 +356,23 @@ generate_splash_screens()
 	done
 }
 
-# Append the correct device tree to the linux image file
-append_device_tree()
+# Append the correct device tree to the linux image file or copy the dtb to the boot partition
+append_or_copy_dtb()
 {
 	[ -n "${deviceinfo_dtb}" ] || return
 	dtb="/usr/share/dtb/${deviceinfo_dtb}.dtb"
 	kernel="${outfile/initramfs-/vmlinuz-}"
-	echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
-	if [ -e "$dtb" ]; then
+	echo "==> kernel: device-tree blob operations"
+	if ! [ -e "$dtb" ]; then
+		echo "ERROR: File not found: $dtb"
+		exit 1
+	fi
+	if [ "${deviceinfo_append_dtb}" == "true" ]; then
+		echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
 		cat "$kernel" "$dtb" > "${kernel}-dtb"
-		cp "$dtb" "${outfile/initramfs-/dtb-}.dtb"
 	else
-		echo "NOTE: device tree does not exist, not appending it to the kernel."
-		echo "This is expected for downstream kernels."
-		cp "$kernel" "${kernel}-dtb"
+		echo "==> kernel: copying dtb ${deviceinfo_dtb} to boot partition"
+		cp "$dtb" "${outfile/initramfs-/dtb-}.dtb"
 	fi
 }
 
@@ -435,7 +438,7 @@ install -Dm755 "/usr/share/postmarketos-mkinitfs/init_functions.sh" \
 generate_splash_screens
 replace_init_variables
 create_cpio_image "$tmpdir" "$outfile"
-append_device_tree
+append_or_copy_dtb
 create_uboot_files
 create_bootimg
 

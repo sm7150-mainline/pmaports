@@ -9,7 +9,7 @@ echo Loading Initramfs
 load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} uInitrd-postmarketos-allwinner
 
 echo Loading Kernel
-load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz-postmarketos-allwinner-dtb
+load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz-postmarketos-allwinner
 
 echo Resizing FDT
 fdt addr ${fdt_addr_r}
