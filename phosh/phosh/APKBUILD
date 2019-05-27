@@ -1,0 +1,49 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=phosh
+pkgver=0.0.2_git20190502
+pkgrel=0
+_commit="38a86e4bb443fbfa87443539f323338b05408472"
+_gvc_commit="ae1a34aafce7026b8c0f65a43c9192d756fe1057"
+pkgdesc="A shell PoC for the Librem5"
+arch="x86 x86_64"
+url="https://source.puri.sm/Librem5/phosh"
+license="GPL-3.0-only"
+depends="gtk+3.0 wayland-protocols wlroots gnome-session bash dbus-x11 gnome-settings-daemon virtboard libpulse"
+makedepends="gtk+3.0-dev meson ninja gnome-desktop-dev libhandy-dev gcr-dev upower-dev linux-pam-dev git cmake pulseaudio-dev networkmanager-dev"
+subpackages="$pkgname-lang"
+source="
+	$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/$pkgname/-/archive/$_commit.tar.gz
+	libgvc-$_gvc_commit.tar.gz::https://gitlab.gnome.org/GNOME/libgnome-volume-control/-/archive/$_gvc_commit/libgnome-volume-control-$_gvc_commit.tar.gz
+	stop-hardcoding-resolution.patch
+	phosh.desktop"
+options="!check" # Needs a running Wayland compositor
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	cd "$srcdir"
+	mv libgnome-volume-control*/* "$builddir"/subprojects/gvc/
+}
+
+build() {
+	meson . _build --prefix=/usr
+	ninja -C _build
+}
+
+check() {
+	ninja -C _build test
+}
+
+package() {
+	DESTDIR="$pkgdir/" ninja -C _build install
+
+	install -D -m644 "$srcdir"/phosh.desktop \
+		"$pkgdir"/usr/share/wayland-sessions/phosh.desktop
+
+}
+sha512sums="a34f29ab30daf7e655e60eaf8466420cf2e33d1c984ea7dc9259387a5abeb30e3f68385c15b9ef7cd3865ba307f0c619efc903b651c145d447528aba5abbee7c  phosh-38a86e4bb443fbfa87443539f323338b05408472.tar.gz
+723334bff55927363dab47ef22c71dcaf94263fe76e49c40f1cbfbd5f86383e68fd4bf2182eb5777dda8e2ede4ee4710e1a7ab1379d3ca40d68f68ff30c62e21  libgvc-ae1a34aafce7026b8c0f65a43c9192d756fe1057.tar.gz
+8e59a1e592f01c73c32ab75f6608a047a2f90acceed08e78491f8fd2ee2183c4586ec8efc35fb396acffe2e34f5c8bf9bee43767a5a4f7897645e0df3a8107e5  stop-hardcoding-resolution.patch
+6644870edbbbc6b88d6e19f7771d81dba1a11066c2b34e4c22736db73a2dfd0d4909b4967503059c35385c5139a834a5c06a3c56b148ba1275d7f089c0c5f33c  phosh.desktop"
