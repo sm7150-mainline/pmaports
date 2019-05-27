@@ -2,9 +2,9 @@
 # Kernel config based on: <https://git.archlinux.org/svntogit/packages.git/plain/trunk/config?h=packages/linux>
 
 pkgname="linux-chuwi-hi10plus"
-pkgver=5.1
-pkgrel=1
-pkgdesc="Chuwi Hi10 Plus mainline kernel"
+pkgver=5.1.5
+pkgrel=0
+pkgdesc="Chuwi Hi10 Plus stable kernel"
 arch="x86_64"
 _carch="x86"
 _flavor="chuwi-hi10plus"
@@ -20,15 +20,14 @@ HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
-_repository="linux"
-_commit="e93c9c99a629c61837d5a7fc2120cd2b6c70dbdd"
 _config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/torvalds/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$pkgver.tar.gz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$pkgver.tar.gz
 	$_config
-	0001-input-touchscreen-gslx680_ts_acpi-Add-driver-from-on.patch
+	input-silead-Add-MSSL0017-to-acpi_device_id.patch
+	platform-x86-touchscreen_dmi-Add-info-for-the-CHUWI-.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/linux-$pkgver"
 
 prepare() {
 	default_prepare
@@ -71,13 +70,14 @@ package() {
 
 dev() {
     cd $builddir
-    
+
     # https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.txt
     make -j1 headers_install \
         ARCH="$_carch" \
         INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="a2a4463056bbec1187f2a113e514dd58ed8f8e74a4c6dbe4477ba635c12d8a8bc50d431168579ee22f720ef799b21033ea52425a0c0a79849a96783545034ff5  linux-chuwi-hi10plus-e93c9c99a629c61837d5a7fc2120cd2b6c70dbdd.tar.gz
+sha512sums="bd1e61520c88e66064aba04ec3e5dbbc7c3c5d2c8685a33715adca5b8989cf3cab76a705fbb913389a2ef00f70b00b602c24dfe6ffa1076c83e534d07d0723ff  linux-chuwi-hi10plus-5.1.5.tar.gz
 4378e9e6b087f354fc61a747c9f7be4ee0b40b29aac78351641b2548406f1f576d2bc8422ed17b33680fe590ad9cc33ca5603ad2d119610e4cbfe8707783be3b  config-chuwi-hi10plus.x86_64
-a545d9a0cab4b30ed1a012a6a3a27df3dd9d44d096d0832c938ba5a14c54bc5c7a9cce12fe7b5a6797db676f6275b1308a2febb715a4faf653eb3c1ee3a32857  0001-input-touchscreen-gslx680_ts_acpi-Add-driver-from-on.patch"
+cffb4b1dc204a15697aa26749df49b3f450de808cb630cf53d4718d933031a42789b79e94d39a9fe44a75e385f609c70aa8ccfb2e91e4fe473e0ee5245146c66  input-silead-Add-MSSL0017-to-acpi_device_id.patch
+b97509150d4061001e90e1a595723c479252647b5f94f50b7be0673d11556b28a90fa0afff9f0961a4512c3cbc8d4b02b827e75f75385cbb3ad63b378f3931e3  platform-x86-touchscreen_dmi-Add-info-for-the-CHUWI-.patch"
