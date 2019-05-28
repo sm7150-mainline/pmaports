@@ -1,6 +1,6 @@
 pkgname=lxc-android
 pkgver=1.0_git20190315
-pkgrel=1
+pkgrel=2
 arch="noarch"
 url="https://github.com/Halium/lxc-android"
 license="Apache"
@@ -26,6 +26,7 @@ package() {
 
 	# Remove unneeded udev rule override
 	rm -f "$pkgdir/etc/udev/rules.d/50-firmware.rules"
+	rm -f "$pkgdir/etc/udev/rules.d/60-persistent-v4l.rules"
 
 	# Remove systemd units
 	rm -rf "$pkgdir/etc/systemd"
