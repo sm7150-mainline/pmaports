@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=chatty
+pkgver=0.0.7
+pkgrel=0
+pkgdesc="A phone dialer and call handler"
+arch="all"
+url="https://gitlab.gnome.org/Community/Purism/chatty"
+license="GPL-3.0-or-later"
+depends="purple-mm-sms"
+makedepends="meson ninja gtk+3.0-dev pidgin-dev libhandy-dev"
+source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+
+build() {
+	meson . _build --prefix=/usr
+	ninja -C _build
+}
+
+check() {
+	ninja -C _build test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C _build install
+}
+sha512sums="0317d29ad35b1fa5137d017e5ac5cc79eebb14c614f86fba82e18fa448fc1739d11efab44142689db63d054def4681f59044e8fdc8a024acdc54d909de4509b8  chatty-0.0.7.tar.gz"
