@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=calls
+pkgver=0.0.1_git20190131
+pkgrel=0
+_commit="ee126b3660c8c44dcb67c695d0c7911160995971"
+pkgdesc="A phone dialer and call handler"
+arch="all"
+url="https://gitlab.gnome.org/Community/Purism/calls"
+license="GPL-3.0-or-later"
+depends="modemmanager"
+makedepends="meson ninja gettext-dev gobject-introspection-dev gtk+3.0-dev libhandy-dev gsound-dev libpeas-dev modemmanager-dev"
+source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/$pkgname/-/archive/$_commit.tar.gz"
+options="!check" # Requires running Wayland compositor
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cd "$builddir"
+	meson . _build --prefix=/usr
+	ninja -C _build
+}
+
+check() {
+	cd "$builddir"
+	ninja -C _build test
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" ninja -C _build install
+}
+sha512sums="0a30967a832dbfe7cc49b9ae3273586cc08e0da47d069e2335714a6d4b7d9fcc33f04c964881839d01d6d4982f29740ca060b47bee8db5cf5b6046473f0e8b37  calls-0.0.1_git20190131.tar.gz"
