@@ -76,9 +76,10 @@ def get_changed_files():
 
 
 def get_changed_packages_sanity_check(count):
-    if commit_message_has_string("[ci:ignore-count]"):
-        print("NOTE: package count sanity check skipped ([ci:ignore-count]).")
-        return
+    for mark in ["[ci:ignore-count]", "[ci:skip-build]"]:
+        if commit_message_has_string(mark):
+            print("NOTE: package count sanity check skipped (" + mark + ").")
+            return
     if count <= 10:
         return
 
