@@ -1,0 +1,63 @@
+pkgname=firmware-oppo-find-7a
+pkgver=0.1
+pkgrel=1
+pkgdesc="Firmware for Oppo Find 7a"
+url="https://github.com/TheMuppets/proprietary_vendor_oppo"
+arch="armv7"
+license="proprietary"
+depends="wcnss-wlan"
+options="!check !strip !archcheck"
+
+# Sources
+_files1="a330_pfp.fw a330_pm4.fw venus.b00 venus.b01 venus.b02 venus.b03 venus.b04 venus.mbn venus.mdt"
+_files2="cpp_firmware_v1_2_0.fw"
+
+_commit1="412fbe0922125a4d5ff884626c3274a15bd36dff"
+_commit2="9e8beafc3b56ae8643ec90f61025d5e8d98e5619"
+_url1="https://github.com/TheMuppets/proprietary_vendor_oppo/raw/$_commit1/msm8974-common/proprietary/vendor/firmware/"
+_url2="https://github.com/TheMuppets/proprietary_vendor_oppo/raw/$_commit2/find7/proprietary/vendor/firmware/"
+
+# Wifi sources
+_files3="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
+_url_wifi="https://raw.githubusercontent.com/LineageOS/android_device_oppo_msm8974-common/lineage-16.0/wifi"
+
+source=""
+for _i in $_files1; do
+	source="$source $pkgname-$_commit1-$_i::$_url1/$_i";
+done
+for _i in $_files2; do
+	source="$source $pkgname-$_commit2-$_i::$_url2/$_i";
+done
+
+for _i in $_files3; do
+	source="$source $pkgname-$_i::$_url_wifi/$_i";
+done
+
+package() {
+	for _i in $_files1; do
+		install -Dm644 "$srcdir/$pkgname-$_commit1-$_i" \
+			"$pkgdir/lib/firmware/qcom/$_i"
+	done
+	for _i in $_files2; do
+			install -Dm644 "$srcdir/$pkgname-$_commit2-$_i" \
+			"$pkgdir/lib/firmware/$_i"
+	done
+	for _i in $_files3; do
+		install -Dm644 "$srcdir/$pkgname-$_i" \
+			"$pkgdir/lib/firmware/wlan/prima/$_i"
+	done
+}
+
+sha512sums="a642584990333d62ba6a985eeaddc6898c37a8e80aabb61121f93a90d5076861eb698422101e7b00706b7d3dfc00f9f358ea5e44a70fda7369931eb58b455931  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-a330_pfp.fw
+999e3e0777b8dffc0e0d20b214c8217dab577a31753b6a29af2fae57293693196e992a905265e35a586a7978c04547aa8c88496dbe6f836b74ed39026eaa5f05  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-a330_pm4.fw
+4b98e816e5e3a971c4b7d45f36b0ed4eae6f3310a41ff76a7fcf70dca01b85c6a07284f2cb99cff76a76155f773de6b0d6c8b8027b903137004351dd4599184d  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b00
+b4576ac810cc9ee902b0108904071cfbfea5cc9b51cf0bdd466a65b343abef49767f0800717297f236b87339f1989e462684f53a494337aa891d42af03e30096  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b01
+44a64fbb454243b6dc4e0b2c88eace5fd86f2be6ba121a921c0c0901e5cea2223dfc9fe13423432a501da7e056c105e20e19f516eb7be2538dea22febd12e74c  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b02
+85e5c5552b7164964d0902baf8c382f5a1f9e6c7db5dc6a6c6597028227b6c5e36836c4cb3d0564fde010bedc430b28f32806f446be93eabe5b95b9767286528  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b03
+3c3544528b44d39b205ac38944db67adb1d4a6e393256fdfa6958e580d09aa8a01196190d6cf64bd0fd8cdbf0399a8e8e87b5a7a62c6cd6b4b32db6d5390df26  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b04
+1bd9ad4077a98c6ee64886e96ad831ba177528722a7d0ac72e3a3f07d3553f696c1fcc27b3576a09bc570fd173dc32dca6794e58b949d95773b043c298b9410a  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.mbn
+3f550379ac4b720175ceac8b8815aa91e5c946b22152fb6a941e866d2971a8237a82ef65f00161a83f8645748925070c118f227a2b8cda8d81304d971f058a59  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.mdt
+b3ee274b8de7b4a371be4c54c7fb948a96b117dfc844612afa69c807a831922203c2611a84a1710db630f2986e256d656cc3c1f257b17794b7ee3e5a6542f267  firmware-oppo-find-7a-9e8beafc3b56ae8643ec90f61025d5e8d98e5619-cpp_firmware_v1_2_0.fw
+fb92214f928143228c0683934342ceff11f19bec0581684e98e155262bed03f51c21a21881ec03316f917c127b607a2943efea4847b908f1c02864a1e507fb50  firmware-oppo-find-7a-WCNSS_cfg.dat
+491eac4852755999d6a768ee24467d0e0ebfd5daa9aa825db99e18231d555d3b3e9e5b459a91ad8c374d83ff47c8d958e1911e08184ea39713e2955ed5926bf7  firmware-oppo-find-7a-WCNSS_qcom_cfg.ini
+e3402202dbcbc51194c51065ab7fd655e35de418f5634d61dfbb1910c8804faee616b80d7f3f5e04bf23b9d37b8b91d1223283016eb9d2156b1664560952651e  firmware-oppo-find-7a-WCNSS_qcom_wlan_nv.bin"
