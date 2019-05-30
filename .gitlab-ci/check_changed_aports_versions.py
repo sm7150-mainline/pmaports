@@ -82,10 +82,24 @@ def exit_with_error_message():
 
 def check_versions(args, packages):
     error = False
+
+    # Get relevant commits: compare HEAD against upstream/master or HEAD~1
+    # (the latter if this CI check is running on upstream/master). Note that
+    # for the common.get_changed_files() code, we don't check against
+    # upstream/master, but against the latest common ancestor. This is not
+    # desired here, since we already know what packages changed, and really
+    # want to check if the version was increased towards *current* master.
+    commit = "upstream/master"
+    if common.run_git(["rev-parse", "HEAD"]) == common.run_git(["rev-parse",
+                                                                commit]):
+        print("NOTE: upstream/master is on same commit as HEAD, comparing"
+              " HEAD against HEAD~1.")
+        commit = "HEAD~1"
+
     for package in packages:
         # Get versions, skip new packages
         head = get_package_version(args, package, "HEAD")
-        master = get_package_version(args, package, "upstream/master", False)
+        master = get_package_version(args, package, commit, False)
         if not master:
             print("- {}: {} (HEAD) (new package)".format(package, head))
             continue
@@ -95,12 +109,12 @@ def check_versions(args, packages):
         if result != 1:
             error = True
 
-        # Print result line ("- hello-world: 1-r2 (HEAD) > 1-r1 (master)")
-        formatstr = "- {}: {} (HEAD) {} {} (master)"
+        # Print result line ("- hello-world: 1-r2 (HEAD) > 1-r1 (HEAD~1)")
+        formatstr = "- {}: {} (HEAD) {} {} ({})"
         if result != 1:
             formatstr += " [ERROR]"
         operator = version_compare_operator(result)
-        print(formatstr.format(package, head, operator, master))
+        print(formatstr.format(package, head, operator, master, commit))
 
     if error:
         exit_with_error_message()
