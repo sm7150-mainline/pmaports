@@ -4,7 +4,7 @@ _config="config-${_flavor}.${CARCH}"
 pkgname=linux-${_flavor}
 
 pkgver=5.1.0_git20190521
-pkgrel=0
+pkgrel=1
 
 arch="aarch64"
 pkgdesc="Kernel fork with PinePhone Don't be evil patches"
@@ -17,7 +17,7 @@ _commit="bc1984d747095d285236f0d20f691e421f3bbfc3"
 source="
 	${pkgname}-${_commit}.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/${_commit}/linux-${_commit}.tar.gz
 	config-${_flavor}.aarch64
-	sun50i-a64-dontbeevil.dts
+	touch-dts.patch
 "
 
 subpackages=""
@@ -39,8 +39,6 @@ builddir="$srcdir/linux-${_commit}"
 
 prepare() {
 	default_prepare
-
-	cp "$srcdir"/sun50i-a64-dontbeevil.dts "$builddir"/arch/arm64/boot/dts/allwinner/
 
 	REPLACE_GCCH=0 \
 		downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
@@ -87,4 +85,4 @@ package() {
 
 sha512sums="da8d27d3660864584e2910e62f76da7fae4199d79c0c53a90afb5e344045292baeb3755d50523c702e96f2f0950d0feac93aa262d836731a1037485ab570899d  linux-postmarketos-allwinner-bc1984d747095d285236f0d20f691e421f3bbfc3.tar.gz
 5a04df0f76344b247cab894c8a41b2683e75b08209f1a957948a91f99979080ab07a1695ee266d17a4a85146145cb677ccc63a40722b1ae43ba0a7886f28de92  config-postmarketos-allwinner.aarch64
-bbb379b359239dc40a8096c27a1d5f73371e744eeb024ffc50ec6c6de0f28624cfedd44b8eedc2288e70a33c5ff427bbe1a03a5c4d860bed8a9b7df6471c01d4  sun50i-a64-dontbeevil.dts"
+5f2285e4eb262a9429c73599871c3fecbb858a388774bc7cba7631987ed1dc4a14cd7606e8fefc655c5128851fc853132f0a081e3d710c9266739af92f4d37e8  touch-dts.patch"

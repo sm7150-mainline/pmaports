@@ -2,13 +2,19 @@
 pkgname="device-pine-dontbeevil"
 pkgdesc="PINE64 PinePhone Don't be evil devkit"
 pkgver=0.1
-pkgrel=6
+pkgrel=7
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
-depends="postmarketos-base linux-postmarketos-allwinner u-boot-pine64 uboot-tools mesa mesa-dri-lima mesa-dri-kmsro"
+subpackages="
+	$pkgname-weston
+	$pkgname-x11
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kernel-shortts:kernel_shortts
+	$pkgname-kernel-longts:kernel_longts
+"
+depends="postmarketos-base u-boot-pine64 uboot-tools mesa mesa-dri-lima mesa-dri-kmsro"
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
@@ -50,6 +56,19 @@ weston() {
 nonfree_firmware() {
 	pkgdesc="Wifi and Bluetooth firmware"
 	depends="linux-firmware-rtlwifi linux-firmware-rtl_bt firmware-rtl8723bt"
+	mkdir "$subpkgdir"
+}
+
+kernel_shortts() {
+	pkgdesc="Short touch cable version"
+	depends="linux-postmarketos-allwinner"
+	mkdir "$subpkgdir"
+}
+
+kernel_longts() {
+	pkgdesc="Long touch cable version"
+	depends="linux-postmarketos-allwinner"
+	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
 }
 
