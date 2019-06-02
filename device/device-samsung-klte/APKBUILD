@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Alexey Min <alexey.min@gmail.com>
 pkgname="device-samsung-klte"
 pkgdesc="Samsung Galaxy S5"
-pkgver=0.2
-pkgrel=7
+pkgver=0.3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -13,8 +14,18 @@ subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-userland:nonfree_userland
+	$pkgname-hybris:hybris
+	$pkgname-hybris-x11:hybris_x11
 "
-source="deviceinfo"
+source="
+	deviceinfo
+	fstab.android
+	set-brightness
+	battery-status
+	70-klte-android.rules
+	NetworkManager-klte.conf
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -25,9 +36,24 @@ package() {
 }
 
 kernel_downstream() {
-	pkgdesc="Display and touchscreen works (see device table for details)"
-	depends="linux-samsung-klte"
+	pkgdesc="Display, touchscreen, Wi-Fi works (see device table for details)"
+	depends="linux-samsung-klte firmware-samsung-klte"
+	install="$pkgname-kernel-downstream.post-install"
+
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	# Disable v4l udev rules (video4linux), because without the camera
+	#         firmware blobs this makes udev helper hang (#1033)
+	mkdir -p "${subpkgdir}"/etc/udev/rules.d
+	ln -s /dev/null "${subpkgdir}"/etc/udev/rules.d/60-persistent-v4l.rules
+
+	# NetworkManager configuration - ignore unsupported devices for now and set default dhcp client
+	install -Dm644 "${startdir}/NetworkManager-klte.conf" \
+		"${subpkgdir}/etc/NetworkManager/conf.d/10-klte.conf"
+
+	# Extras, helper scripts that make life of developer/user easier
+	install -Dm755 "${startdir}/set-brightness"          "${subpkgdir}/usr/bin/set-brightness"
+	install -Dm755 "${startdir}/battery-status"          "${subpkgdir}/usr/bin/battery-status"
 }
 
 kernel_mainline() {
@@ -42,4 +68,39 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="29e7e50db504e75c5179c2b6e8290eda42fba57bb11fa8fc586edb29d6eaa0749554f65012b48b81c73b89c2ba47dc5ffaa8bb74ddafda19fb6353086a48908e  deviceinfo"
+nonfree_userland() {
+	pkgdesc="Pulls libhybris (Android) hardware adaptation"
+	depends="$pkgname-hybris"
+	mkdir "$subpkgdir"
+}
+
+hybris () {
+	pkgdesc="libhybris (Android) hardware adaptation"
+	depends="hybris-base"
+	install="$pkgname-hybris.post-install"
+
+	mkdir "$subpkgdir"
+
+	# Android mounts (needed for loading firmware and configs from android container)
+	# Appended to fstab in post-install script
+	install -Dm644 "${startdir}/fstab.android"           "${subpkgdir}/etc/fstab.android"
+
+	# Android udev rules, depend on android users and groups presence
+	install -Dm644 "${startdir}/70-klte-android.rules" \
+		"${subpkgdir}/etc/udev/rules.d/70-klte-android.rules"
+}
+
+hybris_x11() {
+	pkgdesc="x11 modules for libhybris adaptation"
+	depends="hybris-base-x11-caf"
+	install_if="$pkgname-hybris xorg-server"
+
+	mkdir "$subpkgdir"
+}
+
+sha512sums="334b57770c4b0e78e385b3c8a30eb4fad9eea88fed3ddbe7d82341b600feae5418feda6c3afc4ef57bb0a870996c4f249f449cced2a5d952da80158cd7e2c632  deviceinfo
+35f3b120152ebe709e11cebc9ced03f21f52768d88bd68ed23ed864fe1dd3b63665c8f74575882e217dd8226ae5d260e5ad2045dc4ab2470c89185f19b81c4a7  fstab.android
+f773a9792407c1ad96b11c6673093c9eeff7d538459b7772c5956760a8cbb4de8912b24c77e8812afe056db26fa3e29af09e2a3851828baa0b9a9986bf80790b  set-brightness
+66db173b9f1075a133efeea8bda94ef08089b7c15acbc1e3aefb9f8510daa7690a0ce2739d20647e096ba69940ac5c4c6699f3b032ec67609ca56f116bb25256  battery-status
+a68734d3fe30695d5a9302c92327e8ca564a73d06f0de87371800d1bdf4c541c3721af380b8d44cfa0b4cc1dc8a71586aec3f00bb877ee9dc18f41ba34caaeff  70-klte-android.rules
+d508d4e1caa416c7d529c681c13f4a6090467a2110a8e5f0162676d65a6680985704103a800863dfd3215f11ef069f513baa3ce6722e48c2fdbee45cae1139fa  NetworkManager-klte.conf"
