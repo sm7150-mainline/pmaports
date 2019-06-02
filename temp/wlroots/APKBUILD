@@ -2,13 +2,15 @@
 pkgname=wlroots
 pkgver=9999
 _pkgver=0.5.0
-pkgrel=0
+pkgrel=1
 pkgdesc="A modular Wayland compositor library"
 url="https://github.com/swaywm/wlroots"
-arch="all !armhf !armv7 !aarch64"
+arch="all"
 license="MIT"
 options="!check" # contains no test suite
-makedepends="eudev-dev
+makedepends="
+	elogind-dev
+	eudev-dev
 	libcap-dev
 	libinput-dev
 	libxcb-dev
@@ -21,9 +23,9 @@ makedepends="eudev-dev
 	wayland-protocols
 	xcb-util-image-dev
 	xcb-util-wm-dev
-	elogind-dev"
+	"
 subpackages="$pkgname-dev"
-source="$pkgname-$i_pkgver.tar.gz::https://github.com/swaywm/$pkgname/archive/$_pkgver.tar.gz"
+source="$pkgname-$_pkgver.tar.gz::https://github.com/swaywm/$pkgname/archive/$_pkgver.tar.gz"
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
@@ -31,6 +33,9 @@ build() {
 	meson \
 		--prefix /usr \
 		--libdir /usr/lib \
+		-Dlogind=enabled \
+		-Dlogind-provider=elogind \
+		-Dexamples=false \
 		. build
 	ninja -C build
 }
@@ -42,4 +47,4 @@ package() {
 	install -D -m755 build/rootston/rootston "$pkgdir"/usr/bin/rootston
 }
 
-sha512sums="4defecff91a6179d3a6b7d05c92c14b20c7fa69263a889869912e913a5d1e29f9fd4684f9816b03e2427a21c004d64236f35d8282e02e8d27d826442f1f8b3a7  wlroots-.tar.gz"
+sha512sums="4defecff91a6179d3a6b7d05c92c14b20c7fa69263a889869912e913a5d1e29f9fd4684f9816b03e2427a21c004d64236f35d8282e02e8d27d826442f1f8b3a7  wlroots-0.5.0.tar.gz"
