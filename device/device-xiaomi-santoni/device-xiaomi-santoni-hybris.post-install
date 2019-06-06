@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Append Android mounts to Linux fstab
+cat /etc/fstab.android >> /etc/fstab
+
+# Create Android mount points
+mkdir -p /data
+mkdir -p /system
+mkdir -p /cache
+mkdir -p /persist
+mkdir -p /dsp
+mkdir -p /firmware
+mkdir -p /usb_otg
+
+# /vendor symlink (points to nowhere until /system is mounted)
+ln -s /system/vendor /vendor
