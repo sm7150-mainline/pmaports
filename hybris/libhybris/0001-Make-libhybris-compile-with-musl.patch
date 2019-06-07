@@ -22,7 +22,7 @@ them, which might lead to problems depending on how musl/bionic are
  hybris/common/n/hybris_compat.cpp                  |  8 ++++
  hybris/common/n/hybris_compat.h                    | 22 +++++++++++
  hybris/include/hybris/common/musl_compat.h         | 10 +++++
- hybris/properties/properties.c                     |  3 ++
+ hybris/common/legacy_properties/properties.c                     |  3 ++
  hybris/tests/test_camera.c                         |  4 ++
  17 files changed, 160 insertions(+), 3 deletions(-)
  create mode 100644 hybris/include/hybris/common/musl_compat.h
@@ -558,10 +558,10 @@ index 0000000..c5f86f2
 +       while (__result == -1L && errno == EINTR);                             \
 +       __result; }))
 +#endif
-diff --git a/hybris/properties/properties.c b/hybris/properties/properties.c
+diff --git a/hybris/common/legacy_properties/properties.c b/hybris/common/legacy_properties/properties.c
 index 55cdda6..ae8bbbc 100644
---- a/hybris/properties/properties.c
-+++ b/hybris/properties/properties.c
+--- a/hybris/common/legacy_properties/properties.c
++++ b/hybris/common/legacy_properties/properties.c
 @@ -36,6 +36,9 @@
  #include <poll.h>
  

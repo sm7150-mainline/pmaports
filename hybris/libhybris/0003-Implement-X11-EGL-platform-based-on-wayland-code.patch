@@ -85,19 +85,6 @@ index 4126752..c52de15 100644
  
 -
 +SUBDIRS += x11
-diff --git a/hybris/egl/platforms/common/eglplatformcommon.cpp b/hybris/egl/platforms/common/eglplatformcommon.cpp
-index b512dc0..04aed79 100644
---- a/hybris/egl/platforms/common/eglplatformcommon.cpp
-+++ b/hybris/egl/platforms/common/eglplatformcommon.cpp
-@@ -74,7 +74,7 @@ extern "C" void hybris_dump_buffer_to_file(ANativeWindowBuffer *buf)
- 	char b[1024];
- 	int bytes_pp = 0;
- 
--	if (buf->format == HAL_PIXEL_FORMAT_RGBA_8888)
-+	if (buf->format == HAL_PIXEL_FORMAT_RGBA_8888 || buf->format == HAL_PIXEL_FORMAT_BGRA_8888)
- 		bytes_pp = 4;
- 	else if (buf->format == HAL_PIXEL_FORMAT_RGB_565)
- 		bytes_pp = 2;
 diff --git a/hybris/egl/platforms/x11/Makefile.am b/hybris/egl/platforms/x11/Makefile.am
 new file mode 100644
 index 0000000..22eac5e
@@ -230,7 +217,7 @@ index 0000000..001b733
 +	hw_get_module(GRALLOC_HARDWARE_MODULE_ID, (const hw_module_t **) &gralloc);
 +	err = gralloc_open((const hw_module_t *) gralloc, &alloc);
 +	TRACE("++ %lu x11: got gralloc %p err:%s", pthread_self(), gralloc, strerror(-err));
-+	eglplatformcommon_init(egl_iface, gralloc, alloc);
++	eglplatformcommon_init(egl_iface);
 +}
 +
 +static void _init_egl_funcs(EGLDisplay display)
