@@ -2,7 +2,7 @@
 pkgname="device-htc-k2ul"
 pkgdesc="HTC One SV"
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -21,6 +21,8 @@ package() {
 
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+		# Remove v4l rules due to crashes and hangs
+		ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 nonfree_firmware() {
@@ -28,7 +30,6 @@ nonfree_firmware() {
 	depends="firmware-htc-k2ul"
 	mkdir "$subpkgdir"
 }
-
 
 sha512sums="6737b2c5d2d0ce651c1b7c7e591da01c4dfed54533d77cfe78fc91c8a75f9a2b0c000dbe23e5e9be5fb6d03e3f7de85bc86fc51b2fb742a4ae755a3c8d00365a  deviceinfo
 e1fa365c75602eb3144ef36f0b1f1c622fea092c758064355c277daf58848655e51ed9db6cbef57a6fe605378a97f778a0b5e3ffca80797257369dc3064419de  initfs-hook.sh
