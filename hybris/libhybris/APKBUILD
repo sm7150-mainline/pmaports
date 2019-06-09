@@ -1,6 +1,6 @@
 pkgname=libhybris
 pkgver=1.0_git20190508
-pkgrel=1
+pkgrel=2
 arch="x86 armhf armv7 aarch64"
 url="https://github.com/libhybris/libhybris"
 license="Apache"
@@ -56,10 +56,14 @@ build() {
 		_vers="7.1 4.4"
 		_ldpath="/usr/libexec/droid-hybris/system/lib:/vendor/lib:/system/lib"
 		_arch="arm"
+		_enable_quirks="--enable-mali-quirks \
+				--enable-adreno-quirks"
 	elif [ "$CARCH" == "aarch64" ]; then
 		_vers="7.1"
 		_ldpath="/usr/libexec/droid-hybris/system/lib64:/vendor/lib64:/system/lib64"
 		_arch="arm64"
+		_enable_quirks="--enable-mali-quirks \
+				--enable-adreno-quirks"
     elif [ "$CARCH" == "x86" ]; then
         _vers="7.1 4.4"
 		_ldpath="/usr/libexec/droid-hybris/system/lib:/vendor/lib:/system/lib"
@@ -77,6 +81,7 @@ build() {
 			--with-android-headers=/usr/include/android-$_headers_ver \
 			--with-default-hybris-ld-library-path=$_ldpath \
 			--enable-arch=$_arch \
+			$_enable_quirks \
 			--enable-property-cache
 		make clean
 		make DESTDIR="${_tmppkgdir}/$pkgname-$_headers_ver" install
