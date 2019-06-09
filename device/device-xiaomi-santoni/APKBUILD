@@ -31,7 +31,8 @@ source="deviceinfo
 	asound.conf
 	msm8920-sku7-snd-card.conf
 	fstab.android
-	70-santoni-android.rules"
+	70-santoni-android.rules
+	10-santoni-android-x11.conf"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -97,7 +98,9 @@ hybris_x11() {
 	depends="hybris-base-x11-caf"
 	install_if="$pkgname-hybris xorg-server"
 
-	mkdir "$subpkgdir"
+	# X11 Hybris configuration
+	install -Dm644 "$srcdir/10-santoni-android-x11.conf" \
+		"$subpkgdir/etc/X11/xorg.conf.d/10-santoni-android-x11.conf"
 }
 
 sha512sums="4a7ba291c30cc5c05cee60f1d54d026b92b270f6499ceb83111cd5c05fe6c6c8182401abc99a8c10d81f0ee95b1414fd72d0aa7f635226f44b9cf659e3cc3471  deviceinfo
@@ -111,4 +114,5 @@ c4853babd5cd6371297e5e5d64364c064d540cd4beaba06d79b1001fe5c78fe3ee8bc5f6f4ba3e38
 b1f374547e9a0ebb99c0740af50ed17d40dfa1e283046ca2aad42a8e31604fee2916612e0579b2dbf1c6cd88a1d2c6117fec7754e745f654a705f8e5073aba92  asound.conf
 6cbe9079b6eb1fc889fbb13d8b3da620b39abde3e93e2301601e5416fda8b768aa11876238378af6571ddc3c4ce662dd49f1491cbe8b96153451ffdc7b761926  msm8920-sku7-snd-card.conf
 8419c1c5d20bc7c7e4d8d72ec2848655526f99cabf9037ae1f7152f5df31363b70b724769225a88c1d614bea6ebe4ee24190702ea947229a843cc2884eac7175  fstab.android
-7c0cda58ddc36e8a6120ce969c1e7afc445817e20b38a4c33e986d3d584bcf0fbb4d82eeda4dab5abdf3429845621a4ffa155512f40e885be615042faf1de171  70-santoni-android.rules"
+7c0cda58ddc36e8a6120ce969c1e7afc445817e20b38a4c33e986d3d584bcf0fbb4d82eeda4dab5abdf3429845621a4ffa155512f40e885be615042faf1de171  70-santoni-android.rules
+dc68956408da82ac9775f23814fb6e1498e65a4c760ceda369a60a202cfc92ad27761d6da27f1802307042affc8a1925c576816a8acbf394dd6a15f32e3ea3c0  10-santoni-android-x11.conf"
