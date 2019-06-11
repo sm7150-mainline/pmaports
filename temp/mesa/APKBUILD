@@ -2,7 +2,7 @@
 pkgname=mesa
 pkgver=9999
 _pkgver=19.1.0-rc1
-pkgrel=5
+pkgrel=6
 pkgdesc="[${_pkgver}] Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
 arch="armhf armv7 aarch64"
@@ -91,8 +91,6 @@ builddir="$srcdir/mesa-$pkgname-$_pkgver"
 
 
 build() {
-	cd "$builddir"
-
 	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE=700"
 	mkdir "$builddir"/build
 	meson -Ddri-search-path="$_dri_driverdir" \
@@ -109,13 +107,14 @@ build() {
 		-Dosmesa=gallium \
 		-Dgbm=true \
 		-Dglx-tls=false \
-		-Dprefix="$pkgdir"/usr "$builddir"/build
+		-Db_ndebug=true \
+		-Dprefix=/usr "$builddir"/build \
+		--buildtype=release
 	ninja -C "$builddir"/build
 }
 
 package() {
-	cd "$builddir"
-	ninja -C "$builddir"/build install
+	DESTDIR="$pkgdir" ninja -C "$builddir"/build install
 }
 
 egl() {
