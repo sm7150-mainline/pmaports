@@ -1,22 +1,20 @@
 pkgname=hwtest
-pkgver=0.2.0
+pkgver=0.3.0
 pkgrel=0
 pkgdesc="Small utility to check hardware functionality on phones"
 url="https://gitlab.com/MartijnBraam/hwtest"
 arch="noarch"
 license="MIT"
-depends="python3 ffmpeg v4l-utils evtest"
+depends="python3 py3-dbus ffmpeg v4l-utils evtest alsa-utils"
 makedepends="python3-dev"
 source="$pkgname-$pkgver.tar.gz::https://gitlab.com/MartijnBraam/hwtest/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
 options="!check" # Doesn't like making chroot directories
 
 build() {
-	cd "$builddir"
 	python3 setup.py build
 }
 
 package() {
-	cd "$builddir"
 	python3 setup.py install --prefix=/usr --root="$pkgdir"
 }
-sha512sums="3f722da76908315fcedc5b74be6c353aa4f2addc63a5f5a972753c8f878148d60bf1a1856ed0088e71108cf9402c8e87a6648d4e6c08772f90c2b833d9a9f69b  hwtest-0.2.0.tar.gz"
+sha512sums="d1c50d9ea914c92bf36f798cd2514d8e672f353f5e969da8e2d5066ca0755acb4fa3bc021879e239c643420e81d94173698be489e115dc6e60949aad124004df  hwtest-0.3.0.tar.gz"
