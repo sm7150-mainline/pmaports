@@ -13,4 +13,5 @@ eval "$(dbus-launch --sh-syntax --exit-with-session)"
 
 # Start X11 with Hildon
 export LC_MESSAGES=en_US.UTF-8
+export CLUTTER_BACKEND=x11
 exec hildon-desktop

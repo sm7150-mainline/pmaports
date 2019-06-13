@@ -1,10 +1,11 @@
+# Contributor: NotKit
 pkgname=hildon-desktop
 pkgver=2.2.157.11
-pkgrel=0
+pkgrel=1
 pkgdesc="Hildon desktop for Fremantle"
 arch="all"
 url="https://github.com/maemo-leste/hildon-desktop"
-license="GPL"
+license="GPL-2.0-or-later"
 depends="libhildon libmatchbox2 libhildondesktop clutter gnome-menus profiled"
 makedepends="
 	autoconf
@@ -14,27 +15,21 @@ makedepends="
 	libmatchbox2-dev
 	mce-headers
 	profiled-dev"
-source="
-	$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/hildon-desktop/archive/$pkgver.tar.gz
-"
-
-builddir="$srcdir/hildon-desktop-$pkgver"
-
-prepare() {
-	default_prepare
-	cd "$builddir"
-	sed -i -e 's/g_return_if_fail (!render_manager->priv->zoomed);//g' src/home/hd-render-manager.c
-}
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/hildon-desktop/archive/$pkgver.tar.gz
+	build-fix.patch"
 
 build() {
-	cd "$builddir"
 	./autogen.sh
 	./configure --prefix=/usr --sysconfdir=/etc
 	make
 }
 
 package() {
-	cd "$builddir"
 	make DESTDIR="$pkgdir/" install
+
+	# Once dsmetool is packaged, we should use this rather than our own launch script
+	# install -Dm644 "$builddir"/debian/hildon-desktop.xsession \
+	#	"$pkgdir"/usr/bin/hildon-desktop
 }
-sha512sums="4084f535b366283d2d7d1a2ca546a925c50506a97270c0bfbb9358f859a4e175d9fbd530ffa9e3251afe372c58352d91d4d707c9190b19b114f655f35ea16f58  hildon-desktop-2.2.157.11.tar.gz"
+sha512sums="4084f535b366283d2d7d1a2ca546a925c50506a97270c0bfbb9358f859a4e175d9fbd530ffa9e3251afe372c58352d91d4d707c9190b19b114f655f35ea16f58  hildon-desktop-2.2.157.11.tar.gz
+f9f7ae9c4b175bb40d9f76a6716afdf3e77630bedee727b09b442b723a90f0dfa125937c483e75024343ae55eb60e5d824bc8bf3ce554c071cca9d88b9af2594  build-fix.patch"
