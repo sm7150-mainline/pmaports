@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=spacebar
+pkgver=0_git20190611
+pkgrel=0
+_commit="388ad5caa5dd35ad28cc4e8c77b0b1d77aa012ec"
+pkgdesc="Collection of stuff for running IM on Plasma Mobile "
+url="https://phabricator.kde.org/source/spacebar/"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev kpeople-dev kservice-dev kdbusaddons-dev ki18n-dev ktp-common-internals-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	mkdir "$builddir"/build
+}
+
+build() {
+	cd "$builddir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+package() {
+	cd "$builddir"/build
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="2546a4d0c1bc00895831e7eabaf80dea510f7cc175084f42d48f16ca39026cec69e9a2778017d765fce93648a11b158999d5ac0dee0683a19c112979996a09f1  spacebar-388ad5caa5dd35ad28cc4e8c77b0b1d77aa012ec.tar.gz"
