@@ -1,0 +1,41 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=telepathy-qt
+pkgver=0.9.7
+pkgrel=0
+arch="all"
+url="http://telepathy.freedesktop.org/wiki/"
+license="LGPL-2.1-or-later"
+pkgdesc="A library for Qt-based Telepathy clients"
+depends="qt5-qtbase"
+depends_dev="telepathy-farstream-dev telepathy-glib-dev gstreamer-dev"
+makedepends="$depends_dev cmake python2 qt5-qttools-dev dbus doxygen"
+source="https://telepathy.freedesktop.org/releases/$pkgname/$pkgname-$pkgver.tar.gz"
+subpackages="$pkgname-dev $pkgname-doc"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DPYTHON_EXECUTABLE=/usr/bin/python2 \
+		-DDESIRED_QT_VERSION=5 \
+		-DENABLE_EXAMPLES=OFF \
+		-DENABLE_TESTS=TRUE
+	make
+
+	doxygen doxygen.cfg
+}
+
+check() {
+	# BaseConnectionManager requires jabber support
+	# BaseProtocol is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "Base(ConnectionManager|Protocol)"
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+
+	install -d "$pkgdir"/usr/share/doc/$pkgname
+	cp -r doc/html "$pkgdir"/usr/share/doc/$pkgname/
+}
+sha512sums="081daecb2509ea690079014bcc88eacbf2b3e4f4ac42aaf1b0cb264c01b801bc499a041482571d383f258cb3d3e2c6ffa5682fbe417fe807fcc25a06d2ead877  telepathy-qt-0.9.7.tar.gz"

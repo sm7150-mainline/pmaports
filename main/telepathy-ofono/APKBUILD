@@ -1,38 +1,29 @@
 # Contributor: Bhushan Shah <bshah@kde.org>
 # Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=telepathy-ofono
-pkgver=0.2
+pkgver=0_git20190116
 pkgrel=0
-pkgdesc="telepathy oFono connection manager"
-url="https://launchpad.net/telepathy-ofono"
+_commit="d282c4f8008f8364506829dca20097099a5828cc"
+pkgdesc="Telepathy oFono connection manager"
+url="https://github.com/TelepathyIM/telepathy-ofono"
 arch="all"
-license="GPL3"
-depends=""
-makedepends="cmake telepathy-mission-control-dev libphonenumber-dev telepathy-qt5-dev ofono-qt-dev pulseaudio-dev"
-install=""
-source="https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/telepathy-ofono/0.2+17.04.20161109-0ubuntu1/telepathy-ofono_0.2+17.04.20161109.orig.tar.gz"
-builddir="$srcdir/"
+license="LGPL-2.1-or-later"
+makedepends="cmake qt5-qtbase-dev libphonenumber-dev telepathy-qt-dev sqlite-dev telepathy-mission-control-dev ofono-qt-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/telepathyim/$pkgname/archive/$_commit.tar.gz"
 options="!check" # no tests
+builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cd "$builddir"
-	if [ "$CBUILD" != "$CHOST" ]; then
-		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
-	fi
 	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DBUILD_SHARED_LIBS=True \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-		-DCMAKE_C_FLAGS="$CFLAGS" \
-		${CMAKE_CROSSOPTS}
+		-DBUILD_SHARED_LIBS=True
 	make
 }
 
 package() {
-	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="5c9cb4bdefda8c3a14b18d383f821e3f2abb36a3fcac6c9372cf119466465ade26c9bda12ea8a0510672999b11ff8c3538cd2c43393e1354c11f9af84163ea37  telepathy-ofono_0.2+17.04.20161109.orig.tar.gz"
+sha512sums="6d0ceb618e5957a92433167706e02351a6156674486ff8442e434e99612211b96762ae24f5c319c50024bfcd3ad6383fde2f7bc1cf6378617718651b660cb54d  telepathy-ofono-d282c4f8008f8364506829dca20097099a5828cc.tar.gz"
