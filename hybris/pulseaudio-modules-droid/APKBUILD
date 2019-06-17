@@ -1,0 +1,99 @@
+# Contributor: Alexey Min <alexey.min@gmail.com>
+# Maintainer: Alexey Min <alexey.min@gmail.com>
+pkgname="pulseaudio-modules-droid"
+# pkgver should match MAJOR.MINOR pulseaudio version
+pkgver=12.2
+# _pkgver used in URL to download tarball
+_pkgver=12.2.78
+pkgrel=0
+pkgdesc="PulseAudio Droid modules by Mer project"
+url="https://github.com/mer-hybris/pulseaudio-modules-droid"
+arch="x86 armv7 aarch64"
+license="LGPL-2.1-or-later"
+depends="pulseaudio"
+makedepends="autoconf automake libtool m4 intltool dbus-dev expat-dev pulseaudio-dev pulsecore-private-headers android-headers-7.1 android-headers-7.1-caf libhybris-dev libhybris-7.1"
+options="!check"  # No test suite available
+source="
+	$pkgname-$_pkgver.tar.gz::https://github.com/mer-hybris/$pkgname/archive/$_pkgver.tar.gz
+	0001-configure-ac-compat.patch
+"
+install="$pkgname.post-install"
+subpackages=""
+_headers_variants="7.1 7.1-caf"
+for _ver in $_headers_variants; do
+	subpackages="$subpackages $pkgname-$_ver:_variant"
+done
+
+builddir="$srcdir/$pkgname-$_pkgver"
+_tmppkgdir="$srcdir/tmpinstall"
+_list_of_libs="
+	libdroid-sink.so
+	libdroid-source.so
+	libdroid-util.so
+	module-droid-card.so
+	module-droid-keepalive.so
+	module-droid-sink.so
+	module-droid-source.so
+"
+
+prepare() {
+	default_prepare
+	echo $pkgver > .tarball-version
+	autoreconf --force --install
+}
+
+build() {
+	# Hack to build against CAF android headers:
+	#   use our own local pkg-config path folder
+	mkdir pkgconfig
+	ln -s /usr/lib/pkgconfig/android-headers-7.1.pc pkgconfig/android-headers.pc
+	export PKG_CONFIG_PATH="$builddir/pkgconfig"
+
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-shared \
+		--disable-static
+
+	# build several times against different android headers variation
+	for _ver in $_headers_variants; do
+		msg "building $pkgname-$_ver"
+
+		# Before each build make sure that include path points to correct location:
+		# instead of re-symlinking android-headers.pc file and re-running
+		# configure every time, just rewrite include paths in every Makefile
+		for _makefile in "Makefile src/Makefile src/common/Makefile src/droid/Makefile"; do
+			sed -i -E "s~/usr/include/android-[^ ]+~/usr/include/android-$_ver~g" $_makefile
+		done
+
+		make clean
+		make
+
+		# each variation is installed into a unique temporary directory
+		make DESTDIR="${_tmppkgdir}/$pkgname-$_ver" install
+	done
+}
+
+package() {
+	# here we should run install for some common files
+	# for both subpackages, but we don't have anything like that
+	# pkgdir is still needed, otherwise "rootpkg failed"
+	mkdir -p "$pkgdir"
+}
+
+_variant() {
+	depends="$pkgname"
+	mkdir -p "$subpkgdir"
+	# Copy libs from temp install folder to a proper subpackage dir
+	for _lib in $_list_of_libs; do
+		install -Dm644 ${_tmppkgdir}/${subpkgname}/usr/lib/pulse-${pkgver}/modules/${_lib} \
+			${subpkgdir}/usr/lib/pulse-${pkgver}/modules/${_lib}
+	done
+}
+
+sha512sums="4870936c84aaf3d80f52f8624c0434fac33c1aaa0bd7fe1ecf1fefde16ccd78be3de58b120341ef5e265342ff0f7600730c61adf7de713cb2956073b83a57fe0  pulseaudio-modules-droid-12.2.78.tar.gz
+2aa283c64d8623c035522b89b62c80130d14c145a73e6193e2e98c26525cc12670e50f8db4649029e731b61d08c1e5ab2bd4e1a3dae8ca077bbdabe3a69eaa17  0001-configure-ac-compat.patch"

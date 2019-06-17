@@ -1,0 +1,20 @@
+#!/bin/sh
+# pulseaudio default config file name
+DEFAULT_PA=/etc/pulse/default.pa
+# configuration lines
+L1="load-module module-droid-card"
+
+append_line() {
+	FN=$1
+	LINE=$2
+	if ! grep -q "${LINE}" "${FN}"; then
+		echo "Adding $LINE..."
+		echo "${LINE}" >> "${FN}"
+	else
+		echo "Not adding ${LINE}"
+	fi
+}
+
+if [ -f ${DEFAULT_PA} ]; then
+	append_line "${DEFAULT_PA}" "${L1}"
+fi
