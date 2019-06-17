@@ -1,0 +1,35 @@
+# Contributor: Alexey Min <alexey.min@gmail.com>
+# Maintainer: Alexey Min <alexey.min@gmail.com>
+pkgname=pulsecore-private-headers
+pkgver=12.2
+pkgrel=0
+pkgdesc="PulseAudio internal development library (headers and pkg-config)"
+url="http://www.freedesktop.org/wiki/Software/PulseAudio"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="pulseaudio-dev libpulse pkgconfig"
+options="!check"  # No test suite available
+source="
+	https://freedesktop.org/software/pulseaudio/releases/pulseaudio-$pkgver.tar.xz
+	pulsecore.pc
+	0001-core-util-add-socket-h.patch
+"
+
+builddir="$srcdir/pulseaudio-$pkgver"
+
+build() {
+	sed -i "s/@PA_MAJORMINOR@/$pkgver/" "$srcdir"/pulsecore.pc
+}
+
+package() {
+	install -Dm644 "$srcdir"/pulsecore.pc "$pkgdir"/usr/lib/pkgconfig/pulsecore.pc
+
+	mkdir -p "$pkgdir"/usr/include/pulsecore
+	mkdir -p "$pkgdir"/usr/include/pulsecore/filter
+	cp -r "$builddir"/src/pulsecore/*.h "$pkgdir"/usr/include/pulsecore/
+	cp -r "$builddir"/src/pulsecore/filter/*.h "$pkgdir"/usr/include/pulsecore/filter/
+}
+
+sha512sums="877754c1838b3cb042dbc18a5f1cc3cf313ffcaee7a64703330406d1f86279c34f1107634ac3083b158365e6757fbacf5ec406bc3c5788d291de67b77a561a4e  pulseaudio-12.2.tar.xz
+e419ceab4779e061fb0378fc4ce0d24e2a738610b5d837866c47e9fd8044c206bb32485f7aaf0df336c2944d67b856fdee95ea6ca9e7c12954d15ae521adad66  pulsecore.pc
+4e24295e5e03d3f89f5197657e7946c56e9d776c1b64306d2798075df322700ca1f89a19f1fa9ab7f379b1b33196eb316dc17a20efdc5b0e41ff47c41b567e34  0001-core-util-add-socket-h.patch"
