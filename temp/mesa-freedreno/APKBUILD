@@ -1,0 +1,257 @@
+# Forked from Alpine to build mesa master, where freedreno is not broken anymore
+pkgname=mesa-freedreno
+provides=mesa
+pkgver=19.1.0_git20190620
+_commit="f179febde0c6e85911365e845a737be3f346da4a"
+pkgrel=8
+pkgdesc="[${_commit}] Mesa DRI OpenGL library"
+url="https://www.mesa3d.org"
+arch="armhf armv7 aarch64"
+license="MIT SGI-B-2.0 BSL-1.0"
+subpackages="
+	$pkgname-dev
+	$pkgname-glapi $pkgname-egl $pkgname-gl $pkgname-gles
+	$pkgname-osmesa $pkgname-gbm $pkgname-xatracker
+	"
+depends_dev="
+	libdrm-dev
+	libxext-dev
+	libxdamage-dev
+	libxcb-dev
+	libxshmfence-dev
+	"
+makedepends="
+	$depends_dev
+	bison
+	eudev-dev
+	expat-dev
+	flex
+	gettext
+	elfutils-libelf
+	libtool
+	libxfixes-dev
+	libva-dev
+	libvdpau-dev
+	libx11-dev
+	libxrandr-dev
+	libxxf86vm-dev
+	libxt-dev
+	libxvmc-dev
+	makedepend
+	py-mako
+	py3-libxml2
+	python3
+	talloc-dev
+	wayland-dev
+	wayland-protocols
+	xorgproto
+	zlib-dev
+	meson
+	ninja
+	"
+source="
+	https://gitlab.freedesktop.org/mesa/mesa/-/archive/$_commit/mesa-$_commit.tar.bz2
+	10-adjust-cache-deflate-buffer.patch
+	20-musl.patch
+	meson-add-toggle-for-TLS-support-in-GLX.patch"
+replaces="mesa-dricore"
+
+_dri_driverdir=/usr/lib/dri
+_dri_driverdir_x11=/usr/lib/xorg/modules/dri
+_dri_drivers=""
+_gallium_drivers="swrast,virgl"
+subpackages="$subpackages
+			$pkgname-dri-swrast:_dri
+			$pkgname-dri-virgl:_dri"
+
+case "$CARCH" in
+x86*)
+	_dri_drivers="${_dri_drivers},i915,i965"
+	_gallium_drivers="${_gallium_drivers},svga"
+	_vulkan_drivers="${_vulkan_drivers},amd,intel"
+	subpackages="$subpackages
+			$pkgname-dri-intel:_dri \
+			$pkgname-dri-vmwgfx:_dri"
+	;;
+armhf|armv7|aarch64)
+	_gallium_drivers="${_gallium_drivers},kmsro,vc4,freedreno,panfrost,etnaviv"
+	_vulkan_drivers="${_vulkan_drivers}"
+	subpackages="$subpackages
+			$pkgname-dri-kmsro:_dri
+			$pkgname-dri-vc4:_dri
+			$pkgname-dri-freedreno:_dri
+			$pkgname-dri-panfrost:_dri
+			$pkgname-dri-etnaviv:_dri"
+	;;
+esac
+builddir="$srcdir/mesa-$_commit"
+
+
+build() {
+	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE=700"
+	mkdir "$builddir"/build
+	meson -Ddri-search-path="$_dri_driverdir" \
+		-Dgallium-drivers="$_gallium_drivers" \
+		-Ddri-drivers="$_dri_drivers" \
+		-Dvulkan-drivers="$_vulkan_drivers" \
+		-Dplatforms=x11,wayland,drm \
+		-Ddri3=true \
+		-Degl=true \
+		-Dglx=dri \
+		-Dgles1=true \
+		-Dgles2=true \
+		-Dshared-glapi=true \
+		-Dosmesa=gallium \
+		-Dgbm=true \
+		-Dglx-tls=false \
+		-Db_ndebug=true \
+		-Dprefix=/usr "$builddir"/build \
+		--buildtype=release
+	ninja -C "$builddir"/build
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C "$builddir"/build install
+}
+
+egl() {
+	pkgdesc="[${_commit}] Mesa libEGL runtime libraries"
+	replaces="mesa"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libEGL.so* "$subpkgdir"/usr/lib/
+}
+
+gl() {
+	pkgdesc="[${_commit}] Mesa libGL runtime libraries"
+	replaces="mesa"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libGL.so* "$subpkgdir"/usr/lib/
+}
+
+glapi() {
+	pkgdesc="[${_commit}] Mesa shared glapi"
+	replaces="$pkgname-gles"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libglapi.so.* "$subpkgdir"/usr/lib/
+}
+
+gles() {
+	pkgdesc="[${_commit}] Mesa libGLESv2 runtime libraries"
+	replaces="mesa"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libGLES*.so* "$subpkgdir"/usr/lib/
+}
+
+
+osmesa() {
+	pkgdesc="[${_commit}] Mesa offscreen rendering libraries"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libOSMesa.so.* "$subpkgdir"/usr/lib/
+}
+
+xatracker() {
+	pkgdesc="Mesa XA state tracker for vmware"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libxatracker*.so.* "$subpkgdir"/usr/lib/
+}
+
+gbm() {
+	pkgdesc="[${_commit}] Mesa gbm library"
+	replaces="mesa"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libgbm.so.* "$subpkgdir"/usr/lib/
+}
+
+_mv_dri() {
+	install -d "$subpkgdir"/$_dri_driverdir
+	install -d "$subpkgdir"/$_dri_driverdir_x11
+
+	while [ $# -gt 0 ]; do
+		mv "$pkgdir"/$_dri_driverdir/${1}.so \
+			"$subpkgdir"/$_dri_driverdir/
+		ln -s $_dri_driverdir/${1}.so \
+			"$subpkgdir"/$_dri_driverdir_x11/${1}.so
+		shift
+	done
+}
+
+_mv_vdpau() {
+	local i
+	install -d "$subpkgdir"/usr/lib/vdpau
+	for i in "$@"; do
+		mv "$pkgdir"/usr/lib/vdpau/libvdpau_$i.* \
+			"$subpkgdir"/usr/lib/vdpau/
+	done
+}
+
+_mv_gpipe() {
+	return 0
+	# http://cgit.freedesktop.org/mesa/mesa/commit/?id=44ec468e8033553c26a112cebba41c343db00eb1
+	# https://code.google.com/p/chromium/issues/detail?id=412089
+#	local i
+#	install -d "$subpkgdir"/usr/lib/gallium-pipe
+#	for i in "$@"; do
+#		mv "$pkgdir"/usr/lib/gallium-pipe/pipe_$i.* \
+#			"$subpkgdir"/usr/lib/gallium-pipe/
+#	done
+}
+
+
+
+_mv_va() {
+	local i
+	install -d "$subpkgdir"/usr/lib/dri
+	for i in "$@"; do
+		mv "$pkgdir"/usr/lib/dri/${i}_drv_video.so \
+			"$subpkgdir"/usr/lib/dri/
+	done
+}
+
+_dri() {
+	local n=${subpkgname##*-dri-}
+	pkgdesc="[${_commit}] Mesa DRI driver for $n"
+
+	case $n in
+	swrast)
+		_mv_dri swrast_dri kms_swrast_dri \
+			&& _mv_gpipe swrast
+		;;
+	intel)
+		_mv_dri i915_dri i965_dri
+		;;
+	vmwgfx)
+		_mv_dri vmwgfx_dri \
+			&& _mv_gpipe vmwgfx
+		;;
+	freedreno)
+		_mv_dri msm_dri kgsl_dri
+		;;
+	virgl)
+		_mv_dri virtio_gpu_dri
+		;;
+	vc4)
+		_mv_dri vc4_dri
+		;;
+	panfrost)
+		_mv_dri panfrost_dri
+		;;
+	etnaviv)
+		_mv_dri armada-drm_dri imx-drm_dri etnaviv_dri
+		;;
+	kmsro)
+		_mv_dri exynos_dri hx8357d_dri ili9225_dri ili9341_dri meson_dri mi0283qt_dri pl111_dri repaper_dri rockchip_dri st7586_dri st7735r_dri sun4i-drm_dri
+		;;
+	esac
+}
+
+sha512sums="244b50bf0275dcdac3adaa6be9a0d9997aeb6d5601d21585e328e6c950225f787366bf70aba2256bdc72ade7e478ccf2f62269d1d944f80ecf25184b0d1bbe38  mesa-f179febde0c6e85911365e845a737be3f346da4a.tar.bz2
+cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  10-adjust-cache-deflate-buffer.patch
+02db65893d55b5667d9c3bc193fc089e5408596431e06363fe2adea00c9e3c4e80612f3d03dc61f931d1a6ae04340bccf55e1376cf00bbf2433990713649d286  20-musl.patch
+a7bbc0d8836fe5eb7220c7b41d8af439878a3876302de32739243232f979ea9c63d2069fcd78bef370eafef0a21f491ef99219ae686e965326475764244bbe5d  meson-add-toggle-for-TLS-support-in-GLX.patch"
