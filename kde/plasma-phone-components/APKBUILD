@@ -1,40 +1,35 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-phone-components
-pkgver=0_git20190505
-pkgrel=4
-_commit="cec97e231b6106eb5c69fd9b774769cd3c8e72b1"
+pkgver=0_git20190521
+pkgrel=0
+_commit="af8c4c939266d13be50fc31af4841cb53b788315"
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
 license="GPL-2.0 LGPL-2.1-or-later"
-depends="desktop-file-utils qt5-qtgraphicaleffects kactivities qt5-qtquickcontrols2 qt5-qtquickcontrols plasma-pa plasma-nm upower libqofono"
+depends="qt5-qtquickcontrols2 plasma-workspace kactivities plasma-pa plasma-nm libqofono breeze-icons plasma-settings"
 makedepends="extra-cmake-modules kpeople-dev qt5-qtdeclarative-dev kactivities-dev plasma-framework-dev kservice-dev kdeclarative-dev ki18n-dev kio-dev kcoreaddons-dev kconfig-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kpackage-dev kwindowsystem-dev kdbusaddons-dev knotifications-dev kwayland-dev telepathy-qt-dev libphonenumber-dev"
-install="$pkgname.post-install
-	$pkgname.post-upgrade
-	$pkgname.post-deinstall"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz
+source="
+	$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz
 	startplasmamobile
-	plasma-mobile.desktop"
+	plasma-mobile.desktop
+	"
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cd "$builddir"
 	cmake \
-		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 check() {
-	cd "$builddir"
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" make install
 
 	install -D -m755 "$srcdir"/startplasmamobile \
@@ -43,6 +38,6 @@ package() {
 	install -Dm644 "$srcdir"/plasma-mobile.desktop \
 		"$pkgdir"/usr/share/wayland-sessions/plasma-mobile-2.desktop
 }
-sha512sums="2c941ecc1b4c054c09753c19db1cf00157d5d51b3f2f0067125e67a6311eb26419a295df6fec52467e1019a833ee054e62db2ca58ad0219061bbcb7ca961393a  plasma-phone-components-cec97e231b6106eb5c69fd9b774769cd3c8e72b1.tar.gz
+sha512sums="ed10a01c25a6e8c2b8f2d0090ee17a8bb33bc17e5f0483953758fb9336297093cb65340d9adfbd20fe70b0c1817ff3a449af4d982b93188b04563315125a691c  plasma-phone-components-af8c4c939266d13be50fc31af4841cb53b788315.tar.gz
 bfa5df2bb635899b6b88816dd02073d6949303f1282c3acd91fd8bc1e92b10db2fbfa167d2df6c6e11ecb763b6b94ed0451b5b1ddc504543402e6a9ce6bb985c  startplasmamobile
 7f4bdbd30cda4c9e23293b7bb1eb6e8536ada056cb3bcc9a6cc3db7bbc2277eac67b519992b7e46afdf5c720df9c696b43a6a9e9f82ed7ebe3937d8c0bf4d55d  plasma-mobile.desktop"
