@@ -3,20 +3,18 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=4.17_rc3
-pkgrel=11
+pkgver=5.2.0_rc3
+pkgrel=0
 
-arch="armhf armv7"
+arch="armv7"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm devices"
 url="https://kernel.org/"
 makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
-_commit="7370f0628e00250f237fe8b934ebedf7ae8d6547"
+_commit="f1163f1d8ee8895ab1e467b8a9867838cff3422a"
 source="
-	linux-${_commit}.tar.gz::https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/${_commit}/linux-postmarketos-${_commit}.tar.gz
-	config-${_flavor}.armhf
+	linux-${_commit}.tar.gz::https://github.com/masneyb/linux/archive/${_commit}.tar.gz
 	config-${_flavor}.armv7
-	0001-Fix-Hammerhead-backlight.patch
 "
 
 subpackages="$pkgname-dev"
@@ -34,7 +32,7 @@ esac
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-builddir="$srcdir/linux-postmarketos-${_commit}"
+builddir="$srcdir/linux-${_commit}"
 
 prepare() {
 	local _patch_failed=
@@ -160,7 +158,5 @@ dev() {
 		"$subpkgdir"/lib/modules/${_abi_release}/build
 }
 
-sha512sums="a91bb4d5b2208e485c7311e9c8b7047505a08b1ce73b061169752e394a7fa58da54fed85aa85fe5fae19cfd8943174b5646b82e788afb6149e6a0be8679019d3  linux-7370f0628e00250f237fe8b934ebedf7ae8d6547.tar.gz
-fc151402f33f947fdfb1a0f60f7dee621b2299678c14bbc2d3425c22b3300795cddfba8635f3d2d9a409ea506e825d00957bffe14d54cd14612d364a1d03529a  config-postmarketos-qcom.armhf
-fc151402f33f947fdfb1a0f60f7dee621b2299678c14bbc2d3425c22b3300795cddfba8635f3d2d9a409ea506e825d00957bffe14d54cd14612d364a1d03529a  config-postmarketos-qcom.armv7
-caf6d5615548dda58261c1d0fb571b93f0bd057a7dd071980e2402bae62bb951e40375693776b846a431c9ea47b8e6098f292b83b3744b23f2e5663f830b3548  0001-Fix-Hammerhead-backlight.patch"
+sha512sums="404d93112b24c263fd8cdec9fd1f607e02fb4e52c701dfbabde7b7e3d8811dcc04fe802bfc2cdd6832f1911f813bb64774df369535b712f7a3c5faa878d0ee2b  linux-f1163f1d8ee8895ab1e467b8a9867838cff3422a.tar.gz
+924308f9b7ab68b0d04faf882cf00a9597463583cd35e6453c5e1bae404c6b75526d3f43c44214ade80e3723da857c57cacc06333dcfaee601662ddccc901e1e  config-postmarketos-qcom.armv7"
