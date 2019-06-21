@@ -1,29 +1,28 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=index
-pkgver=0_git20190423
+_pkgname=$pkgname-fm
+pkgver=0_git20190603
 pkgrel=0
-_commit="92fb54da15c57c75e97b496a27e360b1e7ed6d40"
+_commit="56e4812422ffb6129ce690f3bf5ddc639c722338"
 pkgdesc="Index file manager based on MauiKit"
 arch="all"
-url="https://github.com/mauikit/index"
-license="GPL-2.0+"
+url="https://invent.kde.org/kde/index-fm"
+license="GPL-2.0-or-later"
 depends="mauikit qmltermwidget"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
-source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$_pkgname/-/archive/$_commit.tar.gz"
 options="!check" # No tests available
-builddir="$srcdir/$pkgname-$_commit"
+builddir="$srcdir/$_pkgname-$_commit"
 
 build() {
-	cd "$builddir"
 	cmake \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr
 	make
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="84b045931169c4f40d4f2b8619ad8a9692f9d556a0a068f8e867415469927239bd26d411cdaa29eeef15d2e8c5bde636a804c86ceedf90dc9e17262de1c30b8d  index-92fb54da15c57c75e97b496a27e360b1e7ed6d40.tar.gz"
+sha512sums="a649211b0c8c2bef8d42c693a815a37ef304e1162c3a6ced50ceca363f345a238b83d9e4b3d08b05052d3f85a3819020b4cc4d8303e9dcd9977d76bb74cc6b05  index-56e4812422ffb6129ce690f3bf5ddc639c722338.tar.gz"
