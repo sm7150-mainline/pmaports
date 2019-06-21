@@ -1,32 +1,30 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=vvave
-pkgver=0_git20190423
+pkgver=0_git20190621
 pkgrel=0
-_commit="59783779eb42d8c742a7f8e3aedaa68a6b44f4b5"
+_commit="3c562d17913a83a356988458df492a6ba969c639"
 pkgdesc="VVAVE Music Player"
 arch="all"
-url="https://github.com/mauikit/vvave"
-license="GPL-3.0"
+url="https://invent.kde.org/kde/vvave"
+license="GPL-3.0-or-later"
 depends="mauikit"
 makedepends="extra-cmake-modules mauikit-dev qt5-qtwebsockets-dev qt5-qtmultimedia-dev qt5-qtwebengine-dev taglib-dev"
-source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
 	cmake \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr
 	make
 }
 
 check() {
-	cd "$builddir"
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="7b1f01f2c25d2aface1dee14ebe162f88cd69fff0dc2c237eada074e19fc4ae3f71be561f9281c485ca1d5df48e2d2cd3113aedc0c43353d20191b73ef407eaf  vvave-59783779eb42d8c742a7f8e3aedaa68a6b44f4b5.tar.gz"
+sha512sums="0246df5dbc84f5b84ab3ace54c770e71f709a91e73c2c26cf7d701d2dfd1e2c722cdf6508f65680f6b8da2b3f227bf28eaa6e2514ceca55fe8348747193fc23e  vvave-3c562d17913a83a356988458df492a6ba969c639.tar.gz"
