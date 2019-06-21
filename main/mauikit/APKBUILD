@@ -1,34 +1,32 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=mauikit
-pkgver=0_git20190423
+pkgver=0_git20190619
 pkgrel=0
-_commit="76895b879db16b38bd017bed7998ddf2b6c025e6"
+_commit="3818cce2e8f25c38f5bdb67458f794144c223e47"
 pkgdesc="Kit for developing MAUI Apps"
 arch="all"
-url="https://github.com/mauikit/mauikit"
-license="GPL-2.0+ GPL-3.0+"
+url="https://invent.kde.org/kde/mauikit"
+license="GPL-2.0-or-later"
 depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev qt5-qtwebengine-dev ki18n-dev knotifications-dev kconfig-dev kservice-dev kio-dev"
 makedepends="$depends_dev extra-cmake-modules"
-source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit.tar.gz"
 subpackages="$pkgname-dev"
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
 	cmake \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 check() {
-	cd "$builddir"
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" make install
 }
-sha512sums="a5342b708ccaa9ecc8e3c84df839939ac52bb8cf8ea5813b14ad5403f92c443a2e35539849a5797dddaaa49e4bed93b6a4a2cd6ba477bf1c75e0575b8e622433  mauikit-76895b879db16b38bd017bed7998ddf2b6c025e6.tar.gz"
+sha512sums="f61213a61b3be595ed973c9c11468306657b32c71378d25a1dab2e4587baeb146092d29e3f91d2bd9fcc8238325f6ca2751bcedcc1e23d0932d5897eaf4ab571  mauikit-3818cce2e8f25c38f5bdb67458f794144c223e47.tar.gz"
