@@ -1,30 +1,29 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=pix
-pkgver=0_git20190423
+_pkgname=maui-$pkgname
+pkgver=0_git20190620
 pkgrel=0
-_commit="63d0aab7d656426cabcd82dd0f3643e92fac7d7d"
+_commit="a41659898925a252a365334eaab986d647b967ad"
 pkgdesc="Image gallery manager built with MauiKit"
 arch="all"
-url="https://github.com/mauikit/pix"
-license="GPL-3.0"
+url="https://invent.kde.org/kde/maui-pix"
+license="GPL-3.0-or-later"
 depends="mauikit"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
-source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$_pkgname/-/archive/$_commit.tar.gz"
 options="!check" # No tests available
-builddir="$srcdir/$pkgname-$_commit"
+builddir="$srcdir/$_pkgname-$_commit"
 
 build() {
-	cd "$builddir"
 	cmake \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="48befb1dc8f914d7dd76fccfbcfe4987e99d25a85aeca923250a4705fdc342076e98cbf71ac1cf412082c78b9c82bef4745b6961e4e26e9b86fcb949c1dbf9f4  pix-63d0aab7d656426cabcd82dd0f3643e92fac7d7d.tar.gz"
+sha512sums="f35e47a1e6c699d79db7777ce8ec2a1de80279ef838d8f0e04880b9bba4f53ebaae8b04ab9134d9e738fe1221515fb747bdafae439701a36a6eda219abf7a148  pix-a41659898925a252a365334eaab986d647b967ad.tar.gz"
