@@ -1,29 +1,28 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=nota
-pkgver=0_git20190423
+pkgver=0_git20190619
 pkgrel=0
-_commit="03180ff74a2440a9268e4218b071426672d98ff7"
+_commit="040f835919bd4e2ec6296c48a7d747a5a2412611"
 pkgdesc="Nota is a simple and convergent text editor"
 arch="all"
-url="https://github.com/mauikit/nota"
-license="GPL-2.0+ GPL-3.0+"
+url="https://invent.kde.org/kde/nota"
+license="GPL-2.0-or-later"
 depends="mauikit"
 makedepends="extra-cmake-modules qt5-qtbase-dev mauikit-dev"
-source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit.tar.gz"
 options="!check" # No tests available
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
 	cmake \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="66496e071a2695c3dbba6f0020cd84daf13bd14c1f7d06f5ec95f77cff0746fd6864cfdb6ae53b48d812fb89efedb24f46b4a5c427fd47bd77bf8da8c30ecf90  nota-03180ff74a2440a9268e4218b071426672d98ff7.tar.gz"
+sha512sums="8248edb5dda9f84d0a16a151185927f0de36313d80c4da3401a4e7d6aba901c9b576b9062dc9b644fbe8ce09239244b68350e5e4d256d300127d47c7c90842e2  nota-040f835919bd4e2ec6296c48a7d747a5a2412611.tar.gz"
