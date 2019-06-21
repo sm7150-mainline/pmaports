@@ -1,0 +1,33 @@
+# Contributor: Bhushan Shah <bshah@kde.org>
+# Maintainer: Bhushan Shah <bshah@kde.org>
+pkgname=libofono-qt
+pkgver=0.54_git20190116
+pkgrel=0
+_commit="8132b5ff5035c468807c291b4fa30d7e0a54cba4"
+pkgdesc="This package contains ofono-qt, a Qt-based library that providesbindings to oFono."
+url="https://github.com/Kaffeine/libofono-qt"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="qt5-qtbase"
+makedepends="qt5-qtbase-dev doxygen texlive"
+subpackages="$pkgname-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/Kaffeine/$pkgname/archive/$_commit.tar.gz"
+options="!check" # No tests suite
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	qmake-qt5
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+
+	# Remove tests
+	rm -r "$pkgdir"/opt
+
+	mkdir -p "$pkgdir"/usr/share/doc/$pkgname
+	mv doc/html "$pkgdir"/usr/share/doc/$pkgname/
+}
+
+sha512sums="80d7e92fff9a9d8798a050aa6a42dee553d5b44cfae0ee540523032ff116d95c9388f4e1302b9ab063dbf3076e1a8bedea8c67d8a5904d966a5d22a410b6218f  libofono-qt-8132b5ff5035c468807c291b4fa30d7e0a54cba4.tar.gz"
