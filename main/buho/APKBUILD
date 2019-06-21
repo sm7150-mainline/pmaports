@@ -1,32 +1,28 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=buho
-pkgver=0_git20190423
-pkgrel=1
-_commit="50e7c89b7e80dd633267b95c64f987cb8e3a4e36"
+pkgver=0_git20190619
+pkgrel=0
+_commit="1c388ebdb70489847020ff89101aa114bd08bdb5"
 pkgdesc="Note taking app based on MauiKit"
 arch="all"
-url="https://github.com/mauikit/buho"
-license="GPL-2.0+ GPL-3.0+"
+url="https://invent.kde.org/kde/buho"
+license="GPL-2.0-or-later"
 depends="mauikit"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtquickcontrols2-dev qt5-qtwebengine-dev mauikit-dev ki18n-dev knotifications-dev kconfig-dev kio-dev attica-dev"
-source="$pkgname-$_commit.tar.gz::https://github.com/mauikit/$pkgname/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit.tar.gz"
 options="!check" # No tests available
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	# Building with CMake is broken currently, so build with qmake for now
-	#cmake \
-	#	-DCMAKE_BUILD_TYPE=Release \
-	#	-DCMAKE_INSTALL_PREFIX=/usr \
-	#	-DCMAKE_INSTALL_LIBDIR=lib
-	qmake-qt5
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 package() {
-	cd "$builddir"
-	#DESTDIR="$pkgdir" make install
-	INSTALL_ROOT="$pkgdir" make install
+	DESTDIR="$pkgdir" make install
 }
-sha512sums="31bd1b76b0bf0cae72e0d990125784a94bff200e5dc670a1bf8ec6ada42261ccad09ac6706839a75c4a80dfac643afd9b572bd61e306de793e3d85dd887e8f75  buho-50e7c89b7e80dd633267b95c64f987cb8e3a4e36.tar.gz"
+sha512sums="350e63b91655a11dd4eb4992b4973648e3cbb1775b0b684c005e389f416e3e03e231efea2e939149f15e84a94f273c2994e1259b24bce6942249d168e968663e  buho-1c388ebdb70489847020ff89101aa114bd08bdb5.tar.gz"
