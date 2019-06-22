@@ -1,0 +1,30 @@
+From bc97232dfd16c4fe88903d3b9fdb58166e26d544 Mon Sep 17 00:00:00 2001
+From: David Edmundson <kde@davidedmundson.co.uk>
+Date: Sat, 22 Jun 2019 17:13:43 +0200
+Subject: [wayland] Obey m_requestGeometryBlockCounter inside updateDecoration
+
+Otherwise we can send our configure request too early
+
+Reviewed-by: Bhushun Shah
+---
+ shell_client.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/shell_client.cpp b/shell_client.cpp
+index ff7ee34..65417d5 100644
+--- a/shell_client.cpp
++++ b/shell_client.cpp
+@@ -591,7 +591,9 @@ void ShellClient::updateDecoration(bool check_workspace_pos, bool force)
+     if (m_xdgDecoration) {
+         auto mode = isDecorated() || m_userNoBorder ? XdgDecorationInterface::Mode::ServerSide: XdgDecorationInterface::Mode::ClientSide;
+         m_xdgDecoration->configure(mode);
+-        m_xdgShellSurface->configure(xdgSurfaceStates(), m_requestedClientSize);
++        if (m_requestGeometryBlockCounter == 0) {
++            m_xdgShellSurface->configure(xdgSurfaceStates(), m_requestedClientSize);
++        }
+     }
+     getShadow();
+     if (check_workspace_pos)
+-- 
+cgit v1.1
+
