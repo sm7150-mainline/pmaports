@@ -1,0 +1,20 @@
+pkgname="soc-qcom-msm8916"
+pkgdesc="Common package for Qualcomm MSM8916 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="LGPL-2.1-or-later"
+arch="aarch64"
+options="!check !archcheck"
+depends="alsa-lib mesa-dri-freedreno"
+
+_alsa_commit=eff9ffaa30226006a73b493cfc3e308c0a82bac0
+source="$pkgname-${_alsa_commit}.tar.gz::https://github.com/msm8916-mainline/alsa-lib/archive/${_alsa_commit}.tar.gz"
+
+package() {
+	cd "$srcdir/alsa-lib-${_alsa_commit}"/src/conf/ucm
+	find codecs/msm8916-wcd msm8916* -type f -name "*.conf" \
+		-exec install -Dm644 {} "$pkgdir"/usr/share/alsa/ucm/{} \;
+}
+
+sha512sums="9499d1e7e5a82833fd3d29faea22c3fc62a8fbb59a8994c0d95f74269746a2c8efc1346a6f569d19b50c87e7db038689d7498c90d6f6ac8d0d8696c0fcbbe3ab  soc-qcom-msm8916-eff9ffaa30226006a73b493cfc3e308c0a82bac0.tar.gz"

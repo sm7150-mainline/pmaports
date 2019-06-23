@@ -1,0 +1,58 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/msm8916_defconfig
+
+_flavor="postmarketos-qcom-msm8916"
+pkgname="linux-${_flavor}"
+pkgver=5.3.0_rc6
+pkgrel=0
+pkgdesc="Mainline kernel fork for Qualcomm MSM8916 devices"
+arch="aarch64"
+_carch="arm64"
+url="https://github.com/msm8916-mainline/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+depends_dev="perl gmp-dev elfutils-dev bash flex bison"
+makedepends="$depends_dev sed installkernel bc linux-headers openssl-dev dtbtool"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_tag=v5.3-rc6-msm8916
+source="
+	$pkgname-$_tag.tar.gz::$url/archive/$_tag.tar.gz
+	config-$_flavor.$arch
+"
+builddir="$srcdir/linux-${_tag#v}"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -p scripts/dtc/ -o arch/arm64/boot/dt.img arch/arm64/boot/
+	install -Dm644 arch/arm64/boot/dt.img "$pkgdir"/boot/dt.img
+}
+
+sha512sums="d40bf6aa0f772685232507708366666fbfadba5ade13679bf05508c5dab91db700aa01b34f09c59f04e8c5c20e6bb5a3b8cd068eb7653f6d8442afb742141f63  linux-postmarketos-qcom-msm8916-v5.3-rc6-msm8916.tar.gz
+d2ca2b11133ce2deb51ebef991334217fff425fcd389f27a46651798b93c3141b64c1f2a8ba1c395076e542c3b72371083bfd020882aaee0e106a663969c43ae  config-postmarketos-qcom-msm8916.aarch64"
