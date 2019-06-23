@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-a3ulte"
+pkgdesc="Samsung Galaxy A3 (SM-A300FU)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-samsung-a3ulte-venus firmware-samsung-a3ulte-wcnss"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="c689991681a36d16151eb86faf31df1138c161fac0bd5f68112bba5031ffee2b1c9e5aff46b50acb125d4364d4287f224509aaf2c89bdfc3d7bd39204163b580  deviceinfo"
