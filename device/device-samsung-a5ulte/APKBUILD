@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-a5ulte"
+pkgdesc="Samsung Galaxy A5 (SM-A500FU)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-samsung-a5ulte-venus firmware-samsung-a5ulte-wcnss"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="a7e8cad02d17431965a8c5a0969af3ac4427d7338f662c0bcf1a68274d17ec0306588e741a55f630df82b3347b8d3e914f364e6b7424aaf1bc0b882d34333133  deviceinfo"
