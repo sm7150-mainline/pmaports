@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-xiaomi-kenzo"
+pkgdesc="Xiaomi Redmi Note 3"
+pkgver=0.1
+pkgrel=1
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-kenzo mkbootimg mesa-dri-swrast mdss-fb-init-hack libsparse"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-xiaomi-kenzo"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="6307cdc07e910b8a8c991b4a0552c558a30f86fb2c930778d51ef6a80a144e67c32b782696059cad3415ed81e32c04c41e3ee6833046599474c36e56f4dfb528  deviceinfo"
