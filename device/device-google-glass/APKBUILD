@@ -1,17 +1,29 @@
 pkgname="device-google-glass"
 pkgdesc="Google Glass"
-pkgver=0.1
-pkgrel=5
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
 options="!check !archcheck"
 depends="postmarketos-base linux-google-glass mkbootimg mesa-dri-swrast"
-source="deviceinfo"
+source="deviceinfo initfs-hook.sh"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
-package() {
-	install -Dm644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+build() {
+	devicepkg_build $startdir $pkgname
 }
 
-sha512sums="0e33b7f9c6db6bf0bdead69119da64ddc2bd24e2bbc5fc8e04346cc292eb52deae9d2c1ab61f48047d897739abf1e955ed4e36f53b48e0cddd95e35203387b7f  deviceinfo"
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Google Glass Firmware"
+	depends="firmware-google-glass"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="0e33b7f9c6db6bf0bdead69119da64ddc2bd24e2bbc5fc8e04346cc292eb52deae9d2c1ab61f48047d897739abf1e955ed4e36f53b48e0cddd95e35203387b7f  deviceinfo
+e204252a8c987269538039f510b42e094fa5ce141f9f5ded461cbb8074202fc343ccd300a0cc28595d4bb9162992104ad5ac916fd4028857e0f646250998910c  initfs-hook.sh"
