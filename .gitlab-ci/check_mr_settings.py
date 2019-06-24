@@ -110,6 +110,13 @@ def main():
     # Check the merge request
     check_environment_variables()
     settings = get_mr_settings(args.path)
+
+    # Make sure that squashing is disabled
+    if settings_read(settings, "squash"):
+        print("*** MR settings check failed!")
+        print('ERROR: Please turn off the "Squash commits when merge request'
+              ' is accepted." option in the merge request settings.')
+        return 1
     if check_allow_push(settings):
         print("*** MR settings check successful!")
     else:
