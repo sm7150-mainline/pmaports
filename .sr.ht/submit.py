@@ -66,7 +66,7 @@ else:
     })
 
 if response.status_code > 399:
-    print('Error occured:')
+    print('Error occurred:')
     print(response.content.decode())
     exit(1)
 

@@ -51,7 +51,7 @@ def test_deviceinfo(args):
         device = folder[len(args.aports):].split("-", 1)[1]
 
         try:
-            # Successfull deviceinfo parsing / obsolete options
+            # Successful deviceinfo parsing / obsolete options
             info = pmb.parse.deviceinfo(args, device)
             deviceinfo_obsolete(info)
 

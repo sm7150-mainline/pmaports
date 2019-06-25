@@ -1,5 +1,5 @@
 main() {
-        # Wait untill graphical enviroment is running
+        # Wait until graphical environment is running
         sleep 5
         # Workaround for buggy graphics driver
         while [ ! ];

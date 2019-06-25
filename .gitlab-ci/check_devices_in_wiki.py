@@ -100,7 +100,7 @@ def main():
         print("precious porting efforts visible for others, and allow them")
         print("not only to use what you have created, but also to build upon")
         print("it more easily. Many times one person did a port with basic")
-        print("functionallity, and then someone else jumped in and")
+        print("functionality, and then someone else jumped in and")
         print("contributed major new features.")
         return 1
     else:
