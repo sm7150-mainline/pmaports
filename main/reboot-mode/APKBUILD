@@ -22,4 +22,4 @@ package() {
 		"${pkgdir}/usr/sbin/reboot-mode"
 }
 
-sha512sums="569b6b1cf595e208b8c5731ea8d4334cd5458cbc2a63d5756014f55f04dd89a4b67ec0d0d01d7a1cd935ae13d44e62e3ea6765f626736bc3dc2029b890c20070  reboot-mode.c"
+sha512sums="37d282608f30b1b8fa4f7501a8afcaa81902c9dfaee0c4c92ab05028e3a99a69c601dc7fce6ab06582db044b6fd0f5bffabe9d6064af9e670266978d66fe2515  reboot-mode.c"

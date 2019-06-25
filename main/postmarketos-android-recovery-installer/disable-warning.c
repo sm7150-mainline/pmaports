@@ -17,61 +17,61 @@
  * along with postmarketos-android-recovery-installer.  If not, see <http:www.gnu.org/licenses/>.
  */
 
+#include <dirent.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <string.h>
-#include <fcntl.h>
-#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 void close_FDs()
 {
-    unsigned int fd;
-    struct dirent* ep;
-    DIR* dp = opendir("/proc/self/fd");
-    if (dp != NULL) {
-        // first two entries are . and ..
-        readdir(dp);
-        readdir(dp);
+	unsigned int fd;
+	struct dirent *ep;
+	DIR *dp = opendir("/proc/self/fd");
+	if (dp != NULL) {
+		// first two entries are . and ..
+		readdir(dp);
+		readdir(dp);
 
-        while (ep = readdir(dp))
-            if (sscanf(ep->d_name, "%u", &fd) != EOF)
-                close(fd);
-        closedir(dp);
-    } else {
-        // try to close all file descriptors by brute-force
-        // in case the list of open FDs could not be read
-        // from the procfs
-        for (fd = 256; fd >= 0; fd--)
-            close(fd);
-    }
+		while (ep = readdir(dp))
+			if (sscanf(ep->d_name, "%u", &fd) != EOF)
+				close(fd);
+		closedir(dp);
+	} else {
+		// try to close all file descriptors by brute-force
+		// in case the list of open FDs could not be read
+		// from the procfs
+		for (fd = 256; fd >= 0; fd--)
+			close(fd);
+	}
 }
 
 // Detach the program from the installation script
 void daemonize()
 {
-    pid_t pid;
+	pid_t pid;
 
-    pid = fork();
-    if (pid < 0)
-        exit(1);
-    if (pid > 0)
-        exit(0);
+	pid = fork();
+	if (pid < 0)
+		exit(1);
+	if (pid > 0)
+		exit(0);
 
-    if (setsid() < 0)
-        exit(1);
+	if (setsid() < 0)
+		exit(1);
 
-    pid = fork();
-    if (pid < 0)
-        exit(1);
-    if (pid > 0)
-        exit(0);
+	pid = fork();
+	if (pid < 0)
+		exit(1);
+	if (pid > 0)
+		exit(0);
 
-    umask(0);
-    chdir("/");
-    close_FDs();
+	umask(0);
+	chdir("/");
+	close_FDs();
 }
 
 // Workaround to disable No OS warning in TWRP
@@ -88,36 +88,36 @@ void daemonize()
 // exited.
 int main()
 {
-    daemonize();
+	daemonize();
 
-    int orsin, orsout;
+	int orsin, orsout;
 
-    char command[1024];
-    char result[512];
+	char command[1024];
+	char result[512];
 
-    char* commands[] = {"set tw_backup_system_size 999",
-                        "set tw_app_prompt 0"};
+	char *commands[] = { "set tw_backup_system_size 999",
+		"set tw_app_prompt 0" };
 
-    sleep(4);
+	sleep(4);
 
-    int i;
-    for (i = 0; i < sizeof(commands)/sizeof(char*); i++) {
-        if ((orsin = open("/sbin/orsin", O_WRONLY)) == -1)
-            return 1;
-        strcpy(command, commands[i]);
-        write(orsin, command, sizeof(command));
-        close(orsin);
+	int i;
+	for (i = 0; i < sizeof(commands) / sizeof(char *); i++) {
+		if ((orsin = open("/sbin/orsin", O_WRONLY)) == -1)
+			return 1;
+		strcpy(command, commands[i]);
+		write(orsin, command, sizeof(command));
+		close(orsin);
 
-        // Have to read FIFO file, because it blocks
-        // the thread processing the command
-        // (see man 3 mkfifo)
-        if ((orsout = open("/sbin/orsout", O_RDONLY)) == -1)
-            return 1;
-        read(orsout, result, sizeof(result));
-        close(orsout);
+		// Have to read FIFO file, because it blocks
+		// the thread processing the command
+		// (see man 3 mkfifo)
+		if ((orsout = open("/sbin/orsout", O_RDONLY)) == -1)
+			return 1;
+		read(orsout, result, sizeof(result));
+		close(orsout);
 
-        sleep(3);
-    }
+		sleep(3);
+	}
 
-    return 0;
+	return 0;
 }
