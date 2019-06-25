@@ -42,6 +42,15 @@ py-sh-static:
   script:
     - .gitlab-ci/static_code_analysis.sh
 
+# coding style check
+clang-format-static:
+  stage: first
+  <<: *only-default
+  before_script:
+    - apk -q add clang git
+  script:
+    - .gitlab-ci/static_clang-format.sh
+
 # aports checks (generic)
 aports-static:
   stage: first
