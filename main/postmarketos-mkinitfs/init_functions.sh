@@ -22,8 +22,8 @@ setup_log() {
 
 mount_proc_sys_dev() {
 	# mdev
-	mount -t proc -o nodev,noexec,nosuid proc /proc
-	mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
+	mount -t proc -o nodev,noexec,nosuid proc /proc || echo "Couldn't mount /proc"
+	mount -t sysfs -o nodev,noexec,nosuid sysfs /sys || echo "Couldn't mount /sys"
 
 	mkdir /config
 	mount -t configfs -o nodev,noexec,nosuid configfs /config
@@ -207,7 +207,12 @@ mount_root_partition() {
 setup_usb_network_android() {
 	# Only run, when we have the android usb driver
 	SYS=/sys/class/android_usb/android0
-	[ -e "$SYS" ] || return
+	if ! [ -e "$SYS" ]; then
+		echo "  /sys/class/android_usb does not exist, skipping android_usb"
+		return
+	fi
+
+	echo "  Setting up an USB gadget through android_usb"
 
 	# Do the setup
 	printf "%s" "0" >"$SYS/enable"
@@ -219,25 +224,44 @@ setup_usb_network_android() {
 
 setup_usb_network_configfs() {
 	CONFIGFS=/config/usb_gadget
-	[ -e "$CONFIGFS" ] || return
 
-	mkdir $CONFIGFS/g1
+	if ! [ -e "$CONFIGFS" ]; then
+		echo "  /config/usb_gadget does not exist, skipping configfs usb gadget"
+		return
+	fi
+
+	echo "  Setting up an USB gadget through configfs"
+	# Create an usb gadet configuration
+	mkdir $CONFIGFS/g1 || echo "  Couldn't create $CONFIGFS/g1"
 	printf "%s" "0x18D1" >"$CONFIGFS/g1/idVendor"
 	printf "%s" "0xD001" >"$CONFIGFS/g1/idProduct"
 
-	mkdir $CONFIGFS/g1/strings/0x409
+	# Create english (0x409) strings
+	mkdir $CONFIGFS/g1/strings/0x409 || echo "  Couldn't create $CONFIGFS/g1/strings/0x409"
+	echo "postmarketOS" > "$CONFIGFS/g1/strings/0x409/manufacturer"
+	echo "Debug network interface" > "$CONFIGFS/g1/strings/0x409/product"
 
-	mkdir $CONFIGFS/g1/functions/rndis.usb0
+	# Create rndis function
+	mkdir $CONFIGFS/g1/functions/rndis.usb0 || echo "  Couldn't create $CONFIGFS/g1/functions/rndis.usb0"
 
-	mkdir $CONFIGFS/g1/configs/c.1
-	mkdir $CONFIGFS/g1/configs/c.1/strings/0x409
-	printf "%s" "rndis" > $CONFIGFS/g1/configs/c.1/strings/0x409/configuration
+	# Create configuration instance for the gadget
+	mkdir $CONFIGFS/g1/configs/c.1 || echo "  Couldn't create $CONFIGFS/g1/configs/c.1"
+	mkdir $CONFIGFS/g1/configs/c.1/strings/0x409 || echo "  Couldn't create $CONFIGFS/g1/configs/c.1/strings/0x409"
+	printf "%s" "rndis" > $CONFIGFS/g1/configs/c.1/strings/0x409/configuration || echo "  Couldn't write configration name"
 
-	ln -s $CONFIGFS/g1/functions/rndis.usb0 $CONFIGFS/g1/configs/c.1
+	# Link the rndis instance to the configuration
+	ln -s $CONFIGFS/g1/functions/rndis.usb0 $CONFIGFS/g1/configs/c.1 || echo "  Couldn't symlink rndis.usb0"
 
-	# See also: #338
+	# Check if there's an USB Device Controller
+	if [ -z "$(ls /sys/class/udc)" ]; then
+		echo "  No USB Device Controller available"
+		return
+	fi
+
+	# Link the gadget instance to an USB Device Controller
+	# See also: https://github.com/postmarketOS/pmbootstrap/issues/338
 	# shellcheck disable=SC2005
-	echo "$(ls /sys/class/udc)" > $CONFIGFS/g1/UDC
+	echo "$(ls /sys/class/udc)" > $CONFIGFS/g1/UDC || echo "  Couldn't write UDC"
 }
 
 setup_usb_network() {
@@ -263,15 +287,25 @@ start_udhcpd() {
 		return
 	fi
 
+	echo "Starting udhcpd"
 	# Get usb interface
 	INTERFACE=""
-	ifconfig rndis0 "$IP" && INTERFACE=rndis0
+	ifconfig rndis0 "$IP" 2>/dev/null && INTERFACE=rndis0
 	if [ -z $INTERFACE ]; then
-		ifconfig usb0 "$IP" && INTERFACE=usb0
+		ifconfig usb0 "$IP" 2>/dev/null && INTERFACE=usb0
 	fi
 	if [ -z $INTERFACE ]; then
-		ifconfig eth0 "$IP" && INTERFACE=eth0
+		ifconfig eth0 "$IP" 2>/dev/null && INTERFACE=eth0
 	fi
+
+	if [ -z $INTERFACE ]; then
+		echo "  Could not find an interface to run a dhcp server on"
+		echo "  Interfaces:"
+		ip link
+		return
+	fi
+
+	echo "  Using interface $INTERFACE"
 
 	# Create /etc/udhcpd.conf
 	{
@@ -285,7 +319,7 @@ start_udhcpd() {
 		echo "option subnet 255.255.255.0"
 	} >/etc/udhcpd.conf
 
-	echo "Start the dhcpcd daemon (forks into background)"
+	echo "  Start the dhcpcd daemon (forks into background)"
 	udhcpd
 }
 
