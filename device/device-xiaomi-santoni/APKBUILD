@@ -14,7 +14,7 @@ license="MIT"
 arch="aarch64"
 install="$pkgname.post-install"
 options="!check !archcheck"
-depends="postmarketos-base linux-xiaomi-santoni mkbootimg mesa-dri-swrast msm-fb-refresher pulseaudio pulseaudio-alsa alsa-plugins-pulse alsa-utils"
+depends="postmarketos-base linux-xiaomi-santoni mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware
 		$pkgname-nonfree-userland:nonfree_userland
@@ -41,15 +41,6 @@ build() {
 package() {
 	devicepkg_package $startdir $pkgname
 
-	install -Dm644 "$srcdir"/HiFi \
-		"$pkgdir"/usr/share/alsa/ucm/msm8920-sku7-snd-card/HiFi
-	install -Dm644 "$srcdir"/msm8920-sku7-snd-card.conf \
-		"$pkgdir"/usr/share/alsa/ucm/msm8920-sku7-snd-card/msm8920-sku7-snd-card.conf
-	install -Dm644 "$srcdir"/90-device-xiaomi-santoni-audio.rules \
-		"$pkgdir"/etc/udev/rules.d/90-device-xiaomi-santoni-audio.rules
-	install -Dm644 "$srcdir"/asound.conf \
-		"$pkgdir"/etc/asound.conf
-
 	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
 	install -Dm644 "$srcdir"/directfbrc "$pkgdir"/etc/directfbrc
 
@@ -67,8 +58,18 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="Wi-Fi, ADSP Firmware (DON'T INSTALL IF USE **LIBHYBRIS**)"
-	depends="firmware-xiaomi-santoni wcnss-wlan adsp-audio"
+	depends="firmware-xiaomi-santoni wcnss-wlan adsp-audio pulseaudio pulseaudio-alsa alsa-plugins-pulse alsa-utils"
 	mkdir "$subpkgdir"
+
+	# Install UCM files for santoni
+	install -Dm644 "$srcdir"/HiFi \
+		"$subpkgdir"/usr/share/alsa/ucm/msm8920-sku7-snd-card/HiFi
+	install -Dm644 "$srcdir"/msm8920-sku7-snd-card.conf \
+		"$subpkgdir"/usr/share/alsa/ucm/msm8920-sku7-snd-card/msm8920-sku7-snd-card.conf
+	install -Dm644 "$srcdir"/90-device-xiaomi-santoni-audio.rules \
+		"$subpkgdir"/etc/udev/rules.d/90-device-xiaomi-santoni-audio.rules
+	install -Dm644 "$srcdir"/asound.conf \
+		"$subpkgdir"/etc/asound.conf
 }
 
 nonfree_userland() {
