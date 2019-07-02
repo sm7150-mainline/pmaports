@@ -1,41 +1,35 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=calindori
-pkgver=0_git20190517
+pkgver=1.0
 pkgrel=0
-_commit="a42b436f4df4c2c1b3a031125a28574b2679b96c"
 pkgdesc="Calendar for Plasma Mobile"
 arch="all"
-url="https://invent.kde.org/dkardarakos/calindori"
-license="GPL-3.0"
-depends="kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kcalcore-dev kconfig-dev plasma-framework-dev"
-source="https://invent.kde.org/dkardarakos/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
-builddir="$srcdir/$pkgname-$_commit/build"
+url="https://invent.kde.org/kde/calindori"
+license="GPL-2.0-or-later"
+depends="qt5-qtquickcontrols2 kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kconfig-dev kirigami2-dev plasma-framework-dev ki18n-dev kcalcore-dev"
+source="$pkgname-$pkgver.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-v$pkgver"
 
 prepare() {
 	default_prepare
 
-	mkdir "$builddir"
+	mkdir "$builddir"/build
 }
 
 build() {
-	cd "$builddir"
-	cmake .. \
-		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
-		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON
+	cd "$builddir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr
 	make
 }
 
-check() {
-	cd "$builddir"
-	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
-}
-
 package() {
-	cd "$builddir"
+	cd "$builddir"/build
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="e91a0df9eb4737ba91252ff4b66e960d3d1a57dec613e9b5903f80a6d26c5d211fb09e447d8c30d6f3c5ecc12bf493ba2a4a7e670717ff967e974c2259691203  calindori-a42b436f4df4c2c1b3a031125a28574b2679b96c.tar.gz"
+sha512sums="ec0f2c8541ed36bf43f9cb95ef056e46badc12220f1b737e040c0e741a79149a2e222b710e3d511d2cd778dcf2299bd365c3b54c88228c81fae86887ab1586ae  calindori-1.0.tar.gz"
