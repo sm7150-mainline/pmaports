@@ -1,0 +1,53 @@
+From bac975363a78ab2bea2bdc6a3a9e199e9beea1f0 Mon Sep 17 00:00:00 2001
+From: Oliver Smith <ollieparanoid@bitmessage.ch>
+Date: Sat, 6 Jul 2019 00:13:36 +0200
+Subject: [PATCH 2/2] Remove drmIsMaster to use libdrm version
+
+Here is the proper version of this patch, but it does not apply cleanly
+on mir-1.1.2, so I chose to simply remove the whole drmIsMaster().
+
+https://github.com/MirServer/mir/pull/814
+
+This patch can be removed once we update to a newer mir version, which
+has the pull request above included.
+---
+ .../console/minimal_console_services.cpp      | 23 -------------------
+ 1 file changed, 23 deletions(-)
+
+diff --git a/src/server/console/minimal_console_services.cpp b/src/server/console/minimal_console_services.cpp
+index b6d7918..51df9f3 100644
+--- a/src/server/console/minimal_console_services.cpp
++++ b/src/server/console/minimal_console_services.cpp
+@@ -35,29 +35,6 @@
+ #include <sys/types.h>
+ #include <drm.h>
+ 
+-// TODO: once libdrm provides this symbol, we need a way to set MIR_LIBDRM_HAS_IS_MASTER
+-#ifndef MIR_LIBDRM_HAS_IS_MASTER
+-bool drmIsMaster(int fd)
+-{
+-    struct drm_mode_mode_cmd cmd;
+-
+-    ::memset(&cmd, 0, sizeof cmd);
+-    /* Set an invalid connector_id to ensure that ATTACHMODE errors with
+-     * EINVAL in the unlikely event someone feels like calling this on a
+-     * kernel prior to 3.9. */
+-    cmd.connector_id = -1;
+-
+-    if (drmIoctl(fd, DRM_IOCTL_MODE_ATTACHMODE, &cmd) != -1)
+-    {
+-        /* On 3.9 ATTACHMODE was changed to drm_noop, and so will succeed
+-         * iff we've got a master fd */
+-        return true;
+-    }
+-
+-    return errno == EINVAL;
+-}
+-#endif
+-
+ mir::MinimalConsoleDevice::MinimalConsoleDevice(std::unique_ptr<mir::Device::Observer> observer)
+     : observer{std::move(observer)}
+ {
+-- 
+2.17.2
+
