@@ -1,0 +1,31 @@
+pkgname=firmware-wileyfox-crackling
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Wileyfox Swift"
+url="https://rizzotherat.gitlab.io/firmware/"
+subpackages="$pkgname-venus $pkgname-wcnss"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck"
+source="https://rizzotherat.gitlab.io/firmware/crackling.tar.xz"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+venus() {
+	pkgdesc="Wileyfox Swift video firmware"
+	install -Dm644 "$srcdir"/venus.* -t "$subpkgdir/$_fwdir"/qcom/venus-1.8
+}
+
+wcnss() {
+	pkgdesc="Wileyfox Swift WiFi/BT firmware"
+	cd "$srcdir"
+	install -Dm644 wcnss.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 WCNSS_* -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+sha512sums="44e5c6d2ab28576548689bf43ecf5ac0a2ee42a49e0f993a459a59f80063775a00976bfe1a7db8d82ff82b92bf502832bf1c61ab456a131696f2fa5e09af16b3  crackling.tar.xz"

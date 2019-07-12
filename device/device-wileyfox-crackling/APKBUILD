@@ -1,14 +1,20 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname="device-wileyfox-crackling"
 pkgdesc="Wileyfox Swift"
-pkgver=0.1
+pkgver=1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-wileyfox-crackling mkbootimg mesa-dri-swrast mdss-fb-init-hack"
+depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
 source="
 	deviceinfo
 	fb.modes
@@ -16,13 +22,30 @@ source="
 
 build() {
 	devicepkg_build $startdir $pkgname
-	install -Dm544 "$srcdir"/fb.modes \
-		"$pkgdir"/etc/fb.modes
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -Dm544 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
 }
 
-sha512sums="fbac0a067856483dba9bc2a0c7d97edd8a4f471a086572800c47c22903385c98451954fe9a4489e07b7c5876f565295245c1fe6024610ed60c4d2a7f1693d062  deviceinfo
+kernel_mainline() {
+	pkgdesc="Most features working (note: charging not working yet)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_downstream() {
+	pkgdesc="For charging/debugging only (prefer mainline)"
+	depends="linux-wileyfox-crackling mesa-dri-swrast mdss-fb-init-hack"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-wileyfox-crackling-venus firmware-wileyfox-crackling-wcnss"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="a0891e36538c9761050991ea5b7f69f48019758ed80ebf96e4c06c9e871547e6f447126a72ffd455d36a16553750ac3cc243b3a31acf08dc478a48b190ddd337  deviceinfo
 587be41a15f5738c6f55c52f760e08810185a00af886e84864f77ce38675bdf65893779a4ea88c9811023746895818ce5829a1b060e158f2cdae87d13e13f07d  fb.modes"
