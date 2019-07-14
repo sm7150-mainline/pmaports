@@ -12,7 +12,6 @@ pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
-install="$pkgname.post-install"
 options="!check !archcheck"
 depends="postmarketos-base linux-xiaomi-santoni mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
@@ -58,6 +57,7 @@ package() {
 nonfree_firmware() {
 	pkgdesc="Wi-Fi, ADSP Firmware (DON'T INSTALL IF USE **LIBHYBRIS**)"
 	depends="firmware-xiaomi-santoni wcnss-wlan adsp-audio pulseaudio pulseaudio-alsa alsa-plugins-pulse alsa-utils"
+	install="$pkgname-nonfree-firmware.post-install"
 	mkdir "$subpkgdir"
 
 	# Install UCM files for santoni
