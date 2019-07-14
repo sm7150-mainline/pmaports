@@ -1,0 +1,47 @@
+From 5cf0b498caa8073674235b1c0166b593744ccae3 Mon Sep 17 00:00:00 2001
+From: Sebastian Krzyszkowiak <dos@dosowisko.net>
+Date: Fri, 5 Jul 2019 00:11:46 +0200
+Subject: [PATCH] PolkitAuthAgent: fix build with Polkit >= 0.114
+
+Polkit 0.114 introduced bunch of predefined g_autoptr cleanups, which
+leads to compilation failure due to duplicate cleanup definition for
+PolkitSubject. Note that even the latest polkit doesn't have a cleanup
+for PolkitAgentListener defined, so it's left there unguarded.
+---
+ src/meson.build         | 5 +++++
+ src/polkit-auth-agent.h | 2 ++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/src/meson.build b/src/meson.build
+index 226305d..2097324 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -101,6 +101,11 @@ phosh_deps = [
+   cc.find_library('rt', required: false),
+ ]
+ 
++add_project_arguments([
++  '-DPOLKIT_AGENT_MAJOR_VERSION=' + libpolkit_agent_dep.version().split('.')[0],
++  '-DPOLKIT_AGENT_MINOR_VERSION=' + libpolkit_agent_dep.version().split('.')[1]
++], language: 'c')
++
+ phosh = executable('phosh', phosh_sources,
+   include_directories: [root_inc, src_inc],
+   dependencies: phosh_deps,
+diff --git a/src/polkit-auth-agent.h b/src/polkit-auth-agent.h
+index 386acc7..0a58202 100644
+--- a/src/polkit-auth-agent.h
++++ b/src/polkit-auth-agent.h
+@@ -14,7 +14,9 @@
+ G_BEGIN_DECLS
+ 
+ /* libpolkit lacks these */
++#if POLKIT_AGENT_MAJOR_VERSION == 0 && POLKIT_AGENT_MINOR_VERSION < 114
+ G_DEFINE_AUTOPTR_CLEANUP_FUNC(PolkitSubject, g_object_unref)
++#endif
+ G_DEFINE_AUTOPTR_CLEANUP_FUNC(PolkitAgentListener, g_object_unref)
+ 
+ #define PHOSH_TYPE_POLKIT_AUTH_AGENT (phosh_polkit_auth_agent_get_type())
+-- 
+2.18.1
+
