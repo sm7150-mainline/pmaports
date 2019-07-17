@@ -2,9 +2,9 @@
 
 pkgname="linux-asus-z00vd"
 pkgver=3.18.41
-pkgrel=0
+pkgrel=1
 pkgdesc="ASUS Zenfone Go kernel fork"
-arch="armhf"
+arch="armv7"
 _carch="arm"
 _flavor="asus-z00vd"
 url="https://kernel.org"
@@ -21,7 +21,7 @@ _repository="ZC500TG"
 _commit="7957ae0b17bb46d56a5cddd1d313aec76296aee8"
 _config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/nik124seleznev/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Danct12/${_repository}/archive/${_commit}.tar.gz
 	$_config
 	01_fix_warnings.patch
 	02_gcc8_error.patch
@@ -40,7 +40,7 @@ prepare() {
 		sed -i 's/-Werror//g' "$i"
 	done
 
-	# Make a output folder because the kernel needs it for some reason
+	# Requires a out folder for some reason
 	mkdir "$builddir/out"
 
 	# Clean up kernel source
@@ -48,14 +48,13 @@ prepare() {
 	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" HOSTCC="$HOSTCC" mrproper
 
 	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/arch/$_carch/configs/zc500tg_pmos_defconfig
-	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" HOSTCC="$HOSTCC" zc500tg_pmos_defconfig
-
+	cp "$srcdir"/$_config "$builddir"/out/.config
+	yes "" | make O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" HOSTCC="$HOSTCC" oldconfig
 }
 
 build() {
 	unset LDFLAGS
-	make -C "$builddir" O="$builddir/out" ARCH="$_carch" CC="${CC:-gcc}" ARCH_MTK_PLATFORM="mt6580" \
+	make O="$builddir/out" ARCH="$_carch" CC="${CC:-gcc}" ARCH_MTK_PLATFORM="mt6580" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
@@ -80,6 +79,6 @@ package() {
 }
 
 sha512sums="eb4575d8d3603097141991bc207a51f3ed9281d6e1432570666aeeb3299c86574e80724e27721e2f64844fe9efdfd99df898138e1d2053f143132d1b0e89414b  linux-asus-z00vd-7957ae0b17bb46d56a5cddd1d313aec76296aee8.tar.gz
-c0bbe3df4f9f1cbd89a3817377ab1ecc45b679c852d0376f4c3bff74cee8fe1c84e90acfb56db560664e752927989c91bf8562de24a73ae3b06fde032524a86c  config-asus-z00vd.armhf
+c0bbe3df4f9f1cbd89a3817377ab1ecc45b679c852d0376f4c3bff74cee8fe1c84e90acfb56db560664e752927989c91bf8562de24a73ae3b06fde032524a86c  config-asus-z00vd.armv7
 1db0eb57279ab2b0ad70e0f93dfe6faa0d807cf24832c2e55b2c726b43cdece84edfc614e6455cddddbce890de1df80e37fd1805b9fd6ccc259047c5ef7a6ba6  01_fix_warnings.patch
 f60b91c7cffd1704e6ac51d1c352b87f74432fc645deff2ff4feeeffff3c441af425191254f871a999555b3abcd1d199eeba0c12dbef4d9364f4d70df4484976  02_gcc8_error.patch"
