@@ -1,41 +1,40 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-camera
-pkgver=0_git20190517
+pkgver=0_git20190715
 pkgrel=0
-_commit="b5152b6aed47ab12153ea989434b9e6338531817"
+_commit="67973b7578ab1bc76e1895562e9edc9826f816c9"
 pkgdesc="Simple camera application for mobile devices"
 arch="all"
 url="https://community.kde.org/Plasma/Mobile"
-license="GPL-3.0"
-depends="kirigami2"
+license="GPL-3.0-or-later AND BSD-3-Clause"
+depends="kirigami2 qt5-qtquickcontrols2 qt5-qtmultimedia"
 makedepends="extra-cmake-modules qt5-qtbase-dev kpackage-dev kcoreaddons-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev"
 source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
-builddir="$srcdir/$pkgname-$_commit/build"
+builddir="$srcdir/$pkgname-$_commit"
 
 prepare() {
 	default_prepare
 
-	mkdir "$builddir"
+	mkdir "$builddir"/build
 }
 
 build() {
-	cd "$builddir"
-	cmake .. \
+	cd "$builddir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
-		-DKDE_INSTALL_USE_QT_SYS_PATHS=ON
+		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
 check() {
-	cd "$builddir"
+	cd "$builddir"/build
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"
-	make DESTDIR="$pkgdir" install
+	cd "$builddir"/build
+	DESTDIR="$pkgdir" make install
 }
-sha512sums="db2b5570977e67e8475743229d0938146fc873a1aaea72198859fb08c6063f395621edb53588a14c15c742bff0bbc23db4486e9d94e54a391b000471c4f5f12b  plasma-camera-b5152b6aed47ab12153ea989434b9e6338531817.tar.gz"
+sha512sums="3e12204f9156696c8219b9f4f7111b467fc9effe00520bcc9c32d1322a97e0fc9845abeb44dd8548490c8a222684c1dcb6450da81984609657338b077e7d6c42  plasma-camera-67973b7578ab1bc76e1895562e9edc9826f816c9.tar.gz"
