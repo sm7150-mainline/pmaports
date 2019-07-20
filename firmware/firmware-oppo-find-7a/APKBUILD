@@ -1,55 +1,167 @@
 pkgname=firmware-oppo-find-7a
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for Oppo Find 7a"
-url="https://github.com/TheMuppets/proprietary_vendor_oppo"
+url="https://postmarketos.org/"
 arch="armv7"
 license="proprietary"
-depends="wcnss-wlan"
-options="!check !strip !archcheck"
+depends="wcnss-wlan adsp-audio"
+makedepends="mtools"
+options="!strip !archcheck"
 
 # Sources
-_files1="a330_pfp.fw a330_pm4.fw venus.b00 venus.b01 venus.b02 venus.b03 venus.b04 venus.mbn venus.mdt"
+_commit1="412fbe0922125a4d5ff884626c3274a15bd36dff"
+_url1="https://github.com/TheMuppets/proprietary_vendor_oppo/raw/$_commit1/msm8974-common/proprietary/vendor/firmware/"
+_files1="a330_pm4.fw a330_pfp.fw venus.b00 venus.b01 venus.b02 venus.b03 venus.b04 venus.mbn venus.mdt"
+_commit2="9e8beafc3b56ae8643ec90f61025d5e8d98e5619"
+_url2="https://github.com/TheMuppets/proprietary_vendor_oppo/raw/$_commit2/find7/proprietary/vendor/firmware/"
 _files2="cpp_firmware_v1_2_0.fw"
 
-_commit1="412fbe0922125a4d5ff884626c3274a15bd36dff"
-_commit2="9e8beafc3b56ae8643ec90f61025d5e8d98e5619"
-_url1="https://github.com/TheMuppets/proprietary_vendor_oppo/raw/$_commit1/msm8974-common/proprietary/vendor/firmware/"
-_url2="https://github.com/TheMuppets/proprietary_vendor_oppo/raw/$_commit2/find7/proprietary/vendor/firmware/"
-
 # Wifi sources
-_files3="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
 _url_wifi="https://raw.githubusercontent.com/LineageOS/android_device_oppo_msm8974-common/lineage-16.0/wifi"
+_files3="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
 
-source=""
+# Oppo sources
+_url_oppo="http://public.oppousa.com.s3.amazonaws.com/OTA/Find7/L/X9006&X9076ColorOS_V2.1.5i_full.zip"
+
+_files4="adsp.b00
+adsp.b01
+adsp.b02
+adsp.b03
+adsp.b04
+adsp.b05
+adsp.b06
+adsp.b07
+adsp.b08
+adsp.b09
+adsp.b10
+adsp.b11
+adsp.b12
+adsp.mdt
+cmnlib.b00
+cmnlib.b01
+cmnlib.b02
+cmnlib.b03
+cmnlib.mdt
+isdbtmm.b00
+isdbtmm.b01                                                                                                                                   
+isdbtmm.b02                                                                                                                                   
+isdbtmm.b03                                                                                                                                   
+isdbtmm.mdt                                                                                                                                   
+mba.b00
+mba.mdt
+mc_v2.b00
+mc_v2.b01
+mc_v2.b02
+mc_v2.b03
+mc_v2.mdt
+modem.b00
+modem.b01
+modem.b02
+modem.b03
+modem.b06
+modem.b08
+modem.b09
+modem.b11
+modem.b12
+modem.b13
+modem.b14
+modem.b15
+modem.b16
+modem.b17
+modem.b18
+modem.b19
+modem.b22
+modem.b23
+modem.b24
+modem.b25
+modem.mdt
+playread.b00
+playread.b01
+playread.b02
+playread.b03
+playread.mdt
+tqs.b00
+tqs.b01
+tqs.b02
+tqs.b03
+tqs.mdt
+wcnss.b00
+wcnss.b01
+wcnss.b02
+wcnss.b04
+wcnss.b06
+wcnss.b07
+wcnss.b08
+wcnss.b09
+wcnss.mdt
+widevine.b00
+widevine.b01
+widevine.b02
+widevine.b03
+widevine.mdt"
+
+_files5="keymaste.b00
+keymaste.b01
+keymaste.b02
+keymaste.b03
+keymaste.mdt"
+
+source="oppo_checksums.txt"
 for _i in $_files1; do
-	source="$source $pkgname-$_commit1-$_i::$_url1/$_i";
+	source="$source $pkgname-$_commit1-$_i::$_url1/$_i"
 done
+
 for _i in $_files2; do
-	source="$source $pkgname-$_commit2-$_i::$_url2/$_i";
+	source="$source $pkgname-$_commit2-$_i::$_url2/$_i"
 done
 
 for _i in $_files3; do
-	source="$source $pkgname-$_i::$_url_wifi/$_i";
+	source="$source $pkgname-$_i::$_url_wifi/$_i"
 done
+source="$source $pkgname-ColorOS_V2.1.5i_full.zip::$_url_oppo"
 
-package() {
-	for _i in $_files1; do
-		install -Dm644 "$srcdir/$pkgname-$_commit1-$_i" \
-			"$pkgdir/lib/firmware/qcom/$_i"
-	done
-	for _i in $_files2; do
-			install -Dm644 "$srcdir/$pkgname-$_commit2-$_i" \
-			"$pkgdir/lib/firmware/$_i"
-	done
-	for _i in $_files3; do
-		install -Dm644 "$srcdir/$pkgname-$_i" \
-			"$pkgdir/lib/firmware/wlan/prima/$_i"
+unpack () {
+	unzip -o "$srcdir/$pkgname-ColorOS_V2.1.5i_full.zip" NON-HLOS.bin
+}
+
+build () {
+	for _i in $_files4 $_files5; do
+		mcopy -v -b -p -n -i NON-HLOS.bin ::image/$_i $pkgname-$_i
 	done
 }
 
-sha512sums="a642584990333d62ba6a985eeaddc6898c37a8e80aabb61121f93a90d5076861eb698422101e7b00706b7d3dfc00f9f358ea5e44a70fda7369931eb58b455931  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-a330_pfp.fw
+check() {
+	sha512sum -c oppo_checksums.txt
+}
+
+package() {
+	mkdir -p "$pkgdir/lib/firmware/qcom"
+	for _i in $_files1; do
+		install -Dm644 "$srcdir/$pkgname-$_commit1-$_i" "$pkgdir/lib/firmware/qcom/$_i"
+	done
+	for _i in $_files2; do
+			install -Dm644 "$srcdir/$pkgname-$_commit2-$_i" "$pkgdir/lib/firmware/$_i"
+	done
+	mkdir -p "$pkgdir/lib/firmware/wlan/prima"
+	for _i in $_files3; do
+		install -Dm644 "$srcdir/$pkgname-$_i" "$pkgdir/lib/firmware/wlan/prima/$_i"
+	done
+	for _i in $_files4; do
+		install -Dm644 "$pkgname-$_i" "$pkgdir/lib/firmware/$_i"
+	done
+	mkdir -p "$pkgdir/lib/firmware/keymaster"
+	install -Dm644 "$pkgname-keymaste.b00" "$pkgdir/lib/firmware/keymaster/keymaster.b00"
+	install -Dm644 "$pkgname-keymaste.b01" "$pkgdir/lib/firmware/keymaster/keymaster.b01"
+	install -Dm644 "$pkgname-keymaste.b02" "$pkgdir/lib/firmware/keymaster/keymaster.b02"
+	install -Dm644 "$pkgname-keymaste.b03" "$pkgdir/lib/firmware/keymaster/keymaster.b03"
+	install -Dm644 "$pkgname-keymaste.mdt" "$pkgdir/lib/firmware/keymaster/keymaster.mdt"
+}
+
+
+sha512sums="ab453bf04b8fbf78f195740c300218cbba3f6eb9d97f48708c364029f4a5b405c5afba24fbc9bc2e984a3279de5f140177a9709d055b1b44679501f015cf8261  oppo_checksums.txt
 999e3e0777b8dffc0e0d20b214c8217dab577a31753b6a29af2fae57293693196e992a905265e35a586a7978c04547aa8c88496dbe6f836b74ed39026eaa5f05  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-a330_pm4.fw
+a642584990333d62ba6a985eeaddc6898c37a8e80aabb61121f93a90d5076861eb698422101e7b00706b7d3dfc00f9f358ea5e44a70fda7369931eb58b455931  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-a330_pfp.fw
 4b98e816e5e3a971c4b7d45f36b0ed4eae6f3310a41ff76a7fcf70dca01b85c6a07284f2cb99cff76a76155f773de6b0d6c8b8027b903137004351dd4599184d  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b00
 b4576ac810cc9ee902b0108904071cfbfea5cc9b51cf0bdd466a65b343abef49767f0800717297f236b87339f1989e462684f53a494337aa891d42af03e30096  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b01
 44a64fbb454243b6dc4e0b2c88eace5fd86f2be6ba121a921c0c0901e5cea2223dfc9fe13423432a501da7e056c105e20e19f516eb7be2538dea22febd12e74c  firmware-oppo-find-7a-412fbe0922125a4d5ff884626c3274a15bd36dff-venus.b02
@@ -60,4 +172,5 @@ b4576ac810cc9ee902b0108904071cfbfea5cc9b51cf0bdd466a65b343abef49767f0800717297f2
 b3ee274b8de7b4a371be4c54c7fb948a96b117dfc844612afa69c807a831922203c2611a84a1710db630f2986e256d656cc3c1f257b17794b7ee3e5a6542f267  firmware-oppo-find-7a-9e8beafc3b56ae8643ec90f61025d5e8d98e5619-cpp_firmware_v1_2_0.fw
 fb92214f928143228c0683934342ceff11f19bec0581684e98e155262bed03f51c21a21881ec03316f917c127b607a2943efea4847b908f1c02864a1e507fb50  firmware-oppo-find-7a-WCNSS_cfg.dat
 491eac4852755999d6a768ee24467d0e0ebfd5daa9aa825db99e18231d555d3b3e9e5b459a91ad8c374d83ff47c8d958e1911e08184ea39713e2955ed5926bf7  firmware-oppo-find-7a-WCNSS_qcom_cfg.ini
-e3402202dbcbc51194c51065ab7fd655e35de418f5634d61dfbb1910c8804faee616b80d7f3f5e04bf23b9d37b8b91d1223283016eb9d2156b1664560952651e  firmware-oppo-find-7a-WCNSS_qcom_wlan_nv.bin"
+e3402202dbcbc51194c51065ab7fd655e35de418f5634d61dfbb1910c8804faee616b80d7f3f5e04bf23b9d37b8b91d1223283016eb9d2156b1664560952651e  firmware-oppo-find-7a-WCNSS_qcom_wlan_nv.bin
+55122a3f8078bacda4e635fdbc28d90e6f5039bacb2bb054e1a4d772fd01b4a5bb999018934a2b3e84de3409d33c97df13e84d6e1cbf61ecddc359d8936de5d1  firmware-oppo-find-7a-ColorOS_V2.1.5i_full.zip"
