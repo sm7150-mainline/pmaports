@@ -36,6 +36,21 @@ mount_proc_sys_dev() {
 	mkdir /run
 }
 
+setup_firmware_path() {
+	# Add the postmarketOS-specific path to the firmware search paths.
+	# This should be sufficient on kernel 3.10+, before that we need
+	# the kernel calling udev (and in our case /usr/lib/firmwareload.sh)
+	# to load the firmware for the kernel.
+	echo "Configuring kernel firmware image search path"
+	SYS=/sys/module/firmware_class/parameters/path
+	if ! [ -e "$SYS" ]; then
+		echo "Kernel does not support setting the firmware image search path. Skipping."
+		return
+	fi
+	# shellcheck disable=SC2039
+	echo -n /lib/firmware/postmarketos >$SYS
+}
+
 setup_mdev() {
 	echo /sbin/mdev >/proc/sys/kernel/hotplug
 	mdev -s
