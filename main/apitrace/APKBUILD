@@ -1,0 +1,34 @@
+# Contributor: Bhushan Shah <bshah@kde.org>
+# Maintainer: Bhushan Shah <bshah@kde.org>
+pkgname=apitrace
+pkgver=8.0
+pkgrel=0
+_commit="81c73a74860a45cbc21da9925eb04e1edad646d5"
+pkgdesc="Tools for tracing OpenGL, Direct3D, and other graphics APIs"
+arch="all"
+url="http://apitrace.github.io/"
+license="MIT"
+depends_dev="mesa-dev libx11-dev linux-headers"
+makedepends="$depends_dev cmake python3"
+source="$pkgname-$_commit.tar.gz::https://github.com/apitrace/apitrace/archive/$_commit.tar.gz
+	musl-fixes.patch"
+subpackages="$pkgname-doc"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="2c02106730e4c46c929dfa1b475691bbc72eaf232625276540ab46bbc80728f8b3d230c4297bdcbb11d8396490ed1f91ad592bb404c52fe2c63ef5840678eb32  apitrace-81c73a74860a45cbc21da9925eb04e1edad646d5.tar.gz
+a204b51654d9adc484657ec68da6f89cbcdc4dd3a810d024979dcbeacffa5867d3e5ce0b40fcdc9133b36e8927d2c7672ef5c3a40db3dee0813fe2766130e21b  musl-fixes.patch"
