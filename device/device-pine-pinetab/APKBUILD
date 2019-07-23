@@ -1,0 +1,49 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-pine-pinetab"
+pkgdesc="Pine64 Pinetab"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-allwinner u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-egl mesa-git-dri-lima mesa-git-dri-kmsro mesa-git-gbm mesa-git-gles"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-sway"
+source="
+	deviceinfo
+	uboot-script.cmd
+	sway.conf
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkimage \
+		-A arm \
+		-O linux \
+		-T script \
+		-C none \
+		-a 0 \
+		-e 0 \
+		-n postmarketos \
+		-d "$srcdir"/uboot-script.cmd \
+		"$srcdir"/boot.scr
+}
+
+sway() {
+        install_if="$pkgname postmarketos-ui-sway"
+        depends="dmenu"
+        install -D -m644 "$srcdir"/sway.conf \
+                "$subpkgdir"/etc/sway/config.d/pinetab
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+}
+
+
+sha512sums="ae788279ad03c48ae5846b81c0c544ba3da9f17d044d3e74cde8fb0d5b33259bf8ded6507542389d9e506a8ca38f76866a7291458d630d2de11adb6ddf85c5f4  deviceinfo
+2aabfeff137e6ecbbb2cf9353d6ae69a0c4fe3f75064164c5e9edde750b035b9d7ab9c10000bb93d1a71cc9b357d469c86d7b9b3ffa0466da8ee229ac59e6c56  uboot-script.cmd
+9e71c61bfa72b60e749c4dc04f17eb59d25de822765e81e65c937d6be5236d3951a652b69a1ab973abe6add9f34705be5dbaa98bbfa25daf7504dd50b28524c2  sway.conf"
