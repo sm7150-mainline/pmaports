@@ -3,7 +3,7 @@ pkgname=mesa-freedreno
 provides=mesa
 pkgver=19.1.0_git20190620
 _commit="f179febde0c6e85911365e845a737be3f346da4a"
-pkgrel=8
+pkgrel=9
 pkgdesc="[${_commit}] Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
 arch="armhf armv7 aarch64"
@@ -125,6 +125,7 @@ egl() {
 gl() {
 	pkgdesc="[${_commit}] Mesa libGL runtime libraries"
 	replaces="mesa"
+	provides="mesa-gl"
 
 	install -d "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libGL.so* "$subpkgdir"/usr/lib/
