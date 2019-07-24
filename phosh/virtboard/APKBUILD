@@ -1,31 +1,28 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=virtboard
-pkgver=0.0.5_git20190325
+pkgver=0.0.5_git20190621
 pkgrel=0
-_commit="0bab93edb997035e3f69ac408d72f5e4f6947a20"
+_commit="576fffc61bcfa8e24f9dcf10d8bf3b32240cc36d"
 pkgdesc="A basic keyboard, blazing the path of modern Wayland keyboards. Sacrificial."
 arch="all"
 url="https://source.puri.sm/Librem5/virtboard"
 license="MIT"
 depends="wayland-protocols"
 makedepends="meson ninja libpng-dev wayland-dev libxkbcommon-dev cairo-dev linux-headers"
-source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/$pkgname/-/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/$pkgname/-/archive/$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cd "$builddir"
 	meson . _build --prefix=/usr
 	ninja -C _build
 }
 
 check() {
-	cd "$builddir"
 	ninja -C _build test
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" ninja -C _build install
 }
-sha512sums="382eb199591ca4dd227d8c4f2abf9d7d31c11d3ef499e56b220dd77423655d887f29d09e91f58369d60949b8f005f00df378391d28495844e616fb963eafbeb8  virtboard-0.0.5_git20190325.tar.gz"
+sha512sums="2b4196d2bef3e023423995d7564064413ed174d5d2515510b00f1979c397d763503015a5b5bb2ec3b1cd0e1ee77f86063098e30afb5491ba14ba56ebcd3a36bc  virtboard-576fffc61bcfa8e24f9dcf10d8bf3b32240cc36d.tar.gz"
