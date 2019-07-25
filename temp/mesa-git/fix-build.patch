@@ -1,0 +1,22 @@
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 2a2d6fe..6082ea3 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -27,6 +27,8 @@
+  *    Benjamin Franzke <benjaminfranzke@googlemail.com>
+  */
+ 
++#include <assert.h>
++
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -114,7 +116,7 @@ static const struct dri2_wl_visual {
+    },
+ };
+ 
+-static_assert(ARRAY_SIZE(dri2_wl_visuals) <= EGL_DRI2_MAX_FORMATS,
++_Static_assert(ARRAY_SIZE(dri2_wl_visuals) <= EGL_DRI2_MAX_FORMATS,
+               "dri2_egl_display::formats is not large enough for "
+               "the formats in dri2_wl_visuals");
+ 

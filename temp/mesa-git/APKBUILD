@@ -1,0 +1,345 @@
+# Forked from Alpine Linux to provide latest git builds, useful for bleeding
+# edge driver support
+#
+# Any new drivers should be upstreamed to Alpine Linux once they appear in a
+# new Mesa stable release
+#
+# Any device that wants to use this should explicitely depend on the entirety
+# of this aport, so mesa-git including _all_ of the subpackages, to not cause
+# conflicts
+pkgname=mesa-git
+pkgver=0_git20190725
+pkgrel=0
+_commit="cd02f60c1e9d0ef37e4defb8e6b00433990fd90c"
+pkgdesc="(Git) Mesa DRI OpenGL library"
+url="https://www.mesa3d.org"
+arch="all"
+license="MIT SGI-B-2.0 BSL-1.0"
+subpackages="
+	$pkgname-dev
+	$pkgname-dri-ati:_dri
+	$pkgname-dri-nouveau:_dri
+	$pkgname-dri-freedreno:_dri
+	$pkgname-dri-swrast:_dri
+	$pkgname-dri-virtio:_dri
+	$pkgname-glapi $pkgname-egl $pkgname-gl $pkgname-gles
+	$pkgname-xatracker $pkgname-osmesa $pkgname-gbm
+	$pkgname-vulkan-ati:_vulkan
+	"
+_llvmver=8
+depends_dev="
+	libdrm-dev
+	libxext-dev
+	libxdamage-dev
+	libxcb-dev
+	libxshmfence-dev
+	"
+makedepends="
+	$depends_dev
+	bison
+	eudev-dev
+	expat-dev
+	flex
+	gettext
+	elfutils-dev
+	libtool
+	libxfixes-dev
+	libva-dev
+	libvdpau-dev
+	libx11-dev
+	libxrandr-dev
+	libxt-dev
+	libxvmc-dev
+	libxxf86vm-dev
+	llvm$_llvmver-dev
+	makedepend
+	meson
+	py-mako
+	py3-libxml2
+	python3
+	talloc-dev
+	wayland-dev
+	wayland-protocols
+	xorgproto
+	zlib-dev
+	"
+source="
+	$pkgname-$_commit.tar.gz::https://gitlab.freedesktop.org/mesa/mesa/-/archive/$_commit.tar.gz
+	adjust-cache-deflate-buffer.patch
+	musl-fix-includes.patch
+	add-glx-use-tls.patch
+	fix-build.patch
+	"
+provides="mesa"
+replaces="mesa-dricore mesa"
+builddir="$srcdir/mesa-$_commit"
+
+_dri_driverdir=/usr/lib/xorg/modules/dri
+_dri_drivers="r100,r200,nouveau"
+_gallium_drivers="r300,r600,radeonsi,nouveau,freedreno,swrast,virgl"
+_vulkan_drivers="amd"
+_arch_opts=
+
+case "$CARCH" in
+x86*)
+	_dri_drivers="${_dri_drivers},i915,i965"
+	_gallium_drivers="${_gallium_drivers},svga"
+	_vulkan_drivers="${_vulkan_drivers},intel"
+	subpackages="$subpackages \
+			$pkgname-dri-intel:_dri \
+			$pkgname-dri-vmwgfx:_dri \
+			$pkgname-vulkan-intel:_vulkan"
+	_arch_opts="-Ddri3=true"
+	case "$CARCH" in
+	x86)
+		_arch_opts="$_arch_opts -Dglx-read-only-text=true -Dasm=false";;
+	esac
+	;;
+armhf|armv7|aarch64)
+	_gallium_drivers="${_gallium_drivers},vc4,kmsro,lima,panfrost,etnaviv,tegra"
+	subpackages="$subpackages
+		$pkgname-dri-vc4:_dri
+		$pkgname-dri-kmsro:_dri
+		$pkgname-dri-lima:_dri
+		$pkgname-dri-panfrost:_dri
+		$pkgname-dri-etnaviv:_dri
+		$pkgname-dri-tegra:_dri
+		"
+	;;
+esac
+
+build() {
+	cd "$builddir"
+
+	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE=700"
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=release \
+		-Ddri-drivers-path=$_dri_driverdir \
+		-Dgallium-drivers=$_gallium_drivers \
+		-Ddri-drivers=$_dri_drivers \
+		-Dvulkan-drivers=$_vulkan_drivers \
+		-Dplatforms=x11,drm,wayland \
+		-Dllvm=true \
+		-Dshared-llvm=true \
+		-Dshared-glapi=true \
+		-Dgbm=true \
+		-Dglx=dri \
+		-Dosmesa=gallium \
+		-Dgles1=true \
+		-Dgles2=true \
+		-Degl=true \
+		-Dgallium-xa=true \
+		-Dgallium-vdpau=true \
+		-Dgallium-va=true \
+		-Dgallium-xvmc=false \
+		-Dglx-use-tls=false \
+		-Dgallium-nine=false \
+		-Db_ndebug=true \
+		$_arch_opts \
+		. output
+	ninja -C output
+}
+
+package() {
+	cd "$builddir"
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+egl() {
+	pkgdesc="Mesa libEGL runtime libraries"
+	depends="mesa-git"
+	replaces="mesa-egl"
+	provides="mesa-egl"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libEGL.so* "$subpkgdir"/usr/lib/
+}
+
+gl() {
+	pkgdesc="Mesa libGL runtime libraries"
+	depends="mesa-git"
+	replaces="mesa-gl"
+	provides="mesa-gl"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libGL.so* "$subpkgdir"/usr/lib/
+}
+
+glapi() {
+	pkgdesc="Mesa shared glapi"
+	replaces="mesa-gles mesa-glapi"
+	provides="mesa-glapi"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libglapi.so.* "$subpkgdir"/usr/lib/
+}
+
+gles() {
+	pkgdesc="Mesa libGLESv2 runtime libraries"
+	depends="mesa-git"
+	replaces="mesa-gles"
+	provides="mesa-gles"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libGLES*.so* "$subpkgdir"/usr/lib/
+}
+
+xatracker() {
+	pkgdesc="Mesa XA state tracker for vmware"
+	depends="mesa-git"
+	replaces="mesa-xatracker"
+	provides="mesa-xatracker"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libxatracker*.so.* "$subpkgdir"/usr/lib/
+}
+
+osmesa() {
+	pkgdesc="Mesa offscreen rendering libraries"
+	depends="mesa-git"
+	replaces="mesa-osmesa"
+	provides="mesa-osmesa"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libOSMesa.so.* "$subpkgdir"/usr/lib/
+}
+
+gbm() {
+	pkgdesc="Mesa gbm library"
+	depends="mesa-git"
+	replaces="mesa-gbm"
+	provides="mesa-gbm"
+
+	install -d "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libgbm.so.* "$subpkgdir"/usr/lib/
+}
+
+_mv_dri() {
+	install -d "$subpkgdir"/$_dri_driverdir
+
+	while [ $# -gt 0 ]; do
+		mv "$pkgdir"/$_dri_driverdir/${1}.so \
+			"$subpkgdir"/$_dri_driverdir/
+		shift
+	done
+}
+
+_mv_vdpau() {
+	local i
+	install -d "$subpkgdir"/usr/lib/vdpau
+	for i in "$@"; do
+		mv "$pkgdir"/usr/lib/vdpau/libvdpau_$i.* \
+			"$subpkgdir"/usr/lib/vdpau/
+	done
+}
+
+_mv_gpipe() {
+	return 0
+	# http://cgit.freedesktop.org/mesa/mesa/commit/?id=44ec468e8033553c26a112cebba41c343db00eb1
+	# https://code.google.com/p/chromium/issues/detail?id=412089
+#	local i
+#	install -d "$subpkgdir"/usr/lib/gallium-pipe
+#	for i in "$@"; do
+#		mv "$pkgdir"/usr/lib/gallium-pipe/pipe_$i.* \
+#			"$subpkgdir"/usr/lib/gallium-pipe/
+#	done
+}
+
+_mv_vulkan() {
+	local i
+	install -d "$subpkgdir"/usr/lib
+	install -d "$subpkgdir"/usr/share/vulkan/icd.d
+	for i in "$@"; do
+		mv "$pkgdir"/usr/lib/libvulkan_${i}.so "$subpkgdir"/usr/lib/
+		mv "$pkgdir"/usr/share/vulkan/icd.d/${i}* "$subpkgdir"/usr/share/vulkan/icd.d/
+	done
+}
+
+_mv_va() {
+	local i
+	install -d "$subpkgdir"/usr/lib/dri
+	for i in "$@"; do
+		mv "$pkgdir"/usr/lib/dri/${i}_drv_video.so \
+			"$subpkgdir"/usr/lib/dri/
+	done
+}
+
+_dri() {
+	local n=${subpkgname##*-dri-}
+	pkgdesc="(Git) Mesa DRI driver for $n"
+	depends="mesa-git"
+	provides="mesa-dri-$n"
+	replaces="mesa-dri-$n"
+
+	case $n in
+	ati)
+		_mv_dri radeon_dri r200_dri r300_dri r600_dri radeonsi_dri \
+			&& _mv_vdpau r300 r600 radeonsi \
+			&& _mv_gpipe r300 r600 \
+			&& _mv_va r600 radeonsi
+		;;
+	intel)
+		_mv_dri i915_dri i965_dri
+		;;
+	nouveau)
+		_mv_dri nouveau_dri nouveau_vieux_dri \
+			&& _mv_vdpau nouveau \
+			&& _mv_gpipe nouveau \
+			&& _mv_va nouveau
+		;;
+	freedreno)
+		_mv_dri msm_dri kgsl_dri
+		;;
+	swrast)
+		_mv_dri swrast_dri kms_swrast_dri && _mv_gpipe swrast
+		;;
+	vc4)
+		_mv_dri vc4_dri
+		;;
+	vmwgfx)
+		_mv_dri vmwgfx_dri && _mv_gpipe vmwgfx
+		;;
+	virtio)
+		_mv_dri virtio_gpu_dri
+		;;
+	kmsro)
+		_mv_dri exynos_dri hx8357d_dri ili9225_dri ili9341_dri meson_dri mi0283qt_dri pl111_dri repaper_dri rockchip_dri st7586_dri st7735r_dri sun4i-drm_dri
+		;;
+	lima)
+		_mv_dri lima_dri
+		;;
+	panfrost)
+		_mv_dri panfrost_dri
+		;;
+	etnaviv)
+		_mv_dri armada-drm_dri imx-drm_dri etnaviv_dri
+		;;
+	tegra)
+		_mv_dri tegra_dri
+		;;
+	esac
+}
+
+_vulkan() {
+	local n=${subpkgname##*-vulkan-}
+	pkgdesc="(Git) Mesa Vulkan API driver for $n"
+	depends="mesa-git"
+	replaces="mesa-vulkan-$n"
+	provides="mesa-vulkan-$n"
+
+	case $n in
+	ati)
+		_mv_vulkan radeon ;;
+	intel)
+		_mv_vulkan intel ;;
+	esac
+}
+sha512sums="be6dc11d0e967bb519e6cea1e6aac76539bcb39f76daf00a194a24e1fc8636891a80dbe7960f30d58f4fa96d836509899c0c8f9474574cc21079355e9ef2977e  mesa-git-cd02f60c1e9d0ef37e4defb8e6b00433990fd90c.tar.gz
+cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  adjust-cache-deflate-buffer.patch
+cf849044d6cc7d2af4ff015208fb09d70bf9660538699797da21bda2ecb7c1892d312af83d05116afd826708d9caafb1d05a13f09139c558aea6fee931e3eee7  musl-fix-includes.patch
+1d89e305659bb0ca95b0b593dbc1a17ed28f4a18fabe468c20527302fc90c1ce11ca40a79c8786f1eca68ef643027af706b8689068e31c7f27ceb2303d51633e  add-glx-use-tls.patch
+c8cc0cb3e5e1e2a4795fa9ddd9312c496db6ec333907a4a1345b97ac839fe8e5a4f3036063242527237eace07d4bd2ccd5ca4b49134eae688a3d7387c83e31fb  fix-build.patch"
