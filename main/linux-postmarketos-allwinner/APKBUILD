@@ -3,17 +3,17 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=5.1.0_git20190715
+pkgver=5.3.0_git20190726
 pkgrel=0
 
 arch="aarch64"
 pkgdesc="Kernel fork with PinePhone Don't be evil patches"
-url="https://kernel.org/"
+url="https://gitlab.com/pine64-org/linux/"
 depends=""
 makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
 install=
-_commit="b8ed98706f36cb5bb8686f4dd4dfef0fb774c36b"
+_commit="577c793d924a0455b2b555d468cf50f97985b6f6"
 source="
 	${pkgname}-${_commit}.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/${_commit}/linux-${_commit}.tar.gz
 	config-${_flavor}.aarch64
@@ -83,6 +83,6 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-sha512sums="fca78f23f27029b3c26fa53257b4108fc23c35357f9ec4889a571d24dc460f5ed2383ce50103211978855f38214d237b99f6bf8bc6031811df8be6b239ed1a8a  linux-postmarketos-allwinner-b8ed98706f36cb5bb8686f4dd4dfef0fb774c36b.tar.gz
-a863c88352353de09802d9b3daa59650ee477238ec072796e81933765a75a6d002b10ece3d245e438d4330b630b7d9532abc92442509e6c2e4b79c8381620b8e  config-postmarketos-allwinner.aarch64
+sha512sums="88aab0956b4bb3a240b40448b46b0edbfefd038759cd4c00fe89357e666e5be054ad3cd9455de2fc5670bd656c9414bbc66580723c8532a744d06ab2a4edbac2  linux-postmarketos-allwinner-577c793d924a0455b2b555d468cf50f97985b6f6.tar.gz
+1e6f4206e3c694940c49a80330c53b425670e1a554a4072bd1b1cb55894e5edddb5e1fcb2e9bdc0d49a6cf27f2cad903fa2fffaefbb8337d70eb79252ae91c85  config-postmarketos-allwinner.aarch64
 5f2285e4eb262a9429c73599871c3fecbb858a388774bc7cba7631987ed1dc4a14cd7606e8fefc655c5128851fc853132f0a081e3d710c9266739af92f4d37e8  touch-dts.patch"
