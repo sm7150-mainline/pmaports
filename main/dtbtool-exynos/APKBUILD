@@ -1,0 +1,21 @@
+pkgname=dtbtool-exynos
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Tool for compiling a dtb.img for Exynos SOC"
+url="https://forum.xda-developers.com/android/development/exynos-compiling-dtb-img-linux-t3700690"
+arch="all"
+license="MIT"
+depends="libfdt"
+makedepends="dtc-dev"
+options="!check" # There is no testsuite
+source="$pkgname-$pkgver.tar.gz::https://github.com/dsankouski/$pkgname/archive/$pkgver.tar.gz"
+
+build() {
+	make
+}
+
+package() {
+	install -D -m755 "$builddir"/dtbTool-exynos \
+		"$pkgdir"/usr/bin/dtbTool-exynos
+}
+sha512sums="e116431260c365db75f34332f11cd8fa81c80e027f08ac0dd556cd9f0a30e640ecb22a98e4db50d35ff680de9c4a5777df8b0c2eda4300067d34e9dcb1147537  dtbtool-exynos-1.0.0.tar.gz"
