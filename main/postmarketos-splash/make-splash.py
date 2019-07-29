@@ -62,6 +62,9 @@ def make_splash(width, height, filename, landscape=False, text="", config_file=N
 
     del draw
 
+    if landscape:
+        im = im.transpose(Image.ROTATE_270)
+
     if raw:
         data = list(im.getdata())  # [(R,G,B), (R,G,B)]
         flat = list(itertools.chain.from_iterable(data))  # [R, G, B, R, G, B]
