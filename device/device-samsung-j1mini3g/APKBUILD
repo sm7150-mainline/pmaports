@@ -1,0 +1,26 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-j1mini3g"
+pkgdesc="Samsung Galaxy J1 mini"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armhf"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-j1mini3g mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo
+	initfs-hook.sh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="b4f8b3f7381d98a3974551ee3b73734bbdbdba13663a279b42a5056bccb182f6f616e9d49c14b6a4526effea18fbf11596e2695781feca4f0be6af6859bc1253  deviceinfo
+46c58ff11a1f6cecc3f450f462c9a2b01d2a651f933a796c8a9c2e72f5fba0a0fe876429b5e7dad2fbc64fb056150d56929cd932b39053bed64b389c825bac0d  initfs-hook.sh"
