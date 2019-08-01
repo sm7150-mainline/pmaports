@@ -377,7 +377,7 @@ append_or_copy_dtb()
 		cat "$kernel" "$dtb" > "${kernel}-dtb"
 	else
 		echo "==> kernel: copying dtb ${deviceinfo_dtb} to boot partition"
-		cp "$dtb" "${outfile/initramfs-/dtb-}.dtb"
+		cp "$dtb" "$(dirname ${outfile})"
 	fi
 }
 
