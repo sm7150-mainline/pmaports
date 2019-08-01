@@ -214,10 +214,10 @@ require_package()
 # Legacy u-boot images
 create_uboot_files()
 {
-        arch="arm"
-        if [ "${deviceinfo_arch}" == "aarch64" ]; then
-                arch="arm64"
-        fi
+	arch="arm"
+	if [ "${deviceinfo_arch}" == "aarch64" ]; then
+		arch="arm64"
+	fi
 
 	[ "${deviceinfo_generate_legacy_uboot_initfs}" == "true" ] || return
 	require_package "mkimage" "uboot-tools" "generate_legacy_uboot_initfs"
