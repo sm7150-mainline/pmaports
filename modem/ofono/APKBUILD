@@ -1,8 +1,9 @@
 # Forked from Alpine for qmi voicecall support & smdpkt patches
 pkgname=ofono
-pkgver=1.29
-pkgrel=1
-pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications"
+pkgver=9999
+_pkgver=1.29
+pkgrel=0
+pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications [$_pkgver]"
 url="https://01.org/ofono"
 arch="all"
 license="GPL-2.0-only"
@@ -11,7 +12,7 @@ makedepends="glib-dev dbus-dev eudev-dev
 	linux-headers bsd-compat-headers libexecinfo-dev
 	autoconf automake libtool"
 subpackages="$pkgname-dev $pkgname-doc $pkgname-openrc"
-source="https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$pkgver.tar.xz
+source="https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$_pkgver.tar.xz
 	fix-explicit-bzero.patch
 	fix-TEMP_FAILURE_RETRY.patch
 	skip-broken-test.patch
@@ -23,6 +24,7 @@ source="https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$pkgver.tar.x
 	0005-qmimodem-implement-voice-calls.patch
 	$pkgname.initd
 	udev.rules"
+builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
 	autoreconf -fi
@@ -41,7 +43,7 @@ check() {
 
 package() {
 	make DESTDIR="$pkgdir" install
-	install -Dm644 "$srcdir/$pkgname-${pkgver}/plugins/ofono.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono.rules"
+	install -Dm644 "$srcdir/$pkgname-${_pkgver}/plugins/ofono.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono.rules"
 	install -Dm644 "$srcdir/udev.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono-pmos.rules"
 	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
 }
