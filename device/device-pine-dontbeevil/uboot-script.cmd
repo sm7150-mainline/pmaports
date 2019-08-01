@@ -3,7 +3,7 @@ setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 no_console_su
 printenv
 
 echo Loading DTB
-load mmc ${mmc_bootdev}:1 ${fdt_addr_r} dtb-postmarketos-allwinner.dtb
+load mmc ${mmc_bootdev}:1 ${fdt_addr_r} sun50i-a64-dontbeevil.dtb
 
 echo Loading Initramfs
 load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} uInitrd-postmarketos-allwinner

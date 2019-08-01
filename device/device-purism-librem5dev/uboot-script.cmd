@@ -4,7 +4,7 @@ setenv mmcpart 1
 
 printenv
 echo Loading DTB
-ext2load mmc ${mmcdev}:${mmcpart} ${fdt_addr} dtb-purism-librem5dev.dtb
+ext2load mmc ${mmcdev}:${mmcpart} ${fdt_addr} librem5-evk.dtb
 
 echo Loading Initramfs
 ext2load mmc ${mmcdev}:${mmcpart} ${initrd_addr} uInitrd-purism-librem5dev
