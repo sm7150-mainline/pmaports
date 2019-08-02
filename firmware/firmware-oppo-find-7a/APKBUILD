@@ -1,6 +1,6 @@
 pkgname=firmware-oppo-find-7a
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 pkgdesc="Firmware for Oppo Find 7a"
 url="https://postmarketos.org/"
 arch="armv7"
@@ -136,12 +136,12 @@ check() {
 }
 
 package() {
-	mkdir -p "$pkgdir/lib/firmware/qcom"
+	mkdir -p "$pkgdir/lib/firmware"
 	for _i in $_files1; do
-		install -Dm644 "$srcdir/$pkgname-$_commit1-$_i" "$pkgdir/lib/firmware/qcom/$_i"
+		install -Dm644 "$srcdir/$pkgname-$_commit1-$_i" "$pkgdir/lib/firmware/$_i"
 	done
 	for _i in $_files2; do
-			install -Dm644 "$srcdir/$pkgname-$_commit2-$_i" "$pkgdir/lib/firmware/$_i"
+		install -Dm644 "$srcdir/$pkgname-$_commit2-$_i" "$pkgdir/lib/firmware/$_i"
 	done
 	mkdir -p "$pkgdir/lib/firmware/wlan/prima"
 	for _i in $_files3; do
@@ -156,6 +156,9 @@ package() {
 	install -Dm644 "$pkgname-keymaste.b02" "$pkgdir/lib/firmware/keymaster/keymaster.b02"
 	install -Dm644 "$pkgname-keymaste.b03" "$pkgdir/lib/firmware/keymaster/keymaster.b03"
 	install -Dm644 "$pkgname-keymaste.mdt" "$pkgdir/lib/firmware/keymaster/keymaster.mdt"
+
+	cd "$pkgdir/lib/firmware"
+	ln -s . qcom
 }
 
 
