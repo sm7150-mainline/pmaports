@@ -327,12 +327,17 @@ generate_splash_screens()
 		splash_text=$2
 		splash_args=$3
 
+		if [ "${deviceinfo_framebuffer_landscape}" == "true" ]; then
+			splash_args="${splash_args} --landscape"
+		fi
+
 		# Compute hash using the following values concatenated:
 		# - postmarketos-splash package version
 		# - splash config file
 		# - device resolution
 		# - text to be displayed
-		splash_hash_string="${splash_version}#${splash_config_hash}#${splash_width}#${splash_height}#${splash_text}"
+		# - extra arguments
+		splash_hash_string="${splash_version}#${splash_config_hash}#${splash_width}#${splash_height}#${splash_text}#${splash_args}"
 		splash_hash="$(echo "${splash_hash_string}" | md5sum | awk '{ print $1 }')"
 
 		if ! [ -e "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm.gz" ]; then
