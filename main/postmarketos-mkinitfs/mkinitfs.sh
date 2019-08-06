@@ -86,7 +86,7 @@ get_modules_by_name()
 		echo "with 'y' instead of 'm' (module)."
 	} >&2
 
-	MODULES="drm_kms_helper drm dm_crypt \
+	MODULES="dm_crypt \
 		${deviceinfo_modules_initfs}"
 	modprobe \
 		-a \
