@@ -1,7 +1,7 @@
 # Contributor: Daniele Debernardi <drebrez@gmail.com>
 # Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=reboot-mode
-pkgver=0.1
+pkgver=0.2
 pkgrel=0
 pkgdesc="Reboot the device to a specific mode"
 url="https://postmarketos.org"
@@ -22,4 +22,4 @@ package() {
 		"${pkgdir}/usr/sbin/reboot-mode"
 }
 
-sha512sums="37d282608f30b1b8fa4f7501a8afcaa81902c9dfaee0c4c92ab05028e3a99a69c601dc7fce6ab06582db044b6fd0f5bffabe9d6064af9e670266978d66fe2515  reboot-mode.c"
+sha512sums="a0cd4097d24fb6c66edce60558942d18ccf45925013013e5af5437471b1a855abe12857deb45b5f970b04e8b9dba99177b9080fff584fbd16262f0a7aabbf4b1  reboot-mode.c"

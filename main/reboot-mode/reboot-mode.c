@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2019 Daniele Debernardi <drebrez@gmail.com>
  */
+#include <errno.h>
 #include <linux/reboot.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,8 +43,8 @@ int main(int argc, char **argv)
 	int ret;
 	ret = syscall(__NR_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, argv[1]);
 
-	if (ret) {
-		printf("Error: %s", strerror(ret));
+	if (ret < 0) {
+		printf("Error: %s\n", strerror(errno));
 	}
 
 	return ret;
