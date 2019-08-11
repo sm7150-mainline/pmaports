@@ -2,14 +2,15 @@
 pkgname="device-pine-pinetab"
 pkgdesc="Pine64 Pinetab"
 pkgver=0.1
-pkgrel=4
+pkgrel=5
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-postmarketos-allwinner u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-egl mesa-git-dri-lima mesa-git-dri-kmsro mesa-git-gbm mesa-git-gles"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-sway"
+subpackages="$pkgname-sway
+             $pkgname-nonfree-firmware:nonfree_firmware"
 install="$pkgname.post-install"
 source="
 	deviceinfo
@@ -51,6 +52,11 @@ package() {
 		"$pkgdir"/etc/udev/hwdb.d/99-pinetab-keyboard.hwdb
 }
 
+nonfree_firmware() {
+	pkgdesc="Bluetooth Firmware"
+	depends="firmware-rtl8723bt"
+	mkdir "$subpkgdir"
+}
 
 sha512sums="78b3414f198f2efbfcb12d6240e26a34cd48f00f75a0469c57c372a84aaac75a8f5ddd23f8cb1c16b9a9de6b2a11a8f537a1cd486f75dfbce213541f6890211b  deviceinfo
 8f15bb62704ad5379c6f77c5ea766e69587a11829539cc339b486b72e248e04cc6202b505f12846f6537f259412f7749ce50d0b15227da182afe17fe7dd303e5  uboot-script.cmd
