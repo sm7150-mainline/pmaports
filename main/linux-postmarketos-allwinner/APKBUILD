@@ -3,8 +3,8 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=5.3.0_git20190726
-pkgrel=4
+pkgver=5.3.0_git20190816
+pkgrel=0
 
 arch="aarch64"
 pkgdesc="Kernel fork with PinePhone Don't be evil patches"
@@ -13,7 +13,7 @@ depends=""
 makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
 install=
-_commit="577c793d924a0455b2b555d468cf50f97985b6f6"
+_commit="299a91cfe91e310a178f9af5f73f9e4a6c61d46b"
 _commit_rtl8723cs="1c9c0cb9d335626a66d8063399c6e16751ecc1a8"
 source="
 	${pkgname}-${_commit}.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/${_commit}/linux-${_commit}.tar.gz
@@ -87,9 +87,8 @@ package() {
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
-
-sha512sums="88aab0956b4bb3a240b40448b46b0edbfefd038759cd4c00fe89357e666e5be054ad3cd9455de2fc5670bd656c9414bbc66580723c8532a744d06ab2a4edbac2  linux-postmarketos-allwinner-577c793d924a0455b2b555d468cf50f97985b6f6.tar.gz
+sha512sums="63d8b65f21a6d1c90ba5922bbdb7a4178eca7ea8bb814ce86c2af06e7c7fb8406d78be1c9609d8303b503d4de830a3f2cabd46658c4290f6b2f33dfdfd8bbc5b  linux-postmarketos-allwinner-299a91cfe91e310a178f9af5f73f9e4a6c61d46b.tar.gz
 e4e585ce787301eeee07ff8e45a97343456808a47ed237053f0c83a49b4958a75514def4c5263f4507a282ea90bd2bb3f8f468839f7e5fd05ae947a796c8c6b9  rtl8723cs-1c9c0cb9d335626a66d8063399c6e16751ecc1a8.tar.gz
-d5059f0303f84c0ca005c0fcd3bf1a1ea989377c8b3bee698ed05732a198046f6fd0eb3948c3bce8d643bdaa207197bd34c3bfb953ad937abd332dddcfdf6081  config-postmarketos-allwinner.aarch64
+4ccd2e9d49fe2e246ca1b9c35258177c0df0df1599d4108d86a4b8e82ad9eee5395232df62f2e65688c51091d93ee85a1f363e0172d4a16f8a8be74d54e32d1a  config-postmarketos-allwinner.aarch64
 5f2285e4eb262a9429c73599871c3fecbb858a388774bc7cba7631987ed1dc4a14cd7606e8fefc655c5128851fc853132f0a081e3d710c9266739af92f4d37e8  touch-dts.patch
 bf06f931fb543f4bf2f0567902c3021de237fc9684f92af2ed3e956f869d907c9cff1cf3e11a72eb97bda47c8f8b28aff226634f641bdffa04b08d434f419faa  rtl8723cs.patch"
