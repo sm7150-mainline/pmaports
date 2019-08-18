@@ -1,0 +1,26 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-huawei-lua-u22"
+pkgdesc="Huawei Y3 II 3G"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="msm-fb-refresher postmarketos-base linux-huawei-lua-u22 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/initfs-hook.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+}
+
+
+sha512sums="aca066f7128dd91035087dffc69a6fccf9a709c7f7ee92e99a8b6a18221c89c0a85240e189466b005d994f21ddff589fb8895698ddb6ab2febf62a5bb3d15a29  deviceinfo
+e1f35a48cd76a84cb3a84e26ec223f41ba2adaaec9023880fba3d4f11eb39c69bb2b124bc412d7173d9e6d945a5a78c09384f3cc3b64eaede42248fd92397241  initfs-hook.sh"

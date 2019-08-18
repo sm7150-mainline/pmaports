@@ -1,0 +1,70 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/wt96582_s96582aa71_defconfig
+
+pkgname="linux-huawei-lua-u22"
+pkgver=3.10.72
+pkgrel=0
+pkgdesc="Huawei Y3 II 3G kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="huawei-lua-u22"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="xz perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="kernel-huawei-y3ii"
+_commit="83637cb899ac81dfdabd8935181caec15a7c6929"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/HenriDellal/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	fix-touchscreen.patch
+	kernel-use-the-gnu89-standard-explicitly.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="1772a62d28175bd31f7e1c7f5543f15ffa9a75421409f2dceff5445eaf79ded9d229538b389df0a16d3fd00c4670d625c66e4a9efc7e809fb02c8ee7b0d9a260  linux-huawei-lua-u22-83637cb899ac81dfdabd8935181caec15a7c6929.tar.gz
+5b720380fc83292068f578f0e4cdbeaf7f25775258e7031102575d4a4950bfcb8598e0fac86a85d20f9f6482927b08b429a50fd216ca66874829dd19fb419bd8  config-huawei-lua-u22.armv7
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+dd947f60b8a8082a0d4dcd9c1f0c25178d242edc18aa7ade8390d9f0b13f1756a41bf49bbe4edd890ee70d6e1d751b6d5a7fc0d6bbd4687cf1a0c3b9513a1561  fix-touchscreen.patch
+2ec1a4d6e12dd961541f32d308b97b9daf4817976660601b38ec1ab18631ac88bef6704237f088edcc9f6508bbd4ffbb0014d1ce0fd585587267235a9658a3fe  kernel-use-the-gnu89-standard-explicitly.patch"
