@@ -1,0 +1,22 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=postmarketos-ui-kodi
+pkgver=1
+pkgrel=0
+pkgdesc="(Wayland) 10-foot UI useful on TV's"
+url="https://kodi.tv"
+arch="noarch"
+license="GPL-3.0-or-later"
+depends="kodi-wayland kodi cage lightdm xorg-server"
+install="$pkgname.post-install"
+source="60-lightdm-autologin.conf kodi.desktop"
+options="!check"
+
+package() {
+	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
+	install -Dm644 "$srcdir"/kodi.desktop \
+		"$pkgdir"/usr/share/wayland-sessions/kodi-wayland.desktop
+}
+sha512sums="4cbef7ef9b4da927e123ea28c5918f49ec4dc1367774596e1bc192f172e1e09cb9711015e20743a7fbb3bbbc8ca6df2bee66571a28fb530e2e9d24d945eb982a  60-lightdm-autologin.conf
+e8ab71c6e7d07c0c22f8f85398f33ecc7ed1b4ec865c8bf8e0d0aa589b51fbb16e79601974139990946c163c7008c67c3798bef29d10300365ac720e296729ef  kodi.desktop"
