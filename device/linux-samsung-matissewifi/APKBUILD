@@ -1,0 +1,87 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/cyanogenmod_matissewifi_defconfig
+
+pkgname="linux-samsung-matissewifi"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Samsung Galaxy Tab 4 10.1 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="samsung-matissewifi"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool devicepkg-dev"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_matissewifi"
+_commit="0761bc76449b73747698b76a155883342192106f"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/GalaxyTab4/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	kernel-use-the-gnu89-standard-explicitly.patch
+	00_smd_private.patch
+	01_timeconst.patch
+	02_mdss_mdp_trace.patch
+	03_qdsp6v2.patch
+	04_q6voice.patch
+	random_mac.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Generate master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="fe9bfcd7b16519b60d555492db9ca1f9afe5574da93931221b8aae3b06ac768ead456414e08a9aa08cde57ae5d07a59c9052d6decd15e1cc56ce379c4c712ec4  linux-samsung-matissewifi-0761bc76449b73747698b76a155883342192106f.tar.gz
+4b0c479091310c967999ecd490a6c95b245552b5413e54438f78f6eba2f496a352a5d9b4a367aae063604e912a69d80ba936a73d18ebe385ce7987d408616b56  config-samsung-matissewifi.armv7
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch
+39892cc41e484c51dccc29cadea475aaf99772bafb19231086b614b9eaee520843cd9361c89a6780229961e0ebf4bbf0e115d0e30f8302944b78091fcf7900e7  00_smd_private.patch
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst.patch
+8dd3c227af5c379eedecdabe64a481de3e8241431b5d3d3984ffad65ee74706860115eb1b797afe05f6c360f6696bcb7165fa7d634a4a7a147d98f45cbb5246d  02_mdss_mdp_trace.patch
+1465b7f08dd4d7956c6651da3767648db085f4af8014fd3b24547626ba608734a0c6d8e86ffe086d81817c29f0d8e284e21a3ba50f51cd94ab42935bc124ad30  03_qdsp6v2.patch
+4e7484eaa142e013c9aee12053d91a65983f7629d2b923566d4431143fa0529988dbc28b01dee21336995090ce8127b2ba79208bf61df359632bfeebae9c6618  04_q6voice.patch
+27f890cf82027649ba742b606a87ce6a82f9685b075bb7b50bffec77221e70434ee78d118d39048350537c5ecdad208658967e492eeeb997e7f6884fa78ac696  random_mac.patch"

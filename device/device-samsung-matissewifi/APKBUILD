@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-matissewifi"
+pkgdesc="Samsung Galaxy Tab 4 10.1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-matissewifi mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="34ff1446fca4973043615c439a6ce4b2885a229047bbcb022c2572ea5e0b1cc657e093a9aa7e17c8362af30ac7071e965d3d88eae6240be417e1d1aab06e6a0b  deviceinfo"
