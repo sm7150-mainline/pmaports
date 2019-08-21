@@ -2,7 +2,7 @@
 pkgname=py3-httpbin
 _pkgname=httpbin
 pkgver=0.7.0
-pkgrel=0
+pkgrel=1
 pkgdesc="HTTP Request and Response Service"
 url="https://github.com/requests/httpbin"
 arch="x86_64"
@@ -14,12 +14,10 @@ builddir="$srcdir/$_pkgname-$pkgver"
 options="!check"
 
 build() {
-	cd "$builddir"
 	python3 setup.py build
 }
 
 package() {
-	cd "$builddir"
 	python3 setup.py install --prefix=/usr --root="$pkgdir"
 }
 
