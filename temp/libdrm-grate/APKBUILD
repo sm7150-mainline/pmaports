@@ -1,4 +1,4 @@
-# Maintainer: Robert Yang <decatf@gmail.com>
+# Forked from Alpine, so we can build it with Grate support
 pkgname=libdrm-grate
 pkgver=2.4.91
 pkgrel=2
@@ -25,7 +25,6 @@ _pkgname=libdrm
 builddir="$srcdir/$_pkgname-$_commit"
 
 build() {
-	cd "$builddir"
 	export VALGRIND_CFLAGS="$VALGRIND_CFLAGS -I/usr/include/valgrind/"
 	./autogen.sh \
 		--build=$CBUILD \
@@ -47,12 +46,10 @@ build() {
 }
 
 check() {
-	cd "$builddir"
 	make check
 }
 
 package() {
-	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 
 	cd "$pkgdir"/usr/lib
