@@ -1,12 +1,11 @@
-# Maintainer: Robert Yang <decatf@gmail.com>
+# Forked from Alpine, so we can build it with Tegra support
 pkgname=libvdpau-tegra
 pkgver=1.0.0
 pkgrel=2
 pkgdesc="VDPAU backend driver for NVIDIA Tegra 20/30 SoC's"
 url="https://github.com/grate-driver/libvdpau-tegra"
 arch="armhf armv7"
-license="GPL2"
-subpackages=""
+license="GPL-2.0-or-later"
 depends="libdrm-grate"
 makedepends="
 	autoconf
@@ -30,10 +29,9 @@ makedepends="
 _commit="10910a2d9e1d6205aa60d4947fe3cf00a330e72a"
 source="https://github.com/grate-driver/libvdpau-tegra/archive/$_commit.tar.gz"
 
-builddir="$srcdir"/$pkgname-$_commit
+builddir="$srcdir/$pkgname-$_commit"
 
 prepare() {
-	cd "$builddir"
 	export PKG_CONFIG_PATH="/usr/lib/pkgconfig/libdrm-grate:${PKG_CONFIG_PATH}"
 	./autogen.sh \
 		--build=$CBUILD \
@@ -42,17 +40,14 @@ prepare() {
 }
 
 build() {
-	cd "$builddir"
 	make
 }
 
 check() {
-	cd "$builddir"
 	make check
 }
 
 package() {
-	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
 
