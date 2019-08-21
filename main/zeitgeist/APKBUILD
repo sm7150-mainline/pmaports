@@ -1,16 +1,16 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=zeitgeist
-pkgver=1.0.1
+pkgver=1.0.2
 pkgrel=0
 pkgdesc="Activity logging framework"
 arch="x86_64"
 url="https://zeitgeist.freedesktop.org/"
 license="LGPL-2.1"
-depends=""
 depends_dev="sqlite-dev gobject-introspection-dev xapian-core-dev telepathy-glib-dev gtk+3.0-dev json-glib-dev"
-makedepends="$depends_dev autoconf automake gettext gettext-dev libtool python3 vala git raptor2 py-rdflib"
-source="$pkgname-$pkgver.tar.gz::https://gitlab.freedesktop.org/$pkgname/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+makedepends="$depends_dev autoconf automake gettext-dev libtool python3 py3-rdflib vala git raptor2"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.freedesktop.org/$pkgname/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz
+	gettext_0.20.patch"
 subpackages="$pkgname-dev $pkgname-doc"
 builddir="$srcdir/$pkgname-v$pkgver"
 options="!check" # Needs D-Bus server, see https://gitlab.freedesktop.org/zeitgeist/zeitgeist/issues/4
@@ -18,7 +18,6 @@ options="!check" # Needs D-Bus server, see https://gitlab.freedesktop.org/zeitge
 prepare() {
 	default_prepare
 
-	cd "$builddir"
 	NOCONFIGURE=1 ./autogen.sh
 }
 
@@ -38,13 +37,12 @@ build() {
 }
 
 check() {
-	cd "$builddir"
 	make check
 }
 
 package() {
-	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="58c190daf705141ac06df53d8b928ed615ea98eeaec23f6418a8cff447e9ab32955166266f62175b1ce01fefcef80f46a6095c1df240b00f06a3f1fc73b07ae6  zeitgeist-1.0.1.tar.gz"
+sha512sums="077c2b751b5cb96efc5da6e47336456e1dec4238b1d252218c6da137049dd0c61d518b6079e632fbbfe5edeced0c89e922c826aed1f0811fd6a29ad89abd53ae  zeitgeist-1.0.2.tar.gz
+db47a77efe7ba5cc3f71a9a2d438359c8c9a8dcd2e016726f7776d373177c863e848e4ed4525df66237c79fbf94e3cad3e2844ac685a90e663680cb71e44ff5d  gettext_0.20.patch"
