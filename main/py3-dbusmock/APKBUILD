@@ -2,7 +2,7 @@
 pkgname=py3-dbusmock
 _pkgname=python-dbusmock
 pkgver=0.18
-pkgrel=0
+pkgrel=1
 pkgdesc="Mock D-Bus objects for tests"
 url="https://github.com/martinpitt/python-dbusmock/"
 arch="x86_64"
@@ -15,17 +15,14 @@ builddir="$srcdir/$_pkgname-$pkgver"
 options="!check" # See https://github.com/martinpitt/python-dbusmock/issues/46
 
 build() {
-	cd "$builddir"
 	python3 setup.py build
 }
 
 check() {
-	cd "$builddir"
 	python3 setup.py test
 }
 
 package() {
-	cd "$builddir"
 	python3 setup.py install --prefix=/usr --root="$pkgdir"
 }
 
