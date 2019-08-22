@@ -1,0 +1,74 @@
+# Kernel config based on: arch/arm/configs/p6601_defconfig
+# Wiko U Feel is based on Tinno p6601
+
+pkgname="linux-wiko-ufeel"
+pkgver=3.18.19
+pkgrel=0
+pkgdesc="Wiko U Feel kernel"
+arch="armv7"
+_carch="arm"
+_flavor="wiko-ufeel"
+url="https://wikomobile.com"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl userspace-rcu sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6"
+
+## Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="linux-wiko-ufeel"
+_commit="225754d6fb494c6d5993f40451e415450337ba89"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/pmsourcedump/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	00_disable_drvgen.patch
+	01_add_decompiled_stock_dtb_dtsi.patch
+	02_fix_various_include_directives_mt6735.patch
+	04-workaround-loading-wifi-firmware-mt6735.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+
+sha512sums="140e5d015ede0ebac771d4bb1e35e0133341dc05fe5c97ebc9f40142e889263722e40b7e7c99f865ad9890c879e85e2468d024d5cf5b8c4f79d74b678188bc6e  linux-wiko-ufeel-225754d6fb494c6d5993f40451e415450337ba89.tar.gz
+b3c2db70353a5975715d2bf9c1eef8984d22a866de530ae28926f9ffa3f6588501569efad47e6e9777f8993ba9553a871f1fb51d209f6643226e9b7d2bc8a1e0  config-wiko-ufeel.armv7
+8a04940e6f5424df67a3cc4c75dd19be1c9b560859e9db0ae67b766d52982a46156b601698afb80f90b9b99f63ef74e1f6147902b43ec97c25d2b75ba2f8d2b3  00_disable_drvgen.patch
+e2b77554b0c22cacf9e011bd7ccd447c5d530fc23caa25416469ca3df6c2f6c0e11fb28cdf751ea8e3b35e629d8c68410ad4abf50f9fdbe493f6754810d9966d  01_add_decompiled_stock_dtb_dtsi.patch
+1f6d7d043ee8556758e2475ca2d677abf1582f4329eb66cfcd6481a4b3216efd35a0f44d0483a8a3344bb4b5dd24d340327d9216f3069ed4b86e5bf8ffc5412b  02_fix_various_include_directives_mt6735.patch
+3d8c0888e6de769861fbc6b3d6419bffa7ea841f0a5a38c2990f5ddefb511ae1dce0418ff61a96ac9b6b4438232c0706d627d58eec42fa7b36e135c45ee9bf99  04-workaround-loading-wifi-firmware-mt6735.patch"

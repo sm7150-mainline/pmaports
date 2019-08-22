@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-wiko-ufeel"
+pkgdesc="Wiko U-Feel"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-wiko-ufeel mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="5d00e4db9744c345f014f54d3b5d5cf5d93c001816dbbf57b66a6744a1677383d75db87ce47d6305b6fa9e6f40d161d1ffeeb5e1ef8fbf1aaa36e610c750dade  deviceinfo"
