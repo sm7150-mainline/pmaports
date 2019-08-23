@@ -1,0 +1,54 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/u8500_defconfig
+
+_flavor="postmarketos-novathor"
+pkgname="linux-${_flavor}"
+pkgver=5.5_rc3
+pkgrel=0
+pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
+arch="armv7"
+_carch="arm"
+url="https://github.com/novathor-mainline/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+depends_dev="perl gmp-dev elfutils-dev bash flex bison"
+makedepends="$depends_dev sed installkernel bc linux-headers openssl-dev"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_tag=v${pkgver//_/-}-novathor
+source="
+	$pkgname-$_tag.tar.gz::$url/archive/$_tag.tar.gz
+	config-$_flavor.armv7
+"
+builddir="$srcdir/linux-${_tag#v}"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="fad6e5ee0d239c3f656a266217d3a9e7faddeb2f1c727faf20d28669f173cbfab89d1f47b9d7b6f1c9f9ac6219db37f5b84451530baebb281145b4027559efd8  linux-postmarketos-novathor-v5.5-rc3-novathor.tar.gz
+eac1c7d68fded40fae94f2430f5bb527c69a04e518dfdeed996ea8863bcc918309d955c9c850de08181c58811f18e362156899b15ecdaa85347d4809157504b2  config-postmarketos-novathor.armv7"
