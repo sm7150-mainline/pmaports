@@ -1,0 +1,54 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/vt8500_v6_v7_defconfig
+
+pkgname=linux-tokio-techbook
+pkgver=4.3.0
+pkgrel=0
+pkgdesc="Tokio Techbook kernel fork (mainline 4.3.0)"
+arch="armv7"
+_carch="arm"
+_flavor="tokio-techbook"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev"
+
+
+# Source
+# Mainline 4.3.0
+# https://github.com/torvalds/linux/commit/6a13feb9c82803e2b815eca72fa7a9f5561d7861
+_repository="linux"
+_commit="6a13feb9c82803e2b815eca72fa7a9f5561d7861"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/torvalds/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc8-fix-put-user.patch
+"
+
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+
+}
+
+sha512sums="0fde6b90d9ec94eca00f419e51f112f258e9cb9795375379e4078dc800784dad882935db39e74fb748727a82c91046e23dd39c76ae14bca9afe6f6b19d1ea452  linux-tokio-techbook-6a13feb9c82803e2b815eca72fa7a9f5561d7861.tar.gz
+e6767f859734475eb01ab5763fcad58014a30a4db9c61eca74533f113da945d44fb6d3f83d5dff750fe0fe676f65d7f90fc18a2457751e5a136ab82d55c38e57  config-tokio-techbook.armv7
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"
