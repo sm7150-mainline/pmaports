@@ -231,7 +231,13 @@ create_uboot_files()
 	if [ "${deviceinfo_append_dtb}" == "true" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
-	mkimage -A $arch -O linux -T kernel -C none -a 80008000 -e 80008000 \
+
+	if [ -z "$deviceinfo_legacy_uboot_load_address" ]; then
+		deviceinfo_legacy_uboot_load_address="80008000"
+	fi
+
+	mkimage -A $arch -O linux -T kernel -C none -a "$deviceinfo_legacy_uboot_load_address" \
+		-e "$deviceinfo_legacy_uboot_load_address" \
 		-n postmarketos -d $kernelfile "${outfile/initramfs-/uImage-}" || exit 1
 }
 
