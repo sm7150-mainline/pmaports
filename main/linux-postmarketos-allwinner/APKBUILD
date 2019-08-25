@@ -4,15 +4,13 @@ _config="config-${_flavor}.${CARCH}"
 pkgname=linux-${_flavor}
 
 pkgver=5.3.0_git20190816
-pkgrel=0
+pkgrel=1
 
 arch="aarch64"
 pkgdesc="Kernel fork with PinePhone Don't be evil patches"
 url="https://gitlab.com/pine64-org/linux/"
-depends=""
-makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
+makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync"
 options="!strip !check !tracedeps"
-install=
 _commit="299a91cfe91e310a178f9af5f73f9e4a6c61d46b"
 _commit_rtl8723cs="1c9c0cb9d335626a66d8063399c6e16751ecc1a8"
 source="
@@ -23,7 +21,7 @@ source="
 	rtl8723cs.patch
 "
 
-subpackages=""
+subpackages="$pkgname-dev"
 
 license="GPL2"
 _abi_release=$_pkgver
@@ -87,6 +85,19 @@ package() {
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
+
+dev() {
+	provides="linux-headers"
+	replaces="linux-headers"
+
+	cd $builddir
+
+	# https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.rst
+	make -j1 headers_install \
+		ARCH="$_carch" \
+		INSTALL_HDR_PATH="$subpkgdir"/usr
+}
+
 sha512sums="63d8b65f21a6d1c90ba5922bbdb7a4178eca7ea8bb814ce86c2af06e7c7fb8406d78be1c9609d8303b503d4de830a3f2cabd46658c4290f6b2f33dfdfd8bbc5b  linux-postmarketos-allwinner-299a91cfe91e310a178f9af5f73f9e4a6c61d46b.tar.gz
 e4e585ce787301eeee07ff8e45a97343456808a47ed237053f0c83a49b4958a75514def4c5263f4507a282ea90bd2bb3f8f468839f7e5fd05ae947a796c8c6b9  rtl8723cs-1c9c0cb9d335626a66d8063399c6e16751ecc1a8.tar.gz
 4ccd2e9d49fe2e246ca1b9c35258177c0df0df1599d4108d86a4b8e82ad9eee5395232df62f2e65688c51091d93ee85a1f363e0172d4a16f8a8be74d54e32d1a  config-postmarketos-allwinner.aarch64
