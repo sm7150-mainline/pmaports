@@ -1,12 +1,12 @@
 # Reference: <https://postmarketos.org/vendorkernel>
-# Kernel config based on: arch/arm/configs/montana_defconfig
+# Kernel config based on: arch/arm64/configs/montana_defconfig
 
 pkgname="linux-motorola-montana"
-pkgver=3.18.71
+pkgver=3.18.140
 pkgrel=0
 pkgdesc="Motorola Moto G5s kernel fork"
-arch="armv7"
-_carch="arm"
+arch="aarch64"
+_carch="arm64"
 _flavor="motorola-montana"
 url="https://kernel.org"
 license="GPL-2.0-only"
@@ -18,19 +18,18 @@ HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
-_repository="kernel-msm"
-_commit="oreo-8.1.0-release"
+_repository="android_kernel_motorola_msm8937"
+_commit="1e8993177823e4ddf3b5d91da6335d75ad513dec"
 _config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/kubast2/${_repository}/archive/${_commit}.tar.gz 
+	$pkgname-$_commit.tar.gz::https://github.com/MontanaDevelopment/${_repository}/archive/${_commit}.tar.gz 
 	$_config
-	gcc8-fix-put-user.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
 	default_prepare
-	REPLACE_GCCH=0 downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
@@ -50,7 +49,7 @@ package() {
 	# zImage (find the right one)
 	cd "$builddir/arch/$_carch/boot"
 	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image.gz Image; do
 		[ -e "$_zimg" ] || continue
 		msg "zImage found: $_zimg"
 		install -Dm644 "$_zimg" "$_target"
@@ -66,6 +65,5 @@ package() {
 		"$pkgdir/boot/dt.img"
 }
 
-sha512sums="d84030635b95fde39fe92e5eb79c288c1096a276930cd204ad18119d759f785ca7a0647bb16fd2eaa17c0635ed66e5c2324ef454324e83b5fd678e29e05c926c  linux-motorola-montana-oreo-8.1.0-release.tar.gz
-cd15d24513982b5ce1332cd353f84774eab0d7ac76a8b20a920fc78ee57d3925d25f63171474e959e2018a03401ba7acfa35f4f668f7b1d10d69bd5839b73b2f  config-motorola-montana.armv7
-197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"
+sha512sums="369dfffb8088958226b1a259705f4af1e5e9b02d32fde4cd9f9c50f2165658a187f5aa74badff77761a02c2c088484789267db6afbcc3e802dd62b1e819553c0  linux-motorola-montana-1e8993177823e4ddf3b5d91da6335d75ad513dec.tar.gz
+3d05f43f3c3ca5afc5bc46aeb7b08ffda78ca6b146bf9d8969c14da3b62ae9fa83dab85cac291aadf9ee4d182e98d6d56f8da9324681a6b697e22456c9fbbee5  config-motorola-montana.aarch64"
