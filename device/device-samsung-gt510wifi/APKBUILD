@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-gt510wifi"
+pkgdesc="Samsung Galaxy Tab A 9.7 WiFi (2015) (SM-T550)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-samsung-gt510wifi-venus firmware-samsung-gt510wifi-wcnss"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="3ebfa3b46208f4ffa93728ddc46e09fe7e84e8c961399595375bf716013687c5ebac8235c7c1a4fc166913e575878dd1df2e3bec9a9f480c34a4c5996acec294  deviceinfo"
