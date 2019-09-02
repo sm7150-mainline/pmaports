@@ -8,9 +8,9 @@
 # of this aport, so mesa-git including _all_ of the subpackages, to not cause
 # conflicts
 pkgname=mesa-git
-pkgver=0_git20190725
-pkgrel=1
-_commit="cd02f60c1e9d0ef37e4defb8e6b00433990fd90c"
+pkgver=0_git20190917
+pkgrel=0
+_commit="631255387f0469910db99eccbfbaa63345425739"
 pkgdesc="(Git) Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
 arch="armhf armv7 aarch64"
@@ -67,8 +67,7 @@ source="
 	$pkgname-$_commit.tar.gz::https://gitlab.freedesktop.org/mesa/mesa/-/archive/$_commit.tar.gz
 	adjust-cache-deflate-buffer.patch
 	musl-fix-includes.patch
-	add-glx-use-tls.patch
-	fix-build.patch
+	add-use-elf-tls.patch
 	"
 provides="mesa"
 replaces="mesa-dricore mesa"
@@ -136,7 +135,7 @@ build() {
 		-Dgallium-vdpau=true \
 		-Dgallium-va=true \
 		-Dgallium-xvmc=false \
-		-Dglx-use-tls=false \
+		-Duse-elf-tls=false \
 		-Dgallium-nine=false \
 		-Db_ndebug=true \
 		$_arch_opts \
@@ -345,8 +344,7 @@ _vulkan() {
 		_mv_vulkan intel ;;
 	esac
 }
-sha512sums="be6dc11d0e967bb519e6cea1e6aac76539bcb39f76daf00a194a24e1fc8636891a80dbe7960f30d58f4fa96d836509899c0c8f9474574cc21079355e9ef2977e  mesa-git-cd02f60c1e9d0ef37e4defb8e6b00433990fd90c.tar.gz
+sha512sums="1aaf6ed470c579303631635e6c5dfb16a8d746c67709987a2772bd23559adf12bc0da39abc620fa3d4229fa76fcbdc3b61a84cf0c6098db85a24f4724295c8c7  mesa-git-631255387f0469910db99eccbfbaa63345425739.tar.gz
 cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  adjust-cache-deflate-buffer.patch
 cf849044d6cc7d2af4ff015208fb09d70bf9660538699797da21bda2ecb7c1892d312af83d05116afd826708d9caafb1d05a13f09139c558aea6fee931e3eee7  musl-fix-includes.patch
-1d89e305659bb0ca95b0b593dbc1a17ed28f4a18fabe468c20527302fc90c1ce11ca40a79c8786f1eca68ef643027af706b8689068e31c7f27ceb2303d51633e  add-glx-use-tls.patch
-c8cc0cb3e5e1e2a4795fa9ddd9312c496db6ec333907a4a1345b97ac839fe8e5a4f3036063242527237eace07d4bd2ccd5ca4b49134eae688a3d7387c83e31fb  fix-build.patch"
+6974e344b9a613077cb322b734ff4e2780e78f1a2af60657686b3b3341ad526273f58b22624ba6c575988474dbc0978e7ebe4a9d1547483305f8fc251d24d86e  add-use-elf-tls.patch"
