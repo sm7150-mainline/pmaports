@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=pure-maps
+pkgver=1.26.2
+pkgrel=0
+pkgdesc="Maps and navigation"
+url="https://github.com/rinigus/pure-maps"
+# armhf blocked by mapbox-gl-qml -> qt5-qtdeclarative-dev
+arch="noarch !armhf"
+license="GPL-3.0-or-later"
+depends="qmlrunner kirigami2 py3-gpxpy qt5-qtlocation qt5-qtmultimedia qt5-qtbase-sqlite mapbox-gl-qml nemo-qml-plugin-dbus py3-pyotherside qml-module-clipboard"
+makedepends="py3-pyflakes python3 gettext qt5-qttools-dev"
+subpackages="$pkgname-lang"
+install="$pkgname.post-install"
+source="https://github.com/rinigus/pure-maps/archive/$pkgver/pure-maps-$pkgver.tar.gz"
+options="!check" # Requires jsonlint which is not available
+
+build() {
+	make platform-kirigami
+	make
+}
+
+check() {
+	make test
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+
+	# Locales get installed to the wrong location and thus have to be moved
+	# to get picked up by abuild lang()
+	mv "$pkgdir"/usr/share/pure-maps/locale "$pkgdir"/usr/share/
+}
+
+sha512sums="3c7886d2d0b6ba26a165130d31e701f5aaf85d387bf2b0dd3f69f2930e59cf53facd7d5cb37e7d51512831b23a026ae7adee4e3fdf000cdba635b9a9e0f8d6d2  pure-maps-1.26.2.tar.gz"
