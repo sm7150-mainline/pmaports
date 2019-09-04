@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=mapbox-gl-native
+pkgver=1.5.0.3
+pkgrel=0
+_commit="0d63f5661ed15d43fbbf0462d82c85e634a2e8d7"
+_commit_mapbox="974c87bd9cc25b7f0a2fc31adcc51df4db694270"
+pkgdesc="Mapbox GL Native"
+url="https://github.com/rinigus/pkg-mapbox-gl-native"
+arch="all !armhf"
+license="MIT"
+makedepends="qt5-qtbase-dev icu-dev"
+source="mapbox-gl-native-lib-$_commit.pro::https://raw.githubusercontent.com/rinigus/pkg-mapbox-gl-native/$_commit/mapbox-gl-native-lib.pro
+	$pkgname-$_commit_mapbox.tar.gz::https://github.com/rinigus/mapbox-gl-native/archive/$_commit_mapbox.tar.gz"
+options="!check" # No tests
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit_mapbox"
+
+prepare() {
+	default_prepare
+
+	mv "$srcdir"/mapbox-gl-native-lib-$_commit.pro \
+		"$builddir"/mapbox-gl-native-lib.pro
+}
+
+build() {
+	qmake-qt5 "CONFIG+=posix" mapbox-gl-native-lib.pro
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+}
+
+sha512sums="e12b3be5d302fffe88f02a9e1a8858a6c4603924fc6faab4b2706bc9b5f792222c4b16da835fe773fadc50192f49e53f92ebf0d71088b1af299acb63fbaf3b09  mapbox-gl-native-lib-0d63f5661ed15d43fbbf0462d82c85e634a2e8d7.pro
+86d50d52a2f3c8c9929e556498de6cf4cd955fd366455f533567e0d2fb35c24e03f597ea3d06821042b1ee8387c1ba23a4e3e0f70046183a84330e351251721a  mapbox-gl-native-974c87bd9cc25b7f0a2fc31adcc51df4db694270.tar.gz"
