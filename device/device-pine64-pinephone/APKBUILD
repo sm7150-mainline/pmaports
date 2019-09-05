@@ -8,8 +8,6 @@ license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 subpackages="
-	$pkgname-weston
-	$pkgname-x11
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 depends="postmarketos-base u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-lima mesa-git-dri-kmsro linux-postmarketos-allwinner ofono ofono-openrc"
@@ -19,7 +17,6 @@ source="
 	deviceinfo
 	uboot-script.cmd
 	weston.ini
-	xorg.conf
 	hwtest.ini
 	ucm/sun50i-a64-audio.conf
 	ucm/HiFi
@@ -44,33 +41,15 @@ package() {
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/HiFi
 }
 
-x11() {
-        install_if="$pkgname xorg-server"
-        depends="
-                libinput
-                xf86-input-libinput
-                xf86-video-fbdev"
-        install -Dm644 "$srcdir"/xorg.conf \
-                "$subpkgdir"/etc/X11/xorg.conf.d/10-framebuffer.conf
-}
-
-weston() {
-        install_if="$pkgname weston"
-        install -Dm644 "$srcdir"/weston.ini \
-                "$subpkgdir"/etc/xdg/weston/weston.ini
-}
-
 nonfree_firmware() {
 	pkgdesc="Wifi and Bluetooth firmware"
 	depends="linux-firmware-rtlwifi linux-firmware-rtl_bt firmware-rtl8723bt"
 	mkdir "$subpkgdir"
 }
 
-
 sha512sums="bfb39f14c5a0b928d08cbcb5d19e63e141b052ebb72186c7c26f54d89c2ebf069674bc110215df0cacdd663610594eef5ffb3022eae5bd0e08aea34ab4e2f319  deviceinfo
 35a5ce7c18747e4363c6b310a1c33143f333a9dd2031d619dee10773d499329487a5ed76749e182d56829d03511266a54890cfa706ba21565e9ba8ffdb88f872  uboot-script.cmd
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
-f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
 775b7f7612102fc8ff12b2ffc8a7d479bfcf0ab054e331e4bd7873264cc63cbcbf5073d8dc2a80ef0f36226ad5c8b435396801c7d712161ff80ef036ecdc29b6  sun50i-a64-audio.conf
 8018532bd68b4682455690922560933ddb0dd1dae6a3b2f8611ae89ad09e37ea3c5a17cb9fd39ac165e4e598e0eb9ebbd1395f5908020108ee8a301aae516c3c  HiFi"
