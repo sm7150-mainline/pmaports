@@ -4,7 +4,7 @@ printenv
 
 echo Loading DTB
 load mmc ${mmc_bootdev}:1 ${fdt_addr_r} sun50i-a64-dontbeevil-longts.dtb
-load mmc ${mmc_bootdev}:1 ${fdt_addr_r} sun50i-a64-dontbeevil-shortts.dtb
+load mmc ${mmc_bootdev}:1 ${fdt_addr_r} sun50i-a64-dontbeevil.dtb
 
 echo Loading Initramfs
 load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} uInitrd-postmarketos-allwinner

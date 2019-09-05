@@ -2,7 +2,7 @@
 pkgname="device-pine-dontbeevil"
 pkgdesc="PINE64 PinePhone Don't be evil devkit"
 pkgver=0.1
-pkgrel=10
+pkgrel=11
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -21,7 +21,6 @@ source="
 	uboot-script.cmd
 	weston.ini
 	xorg.conf
-	start_weston.sh
 "
 
 build() {
@@ -49,8 +48,6 @@ weston() {
         install_if="$pkgname weston"
         install -Dm644 "$srcdir"/weston.ini \
                 "$subpkgdir"/etc/xdg/weston/weston.ini
-        install -Dm755 "$srcdir"/start_weston.sh \
-                "$subpkgdir"/etc/profile.d/000_start_weston.sh
 }
 
 nonfree_firmware() {
@@ -73,7 +70,6 @@ kernel_longts() {
 }
 
 sha512sums="3e903f578a5112ec171e09e13e331345f0bd8fee935d6658a48cd2d369085c909106329fc103678961189486956aed97da9ff0b3be59f587f773f57d51f2d1bd  deviceinfo
-cf190dbdc74e92cc150984e5e6419ef2ac45377eac882bf857e000ef8ab534955bb904c5dd3b423f7d50cedd90824e353df08e77336099dcf557e852940e0470  uboot-script.cmd
+eda61d8097896a618593e07bd03518236692b4c580182ce2e34c5e1040125e1004088475f1d484e7a4918d6f1d395a9ab121cfca202a887cdfaf9c0363dbb40b  uboot-script.cmd
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
-f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf
-aa11864b9960e94e13b1467e09d8eb528e3d3652bf1fb251c7a040f4d44270403072db8aa906405d4c81fa9d6043fafa8d9ccd1f97031fd96d0dcacc38da8f84  start_weston.sh"
+f86ef35730b89bcc8160c08db7a7fcd0970adf60c0b77af68bac397de49c0d1783e6b8db1762380c9bf874aff2d030c6f44ecb75c803d69e79ede11376409369  xorg.conf"
