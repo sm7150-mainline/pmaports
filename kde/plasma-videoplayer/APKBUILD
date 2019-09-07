@@ -2,25 +2,28 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-videoplayer
 _pkgname=videoplayer
-pkgver=0_git20190403
-pkgrel=1
-_commit="fb2501691b73aad040807cae09e1b04178a885a1"
+pkgver=0.3_git20190505
+pkgrel=0
+_commit="efd715ef60ab321035ab44ddca36a95a8aad176f"
 pkgdesc="Video Player for Plasma Mobile"
 url="https://invent.kde.org/jbbgameich/videoplayer"
 arch="all"
-license="GPL-2.0 LGPL-2.1"
+license="LGPL-2.1-or-later"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev plasma-framework-dev kdeclarative-dev ki18n-dev kdbusaddons-dev"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/jbbgameich/$_pkgname/-/archive/$_commit/$_pkgname-$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/jbbgameich/videoplayer/-/archive/$_commit/videoplayer-$_commit.tar.gz"
+options="!check" # No tests
 builddir="$srcdir/$_pkgname-$_commit"
 
 prepare() {
+	default_prepare
+
 	mkdir "$builddir"/build
 }
 
 build() {
 	cd "$builddir"/build
-	cmake .. \
-		-DCMAKE_BUILD_TYPE=RelWithDebugInfo \
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make
@@ -35,4 +38,4 @@ package() {
 	cd "$builddir"/build
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="70f143fe4c3294a28d7b7802825e02bb34a5b3a475e5b8a0e6f3f4469f721ed5c8f82fa7b2025b591892fa8e8fa789a86d2ffab7fcf86b69b1730e562fae0d50  plasma-videoplayer-fb2501691b73aad040807cae09e1b04178a885a1.tar.gz"
+sha512sums="fbd4d320264ae820f3e7f64b41df93a3242ec47d5ad05a241f293926509bdd8799eb90295fe18cbd4ac80c4f7ab87c29b53528c671023ddcd9c42ccbafc99ca7  plasma-videoplayer-efd715ef60ab321035ab44ddca36a95a8aad176f.tar.gz"
