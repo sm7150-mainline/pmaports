@@ -1,30 +1,27 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
-# Maintainer: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=pmbootstrap
 pkgver=1.7.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Sophisticated chroot/build/flash tool to develop and install postmarketOS"
 url="https://gitlab.com/postmarketOS/pmbootstrap"
 arch="noarch"
-license="GPL-3.0"
+license="GPL-3.0-or-later"
 depends="python3 coreutils procps"
-makedepends="python3-dev"
+makedepends="python3"
 checkdepends="pytest"
-source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketos/pmbootstrap/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketos/pmbootstrap/-/archive/$pkgver/pmbootstrap-$pkgver.tar.gz"
 options="!check" # Doesn't like making chroot directories
 
 build() {
-	cd "$builddir"
 	python3 setup.py build
 }
 
 check() {
-	cd "$builddir"
 	python3 setup.py test
 }
 
 package() {
-	cd "$builddir"
 	python3 setup.py install --prefix=/usr --root="$pkgdir"
 }
 sha512sums="13a6085d113ab76d7b54ff438c3ea8fec1a8a4f8cf7e5efed372a6ce8288ef5cf96b8e7aae35ec7adba6a03f2da50fa93671260bf1b96593e0519ffe3c3baa28  pmbootstrap-1.7.0.tar.gz"
