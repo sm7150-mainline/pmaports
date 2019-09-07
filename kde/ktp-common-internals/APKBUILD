@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ktp-common-internals
-pkgver=19.04.3
+pkgver=19.08.1
 pkgrel=0
 pkgdesc="Library for KTp"
 url="https://github.com/kde/ktp-common-internals"
@@ -9,8 +9,9 @@ arch="all"
 license="LGPL-2.1-only AND GPL-2.0-only"
 depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev knotifications-dev kio-dev kwidgetsaddons-dev kcmutils-dev knotifyconfig-dev ktexteditor-dev kwallet-dev kconfig-dev kwindowsystem-dev kemoticons-dev kiconthemes-dev kpeople-dev telepathy-qt-dev telepathy-logger-qt-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen"
-source="https://download.kde.org/stable/applications/$pkgver/src/$pkgname-$pkgver.tar.xz"
-subpackages="$pkgname-dev"
+source="https://download.kde.org/stable/applications/$pkgver/src/ktp-common-internals-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # No tests
 
 build() {
 	cmake \
@@ -20,8 +21,12 @@ build() {
 	make
 }
 
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="9dea0bbb9c5cb7812e553b26ffd650c2ed3e1b05065d9f256b475d24199c74b1335edf12d4dd6949e5e59065546dd520f18b72f6b6b610873ee142045cd2d141  ktp-common-internals-19.04.3.tar.xz"
+sha512sums="175434bf8a765003960defe2b27278e0493f81e36c36405d5cae6967f2656383e1b7efb903c38e80cb332fba518b4508bd7b809057580fb132f10ec58f12ba93  ktp-common-internals-19.08.1.tar.xz"
