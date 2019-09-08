@@ -22,14 +22,12 @@ case $pkgver in
 	*.*.*) _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=13
+pkgrel=14
 arch="armhf"
 pkgdesc="LineageOS 14.1 kernel for OnePlus One (bacon)"
 url="https://github.com/LineageOS/android_kernel_oneplus_msm8974"
-depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev python2 xz dtbtool gcc6"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz dtbtool gcc6"
 options="!strip !check !tracedeps"
-install=
 source="
 	$pkgname-$_version.tar.gz::https://github.com/LineageOS/android_kernel_oneplus_msm8974/archive/${_version}.tar.gz
 	${_config}
@@ -38,8 +36,7 @@ source="
 	0001-fix-video-argb-setting.patch
 	mdss_fb_refresh_rate.patch
 "
-subpackages=""
-license="GPL2"
+license="GPL-2.0-only"
 
 _abi_release=${pkgver}
 _carch="arm"
