@@ -1,30 +1,23 @@
 pkgname=libdsme
-pkgver=0.60.30
-pkgrel=2
+pkgver=0.60.31
+pkgrel=0
 pkgdesc="Libraries for programs that communicate with the Device State Management Entity"
 arch="all"
 url="https://github.com/maemo-leste/libdsme"
-license="GPL"
-depends="dbus glib"
+license="LGPL-2.1-only"
 depends_dev="glib-dev"
-makedepends="bash glib-dev"
+makedepends="$depends_dev bash"
 subpackages="$pkgname-dev"
-source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libdsme/archive/$pkgver.tar.gz"
-
-_builddir="$srcdir/libdsme-$pkgver"
-
-prepare() {
-	cd "$_builddir"
-	sed -i -e "s|<sys/un.h>|<sys/uio.h>\n#include <sys/un.h>|g" ./protocol.c
-}
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libdsme/archive/$pkgver.tar.gz
+	include.patch"
 
 build() {
-	cd "$_builddir"
 	make
 }
 
 package() {
-	cd "$_builddir"
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="4c8559b0267b03199deffcf7037bb76ba80d6143f01fb291052740e53e7fcf20bbdc700a65a40682a4fd346f33f14bd8628981ef260d27b63c83bd14b8b64624  libdsme-0.60.30.tar.gz"
+
+sha512sums="68baad532f557519fe16257fdddb8787ae4bc82be19311bbcdca6290ef905236f571403c90c571a6dd302e55168a5fc8ab9f1928646653153d72cf99bd49789e  libdsme-0.60.31.tar.gz
+5a59eb4c4f0722702beb5a11c7deda25b56bf08380a135b7e1c22f74dd32dc2ae41a7512912e215ca25fd183de2186f3b65b58a4f8b8716a7dce341d304648d5  include.patch"
