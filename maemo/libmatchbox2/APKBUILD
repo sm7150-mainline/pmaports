@@ -1,34 +1,27 @@
 pkgname=libmatchbox2
-pkgver=0.2.95
+pkgver=0.2.96
 pkgrel=0
 pkgdesc="Library for Matchbox Project applications"
 arch="all"
 url="https://github.com/maemo-leste/libmatchbox2"
-license="GPL"
-depends="gtk+2.0-maemo pango libpng libxext clutter"
-depends_dev="libxcomposite-dev libxext-dev libxdamage-dev"
-makedepends="autoconf automake libtool
-	gtk+2.0-maemo-dev pango-dev clutter-dev libpng-dev $depends_dev"
+license="GPL-2.0-or-later"
+depends="gtk+2.0-maemo clutter"
+makedepends="autoconf automake libtool gtk+2.0-maemo-dev pango-dev clutter-dev libpng-dev"
 subpackages="$pkgname-dev"
 source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/libmatchbox2/archive/$pkgver.tar.gz"
 
-builddir="$srcdir/libmatchbox2-$pkgver"
-
 prepare() {
-	cd "$builddir"
-	sed -i -e 's/libpng12/libpng/g' configure.ac
-	sed -i -e 's/png_ptr->jmpbuf/png_jmpbuf(png_ptr)/g' matchbox/theme-engines/mb-wm-theme-png.c
+	default_prepare
+
+	autoreconf -fi
 }
 
 build() {
-	cd "$builddir"
-	autoreconf -i -f
 	./configure --prefix=/usr --enable-png-theme --with-pango CFLAGS="${CFLAGS} -Wno-error=unused-result -Wno-error=deprecated-declarations"
 	make
 }
 
 package() {
-	cd "$builddir"
 	make DESTDIR="$pkgdir/" install
 }
-sha512sums="c69f298b62c568527afd455f1778f61f9b48c507bae441e09c3f12fd23899d3213af96f2bf9f40297e25320a36540e43ef7e0279e1fdcf17ca1998ddbdf454ad  libmatchbox2-0.2.95.tar.gz"
+sha512sums="cc8d3b1cfe704ec6de38c574b23c0b0391191f0c5f0f3014877920fe099db3a96efcb8332cc7a9a700499e316e4090b11dd10d304efa3ff171a0b29ee7abbeb1  libmatchbox2-0.2.96.tar.gz"
