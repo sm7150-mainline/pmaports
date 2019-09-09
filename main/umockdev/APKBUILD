@@ -1,22 +1,19 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=umockdev
-pkgver=0.12.1
+pkgver=0.13.2
 pkgrel=0
 pkgdesc="Record/mock hardware devices for bug reports and regression tests"
-arch="x86_64"
+arch="all"
 url="https://github.com/martinpitt/umockdev/"
 license="LGPL-2.1"
-depends=""
 depends_dev="eudev-dev libgudev-dev"
 makedepends="$depends_dev autoconf automake libtool gtk-doc vala linux-headers bash"
 source="$pkgname-$pkgver.tar.gz::https://github.com/martinpitt/$pkgname/archive/$pkgver.tar.gz"
 subpackages="$pkgname-dev $pkgname-doc"
-options="!check" # See https://gitlab.com/postmarketOS/pmbootstrap/issues/1650
+options="!check" # Testbed.create_node_for_device: openpty() failed: No such file or directory
 
 build() {
-	cd "$builddir"
-
 	./autogen.sh \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -26,13 +23,10 @@ build() {
 }
 
 check() {
-	cd "$builddir"
 	make check
 }
 
 package() {
-	cd "$builddir"
-
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="0680efd60cdb10f48ed1aff3650b9a8345cb1b5f352751335830cef4d366c7cfd1c7c5b35864c078f2aa899965ef73bffcc4ae00029df80ecec5eb09c9505267  umockdev-0.12.1.tar.gz"
+sha512sums="58a0e2cf9c387a495a39d2094c3f5ea733b28b1dbadb0b8e4fc5bad559359d7f46c968112bc27206d4ecfa03f88562c712b62fa9dae7628181f2ff59e9a143c6  umockdev-0.13.2.tar.gz"
