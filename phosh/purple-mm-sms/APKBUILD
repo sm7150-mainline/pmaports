@@ -1,7 +1,7 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=purple-mm-sms
-pkgver=0.0.3
+pkgver=0.0.4
 pkgrel=0
 pkgdesc="A libpurple plugin for sending and receiving SMS via Modemmanager"
 arch="all"
@@ -11,6 +11,7 @@ depends="modemmanager"
 makedepends="pidgin-dev modemmanager-dev"
 source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
 builddir="$srcdir/$pkgname-v$pkgver"
+options="!check" # No test suite
 
 build() {
 	make
@@ -19,4 +20,4 @@ build() {
 package() {
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="944d73b9d9063159cd367ad40c5484ba6d804698a80c3cf09a3b8ceb196ccbd687aff7413a0deaf096a84751000ceca7b6811d7cee40fa547e22986854dc333d  purple-mm-sms-0.0.3.tar.gz"
+sha512sums="37b4296d5c677897cb4ff0d6f22a077814eb1af2e2985570f2cd4190a317f0292aaa5302b71c5bd54bd5de9d351ce1372599c715a45638ef1ce7ba2f97b0eae3  purple-mm-sms-0.0.4.tar.gz"
