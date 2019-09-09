@@ -1,9 +1,9 @@
-# Maintainer: JuniorJPDJ <pmos@juniorjpdj.pl>
 # Forked from Alpine to disable IFA_F_NOPREFIXROUTE (for old kernels)
+
 pkgname=dhcpcd
 pkgver=9999
-_pkgver=7.0.8
-pkgrel=0
+_pkgver=8.0.6
+pkgrel=1
 pkgdesc="RFC2131 compliant DHCP client"
 url="https://roy.marples.name/projects/dhcpcd"
 arch="all"
@@ -11,16 +11,15 @@ license="BSD-2-Clause"
 makedepends="linux-headers bsd-compat-headers dbus-dev"
 install="$pkgname.post-upgrade"
 subpackages="$pkgname-doc $pkgname-openrc"
-source="https://roy.marples.name/downloads/dhcpcd/$pkgname-$_pkgver.tar.xz
+source="https://roy.marples.name/downloads/dhcpcd/dhcpcd-$_pkgver.tar.xz
 	busybox-logger.patch
 	fix-chrony-conf-location.patch
 	old-kernel.patch
 	dhcpcd.initd
 	"
-builddir="$srcdir/$pkgname-$_pkgver"
-build() {
-	cd "$builddir"
+builddir="$srcdir/dhcpcd-$_pkgver"
 
+build() {
 	CFLAGS="$CFLAGS -D_GNU_SOURCE -DHAVE_PRINTF_M"
 	./configure \
 		--build=$CBUILD \
@@ -38,20 +37,17 @@ build() {
 }
 
 check() {
-	cd "$builddir"
 	make test
 }
 
 package() {
-	cd "$builddir"
-
 	make DESTDIR="$pkgdir" install
 	install -Dm755 "$srcdir"/dhcpcd.initd \
 		"$pkgdir"/etc/init.d/dhcpcd
 }
 
-sha512sums="82cd845eb35670788b8f31b973945460f4c5f1a0a3025e3a452b79230dc30704e129d97140e6aec6d0281e0c89c333c0ce0af03c4767b2e5e66547ed3e071953  dhcpcd-7.0.8.tar.xz
+sha512sums="19a568800a4e510a250de7cc111700b364c68bfe3907f1ac2cda81aacd079cb9ac87731cbabbf8f1e85e055a11c7ba88e419f6c4d7b33f8842dfaeadc7d1e193  dhcpcd-8.0.6.tar.xz
 692b2c8c75166fabd512a7cc69c650f9391e0f682ce9cbe1771bfa44e82dcf09e322c46493c45ca75000f479d3cddde306754ba31d28a798a15e2b79a56045f0  busybox-logger.patch
 1c19eed0f7a008ee96ea392beb327169ff8c83fc27fed20f65f05c9125f60629ebe3474c5e6a7cf4aeeea448fde4264c9b84916efacd67d47ab908c47b1fc3a5  fix-chrony-conf-location.patch
 a4837a22ebf1f99ac3dc137c6edabd6d0c146ea3ca3b755e957cff6421c51eaef3feea443c0900518689c21b56f10af8230ae8fe257054207df0debaf4e55d29  old-kernel.patch
-e777432c2efc84285b41e63a4687f3bd543f6864218d037529ab78b5ad934de154f28f478bd9facb56628f2953aad8a932bc2eb8b1dfffa0ce2278ffcfc4d880  dhcpcd.initd"
+d4610be2b694ae3c7ba2defc4273635b87579c51ae5a74cc4c3ecce66dfc7cb32c4713655ac0324781445c5271fcfdc14b20584b332a2c1e2dbbeaf7ff17b44b  dhcpcd.initd"
