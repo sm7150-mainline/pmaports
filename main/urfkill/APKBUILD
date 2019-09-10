@@ -1,0 +1,42 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname="urfkill"
+pkgver="0.5.0_git20170118"
+_commit="b39a72f9227838d4af5a9fda3430914a4b03a8e2"
+pkgrel=0
+pkgdesc="Handle rfkill events in userspace"
+url="https://freedesktop.org/wiki/Software/urfkill/"
+arch="all"
+license="GPL-2.0-or-later AND LGPL-2.1-or-later"
+depends_dev="eudev-dev expat-dev gobject-introspection-dev dbus-glib-dev polkit-dev"
+makedepends="$depends_dev autoconf automake intltool gtk-doc dbus-dev glib-dev"
+subpackages="$pkgname-static $pkgname-dev $pkgname-doc $pkgname-openrc"
+source="urfkill-$_commit.tar.gz::https://github.com/lcp/urfkill/archive/$_commit.tar.gz
+        $pkgname.initd"
+builddir="$srcdir/urfkill-$_commit"
+options="!check" # Fails with translations check
+
+prepare() {
+	default_prepare
+
+	NOCONFIGURE=1 ./autogen.sh
+}
+
+build() {
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+}
+
+sha512sums="788b425277e86697b40a12072b5014e33e7d9e80acf10967758f28acd01ade8295b98438a39665d6f2ad14e22f95ebc61ca1b22d659887cd1ec7a56eb0599894  urfkill-b39a72f9227838d4af5a9fda3430914a4b03a8e2.tar.gz
+9d51210e5fa9d72f0c791977bd44d05f93102cab3fe8b03a14ae6f538cb679bca629adf193d2167f46033f26a7a09d78d4ad5df38ef36e5aac7f4226f7f48ba1  urfkill.initd"
