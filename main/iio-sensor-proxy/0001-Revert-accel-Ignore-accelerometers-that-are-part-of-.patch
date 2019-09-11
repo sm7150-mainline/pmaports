@@ -1,0 +1,112 @@
+From 6e6aead20f634ee782dd1f2711c66ee582b47d54 Mon Sep 17 00:00:00 2001
+From: Robert Yang <decatf@gmail.com>
+Date: Wed, 10 Oct 2018 14:08:52 -0400
+Subject: [PATCH 1/2] Revert "accel: Ignore accelerometers that are part of a
+ joypad"
+
+This reverts commit 401d59e54b3123860180d4401e09df8a1e1bc6c3.
+---
+ configure.ac          |  2 +-
+ src/drv-input-accel.c | 62 -------------------------------------------
+ 2 files changed, 1 insertion(+), 63 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index c487464..689946f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -49,7 +49,7 @@ if test x$enable_gtk_tests = xyes; then
+ fi
+ AM_CONDITIONAL(HAVE_GTK_TESTS, test "x$enable_gtk_tests" = "xyes")
+ 
+-PKG_CHECK_MODULES(IIO_SENSOR_PROXY, gio-2.0 gudev-1.0 >= 232)
++PKG_CHECK_MODULES(IIO_SENSOR_PROXY, gio-2.0 gudev-1.0)
+ 
+ AC_ARG_WITH(geoclue-user,
+             AS_HELP_STRING([--with-geoclue-user=USER],
+diff --git a/src/drv-input-accel.c b/src/drv-input-accel.c
+index 9cebcef..db658fa 100644
+--- a/src/drv-input-accel.c
++++ b/src/drv-input-accel.c
+@@ -34,68 +34,10 @@ static DrvData *drv_data = NULL;
+ 
+ static void input_accel_set_polling (gboolean state);
+ 
+-/* From src/linux/up-device-supply.c in UPower */
+-static GUdevDevice *
+-get_sibling_with_subsystem (GUdevDevice *device,
+-			    const char *subsystem)
+-{
+-	GUdevDevice *parent;
+-	GUdevClient *client;
+-	GUdevDevice *sibling;
+-	const char * class[] = { NULL, NULL };
+-	const char *parent_path;
+-	GList *devices, *l;
+-
+-	g_return_val_if_fail (device != NULL, NULL);
+-	g_return_val_if_fail (subsystem != NULL, NULL);
+-
+-	parent = g_udev_device_get_parent (device);
+-	if (!parent)
+-		return NULL;
+-	parent_path = g_udev_device_get_sysfs_path (parent);
+-
+-	sibling = NULL;
+-	class[0] = subsystem;
+-	client = g_udev_client_new (class);
+-	devices = g_udev_client_query_by_subsystem (client, subsystem);
+-	for (l = devices; l != NULL && sibling == NULL; l = l->next) {
+-		GUdevDevice *d = l->data;
+-		GUdevDevice *p;
+-		const char *p_path;
+-
+-		p = g_udev_device_get_parent (d);
+-		if (!p)
+-			continue;
+-		p_path = g_udev_device_get_sysfs_path (p);
+-		if (g_strcmp0 (p_path, parent_path) == 0)
+-			sibling = g_object_ref (d);
+-
+-		g_object_unref (p);
+-	}
+-
+-	g_list_free_full (devices, (GDestroyNotify) g_object_unref);
+-	g_object_unref (client);
+-	g_object_unref (parent);
+-
+-	return sibling;
+-}
+-
+-static gboolean
+-is_part_of_joypad (GUdevDevice *device)
+-{
+-	g_autoptr(GUdevDevice) sibling;
+-
+-	sibling = get_sibling_with_subsystem (device, "input");
+-	if (!sibling)
+-		return FALSE;
+-	return g_udev_device_get_property_as_boolean (sibling, "ID_INPUT_JOYSTICK");
+-}
+-
+ static gboolean
+ input_accel_discover (GUdevDevice *device)
+ {
+ 	const char *path;
+-	g_autoptr(GUdevDevice) parent = NULL;
+ 
+ 	if (g_strcmp0 (g_udev_device_get_property (device, "IIO_SENSOR_PROXY_TYPE"), "input-accel") != 0)
+ 		return FALSE;
+@@ -106,10 +48,6 @@ input_accel_discover (GUdevDevice *device)
+ 	if (strstr (path, "/event") == NULL)
+ 		return FALSE;
+ 
+-	parent = g_udev_device_get_parent (device);
+-	if (parent && is_part_of_joypad (parent))
+-		return FALSE;
+-
+ 	g_debug ("Found input accel at %s", g_udev_device_get_sysfs_path (device));
+ 	return TRUE;
+ }
+-- 
+2.17.1
+

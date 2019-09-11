@@ -1,0 +1,40 @@
+# Contributor:
+# Maintainer:
+pkgname=iio-sensor-proxy
+pkgver=2.7
+pkgrel=0
+pkgdesc="IIO accelerometer sensor to input device proxy"
+url="https://github.com/hadess/iio-sensor-proxy"
+arch="all"
+license="GPL-3.0-only"
+makedepends="autoconf automake util-macros libtool autoconf-archive gtk-doc
+	eudev-dev glib-dev gtk+3.0-dev libgudev-dev"
+subpackages="$pkgname-openrc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/hadess/iio-sensor-proxy/archive/$pkgver.tar.gz
+	iio-sensor-proxy.initd
+	0001-Revert-accel-Ignore-accelerometers-that-are-part-of-.patch
+	0002-Make-systemd-optional.patch
+	0001-mount-matrix-also-read-mount-matrix-from-in_accel_mo.patch"
+options="!check"
+
+build() {
+	./autogen.sh \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--disable-systemd
+	make
+}
+
+package() {
+	make install DESTDIR="$pkgdir"
+
+	# openrc runscripts
+	install -Dm755 "$srcdir"/iio-sensor-proxy.initd \
+		"$pkgdir"/etc/init.d/iio-sensor-proxy
+}
+
+sha512sums="92e057ce0a95903009433fba265fbdd6f3ec3eece9ba6cde1f6f1461acfe3024a5ec63787e35837a2327e73aa6e911983295a6f4e7b66429082cb4efe61a72b5  iio-sensor-proxy-2.7.tar.gz
+0b7c3a97c8e51b24b43a00f73b67831e8f55ec13b5b282d8cca9647f585e8e01a4eaa1c10ce53ce510e7a461e0327184de9df145b0a50dcf55fabd2a78653f79  iio-sensor-proxy.initd
+aa713945d5a7f7190f744b76a6164641955db13a12a0ae258ebeefbfd7f0daf4fbb48f3f35951114e452f07c848e5ec7ebe1aa410fc2fdb2579ff72a356da873  0001-Revert-accel-Ignore-accelerometers-that-are-part-of-.patch
+1693f61ab625d7f472248caab347e3fdfcac4832c8e3846dcffb25267a1e4fe2d9f810fb4fdbcaa75abf48a7c6f6bf816171c5d9ca1f4982c7a6a7d17564ea58  0002-Make-systemd-optional.patch
+372e48effd63b36b22124d00fda8ee0e8d9ea304db592d2c9b76295eb025a88091e9e56d1b8ea6e82997eb72b3ce603844bcc5a9022602382591e9128265e240  0001-mount-matrix-also-read-mount-matrix-from-in_accel_mo.patch"
