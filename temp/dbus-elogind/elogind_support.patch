@@ -1,0 +1,96 @@
+From 8cfeaf9711602c11ce66d7fe217ecca58bbaa405 Mon Sep 17 00:00:00 2001
+From: Cameron Nemo <camerontnorman@gmail.com>
+Date: Tue, 27 Nov 2018 18:51:46 -0800
+Subject: [PATCH] Allow building with elogind at_console support
+
+Signed-off-by: Cameron Nemo <camerontnorman@gmail.com>
+---
+ configure.ac            | 28 +++++++++++++++++++++++++---
+ dbus/dbus-userdb-util.c |  4 +++-
+ 2 files changed, 28 insertions(+), 4 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 2d78b7cf..d7c04fb3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -216,6 +216,10 @@ AC_ARG_ENABLE(inotify, AS_HELP_STRING([--enable-inotify],[build with inotify sup
+ AC_ARG_ENABLE(kqueue, AS_HELP_STRING([--enable-kqueue],[build with kqueue support]),enable_kqueue=$enableval,enable_kqueue=auto)
+ AC_ARG_ENABLE(console-owner-file, AS_HELP_STRING([--enable-console-owner-file],[enable console owner file]),enable_console_owner_file=$enableval,enable_console_owner_file=auto)
+ AC_ARG_ENABLE(launchd, AS_HELP_STRING([--enable-launchd],[build with launchd auto-launch support]),enable_launchd=$enableval,enable_launchd=auto)
++AC_ARG_ENABLE([elogind],
++  [AS_HELP_STRING([--enable-elogind],[build with elogind at_console support])],
++  [enable_elogind=$enableval],
++  [enable_elogind=auto])
+ AC_ARG_ENABLE(systemd, AS_HELP_STRING([--enable-systemd],[build with systemd at_console support]),enable_systemd=$enableval,enable_systemd=auto)
+ 
+ AC_ARG_WITH(session-socket-dir, AS_HELP_STRING([--with-session-socket-dir=[dirname]],[Where to put sockets for the per-login-session message bus]))
+@@ -1022,6 +1026,24 @@ fi
+ 
+ AM_CONDITIONAL(HAVE_CONSOLE_OWNER_FILE, test x$have_console_owner_file = xyes)
+ 
++dnl elogind and systemd exclusion
++AS_IF([test "x$enable_elogind" = "xyes" && test "x$enable_systemd" = "xyes"],
++      [AC_MSG_ERROR([Explicitly requested systemd and elogind support, but they are mutually exclusive])])
++
++dnl elogind detection
++AS_IF([test "x$enable_elogind" = "xno"],
++      [have_elogind=no],
++      [PKG_CHECK_MODULES([ELOGIND],
++        [libelogind >= 209],
++        [have_elogind=yes],
++        [have_elogind=no])])
++
++AS_IF([test "x$have_elogind" = "xyes"],
++      [AC_DEFINE(HAVE_ELOGIND, 1, [Have elogind])])
++
++AS_IF([test "x$enable_elogind" = "xyes" && test "x$have_elogind" != "xyes"],
++      [AC_MSG_ERROR([Explicitly requested elogind support, but libelogind not found])])
++
+ dnl systemd detection
+ if test x$enable_systemd = xno ; then
+     have_systemd=no;
+@@ -1035,9 +1057,8 @@ else
+             [have_systemd=no])])
+ fi
+ 
+-if test x$have_systemd = xyes; then
+-    AC_DEFINE(HAVE_SYSTEMD,1,[Have systemd])
+-fi
++AS_IF([test "x$have_systemd" = "xyes" && test "x$enable_elogind" != "xyes"],
++      [AC_DEFINE(HAVE_SYSTEMD, 1, [Have systemd])])
+ 
+ if test x$enable_systemd = xyes -a x$have_systemd != xyes ; then
+     AC_MSG_ERROR([Explicitly requested systemd support, but systemd not found])
+@@ -1786,6 +1807,7 @@ echo "
+         Building AppArmor support: ${have_apparmor}
+         Building inotify support: ${have_inotify}
+         Building kqueue support:  ${have_kqueue}
++        Building elogind support: ${have_elogind}
+         Building systemd support: ${have_systemd}
+         Building X11 code:        ${have_x11}
+         Building Doxygen docs:    ${enable_doxygen_docs}
+diff --git a/dbus/dbus-userdb-util.c b/dbus/dbus-userdb-util.c
+index 7f719b26..1e2f1354 100644
+--- a/dbus/dbus-userdb-util.c
++++ b/dbus/dbus-userdb-util.c
+@@ -38,6 +38,8 @@
+ 
+ #ifdef HAVE_SYSTEMD
+ #include <systemd/sd-login.h>
++#elif defined(HAVE_ELOGIND)
++#include <elogind/sd-login.h>
+ #endif
+ 
+ /**
+@@ -61,7 +63,7 @@ _dbus_is_console_user (dbus_uid_t uid,
+   const DBusUserInfo *info;
+   dbus_bool_t result = FALSE;
+ 
+-#ifdef HAVE_SYSTEMD
++#if defined(HAVE_SYSTEMD) || defined(HAVE_ELOGIND)
+   /* check if we have logind */
+   if (access ("/run/systemd/seats/", F_OK) >= 0)
+     {
+-- 
+2.22.0
+
