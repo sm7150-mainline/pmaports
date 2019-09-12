@@ -9,7 +9,7 @@
 # conflicts
 pkgname=mesa-git
 pkgver=0_git20190725
-pkgrel=0
+pkgrel=1
 _commit="cd02f60c1e9d0ef37e4defb8e6b00433990fd90c"
 pkgdesc="(Git) Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
@@ -216,6 +216,13 @@ gbm() {
 
 	install -d "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libgbm.so.* "$subpkgdir"/usr/lib/
+}
+
+dev() {
+	replaces="mesa-dev"
+	provides="mesa-dev"
+
+	default_dev
 }
 
 _mv_dri() {
