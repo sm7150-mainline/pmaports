@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-starqltechn
+pkgdesc="Samsung Galaxy S9 SM-G9600"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-qcom-sdm845 mesa-dri-gallium mkbootimg u-boot-starqltechn u-boot-tools dtc"
+makedepends="devicepkg-dev dtc"
+source="deviceinfo boot_image.its payload_mock.dts bootscript.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	mkdir -p "$pkgdir"/usr/share/u-boot/starqltechn/
+	mkdir "$builddir"
+	payload_mock_dtb="$builddir/payload_mock.dtb"
+	dtc -I dts -O dtb -o "$payload_mock_dtb" "$srcdir/payload_mock.dts"
+	install -D -m644 "$payload_mock_dtb" \
+		"$pkgdir"/usr/share/u-boot/starqltechn/payload_mock.dtb
+	install -D -m644 "$srcdir/"*.its \
+		"$pkgdir"/usr/share/u-boot/starqltechn/
+	install -D -m644 "$srcdir/"bootscript.sh \
+		"$pkgdir"/usr/share/u-boot/starqltechn/
+}
+
+
+sha512sums="
+1a51b1a75a7ab23b0011d2952e716b6d98a3a395578a99e278d8eda4c921ce015ce1f0e386a88b89e9f657edc867f00fffd11e550a91ec9ede2769d8cbfd1718  deviceinfo
+8e33da25b994a6258e0c1769182d873428c311158f420c28d91566b7d1eb9809b0076a5a2b41726ff5039859dd7c2e1c13efd608dc707fc3b6bc9d93ef147cde  boot_image.its
+ba782c324c14cf0947c752b51a607ae1b08def885b0cf0afe89d1fcade3491ab2f547551eb08bd8074f608dac46bdcdf75c5c633bd7a15e6eb63a10f30994c82  payload_mock.dts
+d7c5c52cb3b747d814680411cc2381e6158714f89aa7ffbeb639193cb10346f6f5b4b8897d2e1c0ce3889178e845599686e8e525a369be35503c2018f152fdb1  bootscript.sh
+"
