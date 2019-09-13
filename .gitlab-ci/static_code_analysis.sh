@@ -7,9 +7,9 @@ DIR="$(cd "$(dirname "$0")" && pwd -P)"
 cd "$DIR/.."
 
 # Find CHANGEMEs in APKBUILDs
-if grep -qr '(CHANGEME!)' device; then
+if grep -qr '(CHANGEME!)' *; then
 	echo "ERROR: Please replace '(CHANGEME!)' in the following files:"
-	grep --color=always -r '(CHANGEME!)' device
+	grep --color=always -r '(CHANGEME!)' *
 	exit 1
 fi
 
