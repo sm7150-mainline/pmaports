@@ -78,8 +78,8 @@ def test_aportgen_versions(args):
     index = pmb.helpers.repo.alpine_apkindex_path(args, "main", "x86_64")
 
     # Alpine packages and patterns for our derivatives
-    # binutils: frozen at 2.31 for now, until #295 is resolved!
-    map = {"busybox": "busybox-static-*",
+    map = {"binutils": "binutils-*",
+           "busybox": "busybox-static-*",
            "gcc": "gcc-*",
            "grub": "grub-efi-*",
            "musl": "musl-*"}
