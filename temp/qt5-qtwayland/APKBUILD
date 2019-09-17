@@ -3,7 +3,7 @@ pkgname=qt5-qtwayland
 _pkgname="${pkgname/qt5-/}-everywhere-src"
 pkgver=9999
 _pkgver=5.12.5
-pkgrel=1
+pkgrel=2
 arch="all"
 url="http://qt-project.org/"
 license="LGPL-2.0 with exceptions or GPL-3.0 with exceptions"
@@ -19,12 +19,6 @@ case $_pkgver in
 esac
 
 source="http://download.qt.io/$_rel/qt/${_pkgver%.*}/${_pkgver}/submodules/$_pkgname-$_pkgver.tar.xz
-0001-Fix-compile-error-with-no-opengl.patch
-0002-Compositor-Map-touch-ids-to-contiguous-ids.patch
-0004-Don-t-crash-if-we-start-a-drag-without-dragFocus.patch
-0005-Client-Fix-stuttering-when-the-GUI-thread-is-busy.patch
-0006-Client-Reset-frame-callback-timer-when-hiding-a-wind.patch
-265998.patch
 265999.patch"
 
 build() {
@@ -49,10 +43,4 @@ package() {
 	ln -s /usr/share/licenses/qt5-base "$pkgdir"/usr/share/licenses/$pkgname
 }
 sha512sums="19e19b3d6226839856f8e8792665eda1f09f0bbf95a38077bdf2831205ee09254c8df6a521ba3f5a228bcd98c4d1929a2bd9e9aa2f6f14c218d4d7458d1a866c  qtwayland-everywhere-src-5.12.5.tar.xz
-a62631eaec27481a9283ebb6b16102f2b90cf56a438180672f6e6853d3b027cb12ef71db84e9f300ceb954ff90583f73b037b3263eff67603d8caf9b1f0a32b7  0001-Fix-compile-error-with-no-opengl.patch
-9301192593c419aabe062510057abbe15e805d97660ab6d5c1f3f93e1cb24e7bec51697d8f6c4ba70212d50716cab61614aa0863762b70172b5efafe52ee90af  0002-Compositor-Map-touch-ids-to-contiguous-ids.patch
-77d1d62ca11994f9eb459b21c2bc461be2e89814c631c23ca635ab02cb4ebacd5fc793c132482d3ef333ca6995dc89715b3a34052bb1f409bc405d350255820e  0004-Don-t-crash-if-we-start-a-drag-without-dragFocus.patch
-3633d1a0352e61fdf5db6bd48f8f9c263b6166661feb3d19d6d6efabfbef5d8baa8400321abe1e563812d4a2c07b683dedfef03833ea7fa59c3cbe828ad4d634  0005-Client-Fix-stuttering-when-the-GUI-thread-is-busy.patch
-fe8ed559dffd5a62dd8a93db225f4d0f84cc6709bb5bf7321cd39d9c8aec6692252018a8d23f85bb91d798f4b073c29ba9f19c0c9ccba1f2231613dd9ed33bb5  0006-Client-Reset-frame-callback-timer-when-hiding-a-wind.patch
-f165830a93c8af609e636cade8cffd898a1d3c4b31502077a6cd42a8542ab16ba7f4412f41dc4e936aa0251f4937a4db686c14580363721fe257be8de31f17c7  265998.patch
 e0962e279abff5e66a4676c0570682f1c6f2e9032295bce24467c0d1841f9fe9af19bf84c0034f2f4c0cf5e7afc9e07b5032239d7b0f0b5df4e932eb5e4835bf  265999.patch"
