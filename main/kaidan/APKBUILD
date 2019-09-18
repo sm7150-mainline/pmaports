@@ -1,34 +1,32 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kaidan
-pkgver=0.3.2_git20190206
+pkgver=0.4.1
 pkgrel=0
-_commit="6ab6c7af327edd80500fbb3bbacd67ba96c10c5a"
 pkgdesc="Kaidan, a simple and user-friendly Jabber/XMPP client for every device and platform"
 arch="all"
-url="https://git.kaidan.im/kaidan/kaidan/"
+url="https://invent.kde.org/kde/kaidan"
 license="GPL-3.0-or-later with OpenSSL exception, GPL-3.0-or-later, MIT, CC-BY-SA-4.0"
 depends="kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev qxmpp-dev"
-source="https://git.kaidan.im/kaidan/$pkgname/-/archive/$_commit/$pkgname-$_commit.tar.gz"
-builddir="$srcdir/$pkgname-$_commit"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev knotifications-dev qxmpp-dev"
+source="https://download.kde.org/stable/kaidan/$pkgver/kaidan-$pkgver.tar.xz"
+options="!check" # No tests
 
 build() {
-	cd "$builddir"
 	cmake \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INSTALL_PREFIX=/usr
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DQUICK_COMPILER=TRUE
 	make
 }
 
 check() {
-	cd "$builddir"
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="cf516fca0147bc4cdd4c211c54edc0b989cc293c0ab30e2007a24670fe432b1a2f5eb8502ed2aeba9fac9bf923a8c0e613d0e1ce0b9491cd14f53f5c484802a6  kaidan-6ab6c7af327edd80500fbb3bbacd67ba96c10c5a.tar.gz"
+sha512sums="907ef5824a781f5cc55af1dfe4a52fe058057585826fecfd2d4d039bdfb3241ec1189fbd34f89fe0aa381b9c86ba418bc1d020324a32466a3b8304783542363e  kaidan-0.4.1.tar.xz"
