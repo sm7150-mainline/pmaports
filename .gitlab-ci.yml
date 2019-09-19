@@ -1,7 +1,7 @@
 ---
 
 # global settings
-image: alpine:latest
+image: alpine:edge
 after_script:
   - .gitlab-ci/move_logs.sh $CI_PROJECT_DIR
 stages:
@@ -31,14 +31,12 @@ wiki:
   script:
     - .gitlab-ci/check_devices_in_wiki.py --booting
 
-# static code analysis (shellcheck is not in Alpine, so we use Debian)
+# static code analysis
 py-sh-static:
   stage: first
   <<: *only-default
-  image: python:3.6-slim-stretch
   before_script:
-    - apt -q update >/dev/null
-    - apt -y install flake8 shellcheck >/dev/null
+    - apk -q add py3-flake8 shellcheck
   script:
     - .gitlab-ci/static_code_analysis.sh
 
