@@ -1,0 +1,30 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=breeze
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="Artwork, styles and assets for the Breeze visual style for the Plasma Desktop"
+arch="all"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="LGPL-2.1"
+depends_dev="kdecoration-dev kpackage-dev ki18n-dev kguiaddons-dev kconfigwidgets-dev kwindowsystem-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="$pkgname-$pkgver.tar.xz::https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # broken with cross-compiling
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="114c3a92d49f21ff1180b29668ff0e0a6442bdbfb12ee5f8213bfb1f2555ee9772203cb86e6cd880b9869c755030e0b8718bf6e924aa4b483953e9e7b578f5c4  breeze-5.16.90.tar.xz"

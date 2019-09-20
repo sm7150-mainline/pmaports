@@ -1,0 +1,30 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=plasma-browser-integration
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="Components necessary to integrate browsers into the Plasma Desktop"
+arch="all"
+url="https://community.kde.org/Plasma/Browser_Integration"
+license="GPL-3.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev kio-dev ki18n-dev kconfig-dev kdbusaddons-dev knotifications-dev krunner-dev kactivities-dev purpose-dev kfilemetadata-dev"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # broken with cross-compiling
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="80110470fe6caa6f4365ad4db74af0b1b6451f436b7ad7d8b7a0d0517a5d4656e22a53b4c7379d6ac05fb6d06cca87f058b242efc137c59033f609cb5e5ad45e  plasma-browser-integration-5.16.90.tar.xz"

@@ -1,0 +1,30 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=bluedevil
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="Integrate the Bluetooth technology within KDE workspace and applications"
+arch="all"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later AND LGPL-2.0-or-later AND (LGPL-2.1-only OR LGPL-3.0-only)"
+depends="kded bluez"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev kwidgetsaddons-dev kdbusaddons-dev knotifications-dev kwindowsystem-dev kiconthemes-dev plasma-framework-dev ki18n-dev kio-dev bluez-qt-dev kded-dev kded shared-mime-info"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="b186bc52bde32845c3bc05f7350c21663a3ecd05eb592b025eb2e538d7298c1dce80148593c6cb782eca6c43ccffe7837576d1662c982eb0356a44ee4375ec23  bluedevil-5.16.90.tar.xz"

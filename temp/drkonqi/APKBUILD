@@ -1,0 +1,31 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=drkonqi
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="Manages the power consumption settings of a Plasma Shell"
+arch="all"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtx11extras-dev ki18n-dev kcoreaddons-dev kservice-dev kconfigwidgets-dev kjobwidgets-dev kio-dev kcrash-dev kcompletion-dev kxmlrpcclient-dev kwidgetsaddons-dev kwallet-dev knotifications-dev kidletime-dev"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # Broken
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=OFF # Broken
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="d98703385824d0b7f2279bbd4062f589173432c42786fb3695554207370d1ef4751e58bc9037b5349b962cac0634a0e903871cc8c7f50df7b848d019cb6a9272  drkonqi-5.16.90.tar.xz"

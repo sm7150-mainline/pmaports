@@ -1,0 +1,31 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=kde-cli-tools
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="Tools based on KDE Frameworks 5 to better interact with the system"
+arch="all !ppc64le !s390x" # Limited by plasma-workspace -> libksysguard -> qt5-qtwebengine
+url="https://cgit.kde.org/kde-cli-tools"
+license="(GPL-2.0-only OR GPL-3.0-only) AND GPL-2.0-or-later AND GPL-2.0-only AND LGPL-2.1-only"
+depends_dev="qt5-qtbase-dev qt5-qtsvg-dev qt5-qtx11extras-dev kconfig-dev kiconthemes-dev kinit-dev ki18n-dev kcmutils-dev kio-dev kservice-dev kwindowsystem-dev kactivities-dev kdeclarative-dev kdesu-dev plasma-workspace-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # Broken
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="abba46e8bfc6d315b2f42c45070c0baeaff9170632771440b944bb70336e554b1e7873425fcf26dd6b3950895bb32707572ffddfe499b2bebe7cbd667111e4e5  kde-cli-tools-5.16.90.tar.xz"

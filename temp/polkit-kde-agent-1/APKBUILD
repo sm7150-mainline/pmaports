@@ -1,0 +1,32 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=polkit-kde-agent-1
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="Daemon providing a polkit authentication UI for KDE"
+arch="all"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later"
+depends="polkit-elogind"
+depends_dev="qt5-qtbase-dev ki18n-dev kwindowsystem-dev kdbusaddons-dev kwidgetsaddons-dev kcoreaddons-dev kcrash-dev kiconthemes-dev polkit-qt-1-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # broken with cross-compiling
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="c8edb102d55de5ee40cc7991d97690496e0d905c8a0187f225f8b60e20dbd1f2040d146beda4fcb72ec873a987ab4f8013efeb171bd9c585edc170446693aa39  polkit-kde-agent-1-5.16.90.tar.xz"

@@ -1,0 +1,32 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=libksysguard
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="KDE system monitor library"
+arch="all !ppc64le !s390x" # limited by qt5-qtwebengine
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="LGPL-2.1-or-later AND (GPL-2.0-only OR GPL-3.0-only)"
+depends_dev="qt5-qtwebengine-dev kcoreaddons-dev kconfig-dev ki18n-dev kwindowsystem-dev kcompletion-dev kauth-dev kwidgetsaddons-dev kiconthemes-dev kconfigwidgets-dev kservice-dev kglobalaccel-dev kio-dev plasma-framework-dev zlib-dev"
+makedepends="$depends_dev extra-cmake-modules"
+checkdepends="xvfb-run"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Don't seem to work with xvfb-run on aarch64
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	# processtest requires working OpenGL
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "processtest"
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="cb10929a97ed290cd47c8d8de81a7a35939c7be4e88a4173c9a0c5e372b609f5e49f89dff2b1f0ad6961bc8cf5a36870612c4a35d1f30606319b00f804595086  libksysguard-5.16.90.tar.xz"

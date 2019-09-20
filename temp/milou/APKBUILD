@@ -1,0 +1,30 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=milou
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="A dedicated search application built on top of Baloo"
+arch="all"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later AND (GPL-2.0-only OR GPL-3.0-only) AND (LGPL-2.1-only OR LGPL-3.0-only)"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev ki18n-dev kdeclarative-dev kservice-dev plasma-framework-dev krunner-dev kitemmodels-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # broken with cross-compiling
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="28883715aa1f6eb000e6238cbf647ddd287c0f1e62be202cc632d9c51ff43498e090a252ce611ce7bb91724d100f3adb141894361b8969dd972e8f213ec74d7c  milou-5.16.90.tar.xz"

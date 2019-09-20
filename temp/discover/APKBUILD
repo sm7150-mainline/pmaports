@@ -1,0 +1,39 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=discover
+pkgver=5.16.90
+pkgrel=0
+arch="all"
+url="https://userbase.kde.org/Discover"
+pkgdesc="KDE Plasma resources management GUI"
+license="LGPL-2.0-or-later AND (GPL-2.0-only OR GPL-3.0-only) AND GFDL-1.2-only"
+depends="kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev kconfig-dev kcrash-dev kdbusaddons-dev ki18n-dev karchive-dev kxmlgui-dev kitemmodels-dev kio-dev kdeclarative-dev attica-dev knewstuff-dev plasma-framework-dev appstream-dev flatpak-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/unstable/plasma/$pkgver/discover-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # Don't seem to work with xvfb-run on aarch64
+
+case "$CARCH" in
+	x86|x86_64) makedepends="$makedepends fwupd-dev" ;;
+	*) ;;
+esac
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_DISABLE_FIND_PACKAGE_Snapd=ON
+	make
+}
+
+check() {
+	# knsbackendtest and flatpaktest fail to find their required executables
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "(knsbackend|flatpak)test"
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="a615f2ca9a4f97803d80ca33e7c5c025e7868feb1a413c01fcf0bd973884d0eaccbff9c8797a23d82c5a7cdc875aac2a50225498de0d812b994970a47c9d23ab  discover-5.16.90.tar.xz"

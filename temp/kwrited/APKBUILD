@@ -1,0 +1,25 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=kwrited
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="KDE daemon listening for wall and write messages"
+arch="all"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev kcoreaddons-dev ki18n-dev kpty-dev knotifications-dev kdbusaddons-dev"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+options="!check" # No tests available
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="a26218d48ce3388e00659ead21825e18b84cd51b58ea751a8770d53352d7063ee6233dbb8b91b8e979f45ab821eab80c5f04bff7be59e570c08d62540129a1c9  kwrited-5.16.90.tar.xz"

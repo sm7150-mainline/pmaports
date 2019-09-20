@@ -1,0 +1,34 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=kscreen
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="KDE's screen management software"
+arch="all"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later AND LGPL-2.1-or-later"
+depends="hicolor-icon-theme"
+depends_dev="qt5-qtbase-dev kdbusaddons-dev kconfig-dev kconfigwidgets-dev ki18n-dev kxmlgui-dev kglobalaccel-dev kwidgetsaddons-dev kdeclarative-dev kiconthemes-dev plasma-framework-dev libkscreen-dev kcmutils-dev"
+makedepends="$depends_dev extra-cmake-modules"
+checkdepends="xvfb-run"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # broken with cross-compiling
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	# kscreen-kded-configtest is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "kscreen-kded-configtest"
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="92aeb84f313669d3e1c26920e28f1d7cc057d9694901fa27b4ee711b9c40184ef40b876bd18f9bbd9dd57d4ce836f41dd36ed252f51b17f7e4ded8716c92cf3d  kscreen-5.16.90.tar.xz"

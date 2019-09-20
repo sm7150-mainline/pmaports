@@ -1,0 +1,30 @@
+# Forked from Alpine to build Plasma 5.17 pre-release
+pkgname=kinfocenter
+pkgver=5.16.90
+pkgrel=0
+pkgdesc="A utility that provides information about a computer system"
+arch="all"
+url="https://www.kde.org/applications/system/kinfocenter/"
+license="(GPL-2.0-only OR GPL-3.0-only) AND (LGPL-2.1-only OR LGPL-3.0-only)"
+makedepends="extra-cmake-modules qt5-qtbase-dev kcompletion-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev kcrash-dev kdbusaddons-dev kdoctools-dev ki18n-dev kiconthemes-dev kcmutils-dev kio-dev kservice-dev solid-dev kwidgetsaddons-dev kwindowsystem-dev kxmlgui-dev kdeclarative-dev kpackage-dev solid-dev kwayland-dev glu-dev"
+source="https://download.kde.org/unstable/plasma/$pkgver/$pkgname-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # broken with cross-compiling
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="354f20d6d1a924ba954090b6bde9febcaf559d09d623b924457e15e0f9fa616ab2847f3214bafd960ab4cfba94364bafaf3067530050157ea82d62fe76dfbb87  kinfocenter-5.16.90.tar.xz"
