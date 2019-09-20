@@ -2,17 +2,33 @@
 pkgname="device-sony-nicki"
 pkgdesc="Sony Xperia M"
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-sony-nicki mkbootimg mesa-dri-swrast mdss-fb-init-hack msm-fb-refresher"
+depends="postmarketos-base mkbootimg mesa-dri-swrast mdss-fb-init-hack msm-fb-refresher"
 makedepends="devicepkg-dev"
 source="deviceinfo 90-android-touch-dev.rules screen-workaround.sh fb.modes pointercal"
+subpackages="
+		$pkgname-kernel-downstream:kernel_downstream
+		$pkgname-kernel-mainline:kernel_mainline
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
+}
+
+kernel_downstream() {
+	pkgdesc="LineageOS downstream kernel (recommended)"
+	depends="linux-sony-nicki"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Mainline kernel (do not use - only for development!)"
+	depends="linux-sony-nicki-mainline"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 package() {
@@ -31,7 +47,7 @@ package() {
 	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
-sha512sums="502ecbed9fc61887af0cd0569929ed03b1aad209b499c7ea3a1e86d667ecb270d512ec203da550acc89ac0a6ae444c93d2741118d5a4b601009a2ffef7a2e6a9  deviceinfo
+sha512sums="49a75a0fa879f2b5ad9335754edb6e38e682f68f45e4a4a842df00fe76091db75f0f064d5c9fc643e3c8f424e5cb8fa1a7161e76a5bdb31bf771476605cda420  deviceinfo
 a3d3a0cf43c5f216279666143d6042f2669dbe3dc5ecec2817b6118a0c122f5b927799b37432bee3167359c118d0142fd8e8e8d67374e8ab1d837673f217e1ae  90-android-touch-dev.rules
 336b6ac90946ec4b4626e9dcb8f1cce503d0ad6fc164177e53502b580aa509dc31ae2ef4fcb9fb04906576cdd6590f625f127e2c29ec61493e30cb6508fdb68d  screen-workaround.sh
 aac9a5d4c856b6feaf4f2961251fbc81d9173e24c3b20806e803711b40e388a173abf2651d5d828d36a504ef2de12c1c1eacea1f1b9479e31f55234012140405  fb.modes
