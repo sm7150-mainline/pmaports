@@ -2,13 +2,13 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kaidan
 pkgver=0.4.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Kaidan, a simple and user-friendly Jabber/XMPP client for every device and platform"
 arch="all"
 url="https://invent.kde.org/kde/kaidan"
 license="GPL-3.0-or-later with OpenSSL exception, GPL-3.0-or-later, MIT, CC-BY-SA-4.0"
 depends="kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev knotifications-dev qxmpp-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev qt5-qttools-dev kirigami2-dev knotifications-dev qxmpp-dev"
 source="https://download.kde.org/stable/kaidan/$pkgver/kaidan-$pkgver.tar.xz"
 options="!check" # No tests
 
@@ -17,7 +17,8 @@ build() {
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DQUICK_COMPILER=TRUE
+		-DQUICK_COMPILER=TRUE \
+		-DI18N=TRUE
 	make
 }
 
