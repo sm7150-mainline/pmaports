@@ -1,0 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-htc-memul"
+pkgdesc="HTC One Mini 2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-htc-memul mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for WiFi, etc."
+	depends="firmware-htc-memul-wcnss wcnss-wlan"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="519832a9c6a51998e327bc50587e7d6c09c47ccd9d184379b19f132cd11ae5dae0b26fbce070ae4674a3f4bf0ce4906364b266f9b6412e134311c6271d142df4  deviceinfo
+765abaad5fda0dfda5e62e1e48414d3eea822198f39d0792171a04d73f86f6273a6e562afab430cbfcdd084412568a0ad03d012e9c40c5564f5cd1b9c0f181eb  initfs-hook.sh"
