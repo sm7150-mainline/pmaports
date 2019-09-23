@@ -1,0 +1,84 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/sp7731ceb_dt_defconfig
+
+pkgname="linux-finepower-f1"
+pkgver=3.10.65
+pkgrel=0
+pkgdesc="FinePower F1 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="finepower-f1"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_commit="b30390f1645dcf1ebd08148d7d4086a544c56435"
+_repository="kernel_7730"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.zip::https://github.com/jedld/${_repository}/archive/${_commit}.zip
+	$_config
+	kernel-use-the-gnu89-standard-explicitly.patch
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	01-remove-path-to-missing-driver.patch
+	02-fix-includes-dump-lowpower-regs.patch
+	03-replace-dts.patch
+	04-add-st7796s-mipi-panel-support.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Generate master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -s 2048 -p "scripts/dtc" -o "arch/arm/boot/dt.img" "arch/arm/boot"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+
+sha512sums="bcbb8f6e99bd53b173715765c86845f991c2f769e9c13c72503e4f9062dc7bc97a073a4ad730e804d43efd2bcbcd7b91a0890d6194b5986e453d40a79f08249b  linux-finepower-f1-b30390f1645dcf1ebd08148d7d4086a544c56435.zip
+aa7bfc0627ff218c59c36086c8c7eeae286d3873c871ce41c1b21e73ff280b8ab255dbb6d74e55e8bf14bd1926f00602ad08d7ea8149085fd3377b860404505b  config-finepower-f1.armv7
+ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+57ebedabe0caa29773b0e65f219bb7c3e19bf53bd30fca69c07b1345185658dcc33498a39fe3c77bd9579012075f66887c0057ec1d41febe7f041fd0029a1102  01-remove-path-to-missing-driver.patch
+8cfb51f2a2b645c5b0bee1ce84c368d475b7f23bf337fa21c0695f8c110a6e9644b96a267dacbda822f29ccd9c39c65881c91922605247398f3cd49d274e2bee  02-fix-includes-dump-lowpower-regs.patch
+f72b3616da6f2fc77e36199be295bb5066c93340a2d715bdce196900a4c42371f61a37513b660de0ed978006939af5aa89d85acba2997267d6bc0e7e4d0e32c7  03-replace-dts.patch
+37be4144e4effcb3b2db61bd25706e2eb842328ddc57babb758c23c3a69aecb886c36d09a2557a3ff08ce8d58869914a46c5ff71cdf1dbeff8b7c8c7500c2377  04-add-st7796s-mipi-panel-support.patch"

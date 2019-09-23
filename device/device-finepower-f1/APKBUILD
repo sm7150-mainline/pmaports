@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-finepower-f1"
+pkgdesc="FinePower F1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-finepower-f1 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="621dbc22d55969e1682476d96f0de142c6e5db2ebd1c2787b8dd701a2d1f5c8a93a4570cbbaa408648036bdbb9904a35a5f7cb0c9e996f7ae641b5eb1cad249b  deviceinfo"
