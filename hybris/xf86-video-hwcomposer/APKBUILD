@@ -1,5 +1,5 @@
 pkgname=xf86-video-hwcomposer
-pkgver=1.0_git20190218
+pkgver=1.0_git20190925
 pkgrel=0
 pkgdesc="X.Org driver for Android devices rendering through HWComposer API"
 url="https://github.com/NotKit/xf86-video-hwcomposer"
@@ -11,17 +11,18 @@ makedepends="autoconf automake util-macros libtool
 	videoproto renderproto xf86dgaproto drihybrisproto
 	glamor-hybris-dev drihybris-dev
 	android-headers-4.4 android-headers-7.1 android-headers-7.1-caf
-	libhybris-dev libhybris libhybris-7.1"
-_commit="3dcf05e4dc57918402dae2918555da60928d2c04"
+	android-headers-9.0
+	libhybris-dev libhybris libhybris-9.0"
+_commit="b33e119005158ddc1988b495121591496bddb915"
 source="$pkgname-$_commit.tar.gz::https://github.com/NotKit/$pkgname/archive/$_commit.tar.gz
 	30-modules-hybris.conf"
 
 subpackages="$pkgname-doc"
 
 if [ "$CARCH" == "armhf" -o "$CARCH" == "armv7" ]; then
-	_vers="7.1 7.1-caf 4.4"
+	_vers="9.0 7.1 7.1-caf 4.4"
 elif [ "$CARCH" == "aarch64" ]; then
-	_vers="7.1 7.1-caf"
+	_vers="9.0 7.1 7.1-caf"
 fi
 
 for _ver in $_vers; do
@@ -34,7 +35,7 @@ _tmppkgdir="$srcdir/tmpinstall"
 build() {
 	cd "$builddir"
 	export LDFLAGS="$LDFLAGS -Wl,-z,lazy"
-	export CPPFLAGS="$CPPFLAGS -I/usr/include/android-7.1 -DMESA_EGL_NO_X11_HEADERS"
+	export CPPFLAGS="$CPPFLAGS -I/usr/include/android-9.0 -DMESA_EGL_NO_X11_HEADERS"
 
 	NOCONFIGURE=1 ./autogen.sh
 
@@ -71,5 +72,5 @@ _specific() {
 			"${subpkgdir}/usr/lib/${_lib}"
 }
 
-sha512sums="c589ae0204cd41ce012b8dbd88650c958659974c7154f020972c56f2fd1cd5f31542ca667951e98c5de4a61b2e3e7e992c318e0171b20768238a22fe262625bd  xf86-video-hwcomposer-3dcf05e4dc57918402dae2918555da60928d2c04.tar.gz
+sha512sums="61c7f528c0f8848edc72b4f926095a610abf9b7ea1512cce518d6dae359e76a6eb50fc18558238fc3dc6a31ce3cc3237e4663198a05744400282db2825ee6ddb  xf86-video-hwcomposer-b33e119005158ddc1988b495121591496bddb915.tar.gz
 e8f9f6ec337e88ec440c4bdc3f3441a8252031d1a4265a251b500a087a2c88336861c7e3f81972019f6a492324e94253726ce031fedad60ff582dd8db73efac6  30-modules-hybris.conf"
