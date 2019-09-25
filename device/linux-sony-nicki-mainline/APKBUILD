@@ -13,7 +13,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
-pkgrel=0
+pkgrel=1
 
 arch="armv7"
 pkgdesc="Sony Xperia M mainline kernel fork; only USB networking works"
@@ -30,8 +30,6 @@ source="
         $pkgname-$_commit.tar.gz::https://github.com/konradybcio/${_repository}/archive/${_commit}.tar.gz
 	config-${_flavor}.armv7
 "
-
-subpackages="$pkgname-dev"
 
 license="GPL2"
 _abi_release=$_pkgver
@@ -113,79 +111,5 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-
-dev() {
-	# copy the only the parts that we really need for build 3rd party
-	# kernel modules and install those as /usr/src/linux-headers,
-	# simlar to what ubuntu does
-	#
-	# this way you dont need to install the 300-400 kernel sources to
-	# build a tiny kernel module
-	#
-	pkgdesc="Headers and script for third party modules for postmarketos kernel"
-	depends="gmp-dev bash perl"
-	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
-
-	# first we import config, run prepare to set up for building
-	# external modules, and create the scripts
-	mkdir -p "$dir"
-	cp "$srcdir"/$_config "$dir"/.config
-	make -j1 -C "$builddir" O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
-		olddefconfig prepare modules_prepare scripts
-
-	# needed for 3rd party modules
-	# https://bugzilla.kernel.org/show_bug.cgi?id=11143
-	case "$CARCH" in
-	ppc*) (cd "$dir" && make arch/powerpc/lib/crtsavres.o);;
-	esac
-
-	# remove the stuff that points to real sources. we want 3rd party
-	# modules to believe this is the soruces
-	rm "$dir"/Makefile "$dir"/source
-
-	# copy the needed stuff from real sources
-	#
-	# this is taken from ubuntu kernel build script
-	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
-
-	cd "$builddir"
-	find . -path './include/*' -prune \
-		-o -path './scripts/*' -prune -o -type f \
-		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
-		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
-		-print | cpio -pdm "$dir"
-	cp -a scripts include "$dir"
-	find $(find arch -name include -type d -print) -type f \
-		| cpio -pdm "$dir"
-
-	install -Dm644 "$srcdir"/build/Module.symvers \
-		"$dir"/Module.symvers
-
-	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
-	ln -sf /usr/src/linux-headers-${_abi_release} \
-		"$subpkgdir"/lib/modules/${_abi_release}/build
-
-	# cross-compiling: delete binaries with host arch and replace them with
-	# symlinks to binaries with the target arch (packaged in kernel-scripts)
-	if [ -n "$CROSS_COMPILE" ]; then
-		msg "Symlinking binary scripts..."
-		depends="$depends kernel-scripts"
-		local found="false"
-		cd "$dir/scripts"
-		local i
-		for i in $(find . -type f); do
-			local type="$(file -b --mime-type "$i")"
-			[ "$type" != "application/x-pie-executable" ] && continue
-			local native="/usr/bin/kernel-scripts/$(echo "$i" | cut -d '/' -f 2-)"
-			ln -svf "$native" "$i"
-			found="true"
-		done
-		if [ "$found" = "false" ]; then
-			error "Failed to symlink binary scripts!"
-			error "Did the mime-type change (see #1659)?"
-			return 1
-		fi
-	fi
-}
 sha512sums="31e9ef9b3e956df38824865c291530fa5dda067bfea8b0169a3871d7876cfe192a42ae631e51a8a02f7c64319269c8af2688d8ae180805173bf2c1c84c390a59  linux-sony-nicki-mainline-ad6ab7f8c57896cb3829e6a80408e0912d6096c2.tar.gz
 c83d8f35536bf28088421ce4fb037b17248b27e80c7d401fb1328682b6ca0a45c88cd29b97a7ba9da54456d2375338a84794408f7371a7c3edf6544bbf310eb8  config-sony-nicki-mainline.armv7"
