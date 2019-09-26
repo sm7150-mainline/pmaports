@@ -344,7 +344,7 @@ setup_directfb_tslib(){
 	# the touchscreen device from tslib (e.g. on the N900)
 	export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input"
 	# shellcheck disable=SC2154
-	if [ ! -z "$deviceinfo_dev_touchscreen" ]; then
+	if [ -n "$deviceinfo_dev_touchscreen" ]; then
 		export TSLIB_TSDEVICE="$deviceinfo_dev_touchscreen"
 	fi
 }
