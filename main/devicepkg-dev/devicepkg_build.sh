@@ -65,12 +65,12 @@ echo_libinput_calibration()
 }
 
 # shellcheck disable=SC2154
-if [ ! -z "$deviceinfo_dev_touchscreen" ]; then
+if [ -n "$deviceinfo_dev_touchscreen" ]; then
 	# Create touchscreen udev rule
 	{
 		echo "SUBSYSTEM==\"input\", ENV{DEVNAME}==\"$deviceinfo_dev_touchscreen\", \\"
 		# shellcheck disable=SC2154
-		if [ ! -z "$deviceinfo_dev_touchscreen_calibration" ]; then
+		if [ -n "$deviceinfo_dev_touchscreen_calibration" ]; then
 			echo "ENV{WL_CALIBRATION}=\"$deviceinfo_dev_touchscreen_calibration\", \\"
 
 			# The following intentionally expands the touchscreen calibration into the
