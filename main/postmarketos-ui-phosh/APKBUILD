@@ -2,21 +2,24 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
 pkgver=1
-pkgrel=2
-pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (aarch64, x86 and x86_64 only for now)"
+pkgrel=4
+pkgdesc="(Wayland) Mobile UI developed for the Librem 5"
 url="https://puri.sm"
-arch="noarch !armhf"
+arch="noarch"
 license="GPL-3.0-or-later"
-depends="phosh lightdm xorg-server calls chatty postmarketos-artwork-wallpapers"
+depends="phosh lightdm xorg-server postmarketos-artwork-wallpapers epiphany calls chatty "
 install="$pkgname.post-install"
-source="60-lightdm-autologin.conf 000-system-background.gschema.override"
+source="60-lightdm-autologin.conf 000-gschema.override osk.sh"
 options="!check"
 
 package() {
 	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
 		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
-	install -Dm644 "$srcdir"/000-system-background.gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/000-system-background.gschema.override
+	install -Dm644 "$srcdir"/000-gschema.override \
+		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
+	install -Dm755 "$srcdir"/osk.sh \
+		"$pkgdir"/usr/bin/osk-wayland
 }
 sha512sums="c51a5cf93495069d71900dd1c6fbddfa3bdfb70dbab8141d1b115b6150975a12206c63517f18dc516e0366028b32e014b6d37a20e19ff73d5f0934c518d3ab39  60-lightdm-autologin.conf
-f44d4e2544d44119ed1ab9fb454a20d1fc050925a029ce10df4d7c20da3d1f461b018cdd6129272e38e50179d1e5ff71b72d3cc4dbce28113fe1b3561a2e84b5  000-system-background.gschema.override"
+d487ad8171773cf60241a917466f3da1f05a380429719c738bf6832741afef5798476374f693f60bfbdb0f3d4d3ee8c22343dc143f23eb9f1a415847c14f052c  000-gschema.override
+4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh"
