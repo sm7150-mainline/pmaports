@@ -1,16 +1,17 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=chatty
-pkgver=0.0.7
+pkgver=0.0.7_git20190913
 pkgrel=0
+_commit="ef9413467bddc2af3a5b1967c81586cd23dc094d"
 pkgdesc="A phone dialer and call handler"
 arch="all"
 url="https://gitlab.gnome.org/Community/Purism/chatty"
 license="GPL-3.0-or-later"
 depends="purple-mm-sms"
-makedepends="meson ninja gtk+3.0-dev pidgin-dev libhandy-dev"
-source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/$pkgname/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
-builddir="$srcdir/$pkgname-v$pkgver"
+makedepends="meson ninja gtk+3.0-dev pidgin-dev libhandy-dev evolution-dev"
+source="$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/chatty/-/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
 
 build() {
 	meson . _build --prefix=/usr
@@ -24,4 +25,4 @@ check() {
 package() {
 	DESTDIR="$pkgdir" ninja -C _build install
 }
-sha512sums="0317d29ad35b1fa5137d017e5ac5cc79eebb14c614f86fba82e18fa448fc1739d11efab44142689db63d054def4681f59044e8fdc8a024acdc54d909de4509b8  chatty-0.0.7.tar.gz"
+sha512sums="6e270f14554c42fa9df0b047d18f0212bda24183035a1a08551e61a524a12543c42557b25413f616b8cf5ded37914ed8e3fd32d1cd86a54ea85e5b416d9ebff5  chatty-ef9413467bddc2af3a5b1967c81586cd23dc094d.tar.gz"
