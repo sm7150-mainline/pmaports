@@ -62,6 +62,10 @@ def get_categorized_packages(args):
                      "https://www.qt.io/developers/"]:
             category = "qt"
 
+        # Remove hotfix number (i.e. 5.16.90.1 becomes 5.16.90)
+        if category in ["kde", "plasma"]:
+            pkgver = ".".join(pkgver.split(".")[0:3])
+
         # Save result
         if category not in ret:
             ret[category] = {}
