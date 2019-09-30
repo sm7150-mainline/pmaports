@@ -1,0 +1,79 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/j3xnlte_defconfig
+
+pkgname="linux-samsung-j3nxlte"
+pkgver=3.10.100
+pkgrel=0
+pkgdesc="Samsung Galaxy J3 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="samsung-j3nxlte"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="mkbootimg perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool"
+
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+
+# Source
+_repository="android_kernel_samsung_sharkls"
+_commit="e3381e42b00e1ff977815b365cea53f18afff7a8"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/djeman/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	fix_recordmcount.patch
+	qcom,msm-id_fix.patch
+	fix_touchscreen.patch
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Generate master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="733f04dee55effcbbd8c28b9b2b84b05ca9e95d538bd10177edc40f36ee640cd260f080c50497d28828a441c9c96046debdf1085453a4d8871ac8a3ef300380f  linux-samsung-j3nxlte-e3381e42b00e1ff977815b365cea53f18afff7a8.tar.gz
+28a23904560b29d23037b3c74fc4f00c240a43199ee171b15a70583cd95668e923103d1ddb9c1ee75954b1b3962d238f4fb6019fa38264f4403aa05a9b9dde12  config-samsung-j3nxlte.armv7
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+6aa11a75f422ac5c20cddfce23bff81940e61e65bc86fe1070c60714a6ccf631b2da70bff20e2b88e723706f0f233eb03540a8d9389adffd495592e8ab6bd82a  fix_recordmcount.patch
+dd6e3113ad7d87da76e92d5a656a683e735e1b18e6217c1beb4238ad60f48b1bc429c9e62dc9752b7242201610e95990dafc13f499aa09c74a26079022ae17ec  qcom,msm-id_fix.patch
+54eb205043b9e1b12f4f88d8163611e6769a702490045f5704483c92b17c9297250fde7d257b6d0e82d0cdbaed88d52d85137aeafcd4c4b138cecfffc921857e  fix_touchscreen.patch"

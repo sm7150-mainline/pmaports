@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-j3nxlte"
+pkgdesc="Samsung Galaxy J3"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-j3nxlte mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="56da31a8f2ed7061ab2e569e52bd74285aaa2438bd60b05d145c5c325af1622df8c75a8ca27ee9626ddb32d9493730d89abb15a0125ec228a74c6f24065bfa48  deviceinfo"
