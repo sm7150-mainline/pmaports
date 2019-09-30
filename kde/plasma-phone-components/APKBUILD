@@ -1,17 +1,18 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-phone-components
-pkgver=0_git20190903
-pkgrel=3
-_commit="6dd77469a1bf1c0349316f91b69e7da726ae60f8"
+pkgver=0_git20191009
+pkgrel=0
+_commit="fc640f98271b9636696dbd1cfd1cf6ecfa139e8f"
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all !armhf"
-url="https://community.kde.org/Plasma/Mobile"
+url="https://www.plasma-mobile.org/"
 license="GPL-2.0-or-later AND LGPL-2.1-or-later"
-depends="qt5-qtquickcontrols2 plasma-workspace kactivities plasma-pa plasma-nm libqofono breeze-icons plasma-settings telepathy-ofono"
+depends="plasma-nano qt5-qtquickcontrols2 plasma-workspace kactivities plasma-pa plasma-nm libqofono breeze-icons plasma-settings telepathy-ofono"
 makedepends="extra-cmake-modules kpeople-dev qt5-qtdeclarative-dev kactivities-dev plasma-framework-dev kservice-dev kdeclarative-dev ki18n-dev kio-dev kcoreaddons-dev kconfig-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kpackage-dev kwindowsystem-dev kdbusaddons-dev knotifications-dev kwayland-dev telepathy-qt-dev libphonenumber-dev"
 source="
 	$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-phone-components/-/archive/$_commit/plasma-phone-components-$_commit.tar.gz
+	set-postmarketos-wallpaper.patch
 	startplasmamobile
 	plasma-mobile.desktop
 	"
@@ -39,6 +40,7 @@ package() {
 	install -Dm644 "$srcdir"/plasma-mobile.desktop \
 		"$pkgdir"/usr/share/wayland-sessions/plasma-mobile-2.desktop
 }
-sha512sums="1693df393b0009d3d3c133e7e480a18b37da796e5dc52deaeef00b9beb3d891e9747838ee7df67c9041a93ad9f081fd8df747d10a05d2ab929a1673b4bc26444  plasma-phone-components-6dd77469a1bf1c0349316f91b69e7da726ae60f8.tar.gz
+sha512sums="12baaa9aa6e6b622b67ad1dea0e71480f10a345c59101307185e824c6949dbd8402009545408f7417fe7849b82428a6215313022ab98fe617207b7c05f3fa7fb  plasma-phone-components-fc640f98271b9636696dbd1cfd1cf6ecfa139e8f.tar.gz
+5853e72077c356f8347ea1c8503d5e301505acaa39ccf2fa105abe054a3063e735f5bcb2db1c1357f53032714599bfbf687fff2cbe21a1743930b946900ff7cf  set-postmarketos-wallpaper.patch
 069485a372df96f1b438c026b259bc81a6b417d59f00ef42cfd38e13f0971ce8c63db1d31c7e9603a9a5e0bfedc35ba4a1f2af041b7e24304899f40c10b87432  startplasmamobile
 7f4bdbd30cda4c9e23293b7bb1eb6e8536ada056cb3bcc9a6cc3db7bbc2277eac67b519992b7e46afdf5c720df9c696b43a6a9e9f82ed7ebe3937d8c0bf4d55d  plasma-mobile.desktop"
