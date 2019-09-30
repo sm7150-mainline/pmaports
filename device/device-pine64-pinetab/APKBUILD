@@ -2,7 +2,7 @@
 pkgname="device-pine64-pinetab"
 pkgdesc="PINE64 PineTab"
 pkgver=0.1
-pkgrel=6
+pkgrel=7
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -11,6 +11,7 @@ depends="postmarketos-base linux-postmarketos-allwinner u-boot-pine64 uboot-tool
 makedepends="devicepkg-dev"
 subpackages="$pkgname-sway
              $pkgname-weston
+             $pkgname-phosh
              $pkgname-nonfree-firmware:nonfree_firmware"
 install="$pkgname.post-install"
 source="
@@ -19,6 +20,7 @@ source="
 	sway.conf
 	99-pinetab-keyboard.hwdb
 	weston.ini
+	rootston.ini
 "
 
 build() {
@@ -48,6 +50,12 @@ weston() {
                 "$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+        install -Dm644 "$srcdir"/rootston.ini \
+                "$subpkgdir"/etc/phosh/rootston.ini
+}
+
 package() {
 	devicepkg_package $startdir $pkgname
 
@@ -70,4 +78,5 @@ sha512sums="43ee4f4dde203bb5f3cd6323bc170ddd40413ec17668828bb0a14a9ee747350a514a
 8f15bb62704ad5379c6f77c5ea766e69587a11829539cc339b486b72e248e04cc6202b505f12846f6537f259412f7749ce50d0b15227da182afe17fe7dd303e5  uboot-script.cmd
 9e71c61bfa72b60e749c4dc04f17eb59d25de822765e81e65c937d6be5236d3951a652b69a1ab973abe6add9f34705be5dbaa98bbfa25daf7504dd50b28524c2  sway.conf
 8d1ef04911f1cfa7eda8185f4f4d807af23105a7c8f23d8c18f02afeccd8ab124de70c2e2760c154a3128fe3793447039fb0abf37aa496f597d27051e275033e  99-pinetab-keyboard.hwdb
-6374ef977eab14b71fa88057ebd52ca03035e387e5f41504598a990f24b2e92bccd2db476c545dc541000e08fccdecb6f1cd63e25b5835df706269e0384dacc7  weston.ini"
+6374ef977eab14b71fa88057ebd52ca03035e387e5f41504598a990f24b2e92bccd2db476c545dc541000e08fccdecb6f1cd63e25b5835df706269e0384dacc7  weston.ini
+38827d9636c48b133eb333764a6799a6e93454e01ecb0cfde1ecad3ee149606ba59eb1a5e6c8366e3b3891e54bd664a0a5acdd89d38ac3a3551260e9b9a6d3fc  rootston.ini"
