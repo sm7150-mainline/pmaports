@@ -1,19 +1,18 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=index
-_pkgname=$pkgname-fm
-pkgver=0_git20190603
+pkgver=0_git20191001
 pkgrel=0
-_commit="56e4812422ffb6129ce690f3bf5ddc639c722338"
+_commit="82de927e6177d11c1cebe22b314c40cb23c91e3a"
 pkgdesc="Index file manager based on MauiKit"
 arch="all"
 url="https://invent.kde.org/kde/index-fm"
 license="GPL-2.0-or-later"
 depends="mauikit qmltermwidget"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$_pkgname/-/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/index-fm/-/archive/$_commit.tar.gz"
 options="!check" # No tests available
-builddir="$srcdir/$_pkgname-$_commit"
+builddir="$srcdir/$pkgname-fm-$_commit"
 
 build() {
 	cmake \
@@ -25,4 +24,4 @@ build() {
 package() {
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="a649211b0c8c2bef8d42c693a815a37ef304e1162c3a6ced50ceca363f345a238b83d9e4b3d08b05052d3f85a3819020b4cc4d8303e9dcd9977d76bb74cc6b05  index-56e4812422ffb6129ce690f3bf5ddc639c722338.tar.gz"
+sha512sums="2997dbfca1d4e1da2ad495b20b7bc7c3678b9f80ca717d68a7dbe4baf80803e11779f2ac489be4efe888a8a5a887a9a47075e01ebf5290d9ce5ee935be0c715a  index-82de927e6177d11c1cebe22b314c40cb23c91e3a.tar.gz"
