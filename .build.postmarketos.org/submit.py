@@ -12,6 +12,8 @@ for key in ["BPO_API_ENDPOINT",
             "BPO_API_HOST",
             "BPO_ARCH",
             "BPO_BRANCH",
+            "BPO_JOB_ID",
+            "BPO_JOB_NAME",
             "BPO_TOKEN_FILE",
             "BPO_PAYLOAD_FILES",    # one file per line
             "BPO_PAYLOAD_IS_JSON",  # set to "1" to enable
@@ -42,6 +44,8 @@ is_json = (os.environ["BPO_PAYLOAD_IS_JSON"] == "1")
 # Prepare HTTP headers
 headers = {"X-BPO-Arch": os.environ["BPO_ARCH"],
            "X-BPO-Branch": os.environ["BPO_BRANCH"],
+           "X-BPO-Job-Id": os.environ["BPO_JOB_ID"],
+           "X-BPO-Job-Name": os.environ["BPO_JOB_NAME"],
            "X-BPO-Token": token,
            "X-BPO-Pkgname": os.environ["BPO_PKGNAME"],
            "X-BPO-Version": os.environ["BPO_VERSION"]}
