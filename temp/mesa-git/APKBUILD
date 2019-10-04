@@ -9,7 +9,7 @@
 # conflicts
 pkgname=mesa-git
 pkgver=0_git20191002
-pkgrel=0
+pkgrel=1
 _commit="2236cf24a74a40fd0a423c08ad778ea853bb1c1c"
 pkgdesc="(Git) Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
@@ -111,6 +111,7 @@ build() {
 	cd "$builddir"
 
 	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE=700"
+	export PATH=/usr/lib/llvm${_llvmver}/bin:$PATH
 	meson \
 		--prefix=/usr \
 		--sysconfdir=/etc \
