@@ -3,7 +3,7 @@ _config="config-${_flavor}.${CARCH}"
 
 pkgname=linux-${_flavor}
 
-pkgver=5.2_rc2
+pkgver=5.4_rc1
 _pkgver=${pkgver/_/-}
 _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
@@ -11,7 +11,7 @@ _patchlevel=${_kernver/$_mainver./}
 _basever=${_mainver}.$((_patchlevel-1))
 pkgrel=0
 
-arch="x86_64 armhf aarch64"
+arch="x86_64 armhf armv7 aarch64"
 pkgdesc="Linux for pmOS supported chipsets (mainline, more bleeding-edge than stable)"
 url="https://kernel.org/"
 depends=""
@@ -22,6 +22,7 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v$_mainver.x/linux-$_basever.tar.xz
 	linux-v$_basever-v$_pkgver.patch::https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/rawdiff/?id=v$_pkgver&id2=v$_basever
 	config-${_flavor}.armhf
+	config-${_flavor}.armv7
 	config-${_flavor}.aarch64
 	config-${_flavor}.x86_64
 "
@@ -160,8 +161,9 @@ dev() {
 	ln -sf /usr/src/linux-headers-${_abi_release} \
 		"$subpkgdir"/lib/modules/${_abi_release}/build
 }
-sha512sums="ae96f347badc95f1f3acf506c52b6cc23c0bd09ce8f4ce6705d4b4058b62593059bba1bc603c8d8b00a2f19131e7e56c31ac62b45883a346fa61d655e178f236  linux-5.1.tar.xz
-4df97c0911b3fc0c186ef81a204c0633660f9484583fbf76e2c15ed3a60bf31c9caf9cda46232034fcae87ad6ab53bedd52f420b4db446c6c888cd63942fd615  linux-v5.1-v5.2-rc2.patch
-581d889683f64fc8d9b31d1f87dc75b7b4f466a17b486ba2cb280b7cfa56003dd7c2e876e02c7e4395b8df28164b1efa4281670fb33aa814c2fa92b36ddfecf8  config-postmarketos-mainline.armhf
-2257ce6abd1596e46b69cd8622785fdc8bd2e6b5d6448520b45c3d5151e839fd1f0ad31d673a3ee6984db9792cc5a70226e6f6a13be16e0d2e064e8ae200c681  config-postmarketos-mainline.aarch64
-34e818059bd94b0431f986d7cb63fa779fe2aaa6c2199a054bd6f56a3df037555e80f20eeb78ac2dde5a517fd7dd7385e8be15aa6280685ee02129119638bdea  config-postmarketos-mainline.x86_64"
+sha512sums="6b5edef47c319a3fa7f6c20a3e0903a5acd89ec75e32dc5f99adcb60c9fe118ea312722d9c3d27e2e3900afa2455afb86e83a8b6bb131009bc79ddbe6fb0595d  linux-5.3.tar.xz
+f9771a13b3179033cd015bfa243ce13acce6d62ace8cc3184182d72933afe6c2928c85cba325b75040e03948b8bdde494ca5bb2b54edc0bc08345ef3470b3d3f  linux-v5.3-v5.4-rc1.patch
+148e0d9d72cea10765b79d32a6cfe0cd25bfa76825ea36b50adbbea001ae0c2ee2b4b9e1d621c8aff505cac2750df6eac0e0a927c94fa7efb46010b8a198fe85  config-postmarketos-mainline.armhf
+5e622cdf8e931bde115026e1b1ff09639268100642a48dedaa345836c032a00e144cb78a114bf4d4e3f9523bd137a6a3b2b2375defd0e7cbd00731c16e54ab54  config-postmarketos-mainline.armv7
+5cb59d838e3cc40e3ba76cb86b9af7b6167e5d5e7bf76fc579674a40eba7d877ca707bfc4f4260972fbdc2b9c94c87c17f85a817ba69c735aa4184bca4d41673  config-postmarketos-mainline.aarch64
+1546592d9b788cf977404fefcb9f85c5f37baf91013429f40082274f1b98224af4dc196b63445ce59c9f9ac5dd1159aa92a551a7c95dc9e931caa4f70036fccf  config-postmarketos-mainline.x86_64"
