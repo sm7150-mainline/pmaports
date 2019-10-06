@@ -1,6 +1,6 @@
 pkgname=libhybris
-pkgver=1.0_git20190508
-pkgrel=3
+pkgver=1.0_git20191001
+pkgrel=0
 arch="x86 armhf armv7 aarch64"
 url="https://github.com/libhybris/libhybris"
 license="Apache"
@@ -8,13 +8,12 @@ makedepends="autoconf automake libtool wayland-dev linux-headers bsd-compat-head
 	libx11-dev libxcb-dev libxext-dev
 	android-headers-7.1 android-headers-4.4"
 depends_dev="bsd-compat-headers android-headers-7.1"
-_commit="8ddb15b53d6a63b1545bbf97d00ea93827bd68eb"
+_commit="eaa6884ba95a1d5d0303119ffdc48952a098059b"
 source="$pkgname-$_commit.tar.gz::https://github.com/libhybris/libhybris/archive/$_commit.tar.gz
 	0001-Make-libhybris-compile-with-musl.patch
 	0002-tests-Regression-test-for-EGL-glibc-TLS-conflict.patch
 	0003-PATCH-v2-Implement-X11-EGL-platform-based-on-wayland.patch
 	0004-Build-test-hwcomposer-7-caf.patch
-	0005-eglplatform_wayland-link-libEGL-at-runtime.patch
 "
 
 pkgdesc="libhybris allows to use bionic-based HW adaptations"
@@ -168,9 +167,8 @@ dev() {
 	ln -s ../hybris/EGL/eglhybris.h .
 }
 
-sha512sums="681e8345ba56d5b9684ab3901c9cfdc6d4f48f55ef97611eef14d9471f08f1c0f60803298224df5110f2a3d08da145a61e38ea241585bc07e30cb48a893dc92b  libhybris-8ddb15b53d6a63b1545bbf97d00ea93827bd68eb.tar.gz
+sha512sums="598e4a788d38116437d24052b2153abd980d11fc8a277b5a0655ab96a6b8803388260e4621200f015570dcfa0ebb66fb68eeeb99948f1d9d4b9a04aa71d06540  libhybris-eaa6884ba95a1d5d0303119ffdc48952a098059b.tar.gz
 9f7a324f18332e44f8789108e32f0587c268d10adaee0040c42d1bece7ab58e292d68243e7814f34f37b3b5dff590758269e531b4f2fd1991334eda4333f5854  0001-Make-libhybris-compile-with-musl.patch
 1355a4403d1af8bdf75b9e4502cbfc093b9788224ce7c24a1f6a53dd7996d385d31a3362577a4293db6b6d0dd0ae4e88140b38c658ff0a288d9acfc2753859bb  0002-tests-Regression-test-for-EGL-glibc-TLS-conflict.patch
 db7bb0ffc04042b32d870db364df4d38d9769978f26d71f98dd2569b4cae7fb3839c7a0c421b465f931a57fcde38b8eca091b7ae0062e32a7e09b93a701397f3  0003-PATCH-v2-Implement-X11-EGL-platform-based-on-wayland.patch
-eda57804fefa1d586e90fb2198c310f65e6dbc7e09b5d1dd7d15df4ab152c4c8915c212230a92c35ec8a013d3ec7a7b1d289653bedb46b7eb2850a477ccebe16  0004-Build-test-hwcomposer-7-caf.patch
-39cfd9db2bcd77615de7370e0df861ce61a7025d1b39fd049d27f345643626bbe5253515a876f606fc86b678cb85f8634a9df663b5b32a90fa53b37136d25814  0005-eglplatform_wayland-link-libEGL-at-runtime.patch"
+eda57804fefa1d586e90fb2198c310f65e6dbc7e09b5d1dd7d15df4ab152c4c8915c212230a92c35ec8a013d3ec7a7b1d289653bedb46b7eb2850a477ccebe16  0004-Build-test-hwcomposer-7-caf.patch"
