@@ -3,7 +3,7 @@
 pkgname=pix
 _pkgname=maui-$pkgname
 pkgver=0_git20190620
-pkgrel=0
+pkgrel=1
 _commit="a41659898925a252a365334eaab986d647b967ad"
 pkgdesc="Image gallery manager built with MauiKit"
 arch="all"
@@ -11,7 +11,8 @@ url="https://invent.kde.org/kde/maui-pix"
 license="GPL-3.0-or-later"
 depends="mauikit"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev mauikit-dev kservice-dev knotifications-dev ki18n-dev kio-dev"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$_pkgname/-/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/$_pkgname/-/archive/$_commit.tar.gz
+	fix-build.patch"
 options="!check" # No tests available
 builddir="$srcdir/$_pkgname-$_commit"
 
@@ -26,4 +27,5 @@ build() {
 package() {
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="f35e47a1e6c699d79db7777ce8ec2a1de80279ef838d8f0e04880b9bba4f53ebaae8b04ab9134d9e738fe1221515fb747bdafae439701a36a6eda219abf7a148  pix-a41659898925a252a365334eaab986d647b967ad.tar.gz"
+sha512sums="f35e47a1e6c699d79db7777ce8ec2a1de80279ef838d8f0e04880b9bba4f53ebaae8b04ab9134d9e738fe1221515fb747bdafae439701a36a6eda219abf7a148  pix-a41659898925a252a365334eaab986d647b967ad.tar.gz
+1567f2467bdaef0f8b394a458fa4f1a8b3b77431662848a13a48cd2c781d3691b72ba574da7120922a15f48e5df3fb4c46f7ba52a37aea73ac76143ed378a227  fix-build.patch"

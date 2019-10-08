@@ -1,0 +1,35 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2a2f7ea..c319238 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -62,7 +62,7 @@ if (ANDROID)
+     target_link_libraries(vvave Qt5::AndroidExtras)
+     kde_source_files_enable_exceptions(pix src/pix.cpp)
+ else() 
+-    find_package(KF5 ${KF5_VERSION} REQUIRED COMPONENTS I18n Notifications Config KIO Attica)
++    find_package(KF5 ${KF5_VERSION} REQUIRED COMPONENTS I18n Notifications Config KIO Attica SyntaxHighlighting)
+     find_package(Qt5 REQUIRED COMPONENTS WebEngine)
+ 
+     target_link_libraries(pix KF5::ConfigCore KF5::Notifications KF5::KIOCore KF5::I18n KF5::Attica)
+diff --git a/src/models/cloud/cloud.cpp b/src/models/cloud/cloud.cpp
+index 22b4643..5e8c1bf 100644
+--- a/src/models/cloud/cloud.cpp
++++ b/src/models/cloud/cloud.cpp
+@@ -33,7 +33,7 @@ Cloud::Cloud(QObject *parent) : BaseList (parent)
+         newItem[FMH::MODEL_KEY::TITLE] = item[FMH::MODEL_KEY::LABEL];
+ 
+ 
+-        this->update(FM::toMap(newItem), this->pending.take(QString(item[FMH::MODEL_KEY::PATH]).replace(FMH::CloudCachePath+"opendesktop", FMH::PATHTYPE_NAME[FMH::PATHTYPE_KEY::CLOUD_PATH])));
++        this->update(FM::toMap(newItem), this->pending.take(QString(item[FMH::MODEL_KEY::PATH]).replace(FMH::CloudCachePath+"opendesktop", FMH::PATHTYPE_SCHEME[FMH::PATHTYPE_KEY::CLOUD_PATH])));
+         emit this->cloudImageReady(FM::toMap(newItem));
+     });
+ }
+@@ -63,7 +63,7 @@ void Cloud::setList()
+ {
+     emit this->preListChanged();
+     this->list.clear();
+-    this->fm->getCloudServerContent(FMH::PATHTYPE_NAME[FMH::PATHTYPE_KEY::CLOUD_PATH]+"/"+this->account, FMH::FILTER_LIST[FMH::FILTER_TYPE::IMAGE], 3);
++    this->fm->getCloudServerContent(FMH::PATHTYPE_SCHEME[FMH::PATHTYPE_KEY::CLOUD_PATH]+"/"+this->account, FMH::FILTER_LIST[FMH::FILTER_TYPE::IMAGE], 3);
+     emit this->postListChanged();
+ }
+ 
