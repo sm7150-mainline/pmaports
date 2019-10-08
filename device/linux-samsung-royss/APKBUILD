@@ -1,0 +1,65 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/cyanogenmod_royss_defconfig
+
+pkgname="linux-samsung-royss"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Samsung Galaxy Young kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="samsung-royss"
+url="https://github.com/Nothing-Dev/android_kernel_samsung_royss"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc4 lzo lzop"
+
+## Compiler: GCC 4 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_samsung_royss"
+_commit="3169160cd6b23e0325fb5117cc347fc6acb2bc48"
+_config="config-${_flavor}.${arch}"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Nothing-Dev/${_repository}/archive/${_commit}.tar.gz
+	$_config
+"
+builddir="$srcdir/${_repository}-${_commit}"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="5dd49d41297247788d5b33815ec74f02ecc2566a9045102df63579dbc360f7c4c08fc4a28251efa02959137e7ed0f92a91b694145d40ee52bb0bf99557a7320a  linux-samsung-royss-3169160cd6b23e0325fb5117cc347fc6acb2bc48.tar.gz
+70163ceed1e5e3f6c6f57700d2538bbb9ae7270a874612cb63559c93e9f05c77f72994656f8b0a17e3b6146eaea644aa52eb128a2ec76dd8b087b8a23f178a36  config-samsung-royss.armv7"
