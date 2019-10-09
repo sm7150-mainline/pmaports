@@ -86,7 +86,7 @@ get_modules_by_name()
 		echo "with 'y' instead of 'm' (module)."
 	} >&2
 
-	MODULES="dm_crypt \
+	MODULES="dm_crypt ext4 usb_f_rndis \
 		${deviceinfo_modules_initfs}"
 	modprobe \
 		-a \
