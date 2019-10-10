@@ -1,82 +1,52 @@
 # Reference: <https://postmarketos.org/vendorkernel>
-# Kernel config based on: https://github.com/me176c-dev/me176c-archlinux/blob/master/linux-me176c/config
+# Kernel config based on: https://github.com/me176c-dev/archlinux-me176c/blob/master/linux-me176c/config
 
-pkgname="linux-asus-me176c"
-pkgver=4.19.9
-pkgrel=2
-pkgdesc="Asus MeMo Pad 7 kernel fork"
+_flavor="asus-me176c"
+pkgname="linux-${_flavor}"
+pkgver=4.19.80
+pkgrel=0
+pkgdesc="Mainline kernel fork for ASUS MeMO Pad 7 (ME176C(X))"
 arch="x86_64"
 _carch="x86_64"
-_flavor="asus-me176c"
-url="https://kernel.org"
+url="https://github.com/me176c-dev/linux-me176c"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev bison flex libressl-dev iasl xz"
+depends_dev="perl gmp-dev elfutils-dev bash flex bison"
+makedepends="$depends_dev sed installkernel bc linux-headers openssl-dev xz"
 
 # Compiler: latest GCC from Alpine
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
-_repository="linux-me176c"
-_commit="961c8ea95f2febdaceb2d31940b48932aea0e782"
-_dsdt_commit="18a1fe0c450375c16e17429b429955e068f83945"
-_config="config-${_flavor}.${arch}"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/me176c-dev/${_repository}/archive/${_commit}.tar.gz
-	https://raw.githubusercontent.com/me176c-dev/me176c-acpi/${_dsdt_commit}/dsdt.dsl
-	$_config
+	$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz
+	config-$_flavor.$arch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/linux-me176c-$pkgver"
 
 prepare() {
 	default_prepare
-
-	iasl -tc $srcdir/dsdt.dsl
-	sed -i s/dsdt_aml_code/AmlCode/ $srcdir/dsdt.hex
-	cp $srcdir/dsdt.hex $builddir/include/
-
-	# Remove -Werror from all makefiles
-	makefiles="$(find "$builddir" -type f -name Makefile)
-		$(find "$builddir" -type f -name Kbuild)"
-	for i in $makefiles; do
-		sed -i 's/-Werror-/-W/g' "$i"
-		sed -i 's/-Werror//g' "$i"
-	done
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir/$_config" "$builddir"/.config
-	yes "" | make -C "$builddir" ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	cp "$srcdir/config-$_flavor.$arch" .config
 }
 
 build() {
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	mkdir -p "$pkgdir"/boot
+	make install modules_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir"
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		INSTALL_MOD_PATH="$pkgdir/" INSTALL_MOD_STRIP=1 modules_install
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
-sha512sums="ad0a15e74e2a322fd119dbd159140b97f46e1770d41b1fa8469f529b117e0334f5a9a8c948b54b8f8aeea3d2424c910e17be4068bf17a6d3d571b52134105277  linux-asus-me176c-961c8ea95f2febdaceb2d31940b48932aea0e782.tar.gz
-9f3d8691252dbbc06e8c9ce1f26aaf1803b5fe5647bee7ee80ca89d8bac52ec91bffeb629f41f0babad1b27a33bff766754ed151f2886684b0c6022c190b0907  dsdt.dsl
-67e547102501345ed87a1e555a023c5184d8de4dd1d201f86503bd4bfec49d9144dd46193beebd89facc8354ceb516ba94148720a7751017aee805a01a4fe792  config-asus-me176c.x86_64"
+sha512sums="7725d0fb7152d7727c769d831d00afd2dd9e0b9df7349c0a8cde4c432b42ea24cf06a4f5a9016a5e8b41f28fd71dfca8c5b9b67ecccbd2857682d19f18ba8655  linux-asus-me176c-4.19.80.tar.gz
+fea1ad3104daa792678735bf190a8b351e8b7e529895b219aae1ed789e02bf9d13cd5ec9c9322ce080c3fd26da56e064a8e4053918dfd0a817b9f205b2559ce6  config-asus-me176c.x86_64"

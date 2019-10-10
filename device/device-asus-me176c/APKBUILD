@@ -1,19 +1,49 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname="device-asus-me176c"
-pkgdesc="Asus MeMo Pad 7"
-pkgver=0.1
+pkgdesc="ASUS MeMO Pad 7 (ME176C(X))"
+pkgver=1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 options="!check !archcheck"
-depends="postmarketos-base linux-asus-me176c mesa-dri-intel"
-makedepends="devicepkg-dev"
-source="deviceinfo"
+depends="postmarketos-base linux-asus-me176c firmware-asus-me176c-acpi $pkgname-factory intel-ucode mesa-dri-intel"
+makedepends="devicepkg-dev meson eudev-dev"
+
+_commit=3155254999ac36c3051a2118c415de25a072c0f6
+source="
+	deviceinfo
+	https://github.com/me176c-dev/linux-me176c/archive/$_commit.tar.gz
+"
 subpackages="
+	$pkgname-factory
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-x11
 "
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=release \
+		-Dsystemd=false -Dopenrc=true \
+		linux-me176c-$_commit/factory build-factory
+	ninja -C build-factory
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+factory() {
+	pkgdesc="WiFi/BT MAC address loader"
+	depends="bluez-btmgmt"
+	DESTDIR="$subpkgdir" ninja -C "$srcdir"/build-factory install
+}
 
 x11() {
 	install_if="$pkgname xorg-server"
@@ -22,18 +52,10 @@ x11() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Wifi, Bluetooth, and sound firmware"
-	depends="linux-firmware-intel linux-firmware-brcm firmware-asus-me176c"
+	pkgdesc="WiFi, Bluetooth and Sound firmware"
+	depends="linux-firmware-intel firmware-asus-me176c"
 	mkdir "$subpkgdir"
 }
 
-build() {
-	devicepkg_build $startdir $pkgname
-}
-
-package() {
-	devicepkg_package $startdir $pkgname
-}
-
-
-sha512sums="1281e7dafedf566c983e9d682ca8fccdb9dd4fdb1d8b9dc7d80e180a917e242d61e4e0c1bf70ddfd1cf53ef590ba6f973ec24dafbe143f93ebb8e52e0500b2db  deviceinfo"
+sha512sums="3a329f76237c5fcacc194892a32855d6b4b724f8320d0a43594ceafdba8a447706b590b290bc927256365bc65eeeb300579ee000e99ba7c9acb19cbb12ead56f  deviceinfo
+75243e3d0bc9a352465683ec8cf8b83566e4131bb7fae0f388267a62bdbf4691c955ed034b30df550f921b771080688123ae8db144b72f786bf1677ef1d83f57  3155254999ac36c3051a2118c415de25a072c0f6.tar.gz"
