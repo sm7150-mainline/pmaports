@@ -162,7 +162,7 @@ resize_root_partition() {
 	partition=$(find_root_partition)
 	# Only resize the partition if it's inside the device-mapper, which means
 	# that the partition is stored as a subpartition inside another one.
-	# In this case we want to resize it to use all the unused space of the 
+	# In this case we want to resize it to use all the unused space of the
 	# external partition.
 	if [ -z "${partition##"/dev/mapper/"*}" ]; then
 		# Get physical device
@@ -254,6 +254,7 @@ setup_usb_network_configfs() {
 	# Create english (0x409) strings
 	mkdir $CONFIGFS/g1/strings/0x409 || echo "  Couldn't create $CONFIGFS/g1/strings/0x409"
 	echo "postmarketOS" > "$CONFIGFS/g1/strings/0x409/manufacturer"
+	echo "postmarketOS" > "$CONFIGFS/g1/strings/0x409/serialnumber"
 	echo "Debug network interface" > "$CONFIGFS/g1/strings/0x409/product"
 
 	# Create rndis function
