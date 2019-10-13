@@ -1,5 +1,5 @@
 pkgname=mkbootimg-osm0sis
-pkgver=2018.10.27
+pkgver=2019.09.20
 pkgrel=0
 pkgdesc="Android bootimg tools (maintained fork of the C version, see #441)"
 url="https://github.com/osm0sis/mkbootimg"
@@ -13,6 +13,11 @@ source="$pkgname-$pkgver.tar.gz::https://github.com/osm0sis/mkbootimg/archive/$p
 options="!check"
 builddir="$srcdir/mkbootimg-$pkgver"
 
+prepare() {
+	default_prepare
+	sed s/-Werror/-W/g -i Makefile
+}
+
 build() {
 	cd "$builddir"
 	make -j1
@@ -23,4 +28,4 @@ package() {
 	install -Dm755 "$builddir/unpackbootimg" "${pkgdir}/usr/bin/unpackbootimg"
 }
 
-sha512sums="60d1b1008c3627a118afa66a002c9239023b07adfacff892745326886e16a88b5b394873a7c816fbf6e94ee74b87899db8dede959683aaf0c7802b0d175d5abb  mkbootimg-osm0sis-2018.10.27.tar.gz"
+sha512sums="ec396b137d4159a3ae0a0d40e25904c7d954ed6e0ce32f4ebb8fc885fd1d3a948a56e41e3404597a8b3768a3e468a133b4db99ef85678ffffc13ac17034b9185  mkbootimg-osm0sis-2019.09.20.tar.gz"
