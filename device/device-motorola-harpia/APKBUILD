@@ -1,20 +1,18 @@
 # Reference: <https://postmarketos.org/devicepkg>
-# Contributor: Jacob Juric
+# Maintainer: Ruby Iris Juric <ruby@srxl.me>
 pkgname="device-motorola-harpia"
 pkgdesc="Motorola Moto G4 Play"
-pkgver=0.1
-pkgrel=4
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
-arch="armhf"
+arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-motorola-harpia mkbootimg mesa-dri-swrast msm-fb-refresher"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
-	initfs-hook.sh
-"
+source="deviceinfo"
 
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,5 +22,10 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-sha512sums="221a3d737e18de90958174488b92adbc2d367eb073492a583003c251e96853829251c13e110f172fefe04bc8d77f92f73037bde08ece0e75d04ce75b816c5305  deviceinfo
-17dabb0190a9191173454ac12c5c8ad8744b922d20807bd9465bc26d485c0f2d34e968d40b8e886a32640f0c36635cde083c4dc7e4122b55c3cff1f9d1b34af6  initfs-hook.sh"
+nonfree_firmware() {
+	pkgdesc="GPU/Wi-Fi/Bluetooth/Video firmware"
+	depends="linux-firmware-qcom firmware-motorola-harpia-wcnss firmware-motorola-harpia-venus"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="42fff2887c7670aecfd1d2e1f64d11401c13115d33e86f167201b9c765d03d3fbd6a5fd6392deeaceffc1580315eac115126001bfee0609424241f10b082ea8f  deviceinfo"

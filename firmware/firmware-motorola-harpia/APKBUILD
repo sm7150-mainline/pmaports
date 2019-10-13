@@ -1,0 +1,41 @@
+# Maintainer: Ruby Iris Juric <ruby@srxl.me>
+pkgname=firmware-motorola-harpia
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Motorola Moto G4 Play"
+url="https://github.com/Sorixelle/vendor_motorola_harpia"
+subpackages="$pkgname-wcnss $pkgname-venus $pkgname-modem"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck"
+
+_commit="a81be710b0ff4ee7e5fd1962184dcd882cc13efc"
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+wcnss() {
+	pkgdesc="Motorola Moto G4 Play Wi-Fi/Bluetooth firmware"
+	cd "$srcdir/vendor_motorola_harpia-$_commit"
+	install -Dm644 wcnss.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 wlan/prima/* -t "$subpkgdir/$_fwdir/wlan/prima"
+}
+
+venus() {
+	pkgdesc="Motorola Moto G4 Play video firmware"
+	cd "$srcdir/vendor_motorola_harpia-$_commit"
+	install -Dm644 venus.* -t "$subpkgdir/$_fwdir"
+}
+
+modem() {
+	pkgdesc="Motorola Moto G4 Play modem firmware"
+	cd "$srcdir/vendor_motorola_harpia-$_commit"
+	install -Dm644 modem.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 mba.mbn -t "$subpkgdir/$_fwdir"
+}
+
+sha512sums="56a7f815bea3d20a5ef0241ae109ac3823c6ac433e2a05389035b7005c7966d7a0a7719dbf5a562c6cf53c18cebd6893d31d27a6efc1a50c307565f873b1aa54  firmware-motorola-harpia-a81be710b0ff4ee7e5fd1962184dcd882cc13efc.tar.gz"
