@@ -1,16 +1,15 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=phoc
-pkgver=0.1.0_git20190924
+pkgver=0.1.1
 pkgrel=0
-_commit="32316429eb44251ec50e5b091d93653a8591d639"
 pkgdesc="wlroots based Phone compositor for the Phosh shell"
 arch="all !armhf"
 url="https://source.puri.sm/Librem5/phoc"
 license="GPL-3.0-only"
 makedepends="meson ninja gobject-introspection-dev libinput-dev wayland-dev wayland-protocols libxkbcommon-dev wlroots-dev"
-source="$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/phoc/-/archive/$_commit.tar.gz"
-builddir="$srcdir/$pkgname-$_commit"
+source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/phoc/-/archive/v$pkgver/phoc-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
 
 build() {
 	meson . _build --prefix=/usr
@@ -24,4 +23,4 @@ check() {
 package() {
 	DESTDIR="$pkgdir/" ninja -C _build install
 }
-sha512sums="1f1fa3a64fdee3ddf44f42193723d67b6532311223a746e21ad214cd7ee6348615a2bdd8da13ef12e09ffc485e3d471db018df286615b9d3a97fb79f278cf5f9  phoc-32316429eb44251ec50e5b091d93653a8591d639.tar.gz"
+sha512sums="455a45cf3f6e7a6fab4dbb2b023c7f336e00553cf2143fe9c4ed7d7bf93aea08159ce2ae8b43bfa0aaa37e79fb954f896649be6548587e7bcfc85a6b54e9d052  phoc-0.1.1.tar.gz"
