@@ -1,31 +1,22 @@
 pkgname=libsmdpkt_wrapper
-pkgver=0.1
-pkgrel=1
+pkgver=0.2
+pkgrel=0
 pkgdesc="wrapper to get ofonod and qmicli working on smdpkt devices (MSM kernel's SMD)"
 url="https://github.com/scintill/libsmdpkt_wrapper"
 arch="all"
 license="GPL-3.0-or-later"
 subpackages="$pkgname-doc"
-_tag=v$pkgver
 makedepends="linux-headers"
-source="$pkgname-$_tag.tar.gz::https://github.com/scintill/libsmdpkt_wrapper/archive/$_tag.tar.gz"
-builddir="$srcdir""/libsmdpkt_wrapper-${pkgver}"
+source="$pkgname-$pkgver.tar.gz::https://github.com/scintill/libsmdpkt_wrapper/archive/v$pkgver.tar.gz"
 options="!check"
 
-prepare() {
-	default_prepare
-	sed s/-Werror/-W/g -i Makefile
-}
-
 build() {
-	cd "$builddir"
 	make
 }
 
 package() {
-	cd "$builddir"
 	install -Dm644 libsmdpkt_wrapper.so "$pkgdir"/usr/lib/preload/libsmdpkt_wrapper.so
 	install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
 }
 
-sha512sums="4979ef87523585ac2baaa901680a4f55fe11036ea591ecd43efc2c48f1681ff79699f7a4896e905397a87bbfb380c94f84f09bb48eb7db42ebfe73f26f95bbe2  libsmdpkt_wrapper-v0.1.tar.gz"
+sha512sums="89b6ccd1f21c23b0fe2cc58ce74095f29a57d64d3a01c7114a08cb2e706627e60250b90c4d62001f02083f704eca17822f1dcd33f8408fe35d7b52258421a9bb  libsmdpkt_wrapper-0.2.tar.gz"
