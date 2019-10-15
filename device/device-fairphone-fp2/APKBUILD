@@ -2,7 +2,7 @@
 pkgname="device-fairphone-fp2"
 pkgdesc="Fairphone 2"
 pkgver=2
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -24,11 +24,14 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="Firmware for WiFi, Audio, etc."
-	depends="firmware-fairphone-fp2-adsp firmware-fairphone-fp2-wcnss $pkgname-alsa"
+	depends="$pkgname-alsa firmware-fairphone-fp2-modem firmware-fairphone-fp2-wcnss"
 	mkdir "$subpkgdir"
 }
 
 alsa() {
+	pkgdesc="Audio configuration files"
+	depends="firmware-fairphone-fp2-adsp"
+
 	mkdir -p "$subpkgdir"/usr/share/alsa/ucm/FP2
 	install -Dm644 "$srcdir"/FP2.conf "$subpkgdir"/usr/share/alsa/ucm/FP2/
 	install -Dm644 "$srcdir"/hifi "$subpkgdir"/usr/share/alsa/ucm/FP2/
