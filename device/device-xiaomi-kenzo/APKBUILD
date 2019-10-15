@@ -2,7 +2,7 @@
 pkgname="device-xiaomi-kenzo"
 pkgdesc="Xiaomi Redmi Note 3"
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -10,7 +10,9 @@ options="!check !archcheck"
 depends="postmarketos-base linux-xiaomi-kenzo mkbootimg mesa-dri-swrast mdss-fb-init-hack"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo"
+source="deviceinfo
+        fb.modes
+        directfbrc"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -18,6 +20,9 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
+	install -Dm644 "$srcdir"/directfbrc "$pkgdir"/etc/directfbrc
 }
 
 nonfree_firmware() {
@@ -26,4 +31,6 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="6307cdc07e910b8a8c991b4a0552c558a30f86fb2c930778d51ef6a80a144e67c32b782696059cad3415ed81e32c04c41e3ee6833046599474c36e56f4dfb528  deviceinfo"
+sha512sums="6307cdc07e910b8a8c991b4a0552c558a30f86fb2c930778d51ef6a80a144e67c32b782696059cad3415ed81e32c04c41e3ee6833046599474c36e56f4dfb528  deviceinfo
+646cedb1c4675ef04530f8cab305a48767ddc894d1d08541aae3a4c124268ca9ef88aa4fa6ad507d8618f4355144a206a32f5a75ade8e60ab1fc9a338d5209f8  fb.modes
+19b0a9ae89ad4ad1adfcc2a1b5a1abfe71f560c2857e392f904c393f0b3bb4d29d7c2fbf8e080227d50e7e13f53fd5a5f3b0902c89582ec3e2742430ade19f07  directfbrc"
