@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-mobile
 pkgver=2
-pkgrel=7
+pkgrel=8
 pkgdesc="(Wayland) Mobile variant of KDE Plasma, optimized for touchscreen (slow without hardware acceleration!)"
 url="https://wiki.postmarketos.org/wiki/Plasma_Mobile"
 arch="noarch !armhf" # Crashes on armhf due to https://gitlab.com/postmarketOS/pmaports/issues/75
@@ -34,10 +34,11 @@ depends="
 	"
 # Required to launch
 depends="$depends
+	lightdm
 	lightdm-openrc
 	xorg-server
 	"
-install="$pkgname.post-install"
+install="$pkgname.post-install $pkgname.post-upgrade"
 source="kwinrc kdeglobals qtlogging.ini unlock-plasma 60-lightdm-autologin.conf"
 options="!check"
 
