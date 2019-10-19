@@ -2,17 +2,24 @@
 pkgname="device-fairphone-fp2"
 pkgdesc="Fairphone 2"
 pkgver=2
-pkgrel=4
+pkgrel=5
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-fairphone-fp2 mkbootimg mesa-dri-swrast"
+depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
 source="deviceinfo
 	FP2.conf
 	hifi"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-alsa"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-downstream-firmware:downstream_firmware
+	$pkgname-mainline-firmware:mainline_firmware
+	$pkgname-alsa
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,21 +29,46 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-fairphone-fp2 mesa-dri-swrast ofono"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Mainline kernel"
+	depends="linux-postmarketos-qcom-msm8974 mesa-dri-freedreno"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
 	pkgdesc="Firmware for WiFi, Audio, etc."
-	depends="$pkgname-alsa firmware-fairphone-fp2-modem firmware-fairphone-fp2-wcnss"
+	depends="firmware-fairphone-fp2-adsp firmware-fairphone-fp2-modem firmware-fairphone-fp2-wcnss"
+	mkdir "$subpkgdir"
+}
+
+downstream_firmware() {
+	pkgdesc="Firmware support packages for downstream kernel"
+	depends="$pkgname-alsa adsp-audio modem-qcom-msm-downstream-common wcnss-wlan"
+	install_if="$pkgname-kernel-downstream $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+mainline_firmware() {
+	pkgdesc="Firmware support packages for mainline kernel"
+	depends="modem-qcom-msm-mainline-common firmware-adreno"
+	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
 	mkdir "$subpkgdir"
 }
 
 alsa() {
 	pkgdesc="Audio configuration files"
-	depends="firmware-fairphone-fp2-adsp"
 
 	mkdir -p "$subpkgdir"/usr/share/alsa/ucm/FP2
 	install -Dm644 "$srcdir"/FP2.conf "$subpkgdir"/usr/share/alsa/ucm/FP2/
 	install -Dm644 "$srcdir"/hifi "$subpkgdir"/usr/share/alsa/ucm/FP2/
 }
 
-sha512sums="c20d8601def1e45df617f87159e336b8a9a8189bbc73b8112291a60ff6246d432549af9d1fb838252665b8be92aed97fc2afcba1736b59565458e50ae097f5fb  deviceinfo
+sha512sums="43f05596cd1e2759f9b182777211c3ec879fcd1be7d7f1ff94b409c85847ba2715fdf3080c95af5a5b28c35c7e6460cd149208b0291cc54b47a2e6a834096db3  deviceinfo
 55360b1ba4ddadea341c9edb13c32ba5f19aabf75ab28602f30cfb79b9df8834f115ef979c70569f23ec1293b1fcd408baf320d87803293ce7106bdc73a26c9f  FP2.conf
 b834461c6866bb0c473dd089dd5da641dd42a00f610aad6503117aa50fe6e200db9ad0a264bb609f12350d59faee1f772907bacd75439f702ea7d52f6f85e2b1  hifi"

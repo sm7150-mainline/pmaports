@@ -1,6 +1,6 @@
 pkgname=firmware-fairphone-fp2
 pkgver=17.09.3
-pkgrel=2
+pkgrel=3
 pkgdesc="Firmware for Fairphone 2"
 subpackages="$pkgname-wcnss $pkgname-adsp $pkgname-modem"
 url="https://github.com/FairBlobs/FP2-firmware"
@@ -24,7 +24,6 @@ package() {
 
 wcnss() {
 	pkgdesc="Fairphone 2 firmware for the Qualcomm Wireless Connectivity Subsystem (WCNSS)"
-	depends="wcnss-wlan"
 
 	cd "$builddir"
 	for _i in wcnss.*; do
@@ -38,7 +37,6 @@ wcnss() {
 
 adsp() {
 	pkgdesc="Fairphone 2 adsp firmware"
-	depends="adsp-audio"
 
 	cd "$builddir"
 	for _i in adsp.*; do
@@ -48,7 +46,6 @@ adsp() {
 
 modem() {
 	pkgdesc="Fairphone 2 modem firmware"
-	depends="modem-qcom-msm-downstream-common"
 
 	cd "$builddir"
 	for _i in modem.* mba.*; do
