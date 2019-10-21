@@ -261,6 +261,25 @@ create_bootimg()
 	if [ "${deviceinfo_append_dtb}" == "true" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
+	_second=""
+	if [ "${deviceinfo_bootimg_dtb_second}" == "true" ]; then
+		if [ -z "${deviceinfo_dtb}" ]; then
+			echo "ERROR: deviceinfo_bootimg_dtb_second is set, but"
+			echo "'deviceinfo_dtb' is missing. Set 'deviceinfo_dtb'"
+			echo "to the device tree blob for your device."
+			echo "See also: <https://postmarketos.org/deviceinfo>"
+			exit 1
+		fi
+		dtb="/usr/share/dtb/${deviceinfo_dtb}.dtb"
+		_second="--second $dtb"
+		if ! [ -e "$dtb" ]; then
+			echo "ERROR: File not found: $dtb. Please set 'deviceinfo_dtb'"
+			echo "to the relative path to the device tree blob for your"
+			echo "device (without .dtb)."
+			echo "See also: <https://postmarketos.org/deviceinfo>"
+			exit 1
+		fi
+	fi
 	_dt=""
 	if [ "${deviceinfo_bootimg_qcdt}" == "true" ]; then
 		_dt="--dt /boot/dt.img"
@@ -285,6 +304,7 @@ create_bootimg()
 		--ramdisk_offset "${deviceinfo_flash_offset_ramdisk}" \
 		--tags_offset "${deviceinfo_flash_offset_tags}" \
 		--pagesize "${deviceinfo_flash_pagesize}" \
+		${_second} \
 		${_dt} \
 		-o "${outfile/initramfs-/boot.img-}" || exit 1
 	if [ "${deviceinfo_bootimg_blobpack}" == "true" ]; then
