@@ -20,12 +20,6 @@ sh_files="
 	./main/postmarketos-mkinitfs/init_functions.sh
 	./main/postmarketos-mkinitfs-hook-debug-shell/20-debug-shell.sh
 	./main/postmarketos-update-kernel/update-kernel.sh
-	./main/postmarketos-android-recovery-installer/build_zip.sh
-	./main/postmarketos-android-recovery-installer/pmos_chroot
-	./main/postmarketos-android-recovery-installer/pmos_install
-	./main/postmarketos-android-recovery-installer/pmos_install_functions
-	./main/postmarketos-android-recovery-installer/pmos_setpw
-	./main/postmarketos-android-recovery-installer/update-binary
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
 	./main/postmarketos-ui-hildon/postmarketos-ui-hildon.post-install
 	$(find . -path './main/postmarketos-ui-hildon/*.sh')
