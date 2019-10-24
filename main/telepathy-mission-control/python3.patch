@@ -1,0 +1,176 @@
+diff --git a/configure.ac b/configure.ac
+index cf9d290f..1bcf8521 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1,7 +1,7 @@
+ dnl Set the version number to e.g. 5.x.y immediately before a release.
+ dnl Set the version number to e.g. 5.x.y+ immediately after (this will
+ dnl enable -Werror).
+-AC_INIT([telepathy-mission-control], [5.16.4+])
++AC_INIT([telepathy-mission-control], [5.16.4])
+ 
+ AC_CONFIG_MACRO_DIR([m4])
+ AC_CONFIG_AUX_DIR([build-aux])
+diff --git a/tools/glib-blocking-client-gen.py b/tools/glib-blocking-client-gen.py
+index c20dcd4a..96eef06e 100644
+--- a/tools/glib-blocking-client-gen.py
++++ b/tools/glib-blocking-client-gen.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ # glib-client-gen.py: "I Can't Believe It's Not dbus-binding-tool"
+ #
+diff --git a/tools/glib-client-gen.py b/tools/glib-client-gen.py
+index f8465a62..653e5cab 100644
+--- a/tools/glib-client-gen.py
++++ b/tools/glib-client-gen.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ # glib-client-gen.py: "I Can't Believe It's Not dbus-binding-tool"
+ #
+diff --git a/tools/glib-client-marshaller-gen.py b/tools/glib-client-marshaller-gen.py
+index cb27d638..98dd04c0 100644
+--- a/tools/glib-client-marshaller-gen.py
++++ b/tools/glib-client-marshaller-gen.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ import sys
+ import xml.dom.minidom
+@@ -31,23 +31,23 @@ class Generator(object):
+         for signal in signals:
+             self.do_signal(signal)
+ 
+-        print 'void'
+-        print '%s_register_dbus_glib_marshallers (void)' % self.prefix
+-        print '{'
++        print('void')
++        print('%s_register_dbus_glib_marshallers (void)', self.prefix)
++        print('{')
+ 
+         all = self.marshallers.keys()
+         all.sort()
+         for marshaller in all:
+             rhs = self.marshallers[marshaller]
+ 
+-            print '  dbus_g_object_register_marshaller ('
+-            print '      g_cclosure_marshal_generic,'
+-            print '      G_TYPE_NONE,       /* return */'
++            print('  dbus_g_object_register_marshaller (')
++            print('      g_cclosure_marshal_generic,')
++            print('      G_TYPE_NONE,       /* return */')
+             for type in rhs:
+-                print '      G_TYPE_%s,' % type.replace('VOID', 'NONE')
+-            print '      G_TYPE_INVALID);'
++                print('      G_TYPE_%s,', type.replace('VOID', 'NONE'))
++            print('      G_TYPE_INVALID);')
+ 
+-        print '}'
++        print('}')
+ 
+ 
+ def types_to_gtypes(types):
+diff --git a/tools/glib-ginterface-gen.py b/tools/glib-ginterface-gen.py
+index 6fec0d3c..dd612b1b 100644
+--- a/tools/glib-ginterface-gen.py
++++ b/tools/glib-ginterface-gen.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ # glib-ginterface-gen.py: service-side interface generator
+ #
+@@ -766,7 +766,7 @@ class Generator(object):
+         file_set_contents(self.basename + '-gtk-doc.h', '\n'.join(self.__docs))
+ 
+ def cmdline_error():
+-    print """\
++    print """
+ usage:
+     gen-ginterface [OPTIONS] xmlfile Prefix_
+ options:
+diff --git a/tools/glib-gtypes-generator.py b/tools/glib-gtypes-generator.py
+index 21dfc6aa..9fada94e 100644
+--- a/tools/glib-gtypes-generator.py
++++ b/tools/glib-gtypes-generator.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ # Generate GLib GInterfaces from the Telepathy specification.
+ # The master copy of this program is in the telepathy-glib repository -
+diff --git a/tools/glib-signals-marshal-gen.py b/tools/glib-signals-marshal-gen.py
+index 0d02c134..7c90a6de 100644
+--- a/tools/glib-signals-marshal-gen.py
++++ b/tools/glib-signals-marshal-gen.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ import sys
+ import xml.dom.minidom
+diff --git a/tools/gquark-gen.py b/tools/gquark-gen.py
+index 37d19e07..707915fb 100644
+--- a/tools/gquark-gen.py
++++ b/tools/gquark-gen.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ # glib-client-gen.py: "I Can't Believe It's Not dbus-binding-tool"
+ #
+diff --git a/tools/libglibcodegen.py b/tools/libglibcodegen.py
+index 6a9d2148..4ac459e5 100644
+--- a/tools/libglibcodegen.py
++++ b/tools/libglibcodegen.py
+@@ -154,7 +154,7 @@ def type_to_gtype(s):
+         return ("GHashTable *", "DBUS_TYPE_G_STRING_STRING_HASHTABLE", "BOXED", False)
+     elif s[:2] == 'a{':  #some arbitrary hash tables
+         if s[2] not in ('y', 'b', 'n', 'q', 'i', 'u', 's', 'o', 'g'):
+-            raise Exception, "can't index a hashtable off non-basic type " + s
++            raise Exception("can't index a hashtable off non-basic type " + s)
+         first = type_to_gtype(s[2])
+         second = type_to_gtype(s[3:-1])
+         return ("GHashTable *", "(dbus_g_type_get_map (\"GHashTable\", " + first[1] + ", " + second[1] + "))", "BOXED", False)
+diff --git a/tools/make-release-mail.py b/tools/make-release-mail.py
+index 2bd7c2bc..7dacbaca 100644
+--- a/tools/make-release-mail.py
++++ b/tools/make-release-mail.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/python3
+ # vim: set fileencoding=utf-8 :
+ #
+ # Hello. This is make-release-mail.py from the Telepathy project. It's
+@@ -49,7 +49,7 @@ BASE_URL = 'http://telepathy.freedesktop.org/releases'
+ def main(package, version, news_path):
+     release_name, details = extract_description(package, version, news_path)
+ 
+-    print """
++    print("""
+ %(release_name)s
+ 
+ tarball: %(base_url)s/%(package)s/%(package)s-%(version)s.tar.gz
+@@ -61,7 +61,7 @@ signature: %(base_url)s/%(package)s/%(package)s-%(version)s.tar.gz.asc
+         'version': version,
+         'release_name': release_name,
+         'details': details,
+-    }
++    })
+ 
+ if __name__ == '__main__':
+     try:
+@@ -69,8 +69,6 @@ if __name__ == '__main__':
+ 
+         main(package, version, news_path)
+     except ValueError, e:
+-        sys.stderr.write(
+-            'Usage: %s package-name package.version.number path/to/NEWS\n' %
+-            sys.argv[0])
++        print('Usage: %s package-name package.version.number path/to/NEWS\n', sys.argv[0], file=sys.stderr)
+         sys.stderr.flush()
+         sys.exit(1)

@@ -1,18 +1,25 @@
 # Contributor: Bhushan Shah <bshah@kde.org>
 # Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=telepathy-mission-control
-pkgver=5.16.4
-pkgrel=2
+pkgver=5.16.4_git20190707
+pkgrel=0
+_commit="5de9c50b0353f10b2fd7b1a6980c37bd7cb1b4dc"
 arch="all"
 url="http://telepathy.freedesktop.org/wiki/"
 license="LGPL-2.0-or-later"
 pkgdesc="Account Manager and Channel Dispatcher based on telepathy-glib"
 depends_dev="telepathy-glib-dev gstreamer-dev python2"
-makedepends="$depends_dev libxslt-dev dbus"
-source="https://telepathy.freedesktop.org/releases/$pkgname/$pkgname-$pkgver.tar.gz
-	31268fec582776593e54c10c862d9f7af7b3153c.patch"
+makedepends="$depends_dev libxslt-dev dbus gtk-doc autoconf automake libtool"
+source="$pkgname-$_commit.tar.gz::https://github.com/TelepathyIM/telepathy-mission-control/archive/$_commit.tar.gz"
 subpackages="$pkgname-dev $pkgname-doc"
 options="!check" # Requires a running dbus daemon
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	NOCONFIGURE=1 ./autogen.sh
+}
 
 build() {
 	PYTHON=/usr/bin/python2 ./configure --prefix=/usr \
@@ -25,5 +32,4 @@ package() {
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="5ed624df2d041554af074c22a18db2405fa5bd41bec40edc574382eb9d8b9f93ff6f4be3042d27f950694a353f4192670e200f5f8865419701ca520a973959ed  telepathy-mission-control-5.16.4.tar.gz
-e6e35f6c5adbf67536fdc83e49f3ab7dbce1725df7363f5c4c5a9a7c5f8cccbf5c9cfd1197627f9a5ace00c06df860646e10ad275a3b448cf936af01650033f6  31268fec582776593e54c10c862d9f7af7b3153c.patch"
+sha512sums="b07492cf5a70004a5bf1c2bdc0f01018ff4b73f29222f99faf4468d312ced46eb37c462503aebc9579514a391dc407e01bcbebf04e81cd495e6c11fde134a110  telepathy-mission-control-5de9c50b0353f10b2fd7b1a6980c37bd7cb1b4dc.tar.gz"
