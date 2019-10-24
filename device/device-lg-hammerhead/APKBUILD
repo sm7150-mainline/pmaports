@@ -1,19 +1,20 @@
 pkgname=device-lg-hammerhead
 pkgver=2
-pkgrel=8
+pkgrel=9
 pkgdesc="Google Nexus 5"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 depends="postmarketos-base linux-postmarketos-qcom-msm8974 mkbootimg mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-freedreno ofono"
 install="$pkgname.post-install"
-subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-weston $pkgname-phosh $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	weston.ini
 	xorg.conf
 	modules-load.conf
 	brcmfmac4339-sdio.txt
+	rootston.ini
 "
 options="!check !archcheck"
 
@@ -36,6 +37,12 @@ x11() {
 		"$subpkgdir"/etc/X11/xorg.conf.d/10-hammerhead.conf
 }
 
+phosh() {
+        install_if="$pkgname postmarketos-ui-phosh"
+        install -Dm644 "$srcdir"/rootston.ini \
+                "$subpkgdir"/etc/phosh/rootston.ini
+}
+
 weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
@@ -52,4 +59,5 @@ sha512sums="e3ce75139e862193e45d5e17f2e3d4250eb13efaa3e615a6b240f095772b6dc7a5cd
 4c22070223f39c419260a6817e5cc2b7881c095deeba031363a5634842dd175dd67eecace980849f0553de79110ef4e43a66143d71433805cd916c37fe7248e9  weston.ini
 2c9277ca97b27780a6a38120953bd3c9b3a66c05940241bb8d373bed9b1ea5c89bfbf1b3fa6b78826de42085564dbade14cdc8eb5651e4a511ce3b5942d2f03d  xorg.conf
 d8ce60ea7acaabf627ddca2f0887a4cda46f313b7aaf7934bef2fef8a6e0798ccefab849e4571e4e3fcd06ae34c1a6efe3b58b401e2e443416f6200e6d4ea769  modules-load.conf
-59baf815a45c632f3413dc8d9f48978f91d8f8ee165003689dcd54cc3b3d1af65bfc0c88f76579f840b83b303a28a1de2c2994a651d62cc6f6d8988c8716e345  brcmfmac4339-sdio.txt"
+59baf815a45c632f3413dc8d9f48978f91d8f8ee165003689dcd54cc3b3d1af65bfc0c88f76579f840b83b303a28a1de2c2994a651d62cc6f6d8988c8716e345  brcmfmac4339-sdio.txt
+8ee9e4a5420aa6b00cef04848a94b7e9d7bfd98252ace23b181b757ee44d27d453a2fcd9dbbbe149f17cd8a596f3749d3425d4040167f9e303e5e66dc8cd9560  rootston.ini"
