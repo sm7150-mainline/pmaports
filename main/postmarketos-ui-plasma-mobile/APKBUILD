@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-mobile
 pkgver=2
-pkgrel=8
+pkgrel=9
 pkgdesc="(Wayland) Mobile variant of KDE Plasma, optimized for touchscreen (slow without hardware acceleration!)"
 url="https://wiki.postmarketos.org/wiki/Plasma_Mobile"
 arch="noarch !armhf" # Crashes on armhf due to https://gitlab.com/postmarketOS/pmaports/issues/75
@@ -39,7 +39,14 @@ depends="$depends
 	xorg-server
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="kwinrc kdeglobals qtlogging.ini unlock-plasma 60-lightdm-autologin.conf"
+source="
+	kwinrc
+	kdeglobals
+	qtlogging.ini
+	unlock-plasma
+	60-lightdm-autologin.conf
+	000-gschema.override
+"
 options="!check"
 
 package() {
@@ -57,9 +64,13 @@ package() {
 
 	install -Dm755 "$srcdir"/unlock-plasma \
 		"$pkgdir"/usr/bin/unlock-plasma
+
+        install -Dm644 "$srcdir"/000-gschema.override \
+                "$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
 }
 sha512sums="a95d3bbd1e8051c9b394ad7a26e4beb2d1be8d3c38189819da61fd42b1c7fd3948c4737bc9246eee23eaf5fd9451cd6362fb06442f3d8f967f930d3bcc5cfbe9  kwinrc
 93d6c3e76b6e8d3c8c5424fcb921595ad3569e1aba1b03255b977230b33146dc73a97327e455e8a539018cb02c3bf1a700dd951622f798b50f36c5d381a1b342  kdeglobals
 341f0b866c315f37868ef3e7137cce8b53a0e8e6164e5af71b3e8e2fa68321afbf0652d76124ef84bade1393f701748852ac939aef9daff7e272a0df827780eb  qtlogging.ini
 e5dcc82c0e58288fd7a8f805e60fa777fab71c68355f085a0e4f25b05526491476fdb6decbc7c0495626d6736a53bfc8e8f34a3231210858998e19cd6fbc89a0  unlock-plasma
-4845e9090668baf164c587ad1ee669116955911608e9f6751d480c7eae93ac19d662a78be07721475651c37c580278519c085ad6fed692ce9d7f2778982d0c99  60-lightdm-autologin.conf"
+4845e9090668baf164c587ad1ee669116955911608e9f6751d480c7eae93ac19d662a78be07721475651c37c580278519c085ad6fed692ce9d7f2778982d0c99  60-lightdm-autologin.conf
+2c0ac3cc66e9af71fb89c4f790b6f71598b5c0ecd9b684bd7cbd95d25ce27c256154b8e3a66e1f2648e4d4410d7a5cedc9663b31c1c87b33dcc3179c98d04252  000-gschema.override"
