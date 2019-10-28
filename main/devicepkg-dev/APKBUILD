@@ -1,5 +1,5 @@
 pkgname="devicepkg-dev"
-pkgver=0.10.0
+pkgver=0.11.0
 pkgrel=0
 pkgdesc="Provides default device package functions"
 url="https://postmarketos.org"
@@ -11,6 +11,7 @@ source="
 	devicepkg_build.sh
 	devicepkg_package.sh
 	downstreamkernel_prepare.sh
+	downstreamkernel_package.sh
 	devicepkg_subpackage_kernel.sh
 	testdata/deviceinfo
 	testdata/expected-deviceinfo-downstream
@@ -52,6 +53,8 @@ package() {
 		"$pkgdir/usr/bin/devicepkg_package"
 	install -Dm755 "$srcdir/downstreamkernel_prepare.sh" \
 		"$pkgdir/usr/bin/downstreamkernel_prepare"
+	install -Dm755 "$srcdir/downstreamkernel_package.sh" \
+		"$pkgdir/usr/bin/downstreamkernel_package"
 	install -Dm755 "$srcdir/devicepkg_subpackage_kernel.sh" \
 		"$pkgdir/usr/bin/devicepkg_subpackage_kernel"
 	install -Dm644 "$srcdir/compiler-gcc.h" \
@@ -61,6 +64,7 @@ sha512sums="d69930dd790b00fb39760a37d95a10899f0d167e10e2804feb05d9ce04f94185dc32
 332f693abfb3260ad6c1ef5d245062af8cc8eedba7db360d54db5a7fcf7b301a37a299a0004e9ff4de80b5dfcd260d0cd0f99f96ed6d56080bb4dea81116cc82  devicepkg_build.sh
 5ac4a5087c598582cb12278a4ce0c2dccfe7f91c1620d3328d1d0944c89eff81f8afcc681506d73a80d69615401f96a99fb1fdaa755fea101e0d36ec6ef2d5d0  devicepkg_package.sh
 1b038d0bca1e130674497cf7aeb26fac2bcec510ce094fa6f6700fcdcabc778741541c1aa89d3588ed42908f60708a2d9b83ffd5e50e99db619d366458e82256  downstreamkernel_prepare.sh
+c912156a257ad55d1d72e8e50e1f0e9620497d0ffbb8cba332d2510644b6aeb8c50b9b3cf3f43316a086ab81c3a7c2e6f54aaa4d825b8af811d84c4e5cc520d9  downstreamkernel_package.sh
 cf5ee240cd1c1e9d30cdec833b4a007fd2e00f9a32ba3f265f99aa2e3dd3601cf43c08d3f3e01bade1d5b2648a6754b2f236e5cb4a9945e18e5c4e97aa2ed7c8  devicepkg_subpackage_kernel.sh
 9bb7f2a0930f397a713e9f4b6d5b83a426d9a2a3f692dcc42ac30717bf26ead869d8823a38f3ad388af12b2b9a02e8ec4d4418e9c2062389ed06d2b891a49ff3  deviceinfo
 136247a16ec91dc0c7241eeddb28c2196ae3b29946a9bc7e9566f848491ef1c53b12d05bf2dbc1cc352986712fd76f25c1510bcc8f301af540a2f01c33b299e1  expected-deviceinfo-downstream
