@@ -6,9 +6,9 @@ index 501957e35e1..8ee027f1a1e 100644
  endif
  
  # Android uses emutls for versions <= P/28. For USE_ELF_TLS we need ELF TLS.
--if not with_platform_android or get_option('platform-sdk-version') >= 29
+-if host_machine.system() != 'windows' and (not with_platform_android or get_option('platform-sdk-version') >= 29)
 -  pre_args += '-DUSE_ELF_TLS'
-+if not with_platform_android or get_option('platform-sdk-version') >= 29 
++if host_machine.system() != 'windows' and (not with_platform_android or get_option('platform-sdk-version') >= 29) 
 +  if get_option('use-elf-tls')
 +    pre_args += '-DUSE_ELF_TLS'
 +  endif
