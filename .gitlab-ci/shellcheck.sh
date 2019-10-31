@@ -21,32 +21,22 @@ sh_files="
 	./main/postmarketos-mkinitfs-hook-debug-shell/20-debug-shell.sh
 	./main/postmarketos-update-kernel/update-kernel.sh
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
-	./main/postmarketos-ui-hildon/postmarketos-ui-hildon.post-install
-	$(find . -path './main/postmarketos-ui-hildon/*.sh')
+
+	$(find . -path './main/postmarketos-ui-*/*.sh')
+	$(find . -path './main/postmarketos-ui-*/*.pre-install')
+	$(find . -path './main/postmarketos-ui-*/*.post-install')
+	$(find . -path './main/postmarketos-ui-*/*.pre-upgrade')
+	$(find . -path './main/postmarketos-ui-*/*.post-upgrade')
+	$(find . -path './main/postmarketos-ui-*/*.pre-deinstall')
+	$(find . -path './main/postmarketos-ui-*/*.post-deinstall')
+
 	$(find . -name '*.trigger')
 	$(find . -path './main/devicepkg-dev/*.sh')
 
 	$(find . -path '.gitlab-ci/*.sh')
 "
-for file in ${sh_files}; do
+for file in $sh_files; do
 	echo "Test with shellcheck: $file"
 	cd "$DIR/../$(dirname "$file")"
 	shellcheck -e SC1008 -x "$(basename "$file")"
 done
-
-# Python: flake8
-# E501: max line length
-# F401: imported, but not used (false positive: add_pmbootstrap_to_import_path)
-# E722: do not use bare except
-cd "$DIR/.."
-
-echo "Test with flake8: testcases"
-# shellcheck disable=SC2086
-flake8 --ignore E501,F401,E722,W504,W605 $(find . -path "./.gitlab-ci/testcases/*.py")
-
-echo "Test with flake8: all other Python files"
-# shellcheck disable=SC2086
-flake8 --ignore E501,E722,W504,W605 $(find . -not -path './.gitlab-ci/testcases/*' -a -name '*.py')
-
-# Done
-echo "Success!"

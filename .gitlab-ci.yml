@@ -26,19 +26,34 @@ stages:
 wiki:
   stage: first
   <<: *only-default
+  only:
+    changes:
+      - device/device-*
   before_script:
     - apk -q add python3
   script:
     - .gitlab-ci/check_devices_in_wiki.py --booting
 
-# static code analysis
-py-sh-static:
+# testcases linting
+testcases-linting:
+  stage: first
+  <<: *only-default
+  only:
+    changes:
+      - .gitlab-ci/*
+  before_script:
+    - apk -q add py3-flake8
+  script:
+    - flake8 --ignore E501,F401,E722,W504,W605
+
+# shellcheck
+shellcheck:
   stage: first
   <<: *only-default
   before_script:
-    - apk -q add py3-flake8 shellcheck
+    - apk -q add shellcheck
   script:
-    - .gitlab-ci/static_code_analysis.sh
+    - .gitlab-ci/shellcheck.sh
 
 # aports checks (generic)
 aports-static:
