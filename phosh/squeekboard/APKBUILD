@@ -1,19 +1,18 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=squeekboard
-pkgver=0_git20191004
+pkgver=1.2.2
 pkgrel=0
-_commit="3bede84a2de3009bdf23cb4da031b03f298df946"
 pkgdesc="The final Phosh keyboard"
 arch="all !armhf"
 url="https://source.puri.sm/Librem5/squeekboard"
 license="GPL-3.0-or-later"
 makedepends="meson ninja rust cargo bash glib-dev wayland-protocols wayland-dev gtk+3.0-dev libcroco-dev"
 checkdepends="xvfb-run"
-source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/squeekboard/-/archive/$_commit.tar.gz"
+source="https://source.puri.sm/Librem5/squeekboard/-/archive/v$pkgver/squeekboard-v$pkgver.tar.gz"
 subpackages="$pkgname-lang"
 options="!check" # broken with cross compiling
-builddir="$srcdir/$pkgname-$_commit"
+builddir="$srcdir/$pkgname-v$pkgver"
 
 build() {
 	meson . _build --prefix=/usr
@@ -27,4 +26,4 @@ check() {
 package() {
 	DESTDIR="$pkgdir" ninja -C _build install
 }
-sha512sums="97f53ddc13b00e6820cc67d250c145645642d5668ba68a82578099ed5a61f65fb1c19e99906e4f5ac61dce15d5512fc29b53dec593748332e5185833ba10fede  squeekboard-0_git20191004.tar.gz"
+sha512sums="ba277962e0d851298438e29c9bd58b11db058e427ae91e6a5b80e2147bc3ee7c0bbc9a8424205df19d976cac82b3a6e625a373f680f0b5cf556f0e7698cfc0f7  squeekboard-v1.2.2.tar.gz"
