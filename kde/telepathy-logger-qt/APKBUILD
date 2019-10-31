@@ -1,27 +1,43 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=telepathy-logger-qt
-pkgver=17.08.0
+pkgver=17.08.0_git20191003
 pkgrel=0
+_commit="cae0e0254e88899e83bc707a6caf69e7b414aa46"
 pkgdesc="Qt Wrapper around TpLogger client library"
 url="https://github.com/kde/telepathy-logger-qt"
 arch="all"
 license="LGPL-2.1-only"
 depends_dev="qt5-qtbase-dev telepathy-qt-dev telepathy-logger-dev"
-makedepends="$depends_dev extra-cmake-modules doxygen python2-dev"
-source="$pkgname-$pkgver.tar.gz::https://github.com/kde/$pkgname/archive/v$pkgver.tar.gz"
+makedepends="$depends_dev extra-cmake-modules doxygen python3"
+source="$pkgname-$_commit.tar.gz::https://github.com/kde/$pkgname/archive/$_commit.tar.gz"
 subpackages="$pkgname-dev"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	mkdir "$builddir"/build
+}
 
 build() {
-	cmake \
+	cd "$builddir"/build
+	cmake "$builddir" \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make
 }
 
+check() {
+	cd "$builddir"/build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
 package() {
+	cd "$builddir"/build
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="c4708999b9633ab340bad33245e9a91305e86b238e7b3efe184a670526d96599909df1f060d9964466041434215566ba36e77eafc678a64b3449f35a9ae5a25c  telepathy-logger-qt-17.08.0.tar.gz"
+sha512sums="0e56059e87a064223646285d0999b9f02a49b1a6db2a23acfa7f3779888986d7b3ed23865f0e552f9f161d4a3a760aa3fa1f589294029bc92ebedaa9a84989ad  telepathy-logger-qt-cae0e0254e88899e83bc707a6caf69e7b414aa46.tar.gz"
