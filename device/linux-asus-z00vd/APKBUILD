@@ -2,7 +2,7 @@
 
 pkgname="linux-asus-z00vd"
 pkgver=3.18.41
-pkgrel=1
+pkgrel=2
 pkgdesc="ASUS Zenfone Go kernel fork"
 arch="armv7"
 _carch="arm"
@@ -10,7 +10,7 @@ _flavor="asus-z00vd"
 url="https://kernel.org"
 license="GPL2"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev python2"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev python3"
 
 # Compiler: latest GCC from Alpine
 HOSTCC="${CC:-gcc}"
@@ -25,6 +25,8 @@ source="
 	$_config
 	01_fix_warnings.patch
 	02_gcc8_error.patch
+	03_perf_python3.patch
+	04_dct_python3.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
@@ -81,4 +83,6 @@ package() {
 sha512sums="eb4575d8d3603097141991bc207a51f3ed9281d6e1432570666aeeb3299c86574e80724e27721e2f64844fe9efdfd99df898138e1d2053f143132d1b0e89414b  linux-asus-z00vd-7957ae0b17bb46d56a5cddd1d313aec76296aee8.tar.gz
 c0bbe3df4f9f1cbd89a3817377ab1ecc45b679c852d0376f4c3bff74cee8fe1c84e90acfb56db560664e752927989c91bf8562de24a73ae3b06fde032524a86c  config-asus-z00vd.armv7
 1db0eb57279ab2b0ad70e0f93dfe6faa0d807cf24832c2e55b2c726b43cdece84edfc614e6455cddddbce890de1df80e37fd1805b9fd6ccc259047c5ef7a6ba6  01_fix_warnings.patch
-f60b91c7cffd1704e6ac51d1c352b87f74432fc645deff2ff4feeeffff3c441af425191254f871a999555b3abcd1d199eeba0c12dbef4d9364f4d70df4484976  02_gcc8_error.patch"
+f60b91c7cffd1704e6ac51d1c352b87f74432fc645deff2ff4feeeffff3c441af425191254f871a999555b3abcd1d199eeba0c12dbef4d9364f4d70df4484976  02_gcc8_error.patch
+c64bbad5e6f33e086d35e8f4e08ffc840b3bfb09fba49f635dd2eb671301cb8e5fd2915b3406a8bb7fce2de6638ce0337adcd14182316b7a5941ff84352744de  03_perf_python3.patch
+b1aef615711138992101466b7fea4762698ba87620a55f748bd66f20a2114122678e85c3bb85ef0ae0d394552d2f4577535086a5d80a878459aadc9a9fb42ce0  04_dct_python3.patch"
