@@ -203,7 +203,7 @@ resize_root_filesystem() {
 	partition="$(find_root_partition)"
 	touch /etc/mtab # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=673323
 	echo "Check/repair root filesystem ($partition)"
-	e2fsck -f -y "$partition"
+	e2fsck -y "$partition"
 	echo "Resize root filesystem ($partition)"
 	resize2fs -f "$partition"
 }
