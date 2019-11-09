@@ -1,16 +1,19 @@
+# Contributor: Nikita Ukhrenkov <thekit@disroot.org>
+# Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
 pkgname=gtk+2.0-maemo
 pkgver=2.24.31
 _tag=2.24.25
-pkgrel=4
+pkgrel=5
 subpkg=gtk-update-icon-cache
 pkgdesc="The GTK+ Toolkit (v2)"
 url="http://www.gtk.org/"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.post-deinstall"
 triggers="$subpkg.trigger=/usr/share/icons/*"
 arch="all"
-license="LGPL"
-subpackages="$pkgname-dev $pkgname-doc $pkgname-lang:lang $subpkg:icon_cache"
+license="LGPL-2.0-or-later"
+subpackages="$pkgname-dev $subpkg:icon_cache"
+# $pkgname-doc and $pkgname-lang are available but are not any different from gtk+2.0, so let's just disable them
 depends="shared-mime-info gtk-update-icon-cache"
 
 replaces="gtk+ gtk+-dev gtk+-doc"
@@ -46,7 +49,8 @@ makedepends="
 	libxrandr-dev
 	libxi-dev
 	zlib-dev
-	py-six"
+	py3-six
+	"
 _repo_raw_url=https://raw.githubusercontent.com/maemo-leste/gtk
 source="http://ftp.gnome.org/pub/gnome/sources/gtk+/${pkgver%.*}/gtk+-$pkgver.tar.xz
 	$_repo_raw_url/$_tag/debian/patches/hildonize-gdk-window.diff
@@ -63,24 +67,16 @@ source="http://ftp.gnome.org/pub/gnome/sources/gtk+/${pkgver%.*}/gtk+-$pkgver.ta
 	$_repo_raw_url/$_tag/debian/patches/hildonize-gtk-window.diff
 	xid-collision-debug.patch
 	gtk2-fixdso.patch
-	hildonize-gtk-treeview.diff"
+	hildonize-gtk-treeview.diff
+	"
 
-
-_builddir="$srcdir"/gtk+-$pkgver
+builddir="$srcdir/gtk+-$pkgver"
 prepare() {
-	local i
-	local filename
-
-	cd "$_builddir"
-	for i in $source; do
-		case $i in
-			*.patch | *.diff)
-				filename=`basename "$i"`
-				msg $filename
-				patch -p1 -i "$srcdir/$filename"
-			;;
-		esac
+	for i in *.diff; do
+		ln -s "$i" "$i".patch
 	done
+
+	default_prepare
 
 	libtoolize --force \
 		&& aclocal -I m4 \
@@ -89,7 +85,6 @@ prepare() {
 }
 
 build() {
-	cd "$_builddir"
 	./configure \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -105,8 +100,11 @@ build() {
 }
 
 package() {
-	cd "$_builddir"
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" make install
+
+	rm -r \
+		"$pkgdir"/usr/share/locale \
+		"$pkgdir"/usr/share/gtk-doc
 }
 
 dev() {
@@ -119,16 +117,6 @@ dev() {
 	mv "$pkgdir"/usr/bin/gtk-builder-convert \
 		"$pkgdir"/usr/bin/gtk-demo \
 		"$subpkgdir"/usr/bin
-}
-
-doc() {
-	default_doc
-	provides="gtk+2.0-doc=$pkgver"
-}
-
-lang() {
-	default_lang
-	provides="gtk+2.0-lang=$pkgver"
 }
 
 icon_cache() {
