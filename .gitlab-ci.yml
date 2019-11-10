@@ -1,15 +1,12 @@
 ---
 
 # global settings
-image: alpine:edge
+image: alpine:latest
 after_script:
   - .gitlab-ci/move_logs.sh $CI_PROJECT_DIR
 stages:
   - first
   - second
-
-.before_script: &before_script
-  - apk -q upgrade
 
 # defaults for "only"
 # We need to run the CI jobs in a "merge request specific context", if CI is
@@ -33,7 +30,6 @@ wiki:
     changes:
       - device/device-*
   before_script:
-    - *before_script
     - apk -q add python3
   script:
     - .gitlab-ci/check_devices_in_wiki.py --booting
@@ -46,7 +42,6 @@ testcases-linting:
     changes:
       - .gitlab-ci/*
   before_script:
-    - *before_script
     - apk -q add py3-flake8
   script:
     - flake8 --ignore E501,F401,E722,W504,W605
@@ -55,8 +50,9 @@ testcases-linting:
 shellcheck:
   stage: first
   <<: *only-default
+  image: alpine:edge
   before_script:
-    - *before_script
+    - apk -q upgrade
     - apk -q add shellcheck
   script:
     - .gitlab-ci/shellcheck.sh
@@ -66,7 +62,6 @@ aports-static:
   stage: first
   <<: *only-default
   before_script:
-    - *before_script
     - .gitlab-ci/install_pmbootstrap.sh pytest
   script:
     - apk -q add git
@@ -89,7 +84,6 @@ mr-settings:
   only:
     - merge_requests
   before_script:
-    - *before_script
     - apk -q add python3
   script:
     - .gitlab-ci/check_mr_settings.py
@@ -100,7 +94,6 @@ aports-static-upstream:
   only:
     - master@postmarketOS/pmaports
   before_script:
-    - *before_script
     - .gitlab-ci/install_pmbootstrap.sh pytest
   script:
     - su pmos -c ".gitlab-ci/run_testcases.sh
@@ -118,7 +111,6 @@ aports-build:
   stage: second
   <<: *only-default
   before_script:
-    - *before_script
     - .gitlab-ci/install_pmbootstrap.sh git
   script:
     - PYTHONUNBUFFERED=1 su pmos -c ".gitlab-ci/build_changed_aports.py"
