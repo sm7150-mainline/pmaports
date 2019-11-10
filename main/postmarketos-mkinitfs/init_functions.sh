@@ -229,12 +229,15 @@ setup_usb_network_android() {
 
 	echo "  Setting up an USB gadget through android_usb"
 
+	usb_idVendor="$(echo "${deviceinfo_usb_idVendor:-0x18D1}" | sed "s/0x//g")"	# default: Google Inc.
+	usb_idProduct="$(echo "${deviceinfo_usb_idProduct:-0xD001}" | sed "s/0x//g")"	# default: Nexus 4 (fastboot)
+
 	# Do the setup
-	printf "%s" "0" >"$SYS/enable"
-	printf "%s" "18D1" >"$SYS/idVendor"
-	printf "%s" "D001" >"$SYS/idProduct"
-	printf "%s" "rndis" >"$SYS/functions"
-	printf "%s" "1" >"$SYS/enable"
+	echo "0" >"$SYS/enable"
+	echo "$usb_idVendor" >"$SYS/idVendor"
+	echo "$usb_idProduct" >"$SYS/idProduct"
+	echo "rndis" >"$SYS/functions"
+	echo "1" >"$SYS/enable"
 }
 
 setup_usb_network_configfs() {
