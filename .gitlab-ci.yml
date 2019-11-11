@@ -27,8 +27,10 @@ wiki:
   stage: first
   <<: *only-default
   only:
+    refs:
+      - merge_requests
     changes:
-      - device/device-*
+      - device/device-*/*
   before_script:
     - apk -q add python3
   script:
@@ -39,6 +41,8 @@ testcases-linting:
   stage: first
   <<: *only-default
   only:
+    refs:
+      - merge_requests
     changes:
       - .gitlab-ci/*
   before_script:
