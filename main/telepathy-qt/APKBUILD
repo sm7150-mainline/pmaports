@@ -1,21 +1,17 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
-# Git version to have Python 3 support, not needed once 0.9.8 is released
 pkgname=telepathy-qt
-pkgver=0.9.7_git20190920
+pkgver=0.9.8
 pkgrel=0
-_commit="336ff2a4b4f9a12bd0ff525f836ed37e564121a7"
 arch="all"
 url="http://telepathy.freedesktop.org/wiki/"
 license="LGPL-2.1-or-later"
 pkgdesc="A library for Qt-based Telepathy clients"
 depends_dev="telepathy-farstream-dev telepathy-glib-dev gstreamer-dev"
-makedepends="$depends_dev cmake python3 qt5-qttools-dev dbus doxygen"
-#source="https://telepathy.freedesktop.org/releases/telepathy-qt/telepathy-qt-$pkgver.tar.gz"
-source="$pkgname-$_commit.tar.gz::https://github.com/TelepathyIM/telepathy-qt/archive/$_commit.tar.gz"
+makedepends="$depends_dev cmake python3 qt5-qttools-dev doxygen"
+source="https://telepathy.freedesktop.org/releases/telepathy-qt/telepathy-qt-$pkgver.tar.gz"
 subpackages="$pkgname-dev $pkgname-doc"
 options="!check" # failing on armhf
-builddir="$srcdir/$pkgname-$_commit"
 
 build() {
 	cmake \
@@ -42,4 +38,4 @@ package() {
 	install -d "$pkgdir"/usr/share/doc/$pkgname
 	cp -r doc/html "$pkgdir"/usr/share/doc/$pkgname/
 }
-sha512sums="fc4e852b0f5c10733233e174b72e0bedb167af1231c84629edddfaf8802eafb8516b5db9f0e3eee30823aee7233158e208b614c97ac51b67777414d199272cd4  telepathy-qt-336ff2a4b4f9a12bd0ff525f836ed37e564121a7.tar.gz"
+sha512sums="fad662c02417c8e4e239d438ea3549226e589442aea8418c8922a6b78ff88422a36c1cc0d2e3591240fac115390a7fbdb1b4deea98187051cc811175b60b9e8b  telepathy-qt-0.9.8.tar.gz"
