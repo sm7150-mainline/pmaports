@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=buho
 pkgver=0_git20190924
-pkgrel=0
+pkgrel=1
 _commit="375480f43ca3f1eefb0fe029582426ad94e760ae"
 pkgdesc="Note taking app based on MauiKit"
 arch="all"
@@ -19,6 +19,10 @@ build() {
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
+
+	# Workaround for broken CMakeLists.txt
+	sed -i s/std=gnu90/std=c99/g CMakeFiles/buho.dir/flags.make
+
 	make
 }
 
