@@ -2,7 +2,7 @@
 pkgname=mesa-purism-gc7000
 provides=mesa
 pkgver=19.1.0_git20190919
-pkgrel=0
+pkgrel=1
 _commit="995037366d5130b36e23363e25afef5b10208771"
 pkgdesc="Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
@@ -58,6 +58,7 @@ source="
 	meson-add-toggle-for-TLS-support-in-GLX.patch
 	"
 replaces="mesa-dricore"
+pcprefix="mesa-purism-gc7000"
 
 _dri_driverdir=/usr/lib/dri
 _dri_driverdir_x11=/usr/lib/xorg/modules/dri
@@ -95,6 +96,9 @@ build() {
 package() {
 	cd "$builddir"
 	ninja -C "$builddir"/build install
+
+	# Make abuild's version check happy (#386)
+	sed -i s/-devel//g "$pkgdir"/usr/lib/pkgconfig/*.pc
 }
 
 egl() {

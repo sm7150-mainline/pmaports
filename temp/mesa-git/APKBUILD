@@ -9,7 +9,7 @@
 # conflicts
 pkgname=mesa-git
 pkgver=0_git20191101
-pkgrel=0
+pkgrel=1
 _commit="c236e6c1e3224dd324b9ee3d3b501bd02ba2f177"
 pkgdesc="(Git) Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
@@ -72,6 +72,7 @@ provides="mesa"
 replaces="mesa-dricore mesa"
 options="!check" # to follow alpine's standards
 builddir="$srcdir/mesa-$_commit"
+pcprefix="mesa-git"
 
 _dri_driverdir=/usr/lib/xorg/modules/dri
 _dri_drivers="r100,r200,nouveau"
@@ -149,6 +150,9 @@ build() {
 package() {
 	cd "$builddir"
 	DESTDIR="$pkgdir" ninja -C output install
+
+	# Make abuild's version check happy (#386)
+	sed -i s/-devel//g "$pkgdir"/usr/lib/pkgconfig/*.pc
 }
 
 egl() {
