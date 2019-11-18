@@ -1,6 +1,6 @@
 pkgname=device-qemu-amd64
 pkgver=1
-pkgrel=20
+pkgrel=21
 pkgdesc="Simulated device in qemu with an x86 platform"
 url="https://postmarketos.org"
 arch="x86_64"
@@ -11,6 +11,7 @@ makedepends=""
 subpackages="
 	$pkgname-x11
 	$pkgname-weston
+	$pkgname-xfce4
 	$pkgname-kernel-stable:kernel_stable
 	$pkgname-kernel-mainline:kernel_mainline
 "
@@ -35,6 +36,12 @@ weston() {
 	install_if="$pkgname weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+xfce4() {
+	install_if="$pkgname postmarketos-ui-xfce4"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
 }
 
 kernel_stable() {
