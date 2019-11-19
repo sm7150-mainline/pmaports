@@ -2,7 +2,7 @@
 pkgname=ofono
 pkgver=9999
 _pkgver=1.30
-pkgrel=1
+pkgrel=2
 pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications [$_pkgver]"
 url="https://01.org/ofono"
 arch="all"
@@ -23,7 +23,8 @@ source="https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$_pkgver.tar.
 	0004-add-call-list-helper-to-manage-voice-call-lists.patch
 	0005-qmimodem-implement-voice-calls.patch
 	$pkgname.initd
-	udev.rules"
+	udev.rules
+	ofono-wheel.conf"
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
@@ -46,6 +47,7 @@ package() {
 	install -Dm644 "$srcdir/$pkgname-${_pkgver}/plugins/ofono.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono.rules"
 	install -Dm644 "$srcdir/udev.rules" "$pkgdir/usr/lib/udev/rules.d/60-ofono-pmos.rules"
 	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+	install -Dm755 "$srcdir/ofono-wheel.conf" "$pkgdir/etc/dbus-1/system.d/"
 }
 
 sha512sums="e65c5af7f09eef31c1e8c2b8202315b1bfeeb18e6e3cca07e3758ee693e51f8d8007211cba9e0da17656b063f362858a51234908c89a2bfd1ef0e057d538bda5  ofono-1.30.tar.xz
@@ -59,4 +61,5 @@ f906281888f06ec154ab9ca266d3641d32c6e295568aadbed7fb0cea42584c6aea4ea71d37530893
 6d7b350fed2b4be3b597fad19168448547e3730abfe8d398fc909cd43c1dfce2eabd6efec0bcb0aadb9cca7b8500e6a86b3d1455d9c6ade1a1deacd769e01c7a  0004-add-call-list-helper-to-manage-voice-call-lists.patch
 f5ab8f47e21545de71c866e3a7c589ba0f7d5c29f688df3fec06f01093bea72388f5e640a688b25288e58a107e85e5dd5c2c2616f57003ab148f28c2111fc88f  0005-qmimodem-implement-voice-calls.patch
 a625f71a2b6fdcd7ac43cca64d2a532f5e5a0192b022fcf9157fad51801dc3b71c5d317a62f3f233136a6ed2bbf92e6f1c2fad2c6aa762b9719ceca02de025d1  ofono.initd
-8f2893dfc291fc210ef217c4bc74d79436a0997001dd2773809625d52dd19d092cc75d3f9aa5ed2f3d4a6248d4a4e17013a7655323f7dad951f744c55b572417  udev.rules"
+8f2893dfc291fc210ef217c4bc74d79436a0997001dd2773809625d52dd19d092cc75d3f9aa5ed2f3d4a6248d4a4e17013a7655323f7dad951f744c55b572417  udev.rules
+72cd0cd4bee1f885a990c84f7ed3ef27e0d9d2db37d9a486342204152cb02a67d5197e8014dfea59f1a95285c674695b3dc3cb2b53941781bcfc9b73d5580b1f  ofono-wheel.conf"
