@@ -102,19 +102,30 @@ find_root_partition() {
 	# mount_subpartitions() must get executed before calling
 	# find_root_partition(), so partitions from b) also get found.
 
-	# Try partitions in /dev/mapper and /dev/dm-* first
-	for id in pmOS_root crypto_LUKS; do
-		for path in /dev/mapper /dev/dm; do
-			DEVICE="$(blkid | grep "$path" | grep "$id" \
-				| cut -d ":" -f 1)"
-			[ -z "$DEVICE" ] || break 2
-		done
+	# Short circuit all autodetection logic if pmos_root= is supplied
+	# on the kernel cmdline
+	# shellcheck disable=SC2013
+	for x in $(cat /proc/cmdline); do
+		[ "$x" = "${x#pmos_root=}" ] && continue
+		DEVICE="${x#pmos_root=}"
 	done
+
+	# Try partitions in /dev/mapper and /dev/dm-* first
+	if [ -z "$DEVICE" ]; then
+		for id in pmOS_root crypto_LUKS; do
+			for path in /dev/mapper /dev/dm; do
+				DEVICE="$(blkid | grep "$path" | grep "$id" \
+					| cut -d ":" -f 1 | head -n 1)"
+				[ -z "$DEVICE" ] || break 2
+			done
+		done
+	fi
 
 	# Then try all devices
 	if [ -z "$DEVICE" ]; then
 		for id in pmOS_root crypto_LUKS; do
-			DEVICE="$(blkid | grep "$id" | cut -d ":" -f 1)"
+			DEVICE="$(blkid | grep "$id" | cut -d ":" -f 1 \
+				| head -n 1)"
 			[ -z "$DEVICE" ] || break
 		done
 	fi
@@ -122,6 +133,12 @@ find_root_partition() {
 }
 
 find_boot_partition() {
+	# shellcheck disable=SC2013
+	for x in $(cat /proc/cmdline); do
+		[ "$x" = "${x#pmos_boot=}" ] && continue
+		echo "${x#pmos_boot=}"
+		return
+	done
 	findfs LABEL="pmOS_boot"
 }
 
