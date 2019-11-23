@@ -2,16 +2,20 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ktp-common-internals
 pkgver=19.08.2
-pkgrel=0
+pkgrel=1
 pkgdesc="Library for KTp"
 url="https://github.com/kde/ktp-common-internals"
+_commit="6e0c62009bfaba906f9ca1886f02d3517de5c984"
 arch="all"
 license="LGPL-2.1-only AND GPL-2.0-only"
 depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev knotifications-dev kio-dev kwidgetsaddons-dev kcmutils-dev knotifyconfig-dev ktexteditor-dev kwallet-dev kconfig-dev kwindowsystem-dev kemoticons-dev kiconthemes-dev kpeople-dev telepathy-qt-dev telepathy-logger-qt-dev"
 makedepends="$depends_dev extra-cmake-modules doxygen"
-source="https://download.kde.org/stable/applications/$pkgver/src/ktp-common-internals-$pkgver.tar.xz
+builddir="$srcdir/$pkgname-$_commit"
+#source="https://download.kde.org/stable/applications/$pkgver/src/ktp-common-internals-$pkgver.tar.xz
+source="
+	$pkgname-$_commit.tar.gz::https://invent.kde.org/bshah/ktp-common-internals/-/archive/$_commit/ktp-common-internals-$_commit.tar.gz
 	fix-build.patch"
-subpackages="$pkgname-dev $pkgname-lang"
+subpackages="$pkgname-dev" # $pkgname-lang
 options="!check" # No tests
 
 prepare() {
@@ -39,5 +43,5 @@ package() {
 	DESTDIR="$pkgdir" make install
 }
 
-sha512sums="dda4b54497fe85067e0bf6f14b892cb0a718e4eb6a997628a07f6d26c3062d2b413766c70a014372bd5708c7b0d6c75da4749b694bcd8062aed01a43bf3b2b3b  ktp-common-internals-19.08.2.tar.xz
+sha512sums="70b1d96698922c038fe70fc5b16a0bca148037cb0ee228f2072a830ef2fe9eb1a9f62855e6dd0b22a7cea735e6ad87329c658f7b5eefb6c4b355fc7d939de940  ktp-common-internals-6e0c62009bfaba906f9ca1886f02d3517de5c984.tar.gz
 4a2b1fce5ae3f7c39709c4970d56008eede04dce5d5dc6dc7c185c67697893b205408e9501ddba52e15693f99d533c035a8c28de12ec24611e9422ab37143849  fix-build.patch"
