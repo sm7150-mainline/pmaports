@@ -1,25 +1,16 @@
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/lx_smultron_defconfig
-
 pkgname=linux-semc-smultron
 pkgver=3.4.0
-pkgrel=2
-pkgdesc="Xperia mini kernel fork"
-arch="armhf"
+pkgrel=3
+pkgdesc="Sony Ericsson Xperia mini kernel fork"
+arch="armv7"
 _carch="arm"
 _flavor="semc-smultron"
 url="https://kernel.org"
-license="GPL2"
+license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev xz gcc6"
-
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev xz"
 
 # Source
 _repository="android_kernel_semc_msm7x30"
@@ -28,9 +19,11 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LegacyXperia/$_repository/archive/$_commit.tar.gz
 	$_config
-	compiler-gcc6.h
-	01_msm-fix-perf_trace_counters.patch
-	02_gpu-msm-fix-gcc5-compile.patch
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	kernel-use-the-gnu89-standard-explicitly.patch
+	fix-perf_trace_counters.patch
+	fix-proc-file-handling.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 
@@ -46,11 +39,13 @@ build() {
 }
 
 package() {
-	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
 sha512sums="234e8973236e6056c60a312340ef4ccb7598adc43bd1f0c2ca0e89d03f4e16ecfdd5ad4658d76993c7bae24242a7e134a9ed2fda662dfe229b61f3a88ea6c2f0  linux-semc-smultron-9c6f07f81e2c0bcb2bef75fa9716cc30f8942286.tar.gz
-170e9ff569175ab31f124ac7571875c091d315717c96b5a5eacb00b1f62763388807821ecf69fc3c7e10485f8dfec1befcf63fd6b07e3f9fb1752c80b4b4ccb0  config-semc-smultron.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-f85ced49ee2f2461adea68dac0a10452aa809a7d41d869092d94eb085344919a9a385dec0c48011f4601ca4f441700f7fe49075c7eca4fb2d66b01f7d413ccb7  01_msm-fix-perf_trace_counters.patch
-7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"
+bc1dc607300242938e75a88d80d104ba5fb12eb49b9e576cf2df5139c133245c10d0002d9545c73ace4092f1f6c64397dd6f8452316ff32e1adeebef8571d7bf  config-semc-smultron.armv7
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch
+f85ced49ee2f2461adea68dac0a10452aa809a7d41d869092d94eb085344919a9a385dec0c48011f4601ca4f441700f7fe49075c7eca4fb2d66b01f7d413ccb7  fix-perf_trace_counters.patch
+93f7870b2063d4ddb1f35dc4de4b213d83e0f54f59511b3050e880763f2374b3816ac0c879de76fe8a0b61d62c1753c5dda7326961164a8fcbfc8a9232309569  fix-proc-file-handling.patch"
