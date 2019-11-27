@@ -1,0 +1,17 @@
+pkgname="device-wiko-lenny2"
+pkgdesc="Wiko Lenny 2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-wiko-lenny2 mkbootimg mesa-dri-swrast"
+source="deviceinfo"
+
+package() {
+	install -Dm644 "$srcdir"/deviceinfo \
+		"$pkgdir"/etc/deviceinfo
+}
+
+sha512sums="9786dbf5aeeb7ad8df26f266f3db8b0d5c2e761cbd153ab59c8d530894a0cbdcbcec07676df065d5f187d1cb3a84e7d21b9a276dd613a6e73e00028797c5d390  deviceinfo"
