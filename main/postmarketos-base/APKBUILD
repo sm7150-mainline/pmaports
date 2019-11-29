@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
 pkgver=3
-pkgrel=28
+pkgrel=29
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -36,6 +36,7 @@ source="
 	swapfile/swapfile.conf
 	devmappings.initd
 	deferred-initcalls.init
+	50-org.freedesktop.NetworkManager.rules
 	"
 options="!check"
 
@@ -63,6 +64,9 @@ package() {
 
 	install -Dm755 "$srcdir"/deferred-initcalls.init \
 		"$pkgdir"/etc/init.d/deferred-initcalls
+
+	install -Dm755 "$srcdir"/50-org.freedesktop.NetworkManager.rules \
+		"$pkgdir"/etc/polkit-1/rules.d/50-org.freedesktop.NetworkManager.rules
 }
 
 x11() {
@@ -81,4 +85,5 @@ sha512sums="38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  swapfile.init
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  swapfile.conf
 dadd251229eb5759e3cba77c39a4afc6f28bcbe0f272cd3ab41b7ff4fe6a3d2b9ee765e1a0b8f9241274e757ed3b2ce035ee5abe91843e55fb4188a3c401ca78  devmappings.initd
-5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  deferred-initcalls.init"
+5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  deferred-initcalls.init
+7b34e861bc4ec57d970d2a7aacca36e3c3742a63ff995af1336f80b666e4a38c1035b35e129322e0d62dc75011bfaf495eb2bcae5392f2bf39f1d7b1400afcce  50-org.freedesktop.NetworkManager.rules"
