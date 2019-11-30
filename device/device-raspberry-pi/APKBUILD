@@ -2,7 +2,7 @@
 pkgname="device-raspberry-pi"
 pkgdesc="Raspberry Pi"
 pkgver=0.1
-pkgrel=5
+pkgrel=6
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
@@ -12,8 +12,15 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-rpi:kernel_rpi
 	$pkgname-kernel-rpi2:kernel_rpi2
+	$pkgname-sway
+	$pkgname-phosh
 "
-source="deviceinfo config.txt usercfg.txt cmdline.txt 95-vchiq-permissions.rules"
+source="deviceinfo
+	config.txt
+	usercfg.txt
+	cmdline.txt
+	95-vchiq-permissions.rules
+	start-even-without-input.sh"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -42,8 +49,23 @@ kernel_rpi2() {
 	mkdir "$subpkgdir"
 }
 
+sway() {
+	install_if="$pkgname postmarketos-ui-sway"
+	depends="$pkgname mesa-dri-vc4"
+	install -Dm644 "$srcdir"/start-even-without-input.sh "$pkgdir"/etc/profile.d/start-even-without-input.sh
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	depends="$pkgname mesa-dri-vc4"
+	install -Dm644 "$srcdir"/start-even-without-input.sh "$pkgdir"/etc/profile.d/start-even-without-input.sh
+	mkdir "$subpkgdir"
+}
+
 sha512sums="62048277ee2486322316995d294cdcfcd8b868fe63877d3d23c4634df48d246c2fc48acd54ee546d87e4f7806b1b113dbbf33a8e096be75c4f48682c77063c1e  deviceinfo
-de4d6967be7f68d0b005ab968e6f8da2eacf4ba2d814d1f47ed6ad43ba81cacc1fdc74b3ba3a44b5ae6f08c51b53708432afb5779422b977b65ae69a5a4bf068  config.txt
+501b085650a7c1e39628b64c6bf05e967f08470c9c70c648ce45b5cdf05e831b994f91e91ba83ad076797deb7ee405ff4912bcd71779d66b7056d1786d366a3c  config.txt
 e94c810f973eb6b6d0fb3687ea1d70612ba00e9c5d6b3608390a161e077c5591fd9d232c37b42443c05ed28bb639ca1754422ff35899c5e33d7fc266e0e1ad05  usercfg.txt
 ae3de0b8fec07d3a283dc3c06bf8678eec1e65c9faf0b7f4fdc9fb92751e324d1f8e2fb224dbbf561b7e5a6fb34769bfa1657858375f74b101a130d78e0737e2  cmdline.txt
-7e5505cb07d5b4a81bd28443d508336b5c547356538f1c06f91ed93ad0d7d456d4f74f1d24df5a2e08c17e74f0a66607352ac4874e967e9a91dfec9522d2d58d  95-vchiq-permissions.rules"
+7e5505cb07d5b4a81bd28443d508336b5c547356538f1c06f91ed93ad0d7d456d4f74f1d24df5a2e08c17e74f0a66607352ac4874e967e9a91dfec9522d2d58d  95-vchiq-permissions.rules
+5e91a9efbaa0c734492472b0d1bb1798ec75587f3cf0ccbc31489b2e1ee6c6713e78397e67cdce3616af967bb3cbf57b49a137879106a3eec4a4a4e3d74f0610  start-even-without-input.sh"
