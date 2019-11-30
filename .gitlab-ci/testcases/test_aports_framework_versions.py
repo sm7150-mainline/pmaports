@@ -52,6 +52,9 @@ def get_categorized_packages(args):
         if pkgver == "9999":
             pkgver = apkbuild["_pkgver"]
 
+        if "_git" in pkgver:
+            continue
+
         # Categorize by URL
         category = "other"
         if "https://www.kde.org/workspaces/plasmadesktop" in url:
