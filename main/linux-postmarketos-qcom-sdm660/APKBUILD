@@ -1,0 +1,55 @@
+# Maintainer: Alexey Min <alexey.min@gmail.com>
+# Kernel config based on: arch/arm64/configs/defconfig
+
+_flavor="postmarketos-qcom-sdm660"
+pkgname="linux-$_flavor"
+pkgver=5.6_rc1
+pkgrel=0
+pkgdesc="QCOM group's fork of mainline linux"
+arch="aarch64"  # sdm660 is arm64 only
+url="https://kernel.org/"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="bison findutils flex installkernel openssl-dev perl"
+
+_repo="linux-postmarketos"
+_commit="8dc3769c8a680bfc1f38221e68d3fd994f490970"
+
+source="
+	$_repo-$_commit.tar.bz2::https://gitlab.com/postmarketOS/$_repo/-/archive/$_commit/$_repo-$_commit.tar.bz2
+	config-$_flavor.aarch64
+	0001-arm64-dts-qcom-Add-sdm630-sdm660-SoC-and-xiaomi-lave.patch
+"
+
+_carch="arm64"
+
+builddir="$srcdir/$_repo-$_commit"
+
+prepare() {
+	default_prepare
+	cp -v "$srcdir/config-$_flavor.$CARCH" "$builddir"/.config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+}
+
+package() {
+	# bootloader requires compressed kernel
+	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+
+sha512sums="b53b17709eea1b8cd8fc9158762f0e2fefad7baa383dbee2ba758e9aed89cf411b2bd65386823821b877ced5f0b525f5ddc67cd048fddf47c9104eea42ab81f0  linux-postmarketos-8dc3769c8a680bfc1f38221e68d3fd994f490970.tar.bz2
+39511fa22c3abf514d2ab3d21c1cc0fcccf2b9e986443b6d047525e8a72d9d80dafb51249617d7f4643017f421f2a3585fcbf9d4667fc06f5cedef4372b9339c  config-postmarketos-qcom-sdm660.aarch64
+a5c4036e916716a66277c40d2adfc526401c7abdfe5222e237deb585bd4081cb36023696e794e0531413caf1296b88072f3506086dee99e1388e2874d72880bc  0001-arm64-dts-qcom-Add-sdm630-sdm660-SoC-and-xiaomi-lave.patch"
