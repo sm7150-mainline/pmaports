@@ -1,9 +1,9 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-nano
-pkgver=0_git20191011
+pkgver=0_git20191120
 pkgrel=0
-_commit="1be7aceab2d079208e7ef2b80434ad3939412bc6"
+_commit="06775270c31ce173a4a42a16c2ebb84e4544385e"
 pkgdesc="A minimal Plasma shell package intended for embedded devices"
 arch="all !armhf"
 url="https://invent.kde.org/kde/plasma-nano"
@@ -13,8 +13,15 @@ source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-nano/-/archi
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
+prepare() {
+	default_prepare
+
+	mkdir "$builddir"/build
+}
+
 build() {
-	cmake \
+	cd "$builddir"/build
+	cmake "$builddir" \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
@@ -22,10 +29,12 @@ build() {
 }
 
 check() {
+	cd "$builddir"/build
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
+	cd "$builddir"/build
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="1fad1fb72a133e1fb1eb65357aba3fc5d25de2eaf59e2481397ca9ac8d9bb2cb4f6bfc212572171c72649a376ff85cd5c520c7cbf217043d78a9972c2e135b5a  plasma-nano-1be7aceab2d079208e7ef2b80434ad3939412bc6.tar.gz"
+sha512sums="6f168f27fcdabcf7f3b93de351df1d1dbfb559f0d5b23a11f37389688de0d61a91486ac05fe84029a452f1b28d19af01a0f59a3cdb21c63a7dc68f7a0efab6c6  plasma-nano-06775270c31ce173a4a42a16c2ebb84e4544385e.tar.gz"
