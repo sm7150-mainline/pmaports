@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-serranovelte"
+pkgdesc="Samsung Galaxy S4 Mini Value Edition"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-samsung-serranovelte-venus firmware-samsung-serranovelte-wcnss"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="71e014f672180c64f8037f00e45f23be2d013aa4488b2d0581bec523af2a9e3d4c75171fcfc55049426a4869a0597e00979e67cf08c10abefed100c413e4913e  deviceinfo"
