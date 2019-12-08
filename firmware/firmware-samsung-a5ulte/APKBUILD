@@ -1,9 +1,9 @@
 pkgname=firmware-samsung-a5ulte
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware for Samsung Galaxy A5 (SM-A500FU)"
 url="https://rizzotherat.gitlab.io/firmware/"
-subpackages="$pkgname-venus $pkgname-wcnss"
+subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck"
@@ -14,6 +14,12 @@ _fwdir="/lib/firmware/postmarketos"
 package() {
 	# parent package is empty
 	mkdir -p "$pkgdir"
+}
+
+modem() {
+	pkgdesc="Samsung Galaxy A5 (SM-A500FU) modem firmware"
+	install -Dm644 "$srcdir"/mba.mbn -t "$subpkgdir/$_fwdir"
+	install -Dm644 "$srcdir"/modem.* -t "$subpkgdir/$_fwdir"
 }
 
 venus() {
