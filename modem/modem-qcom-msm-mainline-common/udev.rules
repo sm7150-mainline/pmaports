@@ -5,7 +5,7 @@ ATTR{name}=="DATA5_CNTL", SYMLINK+="modem"
 
 # open SMD channels when the remoteproc comes up
 KERNEL!="rpmsg_ctrl[0-9]*", GOTO="qcom_rpmsg_end"
-ATTRS{rpmsg_name}!="modem", GOTO="qcom_rpmsg_end"
+ATTRS{rpmsg_name}!="modem|hexagon", GOTO="qcom_rpmsg_end"
 
 ACTION=="add", RUN+="/usr/sbin/rpmsgexport /dev/$name DATA5_CNTL"
 
