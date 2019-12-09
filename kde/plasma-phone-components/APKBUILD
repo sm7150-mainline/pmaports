@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-phone-components
 pkgver=0_git20191204
-pkgrel=0
+pkgrel=1
 _commit="a7a5a3f0037ba3047da2d8a6f850137e9c04bc1e"
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all !armhf"
@@ -13,6 +13,7 @@ makedepends="extra-cmake-modules kpeople-dev qt5-qtdeclarative-dev kactivities-d
 source="
 	$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-phone-components/-/archive/$_commit/plasma-phone-components-$_commit.tar.gz
 	set-postmarketos-wallpaper.patch
+	set-qt-virtualkeyboard-style.patch
 	"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -42,4 +43,5 @@ package() {
 	DESTDIR="$pkgdir" make install
 }
 sha512sums="828ce22811571cc74d2caa5a3369d2f1d9f6eb5b578a6acf57344c70cf27bf5f1531a2b16bc3ca65f34630a0fac07d032a7118f1453ed4660ed90206dc6f03b8  plasma-phone-components-a7a5a3f0037ba3047da2d8a6f850137e9c04bc1e.tar.gz
-5853e72077c356f8347ea1c8503d5e301505acaa39ccf2fa105abe054a3063e735f5bcb2db1c1357f53032714599bfbf687fff2cbe21a1743930b946900ff7cf  set-postmarketos-wallpaper.patch"
+5853e72077c356f8347ea1c8503d5e301505acaa39ccf2fa105abe054a3063e735f5bcb2db1c1357f53032714599bfbf687fff2cbe21a1743930b946900ff7cf  set-postmarketos-wallpaper.patch
+4ac627403b64029626e53d071af5dcedf29347cbc0a51788431cbc308efdafb61430fe812cf197bc55eba92a99c87857fcfc79c6ec35ad4997248a4e7c765bc1  set-qt-virtualkeyboard-style.patch"
