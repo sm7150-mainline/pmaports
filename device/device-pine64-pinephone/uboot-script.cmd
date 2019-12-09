@@ -1,5 +1,14 @@
 gpio set 114
-setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 no_console_suspend earlycon=uart,mmio32,0x01c28000 panic=10 consoleblank=0 loglevel=1 cma=256M PMOS_NO_OUTPUT_REDIRECT pmos_boot=/dev/mmcblk${mmc_bootdev}p1 pmos_root=/dev/mmcblk${mmc_bootdev}p2
+
+if test ${mmc_bootdev} -eq 0 ; then
+	echo "Booting from SD";
+	setenv bootdev 0;
+else
+	echo "Booting from eMMC";
+	setenv bootdev 2;
+fi;
+
+setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 no_console_suspend earlycon=uart,mmio32,0x01c28000 panic=10 consoleblank=0 loglevel=1 cma=256M PMOS_NO_OUTPUT_REDIRECT pmos_boot=/dev/mmcblk${bootdev}p1 pmos_root=/dev/mmcblk${bootdev}p2
 
 printenv
 
