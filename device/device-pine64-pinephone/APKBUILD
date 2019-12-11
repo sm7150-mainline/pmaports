@@ -3,7 +3,7 @@
 pkgname="device-pine64-pinephone"
 pkgdesc="PINE64 PinePhone"
 pkgver=0.1
-pkgrel=22
+pkgrel=23
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -11,7 +11,7 @@ options="!check !archcheck"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
-depends="postmarketos-base u-boot-pine64 uboot-tools mesa-git-dri-gallium linux-postmarketos-allwinner ofono ofono-openrc"
+depends="postmarketos-base u-boot-pine64 uboot-tools mesa-git-dri-gallium linux-postmarketos-allwinner ofono ofono-openrc gpsd atinout"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 source="
@@ -19,6 +19,9 @@ source="
 	uboot-script.cmd
 	weston.ini
 	hwtest.ini
+	gpsd_pinephone.initd
+	gpsd_device-hook.sh
+	90-modem-eg25.rules
 	ucm/sun50i-a64-audio.conf
 	ucm/HiFi
 	ucm/VoiceCall
@@ -37,6 +40,14 @@ package() {
 	install -D -m644 "$srcdir"/hwtest.ini \
 		"$pkgdir"/usr/share/hwtest.ini
 
+	# GPS
+	install -D -m755 "$srcdir"/gpsd_pinephone.initd \
+		"$pkgdir"/etc/init.d/gpsd_pinephone
+	install -D -m755 "$srcdir"/gpsd_device-hook.sh \
+		"$pkgdir"/etc/gpsd/device-hook
+	install -D -m644 "$srcdir"/90-modem-eg25.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/90-modem-eg25.rules
+
 	# Alsa usecase manager config
 	install -D -m644 "$srcdir"/sun50i-a64-audio.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/sun50i-a64-audio.conf
@@ -53,11 +64,13 @@ nonfree_firmware() {
 	depends="linux-firmware-rtlwifi linux-firmware-rtl_bt firmware-rtl8723bt"
 	mkdir "$subpkgdir"
 }
-
 sha512sums="bfb39f14c5a0b928d08cbcb5d19e63e141b052ebb72186c7c26f54d89c2ebf069674bc110215df0cacdd663610594eef5ffb3022eae5bd0e08aea34ab4e2f319  deviceinfo
 35a5ce7c18747e4363c6b310a1c33143f333a9dd2031d619dee10773d499329487a5ed76749e182d56829d03511266a54890cfa706ba21565e9ba8ffdb88f872  uboot-script.cmd
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
+1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
+ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd46444dd3c0a637ec08ce6125b18240fe6bfc13f624a15192e648  gpsd_device-hook.sh
+aa0b7191548e89ddfc6cf5b1f637c7ee7ab4c2025cbfc6328e7e482e5b179ea072779ca332a18094e3d424708b923c2334210591fc369831426992f540c07abc  90-modem-eg25.rules
 08a019cad26a8cb298e26ab5b9360b90b981d15f8562d434a00762e4ba14e16ae11cf5e516385aa5b428b0e8b310caee1e8ef7a40bafd66ffe8dde3026c6e17e  sun50i-a64-audio.conf
 e5cb41ef6c00bc6cc5e3821a0001f62bbda9555cbdb829a35a80a56cda402bcf551a8beca9be602af71901ae999552dd24fb87bf5476541f7d25b876ab1b8f93  HiFi
 3d75dadbc8e9b12ff86bd321351e40de5c0ec93c4954dd482510c57df90e82c6dcc75fff8cc6702bebaf5d429ad8fe26c4bdd678038038209c117ec0488b0ba4  VoiceCall
