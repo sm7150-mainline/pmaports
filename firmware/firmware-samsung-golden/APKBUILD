@@ -1,23 +1,25 @@
 pkgname=firmware-samsung-golden
-pkgver=1
+pkgver=2
 pkgrel=0
-pkgdesc="Samsung Galaxy SIII mini proprietary firmware"
-url="https://github.com/3liteking148/android_vendor_samsung_golden"
+pkgdesc="Firmware for Samsung Galaxy S III mini"
+url="https://pepethekingprawn.gitlab.io/firmware/"
 arch="armv7"
 license="proprietary"
-options="!check !strip"
+options="!check !strip !archcheck"
+source="https://pepethekingprawn.gitlab.io/firmware/GT-I8190.tar.xz"
+builddir="$srcdir"
 
-# Source
-_commit="3ca5e3fac6f68263bbe4ef72887cc8c3f10fed4c"
-source=$pkgname-$_commit.tar.gz::$url"/archive/${_commit}.tar.gz"
+_fwdir="/lib/firmware/postmarketos"
 
 package() {
-	cd "$srcdir/android_vendor_samsung_golden-${_commit}/proprietary/"
+	# WiFi
+	install -Dm644 bcmdhd_sta.bin_b2 \
+		"$pkgdir/$_fwdir"/brcm/brcmfmac4334-sdio.bin
+	install -Dm644 nvram_net.txt_GPIO4 \
+		"$pkgdir/$_fwdir"/brcm/brcmfmac4334-sdio.samsung,golden.txt
 
-	# Wifi
-	install -Dm644 "etc/wifi/bcmdhd_sta.bin" \
-		"$pkgdir/lib/firmware/postmarketos/bcmdhd_sta.bin"
-	install -Dm644 "etc/wifi/nvram_net.txt" \
-		"$pkgdir/lib/firmware/postmarketos/nvram_net.txt"
+	# Bluetooth
+	install -Dm644 bcm4334.hcd "$pkgdir/$_fwdir"/brcm/BCM4334B0.hcd
 }
-sha512sums="b1d39e4d2180585970d7c06eca424aa784d76b8ccb020dc0768f683e8fd1e68e4487213c021db33ec40141f09db1879d53851110fc89d4e57e2205d1788904a3  firmware-samsung-golden-3ca5e3fac6f68263bbe4ef72887cc8c3f10fed4c.tar.gz"
+
+sha512sums="d9ad7a2d593ecef40252e85fd0d2b65d54aaed911e80c516f211573a8f42d9fc18303d7c2b55dd37e5027ca8bc42289b5dbccb9008ab20f902f30e4394704912  GT-I8190.tar.xz"
