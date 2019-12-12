@@ -7,14 +7,17 @@ url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-samsung-golden mkbootimg mesa-dri-swrast"
+depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 source="
 	deviceinfo
-	init-usb-hook.sh
-	modules-load.conf
-	module-config.conf
+	downstream/init-usb-hook.sh
+	downstream/modules-load.conf
+	downstream/module-config.conf
 "
 
 build() {
@@ -23,20 +26,28 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/init-usb-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-init_usb.sh
 }
 
-nonfree_firmware() {
-	pkgdesc="Wifi firmware"
-	depends="firmware-samsung-golden"
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-samsung-golden mesa-dri-swrast"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 
-	# Add wifi config
+	# USB
+	install -Dm644 "$srcdir"/init-usb-hook.sh \
+		"$subpkgdir"/etc/postmarketos-mkinitfs/hooks/00-init_usb.sh
+
+	# WiFi kernel module configuration
 	install -Dm644 "$srcdir"/modules-load.conf \
 		"$subpkgdir"/etc/modules-load.d/00-load-wifi.conf
 	install -Dm644 "$srcdir"/module-config.conf \
 		"$subpkgdir"/etc/modprobe.d/00-module-config.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="firmware-samsung-golden"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="f40b3cb40fa0a9ff58680054117bf7b235b33b7c8899a6e8b324cd080779a2b9da5ce23c71f0966fe6ba5acc9e6816224d1ef53157223bf7a6f4718a97b4f51e  deviceinfo
