@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-expressatt"
+pkgdesc="Samsung Galaxy S3 SGHI437"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-expressatt mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="38fe70f1459ff3ce2ed87aa0e3331aabfddf042e3e292db81e9d4febc2eec29284c605ab7f7c4b76a3e49b1b1612b3dec748594d55c9751d7b93eaf6b2de3391  deviceinfo"
