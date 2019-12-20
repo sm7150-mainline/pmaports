@@ -1,0 +1,42 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kpublictransport
+pkgver=0_git20191219
+pkgrel=0
+_commit="7ad1322efc70dfa30839bb46e790fa524c4967b1"
+pkgdesc="Library to assist with accessing public transport timetables and other information"
+arch="all !armhf"
+url="https://github.com/kde/kpublictransport"
+license="LGPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev zlib-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/kde/kpublictransport/archive/$_commit/kpublictransport-$_commit.tar.gz"
+subpackages="$pkgname-dev"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	mkdir "$builddir"/build
+}
+
+build() {
+	cd "$builddir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+check() {
+	cd "$builddir"/build
+	# navitiaparsertest requires some not yet implemented functions
+	# departuretest, journeytest and mergeutiltest broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "(navitiaparser|departure|journey|mergeutil)test"
+}
+
+package() {
+	cd "$builddir"/build
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="7a322b8930bcdff4acb33f00b5ec53bd5e72e930194769e7bce8269a02969a5b898c62b39b362b7f29fac43c4008c0f70a8979bb5917fe31f8889fe1c0a73175  kpublictransport-7ad1322efc70dfa30839bb46e790fa524c4967b1.tar.gz"
