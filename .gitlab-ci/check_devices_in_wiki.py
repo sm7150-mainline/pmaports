@@ -37,7 +37,7 @@ def get_wiki_devices_html(path):
         content = urllib.request.urlopen(url).read().decode("utf-8")
 
     # Split into booting and not booting
-    split = content.split("<span class=\"mw-headline\" id=\"Not_booting\">")
+    split = content.split("<span class=\"mw-headline\" id=\"Non-booting_devices\">")
 
     if len(split) != 2:
         print("*** Failed to parse wiki page")
