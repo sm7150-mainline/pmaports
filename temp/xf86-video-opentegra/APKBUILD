@@ -1,0 +1,38 @@
+# Maintainer: David Heidelberg <david@ixit.cz>
+pkgname=xf86-video-opentegra
+pkgver=0.6.0_git20191222
+pkgrel=0
+pkgdesc="X.Org driver for NVIDIA tegra"
+url="https://github.com/grate-driver/xf86-video-opentegra"
+arch="armhf"
+license="MIT"
+subpackages="$pkgname-doc"
+depends="libdrm-grate"
+makedepends="libdrm-grate-dev xorg-server-dev xproto fontsproto util-macros
+	libtool m4 automake autoconf bison flex"
+_commit="6c250a123b176b2cbaf05ade68731029f73dc16b"
+source="$pkgname-$_commit.tar.gz::https://github.com/grate-driver/xf86-video-opentegra/archive/$_commit.tar.gz"
+builddir="$srcdir"/$pkgname-$_commit
+
+prepare() {
+	export LDFLAGS="$LDFLAGS -Wl,-z,lazy"
+
+	./autogen.sh \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr
+}
+
+build() {
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="0ce37b72f94f074f54e0f5a68cbdd478137d862860606942aa98bd8bcdff4abb54c9eab288a5199210b6d3c2640183251718a28048630fa4b97eda89869bb206  xf86-video-opentegra-6c250a123b176b2cbaf05ade68731029f73dc16b.tar.gz"
