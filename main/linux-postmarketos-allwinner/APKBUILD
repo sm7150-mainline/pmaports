@@ -1,10 +1,10 @@
 _flavor=postmarketos-allwinner
-_config="config-${_flavor}.${CARCH}"
+_config="config-$_flavor.$CARCH"
 
-pkgname=linux-${_flavor}
+pkgname=linux-$_flavor
 
 pkgver=5.5.0_git20200213
-pkgrel=0
+pkgrel=1
 
 arch="aarch64"
 pkgdesc="Kernel fork with Pine64 patches"
@@ -14,9 +14,9 @@ options="!strip !check !tracedeps"
 _commit="a41f10decbe148d189a0cd75435ba2b675a24ae3"
 _commit_rtl8723cs="1c9c0cb9d335626a66d8063399c6e16751ecc1a8"
 source="
-	${pkgname}-${_commit}.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/${_commit}/linux-${_commit}.tar.gz
-	rtl8723cs-${_commit_rtl8723cs}.tar.gz::https://github.com/Icenowy/rtl8723cs/archive/${_commit_rtl8723cs}.tar.gz
-	config-${_flavor}.aarch64
+	$pkgname-$_commit.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/$_commit/linux-$_commit.tar.gz
+	rtl8723cs-$_commit_rtl8723cs.tar.gz::https://github.com/Icenowy/rtl8723cs/archive/$_commit_rtl8723cs.tar.gz
+	config-$_flavor.aarch64
 	touch-dts.patch
 	rtl8723cs.patch
 "
@@ -25,7 +25,7 @@ subpackages="$pkgname-dev"
 
 license="GPL2"
 _abi_release=$_pkgver
-_carch=${CARCH}
+_carch=$CARCH
 case "$_carch" in
 aarch64*) _carch="arm64" ;;
 arm*) _carch="arm" ;;
@@ -36,7 +36,7 @@ esac
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-builddir="$srcdir/linux-${_commit}"
+builddir="$srcdir/linux-$_commit"
 
 prepare() {
 	default_prepare
@@ -50,7 +50,7 @@ prepare() {
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
 		CFLAGS_MODULE=-fno-pic
 }
 
@@ -100,6 +100,6 @@ dev() {
 
 sha512sums="4af40c698b304c83f0c0ef9d7afb17afd91ed81f1279d276a869c36de809f638ef9209da684e23d7837aeabeb5a50ac56cc4f750e8b9669bf77a7f4792d1939b  linux-postmarketos-allwinner-a41f10decbe148d189a0cd75435ba2b675a24ae3.tar.gz
 e4e585ce787301eeee07ff8e45a97343456808a47ed237053f0c83a49b4958a75514def4c5263f4507a282ea90bd2bb3f8f468839f7e5fd05ae947a796c8c6b9  rtl8723cs-1c9c0cb9d335626a66d8063399c6e16751ecc1a8.tar.gz
-f0d79baa80a69d981fcefa42b8d9ff311157089bceea38c62112fc4e3e10d782f2abb7604b0a947df590ad5f961b1740c414cec939db4ad2060291e01dfd3003  config-postmarketos-allwinner.aarch64
+c1be471bfa6aa9b509511d058107c209d15f8cec087e21d8625a15ac2acb6c5bc58fa779956d9395f5ae8a0df15c4113af9c37ed6ae1ffb2bbb6af58d360159b  config-postmarketos-allwinner.aarch64
 5f403bb1e3e7528954adcba4429768ce26bf13382dc6325ced245babcfb5252d515bea812b9df16d0e5370c9d4e07b4e0267f4c750281faf3cb6ffb29906700c  touch-dts.patch
 bf06f931fb543f4bf2f0567902c3021de237fc9684f92af2ed3e956f869d907c9cff1cf3e11a72eb97bda47c8f8b28aff226634f641bdffa04b08d434f419faa  rtl8723cs.patch"
