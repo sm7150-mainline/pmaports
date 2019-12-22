@@ -1,92 +1,56 @@
-# Forked from Alpine, so we can build it with Grate support
+# Maintainer: David Heidelberg <david@ixit.cz>
 pkgname=libdrm-grate
-pkgver=2.4.96_git20190318
+pkgver=2.4.100_git20191221
 pkgrel=0
 pkgdesc="Userspace interface to kernel DRM services"
 url="https://github.com/grate-driver/libdrm"
 arch="armhf armv7"
 # Requires a computer with gfx, no X running, build user in 'video' group..
-options="!check !tracedeps"
+options="!check"
 license="MIT"
-depends="ldpath"
 depends_dev="linux-headers"
-makedepends="$depends_dev libpthread-stubs eudev-dev libpciaccess-dev xmlto
-	autoconf automake libtool m4 util-macros"
+provides="libdrm"
+makedepends="$depends_dev meson libpthread-stubs eudev-dev libpciaccess-dev xmlto"
 checkdepends="cunit-dev bash"
 subpackages="$pkgname-dev $pkgname-doc"
-install="$pkgname.post-install $pkgname.pre-deinstall"
-_commit="8b34ac343667348e52f7946cf32978bc74377c0d"
-source="https://github.com/grate-driver/libdrm/archive/$_commit.tar.gz
+_commit="fb342d0d78446f5f8898d8676fa986610d01c766"
+source="$pkgname-$_commit.tar.gz::https://github.com/grate-driver/libdrm/archive/$_commit.tar.gz
 	ioctl.patch
 	"
-replaces_doc="libdrm-doc"
 
 _pkgname=libdrm
 builddir="$srcdir/$_pkgname-$_commit"
 
 build() {
-	export VALGRIND_CFLAGS="$VALGRIND_CFLAGS -I/usr/include/valgrind/"
-	./autogen.sh \
-		--build=$CBUILD \
-		--host=$CHOST \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--mandir=/usr/share/man \
-		--localstatedir=/var \
-		--disable-radeon \
-		--disable-amdgpu \
-		--disable-nouveau \
-		--disable-vmwgfx \
-		--disable-freedreno \
-		--disable-vc4 \
-		--enable-tegra-experimental-api \
-		--enable-udev \
-		--disable-valgrind
-	make
+	meson \
+		-Dprefix=/usr \
+		-Dradeon=false \
+		-Damdgpu=false \
+		-Dnouveau=false \
+		-Dvmwgfx=false \
+		-Dfreedreno=false \
+		-Dvc4=false \
+		-Dtegra=true \
+		-Detnaviv=false \
+		-Dudev=true \
+		. build
+	ninja -C build
 }
 
 check() {
-	make check
+	cd "$builddir"/build
+	meson test
 }
 
 package() {
-	make DESTDIR="$pkgdir" install
-
-	cd "$pkgdir"/usr/lib
-	install -d libdrm-grate/
-	mv lib*.so.* libdrm-grate/
-	mv lib*.la libdrm-grate/
+	DESTDIR="$pkgdir" ninja -C build install
 }
 
 dev() {
 	default_dev
 
-	cd "$subpkgdir"/usr/lib
-	install -d libdrm-grate/
-	mv lib*.so libdrm-grate/
-
-	install -d pkgconfig/libdrm-grate/
-	mv pkgconfig/*.pc pkgconfig/libdrm-grate/
-
-	# Move headers (to /usr/include/libdrm-grate)
-	cd "$subpkgdir"/usr
-	mv include include_
-	mkdir include
-	mv include_ include/libdrm-grate
-
-	# Redirect pkgconfig to alternate lib/header directory
-	local pc
-	cd "$subpkgdir"/usr/lib/pkgconfig/libdrm-grate
-	for pc in *; do
-		sed -i "s./include$./include/libdrm-grate.g" $pc
-		sed -i "s./lib$./lib/libdrm-grate.g" $pc
-	done
+	provides="libdrm-dev"
 }
 
-doc() {
-	default_doc
-	replaces="libdrm-doc"
-}
-
-sha512sums="9e10202a4f9229489c110515df55b3fb76d764ab27fe1546b6ac66f7515c9f147ee9769090a878f7e10f1239a9537a0ff8100b9bb79d94b1c85e8c4ebbae488d  8b34ac343667348e52f7946cf32978bc74377c0d.tar.gz
+sha512sums="90618e48589bb74a5846c991f51cb53f0e483124db6c05a4dafafc2d63c3763972ef24dc62a4f2244c0ba23828894f7040111ba9f60421fc7ce19d19e726312a  libdrm-grate-fb342d0d78446f5f8898d8676fa986610d01c766.tar.gz
 af52fef51aaa05a4dd17919371cb9d92a77480402730bf53ba223e54df52f3825be05a7f28e6aef8c904db5ee59fe38a6c15bc6aafa7f8d31a719e80399dd51f  ioctl.patch"
