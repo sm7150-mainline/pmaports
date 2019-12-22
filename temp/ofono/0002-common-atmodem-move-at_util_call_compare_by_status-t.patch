@@ -1,4 +1,4 @@
-From 90901a203f61b16d2ffbe8f83675a22af6c2d389 Mon Sep 17 00:00:00 2001
+From 4f8a3991c6f90fc5af980eff3aa296552638e73f Mon Sep 17 00:00:00 2001
 From: Alexander Couzens <lynxis@fe80.eu>
 Date: Tue, 25 Jul 2017 15:35:51 +0200
 Subject: [PATCH 2/5] common,atmodem: move at_util_call_compare_by_status to
@@ -17,10 +17,10 @@ at_util_call_compare_by_status is used by several modem drivers.
  8 files changed, 36 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/atmodem/atutil.c b/drivers/atmodem/atutil.c
-index fcbc39a9..9eeaf469 100644
+index 3ab930ad..df42e60e 100644
 --- a/drivers/atmodem/atutil.c
 +++ b/drivers/atmodem/atutil.c
-@@ -71,17 +71,6 @@ void decode_at_error(struct ofono_error *error, const char *final)
+@@ -73,17 +73,6 @@ void decode_at_error(struct ofono_error *error, const char *final)
  	}
  }
  
@@ -39,10 +39,10 @@ index fcbc39a9..9eeaf469 100644
  {
  	const struct ofono_call *call = a;
 diff --git a/drivers/atmodem/atutil.h b/drivers/atmodem/atutil.h
-index 23d172aa..96607881 100644
+index 4a8e26cb..c26adcbd 100644
 --- a/drivers/atmodem/atutil.h
 +++ b/drivers/atmodem/atutil.h
-@@ -52,7 +52,6 @@ enum at_util_charset {
+@@ -56,7 +56,6 @@ enum at_util_charset {
  typedef void (*at_util_sim_inserted_cb_t)(gboolean present, void *userdata);
  
  void decode_at_error(struct ofono_error *error, const char *final);
@@ -51,10 +51,10 @@ index 23d172aa..96607881 100644
  gint at_util_call_compare_by_id(gconstpointer a, gconstpointer b);
  GSList *at_util_parse_clcc(GAtResult *result, unsigned int *mpty_ids);
 diff --git a/drivers/atmodem/voicecall.c b/drivers/atmodem/voicecall.c
-index f9d71e21..5d76967f 100644
+index 5f5b9e45..4c495ce2 100644
 --- a/drivers/atmodem/voicecall.c
 +++ b/drivers/atmodem/voicecall.c
-@@ -661,13 +661,13 @@ static void ring_notify(GAtResult *result, gpointer user_data)
+@@ -662,13 +662,13 @@ static void ring_notify(GAtResult *result, gpointer user_data)
  	/* See comment in CRING */
  	if (g_slist_find_custom(vd->calls,
  				GINT_TO_POINTER(CALL_STATUS_WAITING),
@@ -70,7 +70,7 @@ index f9d71e21..5d76967f 100644
  		return;
  
  	/* Generate an incoming call of unknown type */
-@@ -699,13 +699,13 @@ static void cring_notify(GAtResult *result, gpointer user_data)
+@@ -700,13 +700,13 @@ static void cring_notify(GAtResult *result, gpointer user_data)
  	 */
  	if (g_slist_find_custom(vd->calls,
  				GINT_TO_POINTER(CALL_STATUS_WAITING),
@@ -86,7 +86,7 @@ index f9d71e21..5d76967f 100644
  		return;
  
  	g_at_result_iter_init(&iter, result);
-@@ -749,7 +749,7 @@ static void clip_notify(GAtResult *result, gpointer user_data)
+@@ -750,7 +750,7 @@ static void clip_notify(GAtResult *result, gpointer user_data)
  
  	l = g_slist_find_custom(vd->calls,
  				GINT_TO_POINTER(CALL_STATUS_INCOMING),
@@ -95,7 +95,7 @@ index f9d71e21..5d76967f 100644
  	if (l == NULL) {
  		ofono_error("CLIP for unknown call");
  		return;
-@@ -811,7 +811,7 @@ static void cdip_notify(GAtResult *result, gpointer user_data)
+@@ -812,7 +812,7 @@ static void cdip_notify(GAtResult *result, gpointer user_data)
  
  	l = g_slist_find_custom(vd->calls,
  				GINT_TO_POINTER(CALL_STATUS_INCOMING),
@@ -104,7 +104,7 @@ index f9d71e21..5d76967f 100644
  	if (l == NULL) {
  		ofono_error("CDIP for unknown call");
  		return;
-@@ -860,7 +860,7 @@ static void cnap_notify(GAtResult *result, gpointer user_data)
+@@ -861,7 +861,7 @@ static void cnap_notify(GAtResult *result, gpointer user_data)
  
  	l = g_slist_find_custom(vd->calls,
  				GINT_TO_POINTER(CALL_STATUS_INCOMING),
@@ -113,7 +113,7 @@ index f9d71e21..5d76967f 100644
  	if (l == NULL) {
  		ofono_error("CNAP for unknown call");
  		return;
-@@ -914,7 +914,7 @@ static void ccwa_notify(GAtResult *result, gpointer user_data)
+@@ -915,7 +915,7 @@ static void ccwa_notify(GAtResult *result, gpointer user_data)
  	/* Some modems resend CCWA, ignore it the second time around */
  	if (g_slist_find_custom(vd->calls,
  				GINT_TO_POINTER(CALL_STATUS_WAITING),
@@ -308,5 +308,5 @@ index b5db5d3e..42c1a82c 100644
  		ofono_error("CCWA received before XCALLSTAT!!!");
  		return;
 -- 
-2.22.0
+2.24.1
 
