@@ -1,87 +1,36 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
-# Kernel config based on: arch/arm/configs/lineageos_grouper_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
-
-_vendor=asus
+# Maintainer: David Heidelberg <david@ixit.cz>
 _flavor=asus-grouper
-_hash="953e26f2709dfe0c185c3c99c50b0c9d56d473a4"
-_config="config-${_flavor}.armhf"
+_commit="45a3363d0770af62325410c03535c51b73b0a38f"
+_config="config-$_flavor.armv7"
 
-pkgname=linux-${_flavor}
-pkgver=3.4.0
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=11
-arch="armhf"
-pkgdesc="Nexus 7 (2012) kernel from LineageOS"
-url="https://github.com/LineageOS/android_kernel_asus_grouper"
-depends=""
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev gcc6"
+pkgname=linux-asus-grouper
+pkgver=5.6.0_rc1
+pkgrel=0
+arch="armv7"
+pkgdesc="Nexus 7 grouper/tilapia (2012) mainline kernel"
+url="https://postmarketos.org"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
+	     devicepkg-dev bison flex openssl-dev xz"
 options="!strip !check !tracedeps"
-install=
 source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_asus_grouper/archive/${_hash}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/okias/linux/archive/$_commit.tar.gz
 	$_config
-	compiler-gcc6.h
-	duplicate-return-address-definition.patch
 "
-subpackages=""
-license="GPL2"
+license="GPL-2.0-only"
 
-_abi_release=${pkgver}
 _carch="arm"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
+# Compiler: latest GCC from Alpine
+_hostcc="${CC:-gcc}"
+_hostcc="${_hostcc#${CROSS_COMPILE}}"
 
-ksrcdir="$srcdir/android_kernel_asus_grouper-${_hash}"
+_ksrcdir="$srcdir/linux-$_commit"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
 	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+	cp -v "$srcdir"/$_config "$srcdir"/build/.config
+	make -C "$_ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$_hostcc" \
+		olddefconfig
 }
 
 build() {
@@ -92,14 +41,24 @@ build() {
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+	install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-}
 
-sha512sums="11ba20986552a0b913de2a7d756d31ad9f4f67561cb88988737bba07997f00b7574604d1c19f6d890502208f12a21d48d4044edc5a8db5174b2a49d4a87573e3  linux-asus-grouper-953e26f2709dfe0c185c3c99c50b0c9d56d473a4.tar.gz
-769a9b12dc1f42f0e625852875b3f094a1c618a1de7e6b1a2e55a223a8289f204f8181dc3cb4a75bde1e5102db0e6e2d132a31ede0641510c12e6f4eb3335542  config-asus-grouper.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-9b15bf1f6cb66f54c785b0af6c9db8a7d63257e6fa3eeb0cbf47284334166aa6a7ff93e1b64ab69206c8047d64641199c0f5fcbc257bbe039263252fff45118e  duplicate-return-address-definition.patch"
+	cd "$srcdir"/build
+
+	local _install
+	case "$CARCH" in
+	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
+	*)		_install="modules_install" ;;
+	esac
+
+	make -j1 $_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+sha512sums="681bb00a75cdae677468ffd50463534fd5c03730c433f5243bfc245c50bd023d1b163dfd45ada53374b361ba9221e4cb4b76f26bddc3e04f0a0693266aa1ed6b  linux-asus-grouper-45a3363d0770af62325410c03535c51b73b0a38f.tar.gz
+d4fb13567df269c147a4a5d427fdf85999b37898765f7260a0e6c47d717fde3b24e3f743d2bf47ea9c67a4855bbd6a7b3e0cd388c13e0bd896835ae6be05a1bf  config-asus-grouper.armv7"
