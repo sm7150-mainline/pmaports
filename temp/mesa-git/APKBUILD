@@ -13,7 +13,7 @@ pkgrel=0
 _commit="f6a913bb9540a9c3fa5a22ad5e08dfe87dafdaaf"
 pkgdesc="(Git) Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
-arch="armhf armv7 aarch64"
+arch="all"
 license="MIT SGI-B-2.0 BSL-1.0"
 subpackages="
 	$pkgname-dev
@@ -24,8 +24,9 @@ subpackages="
 	$pkgname-dri-virtio:_dri
 	$pkgname-glapi $pkgname-egl $pkgname-gl $pkgname-gles
 	$pkgname-xatracker $pkgname-osmesa $pkgname-gbm
+	$pkgname-vulkan-ati:_vulkan
 	"
-_llvmver=8
+_llvmver=9
 depends_dev="
 	libdrm-dev
 	libxext-dev
@@ -33,6 +34,7 @@ depends_dev="
 	libxcb-dev
 	libxshmfence-dev
 	"
+# FIXME: Remove glslang when pmbootstrap can handle the conditional makedepends below
 makedepends="
 	$depends_dev
 	bison
@@ -40,6 +42,7 @@ makedepends="
 	expat-dev
 	flex
 	gettext
+	glslang
 	elfutils-dev
 	libtool
 	libxfixes-dev
@@ -53,7 +56,7 @@ makedepends="
 	llvm$_llvmver-dev
 	makedepend
 	meson
-	py-mako
+	py3-mako
 	py3-libxml2
 	python3
 	talloc-dev
@@ -71,26 +74,32 @@ source="
 	"
 provides="mesa"
 replaces="mesa-dricore mesa"
-options="!check" # to follow alpine's standards
 builddir="$srcdir/mesa-$_commit"
 pcprefix="mesa-git"
+
+if [ "$CARCH" = x86 ]; then
+	# Bug upstream that needs to be fixed
+	options="$options textrels"
+fi
 
 _dri_driverdir=/usr/lib/xorg/modules/dri
 _dri_drivers="r100,r200,nouveau"
 _gallium_drivers="r300,r600,radeonsi,nouveau,freedreno,swrast,virgl"
 _vulkan_drivers="amd"
-_arch_opts=
-
+_arch_opts=""
+_vulkan_overlay_layer=false
 case "$CARCH" in
 x86*)
 	_dri_drivers="${_dri_drivers},i915,i965"
-	_gallium_drivers="${_gallium_drivers},svga"
+	_gallium_drivers="${_gallium_drivers},svga,iris"
 	_vulkan_drivers="${_vulkan_drivers},intel"
+	_vulkan_overlay_layer=true
+	makedepends="$makedepends glslang"
 	subpackages="$subpackages \
 			$pkgname-dri-intel:_dri \
 			$pkgname-dri-vmwgfx:_dri \
-			$pkgname-vulkan-intel:_vulkan
-			$pkgname-vulkan-ati:_vulkan"
+			$pkgname-vulkan-intel:_vulkan \
+			$pkgname-vulkan-layer:_vulkan_layer"
 	_arch_opts="-Ddri3=true"
 	case "$CARCH" in
 	x86)
@@ -98,10 +107,10 @@ x86*)
 	esac
 	;;
 armhf|armv7|aarch64)
-	_gallium_drivers="${_gallium_drivers},vc4,kmsro,lima,panfrost,etnaviv,tegra"
-	_vulkan_drivers="" # latest patches uses a syscall that is no longer available for EABI.
+	_gallium_drivers="${_gallium_drivers},vc4,v3d,kmsro,lima,panfrost,etnaviv,tegra"
 	subpackages="$subpackages
 		$pkgname-dri-vc4:_dri
+		$pkgname-dri-v3d:_dri
 		$pkgname-dri-kmsro:_dri
 		$pkgname-dri-lima:_dri
 		$pkgname-dri-panfrost:_dri
@@ -112,8 +121,6 @@ armhf|armv7|aarch64)
 esac
 
 build() {
-	cd "$builddir"
-
 	export CFLAGS="$CFLAGS -D_XOPEN_SOURCE=700"
 	export PATH=/usr/lib/llvm${_llvmver}/bin:$PATH
 	meson \
@@ -126,30 +133,34 @@ build() {
 		-Dgallium-drivers=$_gallium_drivers \
 		-Ddri-drivers=$_dri_drivers \
 		-Dvulkan-drivers=$_vulkan_drivers \
+		-Dvulkan-overlay-layer=$_vulkan_overlay_layer \
 		-Dplatforms=x11,drm,wayland \
 		-Dllvm=true \
 		-Dshared-llvm=true \
 		-Dshared-glapi=true \
 		-Dgbm=true \
 		-Dglx=dri \
+		-Dopengl=true \
 		-Dosmesa=gallium \
-		-Dgles1=true \
+		-Dgles1=false \
 		-Dgles2=true \
 		-Degl=true \
 		-Dgallium-xa=true \
 		-Dgallium-vdpau=true \
 		-Dgallium-va=true \
 		-Dgallium-xvmc=false \
-		-Duse-elf-tls=false \
+		-Dglx-use-tls=false \
 		-Dgallium-nine=false \
 		-Db_ndebug=true \
 		$_arch_opts \
 		. output
+	# parallel build workaround
+	ninja -C output src/compiler/nir/nir_intrinsics.h
+
 	ninja -C output
 }
 
 package() {
-	cd "$builddir"
 	DESTDIR="$pkgdir" ninja -C output install
 
 	# Make abuild's version check happy (#386)
@@ -236,7 +247,7 @@ _mv_dri() {
 	install -d "$subpkgdir"/$_dri_driverdir
 
 	while [ $# -gt 0 ]; do
-		mv "$pkgdir"/$_dri_driverdir/${1}.so \
+		mv "$pkgdir"/$_dri_driverdir/$1.so \
 			"$subpkgdir"/$_dri_driverdir/
 		shift
 	done
@@ -268,7 +279,7 @@ _mv_vulkan() {
 	install -d "$subpkgdir"/usr/lib
 	install -d "$subpkgdir"/usr/share/vulkan/icd.d
 	for i in "$@"; do
-		mv "$pkgdir"/usr/lib/libvulkan_${i}.so "$subpkgdir"/usr/lib/
+		mv "$pkgdir"/usr/lib/libvulkan_$i.so "$subpkgdir"/usr/lib/
 		mv "$pkgdir"/usr/share/vulkan/icd.d/${i}* "$subpkgdir"/usr/share/vulkan/icd.d/
 	done
 }
@@ -297,7 +308,7 @@ _dri() {
 			&& _mv_va r600 radeonsi
 		;;
 	intel)
-		_mv_dri i915_dri i965_dri
+		_mv_dri i915_dri i965_dri iris_dri
 		;;
 	nouveau)
 		_mv_dri nouveau_dri nouveau_vieux_dri \
@@ -313,6 +324,9 @@ _dri() {
 		;;
 	vc4)
 		_mv_dri vc4_dri
+		;;
+	v3d)
+		_mv_dri v3d_dri
 		;;
 	vmwgfx)
 		_mv_dri vmwgfx_dri && _mv_gpipe vmwgfx
@@ -352,8 +366,17 @@ _vulkan() {
 		_mv_vulkan intel ;;
 	esac
 }
+
+_vulkan_layer() {
+	pkgdesc="Vulkan overlay layer to display information about the application"
+
+	mkdir -p "$subpkgdir"/usr/share/vulkan "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/share/vulkan/explicit_layer.d "$subpkgdir"/usr/share/vulkan
+	mv "$pkgdir"/usr/lib/libVkLayer_MESA_overlay.so "$subpkgdir"/usr/lib
+}
+
 sha512sums="0fc1b76ca8fc4d6095d0c099fbfcd485243e89e7041ab0c57862362f949358b6f43a97f7ec92722cb33a20b42d43391851b0c4d42c0ba52723806a4b070af7f0  mesa-git-f6a913bb9540a9c3fa5a22ad5e08dfe87dafdaaf.tar.gz
 cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  adjust-cache-deflate-buffer.patch
 cf849044d6cc7d2af4ff015208fb09d70bf9660538699797da21bda2ecb7c1892d312af83d05116afd826708d9caafb1d05a13f09139c558aea6fee931e3eee7  musl-fix-includes.patch
-bd9539abe5ac6d3ff1f4f8a2155b85dce5f61fc4b10b718b51e7d5ec5674ebfef569cdfdffe981abe5eb0a49989e50a6ddf881486b03649a95b52620a944c9c0  add-use-elf-tls.patch
+9aa207a38d538abbd8e7a7210e3081508563e85e8c27b2269b8f40fd62d9fc6fee0cb2f573a0e62c42f8ba0fb85740459b761f009d5991cfd9813d7614541908  add-use-elf-tls.patch
 6a42ef5d60ccad7e39dee7b3a09b8a884548ce65af3fb17cd1bbd453cee0df7b367968b179e4b54fbc606b29753a1bab74f8c6136b1efaf4cfb9f084d9e76c66  time-fix.patch"
