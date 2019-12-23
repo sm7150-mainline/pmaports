@@ -3,7 +3,7 @@
 
 _flavor="postmarketos-qcom-msm8916"
 pkgname="linux-${_flavor}"
-pkgver=5.4.0_rc2
+pkgver=5.5_rc3
 pkgrel=0
 pkgdesc="Mainline kernel fork for Qualcomm MSM8916 devices"
 arch="aarch64"
@@ -19,7 +19,7 @@ HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
-_tag=v5.4-rc2-msm8916
+_tag=v${pkgver//_/-}-msm8916
 source="
 	$pkgname-$_tag.tar.gz::$url/archive/$_tag.tar.gz
 	config-$_flavor.$arch
@@ -54,5 +54,5 @@ package() {
 	install -Dm644 arch/arm64/boot/dt.img "$pkgdir"/boot/dt.img
 }
 
-sha512sums="d11115cbdb2c091bb65375e9b3a2d6f0315b5a24565bce9be7765b8214189f130d49560498c0ead8b4b341ebef736cc8deac784a7aab594b3b10dd57cc35caa0  linux-postmarketos-qcom-msm8916-v5.4-rc2-msm8916.tar.gz
-1341726bdfeba54e913afa43d56c1ea58fc4f5b8e1d0b064297b9fbf7645e4c21a0a6e695d0532cbd0d4d953257df54fd564c9e931462678e2ec88b56ba39eb6  config-postmarketos-qcom-msm8916.aarch64"
+sha512sums="f812b03b83d77b51ee4d99ed22b955bd8a6ae714e4dd171d7798975cf0e5ce30067748655ff5ae052aeb8941d9f4d6a9c10b8bccd997a8f5cff9b16553fd3ea7  linux-postmarketos-qcom-msm8916-v5.5-rc3-msm8916.tar.gz
+ef2a21d00e781a69cc6f800b6097a36b8a4bd656bd3d72ccb999a4fb6f7123adaf5c24511089b98545d3e46746353b30025cd174dc7eff98f793362e4331aa7c  config-postmarketos-qcom-msm8916.aarch64"
