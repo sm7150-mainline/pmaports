@@ -8,9 +8,9 @@
 # of this aport, so mesa-git including _all_ of the subpackages, to not cause
 # conflicts
 pkgname=mesa-git
-pkgver=0_git20191205
+pkgver=0_git20191223
 pkgrel=0
-_commit="f6a913bb9540a9c3fa5a22ad5e08dfe87dafdaaf"
+_commit="c411d4896c625e6538bf3a6681892256f352868e"
 pkgdesc="(Git) Mesa DRI OpenGL library"
 url="https://www.mesa3d.org"
 arch="all"
@@ -155,7 +155,7 @@ build() {
 		$_arch_opts \
 		. output
 	# parallel build workaround
-	ninja -C output src/compiler/nir/nir_intrinsics.h
+	ninja -C output src/compiler/nir/nir_intrinsics.h src/git_sha1.h
 
 	ninja -C output
 }
@@ -375,7 +375,7 @@ _vulkan_layer() {
 	mv "$pkgdir"/usr/lib/libVkLayer_MESA_overlay.so "$subpkgdir"/usr/lib
 }
 
-sha512sums="0fc1b76ca8fc4d6095d0c099fbfcd485243e89e7041ab0c57862362f949358b6f43a97f7ec92722cb33a20b42d43391851b0c4d42c0ba52723806a4b070af7f0  mesa-git-f6a913bb9540a9c3fa5a22ad5e08dfe87dafdaaf.tar.gz
+sha512sums="95d4fa37c003542b12522258ec42a08e020f25fe274a996ca664bfd5038320a6474fb8fc7b1e819f8852a15dda7bfc3f17bc946599551f02647ae87a2ffaf82b  mesa-git-c411d4896c625e6538bf3a6681892256f352868e.tar.gz
 cdf22d2da3328e116c379264886bd01fd3ad5cc45fe03dc6fd97bdc4794502598ee195c0b9d975fa264d6ac31c6fa108c0535c91800ecf4fcabfd308e53074cc  adjust-cache-deflate-buffer.patch
 cf849044d6cc7d2af4ff015208fb09d70bf9660538699797da21bda2ecb7c1892d312af83d05116afd826708d9caafb1d05a13f09139c558aea6fee931e3eee7  musl-fix-includes.patch
 9aa207a38d538abbd8e7a7210e3081508563e85e8c27b2269b8f40fd62d9fc6fee0cb2f573a0e62c42f8ba0fb85740459b761f009d5991cfd9813d7614541908  add-use-elf-tls.patch
