@@ -1,0 +1,36 @@
+# Contributor: Alexey Min <alexey.min@gmail.com>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kquicksyntaxhighlighter
+pkgver=0_git20181209
+pkgrel=0
+_commit="eae18069e0acab42f9dfdef2339b22bb77b44640"
+pkgdesc="QtQuick bindings for KF5SyntaxHightlighting framework"
+arch="all"
+url="https://community.kde.org/Plasma/Mobile"
+license="LGPL-2.1"
+options="!check"
+depends="syntax-highlighting qt5-qtdeclarative"
+makedepends="extra-cmake-modules qt5-qtdeclarative-dev syntax-highlighting-dev"
+source="$pkgname-$_commit.tar.gz::https://cgit.kde.org/scratch/hein/kquicksyntaxhighlighter.git/snapshot/${_commit}.tar.gz"
+builddir="$srcdir/$_commit"
+
+prepare() {
+	default_prepare
+	mkdir "$builddir"/build
+}
+
+build() {
+	cd "$builddir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make
+}
+
+package() {
+	cd "$builddir"/build
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="1e752efa6bc8cad5852ffc022436646e24f36d1c1532b96ba0d7f917a1460d73eb2591f5b392b89fcc41ed0c4fefcb1dac45e145c1e5dd3d80ca46dff54058fc  kquicksyntaxhighlighter-eae18069e0acab42f9dfdef2339b22bb77b44640.tar.gz"
