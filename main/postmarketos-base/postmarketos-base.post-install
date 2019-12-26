@@ -80,8 +80,16 @@ touch /etc/wpa_supplicant/wpa_supplicant.conf
 echo "- Modifying: /etc/sudoers"
 sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
 
-# Set chrony to quickly correct system time on first boot, if necessary
+# Set chrony to quickly correct system time whenever it differs from
+# ntp time by more than 1s.
 if ! grep -q "makestep" /etc/chrony/chrony.conf; then
-	echo "- Modifying: /etc/chrony/chrony.conf"
+	echo "- Modifying: /etc/chrony/chrony.conf (adding makestep)"
 	echo "makestep 1 -1" >> /etc/chrony/chrony.conf
+fi
+
+# Comment out initstepslew in the chrony configuration to avoid a delay 
+# during boot. 
+if grep -q "^initstepslew" /etc/chrony/chrony.conf; then
+	echo "- Modifying: /etc/chrony/chrony.conf (removing initstepslew)"
+	sed -i 's/^initstepslew/#initstepslew/' /etc/chrony/chrony.conf
 fi
