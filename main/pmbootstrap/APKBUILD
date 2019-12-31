@@ -2,7 +2,7 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=pmbootstrap
 pkgver=1.13.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Sophisticated chroot/build/flash tool to develop and install postmarketOS"
 url="https://gitlab.com/postmarketOS/pmbootstrap"
 arch="noarch"
@@ -10,7 +10,9 @@ license="GPL-3.0-or-later"
 depends="python3 coreutils procps openssl"
 makedepends="python3"
 checkdepends="pytest"
-source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketos/pmbootstrap/-/archive/$pkgver/pmbootstrap-$pkgver.tar.gz"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketos/pmbootstrap/-/archive/$pkgver/pmbootstrap-$pkgver.tar.gz
+	modules-load.conf"
+install="$pkgname.post-install"
 options="!check" # Doesn't like making chroot directories
 
 build() {
@@ -23,5 +25,9 @@ check() {
 
 package() {
 	python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	mkdir -p "$pkgdir"/etc/modules-load.d
+	install -m644 "$srcdir"/modules-load.conf "$pkgdir"/etc/modules-load.d/pmbootstrap.conf
 }
-sha512sums="4bc62208fccd171db487cbb978fa729b8288cc1aaaec7925f83899d70d66cddc8a86d7bf85b74ba0f2b9c1f03226594df7059e2481d07c221aaa77a92097388e  pmbootstrap-1.13.0.tar.gz"
+sha512sums="4bc62208fccd171db487cbb978fa729b8288cc1aaaec7925f83899d70d66cddc8a86d7bf85b74ba0f2b9c1f03226594df7059e2481d07c221aaa77a92097388e  pmbootstrap-1.13.0.tar.gz
+f8026ab32234b885e69252459047f70160c54319113bc449000aa7c05bd016f00a46cee05c8f5251682f967ab44a12c06fbbb3c02d0a57ccb836cff810ce1a40  modules-load.conf"
