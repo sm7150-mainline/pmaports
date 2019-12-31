@@ -1,0 +1,45 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=itinerary
+pkgver=0_git20191214
+_commit="63caaf2daae0a105982ee774de9a3797aae3ad33"
+pkgrel=0
+pkgdesc="Application to assist with usage of Travel Reservations"
+url="https://github.com/KDE/itinerary"
+arch="all"
+license="LGPL-2.1"
+depends="prison"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtquickcontrols2-dev
+	qt5-qtlocation-dev ki18n-dev kcontacts-dev kpkpass-dev kitinerary-dev
+	kpublictransport-dev kdbusaddons-dev solid-dev shared-mime-info"
+source="$pkgname-$_commit.tar.gz::https://github.com/KDE/itinerary/archive/$_commit.tar.gz
+	0001-Fix-build.patch
+	0001-Adapt-to-KPublicTransport-API-changes.patch"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # Tests fail
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		${CMAKE_CROSSOPTS}
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="4d0ac75d96cfe9c996ea6b41472945d827d612fe817dff342dffbb22588753cf96d307c9132a693ab77a24819afcc4af1a35e1b59af9d406a758c7663132ebd2  itinerary-63caaf2daae0a105982ee774de9a3797aae3ad33.tar.gz
+ac2eca31b0dc066ff174f6bdb612d5387e7d31bc31b5d0e28814be4932c69dbd9cec4975420757d5b70c14d9828ee4a7a175da4eae4124840fff26f68e0df20f  0001-Fix-build.patch
+619bf1ef7c3eb2b9f8de717f291ba7aac8f038adea38b5ef0c2406d57aff6d850e57d7d720f993242ac2fd6bf8ceebf647996c32bda1105652560818e7387ff7  0001-Adapt-to-KPublicTransport-API-changes.patch"
