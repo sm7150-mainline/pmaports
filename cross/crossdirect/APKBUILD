@@ -5,22 +5,25 @@
 #
 # /native/usr/lib/crossdirect/armhf/gcc
 # -> /native/usr/bin/armv6-alpine-linux-muslgnueabihf-gcc
+# /native/usr/lib/crossdirect/armhf/rustc
+# -> /native/usr/bin/rustc --target=armv6-alpine-linux-musleabihf ...
 #
 # When building packages in the armhf chroot, PATH will get prepended with
 # "/native/usr/lib/crossdirect/armhf". The end game is of course invoking the
 # cross compiler from the native chroot, running at native speed, whenever
 # calling the compiler from the foreign arch chroot. See crossdirect.c for
-# implementation details (llvm, fakeroot, rpath).
+# implementation details of the C version (llvm, fakeroot, rpath). The rust
+# version is implemented as simple shell wrappers.
 
 pkgname=crossdirect
-pkgver=3
-pkgrel=1
+pkgver=4
+pkgrel=0
 pkgdesc="Wrappers to launch native cross compilers in foreign chroots"
 url="https://postmarketOS.org"
 arch="all"
 license="MIT"
-options=""
-source="crossdirect.c"
+options="!check"
+source="crossdirect.c rustc.sh rust-qemu-linker.sh"
 
 build() {
 	cd "$srcdir"
@@ -37,6 +40,9 @@ build() {
 			-Werror \
 			-DHOSTSPEC="\"$_hostspec\"" \
 			crossdirect.c
+
+		# rustc
+		sed "s/@ARCH@/$_arch/g" rustc.sh >rustc-"$_arch"
 	done
 }
 
@@ -45,22 +51,32 @@ package() {
 	_archs="x86_64 armhf armv7 aarch64"
 	_bins="c++ cc cpp g++ gcc clang clang++"
 
+	# Rust: qemu-linker
+	install -Dm755 "$srcdir/rust-qemu-linker.sh" \
+		"$pkgdir/usr/lib/crossdirect/rust-qemu-linker"
+
 	# Iterate over architectures
 	for _arch in $_archs; do
 		[ "$_arch" == "$CARCH" ] && continue
 
-		# Put arch-specific crossdirect wrapper in arch-specific bin folder
+		# GCC: put arch-specific crossdirect wrapper in arch-specific
+		# bin folder
 		_bindir="$pkgdir/usr/lib/crossdirect/$_arch"
 		_hostspec="$(arch_to_hostspec $_arch)"
 		mkdir -p "$_bindir"
 		cd "$_bindir"
 		cp "$srcdir/crossdirect-$_arch" "./"
 
-		# Create compiler symlinks
+		# GCC: create compiler symlinks
 		for _bin in $_bins; do
 			ln -s "crossdirect-$_arch" "$_bin"
 			ln -s "crossdirect-$_arch" "$_hostspec-$_bin"
 		done
+
+		# Rust: arch-specific rustc wrapper
+		install -Dm755 "$srcdir/rustc-$_arch" "$_bindir/rustc"
 	done
 }
-sha512sums="20b963322820de038257304c1eefa85767b78e242eda7459f06d70a1cfae5540a445aa7d5587024bf4d88a4bee28120ef9f5c2d24a648e71b542b9618318deb2  crossdirect.c"
+sha512sums="20b963322820de038257304c1eefa85767b78e242eda7459f06d70a1cfae5540a445aa7d5587024bf4d88a4bee28120ef9f5c2d24a648e71b542b9618318deb2  crossdirect.c
+c3492cf2bbf282d22585fb485a8a8950ddbd6e47faff472931072defa9c33ea757b72d455b2d608304c7e40f9c736fac2b9101b65accd48ad896bc7055ef0436  rustc.sh
+ea9bf8db3810d03d0a7395057f3d6e57f7127d87c55deaedc171c255288f5f3cc6fbcc680a5a1b92786cf573875d5dc22521173799fe2639acc97d0715ff905b  rust-qemu-linker.sh"
