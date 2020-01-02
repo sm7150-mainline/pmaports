@@ -374,7 +374,7 @@ start_udhcpd() {
 	udhcpd
 }
 
-setup_directfb_tslib(){
+setup_directfb_tslib() {
 	# Set up directfb and tslib
 	# Note: linux_input module is disabled since it will try to take over
 	# the touchscreen device from tslib (e.g. on the N900)
@@ -385,14 +385,14 @@ setup_directfb_tslib(){
 	fi
 }
 
-start_onscreen_keyboard(){
+start_onscreen_keyboard() {
 	setup_directfb_tslib
 	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
 	unset DFBARGS
 	unset TSLIB_TSDEVICE
 }
 
-start_charging_mode(){
+start_charging_mode() {
 	# Check cmdline for charging mode
 	chargingmodes="
 		androidboot.mode=charger
@@ -463,6 +463,25 @@ setup_framebuffer() {
 	fi
 
 	set_framebuffer_mode
+}
+
+setup_bootchart2() {
+	if grep -q PMOS_BOOTCHART2 /proc/cmdline; then
+		if [ -f "/sysroot/sbin/bootchartd" ]; then
+			# shellcheck disable=SC2034
+			init="/sbin/bootchartd"
+			echo "remounting /sysroot as rw for /sbin/bootchartd"
+			mount -o remount, rw /sysroot
+
+			# /dev/null may not exist at the first boot after
+			# the root filesystem has been created.
+			[ -c /sysroot/dev/null ] && return
+			echo "creating /sysroot/dev/null for /sbin/bootchartd"
+			mknod -m 666 "/sysroot/dev/null" c 1 3
+		else
+			echo "WARNING: bootchart2 is not installed."
+		fi
+	fi
 }
 
 loop_forever() {
