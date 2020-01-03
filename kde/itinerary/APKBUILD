@@ -1,13 +1,13 @@
-# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Luca Weiss <luca@z3ntu.xyz>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=itinerary
 pkgver=0_git20191214
 _commit="63caaf2daae0a105982ee774de9a3797aae3ad33"
-pkgrel=0
+pkgrel=1
 pkgdesc="Application to assist with usage of Travel Reservations"
 url="https://github.com/KDE/itinerary"
-arch="all"
-license="LGPL-2.1"
+arch="all !armhf"
+license="LGPL-2.0-or-later"
 depends="prison"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtquickcontrols2-dev
 	qt5-qtlocation-dev ki18n-dev kcontacts-dev kpkpass-dev kitinerary-dev
@@ -26,7 +26,7 @@ build() {
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DBUILD_SHARED_LIBS=True \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
 		-DCMAKE_C_FLAGS="$CFLAGS" \
 		${CMAKE_CROSSOPTS}
