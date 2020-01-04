@@ -1,0 +1,35 @@
+# Contributor: Danct12 <danct12@disroot.org>
+# Maintainer: Danct12 <danct12@disroot.org>
+pkgname="libttymultiplex"
+pkgver=0.0.1_git20200204
+pkgrel=0
+pkgdesc="A terminal multiplexer library"
+arch="all"
+url="https://github.com/Daniel-Abrecht/libttymultiplex"
+license="MIT AND AGPL-3.0-or-later"
+depends="ncurses"
+makedepends="bash ncurses-dev"
+subpackages="$pkgname-dev"
+
+options="!check" # fails without a proper devfs
+
+# Source
+_commit="91dfd9c6de24314977dd537d25b82cdb994e96ec"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Daniel-Abrecht/$pkgname/archive/$_commit.tar.gz
+"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	make -j1 # workaround for ld issues
+}
+
+package() {
+	make install DESTDIR="$pkgdir"
+}
+
+check() {
+	make test
+}
+
+sha512sums="955c48003b5612616c40afe2f832a7a0035afd71602a161d71c34d80c886215211185f6a3e13382d235b2936f2459cda105d2c2438c1f750d63de9e7d9304143  libttymultiplex-91dfd9c6de24314977dd537d25b82cdb994e96ec.tar.gz"

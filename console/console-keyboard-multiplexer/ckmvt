@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# as for right now, it seems that postmarketOS runs without any color :(
+export TERM=linux
+
+nr="$(printf "%s" "$1" | /bin/sed 's/^tty//')"; shift
+
+case "$nr" in
+  *[!0-9]*)
+    echo "Usage: $0 vtnumber"
+    exit 1
+  ;;
+esac
+
+tty="$(tty)"
+
+if [ "$(tty)" != "/dev/tty$nr" ]
+  then exec /sbin/getty -n -l "$0" 38400 "tty$nr" linux
+fi
+
+# nicer font (requires terminus-font to be installed)
+setfont /usr/share/consolefonts/ter-u24b.psf.gz
+
+exec /usr/bin/console-keyboard-multiplexer -w : -l "CKM$nr" -- login

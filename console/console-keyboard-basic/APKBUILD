@@ -1,0 +1,29 @@
+# Contributor: Danct12 <danct12@disroot.org>
+# Maintainer: Danct12 <danct12@disroot.org>
+pkgname="console-keyboard-basic"
+pkgver=0_git20200104
+pkgrel=0
+pkgdesc="A basic console keyboard"
+arch="all"
+url="https://github.com/Daniel-Abrecht/console-keyboard-basic"
+license="GPL-3.0-or-later"
+options="!check" # no testsuite
+depends="console-keyboard-multiplexer"
+makedepends="ncurses-dev libconsolekeyboard-dev"
+
+# Source
+_commit="005fd482e9423b5d45743f098e52ba25255bffc0"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Daniel-Abrecht/$pkgname/archive/$_commit.tar.gz
+"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	make
+}
+
+package() {
+	make install-all DESTDIR="$pkgdir"
+	ln -sf /usr/bin/console-keyboard-basic $pkgdir/usr/bin/console-keyboard
+}
+sha512sums="6e4ffbfa6f44a2a7a90e7bafc3944e5c34c007ae9c9ab0d7cd26930422af9fb381ece6e4357b4bd2568d319393491130e880ebc0861c729fff482c02cce0114e  console-keyboard-basic-005fd482e9423b5d45743f098e52ba25255bffc0.tar.gz"
