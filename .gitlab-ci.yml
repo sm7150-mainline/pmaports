@@ -80,6 +80,15 @@ aports-static:
       - pmbootstrap.cfg
     expire_in: 1 week
 
+# APKBUILD linting
+aport-lint:
+  stage: first
+  image: alpinelinux/apkbuild-lint-tools:latest
+  script:
+    - changed-aports $CI_MERGE_REQUEST_TARGET_BRANCH_NAME | lint
+  only:
+    - merge_requests
+
 # kernel kconfig check
 kernel-kconfig:
   stage: first
