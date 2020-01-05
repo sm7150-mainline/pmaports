@@ -14,16 +14,14 @@ source="triggerhappy-$pkgver.tar.gz::https://github.com/wertarbyte/triggerhappy/
 builddir="$srcdir/$pkgname-release-$pkgver"
 
 build() {
-	cd "$builddir"
 	make
 }
 
 package() {
-	cd "$builddir"
-	make DESTDIR="$pkgdir/" install
-	install -Dm 644 "$builddir/triggerhappy.conf.examples" "$pkgdir/etc/triggerhappy/triggers.d/triggerhappy.conf.examples"
-	install -Dm 644 "$builddir/udev/triggerhappy-udev.rules" "$pkgdir/usr/lib/udev/rules.d/99-triggerhappy.rules"
-	install -Dm 755 "$srcdir/triggerhappy.openrc" "$pkgdir/etc/init.d/triggerhappy"
+	make DESTDIR="$pkgdir" install
+	install -Dm 644 triggerhappy.conf.examples "$pkgdir"/etc/triggerhappy/triggers.d/triggerhappy.conf.examples
+	install -Dm 644 udev/triggerhappy-udev.rules "$pkgdir"/usr/lib/udev/rules.d/99-triggerhappy.rules
+	install -Dm 755 "$srcdir"/triggerhappy.openrc "$pkgdir"/etc/init.d/triggerhappy
 }
 
 sha512sums="7a4c7a67a90a92e907fcc966902e9a1d5ebc702304ac4165d1a2733a0891dd08f4caf4e4677b41854fcd8021c03b2ffa118a34658dd5d4d97d538517457622dc  triggerhappy-0.5.0.tar.gz
