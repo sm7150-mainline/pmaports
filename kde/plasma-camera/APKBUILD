@@ -1,14 +1,14 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-camera
-pkgver=0_git20191120
+pkgver=0_git20191231
 pkgrel=0
-_commit="2fa0b0e45e0dd4b7d4cb29dfbc20e6a76237945b"
+_commit="e2afa0a626d1ae5756b4f101bcf0308b8234c00f"
 pkgdesc="Simple camera application for mobile devices"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 url="https://community.kde.org/Plasma/Mobile"
 license="GPL-3.0-or-later AND BSD-3-Clause"
-depends="kirigami2 qt5-qtquickcontrols2 qt5-qtmultimedia"
+depends="kirigami2 qt5-qtquickcontrols2 qt5-qtmultimedia gst-plugins-bad gst-plugins-good"
 makedepends="extra-cmake-modules qt5-qtbase-dev kpackage-dev kcoreaddons-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev"
 source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-camera/-/archive/$_commit/plasma-camera-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
@@ -37,4 +37,4 @@ package() {
 	cd "$builddir"/build
 	DESTDIR="$pkgdir" make install
 }
-sha512sums="a746a5155e2aeef5c40a06ffa9f885ebaa50e8a07714272a644e5e9fb78e3875fe5f5026207cda33f5c97bb496982b68fb28abdab1376f1ca4f47012284dbe4c  plasma-camera-2fa0b0e45e0dd4b7d4cb29dfbc20e6a76237945b.tar.gz"
+sha512sums="f64eb79fd2970c1c61b65f697f46dcee8d5e8f99b2155d21ab7518a969d07bcafeab909ddecae8b93a7c40f58161f75a212840d7c4420820d8dbb0dbf431b0d3  plasma-camera-e2afa0a626d1ae5756b4f101bcf0308b8234c00f.tar.gz"
