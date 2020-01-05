@@ -1,14 +1,13 @@
+# Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=mkbootimg-osm0sis
 pkgver=2019.09.20
-pkgrel=0
+pkgrel=1
 pkgdesc="Android bootimg tools (maintained fork of the C version, see #441)"
 url="https://github.com/osm0sis/mkbootimg"
 arch="all"
-license="APACHE2"
-depends=""
+license="Apache-2.0"
 provides="mkbootimg=$pkgver unpackbootimg=$pkgver"
 replaces="mkbootimg"
-subpackages=""
 source="$pkgname-$pkgver.tar.gz::https://github.com/osm0sis/mkbootimg/archive/$pkgver.tar.gz"
 options="!check"
 builddir="$srcdir/mkbootimg-$pkgver"
@@ -19,13 +18,12 @@ prepare() {
 }
 
 build() {
-	cd "$builddir"
 	make -j1
 }
 
 package() {
-	install -Dm755 "$builddir/mkbootimg" "${pkgdir}/usr/bin/mkbootimg-osm0sis"
-	install -Dm755 "$builddir/unpackbootimg" "${pkgdir}/usr/bin/unpackbootimg"
+	install -Dm755 "$builddir/mkbootimg" "$pkgdir/usr/bin/mkbootimg-osm0sis"
+	install -Dm755 "$builddir/unpackbootimg" "$pkgdir/usr/bin/unpackbootimg"
 }
 
 sha512sums="ec396b137d4159a3ae0a0d40e25904c7d954ed6e0ce32f4ebb8fc885fd1d3a948a56e41e3404597a8b3768a3e468a133b4db99ef85678ffffc13ac17034b9185  mkbootimg-osm0sis-2019.09.20.tar.gz"
