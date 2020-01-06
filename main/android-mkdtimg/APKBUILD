@@ -1,23 +1,21 @@
+# Contributor: Zhuowei Zhang <zhuoweizhang@yahoo.com>
+# Maintainer: Zhuowei Zhang <zhuoweizhang@yahoo.com>
 pkgname=android-mkdtimg
 pkgver=1
-pkgrel=0
+pkgrel=1
+_commit="f7b3c0ec3ab51b8000de5a5cb7485e91ef35370b"
 pkgdesc="Tool to create dtbo images"
 url="https://android.googlesource.com/platform/system/libufdt/"
 arch="all"
 license="Apache-2.0"
 depends="libfdt"
 makedepends="dtc-dev"
-install=""
-subpackages=""
 # android-o-mr1-iot-release-smart-display-r4
-_commit="f7b3c0ec3ab51b8000de5a5cb7485e91ef35370b"
-source="
-	https://gitlab.com/zhuowei/android-mkdtimg/-/archive/$_commit/$_commit.tar.gz
-"
+source="https://gitlab.com/zhuowei/android-mkdtimg/-/archive/$_commit/$_commit.tar.gz"
+options="!check" # No tests
 builddir="$srcdir/android-mkdtimg-$_commit"
 
 build() {
-	cd "$builddir"
 	$CC -o mkdtimg -Wall -Os -I sysdeps/include \
 		utils/src/mkdtimg.c utils/src/mkdtimg_cfg_create.c \
 		utils/src/mkdtimg_core.c utils/src/mkdtimg_create.c \
@@ -25,12 +23,8 @@ build() {
 		sysdeps/libufdt_sysdeps_posix.c -lfdt
 }
 
-check() {
-	cd "$builddir"
-}
-
 package() {
-	install -D -m755 "$builddir"/mkdtimg \
+	install -D -m755 mkdtimg \
 		"$pkgdir"/usr/bin/mkdtimg
 }
 
