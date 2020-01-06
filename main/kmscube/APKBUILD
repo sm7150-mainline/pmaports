@@ -1,15 +1,17 @@
+# Contributor: Zhuowei Zhang <zhuoweizhang@yahoo.com>
+# Maintainer: Zhuowei Zhang <zhuoweizhang@yahoo.com>
 pkgname=kmscube
 pkgver=0_git20190918
-pkgrel=0
+pkgrel=1
+_commit="76bb57d539cb43d267e561024c34e031bf351e04"
 pkgdesc="Simple demo for testing kernel mode setting support"
 url="https://gitlab.freedesktop.org/mesa/kmscube"
 arch="all"
 license="MIT"
 makedepends="libdrm-dev libpng-dev mesa-dev meson"
-_commit="76bb57d539cb43d267e561024c34e031bf351e04"
-source="https://gitlab.freedesktop.org/mesa/kmscube/-/archive/${_commit}/kmscube-${_commit}.tar.gz"
+source="https://gitlab.freedesktop.org/mesa/kmscube/-/archive/$_commit/kmscube-$_commit.tar.gz"
 options="!check" # No tests
-builddir="$srcdir/kmscube-${_commit}"
+builddir="$srcdir/kmscube-$_commit"
 
 build() {
 	meson \
@@ -18,12 +20,12 @@ build() {
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
 		--buildtype=release \
-		. build
-	ninja -C build
+		. output
+	ninja -C output
 }
 
 package() {
-	DESTDIR="$pkgdir" ninja -C build install
+	DESTDIR="$pkgdir" ninja -C output install
 }
 
 sha512sums="fe781e64eda7f18e55364872e60756e536a0806b08cc7ccd97c86a0ba123ca7bb974de62c8a73b5c1d5b01a16a1172e6269dcb0e76583ae33874d52c376e0d26  kmscube-76bb57d539cb43d267e561024c34e031bf351e04.tar.gz"
