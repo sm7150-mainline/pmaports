@@ -1,29 +1,36 @@
+# Contributor: Clayton Craft <clayton@craftyguy.net>
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=uuu
 pkgver=1.3
-pkgrel=0
+pkgrel=1
+_commit="8bb3f0169778e5ae9ed498ba5652d65eccc77cff"
 pkgdesc="Purism fork of the Universal Update Utility: Freescale/NXP I.MX Chip image deploy tools"
 url="https://source.puri.sm/Librem5/mfgtools"
 arch="x86_64"
-license="BSD"
+license="BSD-3-Clause"
 depends="libusb-compat"
-makedepends="libzip-dev libusb-compat-dev libusb-dev bzip2-dev cmake"
-_commit="8bb3f0169778e5ae9ed498ba5652d65eccc77cff"
-source="$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/mfgtools/-/archive/${_commit}.tar.gz"
+makedepends="cmake libzip-dev libusb-dev bzip2-dev"
+source="$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/mfgtools/-/archive/$_commit.tar.gz
+	ignore-git-version.patch"
 options="!check"
+builddir="$srcdir/mfgtools-$_commit"
 
-builddir="$srcdir"/mfgtools-"$_commit"
 build() {
-	cd "$builddir"
-	cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr
+
 	mkdir -p "$builddir"/libuuu/gen
-	echo "#define GIT_VERSION \"lib${pkgver}\"" > "$builddir"/libuuu/gen/gitversion.h.tmp
+	echo "#define GIT_VERSION \"lib$pkgver\"" > "$builddir"/libuuu/gen/gitversion.h.tmp
+
 	make
 }
 
 package() {
-	cd "$builddir"
-        echo "#define GIT_VERSION \"lib${pkgver}\"" > "$builddir"/libuuu/gen/gitversion.h.tmp
-	make PREFIX=/usr DESTDIR="$pkgdir"/ install
+	echo "#define GIT_VERSION \"lib$pkgver\"" > "$builddir"/libuuu/gen/gitversion.h.tmp
+
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="f3c004d4e712123d3c2ae2e4a08e3dfd64ed9b065edb05aa0e4d7c6a5d9b1b6ea7d5190b6709c522ba7a5a3e9c978aefc3865a2e16c5696b8024a9584e3ab2a5  uuu-8bb3f0169778e5ae9ed498ba5652d65eccc77cff.tar.gz"
+sha512sums="f3c004d4e712123d3c2ae2e4a08e3dfd64ed9b065edb05aa0e4d7c6a5d9b1b6ea7d5190b6709c522ba7a5a3e9c978aefc3865a2e16c5696b8024a9584e3ab2a5  uuu-8bb3f0169778e5ae9ed498ba5652d65eccc77cff.tar.gz
+b6ab9acadd46360fca1944b3abe93c3eafdafd3343e32350fed47426c7858b59bb49554deb6c8e249984878276a9f288546702267f4dc3774918dfdf2a61ed83  ignore-git-version.patch"
