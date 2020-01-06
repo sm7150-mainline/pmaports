@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: red-black-bonsai <red-black-bonsai@gmx.net>
+pkgname="device-medion-kai"
+pkgdesc="Lenovo Medion Lifetab S9714"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-medion-kai mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="8ec9bbe89a25cd1f986a70e985f6c045027300ed1a1c0323da3fddf3a9b223eaf0210a9b98fc7188196427ea9078a853ef78457a730494d166bdb1e0d84ea764  deviceinfo"
