@@ -1,22 +1,23 @@
+# Contributor:
 pkgname=firmware-aosp-broadcom-wlan
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Broadcom Wi-Fi firmware from AOSP"
 url="https://android.googlesource.com/platform/hardware/broadcom/wlan/+/android-8.0.0_r12"
 arch="armhf armv7 aarch64"
 license="proprietary"
-options="!check !strip !archcheck"
+options="!check !strip !archcheck !spdx"
 
 # Sources
 _commit="6c8ef5b600cec5d36a54a0276fe8c97b9ab8d6bb"
-_url="https://github.com/zhuowei/android_hardware_broadcom_wlan"
-source=$pkgname-$_commit.tar.gz::$_url"/archive/${_commit}.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/zhuowei/android_hardware_broadcom_wlan/archive/$_commit.tar.gz"
+builddir="$srcdir/android_hardware_broadcom_wlan-$_commit"
 
 package() {
-	cd "$srcdir/android_hardware_broadcom_wlan-$_commit/bcmdhd/firmware"
+	cd bcmdhd/firmware
 	for _i in */*.bin; do
 		install -Dm644 "$_i" \
-			"$pkgdir/lib/firmware/postmarketos/bcmdhd/$_i"
+			"$pkgdir"/lib/firmware/postmarketos/bcmdhd/"$_i"
 	done
 }
 
