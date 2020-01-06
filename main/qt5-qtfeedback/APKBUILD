@@ -2,18 +2,17 @@
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=qt5-qtfeedback
 pkgver=0_git20180903
+pkgrel=1
 _commit="a14bd0bb1373cde86e09e3619fb9dc70f34c71f2"
-pkgrel=0
 arch="x86_64"
 url='http://qt-project.org/'
-license="LGPL-3.0"
-pkgdesc='Qt Tactile Feedback'
-depends=""
+license="LGPL-2.1-only AND LGPL-3.0-only AND GPL-3.0-only AND Qt-GPL-exception-1.0"
+pkgdesc="Qt Tactile Feedback"
 depends_dev="qt5-qtdeclarative-dev"
 makedepends="$depends_dev git"
-source="$pkgname-$_commit.tar.gz::https://github.com/qt/${pkgname/qt5-/}/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/qt/qtfeedback/archive/$_commit.tar.gz"
 subpackages="$pkgname-dev $pkgname-doc"
-builddir="$srcdir/${pkgname/qt5-/}-$_commit"
+builddir="$srcdir/qtfeedback-$_commit"
 options="!check"
 
 prepare() {
@@ -23,13 +22,11 @@ prepare() {
 }
 
 build() {
-	cd "$builddir"
 	qmake-qt5
 	make
 }
 
 package() {
-	cd "$builddir"
 	make INSTALL_ROOT="$pkgdir" install
 
 	# Drop QMAKE_PRL_BUILD_DIR because reference the build dir
