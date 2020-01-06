@@ -1,32 +1,30 @@
+# Contributor: Martijn Brixit <martijn@brixit.nl>
+# Maintainer: Martijn Brixit <martijn@brixit.nl>
 pkgname=unixbench
 pkgver=5.1.3_git20180129
 _commit="070030e09f6effdf0c6721e8fcc3a5c6fb5bed1a"
-pkgrel=0
+pkgrel=1
 pkgdesc="The original BYTE UNIX benchmark suite"
 url="https://github.com/kdlucas/byte-unixbench"
 arch="all"
-license="GPL2"
+license="GPL-2.0-or-later"
 depends="perl make"
-makedepends=""
-install=""
 options="!check"
 source="
-	${pkgname}-${_commit}.tar.gz::https://github.com/kdlucas/byte-unixbench/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/kdlucas/byte-unixbench/archive/$_commit.tar.gz
 	ubench
 "
-builddir="$srcdir/byte-unixbench-${_commit}/UnixBench"
+builddir="$srcdir/byte-unixbench-$_commit/UnixBench"
 
 build() {
-	cd "$builddir"
 	make
 }
 
 package() {
-	cd "$builddir"
-	install -Dm775 ${srcdir}/ubench "${pkgdir}/usr/bin/ubench"
-	install -Dm775 Run "${pkgdir}/usr/share/unixbench/Run"
+	install -Dm775 "$srcdir"/ubench "$pkgdir"/usr/bin/ubench
+	install -Dm775 Run "$pkgdir"/usr/share/unixbench/Run
 
-	cp -a pgms testdir Makefile src ${pkgdir}/usr/share/unixbench
+	cp -a pgms testdir Makefile src "$pkgdir"/usr/share/unixbench
 }
 
 sha512sums="ca4b7ab21eaacddcb99f9237998c42e2179d8e136e23dc0e4d9b2774f460588bc1851dbf0cdb9ad99bd485eb67434a74408f878f76a8ea5672615495ea074124  unixbench-070030e09f6effdf0c6721e8fcc3a5c6fb5bed1a.tar.gz
