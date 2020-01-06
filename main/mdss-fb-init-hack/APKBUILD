@@ -1,16 +1,16 @@
+# Contributor: Atilla Szollosi <ata2001@airmail.cc>
+# Maintainer: Atilla Szollosi <ata2001@airmail.cc>
 pkgname=mdss-fb-init-hack
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Workaround for buggy framebuffer driver (mdss-fb)"
 url="https://gitlab.com/postmarketOS/pmbootstrap"
 arch="noarch"
-license="GPL3"
+license="GPL-3.0-or-later"
 depends="msm-fb-refresher"
-makedepends=""
 install="$pkgname.post-install"
-subpackages=""
 source="$pkgname.initd $pkgname.sh"
-options=""
+options="!check" # No tests
 
 package() {
 	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
