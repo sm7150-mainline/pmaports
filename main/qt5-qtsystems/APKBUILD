@@ -3,17 +3,16 @@
 pkgname=qt5-qtsystems
 pkgver=0_git20190103
 _commit="e3332ee38d27a134cef6621fdaf36687af1b6f4a"
-pkgrel=0
+pkgrel=1
 arch="x86_64"
 url='http://qt-project.org/'
-license="LGPL-3.0"
-pkgdesc='Qt Systems'
-depends=""
+license="LGPL-2.1-only AND LGPL-3.0-only AND GPL-3.0-only AND Qt-GPL-exception-1.0"
+pkgdesc="Qt Systems"
 depends_dev="qt5-qtdeclarative-dev"
 makedepends="$depends_dev git"
-source="$pkgname-$_commit.tar.gz::https://github.com/qt/${pkgname/qt5-/}/archive/$_commit.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/qt/qtsystems/archive/$_commit.tar.gz"
 subpackages="$pkgname-dev $pkgname-doc"
-builddir="$srcdir/${pkgname/qt5-/}-$_commit"
+builddir="$srcdir/qtsystems-$_commit"
 options="!check"
 
 prepare() {
@@ -23,13 +22,11 @@ prepare() {
 }
 
 build() {
-	cd "$builddir"
 	qmake-qt5
 	make
 }
 
 package() {
-	cd "$builddir"
 	make INSTALL_ROOT="$pkgdir" install
 
 	# Drop QMAKE_PRL_BUILD_DIR because reference the build dir
