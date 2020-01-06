@@ -108,7 +108,7 @@ def get_changed_packages_sanity_check(count):
     sys.exit(1)
 
 
-def get_changed_packages():
+def get_changed_packages(with_directory=False):
     files = get_changed_files()
     ret = set()
     for file in files:
@@ -120,7 +120,10 @@ def get_changed_packages():
             continue
 
         # Add to the ret set (removes duplicated automatically)
-        ret.add(file.split("/")[1])
+        if with_directory:
+            ret.add(file)
+        else:
+            ret.add(file.split("/")[1])
     return ret
 
 
