@@ -1,26 +1,21 @@
+# Contributor: rrooij
 pkgname=blobtools
 pkgver=0.0_git20121024
-pkgrel=0
+pkgrel=1
+_commit="6186e33baa10ce6f1c738d7b91eb5153743105af"
 pkgdesc="Tools for unpacking & repacking blobs used for updating 'hidden' partitions on ASUS Transformer"
 url="https://github.com/AndroidRoot/BlobTools"
 arch="all"
 license="Apache-2.0"
-options="!check"
-depends=""
-makedepends=""
-subpackages=""
-
-_commit="6186e33baa10ce6f1c738d7b91eb5153743105af"
-source="$pkgname-$_commit.tar.gz::https://github.com/AndroidRoot/BlobTools/archive/${_commit}.tar.gz"
-
-builddir="$srcdir"/BlobTools-$_commit
+source="$pkgname-$_commit.tar.gz::https://github.com/AndroidRoot/BlobTools/archive/$_commit.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/BlobTools-$_commit"
 build() {
-	cd "$builddir"
 	make
 }
 
 package() {
-	for i in "$builddir"/blobpack "$builddir"/blobunpack; do
+	for i in blobpack blobunpack; do
 		install -Dm755 "$i" "$pkgdir"/usr/bin/"$(basename "$i")"
 	done
 }
