@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2019 Oliver Smith
+# Copyright 2020 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import argparse
