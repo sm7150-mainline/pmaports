@@ -1,23 +1,24 @@
+# Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=heimdall
 pkgver=1.4.2
-pkgrel=3
+pkgrel=4
 pkgdesc="Flasher for Samsung Galaxy S devices"
 url="https://gitlab.com/BenjaminDobell/Heimdall"
 arch="all"
 license="MIT"
-depends=""
 makedepends="libusb-dev cmake"
-subpackages=""
 source="
-	${url}/-/archive/v${pkgver}/Heimdall-v${pkgver}.tar.gz
+	https://gitlab.com/BenjaminDobell/Heimdall/-/archive/v$pkgver/Heimdall-v$pkgver.tar.gz
 	heimdall_flash_kernel.sh
 	heimdall_wait_for_device.sh
 "
 options="!check"
-builddir="$srcdir"/Heimdall-v$pkgver
+builddir="$srcdir/Heimdall-v$pkgver"
 
 build() {
-	cmake -DCMAKE_BUILD_TYPE=Release -DDISABLE_FRONTEND=ON .
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DDISABLE_FRONTEND=ON
 	make
 }
 
