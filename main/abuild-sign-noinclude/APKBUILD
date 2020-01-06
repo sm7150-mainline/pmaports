@@ -2,35 +2,29 @@
 # Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=abuild-sign-noinclude
 pkgver=3.4.0
-pkgrel=0
+pkgrel=1
 pkgdesc="self-contained abuild-sign to be used by non-Alpine systems"
 url="https://git.alpinelinux.org/cgit/abuild/"
 arch="x86_64"
-license="GPL-2.0"
+license="GPL-2.0-only"
 makedepends="openssl-dev openssl-libs-static zlib-dev zlib-static pkgconf"
+source="https://dev.alpinelinux.org/archive/abuild/abuild-$pkgver.tar.xz
+	0002-add-abuild-sign.noinclude-target.patch
+	0003-use-abuild-tar.static-from-script-directory.patch"
 options="!check"
-
-# first patch is being upstreamed here:
-# https://github.com/alpinelinux/abuild/pull/49
-source="https://dev.alpinelinux.org/archive/abuild/abuild-${pkgver}.tar.xz
-    0002-add-abuild-sign.noinclude-target.patch
-    0003-use-abuild-tar.static-from-script-directory.patch"
 builddir="$srcdir/abuild-$pkgver"
 
 prepare() {
 	default_prepare
 
-	cd "$builddir"
 	sed -i -e "/^CHOST=/s/=.*/=$CHOST/" abuild.conf
 }
 
 build() {
-	cd "$builddir"
 	make VERSION="$pkgver-r$pkgrel" abuild-tar.static abuild-sign.noinclude
 }
 
 package() {
-	cd "$builddir"
 	install -Dm755 abuild-tar.static "$pkgdir"/usr/bin/abuild-tar.static
 	install -Dm755 abuild-sign.noinclude "$pkgdir"/usr/bin/abuild-sign.noinclude
 }
