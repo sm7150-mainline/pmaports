@@ -1,26 +1,25 @@
+# Contributor: Clayton Craft <clayton@craftyguy.net>
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=osk-sdl
 pkgver=0.53
-pkgrel=0
+pkgrel=1
 pkgdesc="Onscreen keyboard for unlocking LUKS devices"
 url="https://gitlab.com/postmarketOS/osk-sdl"
 arch="all"
-license="GPL3"
-depends="sdl2 sdl2_ttf cryptsetup-libs mesa-gl directfb"
+license="GPL-3.0-or-later"
+depends="cryptsetup-libs mesa-gl directfb"
 makedepends="linux-headers sdl2-dev sdl2_ttf-dev cryptsetup-dev"
-subpackages=""
-
-source="${pkgname}-${pkgver}-${pkgrel}.tar.gz::https://gitlab.com/postmarketOS/osk-sdl/-/archive/${pkgver}/osk-sdl-${pkgver}.tar.gz"
-
-options="!strip"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketOS/osk-sdl/-/archive/$pkgver/osk-sdl-$pkgver.tar.gz"
+options="!strip !check" # No tests
 
 build() {
-    make
+	make
 }
 
 package() {
-    install -D -m755 "${srcdir}/${pkgname}-${pkgver}"/bin/osk-sdl \
-        "$pkgdir"/usr/bin/osk-sdl
-    install -D -m755 "${srcdir}/${pkgname}-${pkgver}"/osk.conf \
-        "$pkgdir"/etc/osk.conf
+	install -D -m755 bin/osk-sdl \
+		"$pkgdir"/usr/bin/osk-sdl
+	install -D -m755 osk.conf \
+		"$pkgdir"/etc/osk.conf
 }
-sha512sums="0b48c6cbe6edce7edda8721e75be76fb984a825468b49d1ff690309c3112392f731eb919ebc96a0b085f6a5fc77e11e220fd79dbe6ea030cfddbb3cd5f86dd3f  osk-sdl-0.53-0.tar.gz"
+sha512sums="0b48c6cbe6edce7edda8721e75be76fb984a825468b49d1ff690309c3112392f731eb919ebc96a0b085f6a5fc77e11e220fd79dbe6ea030cfddbb3cd5f86dd3f  osk-sdl-0.53.tar.gz"
