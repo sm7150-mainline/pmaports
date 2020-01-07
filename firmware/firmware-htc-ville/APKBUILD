@@ -1,24 +1,22 @@
+# Contributor: escoand <mail-an-papierkorb@web.de>
 pkgname=firmware-htc-ville
 pkgver=1
-pkgrel=0
+pkgrel=1
+_commit="264fdb3e9e01c85baa487b057b149262e2df9310"
 pkgdesc="Firmware files for HTC One S (htc-ville)"
 url="https://postmarketos.org"
 arch="armhf"
 license="proprietary"
 depends="wcnss-wlan"
-options="!check !strip !archcheck"
-
-# source
-_commit="264fdb3e9e01c85baa487b057b149262e2df9310"
-_repo="android_vendor_htc_ville"
-_url="https://github.com/UISS-Dev-Team"
-source="$pkgname-$_commit.tar.gz::$_url/$_repo/archive/${_commit}.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/UISS-Dev-Team/android_vendor_htc_ville/archive/$_commit.tar.gz"
+options="!check !strip !archcheck !spdx textrels"
+builddir="$srcdir/android_vendor_htc_ville-$_commit"
 
 package() {
-	cd "$srcdir/$_repo-$_commit/proprietary/etc/firmware"
-	find -type f |
-	while read _i; do
-		install -D -m644 "$_i" "$pkgdir/lib/firmware/postmarketos/$_i"
+	find . -type f |
+	while read -r _i; do
+		install -D -m644 "$_i" \
+			"$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 }
 sha512sums="0b03cea2effcdaa1b230e909152ea8fbe79ed3e25f70e22ec7d8797147ff2276958b328f438e49a66c07128f063477d1069e00f90a8fadd7946c58da6838d919  firmware-htc-ville-264fdb3e9e01c85baa487b057b149262e2df9310.tar.gz"
