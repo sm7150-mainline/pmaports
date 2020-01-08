@@ -1,0 +1,81 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Maintainer: Anri Dellal <anridellal@gmail.com>
+# Contributor: Anri Dellal <anridellal@gmail.com>
+# Kernel config based on: arch/arm/configs/sp7715ga-native_defconfig
+
+pkgname="linux-nobby-230"
+pkgver=3.10.17
+pkgrel=0
+pkgdesc="Nobby 230 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="nobby-230"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="gcc4 perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev"
+
+# Compiler: GCC4. Doesn't boot with newer versions of GCC
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_scx15_sp7715ga_FS001"
+_commit="161c7229a4873ead08fc0118d93967b66e38d645"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Qiangong2/$_repository/archive/$_commit.tar.gz
+	$_config
+	kernel-use-the-gnu89-standard-explicitly.patch
+	01-fix-X11.patch
+	02-arm-eabi-not-found.patch
+	03-add-ili9340-support.patch
+	04-add-keypad-support.patch
+	05-add-xt-dscp-mask-define.patch
+	06-set-BGR565-color-mode.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="0bee0e9c67c155957ed90f6f3707ec9663fd541c1c73e93c747b71423b37d64486c1c758b5e889280210b69d377c0bb203346f8d290252d5a4989788749b6e89  linux-nobby-230-161c7229a4873ead08fc0118d93967b66e38d645.tar.gz
+d24744af22416041aad23e67af3b37223e8a3ea8c6e2966431c8519886c2c0520f7c80939fdbe87225172f33f53e31a6501caac7c847c34b72f54b3c801cce1c  config-nobby-230.armv7
+ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch
+fd3d5578120f43a09013feebe3ea75cff71de1078a92a20d27083f15279106f4c95f7889d432eabc689954d9db4bff09a429374b8d2891f23f08d64e66affd86  01-fix-X11.patch
+1cc15cf60c31f9cf4d82c74c3578fd8be55506278e5106634973784179509e47a7741e42241a7aa8622c0ce4192a331cf860b11537998ba4f8af4da13718229e  02-arm-eabi-not-found.patch
+720babeda78dfda03e99771bcdbaea35a9dc5fbe4ad6d6464802fda66829cb4b74a275d0f209e7f093c98a3b5ab654edeebfbdc499398ca8b21046534f7acd0b  03-add-ili9340-support.patch
+3b05155fdde4eca90c3c3be672f4e6eb2d888110eceb6ca88b593f835be36bcab91206dced76bc0a3ca71346ce50b4adec10a9f47a00a69b1d6e11ac268a51a9  04-add-keypad-support.patch
+8eb858cb1389bc5a9b39be96d8bb76d5ba6d58859eab32a496103d0d70218e994956fdd45e73e58a56881348b07503cdb177ee8836b797772af9d2743d58ed03  05-add-xt-dscp-mask-define.patch
+b0b59a222ab44d1c4e90fed0506d38282e8a2dfbed4bde9c0c5e381ae40177d916abec984a2b66fbca9d96c3afe4e3fa0e0922a300e91cb8ac1020cb15a9f88b  06-set-BGR565-color-mode.patch"

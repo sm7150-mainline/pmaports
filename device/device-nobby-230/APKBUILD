@@ -1,0 +1,34 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Anri Dellal <anridellal@gmail.com>
+# Contributor: Anri Dellal <anridellal@gmail.com>
+pkgname="device-nobby-230"
+pkgdesc="Nobby 230"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="msm-fb-refresher postmarketos-base linux-nobby-230 mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	asound.conf
+	initfs-hook.sh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -D -m644 "$srcdir"/asound.conf \
+		"$pkgdir"/etc/asound.conf
+}
+
+
+sha512sums="a3e58864621ad657438b629c65cfc62ca8092d9f30a51ba8dcfb80ede6d50db64cfd22ff8492ddd172180ffd6e32304d4a2ec96a2050b54abd929430a16011d3  deviceinfo
+369df19f9bf7546236b81a33c00b6384e88e979c4711fead3749f8e60f4cd99f37b31baf1f00d05a821cb71ca2f440648e13083653f1a4ec0c178c7c1c415a58  asound.conf
+b2838f65401d506a8c64a022a12887e67c410f3e21279e1c6ec2b88c3b51a0ce4f31b9de6883c3ff786cbb000a7fe8a39342fe313a6425bd6f281e521c143492  initfs-hook.sh"
