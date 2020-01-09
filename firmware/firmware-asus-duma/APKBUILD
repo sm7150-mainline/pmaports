@@ -1,25 +1,21 @@
+# Contributor: myfreeweb <greg@unrelenting.technology>
 pkgname=firmware-asus-duma
 pkgver=1
-pkgrel=1
+pkgrel=2
+_commit="598acdf72ad986302d028fef7e9bcb5daadf7d79"
 pkgdesc="Firmware files for ASUS MeMO Pad FHD 10 (asus-duma)"
 url="https://postmarketos.org"
 arch="armhf"
 license="proprietary"
 depends="wcnss-wlan"
-options="!check !strip !archcheck"
-
-# Source
-_commit="598acdf72ad986302d028fef7e9bcb5daadf7d79"
-_url="https://github.com/yatto/android_vendor_asus_duma"
-source="$pkgname-$_commit.tar.gz::$_url/archive/${_commit}.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/yatto/android_vendor_asus_duma/archive/$_commit.tar.gz"
+options="!check !strip !archcheck !spdx"
+builddir="$srcdir/android_vendor_asus_duma-$_commit"
 
 package() {
-	cd "$srcdir/android_vendor_asus_duma-$_commit/proprietary/vendor/firmware"
-
-	# /lib/firmware/postmarketos
 	_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b05 wcnss.mdt"
 	for _i in $_files; do
-		install -D -m644 "$_i" "$pkgdir/lib/firmware/postmarketos/$_i"
+		install -D -m644 proprietary/vendor/firmware/"$_i" "$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 }
 
