@@ -1,23 +1,21 @@
+# Contributor: Alex Roth <alex@magmastone.net>
 pkgname=firmware-samsung-i747m
 pkgver=1
-pkgrel=0
+pkgrel=1
+_commit="15cea7e29a50a85f7cd5ce27e5ff865314467ca3"
 pkgdesc="Samsung Galaxy SIII i747m Firmware"
 url="https://github.com/Zerospeed8/device_samsung_d2att"
 arch="armhf"
 license="proprietary"
-options="!check !strip"
-
-# Source
-_commit="15cea7e29a50a85f7cd5ce27e5ff865314467ca3"
-source=$pkgname-$_commit.tar.gz::$url"/archive/${_commit}.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/Zerospeed8/device_samsung_d2att/archive/$_commit.tar.gz"
+options="!check !strip !archcheck !spdx"
+builddir="$srcdir/device_samsung_d2att-$_commit"
 
 package() {
-	cd "$srcdir/device_samsung_d2att-${_commit}/vendor/samsung/d2att/proprietary/"
-
 	# Wifi
-	install -Dm644 "etc/wifi/bcmdhd_sta.bin_b2" \
+	install -Dm644 vendor/samsung/d2att/proprietary/etc/wifi/bcmdhd_sta.bin_b2 \
 		"$pkgdir/lib/firmware/postmarketos/bcmdhd_sta.bin_b2"
-	install -Dm644 "etc/wifi/nvram_net.txt" \
+	install -Dm644 vendor/samsung/d2att/proprietary/etc/wifi/nvram_net.txt \
 		"$pkgdir/lib/firmware/postmarketos/nvram_net.txt"
 }
 
