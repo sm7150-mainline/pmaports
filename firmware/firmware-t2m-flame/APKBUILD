@@ -1,20 +1,19 @@
+# Contributor: Yuval Adam <_@yuv.al>
 pkgname=firmware-t2m-flame
 pkgver=1
-pkgrel=4
+pkgrel=5
+_commit="503a4052a8bfdc3b4c06533f2d08fe4d6a923842"
 pkgdesc="Mozilla Flame Firmware"
 url="https://github.com/yuvadm/mozilla-flame-firmware"
 arch="armhf"
 license="proprietary"
-options="!check !strip !archcheck"
-
-# Source
-_commit="503a4052a8bfdc3b4c06533f2d08fe4d6a923842"
-source="$pkgname-$_commit.tar.gz::$url/archive/${_commit}.tar.gz"
+source="$pkgname-$_commit.tar.gz::https://github.com/yuvadm/mozilla-flame-firmware/archive/$_commit.tar.gz"
+options="!check !strip !archcheck !spdx"
+builddir="$srcdir/mozilla-flame-firmware-$_commit"
 
 package() {
-	cd "$srcdir/mozilla-flame-firmware-$_commit"
 	for _i in *; do
-		install -Dm644 "$_i" "$pkgdir/lib/firmware/postmarketos/$_i"
+		install -Dm644 "$_i" "$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 }
 
