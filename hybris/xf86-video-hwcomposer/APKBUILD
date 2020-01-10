@@ -1,6 +1,6 @@
 pkgname=xf86-video-hwcomposer
 pkgver=1.0_git20190925
-pkgrel=0
+pkgrel=1
 pkgdesc="X.Org driver for Android devices rendering through HWComposer API"
 url="https://github.com/NotKit/xf86-video-hwcomposer"
 arch="armhf armv7 aarch64 !x86 !x86_64"
@@ -8,13 +8,12 @@ license="MIT"
 depends="drihybris glamor-hybris"
 makedepends="autoconf automake util-macros libtool
 	xorg-server-dev libxi-dev fontsproto randrproto
-	videoproto renderproto xf86dgaproto drihybrisproto
-	glamor-hybris-dev drihybris-dev
+	videoproto renderproto xf86dgaproto glamor-hybris-dev drihybris-dev
 	android-headers-4.4 android-headers-7.1 android-headers-7.1-caf
 	android-headers-9.0
 	libhybris-dev libhybris libhybris-9.0"
 _commit="b33e119005158ddc1988b495121591496bddb915"
-source="$pkgname-$_commit.tar.gz::https://github.com/NotKit/$pkgname/archive/$_commit.tar.gz
+source="$pkgname-$_commit.tar.gz::https://github.com/NotKit/xf86-video-hwcomposer/archive/$_commit.tar.gz
 	30-modules-hybris.conf"
 
 subpackages="$pkgname-doc"
@@ -33,7 +32,6 @@ builddir="$srcdir/$pkgname-$_commit"
 _tmppkgdir="$srcdir/tmpinstall"
 
 build() {
-	cd "$builddir"
 	export LDFLAGS="$LDFLAGS -Wl,-z,lazy"
 	export CPPFLAGS="$CPPFLAGS -I/usr/include/android-9.0 -DMESA_EGL_NO_X11_HEADERS"
 
@@ -55,12 +53,11 @@ build() {
 
 		make clean
 		make
-		make DESTDIR="${_tmppkgdir}/$pkgname-$_ver" install
+		make DESTDIR="$_tmppkgdir/$pkgname-$_ver" install
 	done
 }
 
 package() {
-	cd "$builddir"
 	install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
 	install -Dm644 "$srcdir"/30-modules-hybris.conf \
 		"$pkgdir"/etc/X11/xorg.conf.d/30-modules-hybris.conf
@@ -68,8 +65,8 @@ package() {
 
 _specific() {
 	_lib="xorg/modules/drivers/hwcomposer_drv.so"
-	install -Dm644 "${_tmppkgdir}/${subpkgname}/usr/lib/${_lib}" \
-			"${subpkgdir}/usr/lib/${_lib}"
+	install -Dm644 "$_tmppkgdir/$subpkgname/usr/lib/$_lib" \
+			"$subpkgdir/usr/lib/$_lib"
 }
 
 sha512sums="61c7f528c0f8848edc72b4f926095a610abf9b7ea1512cce518d6dae359e76a6eb50fc18558238fc3dc6a31ce3cc3237e4663198a05744400282db2825ee6ddb  xf86-video-hwcomposer-b33e119005158ddc1988b495121591496bddb915.tar.gz
