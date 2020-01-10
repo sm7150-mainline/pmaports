@@ -1,18 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Alex Roth <alex@magmastone.net>
 pkgname="device-samsung-i747m"
 pkgdesc="Samsung Galaxy SIII (USA/Canada)"
 pkgver=0.1
-pkgrel=8
+pkgrel=9
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
 options="!check !archcheck"
 depends="postmarketos-base linux-samsung-i747m mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
 source="deviceinfo 90-android-touch-dev.rules fb.modes"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -Dm644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -Dm644 "$srcdir"/fb.modes \
