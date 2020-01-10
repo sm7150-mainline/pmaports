@@ -1,18 +1,21 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname="device-pine64-pinetab"
 pkgdesc="PINE64 PineTab"
 pkgver=0.1
-pkgrel=10
+pkgrel=11
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-postmarketos-allwinner u-boot-pine64 uboot-tools mesa-git mesa-git-glapi mesa-git-gl mesa-git-egl mesa-git-dri-lima mesa-git-dri-kmsro mesa-git-gbm mesa-git-gles"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-sway
-             $pkgname-weston
-             $pkgname-phosh
-             $pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-sway
+	$pkgname-weston
+	$pkgname-phosh
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 install="$pkgname.post-install"
 source="
 	deviceinfo
@@ -38,22 +41,22 @@ build() {
 }
 
 sway() {
-        install_if="$pkgname postmarketos-ui-sway"
-        depends="dmenu"
-        install -D -m644 "$srcdir"/sway.conf \
-                "$subpkgdir"/etc/sway/config.d/pinetab
+	install_if="$pkgname postmarketos-ui-sway"
+	depends="dmenu"
+	install -D -m644 "$srcdir"/sway.conf \
+		"$subpkgdir"/etc/sway/config.d/pinetab
 }
 
 weston() {
-        install_if="$pkgname postmarketos-ui-weston"
-        install -Dm644 "$srcdir"/weston.ini \
-                "$subpkgdir"/etc/xdg/weston/weston.ini
+	install_if="$pkgname postmarketos-ui-weston"
+	install -Dm644 "$srcdir"/weston.ini \
+		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-        install -Dm644 "$srcdir"/rootston.ini \
-                "$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
 }
 
 package() {
