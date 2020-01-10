@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Adrian Siekierka <kontakt@asie.pl>
 pkgname=device-semc-anzu
 pkgdesc="Xperia Arc"
 pkgver=1
-pkgrel=9
+pkgrel=10
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
@@ -22,7 +23,7 @@ build() {
 package() {
 	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
 }
 
 nonfree_firmware() {
