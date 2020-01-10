@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname="device-pine64-a64lts"
 pkgdesc="PINE64 A64-LTS"
 pkgver=0.3
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -17,7 +18,7 @@ source="
 
 build() {
 	devicepkg_build $startdir $pkgname
-	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir"/uboot-script.cmd "$srcdir"/boot.scr
 }
 
 package() {
