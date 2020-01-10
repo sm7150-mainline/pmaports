@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname="device-pine64-pinephone"
 pkgdesc="PINE64 PinePhone"
 pkgver=0.1
-pkgrel=18
+pkgrel=19
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -25,7 +26,7 @@ source="
 
 build() {
 	devicepkg_build $startdir $pkgname
-	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir"/uboot-script.cmd "$srcdir"/boot.scr
 }
 
 package() {
