@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Nick Reitemeyer <nick.reitemeyer@web.de>
 pkgname="device-surftab-wintron7.0"
 pkgdesc="TrekStor SurfTab wintron 7.0"
 pkgver=0.3
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -21,9 +22,9 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	mkdir -p "$pkgdir/boot/grub/"
-	install -D -m644 "$srcdir/grub.cfg" \
-		"$pkgdir/boot/grub/grub.cfg"
+	mkdir -p "$pkgdir"/boot/grub/
+	install -D -m644 "$srcdir"/grub.cfg \
+		"$pkgdir"/boot/grub/grub.cfg
 }
 
 nonfree_firmware() {
