@@ -1,20 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=device-qemu-vexpress
 pkgver=1
-pkgrel=22
+pkgrel=23
 pkgdesc="Simulated device in qemu with vexpress soc"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 # NOTE: 'pmbootstrap init' allows you to choose the mesa-dri-* package
 depends="postmarketos-base linux-postmarketos-stable"
-makedepends=""
-subpackages=""
+makedepends="devicepkg-dev"
 source="deviceinfo"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 }
 
 sha512sums="4ad09997f7f5f5354453d2a5b60f4841cab245f710907591c4b066e883b8fc903c9f01096bb7cecbec32e6856942a8434a85decc1ba4a5cd65f341d8b0ba7091  deviceinfo"
