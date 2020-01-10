@@ -1,24 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: opendata26 <ctatlor97@gmail.com>
 pkgname=device-sony-castor-windy
 pkgver=1
-pkgrel=17
+pkgrel=18
 pkgdesc="Sony Xperia Z2 Tablet WIFI"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base mkbootimg linux-sony-castor-windy mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-freedreno"
+makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="modules-load.conf deviceinfo 90-android-touch-dev.rules brcmfmac4335-sdio.txt"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
-	install -D -m644 "$srcdir/brcmfmac4335-sdio.txt" \
-		"$pkgdir/lib/firmware/brcm/brcmfmac4335-sdio.txt"
-	install -D -m644 "$srcdir/90-android-touch-dev.rules" \
-		"$pkgdir/etc/udev/rules.d/90-android-touch-dev.rules"
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/brcmfmac4335-sdio.txt \
+		"$pkgdir"/lib/firmware/brcm/brcmfmac4335-sdio.txt
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
 }
 
 nonfree_firmware() {
