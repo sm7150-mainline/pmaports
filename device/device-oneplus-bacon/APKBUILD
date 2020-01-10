@@ -1,20 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Jean Lucas <jean@4ray.co>
 pkgname=device-oneplus-bacon
 pkgver=1
-pkgrel=16
+pkgrel=17
 pkgdesc="OnePlus One"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 depends="postmarketos-base linux-oneplus-bacon mkbootimg mesa-dri-swrast msm-fb-refresher"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="$pkgname-weston"
 source="deviceinfo 90-android-touch-dev.rules weston.ini"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -Dm644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
