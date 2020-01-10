@@ -1,13 +1,14 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Larvitar <chrycm1995@gmail.com>
 pkgname=device-htc-ace
 pkgver=1
-pkgrel=14
+pkgrel=15
 pkgdesc="HTC Desire HD"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 depends="postmarketos-base linux-htc-ace mkbootimg mesa-dri-swrast"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
@@ -16,11 +17,12 @@ source="
 "
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
-	install -D -m644 "$srcdir"/initfs-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
