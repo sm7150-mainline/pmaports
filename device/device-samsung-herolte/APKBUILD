@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Alexander Polynomdivision <polynomdivision@disroot.org>
 pkgname="device-samsung-herolte"
 pkgdesc="Samsung Galaxy S7"
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -18,8 +19,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir"/initfs-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 }
 
 nonfree_firmware() {
