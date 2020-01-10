@@ -1,14 +1,14 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Daniele Debernardi <drebrez@gmail.com>
 pkgname=device-samsung-i9070
 pkgver=1
-pkgrel=25
+pkgrel=26
 pkgdesc="Samsung Galaxy S Advance"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-samsung-i9070 mesa-dri-swrast"
 makedepends="devicepkg-dev"
-install=""
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
@@ -25,7 +25,7 @@ package() {
 	devicepkg_package $startdir $pkgname
 
 	install -Dm644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
 }
 
 nonfree_firmware() {
