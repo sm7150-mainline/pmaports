@@ -1,24 +1,23 @@
 pkgname=glamor-hybris
-pkgver=1.0_git20181217
+pkgver=1.0_git20191007
 pkgrel=0
-_commit="347463bcd688b75067d0dda2a920fb74fc976f51"
+_commit="28f342f937a5f9a606273b48dcede7eefbab4bab"
 pkgdesc="glamor Xserver 2D acceleration modified to work with libhybris drivers"
 url="https://github.com/NotKit/glamor-hybris"
 arch="armhf armv7 aarch64"
 license="MIT"
 subpackages="$pkgname-doc $pkgname-dev"
-depends=
 makedepends="autoconf automake util-macros libtool
 	xorg-server-dev libxi-dev fontsproto randrproto
-	videoproto renderproto drihybrisproto drihybris-dev libepoxy-dev
+	videoproto renderproto drihybris-dev libepoxy-dev
 	libhybris-dev"
 
 source="$pkgname-$_commit.tar.gz::https://github.com/NotKit/glamor-hybris/archive/$_commit.tar.gz"
+options="!check" # no testsuite
 
 builddir="$srcdir"/$pkgname-$_commit
 
 build() {
-	cd "$builddir"
 	export LDFLAGS="$LDFLAGS -Wl,-z,lazy"
 	export CPPFLAGS="$CPPFLAGS -I/usr/include/android-7.1"
 
@@ -31,9 +30,8 @@ build() {
 }
 
 package() {
-	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 	mv "$pkgdir/usr/include/xorg/glamor.h" "$pkgdir/usr/include/xorg/glamor-hybris.h"
 	install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
 }
-sha512sums="57fa7462a8967cdb282868800ca69e6ee2e2187a421853c093a4e06f8242c15b5953b86921df6e1b668a254a251b38ba80d4194ab5230fa0940f4b97545c0176  glamor-hybris-347463bcd688b75067d0dda2a920fb74fc976f51.tar.gz"
+sha512sums="49a323d40b56f15fe96a7371c864abc78669c7e58585d689c284127f1a01660504938e0dcf6e1199da4f6d382087232a00091d22efa5b12059867e45c301a584  glamor-hybris-28f342f937a5f9a606273b48dcede7eefbab4bab.tar.gz"
