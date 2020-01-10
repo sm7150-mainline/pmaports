@@ -1,20 +1,25 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Yuval Adam <_@yuv.al>
 pkgname=device-t2m-flame
 pkgver=1
-pkgrel=14
+pkgrel=15
 pkgdesc="Mozilla Flame"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-t2m-flame mkbootimg mesa-dri-swrast"
-makedepends=""
+makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 source="deviceinfo 90-android-touch-dev.rules"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -Dm644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
