@@ -1,20 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Wouter Franken <wouter.franken@gmail.com>
 pkgname=device-sony-yuga
 pkgver=1
-pkgrel=14
+pkgrel=15
 pkgdesc="Sony Xperia Z"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-sony-yuga mkbootimg msm-fb-refresher mesa-dri-swrast"
-makedepends=""
-install=""
-subpackages=""
+makedepends="devicepkg-dev"
 source="deviceinfo 90-android-touch-dev.rules"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 
