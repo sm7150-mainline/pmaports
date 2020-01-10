@@ -1,13 +1,14 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Attila Szöllősi <ata@openmailbox.org>
 pkgname=device-sony-amami
 pkgver=3
-pkgrel=2
+pkgrel=3
 pkgdesc="Sony Xperia Z1 Compact"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 depends="postmarketos-base mkbootimg mdss-fb-init-hack mesa-dri-swrast"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
@@ -16,9 +17,12 @@ subpackages="
 source="deviceinfo 90-android-touch-dev.rules fb.modes"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/fb.modes \
@@ -28,13 +32,13 @@ package() {
 kernel_downstream() {
 	pkgdesc="Display and wifi works (see device table for details)"
 	depends="linux-sony-amami"
-	mkdir "$subpkgdir"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline() {
 	pkgdesc="For kernel development only (most features aren't working)"
 	depends="linux-postmarketos-mainline"
-	mkdir "$subpkgdir"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
