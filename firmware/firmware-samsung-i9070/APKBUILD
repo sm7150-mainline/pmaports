@@ -1,23 +1,21 @@
+# Contributor: Daniele Debernardi <drebrez@gmail.com>
 pkgname=firmware-samsung-i9070
 pkgver=1
-pkgrel=1
+pkgrel=2
+_commit="e24d9687e7fda4f94fc6652d137ed8e703930c3a"
 pkgdesc="Samsung Galaxy S Advance Firmware"
 url="https://github.com/Epirex/android_vendor_samsung_u8500"
 arch="armhf"
 license="proprietary"
-
-# Source
-_commit="e24d9687e7fda4f94fc6652d137ed8e703930c3a"
-source="$pkgname-$_commit.tar.gz::$url/archive/${_commit}.tar.gz"
-options="!check !strip"
+source="$pkgname-$_commit.tar.gz::https://github.com/Epirex/android_vendor_samsung_u8500/archive/$_commit.tar.gz"
+options="!check !strip !archcheck !spdx"
+builddir="$srcdir/android_vendor_samsung_u8500-$_commit"
 
 package() {
-	cd "$srcdir/android_vendor_samsung_u8500-${_commit}"
-
 	# Wifi
 	for _i in bcmdhd_sta.bin nvram_net.txt; do
-		install -Dm644 "janice/system/etc/wifi/$_i" \
-		"$pkgdir/lib/firmware/postmarketos/$_i"
+		install -Dm644 janice/system/etc/wifi/"$_i" \
+		"$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 }
 
