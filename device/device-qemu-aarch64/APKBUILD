@@ -1,26 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=device-qemu-aarch64
 pkgver=1
-pkgrel=14
+pkgrel=15
 pkgdesc="Simulated device in qemu with vexpress soc"
 url="https://postmarketos.org"
 arch="aarch64"
 license="MIT"
 # NOTE: 'pmbootstrap init' allows you to choose the mesa-dri-* package
 depends="postmarketos-base linux-postmarketos-stable"
-makedepends=""
+makedepends="devicepkg-dev"
 subpackages="$pkgname-weston"
 source="deviceinfo weston.ini"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 }
 
 weston() {
-    install_if="$pkgname weston"
-    install -Dm644 "$srcdir"/weston.ini \
-        "$subpkgdir"/etc/xdg/weston/weston.ini
+	install_if="$pkgname weston"
+	install -Dm644 "$srcdir"/weston.ini \
+		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
 
