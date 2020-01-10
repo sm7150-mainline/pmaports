@@ -1,12 +1,14 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=device-samsung-i9100
 pkgver=1
-pkgrel=22
+pkgrel=23
 pkgdesc="Samsung Galaxy SII"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-samsung-i9100 libsamsung-ipc mesa-dri-swrast"
-makedepends=""
+makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
@@ -15,9 +17,12 @@ source="
 "
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
