@@ -1,9 +1,10 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Daniele Debernardi <drebrez@gmail.com>
 # Contributor: Alexey Min <alexey.min@gmail.com>
 pkgname="device-samsung-klte"
 pkgdesc="Samsung Galaxy S5"
 pkgver=0.3
-pkgrel=4
+pkgrel=5
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -44,16 +45,16 @@ kernel_downstream() {
 
 	# Disable v4l udev rules (video4linux), because without the camera
 	#         firmware blobs this makes udev helper hang (#1033)
-	mkdir -p "${subpkgdir}"/etc/udev/rules.d
-	ln -s /dev/null "${subpkgdir}"/etc/udev/rules.d/60-persistent-v4l.rules
+	mkdir -p "$subpkgdir"/etc/udev/rules.d
+	ln -s /dev/null "$subpkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 
 	# NetworkManager configuration - ignore unsupported devices for now and set default dhcp client
-	install -Dm644 "${startdir}/NetworkManager-klte.conf" \
-		"${subpkgdir}/etc/NetworkManager/conf.d/10-klte.conf"
+	install -Dm644 "$startdir"/NetworkManager-klte.conf \
+		"$subpkgdir"/etc/NetworkManager/conf.d/10-klte.conf
 
 	# Extras, helper scripts that make life of developer/user easier
-	install -Dm755 "${startdir}/set-brightness"          "${subpkgdir}/usr/bin/set-brightness"
-	install -Dm755 "${startdir}/battery-status"          "${subpkgdir}/usr/bin/battery-status"
+	install -Dm755 "$startdir"/set-brightness "$subpkgdir"/usr/bin/set-brightness
+	install -Dm755 "$startdir"/battery-status "$subpkgdir"/usr/bin/battery-status
 }
 
 kernel_mainline() {
@@ -74,7 +75,7 @@ nonfree_userland() {
 	mkdir "$subpkgdir"
 }
 
-hybris () {
+hybris() {
 	pkgdesc="libhybris (Android) hardware adaptation"
 	depends="hybris-base"
 	install="$pkgname-hybris.post-install"
@@ -83,11 +84,11 @@ hybris () {
 
 	# Android mounts (needed for loading firmware and configs from android container)
 	# Appended to fstab in post-install script
-	install -Dm644 "${startdir}/fstab.android"           "${subpkgdir}/etc/fstab.android"
+	install -Dm644 "$startdir"/fstab.android "$subpkgdir"/etc/fstab.android
 
 	# Android udev rules, depend on android users and groups presence
-	install -Dm644 "${startdir}/70-klte-android.rules" \
-		"${subpkgdir}/etc/udev/rules.d/70-klte-android.rules"
+	install -Dm644 "$startdir"/70-klte-android.rules \
+		"$subpkgdir"/etc/udev/rules.d/70-klte-android.rules
 }
 
 hybris_x11() {
