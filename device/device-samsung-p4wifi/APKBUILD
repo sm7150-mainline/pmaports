@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Robert Yang <decatf@gmail.com>
 pkgname="device-samsung-p4wifi"
 pkgdesc="Galaxy Tab 10.1"
 pkgver=0.3
-pkgrel=5
+pkgrel=6
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -33,9 +34,9 @@ package() {
 	devicepkg_package $startdir $pkgname
 
 	install -D -m644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
+		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
 	install -D -m644 "$srcdir"/modprobe.conf \
-		"$pkgdir"/etc/modprobe.d/00-${pkgname}.conf
+		"$pkgdir"/etc/modprobe.d/00-$pkgname.conf
 
 	install -D -m644 "$srcdir"/HiFi \
 		"$pkgdir"/usr/share/alsa/ucm/wm8994aif1/HiFi
