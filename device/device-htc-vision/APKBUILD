@@ -1,23 +1,26 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Matthias Berndt <matthias_berndt@gmx.de>
 pkgname=device-htc-vision
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="HTC Desire Z"
 url="https://github.com/postmarketOS"
 arch="armhf"
 license="MIT"
 depends="linux-htc-vision mkbootimg postmarketos-base msm-fb-refresher"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo 90-android.rules
-        initfs-hook.sh"
+source="deviceinfo
+	90-android.rules
+	initfs-hook.sh"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
-        install -D -m644 "$srcdir"/initfs-hook.sh \
-                "$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android.rules
 }
