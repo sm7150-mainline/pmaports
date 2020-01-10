@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: rendeko <rendeko@waifu.club>
 pkgname=device-ouya-ouya
 pkgver=1
 pkgdesc="Ouya"
-pkgrel=12
+pkgrel=13
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
@@ -15,8 +16,7 @@ depends="
 	mkbootimg
 	postmarketos-base
 	"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-kernel-downstream:kernel_downstream
@@ -29,15 +29,16 @@ source="
 	networkmanager.conf
 	"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -Dm644 "$srcdir"/initfs-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/fb.modes \
-		"$pkgdir/etc/fb.modes"
+		"$pkgdir"/etc/fb.modes
 	install -D -m644 "$srcdir"/networkmanager.conf \
-		"$pkgdir/etc/NetworkManager/conf.d/10-ouya.conf"
+		"$pkgdir"/etc/NetworkManager/conf.d/10-ouya.conf
 }
 
 nonfree_firmware() {
@@ -49,13 +50,13 @@ nonfree_firmware() {
 kernel_downstream() {
 	pkgdesc="Downstream kernel"
 	depends="linux-ouya-ouya"
-	mkdir "$subpkgdir"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline() {
 	pkgdesc="Work in progress mainline kernel"
 	depends="linux-ouya-ouya-mainline"
-	mkdir "$subpkgdir"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 sha512sums="cdfcbab0c1bd5389c29302052606c416ada3d69fe9d231032ba758eec4ec04b63c9cf9441ce33849f614fc9583f799299e20f794ba2b7f4218347f7daa06b193  deviceinfo
