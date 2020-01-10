@@ -1,12 +1,14 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: joris
 pkgname=device-samsung-i9305
 pkgver=1
-pkgrel=21
+pkgrel=22
 pkgdesc="Samsung Galaxy SIII LTE"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-samsung-i9305 mkbootimg mesa-dri-swrast"
-makedepends=""
+makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
@@ -15,9 +17,12 @@ source="
 "
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
