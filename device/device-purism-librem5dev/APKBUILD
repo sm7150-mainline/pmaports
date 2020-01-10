@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Clayton Craft <clayton@craftyguy.net>
 pkgname="device-purism-librem5dev"
 pkgdesc="Purism Librem 5 Devkit"
 pkgver=0.8
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -29,21 +30,21 @@ subpackages="$pkgname-plasma"
 install="$pkgname.post-install"
 
 build() {
-	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir"/uboot-script.cmd "$srcdir"/boot.scr
 	devicepkg_build $startdir $pkgname
 }
 
 plasma() {
 	install_if="$pkgname kwin"
-	install -D -m644 "$srcdir/00-kwin.sh" "$subpkgdir/etc/profile.d/00-kwin.sh"
+	install -D -m644 "$srcdir"/00-kwin.sh "$subpkgdir"/etc/profile.d/00-kwin.sh
 }
 
 package() {
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
-	install -D -m644 "$srcdir/modprobe.d_rsi.conf" "$pkgdir/etc/modprobe.d/rsi.conf"
-	install -D -m644 "$srcdir/00-mesa.sh" "$pkgdir/etc/profile.d/00-mesa.sh"
-	install -D -m644 "$srcdir/flash_script.lst" "$pkgdir/usr/share/uuu/flash_script.lst"
+	install -D -m644 "$srcdir"/modprobe.d_rsi.conf "$pkgdir"/etc/modprobe.d/rsi.conf
+	install -D -m644 "$srcdir"/00-mesa.sh "$pkgdir"/etc/profile.d/00-mesa.sh
+	install -D -m644 "$srcdir"/flash_script.lst "$pkgdir"/usr/share/uuu/flash_script.lst
 	devicepkg_package $startdir $pkgname
 }
 
