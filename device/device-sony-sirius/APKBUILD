@@ -1,11 +1,14 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Craig Tatlor <ctatlor97@gmail.com>
 pkgname=device-sony-sirius
 pkgver=1
-pkgrel=5
+pkgrel=6
 pkgdesc="Sony Xperia Z2 device package"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 depends="postmarketos-base linux-postmarketos-qcom-msm8974 mkbootimg mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-freedreno"
+makedepends="devicepkg-dev"
 subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
@@ -16,11 +19,14 @@ source="
 "
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-${pkgname}.conf
-	install -Dm644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
 	install -Dm644 "$srcdir"/99-touch.rules \
 		"$pkgdir"/etc/udev/rules.d/99-touch.rules
 	install -D -m644 "$srcdir"/brcmfmac4339-sdio.txt \
