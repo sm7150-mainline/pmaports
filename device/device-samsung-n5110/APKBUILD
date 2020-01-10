@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Michael Hamann <michael@content-space.de>
 pkgname="device-samsung-n5110"
 pkgdesc="Samsung Galaxy Note 8.0 (Wi-Fi)"
 pkgver=0.1
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
@@ -14,20 +15,20 @@ source="deviceinfo pointercal asound.state Kona_WM1811/hifi.conf Kona_WM1811/Kon
 package() {
 	devicepkg_package $startdir $pkgname
 
-	install -D -m644 "$srcdir/pointercal" \
-		"$pkgdir/etc/pointercal"
+	install -D -m644 "$srcdir"/pointercal \
+		"$pkgdir"/etc/pointercal
 
-	install -D -m644 "$srcdir/asound.state" \
-		"$pkgdir/var/lib/alsa/asound.state"
+	install -D -m644 "$srcdir"/asound.state \
+		"$pkgdir"/var/lib/alsa/asound.state
 
-	install -D -m644 "$srcdir/Kona_WM1811.conf" \
-		"$pkgdir/usr/share/alsa/ucm/Kona_WM1811/Kona_WM1811.conf"
+	install -D -m644 "$srcdir"/Kona_WM1811.conf \
+		"$pkgdir"/usr/share/alsa/ucm/Kona_WM1811/Kona_WM1811.conf
 
-	install -D -m644 "$srcdir/hifi.conf" \
-		"$pkgdir/usr/share/alsa/ucm/Kona_WM1811/hifi.conf"
+	install -D -m644 "$srcdir"/hifi.conf \
+		"$pkgdir"/usr/share/alsa/ucm/Kona_WM1811/hifi.conf
 
-	install -D -m644 "$srcdir/lp.conf" \
-	 	"$pkgdir/usr/share/alsa/ucm/Kona_WM1811/lp.conf"
+	install -D -m644 "$srcdir"/lp.conf \
+	 	"$pkgdir"/usr/share/alsa/ucm/Kona_WM1811/lp.conf
 }
 
 sha512sums="db672b6a8e3adf800a854afc96cc44c4fed441e85b462675a6ee384d324b013c3a2a01d308e51feba5edc62f97e672c2a89a10de5f70f02165a36f2509609064  deviceinfo
