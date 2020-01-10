@@ -1,21 +1,25 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: montvid <montvid@gmail.com>
 pkgname=device-asus-flo
 pkgver=0
-pkgrel=16
+pkgrel=17
 pkgdesc="Google Nexus 7 2013 flo"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-asus-flo mkbootimg mesa-git mesa-git-glapi mesa-git-gl mesa-git-gles mesa-git-egl mesa-git-gbm mesa-git-dri-freedreno"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="$pkgname-weston $pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo 90-android-touch-dev.rules wpa_supplicant.conf pointercal weston.ini"
 
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/wpa_supplicant.conf \
 		"$pkgdir"/etc/wpa_supplicant/wpa_supplicant.conf
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
