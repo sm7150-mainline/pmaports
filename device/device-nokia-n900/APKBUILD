@@ -1,13 +1,14 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname=device-nokia-n900
 pkgver=5
-pkgrel=1
+pkgrel=2
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 depends="postmarketos-base linux-postmarketos-stable uboot-tools kbd kbd-bkeymaps ofono mesa-dri-swrast"
-makedepends="uboot-tools kbd kbd-bkeymaps"
+makedepends="devicepkg-dev uboot-tools kbd kbd-bkeymaps"
 install="$pkgname.post-install"
 subpackages="
 	$pkgname-weston
@@ -47,7 +48,8 @@ source="
 options="!check !archcheck"
 
 build() {
-	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+	devicepkg_build $startdir $pkgname
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir"/uboot-script.cmd "$srcdir"/boot.scr
 	mkdir "$srcdir"/keymaps
 	loadkeys -b "$srcdir"/rx51_us.map > "$srcdir"/keymaps/rx51_us.bmap
 	gzip "$srcdir"/keymaps/rx51_us.bmap
@@ -59,12 +61,11 @@ build() {
 }
 
 package() {
-	install -D -m644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
 	install -D -m644 "$srcdir"/backlight-enable.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}-backlight.sh
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-$pkgname-backlight.sh
 	install -D -m644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
 	install -D -m644 "$srcdir"/asound.state \
