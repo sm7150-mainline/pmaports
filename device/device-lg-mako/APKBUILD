@@ -1,20 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=device-lg-mako
 pkgver=2
-pkgrel=23
+pkgrel=24
 pkgdesc="Google Nexus 4"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-lg-mako mkbootimg mesa-dri-swrast"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="$pkgname-weston"
 source="deviceinfo 90-android-touch-dev.rules profile.sh pointercal fb.modes weston.ini wcnss-wlan"
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -Dm644 "$srcdir"/deviceinfo \
-		"$pkgdir"/etc/deviceinfo
+	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -Dm644 "$srcdir"/profile.sh \
