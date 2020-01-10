@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Danct12 <danct12@disroot.org>
 pkgname="device-chuwi-hi10plus"
 pkgdesc="CHUWI Hi10 Plus"
 pkgver=0.2
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -24,8 +25,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/initfs-hook.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-${pkgname}.sh
 }
 
 x11() {
