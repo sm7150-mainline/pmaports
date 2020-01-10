@@ -1,13 +1,14 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Zhuowei Zhang <zhuoweizhang@yahoo.com>
 pkgname=device-huawei-angler
 pkgver=1
-pkgrel=14
+pkgrel=15
 pkgdesc="Huawei Nexus 6P"
 url="https://postmarketos.org"
 arch="aarch64"
 license="MIT"
 depends="postmarketos-base linux-huawei-angler mkbootimg msm-fb-refresher mesa-dri-swrast"
-makedepends=""
-install=""
+makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
@@ -20,9 +21,12 @@ source="
 # See https://github.com/LineageOS/android_device_huawei_angler/blob/cm-14.1/init.angler.rc#L450
 options="!check !archcheck"
 
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
 package() {
-	install -D -m644 "$srcdir/deviceinfo" \
-		"$pkgdir/etc/deviceinfo"
+	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/bcmdhd.cal \
