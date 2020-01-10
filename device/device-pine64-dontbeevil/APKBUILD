@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname="device-pine64-dontbeevil"
 pkgdesc="PINE64 PinePhone Don't be evil devkit"
 pkgver=0.1
-pkgrel=12
+pkgrel=13
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -26,7 +27,7 @@ source="
 
 build() {
 	devicepkg_build $startdir $pkgname
-	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir"/uboot-script.cmd "$srcdir"/boot.scr
 }
 
 package() {
@@ -36,19 +37,19 @@ package() {
 }
 
 x11() {
-        install_if="$pkgname xorg-server"
-        depends="
-                libinput
-                xf86-input-libinput
-                xf86-video-fbdev"
-        install -Dm644 "$srcdir"/xorg.conf \
-                "$subpkgdir"/etc/X11/xorg.conf.d/10-framebuffer.conf
+	install_if="$pkgname xorg-server"
+	depends="
+		libinput
+		xf86-input-libinput
+		xf86-video-fbdev"
+	install -Dm644 "$srcdir"/xorg.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/10-framebuffer.conf
 }
 
 weston() {
-        install_if="$pkgname weston"
-        install -Dm644 "$srcdir"/weston.ini \
-                "$subpkgdir"/etc/xdg/weston/weston.ini
+	install_if="$pkgname weston"
+	install -Dm644 "$srcdir"/weston.ini \
+		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
 nonfree_firmware() {
