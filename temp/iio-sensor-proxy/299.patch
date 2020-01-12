@@ -1,0 +1,63 @@
+From c94f5d31250f9cc75271a7f386104ce2fdfb268e Mon Sep 17 00:00:00 2001
+From: Dmitry Osipenko <digetx@gmail.com>
+Date: Sat, 18 Jan 2020 19:29:08 +0300
+Subject: [PATCH] mount-matrix: Support IIO sysfs matrices
+
+Linux kernel IIO drivers provide mount matrix via standardized sysfs
+interface, let's support these drivers. Tested on Nexus 7 and Acer A500
+tablet devices using MPU6050 and KXTF9 IIO drivers respectively, now
+monitor-sensor reports display's orientation correctly on these devices.
+---
+ src/accel-mount-matrix.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/src/accel-mount-matrix.c b/src/accel-mount-matrix.c
+index c66b440..ced2819 100644
+--- a/src/accel-mount-matrix.c
++++ b/src/accel-mount-matrix.c
+@@ -50,6 +50,42 @@ setup_mount_matrix (GUdevDevice *device)
+ 		g_clear_pointer (&ret, g_free);
+ 	}
+ 
++	/*
++	 * Linux kernel IIO accelerometer drivers provide mount matrix
++	 * via standardized sysfs interface.
++	 *
++	 * See https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-iio
++	 * for more details.
++	 */
++	mount_matrix = g_udev_device_get_sysfs_attr (device, "in_mount_matrix");
++	if (mount_matrix) {
++		if (parse_mount_matrix (mount_matrix, &ret))
++			return ret;
++
++		g_warning ("Failed to parse in_mount_matrix ('%s') from sysfs",
++			   mount_matrix);
++		g_clear_pointer (&ret, g_free);
++	}
++
++	/*
++	 * Some IIO drivers provide multiple sensors via the same sysfs path
++	 * and thus they may have different matrices like in a case of
++	 * accelerometer and angular velocity for example. The accelerometer
++	 * mount matrix is named as in_accel_mount_matrix in that case.
++	 *
++	 * See https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-iio
++	 * for more details.
++	 */
++	mount_matrix = g_udev_device_get_sysfs_attr (device, "in_accel_mount_matrix");
++	if (mount_matrix) {
++		if (parse_mount_matrix (mount_matrix, &ret))
++			return ret;
++
++		g_warning ("Failed to parse in_accel_mount_matrix ('%s') from sysfs",
++			   mount_matrix);
++		g_clear_pointer (&ret, g_free);
++	}
++
+ 	g_debug ("Failed to auto-detect mount matrix, falling back to identity");
+ 	parse_mount_matrix (NULL, &ret);
+ 	return ret;
+-- 
+2.24.1
+
