@@ -7,10 +7,10 @@ echo Loading DTB
 ext2load mmc ${mmcdev}:${mmcpart} ${fdt_addr_r} imx8mq-librem5-devkit.dtb
 
 echo Loading Initramfs
-ext2load mmc ${mmcdev}:${mmcpart} ${ramdisk_addr_r} uInitrd-purism-librem5dev
+ext2load mmc ${mmcdev}:${mmcpart} ${ramdisk_addr_r} uInitrd-purism-librem5
 
 echo Loading Kernel
-ext2load mmc ${mmcdev}:${mmcpart} ${kernel_addr_r} vmlinuz-purism-librem5dev
+ext2load mmc ${mmcdev}:${mmcpart} ${kernel_addr_r} vmlinuz-purism-librem5
 
 echo Resizing FDT
 fdt addr ${fdt_addr_r}
