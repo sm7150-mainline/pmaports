@@ -1,33 +1,29 @@
 # Forked from Alpine, so we can build it with Librem 5 devkit support
 pkgname=u-boot-librem5dev
-pkgver=0.3
+pkgver=0.4
 pkgrel=0
-_atfversion="e570c688f9962b5d8d0668416bc10ac132392e40"
-_ubootversion="a8e92dba4b5bea64cda4fe92348170f29132e116"
-_mkimageversion="7bb910903a657c25421a06ccc9e20239fbf4e173"
-_ddrversion="91b60308b4edf8f112aa275895280ac5608ac630"
+_atfversion="92c2de12d36b31938ce940d5cac3c30a98665237"
+_ubootversion="54f300a32d00f3acebf7e6fcff210ad34e157eb9"
 _m4version="a017421c340a69f2392086da93841244f78a03c5"
+_firmwareversion="7.9"
 pkgdesc="u-boot bootloader for the Purism Librem5 devkit"
 url="http://www.denx.de/wiki/U-Boot/"
 arch="aarch64"
 license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs"
-makedepends="$depends_dev bc dtc python3-dev swig binutils coreutils zlib-dev newlib-arm-none-eabi"
+makedepends="$depends_dev bc dtc python3-dev swig binutils coreutils zlib-dev newlib-arm-none-eabi bison flex"
 options="!check !tracedeps"
 source="
 	uboot-imx-${_ubootversion}.tar.gz::https://source.puri.sm/Librem5/uboot-imx/-/archive/${_ubootversion}/uboot-imx-${_ubootversion}.tar.gz
 	m4-${_m4version}.tar.gz::https://source.puri.sm/Librem5/Cortex_M4/-/archive/${_m4version}/Cortex_M4-${_m4version}.tar.gz
-	arm-trusted-firmware-${_atfversion}.tar.gz::https://source.puri.sm/Librem5/trusted-firmware-a/-/archive/${_atfversion}/trusted-firmware-a-${_atfversion}.tar.gz
-	imx-mkimage-${_mkimageversion}.tar.gz::https://source.codeaurora.org/external/imx/imx-mkimage/snapshot/${_mkimageversion}.tar.gz
-	imx-ddr4_firmware-${_ddrversion}.tar.gz::https://source.puri.sm/Librem5/image-builder/raw/${_ddrversion}/build/files/imx-mkimage-emcraft.tar.gz
-	0001-remove-dependency-on-git.patch
+	arm-trusted-firmware-${_atfversion}.tar.gz::https://source.puri.sm/Librem5/arm-trusted-firmware/-/archive/${_atfversion}/arm-trusted-firmware-${_atfversion}.tar.gz
+        https://www.nxp.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-${_firmwareversion}.bin
 	"
 _ubootbuilddir="$srcdir"/uboot-imx-${_ubootversion}
-_atfbuilddir="$srcdir"/trusted-firmware-a-${_atfversion}
-_mkimagebuilddir="$srcdir"/${_mkimageversion}
-_ddr4dir="$srcdir/imx-mkimage"
+_atfbuilddir="$srcdir"/arm-trusted-firmware-${_atfversion}
 _m4builddir="$srcdir"/Cortex_M4-${_m4version}
+_firmwarebuilddir="$srcdir"/firmware-imx-${_firmwareversion}
 
-builddir="$_mkimagebuilddir"
+builddir="$_ubootbuilddir"
 
 build() {
 	msg "Building M4"
@@ -37,82 +33,41 @@ build() {
 	msg "Building ARM trusted firmware"
 	cd "$_atfbuilddir"
 	LDFLAGS="" make PLAT=imx8mq bl31
-	_bl31="$_atfbuilddir"/build/imx8mq/release/bl31.bin
+	# Overwrite default bl31 binary with one made here
+	cp -v "$_atfbuilddir"/build/imx8mq/release/bl31.bin "$_ubootbuilddir"/
+
+        msg "Extracting DDR & HDMI firmware"
+        cd "$srcdir"
+        chmod +x firmware-imx-${_firmwareversion}.bin
+        ./firmware-imx-${_firmwareversion}.bin --auto-accept
+        cp -v "$_firmwarebuilddir"/firmware/ddr/synopsys/lpddr4*.bin "$_ubootbuilddir"/
+        cp -v "$_firmwarebuilddir"/firmware/hdmi/cadence/signed*.bin "$_ubootbuilddir"/
 
 	msg "Building u-boot"
 	cd "$_ubootbuilddir"
 	make distclean
 	# Note: HOSTCC is set explicitly here else it tries to use cc, which
 	# doesn't exist on Alpine
-	make ARCH=arm HOSTCC=gcc librem5_devkit_base_defconfig
+	make ARCH=arm HOSTCC=gcc librem5_devkit_defconfig
 	make ARCH=arm HOSTCC=gcc
+        make ARCH=arm HOSTCC=gcc flash.bin
+        make ARCH=arm HOSTCC=gcc u-boot.imx
 
+	msg "Building u-boot flashing image"
+        dd if=/dev/zero of=devkit-boot.img bs=1024 count=1055
+        dd if="$_m4builddir"/m4.bin conv=notrunc of="$_ubootbuilddir"/devkit-boot.img bs=1024
+        dd if="$_ubootbuilddir"/flash.bin conv=notrunc of="$_ubootbuilddir"/devkit-boot.img bs=1024 seek=31
 
-	msg "Building u-boot image"
-	# Copy binaries to build final image
-	cp -v "$_ubootbuilddir"/u-boot-nodtb.bin "$_mkimagebuilddir"/iMX8M/
-	cp -v "$_ubootbuilddir"/u-boot.bin "$_mkimagebuilddir"/iMX8M/
-	cp -v "$_ubootbuilddir"/spl/u-boot-spl.bin "$_mkimagebuilddir"/iMX8M/
-	cp -v "$_ubootbuilddir"/arch/arm/dts/librem5-evk.dtb "$_mkimagebuilddir"/iMX8M/fsl-imx8mq-evk.dtb
-	cp -v "$_ddr4dir"/iMX8M/*.bin "$_mkimagebuilddir"/iMX8M/
-	cp -v "$_ubootbuilddir"/tools/mkimage "$_mkimagebuilddir"/iMX8M/
-	mv -v "$_mkimagebuilddir"/iMX8M/mkimage "$_mkimagebuilddir"/iMX8M/mkimage_uboot
-	# Overwrite default bl31 binary with one made here
-	cp -v "$_bl31" "$_mkimagebuilddir"/iMX8M/bl31.bin
-	cd "$_mkimagebuilddir"
-	make SOC=iMX8M flash_hdmi_spl_uboot
 	msg "done!"
 }
 
 package() {
-	install -D -m644 "$builddir"/iMX8M/flash.bin \
-		"$pkgdir/usr/share/firmware/librem5dev/u-boot.bin"
-	install -D -m644 "$_m4builddir"/m4.bin \
-		"$pkgdir/usr/share/firmware/librem5dev/m4.bin"
+	install -D -m644 "$_ubootbuilddir"/devkit-boot.img \
+		"$pkgdir/usr/share/firmware/librem5dev/devkit-boot.img"
 }
 
-_all() {
-	pkgdesc="u-boot for all boards (meta package)"
-	depends="$_allboards"
 
-	mkdir -p "$subpkgdir"/
-}
-
-_split_boards() {
-	cd "$builddir"/build
-	pkgdesc="u-boot for $1"
-	depends="u-boot"
-	shift
-	local board
-	for board; do
-		msg "Including board $board"
-		mkdir -p "$subpkgdir"/usr/share/$pkgname/$board
-		export BUILD_DIR="$builddir"/build/$board
-		local ok=no
-		for image in u-boot-sunxi-with-spl.bin -- MLO SPL u-boot.img -- u-boot.bin; do
-			if [ "$image" = "--" ]; then
-				[ "$ok" = yes ] && break
-				continue
-			fi
-			if [ -e "$BUILD_DIR"/$image ]; then
-				cp "$BUILD_DIR"/$image "$subpkgdir"/usr/share/$pkgname/$board \
-					|| return 1
-				ok=yes
-			fi
-		done
-		[ "$ok" = yes ] || return 1
-	done
-}
-
-for board_config in $board_configs; do
-	_board="${board_config%%:*}"
-	_configs="${board_config#*:}"
-	eval "${_board}() { _split_boards $_board ${_configs//,/ }; }"
-done
-
-sha512sums="879ce8b4deee0a696d9f1538167cda85467d4751c47800cfb9246db7d7772458a37ea60e706c4be3316521fe8885201837cd39c8ba88acb0da6ceabaff1e0010  uboot-imx-a8e92dba4b5bea64cda4fe92348170f29132e116.tar.gz
+sha512sums="6bcce8d553059dcde094b8a0bb352f1c8c8f33f5e59c3e1cde87d614bd785c929abe883b4ea6a72958c2849a6578dc06fe558e8d82180334ff0c1eb190a6a0ed  uboot-imx-54f300a32d00f3acebf7e6fcff210ad34e157eb9.tar.gz
 035a4358ddf586c829da7fa2fb0d9d1df913c0c454f2d0e57ff0c6794552e49950fb6373f9aaf72e0e4c78ab411496aabbc60bf66cd76e35053f7a2d77911735  m4-a017421c340a69f2392086da93841244f78a03c5.tar.gz
-8c42ba928be1ea957c663766fcc5408336e16b80b9aacc739887e0f604a670009394f2a31a6303f718c345ba3df9cd2d758268dd1343dd3086dda65790d707a6  arm-trusted-firmware-e570c688f9962b5d8d0668416bc10ac132392e40.tar.gz
-e17a6c245706eb17950a8136121c58dc8810010c974f5183e920d5bfc689d6fe578f1faba5d408c62887081d34fa130bbc0c50e3a4cdab9da58554ff91caa71b  imx-mkimage-7bb910903a657c25421a06ccc9e20239fbf4e173.tar.gz
-a03f0fdb3541f95bf6d4c767c02378ae82d6ef1a85a1bbe70f124b72d497f23515469f7dde20f59102a5d81fa507136912bcf39e184f6765cfd1592a738e4a2a  imx-ddr4_firmware-91b60308b4edf8f112aa275895280ac5608ac630.tar.gz
-0410f8c7a3d122c0be9da969880fb5996e8bd2a91be1d06c6624f16d6f1ff9dbc948c0274a521419e743ca46331e9e9bd0e234a422ccf23e42bc2bd6daedbc05  0001-remove-dependency-on-git.patch"
+cd8c9411ae0e57d2c8c700bf3e8c8d03e7dab955ace249a00911dd8c42b42929e0de3a5885eb9b1d945174abc8cfb177595d83c235e757c70640f451b62547ba  arm-trusted-firmware-92c2de12d36b31938ce940d5cac3c30a98665237.tar.gz
+d7c221e0c1cc5a22c9b98ba369f481d690a2227b0897836fb0b18975f0d2f0a085f7a120d24bdd161850d32f878e7f1aa47015dee76f7b40e84f45adf379e22c  firmware-imx-7.9.bin"
