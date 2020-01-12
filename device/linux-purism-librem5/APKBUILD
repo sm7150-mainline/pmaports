@@ -1,13 +1,13 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm64/configs/librem5-devkit_defconfig
 
-pkgname="linux-purism-librem5dev"
-pkgver=5.2
+pkgname="linux-purism-librem5"
+pkgver=5.3
 pkgrel=0
-pkgdesc="Purism Librem 5 devkit kernel fork"
+pkgdesc="Purism Librem 5 phone kernel fork"
 arch="aarch64"
 _carch="arm64"
-_flavor="purism-librem5dev"
+_flavor="purism-librem5"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps"
@@ -20,14 +20,14 @@ HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="linux-next"
-# imx8-5.2-devkit branch:
-_commit="ef814e5c7b41dfbaeb0ac468de0035d5c3cb3b15"
-_config="config-${_flavor}.${arch}"
+# imx8-current-librem5 branch:
+_commit="943e968dc344b7a5535f299b12b462aaecb60a75"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/${_repository}/-/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/$_repository/-/archive/$_commit.tar.gz
 	$_config
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare
@@ -73,5 +73,5 @@ package() {
 
 }
 
-sha512sums="4e9fb564f57656064e139760bb68336a4d208d65004e043452a19f9e1e9ae11d927ca469271f71f0d2b9c5bf257e8a3e3f049f7861b2f4bfe24b71485b8cd542  linux-purism-librem5dev-ef814e5c7b41dfbaeb0ac468de0035d5c3cb3b15.tar.gz
-7b767918c425eb0dec029a5780615187bc972d30fd11cc7eca43c0a5ae97c7e5be80464be2d743a97f1fa042a74c02dac89a2ab9ed3bff35213f963a0d51e19c  config-purism-librem5dev.aarch64"
+sha512sums="895ace8d703c7c2123086a2958eabfb64ebbe19a21a2b7f4d669635f0c8e49148125555681754e949a26c940f4ff8d0ce0efea451cebd7dc6d224bdeba24d936  linux-purism-librem5-943e968dc344b7a5535f299b12b462aaecb60a75.tar.gz
+3d17eb02738bc364e3ff892581eca3528ed10949dd7ad43530735256abaef6af76309508292443d79c0651bbbf24508c01c38296ea189931a849f161bac308f7  config-purism-librem5.aarch64"
