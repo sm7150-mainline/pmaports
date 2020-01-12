@@ -11,7 +11,7 @@ url="https://gitlab.com/postmarketOS/pmbootstrap/-/archive/$tag/pmbootstrap-$tag
 pmaports="$(cd $(dirname $0)/..; pwd -P)"
 
 # Set up depends and binfmt_misc
-depends="coreutils openssl python3 sudo $@"
+depends="coreutils openssl python3 sudo git $@"
 echo "Installing dependencies: $depends"
 apk -q add $depends
 mount -t binfmt_misc none /proc/sys/fs/binfmt_misc
@@ -32,7 +32,7 @@ mv pmbootstrap-* pmbootstrap
 # Install to $PATH and init
 ln -s /tmp/pmbootstrap/pmbootstrap.py /usr/local/bin/pmbootstrap
 echo "Initializing pmbootstrap"
-if ! su pmos -c "yes '' | pmbootstrap -q --aports '$pmaports' init"; then
+if ! su pmos -c "yes '' | pmbootstrap -q --aports '$pmaports' --details-to-stdout init"; then
 	echo "ERROR: pmbootstrap init failed!"
 	echo
 	echo "Most likely, this means that pmbootstrap requires a newer"
