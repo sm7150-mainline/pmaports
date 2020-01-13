@@ -15,3 +15,10 @@ mkdir -p /misc
 
 # /vendor symlink (points to nowhere until /system is mounted)
 ln -s /system/vendor /vendor
+
+# disable msm-fb-refresher service on libhybris adaptation
+rc-update del msm-fb-refresher boot
+
+# symlink system.img from userdata partition to a place
+#    where lxc-android expects to see it.
+ln -s /data/system.img /var/lib/lxc/android/system.img

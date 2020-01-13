@@ -4,12 +4,12 @@
 pkgname="device-samsung-klte"
 pkgdesc="Samsung Galaxy S5"
 pkgver=0.3
-pkgrel=6
+pkgrel=7
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg msm-fb-refresher"
+depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
@@ -18,13 +18,15 @@ subpackages="
 	$pkgname-nonfree-userland:nonfree_userland
 	$pkgname-hybris:hybris
 	$pkgname-hybris-x11:hybris_x11
+	$pkgname-hybris-pulse:hybris_pulse
 "
 source="
+	70-klte-android.rules
+	battery-status
+	cpufreq.start
 	deviceinfo
 	fstab.android
 	set-brightness
-	battery-status
-	70-klte-android.rules
 	NetworkManager-klte.conf
 "
 
@@ -38,7 +40,7 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Display, touchscreen, Wi-Fi works (see device table for details)"
-	depends="linux-samsung-klte"
+	depends="linux-samsung-klte cpufrequtils msm-fb-refresher"
 	install="$pkgname-kernel-downstream.post-install"
 
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
@@ -55,6 +57,9 @@ kernel_downstream() {
 	# Extras, helper scripts that make life of developer/user easier
 	install -Dm755 "$startdir"/set-brightness "$subpkgdir"/usr/bin/set-brightness
 	install -Dm755 "$startdir"/battery-status "$subpkgdir"/usr/bin/battery-status
+
+	# Power saver
+	install -Dm755 "$startdir"/cpufreq.start "$subpkgdir"/etc/local.d/cpufreq.start
 }
 
 kernel_mainline() {
@@ -92,6 +97,7 @@ hybris() {
 }
 
 hybris_x11() {
+	# Installs libhybris xorg support
 	pkgdesc="x11 modules for libhybris adaptation"
 	depends="hybris-base-x11-caf"
 	install_if="$pkgname-hybris xorg-server"
@@ -99,9 +105,19 @@ hybris_x11() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="5df49918003fb5e45b33e4ec3bf03052b846595158b00f2ef7dd37158e0922520ce999b0e741151dc9c059161a8095f6a45da256885bad818ec2edf686ee9b44  deviceinfo
+hybris_pulse() {
+	# Installs libhybris pulseaudio support
+	pkgdesc="pulseaudio modules for libhybris adaptation"
+	depends="alsa-plugins-pulse pulseaudio-modules-droid-7.1-caf"
+	install_if="$pkgname-hybris pulseaudio"
+
+	mkdir "$subpkgdir"
+}
+
+sha512sums="a68734d3fe30695d5a9302c92327e8ca564a73d06f0de87371800d1bdf4c541c3721af380b8d44cfa0b4cc1dc8a71586aec3f00bb877ee9dc18f41ba34caaeff  70-klte-android.rules
+66db173b9f1075a133efeea8bda94ef08089b7c15acbc1e3aefb9f8510daa7690a0ce2739d20647e096ba69940ac5c4c6699f3b032ec67609ca56f116bb25256  battery-status
+c66e0c57e911b644cf6c340ea19ce0a9399b8e9e6cb0da38f612e0f8b3d0812ad109cd7b7506184e840a653397a64e3e57fdc71ab8b0fc52733bf74365b9c0e7  cpufreq.start
+5df49918003fb5e45b33e4ec3bf03052b846595158b00f2ef7dd37158e0922520ce999b0e741151dc9c059161a8095f6a45da256885bad818ec2edf686ee9b44  deviceinfo
 35f3b120152ebe709e11cebc9ced03f21f52768d88bd68ed23ed864fe1dd3b63665c8f74575882e217dd8226ae5d260e5ad2045dc4ab2470c89185f19b81c4a7  fstab.android
 f773a9792407c1ad96b11c6673093c9eeff7d538459b7772c5956760a8cbb4de8912b24c77e8812afe056db26fa3e29af09e2a3851828baa0b9a9986bf80790b  set-brightness
-66db173b9f1075a133efeea8bda94ef08089b7c15acbc1e3aefb9f8510daa7690a0ce2739d20647e096ba69940ac5c4c6699f3b032ec67609ca56f116bb25256  battery-status
-a68734d3fe30695d5a9302c92327e8ca564a73d06f0de87371800d1bdf4c541c3721af380b8d44cfa0b4cc1dc8a71586aec3f00bb877ee9dc18f41ba34caaeff  70-klte-android.rules
 3753dcd8c25cfbbdd8f087a3168537df1334f0d33f36bc8923ec3d225ceb88121aa8d1670d6c6a2baab3d7067c86a43571695ce22e3b47076f97fcb53d1d7e6f  NetworkManager-klte.conf"
