@@ -1,20 +1,21 @@
+# Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname="soc-qcom-msm8916"
 pkgdesc="Common package for Qualcomm MSM8916 devices"
 pkgver=1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
-license="LGPL-2.1-or-later"
+license="BSD-3-Clause"
 arch="aarch64 armv7"
 options="!check !archcheck"
-depends="alsa-lib mesa-dri-freedreno"
+depends="mesa-dri-freedreno"
 
-_alsa_commit=eff9ffaa30226006a73b493cfc3e308c0a82bac0
-source="$pkgname-${_alsa_commit}.tar.gz::https://github.com/msm8916-mainline/alsa-lib/archive/${_alsa_commit}.tar.gz"
+_ucm_commit=e4639175c20c7dfe8f31fe32735d1efa8af31a48
+source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8916-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz"
 
 package() {
-	cd "$srcdir/alsa-lib-${_alsa_commit}"/src/conf/ucm
-	find codecs/msm8916-wcd msm8916* -type f -name "*.conf" \
-		-exec install -Dm644 {} "$pkgdir"/usr/share/alsa/ucm/{} \;
+	cd "$srcdir/alsa-ucm-conf-$_ucm_commit"/ucm2
+	find msm8916* codecs/msm8916-wcd platforms/msm8916 -type f -name "*.conf" \
+		-exec install -Dm644 {} "$pkgdir"/usr/share/alsa/ucm2/{} \;
 }
 
-sha512sums="9499d1e7e5a82833fd3d29faea22c3fc62a8fbb59a8994c0d95f74269746a2c8efc1346a6f569d19b50c87e7db038689d7498c90d6f6ac8d0d8696c0fcbbe3ab  soc-qcom-msm8916-eff9ffaa30226006a73b493cfc3e308c0a82bac0.tar.gz"
+sha512sums="392ed18933d3ccad8cecb8086742c6cfb44cb24d3de4e20dfa9caa137707df2439e45bd4e6215883c6f2710f279a12c408f09ab18c333682483eccf863ced0de  soc-qcom-msm8916-e4639175c20c7dfe8f31fe32735d1efa8af31a48.tar.gz"
