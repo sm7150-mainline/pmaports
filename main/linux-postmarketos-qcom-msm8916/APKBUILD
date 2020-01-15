@@ -1,27 +1,23 @@
-# Reference: <https://postmarketos.org/vendorkernel>
+# Maintainer: Minecrell <minecrell@minecrell.net>
 # Kernel config based on: arch/arm64/configs/msm8916_defconfig
 
 _flavor="postmarketos-qcom-msm8916"
 pkgname="linux-$_flavor"
 pkgver=5.5_rc7
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for Qualcomm MSM8916 devices"
 arch="aarch64 armv7"
 url="https://github.com/msm8916-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps"
 depends_dev="perl gmp-dev elfutils-dev bash flex bison"
-makedepends="$depends_dev sed installkernel bc linux-headers openssl-dev dtbtool"
+makedepends="$depends_dev sed installkernel bc linux-headers openssl-dev"
 
 # Architecture
 case "$CARCH" in
 	aarch64) _carch="arm64" ;;
 	arm*)    _carch="arm" ;;
 esac
-
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _tag=v${pkgver//_/-}-msm8916
@@ -54,10 +50,6 @@ package() {
 
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
-
-	# Master DTB (deviceinfo_bootimg_qcdt)
-	dtbTool -p scripts/dtc/ -o "arch/$_carch/boot"/dt.img "arch/$_carch/boot/"
-	install -Dm644 "arch/$_carch/boot"/dt.img "$pkgdir"/boot/dt.img
 }
 
 sha512sums="350255503c9d1a22e094551c289c90c92df4bdde7338d72ab2d43690c6ae2ae22af2d3f87dbf6a4b049954cb18bb82075b8ffa5e5607657253dbd650df39c85b  linux-postmarketos-qcom-msm8916-v5.5-rc7-msm8916.tar.gz
