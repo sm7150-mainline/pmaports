@@ -15,7 +15,9 @@ if __name__ == "__main__":
 
     issues = []
     for package in packages:
-        if "temp/" in package or "APKBUILD" not in package:
+        if "temp/" in package or \
+           "cross/" in package or \
+           "APKBUILD" not in package:
             continue
 
         result = subprocess.run(["apkbuild-lint", package], capture_output=True)
