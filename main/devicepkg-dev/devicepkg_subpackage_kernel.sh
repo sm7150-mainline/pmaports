@@ -21,7 +21,7 @@ install -Dm644 "$srcdir/deviceinfo" \
 	"$subpkgdir/etc/deviceinfo"
 
 # Get the kernel type ("downstream", "mainline")
-kernel=$(echo "$subpkgname" | sed -n "s/.*-kernel-\(.*\)/\1/p")
+kernel=$(echo "$subpkgname" | sed -n "s/.*-kernel-\(.*\)/\1/p" | tr - _)
 
 # Iterate over deviceinfo variables that have the kernel type as suffix
 # var looks like: deviceinfo_kernel_cmdline, ...
