@@ -1,9 +1,10 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Contributor: Nikita Travkin <nikitos.tr@gmail.com>
+# Contributor: Minecrell <minecrell@minecrell.net>
 pkgname="device-wileyfox-crackling"
 pkgdesc="Wileyfox Swift"
-pkgver=1
-pkgrel=4
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,8 +13,10 @@ depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
 "
 
 source="
@@ -31,8 +34,14 @@ package() {
 }
 
 kernel_mainline() {
-	pkgdesc="Most features working (note: charging not working yet)"
+	pkgdesc="Mainline kernel (no charging, no modem, audio routed directly)"
 	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Mainline kernel (no charging, non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916 soc-qcom-msm8916-modem"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
@@ -43,10 +52,17 @@ kernel_downstream() {
 }
 
 nonfree_firmware() {
-	pkgdesc="GPU/WiFi/BT/Video firmware"
+	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
 	depends="linux-firmware-qcom firmware-wileyfox-crackling-venus firmware-wileyfox-crackling-wcnss"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="904e1080dc42bbf438b13d4cec7871425ec39c9f33700276849f43c0f4504902c4873f31be0cb027407062689ba85a1b03136d9d73b44ae392d0474378418598  deviceinfo
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-wileyfox-crackling-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="11000457ae7365910ef48192c86d044f66986d44b5df207472f49cac0507d1bcc49c33471ee1d17a23861d6b2af86f5e3f920ae0cec95ea25bcdc3600a53e1ab  deviceinfo
 587be41a15f5738c6f55c52f760e08810185a00af886e84864f77ce38675bdf65893779a4ea88c9811023746895818ce5829a1b060e158f2cdae87d13e13f07d  fb.modes"
