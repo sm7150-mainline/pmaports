@@ -1,17 +1,23 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Contributor: Minecrell <minecrell@minecrell.net>
+# Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname="device-samsung-a5ulte"
 pkgdesc="Samsung Galaxy A5 (SM-A500FU)"
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
 makedepends="devicepkg-dev"
 source="deviceinfo"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -21,10 +27,29 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_mainline() {
+	pkgdesc="Mainline kernel (no modem, audio routed directly)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Mainline kernel (non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
-	pkgdesc="GPU/WiFi/BT/Video firmware"
+	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
 	depends="linux-firmware-qcom firmware-samsung-a5ulte-venus firmware-samsung-a5ulte-wcnss"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="a7e8cad02d17431965a8c5a0969af3ac4427d7338f662c0bcf1a68274d17ec0306588e741a55f630df82b3347b8d3e914f364e6b7424aaf1bc0b882d34333133  deviceinfo"
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-samsung-a5ulte-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="4428d30447eb60ac7e143b9e7cba67bd55b192cb884b42d13c896419885cb4ae81e4fc6e73c6fc46edd85ad1361b6db463d8705462c4c945d7b59d10c49104cc  deviceinfo"
