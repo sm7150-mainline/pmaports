@@ -1,13 +1,14 @@
 # Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname="soc-qcom-msm8916"
 pkgdesc="Common package for Qualcomm MSM8916 devices"
-pkgver=1
-pkgrel=1
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64 armv7"
 options="!check !archcheck"
 depends="mesa-dri-freedreno"
+subpackages="$pkgname-modem"
 
 _ucm_commit=e4639175c20c7dfe8f31fe32735d1efa8af31a48
 source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8916-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz"
@@ -16,6 +17,11 @@ package() {
 	cd "$srcdir/alsa-ucm-conf-$_ucm_commit"/ucm2
 	find msm8916* codecs/msm8916-wcd platforms/msm8916 -type f -name "*.conf" \
 		-exec install -Dm644 {} "$pkgdir"/usr/share/alsa/ucm2/{} \;
+}
+
+modem() {
+	depends="modem-qcom-msm-mainline-common"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="392ed18933d3ccad8cecb8086742c6cfb44cb24d3de4e20dfa9caa137707df2439e45bd4e6215883c6f2710f279a12c408f09ab18c333682483eccf863ced0de  soc-qcom-msm8916-e4639175c20c7dfe8f31fe32735d1efa8af31a48.tar.gz"
