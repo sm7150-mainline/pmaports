@@ -1,7 +1,7 @@
 # Maintainer: David Heidelberg <david@ixit.cz>
 pkgname=libdrm-grate
 pkgver=2.4.100_git20191221
-pkgrel=0
+pkgrel=1
 pkgdesc="Userspace interface to kernel DRM services"
 url="https://github.com/grate-driver/libdrm"
 arch="armhf armv7"
@@ -24,14 +24,9 @@ builddir="$srcdir/$_pkgname-$_commit"
 build() {
 	meson \
 		-Dprefix=/usr \
-		-Dradeon=false \
-		-Damdgpu=false \
-		-Dnouveau=false \
-		-Dvmwgfx=false \
-		-Dfreedreno=false \
-		-Dvc4=false \
+		-Dfreedreno=true \
 		-Dtegra=true \
-		-Detnaviv=false \
+		-Detnaviv=true \
 		-Dudev=true \
 		. build
 	ninja -C build
