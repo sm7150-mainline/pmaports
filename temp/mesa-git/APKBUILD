@@ -3,10 +3,6 @@
 #
 # Any new drivers should be upstreamed to Alpine Linux once they appear in a
 # new Mesa stable release
-#
-# Any device that wants to use this should explicitely depend on the entirety
-# of this aport, so mesa-git including _all_ of the subpackages, to not cause
-# conflicts
 pkgname=mesa-git
 pkgver=0_git20200116
 pkgrel=1
@@ -271,7 +267,9 @@ _mv_vulkan() {
 _dri() {
 	local n=${subpkgname##*-dri-}
 	pkgdesc="Mesa $n DRI drivers (Git)"
-	depends="$pkgname"
+
+	# List all relevant subpackages to avoid conflicts with main mesa package.
+	depends="$pkgname $pkgname-gl $pkgname-glapi $pkgname-gles $pkgname-egl $pkgname-gbm"
 	provides="mesa-dri-$n"
 	replaces="mesa-dri-$n"
 
