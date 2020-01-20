@@ -46,7 +46,8 @@ generate_splash_screens()
 		splash_text=$2
 		splash_args=$3
 
-		if [ "${deviceinfo_framebuffer_landscape}" == "true" ]; then
+		# shellcheck disable=SC2154
+		if [ "${deviceinfo_framebuffer_landscape}" = "true" ]; then
 			splash_args="${splash_args} --landscape"
 		fi
 
