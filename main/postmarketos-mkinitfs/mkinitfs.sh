@@ -314,79 +314,6 @@ create_bootimg()
 	fi
 }
 
-# Create splash screens
-# $1: "false" to skip clearing the cache if one image is missing
-generate_splash_screens()
-{
-	[ "$1" != "false" ] && clean="true" || clean="false"
-
-	splash_version=$(apk info -v | grep postmarketos-splash)
-	if [ -z "$splash_version" ]; then
-		# If package is not installed yet, use latest version from repository
-		splash_version=$(apk search -x postmarketos-splash)
-	fi
-	splash_config="/etc/postmarketos/splash.ini"
-	splash_config_hash=$(md5sum "$splash_config")
-	splash_width=${deviceinfo_screen_width:-720}
-	splash_height=${deviceinfo_screen_height:-1280}
-	splash_cache_dir="/var/cache/postmarketos-splashes"
-
-	# Overwrite $@ to easily iterate over the splash screens. Format:
-	# $1: splash_name
-	# $2: text
-	# $3: arguments
-	set -- "splash-loading"          "Loading..." "--center" \
-	       "splash-noboot"           "boot partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-noinitramfsextra" "initramfs-extra not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-norootfs"         "rootfs not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-mounterror"       "unable to mount root partition\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-debug-shell"      "WARNING\\ndebug-shell is active\\nhttps://postmarketos.org/debug-shell" "--center" \
-	       "splash-charging-error"   "CHARGING MODE\\nerror starting charging-sdl\\nhttps://postmarketos.org/troubleshooting" "--center"
-
-	# Ensure cache folder exists
-	mkdir -p "${splash_cache_dir}"
-
-	# Loop through the splash screens definitions
-	while [ $# -gt 2 ]
-	do
-		splash_name=$1
-		splash_text=$2
-		splash_args=$3
-
-		if [ "${deviceinfo_framebuffer_landscape}" == "true" ]; then
-			splash_args="${splash_args} --landscape"
-		fi
-
-		# Compute hash using the following values concatenated:
-		# - postmarketos-splash package version
-		# - splash config file
-		# - device resolution
-		# - text to be displayed
-		# - extra arguments
-		splash_hash_string="${splash_version}#${splash_config_hash}#${splash_width}#${splash_height}#${splash_text}#${splash_args}"
-		splash_hash="$(echo "${splash_hash_string}" | md5sum | awk '{ print $1 }')"
-
-		if ! [ -e "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm.gz" ]; then
-
-			# If a cached file is missing, clear the whole cache and start again skipping this step
-			if [ "$clean" = "true" ]; then
-				rm -f ${splash_cache_dir}/*
-				generate_splash_screens false
-				return
-			fi
-
-			# shellcheck disable=SC2086
-			pmos-make-splash --text="${splash_text}" $splash_args --config "${splash_config}" \
-					"$splash_width" "$splash_height" "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm"
-			gzip "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm"
-		fi
-
-		cp "${splash_cache_dir}/${splash_name}_${splash_hash}.ppm.gz" "${tmpdir}/${splash_name}.ppm.gz"
-
-		shift 3 # move to the next 3 arguments
-	done
-}
-
 # Append the correct device tree to the linux image file or copy the dtb to the boot partition
 append_or_copy_dtb()
 {
@@ -458,6 +385,7 @@ copy_files "$(get_modules)" "$tmpdir"
 copy_files "$(get_binaries)" "$tmpdir"
 copy_files "/etc/deviceinfo" "$tmpdir"
 copy_files "/etc/postmarketos-mkinitfs/hooks/*.sh" "$tmpdir"
+cp /usr/share/postmarketos-splashes/*.ppm.gz "$tmpdir"
 create_device_nodes
 ln -s "/bin/busybox" "$tmpdir/bin/sh"
 install -Dm755 "/usr/share/postmarketos-mkinitfs/init.sh.in" \
@@ -466,7 +394,6 @@ install -Dm755 "/usr/share/postmarketos-mkinitfs/init_functions.sh" \
 	"$tmpdir/init_functions.sh"
 
 # finish up
-generate_splash_screens
 replace_init_variables
 create_cpio_image "$tmpdir" "$outfile"
 append_or_copy_dtb

@@ -20,6 +20,7 @@ fi
 
 install -Dm644 "$srcdir/deviceinfo" \
 	"$pkgdir/etc/deviceinfo"
+install -Dm644 -t "$pkgdir/usr/share/postmarketos-splashes" "$srcdir"/*.ppm.gz
 
 if [ -f "$srcdir/90-$pkgname.rules" ]; then
 	install -Dm644 "$srcdir/90-$pkgname.rules" \
