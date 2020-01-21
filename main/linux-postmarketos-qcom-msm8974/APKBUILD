@@ -1,9 +1,9 @@
 _flavor=postmarketos-qcom-msm8974
-_config="config-${_flavor}.${CARCH}"
+_config="config-$_flavor.$CARCH"
 
-pkgname=linux-${_flavor}
+pkgname=linux-$_flavor
 
-pkgver=5.2.0
+pkgver=5.4.0_rc6
 pkgrel=1
 
 arch="armv7"
@@ -11,17 +11,17 @@ pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8974 device
 url="https://kernel.org/"
 makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
-_commit="33fee68163e501634338b40aac2ebe279bf7787b"
+_commit="f5cb192a3e49fc69c2c1df8b684f954152a8a80c"
 source="
-	linux-${_commit}.tar.gz::https://github.com/masneyb/linux/archive/${_commit}.tar.gz
-	config-${_flavor}.armv7
+	linux-postmarketos-qcom-$_commit.tar.gz::https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/qcom/linux-postmarketos-qcom-$_commit.tar.gz
+	config-$_flavor.armv7
 "
 
 subpackages="$pkgname-dev"
 
 license="GPL2"
 _abi_release=$_pkgver
-_carch=${CARCH}
+_carch=$CARCH
 case "$_carch" in
 aarch64*) _carch="arm64" ;;
 arm*) _carch="arm" ;;
@@ -32,12 +32,11 @@ esac
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-builddir="$srcdir/linux-${_commit}"
+builddir="$srcdir/linux-postmarketos-qcom-$_commit"
 
 prepare() {
 	local _patch_failed=
 	ls "$srcdir"
-	cd "$builddir"
 	# first apply patches in specified order
 	for i in $source; do
 		case $i in
@@ -68,20 +67,20 @@ build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
 		CFLAGS_MODULE=-fno-pic
 
 	dtbTool -s 2048 -p scripts/dtc/ -o arch/arm/boot/dt.img arch/arm/boot/dts --version=2
 }
 
 package() {
-	cd "$srcdir/build/arch/${_carch}/boot"
+	cd "$srcdir/build/arch/$_carch/boot"
 
 	if [ "$CARCH" == "aarch64" ]; then
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image" \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image" \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	else
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	fi
 
@@ -116,7 +115,7 @@ dev() {
 	#
 	pkgdesc="Headers and script for third party modules for postmarketos kernel"
 	depends="gmp-dev bash perl"
-	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
+	local dir="$subpkgdir"/usr/src/linux-headers-$_abi_release
 
 	# first we import config, run prepare to set up for building
 	# external modules, and create the scripts
@@ -153,10 +152,10 @@ dev() {
 	install -Dm644 "$srcdir"/build/Module.symvers \
 		"$dir"/Module.symvers
 
-	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
-	ln -sf /usr/src/linux-headers-${_abi_release} \
-		"$subpkgdir"/lib/modules/${_abi_release}/build
+	mkdir -p "$subpkgdir"/lib/modules/$_abi_release
+	ln -sf /usr/src/linux-headers-$_abi_release \
+		"$subpkgdir"/lib/modules/$_abi_release/build
 }
 
-sha512sums="b2d0e92ace0904308ceb9914f8ff3e54d9421c6cba4dcaf073046a7444e7f2cc80543115b869544f75d83c0321c81ca73d4046bdb53c8160e94c613d0bc3ea26  linux-33fee68163e501634338b40aac2ebe279bf7787b.tar.gz
-02287f60c1ad6fd9f3f8082b30e74defee40aaf7b4193e062127718d76de137f4d1bd72c9aa38291063ae878066b01a988c2e10cd5429594099bb35794594d05  config-postmarketos-qcom-msm8974.armv7"
+sha512sums="36c6b2fd37f5ae13937ab0d3900cc8ddee2c78f963d74198488264ce2b10916e8150b6fb9983fe3ef92ac5ffd6d3af290a027e51f4aa7fe9bb6677e11406de3d  linux-postmarketos-qcom-f5cb192a3e49fc69c2c1df8b684f954152a8a80c.tar.gz
+6e51ab9de1881718d4518d93c143f99bada46ce0a6d543296587483eab63d0cd2b52ca7f3a0b407ce1256006ce8231655c0b907aaf1bff05c18ef0ac0cbc29fb  config-postmarketos-qcom-msm8974.armv7"
