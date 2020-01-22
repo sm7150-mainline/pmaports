@@ -3,7 +3,7 @@
 pkgname=ofono
 pkgver=9999
 _pkgver=1.31
-pkgrel=3
+pkgrel=4
 pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications [$_pkgver]"
 url="https://01.org/ofono"
 arch="all"
@@ -24,6 +24,7 @@ source="https://www.kernel.org/pub/linux/network/ofono/ofono-$_pkgver.tar.xz
 	0004-add-call-list-helper-to-manage-voice-call-lists.patch
 	0005-qmimodem-implement-voice-calls.patch
 	$pkgname.initd
+	$pkgname-auto-enable.initd
 	udev.rules
 	ofono-wheel.conf"
 builddir="$srcdir/$pkgname-$_pkgver"
@@ -35,7 +36,8 @@ build() {
 		--prefix=/usr \
 		--sysconfdir=/etc \
 		--localstatedir=/var \
-		--sbindir=/usr/sbin
+		--sbindir=/usr/sbin \
+		--enable-tools
 	make
 }
 
@@ -48,7 +50,9 @@ package() {
 	install -Dm644 "$srcdir"/$pkgname-$_pkgver/plugins/ofono.rules "$pkgdir"/usr/lib/udev/rules.d/60-ofono.rules
 	install -Dm644 "$srcdir"/udev.rules "$pkgdir"/usr/lib/udev/rules.d/60-ofono-pmos.rules
 	install -Dm755 "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/$pkgname
+	install -Dm755 "$srcdir"/$pkgname-auto-enable.initd "$pkgdir"/etc/init.d/$pkgname-auto-enable
 	install -Dm755 "$srcdir"/ofono-wheel.conf "$pkgdir"/etc/dbus-1/system.d/
+	install -Dm755 "$builddir"/tools/auto-enable "$pkgdir"/usr/bin/ofono-auto-enable
 }
 
 sha512sums="377cda34dcc92d1f339a4b3271de5a14afaf309061c4467e5af18089cd821e65c0d8ad29d07e96d0f0480bb51554b284afb6bc2b9da586cc30dc0c1440612b20  ofono-1.31.tar.xz
@@ -62,5 +66,6 @@ ad25dcc34bf710287c9a03fdcd61f2f2fd675691f55be30dbe7c8421753aa857906dd23b2d4f7f75
 3e0dce12bcb65d3c6db15cfd50058e793bf1f1ae6e330bf804565afde54614227746a8d4316ccd36093f22e2cc4f62e3a32e46276ab81a7b1f3a61f56984ed78  0004-add-call-list-helper-to-manage-voice-call-lists.patch
 72d0f63c091d4b1fc5b405ec67e73f377887ee3dffd4791272122462bf4feaeec207de9b177632756e1f973a7bf7bde119c6ec6556568a6307287ba43998b7a0  0005-qmimodem-implement-voice-calls.patch
 a625f71a2b6fdcd7ac43cca64d2a532f5e5a0192b022fcf9157fad51801dc3b71c5d317a62f3f233136a6ed2bbf92e6f1c2fad2c6aa762b9719ceca02de025d1  ofono.initd
+54a2cb55547e77c22a98c4260f2e94d9327d5d98e1b604f9413a7380ae4489247a97561cc2ab39476bc6e6fb5e673dca8053218b18ac4626addb51ecb29f0167  ofono-auto-enable.initd
 8f2893dfc291fc210ef217c4bc74d79436a0997001dd2773809625d52dd19d092cc75d3f9aa5ed2f3d4a6248d4a4e17013a7655323f7dad951f744c55b572417  udev.rules
 72cd0cd4bee1f885a990c84f7ed3ef27e0d9d2db37d9a486342204152cb02a67d5197e8014dfea59f1a95285c674695b3dc3cb2b53941781bcfc9b73d5580b1f  ofono-wheel.conf"
