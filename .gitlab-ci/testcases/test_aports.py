@@ -127,13 +127,7 @@ def test_aports_device_kernel(args):
     Verify the kernels specified in the device packages:
     * Kernel must not be in depends when kernels are in subpackages
     * Check if only one kernel is defined in depends
-    * Validate kernel subpackage names
     """
-    # Generate list of valid subpackages
-    valid_subpackages = ["downstream", "rpi", "rpi2", "longts", "shortts"]
-    for path in glob.glob(args.aports + "/main/linux-postmarketos-*"):
-        suffix = os.path.basename(path)[len("linux-postmarketos-"):]
-        valid_subpackages.append(suffix)
 
     # Iterate over device aports
     for path in glob.glob(args.aports + "/device/device-*/APKBUILD"):
@@ -166,11 +160,3 @@ def test_aports_device_kernel(args):
                                " multiple kernels in depends (see"
                                " <https://postmarketos.org/devicepkg>): " +
                                path)
-
-        # Verify subpackages
-        if kernels_subpackages:
-            for subpackage in kernels_subpackages:
-                if subpackage not in valid_subpackages:
-                    raise RuntimeError("Invalid kernel subpackage name '" +
-                                       subpackage + "', valid: " +
-                                       str(valid_subpackages))
