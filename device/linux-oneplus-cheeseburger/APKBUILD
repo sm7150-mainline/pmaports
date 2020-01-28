@@ -1,0 +1,78 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/lineage_oneplus5_defconfig (https://git.io/JvmDf)
+# Contributor: Jami Kettunen <jami.kettunen@protonmail.com>
+
+pkgname="linux-oneplus-cheeseburger"
+pkgver=4.4.211
+pkgrel=0
+pkgdesc="OnePlus 5 downstream kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="oneplus-cheeseburger"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6 openssl-dev"
+
+# Compiler: GCC 6 (latest doesn't boot to initramfs)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="op5"
+_commit="607bd717e602f6326ad40974d2f382db183633d2"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/android-linux-stable/$_repository/archive/$_commit.tar.gz
+	$_config
+	0001-use-relative-header-includes.patch
+	0002-fix-TRACE_INCLUDE_PATH-paths.patch
+	0003-fix-synaptics_s3320-touchscreen-driver-input.patch
+	0004-disable-interfering-bt_power-rfkill.patch
+	0005-update-msm8998-qpnp-rtc-driver-src-with-sm8150.patch
+	0006-disable-various-spammy-driver-logging.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="7cbd92a8d16a0f47214ff3ba8295286a00ccd051ff45fe25f37d2f3e0829f24b98aa49e7fcb0977da5b77a26ae267fa48685c0e137be88a79599bf8b82853c41  linux-oneplus-cheeseburger-607bd717e602f6326ad40974d2f382db183633d2.tar.gz
+e53a0cbc12ea05971fda1cd59ca606d829bd061031dd0b105d5770868d08507979497c423977cc9c1be30cee1f54a5b1656340f9a3e5dd89c08a6f331aebea9f  config-oneplus-cheeseburger.aarch64
+f369bb6510a5c0581eb2db6ef565d0e93e117b5960c91f52bebd5aa931d65fe91bdc0ec9673107756aa1b5118208d75af116925630aed9025a8f5e303ae1f980  0001-use-relative-header-includes.patch
+a484dc777b37b43eb54f8beb20eef51b7a9177928f97f1b200951c6ece70805e7fa3762f4ad0686525021254fd1f0b5d36c207cf27a04ec65cfe55f88c3d1c12  0002-fix-TRACE_INCLUDE_PATH-paths.patch
+a29c158497e8ef4afddce57e42e54de81629ddf85df4a229282b528ec63475bfa5ed4cc6ff5f77d22300c7124655807355aa7b0cc25d8b02e122b752777f677a  0003-fix-synaptics_s3320-touchscreen-driver-input.patch
+1afb3a4e6af51d073a6e9d3352b0b5ab2918018d2ada972e72209eba3fc5b98926e691ff0d641a9d03a4ce8030e6ed15dff54b3720c751ab7134db53bfd2e685  0004-disable-interfering-bt_power-rfkill.patch
+44031dfaa8fe9a073924fd3549ebb158d32ec2925f29f0a0ca6b1959fb4597dd32232035253bd896985a7d81235c1fbdd917347d7ff5257103be8ee4bb02e5fe  0005-update-msm8998-qpnp-rtc-driver-src-with-sm8150.patch
+bc499a4d4095135cfcbbe898e1628e7eb65fd8fbe9c0e740e77de3150e60016eabd0733843f6f174d91bcdafe8c9702a763efdecdb8406fff9601bba312b85d3  0006-disable-various-spammy-driver-logging.patch"
