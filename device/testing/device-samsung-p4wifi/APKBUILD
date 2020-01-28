@@ -2,12 +2,11 @@
 pkgname=device-samsung-p4wifi
 pkgdesc="Galaxy Tab 10.1"
 pkgver=0.3
-pkgrel=11
+pkgrel=12
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-# FIXME xf86-video-opentegra was removed because it doesn't build anymore, see postmarketOS/pmaports#339
 depends="postmarketos-base
 	linux-samsung-p4wifi
 	mkbootimg
@@ -15,7 +14,7 @@ depends="postmarketos-base
 	mesa-dri-swrast
 	libvdpau-tegra"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-x11"
 source="deviceinfo
 	modules-load.conf
 	modprobe.conf
@@ -44,6 +43,12 @@ package() {
 nonfree_firmware() {
 	pkgdesc="bcm4330 wifi firmware"
 	depends="firmware-samsung-p4wifi"
+	mkdir "$subpkgdir"
+}
+
+x11() {
+	install_if="$pkgname xorg-server"
+	depends="xf86-video-opentegra"
 	mkdir "$subpkgdir"
 }
 
