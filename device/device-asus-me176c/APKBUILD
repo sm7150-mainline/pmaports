@@ -4,7 +4,7 @@
 pkgname="device-asus-me176c"
 pkgdesc="ASUS MeMO Pad 7 (ME176C(X))"
 pkgver=1
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -20,7 +20,6 @@ source="
 subpackages="
 	$pkgname-factory
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-x11
 "
 
 build() {
@@ -45,12 +44,6 @@ factory() {
 	pkgdesc="WiFi/BT MAC address loader"
 	depends="bluez-btmgmt"
 	DESTDIR="$subpkgdir" ninja -C "$srcdir"/build-factory install
-}
-
-x11() {
-	install_if="$pkgname xorg-server"
-	depends="xf86-video-intel"
-	mkdir "$subpkgdir"
 }
 
 nonfree_firmware() {
