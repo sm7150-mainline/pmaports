@@ -1,57 +1,40 @@
+# Contributor: Ethan R. Jones <ethanrjones97@gmail.com>
+# Contributor: red-black-bonsai <red-black-bonsai@gmx.net>
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/msm8610-zte_defconfig
 
 pkgname="linux-zte-kis3"
 pkgver=3.4.0
-pkgrel=2
-pkgdesc="ZTE Kis 3 kernel fork"
-arch="armhf"
+pkgrel=3
+pkgdesc="ZTE Open C / Kis 3 kernel fork"
+arch="armv7"
 _carch="arm"
 _flavor="zte-kis3"
 url="https://kernel.org"
-license="GPL2"
+license="GPL-2.0-only"
 options="!strip !check !tracedeps"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev dtbtool xz gcc6"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool xz"
 
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
+# Compiler: latest GCC from Alpine
+HOSTCC="${CC:-gcc}"
+HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="android_kernel_zte_msm8610"
 _commit="b55a46067bb75d8a290b2cc0e07f5fb3d8207cb1"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/KonstaT/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/KonstaT/$_repository/archive/$_commit.tar.gz
 	$_config
-	compiler-gcc6.h
-	00_fix_return_address.patch
-	02_gpu-msm-fix-gcc5-compile.patch
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	kernel-use-the-gnu89-standard-explicitly.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	local i
-	local makefiles="$(find . -type f -name Makefile)
-		$(find . -type f -name Kbuild)"
-	for i in $makefiles; do
-		sed -i 's/-Werror-/-W/g' "$i"
-		sed -i 's/-Werror//g' "$i"
-	done
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/.config
-	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 
 build() {
@@ -88,7 +71,7 @@ package() {
 }
 
 sha512sums="5759d54232e0c83e71896fc4c859fe8554731678defa337ec9da441505e03fb2f3b795fb68b35dec8e0fc6a920e82f03cd986badc05cf55c993d22085620bebc  linux-zte-kis3-b55a46067bb75d8a290b2cc0e07f5fb3d8207cb1.tar.gz
-1f9c7131401569c5a784b7a63744800a58dd226d5beabba93ae2a64b98b71233f4bcbe15ea5ce8170a85afc9f1271c82e7b92136d5c7023d87064f403d1a02d7  config-zte-kis3.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
-7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"
+feb81328c96af6f97789bb39b288f769f4ef47aa2372dcdf9b87073c43a4688478073d492781646153424f4aa2d79a1468edf3f70c9cb9c555d266aeef9b7886  config-zte-kis3.armv7
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch"
