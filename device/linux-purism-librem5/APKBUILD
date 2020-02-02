@@ -1,9 +1,8 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm64/configs/librem5-devkit_defconfig
-
 pkgname="linux-purism-librem5"
 pkgver=5.3
-pkgrel=0
+pkgrel=1
 pkgdesc="Purism Librem 5 phone kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -21,7 +20,8 @@ HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 # Source
 _repository="linux-next"
 # imx8-current-librem5 branch:
-_commit="943e968dc344b7a5535f299b12b462aaecb60a75"
+_commit="1309cc0a813e70af9b3d8c29d513e78715475de5"
+# kconfig generated with: ARCH=arm64 make defconfig KBUILD_DEFCONFIG=librem5_defconfig
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://source.puri.sm/Librem5/$_repository/-/archive/$_commit.tar.gz
@@ -73,5 +73,5 @@ package() {
 
 }
 
-sha512sums="895ace8d703c7c2123086a2958eabfb64ebbe19a21a2b7f4d669635f0c8e49148125555681754e949a26c940f4ff8d0ce0efea451cebd7dc6d224bdeba24d936  linux-purism-librem5-943e968dc344b7a5535f299b12b462aaecb60a75.tar.gz
-3d17eb02738bc364e3ff892581eca3528ed10949dd7ad43530735256abaef6af76309508292443d79c0651bbbf24508c01c38296ea189931a849f161bac308f7  config-purism-librem5.aarch64"
+sha512sums="85cf8671c4d9481477edbb994423b3745cac684e7a056db889a97a18eb8e26778a900b7151865e8bc79f4394f0bb86c360ecf9eee01cbed6e7d4cbe2862b9e0c  linux-purism-librem5-1309cc0a813e70af9b3d8c29d513e78715475de5.tar.gz
+79046403a26384518ccdb849abc9cfdfe6873986286e4ce97af3e8f633fdb6c8f55b18c954b36edffed3f42f08cbc68f3311e1157f573ee8759fa3da800ad91e  config-purism-librem5.aarch64"
