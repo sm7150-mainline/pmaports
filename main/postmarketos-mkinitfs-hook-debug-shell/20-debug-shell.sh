@@ -42,6 +42,11 @@ echo "Start the telnet daemon"
 chmod +x /telnet_connect.sh
 telnetd -b "${IP}:${TELNET_PORT}" -l /telnet_connect.sh
 
+# mount pstore, if possible
+if [ -d /sys/fs/pstore ]; then
+	mount -t pstore pstore /sys/fs/pstore || true
+fi
+
 echo "---"
 echo "WARNING: debug-shell is active on ${IP}:${TELNET_PORT}."
 echo "This is a security hole! Only use it for debugging, and"
