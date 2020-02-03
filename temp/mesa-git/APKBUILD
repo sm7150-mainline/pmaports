@@ -5,7 +5,7 @@
 # new Mesa stable release
 pkgname=mesa-git
 pkgver=0_git20200202
-pkgrel=1
+pkgrel=2
 _commit="0021f7dc307f4852955359adb5ac2b7667e6d4ac"
 pkgdesc="Mesa DRI OpenGL library (Git)"
 url="https://www.mesa3d.org"
@@ -168,6 +168,12 @@ package() {
 
 	# Make abuild's version check happy (#386)
 	sed -i s/-devel//g "$pkgdir"/usr/lib/pkgconfig/*.pc
+}
+
+dev() {
+	provides="mesa-dev"
+	replaces="mesa-dev"
+	default_dev
 }
 
 egl() {
