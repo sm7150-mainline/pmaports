@@ -2,17 +2,22 @@
 # Maintainer: Ruby Iris Juric <ruby@srxl.me>
 pkgname="device-motorola-harpia"
 pkgdesc="Motorola Moto G4 Play"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,10 +27,29 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_mainline() {
+	pkgdesc="Mainline kernel (no modem, audio routed directly)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Mainline kernel (non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
-	pkgdesc="GPU/Wi-Fi/Bluetooth/Video firmware"
+	pkgdesc="GPU/Wi-Fi/Bluetooth/Video(/Modem) firmware"
 	depends="linux-firmware-qcom firmware-motorola-harpia-wcnss firmware-motorola-harpia-venus"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="42fff2887c7670aecfd1d2e1f64d11401c13115d33e86f167201b9c765d03d3fbd6a5fd6392deeaceffc1580315eac115126001bfee0609424241f10b082ea8f  deviceinfo"
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-motorola-harpia-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="2481b4451ba3ebed9649bd3094c5ab6a2daaf1b2b8d52708e0ce40a4b0e7f03924ca1e560e6b7fa11411f87e207499cf034c391698c1b1be1401ffec5169100e  deviceinfo"
