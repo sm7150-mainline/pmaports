@@ -1,31 +1,40 @@
+# Contributor: TheKit <nekit1000@gmail.com>
+# Contributor: Danct12 <danct12@disroot.org>
+# Contributor: Alexey Min <alexey.min@gmail.com>
+# Maintainer: TheKit <nekit1000@gmail.com>
 pkgname=libhybris
-pkgver=1.0_git20191001
+pkgver=1.0_git20200117
 pkgrel=1
 arch="armhf armv7 aarch64"
 url="https://github.com/libhybris/libhybris"
-license="Apache"
+license="Apache-2.0"
+pkgdesc="libhybris allows to use bionic-based HW adaptations"
+_commit="605f294d3cdf70e3072b9a3077cd14758a174124"
 makedepends="autoconf automake libtool wayland-dev linux-headers bsd-compat-headers
 	libx11-dev libxcb-dev libxext-dev
 	android-headers-9.0 android-headers-7.1 android-headers-4.4"
 depends_dev="bsd-compat-headers android-headers-9.0"
-_commit="eaa6884ba95a1d5d0303119ffdc48952a098059b"
 source="$pkgname-$_commit.tar.gz::https://github.com/libhybris/libhybris/archive/$_commit.tar.gz
 	0001-Make-libhybris-compile-with-musl.patch
 	0002-tests-Regression-test-for-EGL-glibc-TLS-conflict.patch
 	0003-PATCH-v2-Implement-X11-EGL-platform-based-on-wayland.patch
 	0004-Build-test-hwcomposer-7-caf.patch
 "
+_base_subpackages="$pkgname-dev
+	$pkgname-dbg
+	$pkgname-egl
+	$pkgname-gles
+	$pkgname-libwayland-egl:_wayland"
+subpackages="$_base_subpackages
+	$pkgname-9.0:_specific
+	$pkgname-7.1:_specific
+	$pkgname-4.4:_specific"
 
-pkgdesc="libhybris allows to use bionic-based HW adaptations"
-subpackages="$pkgname-dev $pkgname-egl $pkgname-gles $pkgname-libwayland-egl:_wayland
-	$pkgname-9.0:_specific $pkgname-7.1:_specific $pkgname-4.4:_specific"
-
+# Override subpackages list for some specific arches
 if [ "$CARCH" == "aarch64" ]; then
-subpackages="$pkgname-dev $pkgname-egl $pkgname-gles $pkgname-libwayland-egl:_wayland
-	$pkgname-9.0:_specific $pkgname-7.1:_specific"
+	subpackages="$_base_subpackages $pkgname-9.0:_specific $pkgname-7.1:_specific"
 elif [ "$CARCH" == "x86" ]; then
-subpackages="$pkgname-dev $pkgname-egl $pkgname-gles $pkgname-libwayland-egl:_wayland
-	$pkgname-9.0:_specific $pkgname-7.1:_specific $pkgname-4.4:_specific"
+	subpackages="$_base_subpackages $pkgname-9.0:_specific $pkgname-7.1:_specific $pkgname-4.4:_specific"
 fi
 
 options="!check !strip !tracedeps"
@@ -86,37 +95,37 @@ build() {
 			--enable-property-cache
 		make clean
 		make
-		make DESTDIR="${_tmppkgdir}/$pkgname-$_headers_ver" install
+		make DESTDIR="$_tmppkgdir/$pkgname-$_headers_ver" install
 	done
 }
 
 package() {
 	cd "$builddir/hybris"
 
-	# make DESTDIR="${pkgdir}" install
-	mkdir -p "${pkgdir}"
-	cp -a ${_tmppkgdir}/$pkgname-$_main_headers_ver/* "${pkgdir}"
+	# make DESTDIR="$pkgdir" install
+	mkdir -p "$pkgdir"
+	cp -a "$_tmppkgdir"/"$pkgname-$_main_headers_ver"/* "$pkgdir"
 
-	for _bin in ${_bins_specific}; do
-		rm "${pkgdir}/usr/bin/${_bin}" || true
+	for _bin in $_bins_specific; do
+		rm "$pkgdir/usr/bin/$_bin" || true
 	done
 
-	for _lib in ${_libs_specific}; do
-		rm "${pkgdir}/usr/lib/${_lib}"
+	for _lib in $_libs_specific; do
+		rm "$pkgdir/usr/lib/$_lib"
 	done
 }
 
 _specific() {
 	depends="$pkgname"
 
-	for _bin in ${_bins_specific}; do
-		install -Dm755 "${_tmppkgdir}/${subpkgname}/usr/bin/${_bin}" \
-			"${subpkgdir}/usr/bin/${_bin}" || true
+	for _bin in $_bins_specific; do
+		install -Dm755 "$_tmppkgdir/$subpkgname/usr/bin/$_bin" \
+			"$subpkgdir/usr/bin/$_bin" || true
 	done
 
-	for _lib in ${_libs_specific}; do
-		install -Dm755 "${_tmppkgdir}/${subpkgname}/usr/lib/${_lib}" \
-			"${subpkgdir}/usr/lib/${_lib}"
+	for _lib in $_libs_specific; do
+		install -Dm755 "$_tmppkgdir/$subpkgname/usr/lib/$_lib" \
+			"$subpkgdir/usr/lib/$_lib"
 	done
 }
 
@@ -142,8 +151,7 @@ _wayland() {
 	depends="$pkgname"
 	pkgdesc="libhybris libwayland-egl library"
 	mkdir -p "$subpkgdir"/usr/lib/libhybris-egl
-	mv "$pkgdir"/usr/lib/libwayland-egl.so.* "$subpkgdir"/usr/lib/libhybris-egl/ \
-		|| return 1
+	mv "$pkgdir"/usr/lib/libwayland-egl.so.* "$subpkgdir"/usr/lib/libhybris-egl/
 }
 
 dev() {
@@ -168,7 +176,7 @@ dev() {
 	ln -s ../hybris/EGL/eglhybris.h .
 }
 
-sha512sums="598e4a788d38116437d24052b2153abd980d11fc8a277b5a0655ab96a6b8803388260e4621200f015570dcfa0ebb66fb68eeeb99948f1d9d4b9a04aa71d06540  libhybris-eaa6884ba95a1d5d0303119ffdc48952a098059b.tar.gz
+sha512sums="9d4705eab02d0f1cd8c2e9fba39f03a7ea73dd0afebd544cf56343b9d002cdb07cc1fd4ffa44802c610782b32cd94d97b0b33a4fdbb7dd80a090965128d03998  libhybris-605f294d3cdf70e3072b9a3077cd14758a174124.tar.gz
 a1b707c9aaa7bde2907d04742d7d582df57949415e1afe16c3b461671421a18643008e19aa006e9e67b9644392ec4e2d58c6de725d2db2df077a49526f2893ce  0001-Make-libhybris-compile-with-musl.patch
 64fa516c823859c062d175a51fc86846dc85f4e98989cf12c7cb8c9a13ffffb748f6152543f1a6e22f5fe78eb619880262b3c8ff3b6cbd314241fec16ef2eff5  0002-tests-Regression-test-for-EGL-glibc-TLS-conflict.patch
 db7bb0ffc04042b32d870db364df4d38d9769978f26d71f98dd2569b4cae7fb3839c7a0c421b465f931a57fcde38b8eca091b7ae0062e32a7e09b93a701397f3  0003-PATCH-v2-Implement-X11-EGL-platform-based-on-wayland.patch
