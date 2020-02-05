@@ -335,10 +335,10 @@ append_or_copy_dtb()
 }
 
 # Create the initramfs-extra archive
-# $1: outfile
+# Updates $outfile_extra with path to cached file (hash appended to filename)
 generate_initramfs_extra()
 {
-	echo "==> initramfs: creating $1"
+	echo "==> initramfs: creating $outfile_extra"
 
 	osk_conf="$(get_osk_config)"
 	if [ $? -eq 1 ]; then
@@ -346,19 +346,15 @@ generate_initramfs_extra()
 		exit 1
 	fi
 
-	# Ensure cache folder exists
-	mkinitfs_cache_dir="/var/cache/postmarketos-mkinitfs"
-	mkdir -p "$mkinitfs_cache_dir"
-
-	# Generate cache output filename (initfs_extra_cache) by hashing all input files
+	# Generate output filename (initfs_extra_cache) by hashing all input files
 	initfs_extra_files=$(echo "$BINARIES_EXTRA$osk_conf" | xargs -0 -I{} sh -c 'ls $1 2>/dev/null' -- {} | sort -u)
 	initfs_extra_files_hashes="$(md5sum $initfs_extra_files)"
 	initfs_extra_hash="$(echo "$initfs_extra_files_hashes" | md5sum | awk '{ print $1 }')"
-	initfs_extra_cache="$mkinitfs_cache_dir/$(basename $1)_${initfs_extra_hash}"
+	initfs_extra_cache="${outfile_extra}_${initfs_extra_hash}"
 
 	if ! [ -e "$initfs_extra_cache" ]; then
-		# If a cached file is missing, clear the whole cache and create it
-		rm -f ${mkinitfs_cache_dir}/*
+		# Delete old initramfs-extra_<hash> files
+		rm -f "$outfile_extra"_*
 
 		# Set up initramfs-extra in temp folder
 		tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
@@ -369,13 +365,16 @@ generate_initramfs_extra()
 		rm -rf "$tmpdir_extra"
 	fi
 
-	cp "$initfs_extra_cache" "$1"
+	outfile_extra="$initfs_extra_cache"
 }
 
 # initialize
 source_deviceinfo
 parse_commandline "$1" "$2" "$3"
 check_hook_files
+
+generate_initramfs_extra
+
 echo "==> initramfs: creating $outfile"
 tmpdir=$(mktemp -d /tmp/mkinitfs.XXXXXX)
 
@@ -401,7 +400,5 @@ create_uboot_files
 create_bootimg
 
 rm -rf "$tmpdir"
-
-generate_initramfs_extra "$outfile_extra"
 
 exit 0
