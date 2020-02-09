@@ -1,13 +1,13 @@
+# Contributor: TheKit <nekit1000@gmail.com>
+# Maintainer: TheKit <nekit1000@gmail.com>
 pkgname=android-headers-7.1
 _pkgname=android-headers
 pkgver=7.1_git20170630
 _pkgver=7.1
 pkgrel=0
-arch="noarch !x86 !x86_64"
+arch="aarch64 armhf armv7"
 url="https://github.com/Halium/android-headers"
-license="Apache"
-makedepends=""
-depends=""
+license="Apache-2.0"
 _commit="1f6591ba7d42b91c32acf5a65a2a4fae983d6865"
 source="$pkgname-$_commit.tar.gz::https://github.com/Halium/android-headers/archive/$_commit.tar.gz"
 pkgdesc="Android headers used for building libhybris"
@@ -16,12 +16,11 @@ subpackages="$pkgname-caf:package_caf"
 builddir="$srcdir/$_pkgname-$_commit"
 
 package() {
-	cd "$builddir"
-	make PREFIX=/usr DESTDIR="${pkgdir}" install
+	make PREFIX=/usr DESTDIR="$pkgdir" install
 
-	mv ${pkgdir}/usr/include/android ${pkgdir}/usr/include/android-$_pkgver
-	sed -i "s~${includedir}/android~${includedir}/android-$_pkgver~g" ${pkgdir}/usr/lib/pkgconfig/android-headers.pc
-	mv "${pkgdir}/usr/lib/pkgconfig/android-headers.pc" "${pkgdir}/usr/lib/pkgconfig/android-headers-$_pkgver.pc"
+	mv "$pkgdir/usr/include/android" "$pkgdir/usr/include/android-$_pkgver"
+	sed -i "s~$includedir/android~$includedir/android-$_pkgver~g" "$pkgdir"/usr/lib/pkgconfig/android-headers.pc
+	mv "$pkgdir/usr/lib/pkgconfig/android-headers.pc" "$pkgdir/usr/lib/pkgconfig/android-headers-$_pkgver.pc"
 }
 
 
@@ -29,11 +28,11 @@ package_caf() {
 	cd "$builddir"
 
 	sed -i 's~/\* CONFIG GOES HERE \*/~#define QCOM_BSP 1\n#define QTI_BSP 1~g' android-config.h
-	make PREFIX=/usr DESTDIR="${subpkgdir}" install
+	make PREFIX=/usr DESTDIR="$subpkgdir" install
 
-	mv ${subpkgdir}/usr/include/android ${subpkgdir}/usr/include/android-$_pkgver-caf
-	sed -i "s~${includedir}/android~${includedir}/android-$_pkgver-caf~g" ${subpkgdir}/usr/lib/pkgconfig/android-headers.pc
-	mv "${subpkgdir}/usr/lib/pkgconfig/android-headers.pc" "${subpkgdir}/usr/lib/pkgconfig/android-headers-$_pkgver-caf.pc"
+	mv "$subpkgdir/usr/include/android" "$subpkgdir/usr/include/android-$_pkgver-caf"
+	sed -i "s~$includedir/android~$includedir/android-$_pkgver-caf~g" "$subpkgdir"/usr/lib/pkgconfig/android-headers.pc
+	mv "$subpkgdir/usr/lib/pkgconfig/android-headers.pc" "$subpkgdir/usr/lib/pkgconfig/android-headers-$_pkgver-caf.pc"
 }
 
 sha512sums="652641b469f7faf90c7adf03b14047f9eb24fdb190d9ab131d72f73b2d9357aad80cad48867ede66b0a737661cfb9e26fb4583b9fed15b8d6d667fe53ea14419  android-headers-7.1-1f6591ba7d42b91c32acf5a65a2a4fae983d6865.tar.gz"
