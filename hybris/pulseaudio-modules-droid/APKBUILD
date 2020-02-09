@@ -5,22 +5,20 @@ pkgname="pulseaudio-modules-droid"
 pkgver=13.0
 # _pkgver used in URL to download tarball
 # Yes, we can build slightly older modules version against newer pulseaudio, if we are lucky
-_pkgver=12.2.79
-pkgrel=1
+_pkgver=12.2.84
+pkgrel=2
 pkgdesc="PulseAudio Droid modules by Mer project"
 url="https://github.com/mer-hybris/pulseaudio-modules-droid"
-arch="armv7 aarch64"
+arch="armhf armv7 aarch64"
 license="LGPL-2.1-or-later"
 depends="pulseaudio"
 makedepends="autoconf automake libtool m4 intltool dbus-dev expat-dev pulseaudio-dev pulsecore-private-headers android-headers-7.1 android-headers-7.1-caf libhybris-dev libhybris-7.1"
 options="!check"  # No test suite available
 source="
-	$pkgname-$_pkgver.tar.gz::https://github.com/mer-hybris/$pkgname/archive/$_pkgver.tar.gz
+	$pkgname-$_pkgver.tar.gz::https://github.com/mer-hybris/pulseaudio-modules-droid/archive/$_pkgver.tar.gz
 	0001-configure-ac-compat.patch
-	0002-Fix-compatibility-with-pulseaudio-13.0.patch
 "
 install="$pkgname.post-install"
-subpackages=""
 _headers_variants="7.1 7.1-caf"
 for _ver in $_headers_variants; do
 	subpackages="$subpackages $pkgname-$_ver:_variant"
@@ -33,7 +31,6 @@ _list_of_libs="
 	libdroid-source.so
 	libdroid-util.so
 	module-droid-card.so
-	module-droid-keepalive.so
 	module-droid-sink.so
 	module-droid-source.so
 "
@@ -76,7 +73,7 @@ build() {
 		make
 
 		# each variation is installed into a unique temporary directory
-		make DESTDIR="${_tmppkgdir}/$pkgname-$_ver" install
+		make DESTDIR="$_tmppkgdir/$pkgname-$_ver" install
 	done
 }
 
@@ -92,11 +89,10 @@ _variant() {
 	mkdir -p "$subpkgdir"
 	# Copy libs from temp install folder to a proper subpackage dir
 	for _lib in $_list_of_libs; do
-		install -Dm644 ${_tmppkgdir}/${subpkgname}/usr/lib/pulse-${pkgver}/modules/${_lib} \
-			${subpkgdir}/usr/lib/pulse-${pkgver}/modules/${_lib}
+		install -Dm644 "$_tmppkgdir/$subpkgname/usr/lib/pulse-$pkgver/modules/$_lib" \
+			"$subpkgdir/usr/lib/pulse-$pkgver/modules/$_lib"
 	done
 }
 
-sha512sums="9190dfd5891e0ed580e3135eebb322a00ec99cd3af708047e75c23bd5bf6681151ac1facda08f933679464afff15d421168e549b0ae84756b0e3c97d52693865  pulseaudio-modules-droid-12.2.79.tar.gz
-2aa283c64d8623c035522b89b62c80130d14c145a73e6193e2e98c26525cc12670e50f8db4649029e731b61d08c1e5ab2bd4e1a3dae8ca077bbdabe3a69eaa17  0001-configure-ac-compat.patch
-e5cf7c3c11fa096bcd2fbe95c9e4135c0b9c1383b2c8c2c0cf43a554122849cc01d9e2b99cab9ec0ef51375ca013e653c6bdfd5c86145a18b3a70cef8bdf7b3e  0002-Fix-compatibility-with-pulseaudio-13.0.patch"
+sha512sums="7a573573bbcfb3a6b3b82a6d75a79506809b00ab2f000b31cd2f81c6fa433daaa81eeb6a7965ab995e2e36ac87c02252dc1aad413447e82e3b70031dfa9d5e82  pulseaudio-modules-droid-12.2.84.tar.gz
+2aa283c64d8623c035522b89b62c80130d14c145a73e6193e2e98c26525cc12670e50f8db4649029e731b61d08c1e5ab2bd4e1a3dae8ca077bbdabe3a69eaa17  0001-configure-ac-compat.patch"

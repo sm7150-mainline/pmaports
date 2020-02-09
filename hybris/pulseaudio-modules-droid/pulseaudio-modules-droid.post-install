@@ -2,19 +2,16 @@
 # pulseaudio default config file name
 DEFAULT_PA=/etc/pulse/default.pa
 # configuration lines
-L1="load-module module-droid-card"
-
-append_line() {
-	FN=$1
-	LINE=$2
-	if ! grep -q "${LINE}" "${FN}"; then
-		echo "Adding $LINE..."
-		echo "${LINE}" >> "${FN}"
-	else
-		echo "Not adding ${LINE}"
-	fi
-}
+PA_LINES="
+.ifexists /etc/pulse/arm_droid_card_custom.pa
+.include /etc/pulse/arm_droid_card_custom.pa
+.else
+load-module module-droid-card
+.endif
+"
 
 if [ -f ${DEFAULT_PA} ]; then
-	append_line "${DEFAULT_PA}" "${L1}"
+	if ! grep -q "module-droid-card" $DEFAULT_PA; then
+		echo "$PA_LINES" >> $DEFAULT_PA
+	fi
 fi
