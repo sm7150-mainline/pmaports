@@ -1,27 +1,28 @@
+# Contributor: TheKit <nekit1000@gmail.com>
+# Contributor: Alexey Min <alexey.min@gmail.com>
+# Maintainer: TheKit <nekit1000@gmail.com>
 pkgname=lxc-android
 pkgver=1.0_git20190315
 pkgrel=2
-arch="noarch !x86 !x86_64"
+arch="aarch64 armhf armv7"
 url="https://github.com/Halium/lxc-android"
 license="Apache"
-makedepends=""
 depends="lxc shadow"
 _commit="9551443e5ab11d0d21cb544f681bcb7603b870de"
 install="$pkgname.post-install"
-source="$pkgname-$_commit.tar.gz::https://github.com/Halium/$pkgname/archive/$_commit.tar.gz
-    add_android_groups.sh
-    logcat
-    pre-start.sh
-    0001-lxcconfig.patch
-    0002-fix-android-rules.patch
-    lxc-android.init"
+source="$pkgname-$_commit.tar.gz::https://github.com/Halium/lxc-android/archive/$_commit.tar.gz
+	add_android_groups.sh
+	logcat
+	pre-start.sh
+	0001-lxcconfig.patch
+	0002-fix-android-rules.patch
+	lxc-android.init"
 pkgdesc="Configuration for starting Halium build of Android inside LXC container"
 options="!check"
 
 builddir="$srcdir/$pkgname-$_commit"
 
 package() {
-	cd "$builddir"
 	mkdir -p "$pkgdir"
 	cp -r "$builddir"/* "$pkgdir"
 
@@ -38,14 +39,14 @@ package() {
 	install -m755 "$srcdir/pre-start.sh" "$pkgdir/var/lib/lxc/android/pre-start.sh"
 
 	# OpenRC services
-	install -Dm755 "${srcdir}/lxc-android.init" \
-		"${pkgdir}/etc/init.d/lxc-android"
+	install -Dm755 "$srcdir/lxc-android.init" \
+		"$pkgdir/etc/init.d/lxc-android"
 
-	install -Dm755 "${srcdir}/logcat" \
-		"${pkgdir}/usr/bin/logcat"
+	install -Dm755 "$srcdir/logcat" \
+		"$pkgdir/usr/bin/logcat"
 
-	install -Dm755 "${srcdir}/add_android_groups.sh" \
-		"${pkgdir}/usr/sbin/add_android_groups.sh"
+	install -Dm755 "$srcdir/add_android_groups.sh" \
+		"$pkgdir/usr/sbin/add_android_groups.sh"
 }
 sha512sums="348650f24464abb7a5d2b3e86e762efbdf770bf5f91d4fb12eb62290e3e29b94bcb91fac36cb0b550f4cb1ad9941b97ea7b7c44cccdf9af51d6b35233b6fe46d  lxc-android-9551443e5ab11d0d21cb544f681bcb7603b870de.tar.gz
 5917947c88e47e7ce982822b8d286073da6b8104a0c3df335b1358908cff0e3d819573a341392958aafb533503847ed2b188cb0e88086a8be16244383a577862  add_android_groups.sh
