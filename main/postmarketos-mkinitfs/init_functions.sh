@@ -1,6 +1,7 @@
 #!/bin/sh
 # This file will be in /init_functions.sh inside the initramfs.
 IP=172.16.42.1
+ROOT_PARTITION_UNLOCKED=0
 
 # Redirect stdout and stderr to logfile
 setup_log() {
@@ -105,10 +106,12 @@ find_root_partition() {
 	# Short circuit all autodetection logic if pmos_root= is supplied
 	# on the kernel cmdline
 	# shellcheck disable=SC2013
-	for x in $(cat /proc/cmdline); do
-		[ "$x" = "${x#pmos_root=}" ] && continue
-		DEVICE="${x#pmos_root=}"
-	done
+	if [ "$ROOT_PARTITION_UNLOCKED" = 0 ]; then
+		for x in $(cat /proc/cmdline); do
+			[ "$x" = "${x#pmos_root=}" ] && continue
+			DEVICE="${x#pmos_root=}"
+		done
+	fi
 
 	# Try partitions in /dev/mapper and /dev/dm-* first
 	if [ -z "$DEVICE" ]; then
@@ -211,6 +214,7 @@ unlock_root_partition() {
 		until cryptsetup status root | grep -qwi active; do
 			start_onscreen_keyboard
 		done
+		ROOT_PARTITION_UNLOCKED=1
 		# Show again the loading splashscreen
 		show_splash /splash-loading.ppm.gz
 	fi
