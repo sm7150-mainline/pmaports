@@ -23,23 +23,3 @@ mkdir -p /firmware
 
 # /vendor symlink (points to nowhere until /system is mounted)
 ln -s /system/vendor /vendor
-
-# Since Android audio HAL on this device doesn't like to be unloaded,
-# we need to stop PA from exit too.
-DEFAULT_PA=/etc/pulse/daemon.conf
-L1="exit-idle-time = -1"
-
-append_line() {
-	FN=$1
-	LINE=$2
-	if ! grep -q "${LINE}" "${FN}"; then
-		echo "Adding $LINE..."
-		echo "${LINE}" >> "${FN}"
-	else
-		echo "Not adding ${LINE}"
-	fi
-}
-
-if [ -f ${DEFAULT_PA} ]; then
-	append_line "${DEFAULT_PA}" "${L1}"
-fi
