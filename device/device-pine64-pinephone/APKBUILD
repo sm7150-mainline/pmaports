@@ -3,7 +3,7 @@
 pkgname="device-pine64-pinephone"
 pkgdesc="PINE64 PinePhone"
 pkgver=0.1
-pkgrel=26
+pkgrel=27
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -17,6 +17,7 @@ install="$pkgname.post-install"
 source="
 	deviceinfo
 	uboot-script.cmd
+	sysrq.conf
 	weston.ini
 	hwtest.ini
 	gpsd_pinephone.initd
@@ -48,6 +49,11 @@ package() {
 	install -D -m644 "$srcdir"/90-modem-eg25.rules \
 		"$pkgdir"/usr/lib/udev/rules.d/90-modem-eg25.rules
 
+	# Fix "sysrq: HELP..." messages in dmesg while playing audio
+	# (Headphone output interferes with the serial console on the headphone jack)
+	install -D -m644 "$srcdir"/sysrq.conf \
+		"$pkgdir"/etc/sysctl.d/sysrq.conf
+
 	# Alsa usecase manager config
 	install -D -m644 "$srcdir"/sun50i-a64-audio.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/sun50i-a64-audio.conf
@@ -66,6 +72,7 @@ nonfree_firmware() {
 }
 sha512sums="bfb39f14c5a0b928d08cbcb5d19e63e141b052ebb72186c7c26f54d89c2ebf069674bc110215df0cacdd663610594eef5ffb3022eae5bd0e08aea34ab4e2f319  deviceinfo
 35a5ce7c18747e4363c6b310a1c33143f333a9dd2031d619dee10773d499329487a5ed76749e182d56829d03511266a54890cfa706ba21565e9ba8ffdb88f872  uboot-script.cmd
+f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
