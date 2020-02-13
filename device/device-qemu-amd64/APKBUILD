@@ -2,7 +2,7 @@
 # Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=device-qemu-amd64
 pkgver=1
-pkgrel=24
+pkgrel=25
 pkgdesc="Simulated device in qemu with an x86 platform"
 url="https://postmarketos.org"
 arch="x86_64"
@@ -14,6 +14,8 @@ subpackages="
 	$pkgname-x11
 	$pkgname-weston
 	$pkgname-xfce4
+	$pkgname-kernel-virt:kernel_virt
+	$pkgname-kernel-lts:kernel_lts
 	$pkgname-kernel-stable:kernel_stable
 	$pkgname-kernel-mainline:kernel_mainline
 "
@@ -49,6 +51,18 @@ xfce4() {
 	mkdir "$subpkgdir"
 }
 
+kernel_virt() {
+	pkgdesc="Alpine Virt kernel"
+	depends="linux-virt"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_lts() {
+	pkgdesc="Alpine LTS kernel"
+	depends="linux-lts linux-firmware-none"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 kernel_stable() {
 	pkgdesc="Stable for everyday usage (recommended)"
 	depends="linux-postmarketos-stable"
@@ -61,6 +75,6 @@ kernel_mainline() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-sha512sums="7f9a55ab7f28639f13175b698a3c063f89125793a30d08833ab4f08dec282f1e701d7c6253005bc4302decf159e000153189543b93b0049e781f411a659076c2  deviceinfo
+sha512sums="70da8e5895ff78dc599df65f40117ea467471b93fd45d41fc2d7323e279d176fb9ecb572c2d96eb670e99e3947899d9cb0f089cbcf933e38884a37d821823619  deviceinfo
 47b27c7572b8737988488f7eb23b9e68f9a944e22baafe1c78355d2514a2554cf41d99b29fca12238eb13a6f5d53f00ca89b94e534e8461ebab72256dcf0f142  weston.ini
 65468ac81c77637959f2679f8c13e4d82a2056b3b6b17f8e8904fe44e1064d13693e7f8fd43a54fa5e9c09dc966ec47dc5dd492a241cb825fcac6c0a17bb166f  usb_internet.start"
