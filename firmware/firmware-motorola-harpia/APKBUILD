@@ -1,7 +1,7 @@
 # Maintainer: Ruby Iris Juric <ruby@srxl.me>
 pkgname=firmware-motorola-harpia
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for Motorola Moto G4 Play"
 url="https://github.com/Sorixelle/vendor_motorola_harpia"
 subpackages="$pkgname-wcnss $pkgname-venus $pkgname-modem"
@@ -22,13 +22,14 @@ wcnss() {
 	pkgdesc="Motorola Moto G4 Play Wi-Fi/Bluetooth firmware"
 	cd "$srcdir/vendor_motorola_harpia-$_commit"
 	install -Dm644 wcnss.* -t "$subpkgdir/$_fwdir"
-	install -Dm644 wlan/prima/* -t "$subpkgdir/$_fwdir/wlan/prima"
+	install -Dm644 wlan/prima/WCNSS_qcom_wlan_nv.bin -t "$subpkgdir/$_fwdir/wlan/prima"
 }
 
 venus() {
 	pkgdesc="Motorola Moto G4 Play video firmware"
 	cd "$srcdir/vendor_motorola_harpia-$_commit"
-	install -Dm644 venus.* -t "$subpkgdir/$_fwdir/qcom/venus-1.8"
+	install -Dm644 venus.b* -t "$subpkgdir/$_fwdir/qcom/venus-1.8"
+	install -Dm644 venus.mdt -t "$subpkgdir/$_fwdir/qcom/venus-1.8"
 }
 
 modem() {
