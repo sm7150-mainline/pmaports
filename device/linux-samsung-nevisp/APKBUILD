@@ -1,0 +1,74 @@
+# Contributor: Théo Friberg <fsmnarmosta@posteo.net>
+# Maintainer: Théo Friberg <fsmnarmosta@posteo.net>
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/cyanogenmod_nevisp_defconfig
+
+pkgname="linux-samsung-nevisp"
+pkgver=3.0.101
+pkgrel=0
+pkgdesc="Samsung Galaxy Fame GT-S6810P kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="samsung-nevisp"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc4 xz"
+
+
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_rhea"
+_commit="8224116dca7de79d181c0761468f569e6ac3505e"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/bcm216xx/$_repository/archive/$_commit.tar.gz
+	$_config
+	android_paranoid_network.patch
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+"
+
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+
+sha512sums="1c62313451ff2a04ab9259a4b2c954388a360f45f20af90d05e9cfe73d31f49fc4847f24c1742c89a45f1646e1d27999fc6f5bd224baba7046b07ab324e7baae  linux-samsung-nevisp-8224116dca7de79d181c0761468f569e6ac3505e.tar.gz
+18056bc314704d2a6f9f2c14cddd970663297c49296909ebe4d42ec5b4b55d107a86ef1b6b8df82c46f6ac1cd4b09e8aca1383d54a005bc380fa4134c87b4372  config-samsung-nevisp.armv7
+d8cdc1137e6a4ad78a3a31acc40f0c98f4db272eaf5b90ee850abb83b80916c4ff3c18a0a181e94eebead44213f6314e3363d0c4b91d95ee1adafbcad6dc57ab  android_paranoid_network.patch
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"

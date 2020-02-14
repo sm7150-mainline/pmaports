@@ -1,0 +1,25 @@
+# Contributor: Théo Friberg <fsmnarmosta@posteo.net>
+# Maintainer: Théo Friberg <fsmnarmosta@posteo.net>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-nevisp"
+pkgdesc="Samsung Galaxy Fame GT-S6810P"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-nevisp mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="233d1fca39301b3ba995b6ae9a52aa19d7124efd2f452009f828d1fe0ae88fcde98a46257990adf75281d8cf99b3bf1d24c30ff949393e54f4f0e6a55a35734e  deviceinfo"
