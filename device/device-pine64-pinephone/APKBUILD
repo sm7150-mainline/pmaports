@@ -3,7 +3,7 @@
 pkgname="device-pine64-pinephone"
 pkgdesc="PINE64 PinePhone"
 pkgver=0.1
-pkgrel=21
+pkgrel=22
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -21,6 +21,7 @@ source="
 	hwtest.ini
 	ucm/sun50i-a64-audio.conf
 	ucm/HiFi
+	ucm/VoiceCall
 	eg25.initd
 "
 
@@ -41,6 +42,8 @@ package() {
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/sun50i-a64-audio.conf
 	install -D -m644 "$srcdir"/HiFi \
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/HiFi
+	install -D -m644 "$srcdir"/VoiceCall \
+		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/VoiceCall
 
 	install -Dm755 "$srcdir"/eg25.initd "$pkgdir"/etc/init.d/eg25
 }
@@ -55,6 +58,7 @@ sha512sums="bfb39f14c5a0b928d08cbcb5d19e63e141b052ebb72186c7c26f54d89c2ebf069674
 35a5ce7c18747e4363c6b310a1c33143f333a9dd2031d619dee10773d499329487a5ed76749e182d56829d03511266a54890cfa706ba21565e9ba8ffdb88f872  uboot-script.cmd
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
-775b7f7612102fc8ff12b2ffc8a7d479bfcf0ab054e331e4bd7873264cc63cbcbf5073d8dc2a80ef0f36226ad5c8b435396801c7d712161ff80ef036ecdc29b6  sun50i-a64-audio.conf
-8018532bd68b4682455690922560933ddb0dd1dae6a3b2f8611ae89ad09e37ea3c5a17cb9fd39ac165e4e598e0eb9ebbd1395f5908020108ee8a301aae516c3c  HiFi
+08a019cad26a8cb298e26ab5b9360b90b981d15f8562d434a00762e4ba14e16ae11cf5e516385aa5b428b0e8b310caee1e8ef7a40bafd66ffe8dde3026c6e17e  sun50i-a64-audio.conf
+e5cb41ef6c00bc6cc5e3821a0001f62bbda9555cbdb829a35a80a56cda402bcf551a8beca9be602af71901ae999552dd24fb87bf5476541f7d25b876ab1b8f93  HiFi
+3d75dadbc8e9b12ff86bd321351e40de5c0ec93c4954dd482510c57df90e82c6dcc75fff8cc6702bebaf5d429ad8fe26c4bdd678038038209c117ec0488b0ba4  VoiceCall
 5a1a9c774253e8211cc54f4b3961c4bdc35427726d037b0ecad099915e856590e8267a4a47943ab753772d57261eef89924b407b305b1099a9c4ecd7b5f00b35  eg25.initd"
