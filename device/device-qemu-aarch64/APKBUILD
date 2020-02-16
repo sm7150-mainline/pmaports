@@ -2,15 +2,21 @@
 # Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=device-qemu-aarch64
 pkgver=1
-pkgrel=17
+pkgrel=18
 pkgdesc="Simulated device in qemu with vexpress soc"
 url="https://postmarketos.org"
 arch="aarch64"
 license="MIT"
 # NOTE: 'pmbootstrap init' allows you to choose the mesa-dri-* package
-depends="postmarketos-base linux-postmarketos-stable"
+depends="postmarketos-base"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-weston"
+subpackages="
+	$pkgname-weston
+	$pkgname-kernel-lts:kernel_lts
+	$pkgname-kernel-virt:kernel_virt
+	$pkgname-kernel-stable:kernel_stable
+	$pkgname-kernel-mainline:kernel_mainline
+"
 source="deviceinfo weston.ini"
 options="!check !archcheck"
 
@@ -28,6 +34,29 @@ weston() {
 		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
+kernel_virt() {
+	pkgdesc="Alpine Virt kernel"
+	depends="linux-virt"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
 
-sha512sums="2d547d73eb5d7d11f179218c2b37b4acda703f9bf47c89ecc70ec0e4e8f3c128a54d6a4dc621e3f9d74c75e524f74d9b8a396ca67ebd58f86f2d1e1019ae3039  deviceinfo
+kernel_lts() {
+	pkgdesc="Alpine LTS kernel"
+	depends="linux-lts linux-firmware-none"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_stable() {
+	pkgdesc="Stable for everyday usage (recommended)"
+	depends="linux-postmarketos-stable"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Newest kernel features"
+	depends="linux-postmarketos-mainline"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+sha512sums="b59e12e1db1e62cd49c76f46b74ef103bae11d41e300392cdb82e6745cbf60d8336cfb23ea007dcb7ae46e75786060eccf10459a214990cbc9c603e56d70eadb  deviceinfo
 de794566118f1744d068a94e6a75b61d43f6749a4b0871a5270fa7a2048164d609c71fcffa61845c2a7dd4cb5fbeb72c0e4f8b73b382f36d6ff0bcc9b8a5ae25  weston.ini"
