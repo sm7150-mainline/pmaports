@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Max Buchholz <2maxax2@gmx.de>
+pkgname="device-nokia-rm846"
+pkgdesc="Lumia 620"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-nokia-rm846 mkbootimg mdss-fb-init-hack mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+sha512sums="8257904b497fe75f937baad1165cc60fd0f3ff9a66eda8ad6b2b5a4a77d7f1e34cecc8856203562481d3c839078ba2e5808346aef3f37172f56e6ff566043b58  deviceinfo"

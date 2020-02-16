@@ -1,0 +1,71 @@
+# Kernel config based on: arch/arm/configs/lineage_zeal_defconfig
+
+pkgname="linux-nokia-rm846"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Lumia 620 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="nokia-rm846"
+url="https://kernel.org"
+license="GPL2"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6"
+
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_nokia_msm8x27"
+_commit="28fe134696ce748ddaaf3633d3e345d3509276bd"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Android4Lumia/android_kernel_nokia_msm8x27/archive/$_commit.tar.gz
+	$_config
+	compiler-gcc6.h
+	00_fix_return_address.patch
+	psmouse_base.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
+}
+sha512sums="6a576c9bfb645083d1d8477daae647ee44f15732414cb73a585d1c7e27c5481ccdcd98d6e8fe100b61400f1c3186a3339c2d438fb605177e1d11832e93dbc70b  linux-nokia-rm846-28fe134696ce748ddaaf3633d3e345d3509276bd.tar.gz
+021b26b53ec79fdef925cc05da6edf70eeec301b4a7ac2226a35eaf28309ab01a30d244ce8233f3fccfd8f164cbf5496194a7ba1b7c24dd12bcb632f0cb5b535  config-nokia-rm846.armv7
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
+f7e31cfe422696922aec52002e56c58103183966edee3bb8e1995d33f8d37b07c32280a8ecc213874e358a6ff367418556a4542fba7e3c17e4b8e82e05c3a543  psmouse_base.patch
+7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch"
