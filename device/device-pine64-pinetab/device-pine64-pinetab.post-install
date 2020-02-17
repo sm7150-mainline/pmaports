@@ -1,5 +1,9 @@
 #!/bin/sh
 
+sed -i 's|#Name = BlueZ|Name = PINE64 PineTab|' /etc/bluetooth/main.conf
+
+rc-update add bluetooth default
+
 # We'll update the hwdb so that the meta key gets fixed
 echo "UPDATING HWDB..."
 udevadm hwdb --update
