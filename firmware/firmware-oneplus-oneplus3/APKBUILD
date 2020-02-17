@@ -1,0 +1,137 @@
+# Contributor: DrGit <drgitx@gmail.com>
+pkgname=firmware-oneplus-oneplus3
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for OnePlus 3/3T (metapackage)"
+url="https://gitlab.com/DrGitX/firmware-oneplus3"
+arch="aarch64"
+license="proprietary"
+depends="mtools"
+options="!check !strip !archcheck"
+subpackages="$pkgname-op3 $pkgname-op3t"
+_gpufw="https://github.com/TheMuppets/proprietary_vendor_oneplus/raw/lineage-17.1/oneplus3/proprietary/vendor/firmware"
+_files="adsp.b00
+	adsp.b01
+	adsp.b02
+	adsp.b03
+	adsp.b04
+	adsp.b05
+	adsp.b06
+	adsp.b08
+	adsp.b09
+	adsp.mdt
+	modem.b00
+	modem.b01
+	modem.b02
+	modem.b03
+	modem.b04
+	modem.b05
+	modem.b06
+	modem.b07
+	modem.b08
+	modem.b09
+	modem.b10
+	modem.b11
+	modem.b12
+	modem.b13
+	modem.b15
+	modem.b16
+	modem.b17
+	modem.b18
+	modem.b19
+	modem.b20
+	modem.mdt
+	mba.mbn
+	slpi.b00
+	slpi.b01
+	slpi.b02
+	slpi.b03
+	slpi.b04
+	slpi.b05
+	slpi.b06
+	slpi.b07
+	slpi.b08
+	slpi.b09
+	slpi.b10
+	slpi.b11
+	slpi.b12
+	slpi.b13
+	slpi.b14
+	slpi.mdt
+	venus.b00
+	venus.b01
+	venus.b02
+	venus.b03
+	venus.b04
+	venus.mdt
+"
+source="modem_op3.bin::$url/-/raw/master/oneplus3/NON-HLOS.bin
+	modem_op3t.bin::$url/-/raw/master/oneplus3t/NON-HLOS.bin
+	$_gpufw/a530_pfp.fw
+	$_gpufw/a530_pm4.fw
+	$_gpufw/a530v3_gpmu.fw2
+	$_gpufw/a530_zap.elf
+	$_gpufw/a530_zap-pro.elf
+	20-adreno-gpu-firmware.files
+"
+
+unpack() {
+	mkdir -p $srcdir/oneplus3 $srcdir/oneplus3t
+
+	for _i in $_files; do
+		mcopy -v -b -p -n -i $srcdir/modem_op3.bin ::image/$_i $srcdir/oneplus3/$_i
+	done
+
+	for _i in $_files; do
+		mcopy -v -b -p -n -i $srcdir/modem_op3t.bin ::image/$_i $srcdir/oneplus3t/$_i
+	done
+}
+
+package() {
+	cd "$srcdir"
+	for _i in a530_pfp.fw a530_pm4.fw a530v3_gpmu.fw2; do
+		install -Dm644 $_i "$pkgdir/lib/firmware/qcom/$_i"
+	done
+}
+
+_install_fw() {
+	mkdir -p "$subpkgdir/lib/firmware/qcom"
+
+	cd "$srcdir/$1"
+
+	for _i in adsp.* modem.* mba.* slpi.*; do
+		install -Dm644 $_i "$subpkgdir/lib/firmware/$_i"
+	done
+
+	for _i in venus.*; do
+		install -Dm644 $_i "$subpkgdir/lib/firmware/qcom/venus-4.2/$_i"
+	done
+
+	install -Dm644 "$srcdir/a530_zap$2.elf" "$subpkgdir/lib/firmware/qcom/a530_zap.mdt"
+
+	install -Dm644 "$srcdir/20-adreno-gpu-firmware.files" \
+		"$pkgdir/etc/postmarketos-mkinitfs/files/20-adreno-gpu-firmware.files"
+}
+
+op3() {
+	pkgdesc="OnePlus 3 firmware"
+	depends="$pkgname"
+
+	_install_fw oneplus3
+}
+
+op3t() {
+	pkgdesc="OnePlus 3T firmware"
+	depends="$pkgname"
+
+	_install_fw oneplus3t -pro
+}
+
+sha512sums="c0f3f908e237202003d9b2fe4071e2800bdcdae180e8311fbc0671478fcd63aba5a3fe5ab5d297010c12c232501f05f31141fc39a44c5b86ac2b56016f553a7f  modem_op3.bin
+3da90f51fc39c3db4f0f39c07eda318b0b1fc85f7fbb8f21bd31a3ae5c73a4b39ba630a9521a7c5ee844e14c24d084f5d42e4c2ffd2bdee541e50ec7b1629b14  modem_op3t.bin
+6b3ec037646c5738854137003c35ea0ea4e116f0c8b2483b312400de67609b9525ade5e7d5ce6d06e94b348dec0444165a24cdb21a45d703f55c5e657656e7cd  a530_pfp.fw
+a9439c0f05a96f28a092f86fd08ff63dd637a43ff764f1eb1b133e78c6876464572b3cf1b90860165dca125c35c359df937fc4318246374269f69bd00c09eb9f  a530_pm4.fw
+140a288889c49f2e9222f8c1679e394786f7638a0dc8e350d28e0b630ad7ccb9abd1f79a8990208144285eaf95e4bec21be5af0f6e1d07a3624de1010cd89392  a530v3_gpmu.fw2
+374ed1606a8c12bd8fb8adb3e0d91603aa53ff9aed175921c9e6b579104407b01274e5f3cf158007b83ecb5aa2c7343c526e360aebc8bca557cd4b9c4c711f98  a530_zap.elf
+237c82252f1ff44a454bed5f84a8dcf74e0f6ea6e5674e7d5aa32436fcf20d8c9df5c6edc4b4bc151e5fdce4694c1d14edc8ba0804ceb738f3fb67eff950aeff  a530_zap-pro.elf
+c7a4e408b29ac245bb6f19e2e5c0b0798ab8e745a79cfb21c85fde1b035dfc969a755fdecba34b32d54b6fca6d3eed0cd14d6f68f10e2235bcbebb476d96d4cd  20-adreno-gpu-firmware.files"
