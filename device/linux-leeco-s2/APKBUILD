@@ -26,56 +26,56 @@ _repository="overload1"
 _commit="b3650e93fec05cfe6ecf1fe80383bcff979463a0"
 _config="config-${_flavor}.${arch}"
 source="
-    $pkgname-$_commit.tar.gz::https://github.com/renjian2/${_repository}/archive/${_commit}.tar.gz
-    $_config
-    compiler-gcc6.h
-    01_fix_gcc6_errors.patch
-    03_psci.patch
-    05_dtb-fix.patch
+	$pkgname-$_commit.tar.gz::https://github.com/renjian2/${_repository}/archive/${_commit}.tar.gz
+	$_config
+	compiler-gcc6.h
+	01_fix_gcc6_errors.patch
+	03_psci.patch
+	05_dtb-fix.patch
 "
 builddir="$srcdir/${_repository}-${_commit}"
 
 prepare() {
-    default_prepare
+	default_prepare
 
-    # gcc6 support
-    cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
+	# gcc6 support
+	cp -v "$srcdir/compiler-gcc6.h" "$builddir/include/linux/"
 
-    # Remove -Werror from all makefiles
-    find . -type f -name Makefile -print0 | \
-        xargs -0 sed -i 's/-Werror-/-W/g'
-    find . -type f -name Makefile -print0 | \
-        xargs -0 sed -i 's/-Werror//g'
+	# Remove -Werror from all makefiles
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror-/-W/g'
+	find . -type f -name Makefile -print0 | \
+		xargs -0 sed -i 's/-Werror//g'
 
-    # Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-    cp "$srcdir"/$_config "$builddir"/.config
-    yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
+	cp "$srcdir"/$_config "$builddir"/.config
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
 }
 
 build() {
-    unset LDFLAGS
-    make ARCH="$_carch" CC="${CC:-gcc}" \
-        KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-    # kernel.release
-    install -D "$builddir/include/config/kernel.release" \
-        "$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	# kernel.release
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-    # zImage (find the right one)
-    cd "$builddir/arch/$_carch/boot"
-    _target="$pkgdir/boot/vmlinuz-$_flavor"
-    for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-        [ -e "$_zimg" ] || continue
-        msg "zImage found: $_zimg"
-        install -Dm644 "$_zimg" "$_target"
-        break
-    done
-    if ! [ -e "$_target" ]; then
-        error "Could not find zImage in $PWD!"
-        return 1
-    fi
+	# zImage (find the right one)
+	cd "$builddir/arch/$_carch/boot"
+	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		msg "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		error "Could not find zImage in $PWD!"
+		return 1
+	fi
 }
 
 sha512sums="e04ad32aef101019c66717d23ee9af3c1ef1770d3627d5ef6fab68c6ed81a2de766829f9aea9fdf1968523524de82aa6d0617656e1e66cc7a813ee9f54642b9a  linux-leeco-s2-b3650e93fec05cfe6ecf1fe80383bcff979463a0.tar.gz
