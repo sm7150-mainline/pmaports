@@ -43,23 +43,7 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
 sha512sums="7b73724636d9fb2a19e6405b1c6acd9f08020cb2d8c51f209eab2dea90616f15e88e96cdea62931864a6a3f6d4ad1c0b0b9b5cae3e3a690c20f5a9dcb4b33d82  linux-samsung-jflte-e8d93e03563e42d7c762d4e9a87d77115102b301.tar.gz

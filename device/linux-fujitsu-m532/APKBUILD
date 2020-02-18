@@ -45,23 +45,7 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
 sha512sums="7effec2a47246e65063d9bd60c547a8622aa9c934fd812ac189b9aa44f9c59628741c33b13ca99253d25e845aed24ccf56ae4492b70aff75f0651870f5e6447f  linux-fujitsu-m532-1bcab4a49982baea177c26994d2b67811e7b16f9.tar.gz

@@ -43,23 +43,7 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
 sha512sums="41d6b4446dbccf8a8b0e362ad0875341fb17b2a2e95c5be0450f419b838bd5b65de27dda5cce2d9d51c97d45884343f2ecf2a1323671926a82815ea2b5c13294  linux-lg-mako-1495bfcf93f9e0e896331f29e1850387c31d6714.tar.gz

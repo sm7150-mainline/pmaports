@@ -43,23 +43,7 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
 sha512sums="c81a890e9905547106a00ecb308d176d55a19f7d4ec0dcfde10c5d62647a917292c2098be2a657ff3cf6963f03ffaa019ddc1586ab378b9a39d10a850c806f53  linux-sony-taoshan-df6292bc628cece5925d0f67fbc8c8a2cab2d524.tar.gz

@@ -49,23 +49,7 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
 sha512sums="f779774222ce1f89a9d658fa789be5112fa3f8c8fe7220eead28a6b353b001f49bd45bacfb3ca2fa3663c8ad8495ca4e83a153dd45362016294f8f00f28a4214  linux-htc-protou-0e395015315c8950e85b70271b973a7d3c1a3ac5.tar.gz

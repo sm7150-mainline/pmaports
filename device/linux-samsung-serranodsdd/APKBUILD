@@ -45,23 +45,7 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
 sha512sums="a89f9da68be6cf3b0bc77a9d70519b4ffc4ad332a53bfb35facf0e8ae418b7f1870fc1596c9305c596f7a0353be82f7eff0e211a32e330d0dd20c98398ab2826  linux-samsung-serranodsdd-0c7b2079e9ba8f945ea444bad393c8d7f8b099cc.tar.gz

@@ -50,7 +50,7 @@ prepare_isorec() {
 	mv latona_initramfs.list latona_initramfs.list_old
 	grep -v "../../ramdisk" latona_initramfs.list_old > latona_initramfs.list
 	cp -v "$srcdir"/init "$builddir"/usr/latona_initramfs_files/init
-	
+
 	# Paths supplied to gen_initramfs_list.sh are prefixed with "source/".
 	ln -s "$builddir" ln -s "$builddir"/source
 }
@@ -70,25 +70,8 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
-	
-	cd "$builddir"
 	unset LDFLAGS
 
 	echo "--[ Installing modules ]--"

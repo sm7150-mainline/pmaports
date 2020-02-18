@@ -44,29 +44,13 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-		
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
 	# Install kernel modules
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
 		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
 }
 
 sha512sums="5dd49d41297247788d5b33815ec74f02ecc2566a9045102df63579dbc360f7c4c08fc4a28251efa02959137e7ed0f92a91b694145d40ee52bb0bf99557a7320a  linux-samsung-royss-3169160cd6b23e0325fb5117cc347fc6acb2bc48.tar.gz

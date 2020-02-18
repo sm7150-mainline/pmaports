@@ -45,23 +45,7 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
 sha512sums="0124de18237d4ea6a367aab9b6474a05bc67a5db18f687b8f58d3a8a63d2569b3ea9a9c8e33dc78ae834f4cc8fd2ee1c64b6d6a2ea12f0c4821b1f29385a3d8d  linux-lg-vee7e-8a90ec65502bde12a03c60d6756eea3e88c02917.tar.gz

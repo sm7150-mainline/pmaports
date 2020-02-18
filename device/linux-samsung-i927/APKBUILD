@@ -104,25 +104,8 @@ package() {
 		"$builddir/arch/arm/boot/dts/tegra20-glide.dtb" \
 		> "$builddir/arch/arm/boot/zImage-dtb"
 
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
-
-	cd "$builddir"
 	make modules_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir"
