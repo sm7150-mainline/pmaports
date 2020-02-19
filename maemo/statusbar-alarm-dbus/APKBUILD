@@ -1,0 +1,30 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname=statusbar-alarm-dbus
+pkgver=0.5.11
+pkgrel=0
+pkgdesc="Plugin showing current time and indicating if there is any alarm set"
+url="https://github.com/maemo-leste/statusbar-alarm-dbus-api"
+arch="all !armhf !armv7"
+license="BSD-2-Clause"
+makedepends="autoconf automake libtool"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/statusbar-alarm-dbus-api/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+options="!check"
+builddir="$srcdir/statusbar-alarm-dbus-api-$pkgver"
+
+prepare() {
+	default_prepare
+
+	./autogen.sh
+}
+
+build() {
+	./configure --prefix=/usr
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="cd45187540777ce62a59a37407d8e318b8e1a3d1169cf98ae4d389f024a7b07c7b185fdfc16c50c2fe0285b06090c8da8baa01f639a1c6f579431283ca0ff100  statusbar-alarm-dbus-0.5.11.tar.gz"
