@@ -1,0 +1,84 @@
+From 826bf12619b368899d49d0f72957ad42ef863642 Mon Sep 17 00:00:00 2001
+From: NeKit <nekit1000@gmail.com>
+Date: Thu, 10 Oct 2019 13:47:50 +0200
+Subject: [PATCH] Fix compilation on postmarketOS with musl
+
+---
+ Rules.make      |  2 +-
+ util/Makefile   | 12 ++++++------
+ util/dsmetest.c |  2 +-
+ util/dsmetool.c |  2 +-
+ 4 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/Rules.make b/Rules.make
+index c02de3e..d9b9a42 100644
+--- a/Rules.make
++++ b/Rules.make
+@@ -185,7 +185,7 @@ $(DISTCLN_SUBDIRS):
+ # Common rule for all executables
+ ifndef INSTALLING
+ $(BINARIES):
+-	$(CC) -o $@ $(LDFLAGS) $(call TARGET_OBJS,$@) $(addprefix -l,$($@_SO_LIBS) $($@_A_LIBS) $($@_LIBS))
++	$(CC) -o $@ $(call TARGET_OBJS,$@) $(LDFLAGS) $(addprefix -l,$($@_SO_LIBS) $($@_A_LIBS) $($@_LIBS))
+ endif
+ 
+ 
+diff --git a/util/Makefile b/util/Makefile
+index e592d13..6dac30a 100644
+--- a/util/Makefile
++++ b/util/Makefile
+@@ -8,19 +8,19 @@ BINARIES	:=	batttest dsmetool dsmetest bootstate waitfordsme dsmereboot
+ # Target composition and overrides
+ #
+ batttest_C_OBJS		:=	batttest.o
+-batttest_LIBS	:=	dsme
++batttest_LIBS	:=	dsme glib-2.0
+ dsmetool_C_OBJS 	:=	dsmetool.o
+-dsmetool_LIBS	:=	dsme
++dsmetool_LIBS	:=	dsme glib-2.0
+ dsmetest_C_OBJS 	:=	dsmetest.o
+-dsmetest_LIBS	:=	dsme
++dsmetest_LIBS	:=	dsme glib-2.0
+ bootstate_C_OBJS 	:=	bootstate.o
+-bootstate_LIBS	:=	dsme
++bootstate_LIBS	:=	dsme glib-2.0
+ waitfordsme_C_OBJS 	:=	waitfordsme.o
+-waitfordsme_LIBS	:=	dsme
++waitfordsme_LIBS	:=	dsme glib-2.0
+ kicker_C_OBJS 	:=	kicker.o
+ kicker_LIBS	:=	dsme cal
+ dsmereboot_C_OBJS := dsmereboot.o
+-dsmereboot_LIBS := dsme
++dsmereboot_LIBS := dsme glib-2.0
+ 
+ 
+ #
+diff --git a/util/dsmetest.c b/util/dsmetest.c
+index 2fc0f56..8a95547 100644
+--- a/util/dsmetest.c
++++ b/util/dsmetest.c
+@@ -29,7 +29,7 @@
+ #include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+-#include <sys/fcntl.h>
++#include <fcntl.h>
+ #include <sys/time.h>
+ #include <unistd.h>
+ #include <errno.h>
+diff --git a/util/dsmetool.c b/util/dsmetool.c
+index 251a883..0e5d2a8 100644
+--- a/util/dsmetool.c
++++ b/util/dsmetool.c
+@@ -32,7 +32,7 @@
+ #include <stdbool.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+-#include <sys/fcntl.h>
++#include <fcntl.h>
+ #include <sys/time.h>
+ #include <unistd.h>
+ #include <errno.h>
+-- 
+2.23.0
+

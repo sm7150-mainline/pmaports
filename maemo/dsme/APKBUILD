@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Nikita Ukhrenkov <thekit@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname=dsme
+pkgver=0.61.5
+pkgrel=0
+pkgdesc="DSME is responsible of device state management, process lifeguard support, watch dogs and thermal management"
+url="https://github.com/maemo-leste/dsme"
+arch="all !armhf !armv7"
+license="LGPL-2.1-only"
+depends_dev="glib-dev dbus-glib-dev linux-headers libdsme-dev libcal-dev"
+makedepends="$depends_dev bash"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/dsme/archive/$pkgver.tar.gz
+	build-fix.patch"
+options="!check"
+
+build() {
+	make -j1
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="68e04aae2cf585a6082f6f60c8fbc8a864204bc6c2333d9683bb044f0f24926887e137135987f2e494e0e2e62a76b110334974e24347b88a3115b767efeaf2d7  dsme-0.61.5.tar.gz
+174cd9b35b47c8e5573510ae6e4b7a1fbdefe00a2f7622c620acd6ab19f4d56752b0a78be96b1866cbeb7d03a867a8561b050e54b96ff81f33deae25c2404100  build-fix.patch"
