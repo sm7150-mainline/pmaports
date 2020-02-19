@@ -29,12 +29,15 @@ _carch=$4
 HOSTCC=$5
 
 if [ -z "$srcdir" ] || [ -z "$builddir" ] || [ -z "$_config" ] ||
-	[ -z "$_carch" ] || [ -z "$HOSTCC" ]; then
+	[ -z "$_carch" ]; then
 	echo "ERROR: missing argument!"
 	echo "Please call downstreamkernel_prepare() with \$srcdir, \$builddir,"
-	echo "\$_config, \$_carch and \$HOSTCC as arguments."
+	echo "\$_config, \$_carch (and optionally \$HOSTCC) as arguments."
 	exit 1
 fi
+
+# Only override HOSTCC if set (to force use of an old gcc)
+[ -z "$HOSTCC" ] || HOSTCC="HOSTCC=$HOSTCC"
 
 # Support newer GCC versions
 install_gcc_h
@@ -50,4 +53,5 @@ done
 
 # Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
 cp "$srcdir/$_config" "$builddir"/.config
-yes "" | make -C "$builddir" ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+# shellcheck disable=SC2086
+yes "" | make -C "$builddir" ARCH="$_carch" $HOSTCC oldconfig
