@@ -1,0 +1,25 @@
+# Contributor: Nikita Ukhrenkov <thekit@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname="osso-systemui-powerkeymenu"
+pkgver="0.3.0.4"
+pkgrel=0
+pkgdesc="Power key menu UI"
+url="https://github.com/maemo-leste/osso-systemui-powerkeymenu"
+arch="all !armhf !armv7"
+license="LGPL-2.1-only"
+makedepends="glib-dev osso-systemui-dev libhildon-dev libnotify-dev alarmd-dev sqlite-dev"
+subpackages="$pkgname-dev"
+source="osso-systemui-powerkeymenu-$pkgver.tar.gz::https://github.com/maemo-leste/osso-systemui-powerkeymenu/archive/$pkgver.tar.gz"
+options="!check"
+
+build() {
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+	install -D -m 644 include/systemui/powerkeymenu-dbus-names.h \
+		"$pkgdir"/usr/include/systemui/powerkeymenu-dbus-names.h
+}
+
+sha512sums="5754d03d625b8335ac2e0fdbdfa8c8005233d75e04781d1e2917ea0fa6c99d2fc7a00bffac8c9663d3d9c59c4a648ea2d790f48213c6380c764d1cdc1df91f86  osso-systemui-powerkeymenu-0.3.0.4.tar.gz"
