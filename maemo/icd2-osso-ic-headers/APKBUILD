@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname=icd2-osso-ic-headers
+_pkgname=icd2-osso-ic-dev
+pkgver=2.0.1
+pkgrel=0
+pkgdesc="Compatibility header files for osso-ic-headers"
+url="https://github.com/maemo-leste/icd2-osso-ic-dev"
+arch="noarch"
+license="LGPL-2.1-only"
+makedepends="libtool m4 automake autoconf dpkg-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/icd2-osso-ic-dev/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+options="!check"
+builddir="$srcdir/icd2-osso-ic-dev-$pkgver"
+
+prepare() {
+	default_prepare
+
+	./autogen.sh
+}
+
+build() {
+	./configure --prefix=/usr --enable-doxygen
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="ac6188069b0e6ff1e5efd4e83dd67e70d0b35362fe0e46c0b83ef9799b39662b6b79c96317effe398493d03f57551b110981e76547163e8f38c37c7962fa8247  icd2-osso-ic-headers-2.0.1.tar.gz"
