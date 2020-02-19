@@ -1,0 +1,24 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname=cityinfo
+pkgver=0.5.18
+pkgrel=0
+pkgdesc="Cityinfo library allows to get some informations about set of cities from all over the world"
+url="https://github.com/maemo-leste/cityinfo"
+arch="all !armhf !armv7"
+license="LGPL-2.1-or-later"
+depends_dev="gconf-dev glib-dev"
+makedepends="$depends_dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/cityinfo/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+options="!check"
+
+build() {
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="ae54715fd1fe005e50c427d7eab6f74ce5759f858edd8e34f9814fa7ff422f9a8d3b9ec9d8cd10c6076040c9a3fdf3c26169242742b46e18514eb9d3a157f772  cityinfo-0.5.18.tar.gz"
