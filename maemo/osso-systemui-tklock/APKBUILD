@@ -1,0 +1,24 @@
+# Contributor: Nikita Ukhrenkov <thekit@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname="osso-systemui-tklock"
+pkgver="0.3.2.0"
+pkgrel=0
+pkgdesc="Touch screen and keypad lock UI"
+url="https://github.com/maemo-leste/osso-systemui-tklock"
+arch="all !armhf !armv7"
+license="LGPL-2.1-only"
+makedepends="glib-dev osso-systemui-dev libhildon-dev libnotify-dev alarmd-dev clockd-dev sqlite-dev"
+subpackages="$pkgname-dev"
+source="osso-systemui-tklock-$pkgver.tar.gz::https://github.com/maemo-leste/osso-systemui-tklock/archive/$pkgver.tar.gz"
+options="!check"
+
+build() {
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+	install -D -m 644 include/systemui/tklock-dbus-names.h "$pkgdir/usr/include/systemui/tklock-dbus-names.h"
+}
+
+sha512sums="6a3ed4d4efee6b7a1268042dadb9f34aad74555b491ecdb09450524b4fb0336d908070ab7dafbdf084bdb21ad48c073e8c976ee04e22c34db20427e461546b64  osso-systemui-tklock-0.3.2.0.tar.gz"
