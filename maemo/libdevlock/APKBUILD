@@ -1,0 +1,25 @@
+# Contributor: Nikita Ukhrenkov <thekit@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname="libdevlock"
+pkgver="1.0.9.2"
+pkgrel=0
+pkgdesc="provides an API for manupulating device lock code stored in CAL"
+url="https://github.com/maemo-leste/libdevlock"
+arch="all !armhf !armv7"
+license="LGPL-2.1-only"
+depends_dev="libcal-dev"
+makedepends="$depends_dev glib-dev gconf-dev"
+source="libdevlock-$pkgver.tar.gz::https://github.com/maemo-leste/libdevlock/archive/$pkgver.tar.gz"
+subpackages="$pkgname-dev"
+options="!check suid"
+
+build() {
+	make -j1
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+	ln -s libdevlock.so.1.0.9 "$pkgdir"/usr/lib/libdevlock.so
+}
+
+sha512sums="de29b84e8ca142293080feb4d120a52b4440d07a635e307bf8f3d6a7e839dcb3286d63cc2500d13a86972c2efbd2083c21c304cbab89d487b9bde4d6c13abafc  libdevlock-1.0.9.2.tar.gz"
