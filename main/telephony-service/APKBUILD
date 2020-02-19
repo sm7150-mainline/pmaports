@@ -1,0 +1,32 @@
+# Contributor: Bhushan Shah <bshah@kde.org>
+# Maintainer: Bhushan Shah <bshah@kde.org>
+pkgname=telephony-service
+pkgver=0_git20200218
+pkgrel=0
+# uses git sha from integration branch, since changes are still pending to be merged
+_commit="aa9e19d766c8dfcc23ab0531ade02054d4fd8492"
+pkgdesc="Telephony service"
+url="https://github.com/ubports/telephony-service"
+arch="all"
+license="GPL-3.0-only"
+depends="ofono"
+makedepends="cmake qt5-qtbase-dev qt5-qtpim-dev libphonenumber-dev telepathy-qt-dev sqlite-dev telepathy-mission-control-dev libofono-qt-dev qt5-qtpim-dev qt5-qtfeedback-dev libnotify-dev qt5-qtmultimedia-dev pulseaudio-dev glib-dev coreutils lcov gcovr dconf"
+source="$pkgname-$_commit.tar.gz::https://github.com/ubports/telephony-service/archive/$_commit.tar.gz"
+options="!check" # no tests
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DSKIP_QML_TESTS=ON \
+		-DWANT_UI_SERVICES=OFF
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="6ef7a796768009701f3972bd514efb4ca6d2ea38c9afdc2737af0d697bf91172b287da3380c87d1f080759af3d2f974cfa7392f963b939fbd83c41ce3e7b9ed8  telephony-service-aa9e19d766c8dfcc23ab0531ade02054d4fd8492.tar.gz"
