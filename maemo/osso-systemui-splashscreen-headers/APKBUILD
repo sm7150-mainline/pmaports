@@ -1,0 +1,21 @@
+# Contributor: Nikita Ukhrenkov <thekit@disroot.org>
+# Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
+pkgname=osso-systemui-splashscreen-headers
+pkgver=0.2.30
+pkgrel=0
+pkgdesc="System UI splashscreen plugin development headers"
+url="https://github.com/maemo-leste/osso-systemui-splashscreen-dev"
+arch="noarch"
+license="LGPL-2.1-only"
+makedepends="doxygen"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/osso-systemui-splashscreen-dev/archive/$pkgver.tar.gz"
+options="!check"
+builddir="$srcdir/osso-systemui-splashscreen-dev-$pkgver"
+
+package() {
+	DESTDIR="$pkgdir" make install
+	install -d -m 644 doc/html "$pkgdir"/usr/share/doc/"$_pkgname"
+}
+
+sha512sums="9133a1035db1204a95c16e5ba61fc75a79f98c01e104ebeb86a383980f001e3aea633cb60165b334f1f1cf0b4b61264e9d65a8860745753783a56abb62d586f0  osso-systemui-splashscreen-headers-0.2.30.tar.gz"
