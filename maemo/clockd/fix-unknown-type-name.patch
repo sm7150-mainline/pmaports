@@ -1,0 +1,33 @@
+diff --git a/clockd/rclockd.c b/clockd/rclockd.c
+index ef81318..7564c73 100644
+--- a/clockd/rclockd.c
++++ b/clockd/rclockd.c
+@@ -25,8 +25,8 @@ bool clockd_debug_mode = false;
+ 
+ #define SET_UID(uid) set_uid(uid, __FUNCTION__)
+ 
+-static __uid_t
+-set_uid(__uid_t uid, const char *f)
++static uid_t
++set_uid(uid_t uid, const char *f)
+ {
+   if (uid && setuid(0))
+   {
+@@ -44,7 +44,7 @@ static int
+ set_time(const char *s)
+ {
+   unsigned long sec = strtoul(s, 0, 10);
+-  __uid_t uid = SET_UID(getuid());
++  uid_t uid = SET_UID(getuid());
+   struct timeval tv;
+   int rv = -1;
+ 
+@@ -92,7 +92,7 @@ set_tz(const char *s)
+ {
+   char path[256];
+   struct stat stat_buf;
+-  __uid_t uid = SET_UID(getuid());
++  uid_t uid = SET_UID(getuid());
+   int rv = -1;
+ 
+   if (s[1] == '/')

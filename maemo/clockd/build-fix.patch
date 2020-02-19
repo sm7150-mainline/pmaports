@@ -1,0 +1,13 @@
+diff --git a/clockd/Makefile.am b/clockd/Makefile.am
+index 7defc10..3dc0dc5 100644
+--- a/clockd/Makefile.am
++++ b/clockd/Makefile.am
+@@ -24,7 +24,7 @@ libtime_a_CFLAGS = $(DBUS_CFLAGS) -DMESTR="\"$(PACKAGE_NAME):\""
+ 
+ clockd_SOURCES = sighnd.c clockd.c mainloop.c internal_time_utils.c mcc_tz_utils.c logging.c server.c
+ clockd_CFLAGS = $(DBUS_CFLAGS) $(GLIB_CFLAGS) $(CITYINFO_CFLAGS) $(DBUSGLIB_CFLAGS) -DMESTR="\"$(PACKAGE_NAME):\""
+-clockd_LDADD = $(DBUS_LIBS) $(GLIB_LIBS) $(CITYINFO_LIBS) $(DBUSGLIB_LIBS) libtime.a
++clockd_LDADD = $(DBUS_LIBS) $(GLIB_LIBS) $(CITYINFO_LIBS) -lgconf-2 $(DBUSGLIB_LIBS) libtime.a
+ 
+ rclockd_SOURCES = rclockd.c
+ rclockd_CFLAGS = -DMESTR="\"$(PACKAGE_NAME):\""
