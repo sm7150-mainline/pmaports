@@ -3,15 +3,14 @@
 
 _flavor="postmarketos-qcom-msm8916"
 pkgname="linux-$_flavor"
-pkgver=5.5_rc7
-pkgrel=1
+pkgver=5.6_rc2
+pkgrel=0
 pkgdesc="Mainline kernel fork for Qualcomm MSM8916 devices"
 arch="aarch64 armv7"
 url="https://github.com/msm8916-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps"
-depends_dev="perl gmp-dev elfutils-dev bash flex bison"
-makedepends="$depends_dev sed installkernel bc linux-headers openssl-dev"
+makedepends="bison findutils flex installkernel openssl-dev perl"
 
 # Architecture
 case "$CARCH" in
@@ -52,6 +51,6 @@ package() {
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
-sha512sums="350255503c9d1a22e094551c289c90c92df4bdde7338d72ab2d43690c6ae2ae22af2d3f87dbf6a4b049954cb18bb82075b8ffa5e5607657253dbd650df39c85b  linux-postmarketos-qcom-msm8916-v5.5-rc7-msm8916.tar.gz
-d642887b33b7fee4306aeeb1324a1243f2d785776c0eeaba9d02f8772db153aa0eec6e69f0c1a5b255cba292428aa86c04b681f7ecf17861dc0863cc0b3ed520  config-postmarketos-qcom-msm8916.aarch64
-810bc800b2948dcea2ca03b8d927a90832067917fe19665c4f9b1bd20a4eb7194d8b141a8462489a73ccfdd71c97f6be826e360de08aeecc29262b03fa7d1c59  config-postmarketos-qcom-msm8916.armv7"
+sha512sums="dc1c6016356670dbd68db8075c742f28ea18cbde888d4076185293099ef2692b308df8465119eff90ac44fa592b931272f324a2cbb349729f3973195b96a7cd5  linux-postmarketos-qcom-msm8916-v5.6-rc2-msm8916.tar.gz
+945bd74045ae26a330304bc05528e3637ac7d39f25db3bb1fe65d18d920e91bb9e633d0bc48ddc104a3b479e8ca11d4f1c528b370f6e631f7c20d9b67ab30873  config-postmarketos-qcom-msm8916.aarch64
+eee448f5869142a71b9fce92cd6b02a4545f60f051c08aabc4c508296dd4e5387960904cf910c875d26218ba2c6467f9ad2dcb4973b7a82eae8126fbb15b5f7b  config-postmarketos-qcom-msm8916.armv7"
