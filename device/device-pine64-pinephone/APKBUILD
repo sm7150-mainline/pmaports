@@ -2,8 +2,8 @@
 # Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname="device-pine64-pinephone"
 pkgdesc="PINE64 PinePhone"
-pkgver=0.1
-pkgrel=27
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -27,6 +27,8 @@ source="
 	ucm/HiFi
 	ucm/VoiceCall
 	eg25.initd
+	setup-modem-audio.sh
+	setup-modem-audio.initd
 "
 
 build() {
@@ -62,7 +64,12 @@ package() {
 	install -D -m644 "$srcdir"/VoiceCall \
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/VoiceCall
 
+	# Modem
 	install -Dm755 "$srcdir"/eg25.initd "$pkgdir"/etc/init.d/eg25
+	install -Dm755 "$srcdir"/setup-modem-audio.sh \
+		"$pkgdir"/usr/bin/pinephone_setup-modem-audio
+	install -Dm755 "$srcdir"/setup-modem-audio.initd \
+		"$pkgdir"/etc/init.d/pinephone_setup-modem-audio
 }
 
 nonfree_firmware() {
@@ -81,4 +88,6 @@ aa0b7191548e89ddfc6cf5b1f637c7ee7ab4c2025cbfc6328e7e482e5b179ea072779ca332a18094
 08a019cad26a8cb298e26ab5b9360b90b981d15f8562d434a00762e4ba14e16ae11cf5e516385aa5b428b0e8b310caee1e8ef7a40bafd66ffe8dde3026c6e17e  sun50i-a64-audio.conf
 3cf0f2b0d463c1cf79156facfbddfa7e5bb9dffc54c364e0aa27e4f5e4778ec889febe8aecc819782db4f8423ac3cff2264c8e96c7e4f327519a4c403e087ce1  HiFi
 7071765039f282185d5a5f64912f41f96562785436018b4391f87e68bd9636addac496ebec239f7d82f7ef55401ac0cfe03ec1aebb454bd2eedf5b1251da758f  VoiceCall
-5a1a9c774253e8211cc54f4b3961c4bdc35427726d037b0ecad099915e856590e8267a4a47943ab753772d57261eef89924b407b305b1099a9c4ecd7b5f00b35  eg25.initd"
+5a1a9c774253e8211cc54f4b3961c4bdc35427726d037b0ecad099915e856590e8267a4a47943ab753772d57261eef89924b407b305b1099a9c4ecd7b5f00b35  eg25.initd
+78f353cfe59657614ad5629435dc72a529b052986d646e29193645dcfd3663f5704542afd9a43f8b4ea65d1614ad32598a5434409ac524559ff66a9ab9b60856  setup-modem-audio.sh
+1b244cc6bfda4ff6c719c2dc077a2600376301d995607d15840994885b9044335d92d085282566a8baa0c2deb090ce958c586ea1e5950baf0e13686aef257b20  setup-modem-audio.initd"
