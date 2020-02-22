@@ -7,7 +7,7 @@
 tag="master"
 
 # Get download URL and pmaports path
-url="https://gitlab.com/postmarketOS/pmbootstrap/-/archive/$tag/pmbootstrap-$tag.tar.bz2"
+url="https://gitlab.com/postmarketOS/pmbootstrap.git"
 pmaports="$(cd $(dirname $0)/..; pwd -P)"
 
 # Set up depends and binfmt_misc
@@ -25,9 +25,8 @@ echo 'pmos ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 # Download pmbootstrap (to /tmp/pmbootstrap)
 echo "Downloading pmbootstrap ($tag): $url"
 cd /tmp
-wget -q -O "pmb.tar.bz2" "$url"
-tar -xf "pmb.tar.bz2"
-mv pmbootstrap-* pmbootstrap
+git clone -q "$url"
+git -C pmbootstrap checkout -q "$tag"
 
 # Install to $PATH and init
 ln -s /tmp/pmbootstrap/pmbootstrap.py /usr/local/bin/pmbootstrap
