@@ -13,24 +13,16 @@ makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-
 source="$pkgname-$_commit.tar.gz::https://github.com/kde/spacebar/archive/$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
-prepare() {
-	default_prepare
-
-	mkdir "$builddir"/build
-}
-
 build() {
-	cd "$builddir"/build
-	cmake "$builddir" \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B "$builddir"/build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make
+	make -C build
 }
 
 package() {
-	cd "$builddir"/build
-	DESTDIR="$pkgdir" make install
+	DESTDIR="$pkgdir" make -C build install
 }
 
 sha512sums="99e5ae93a5fa4c597a7e070649f3ea438ce19398a4b9a1acc4d9de7412fb95a1ef9dd23f57425fc37647a283f80f165ee131f473f82a030fd6e7934d4f841451  spacebar-68390bde9309e3656bf1453fae8c13406bf4caeb.tar.gz"
