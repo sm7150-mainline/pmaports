@@ -1,8 +1,8 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=umockdev
-pkgver=0.13.2
-pkgrel=1
+pkgver=0.14.1
+pkgrel=0
 pkgdesc="Record/mock hardware devices for bug reports and regression tests"
 arch="all"
 url="https://github.com/martinpitt/umockdev/"
@@ -11,7 +11,7 @@ depends_dev="eudev-dev libgudev-dev"
 makedepends="$depends_dev autoconf automake libtool gtk-doc vala linux-headers bash"
 source="$pkgname-$pkgver.tar.gz::https://github.com/martinpitt/umockdev/archive/$pkgver.tar.gz"
 subpackages="$pkgname-dev $pkgname-doc"
-options="!check" # Testbed.create_node_for_device: openpty() failed: No such file or directory
+options="!check" # needs /dev/pts inside chroot
 
 build() {
 	./autogen.sh \
@@ -29,4 +29,4 @@ check() {
 package() {
 	make DESTDIR="$pkgdir" install
 }
-sha512sums="58a0e2cf9c387a495a39d2094c3f5ea733b28b1dbadb0b8e4fc5bad559359d7f46c968112bc27206d4ecfa03f88562c712b62fa9dae7628181f2ff59e9a143c6  umockdev-0.13.2.tar.gz"
+sha512sums="371dba5f54369709fb19c20b1b999e594d51e10344dc9c3d91379ae3e2018e79e7bdce6ffc48e8d9ee2809d81f9f970a9db6f2ed7385282a943cd9e782e2af5c  umockdev-0.14.1.tar.gz"
