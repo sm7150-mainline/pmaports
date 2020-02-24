@@ -2,8 +2,8 @@
 
 pkgname=dhcpcd
 pkgver=9999
-_pkgver=8.0.6
-pkgrel=1
+_pkgver=8.1.6
+pkgrel=2
 pkgdesc="RFC2131 compliant DHCP client"
 url="https://roy.marples.name/projects/dhcpcd"
 arch="all"
@@ -16,6 +16,7 @@ source="https://roy.marples.name/downloads/dhcpcd/dhcpcd-$_pkgver.tar.xz
 	fix-chrony-conf-location.patch
 	old-kernel.patch
 	dhcpcd.initd
+	musl.patch
 	"
 builddir="$srcdir/dhcpcd-$_pkgver"
 
@@ -46,8 +47,9 @@ package() {
 		"$pkgdir"/etc/init.d/dhcpcd
 }
 
-sha512sums="19a568800a4e510a250de7cc111700b364c68bfe3907f1ac2cda81aacd079cb9ac87731cbabbf8f1e85e055a11c7ba88e419f6c4d7b33f8842dfaeadc7d1e193  dhcpcd-8.0.6.tar.xz
+sha512sums="f4d7ea5f4c139a2735e795e13be68f6edac89d86d97589c2cdd67f89b890a093675dcc207c681332e2163b1094da8ce75bda2ee614c19bafd01410d9fadf19df  dhcpcd-8.1.6.tar.xz
 692b2c8c75166fabd512a7cc69c650f9391e0f682ce9cbe1771bfa44e82dcf09e322c46493c45ca75000f479d3cddde306754ba31d28a798a15e2b79a56045f0  busybox-logger.patch
 1c19eed0f7a008ee96ea392beb327169ff8c83fc27fed20f65f05c9125f60629ebe3474c5e6a7cf4aeeea448fde4264c9b84916efacd67d47ab908c47b1fc3a5  fix-chrony-conf-location.patch
-a4837a22ebf1f99ac3dc137c6edabd6d0c146ea3ca3b755e957cff6421c51eaef3feea443c0900518689c21b56f10af8230ae8fe257054207df0debaf4e55d29  old-kernel.patch
-d4610be2b694ae3c7ba2defc4273635b87579c51ae5a74cc4c3ecce66dfc7cb32c4713655ac0324781445c5271fcfdc14b20584b332a2c1e2dbbeaf7ff17b44b  dhcpcd.initd"
+d4610be2b694ae3c7ba2defc4273635b87579c51ae5a74cc4c3ecce66dfc7cb32c4713655ac0324781445c5271fcfdc14b20584b332a2c1e2dbbeaf7ff17b44b  dhcpcd.initd
+082aa80798476917e2a86003cb95136212cbb9b8da986e7d8186d7f3d857e81a4cb03af56296484e035e5006d36c695ef57f571ea9c1fd18b4200a9cf745a6b4  musl.patch
+a4837a22ebf1f99ac3dc137c6edabd6d0c146ea3ca3b755e957cff6421c51eaef3feea443c0900518689c21b56f10af8230ae8fe257054207df0debaf4e55d29  old-kernel.patch"
