@@ -339,10 +339,10 @@ append_or_copy_dtb()
 }
 
 # Create the initramfs-extra archive
-# Updates $outfile_extra with path to cached file (hash appended to filename)
+# $1: outfile
 generate_initramfs_extra()
 {
-	echo "==> initramfs: creating $outfile_extra"
+	echo "==> initramfs: creating $1"
 
 	osk_conf="$(get_osk_config)"
 	if [ $? -eq 1 ]; then
@@ -350,34 +350,34 @@ generate_initramfs_extra()
 		exit 1
 	fi
 
-	# Generate output filename (initfs_extra_cache) by hashing all input files
+	# Hash all input files for caching
 	initfs_extra_files=$(echo "$BINARIES_EXTRA$osk_conf" | xargs -0 -I{} sh -c 'ls $1 2>/dev/null' -- {} | sort -u)
 	initfs_extra_files_hashes="$(md5sum $initfs_extra_files)"
 	initfs_extra_hash="$(echo "$initfs_extra_files_hashes" | md5sum | awk '{ print $1 }')"
-	initfs_extra_cache="${outfile_extra}_${initfs_extra_hash}"
 
-	if ! [ -e "$initfs_extra_cache" ]; then
-		# Delete old initramfs-extra_<hash> files
-		rm -f "$outfile_extra"_*
-
+	# The hash is appended to the initramfs, check if up-to-date
+	if [ "$initfs_extra_hash" != "$(tail -c 32 "$1")" ]; then
 		# Set up initramfs-extra in temp folder
 		tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
 		mkdir -p "$tmpdir_extra"
 		copy_files "$(get_binaries_extra)" "$tmpdir_extra"
 		copy_files "$osk_conf" "$tmpdir_extra"
-		create_cpio_image "$tmpdir_extra" "$initfs_extra_cache"
+		create_cpio_image "$tmpdir_extra" "$1.new"
 		rm -rf "$tmpdir_extra"
-	fi
 
-	outfile_extra="$initfs_extra_cache"
+		# Append hash to initramfs (used to check if up-to-date)
+		echo -n "$initfs_extra_hash" >> "$1.new"
+
+		# Replace old initramfs-extra *after* we are done to make sure
+		# it does not become corrupted if something goes wrong.
+		mv "$1.new" "$1"
+	fi
 }
 
 # initialize
 source_deviceinfo
 parse_commandline "$1" "$2" "$3"
 check_hook_files
-
-generate_initramfs_extra
 
 echo "==> initramfs: creating $outfile"
 tmpdir=$(mktemp -d /tmp/mkinitfs.XXXXXX)
@@ -404,5 +404,7 @@ create_uboot_files
 create_bootimg
 
 rm -rf "$tmpdir"
+
+generate_initramfs_extra "$outfile_extra"
 
 exit 0
