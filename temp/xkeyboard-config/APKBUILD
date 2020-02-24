@@ -1,14 +1,14 @@
 # Forked from Alpine, so we can extend the keyboard layouts
 pkgname=xkeyboard-config
 pkgver=9999
-_pkgver=2.27
-pkgrel=1
+_pkgver=2.29
+pkgrel=2
 pkgdesc="X keyboard configuration files"
 url="http://www.freedesktop.org/wiki/Software/XKeyboardConfig"
 arch="noarch"
 license="MIT"
 subpackages="$pkgname-doc"
-makedepends="xkbcomp intltool libx11-dev libxslt"
+makedepends="xkbcomp intltool libx11-dev libxslt python3"
 source="https://www.x.org/archive/individual/data/xkeyboard-config/xkeyboard-config-$_pkgver.tar.bz2
 	0001-RX-51-Symbols-Bind-Escape-to-third-level-Backspace.patch
 	0002-RX-51-Symbols-Bind-function-keys-to-fourth-level-top.patch
@@ -26,7 +26,6 @@ source="https://www.x.org/archive/individual/data/xkeyboard-config/xkeyboard-con
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
-	cd "$builddir"
 	./configure \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -39,17 +38,17 @@ build() {
 }
 
 check() {
-	cd "$builddir"
 	make check
 }
 
 package() {
-	cd "$builddir"
 	make DESTDIR="$pkgdir" install
 	rm -f "$pkgdir"/usr/share/X11/xkb/compiled
 	install -m755 -d "$pkgdir"/var/lib/xkb
+	mkdir -p "$pkgdir"/usr/lib
+	mv "$pkgdir"/usr/share/pkgconfig "$pkgdir"/usr/lib
 }
-sha512sums="ae29177461f9d2c6ce1c56c0b8b147600e3f0ecd15e8754c9531811702d9a030a31f42679a88a9fb706bec458974c337ee2a0180f22573702caa7184eb94017e  xkeyboard-config-2.27.tar.bz2
+sha512sums="202255af097f3063d76341d1b4a7672662dc645f9bcd7afa87bc966a41db4c20fc6b8f4fbe2fcaec99b6bc458eac10129141a866a165857c46282f6705b78670  xkeyboard-config-2.29.tar.bz2
 6a761968c0101251a256e4a0b9545c953ba82ecf5f20af35a2c487c01dfdb8804caf32eff0b9534854b7adaab5693a937fbb245c2a1001253735a48d90f80824  0001-RX-51-Symbols-Bind-Escape-to-third-level-Backspace.patch
 13950fc4064f55a69adf2f0dc3d9e2f8ec31ad686202486f772745ed9c7a8b502aed6073c5d629eac30a274194f5d29402f64c2f286b4a46807f3bcfab6753ff  0002-RX-51-Symbols-Bind-function-keys-to-fourth-level-top.patch
 db3c4a1f30c2efc3bf5bba7541d6956414f0d09f089d0ad5e35d340fc2c0faf8bdd6eb8c3708db307ad2c9e7ac841de8c4d11ead076d9c65dd5458b292efae19  0003-RX-51-Symbols-Bind-PgUp-PgDown-Home-End-to-third-lev.patch
