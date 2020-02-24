@@ -1,39 +1,30 @@
 # Contributor: Bhushan Shah <bshah@kde.org>
 # Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=apitrace
-pkgver=8.0
-pkgrel=1
-_commit="81c73a74860a45cbc21da9925eb04e1edad646d5"
+pkgver=9.0
+pkgrel=0
 pkgdesc="Tools for tracing OpenGL, Direct3D, and other graphics APIs"
 arch="all"
 url="http://apitrace.github.io/"
 license="MIT"
 depends_dev="mesa-dev zlib-dev libpng-dev libx11-dev linux-headers qt5-qtbase-dev"
 makedepends="$depends_dev cmake python3"
-source="$pkgname-$_commit.tar.gz::https://github.com/apitrace/apitrace/archive/$_commit.tar.gz
-	musl-fixes.patch"
+source="$pkgname-$pkgver.tar.gz::https://github.com/apitrace/apitrace/archive/$pkgver.tar.gz
+	0001-Support-libc-that-don-t-have-RTLD_DEEPBIND.patch"
 subpackages="$pkgname-doc"
 options="!check" # Tests fail under QEMU
-builddir="$srcdir/$pkgname-$_commit"
-
-prepare() {
-	default_prepare
-	mkdir "$builddir"/build
-}
 
 build() {
-	cd "$builddir"/build
-	cmake "$builddir" \
+	cmake -B "$builddir"/build \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make
+	make -C build
 }
 
 package() {
-	cd "$builddir"/build
-	DESTDIR="$pkgdir" make install
+	DESTDIR="$pkgdir" make -C build install
 }
 
-sha512sums="2c02106730e4c46c929dfa1b475691bbc72eaf232625276540ab46bbc80728f8b3d230c4297bdcbb11d8396490ed1f91ad592bb404c52fe2c63ef5840678eb32  apitrace-81c73a74860a45cbc21da9925eb04e1edad646d5.tar.gz
-a204b51654d9adc484657ec68da6f89cbcdc4dd3a810d024979dcbeacffa5867d3e5ce0b40fcdc9133b36e8927d2c7672ef5c3a40db3dee0813fe2766130e21b  musl-fixes.patch"
+sha512sums="4234bc2d14378b1bd9554752d83f8ce0703b4e08c3edc85769dc988a2b3a44b8e55d2f5856954658155a11d69802849bae6350ed5031a5916c7ac7bc7287918c  apitrace-9.0.tar.gz
+1018d6d23946c42936c20a7ae06d9a1011ca10d31159e991564d000969783dc171cb9d71e53fe22915183624b818bf8a361fbd1a01c521b2b245341504407eac  0001-Support-libc-that-don-t-have-RTLD_DEEPBIND.patch"
