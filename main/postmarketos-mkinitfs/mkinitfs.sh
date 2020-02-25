@@ -312,6 +312,10 @@ create_bootimg()
 		blobpack "${outfile/initramfs-/blob-}" LNX \
 			"${outfile/initramfs-/boot.img-}" || exit 1
 	fi
+	if [ "${deviceinfo_bootimg_append_seandroidenforce}" == "true" ]; then
+		echo "==> initramfs: appending 'SEANDROIDENFORCE' to boot.img"
+		echo -n "SEANDROIDENFORCE" >> "${outfile/initramfs-/boot.img-}"
+	fi
 }
 
 # Append the correct device tree to the linux image file or copy the dtb to the boot partition
