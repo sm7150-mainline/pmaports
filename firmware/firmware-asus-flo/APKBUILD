@@ -1,27 +1,27 @@
 pkgname=firmware-asus-flo
 pkgver=0
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for asus-flo"
 url="https://developers.google.com/android/drivers#flomob30x"
-arch="armhf"
+arch="armv7"
 license="proprietary"
 options="!check !strip !archcheck"
 
 # AOSP sources
 _version_broadcom="23c0a6c8"
-_version_qcom="43963492"
+_version_qcom=43963492
 _url_aosp="https://dl.google.com/dl/android/aosp"
 source="
-	${_url_aosp}/broadcom-flo-mob30x-${_version_broadcom}.tgz
-	${_url_aosp}/qcom-flo-mob30x-${_version_qcom}.tgz
+	$_url_aosp/broadcom-flo-mob30x-$_version_broadcom.tgz
+	$_url_aosp/qcom-flo-mob30x-$_version_qcom.tgz
 "
 
 # Other sources
 _files="WCNSS_qcom_cfg.ini WCNSS_cfg.dat WCNSS_qcom_wlan_nv_flo.bin"
 _commit_other="42b685b6cd77540048e15012278ef290f94194a7"
-_url_other="https://github.com/LineageOS/android_device_asus_flo/raw/${_commit_other}/wifi"
+_url_other="https://github.com/LineageOS/android_device_asus_flo/raw/$_commit_other/wifi"
 for _i in $_files; do
-	source="$source $pkgname-${_commit_other}-$_i::${_url_other}/$_i";
+	source="$source $pkgname-$_commit_other-$_i::$_url_other/$_i";
 done
 
 package() {
