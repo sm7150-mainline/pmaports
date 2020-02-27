@@ -1,23 +1,21 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
-
 pkgname=linux-$_flavor
-pkgver=5.5.0_git20200225
-pkgrel=3
+pkgver=5.5.0_git20200319
+pkgrel=0
+
 arch="aarch64"
 pkgdesc="Kernel fork with Pine64 patches"
 url="https://gitlab.com/pine64-org/linux/"
-license="GPL2"
+license="GPL-2.0-only"
 makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync"
 options="!strip !check !tracedeps"
-_commit="ec1031d53ba4de194eab86f2cc2e5cb3f8fe6e81"
-_commit_rtl8723cs="1c9c0cb9d335626a66d8063399c6e16751ecc1a8"
+_commit="94cf851f0f4443c771a926102dee497def319b49"
 source="
 	$pkgname-$_commit.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/$_commit/linux-$_commit.tar.gz
-	rtl8723cs-$_commit_rtl8723cs.tar.gz::https://github.com/Icenowy/rtl8723cs/archive/$_commit_rtl8723cs.tar.gz
 	config-$_flavor.aarch64
+	disable-power-save.patch
 	touch-dts.patch
-	rtl8723cs.patch
 "
 
 subpackages="$pkgname-dev"
@@ -34,8 +32,6 @@ builddir="$srcdir/linux-$_commit"
 
 prepare() {
 	default_prepare
-
-	cp -rv "$srcdir"/rtl8723cs-${_commit_rtl8723cs} "$builddir"/drivers/staging/rtl8723cs
 
 	REPLACE_GCCH=0 \
 		. downstreamkernel_prepare
@@ -69,8 +65,7 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="e534f16f308cdce4dec45c5cd89aa9336f6f77fb2610ded9796fde5bec78201ee62f56615de2e93be9cac69a3bfda06e28acd59f46234e360c61c8b1709b9d1c  linux-postmarketos-allwinner-ec1031d53ba4de194eab86f2cc2e5cb3f8fe6e81.tar.gz
-e4e585ce787301eeee07ff8e45a97343456808a47ed237053f0c83a49b4958a75514def4c5263f4507a282ea90bd2bb3f8f468839f7e5fd05ae947a796c8c6b9  rtl8723cs-1c9c0cb9d335626a66d8063399c6e16751ecc1a8.tar.gz
-946ee0840f54050ee56bb3a35ef4fcb5d53cdb7c3db9cfb9ac0e5e2a3e0ca27f6e65e79fa077430945b2df4bb47afc77b4519c015d6ba2c909eb09ad720864c6  config-postmarketos-allwinner.aarch64
-5f403bb1e3e7528954adcba4429768ce26bf13382dc6325ced245babcfb5252d515bea812b9df16d0e5370c9d4e07b4e0267f4c750281faf3cb6ffb29906700c  touch-dts.patch
-bf06f931fb543f4bf2f0567902c3021de237fc9684f92af2ed3e956f869d907c9cff1cf3e11a72eb97bda47c8f8b28aff226634f641bdffa04b08d434f419faa  rtl8723cs.patch"
+sha512sums="cfaaf2334691105be22275c13c6f82d8630b070d0cdeb0e33e5c545d3673c8acce2ead6c2d0a1b7318414f12b50cc0aa3641842e05f4cc8187a690be13852341  linux-postmarketos-allwinner-94cf851f0f4443c771a926102dee497def319b49.tar.gz
+b79e73d7508ccb93f1d01d3b43753e3d4d14fdf6144d5f6dfb9c6db3aaaf80b69bdc0285fe7c79786863507027399b7410c15ec3e88239ff626b6e07eb47698e  config-postmarketos-allwinner.aarch64
+8cdfb6d8a894e610c261446663dfbe34c01612a091fa029645e86913634de4394db0d1ab7dedb190052dff82330f0ddabe31860bbf7cd6fe0cdf23e37d0a6ca6  disable-power-save.patch
+5f403bb1e3e7528954adcba4429768ce26bf13382dc6325ced245babcfb5252d515bea812b9df16d0e5370c9d4e07b4e0267f4c750281faf3cb6ffb29906700c  touch-dts.patch"
