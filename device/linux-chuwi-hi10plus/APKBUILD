@@ -48,12 +48,12 @@ package() {
 }
 
 dev() {
-    cd $builddir
+	cd "$builddir"
 
-    # https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.txt
-    make -j1 headers_install \
-        ARCH="$_carch" \
-        INSTALL_HDR_PATH="$subpkgdir"/usr
+	# https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.txt
+	make -j1 headers_install \
+		ARCH="$_carch" \
+		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
 sha512sums="8d84560e22a6473653efa1dc229c8f8c4f95da8c2f61050583bb1285efa774c958fb13da1cf83a4f9c2cd2e73f2075569da346fa64399ccd058e793754da066a  linux-chuwi-hi10plus-5.1.7.tar.gz

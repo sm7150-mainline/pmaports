@@ -27,7 +27,7 @@ _repository="linux"
 _commit="9c9b87cec239101274451cc9c086da60108f9fda"
 
 source="
-        $pkgname-$_commit.tar.gz::https://github.com/Pixel3Dev/$_repository/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Pixel3Dev/$_repository/archive/$_commit.tar.gz
 	config-$_flavor.aarch64
 "
 
@@ -47,7 +47,6 @@ builddir="$srcdir/linux-$_commit"
 
 prepare() {
 	local _patch_failed=
-	cd "$builddir"
 	# first apply patches in specified order
 	for i in $source; do
 		case $i in

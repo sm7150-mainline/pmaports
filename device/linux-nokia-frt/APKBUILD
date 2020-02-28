@@ -1,7 +1,6 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/FRT_defconfig
-
-maintainer="Piotr Halama <skrzynka@halamix2.pl>"
+# Maintainer: Piotr Halama <skrzynka@halamix2.pl>
 pkgname="linux-nokia-frt"
 pkgver=3.18.79
 pkgrel=1
@@ -45,7 +44,6 @@ package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
 	# Modules
-	cd "$builddir"
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \

@@ -42,10 +42,10 @@ build() {
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 	msg "Combine DTB and Image.gz"
-        msg "(Because QCOM's custom Makefile builds into the wrong direcotry)"
-        cat "$builddir/arch/$_carch/boot/Image.gz" \
-                "$builddir/arch/arm/boot/dts/kenzo-msm8956-mtp.dtb" \
-                > "$builddir/arch/$_carch/boot/Image.gz-dtb"
+	msg "(Because QCOM's custom Makefile builds into the wrong direcotry)"
+	cat "$builddir/arch/$_carch/boot/Image.gz" \
+		"$builddir/arch/arm/boot/dts/kenzo-msm8956-mtp.dtb" \
+		> "$builddir/arch/$_carch/boot/Image.gz-dtb"
 }
 
 package() {

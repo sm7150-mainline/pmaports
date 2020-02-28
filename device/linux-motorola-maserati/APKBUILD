@@ -56,7 +56,6 @@ prepare() {
 }
 
 build() {
-	cd "$builddir"
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
@@ -77,7 +76,6 @@ build() {
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
-	cd "$builddir"
 	make modules_install \
 		ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \

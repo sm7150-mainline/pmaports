@@ -36,7 +36,7 @@ build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
-	
+
 	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" modules
 }
@@ -44,7 +44,6 @@ build() {
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
-	cd "$builddir"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" INSTALL_MOD_PATH="$pkgdir" \
 		modules_install

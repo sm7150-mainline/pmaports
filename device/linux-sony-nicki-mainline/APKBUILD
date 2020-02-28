@@ -27,7 +27,7 @@ _repository="linux"
 _commit="ad6ab7f8c57896cb3829e6a80408e0912d6096c2"
 
 source="
-        $pkgname-$_commit.tar.gz::https://github.com/konradybcio/$_repository/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/konradybcio/$_repository/archive/$_commit.tar.gz
 	config-$_flavor.armv7
 "
 
@@ -45,7 +45,6 @@ builddir="$srcdir/linux-$_commit"
 
 prepare() {
 	local _patch_failed=
-	cd "$builddir"
 	# first apply patches in specified order
 	for i in $source; do
 		case $i in

@@ -63,8 +63,7 @@ package() {
 	# Master DTB (deviceinfo_bootimg_qcdt)
 	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
 		"$pkgdir/boot/dt.img"
-	
-	cd "$builddir"
+
 	make -j1 modules_install ARCH="$_carch" INSTALL_MOD_PATH="$pkgdir"
 }
 
@@ -72,15 +71,16 @@ dev() {
 	pkgdesc="Headers and script for third party modules for $pkgname kernel"
 	depends="gmp-dev bash perl"
 	cd "$builddir"
+
 	local dir="$subpkgdir"/usr/src/linux-headers-$_abi_release
 	mkdir -p "$dir"
 	make -j1 headers_install ARCH="$_carch" INSTALL_HDR_PATH="$dir"
-	
+
 	mkdir -p "$subpkgdir"/lib/modules/$_abi_release
 
 	install -Dm644 "$builddir"/Module.symvers \
 		"$subpkgdir"/lib/modules/$_abi_release/Module.symvers
-		
+
 	ln -sf /usr/src/linux-headers-$_abi_release \
 		"$subpkgdir"/lib/modules/$_abi_release/build
 }

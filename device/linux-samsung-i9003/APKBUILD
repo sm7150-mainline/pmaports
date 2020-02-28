@@ -49,12 +49,13 @@ prepare_isorec() {
 
 	# Paths supplied to gen_initramfs_list.sh are prefixed with "source/".
 	ln -s "$builddir" ln -s "$builddir"/source
+
+	cd "$builddir"
 }
 
 prepare() {
 	default_prepare
 	prepare_isorec
-	cd "$builddir"
 	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
 }
 

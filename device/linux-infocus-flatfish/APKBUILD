@@ -50,7 +50,6 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
 		-C $builddir/arch/arm/mach-sun6i/pm/standby
 
-	cd $builddir
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
@@ -59,7 +58,6 @@ package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
 	# External modules install
-	cd "$builddir"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
 		INSTALL_MOD_PATH="$pkgdir" modules_install

@@ -60,12 +60,9 @@ package() {
 		"$pkgdir/boot/dt.img"
 
 	# External modules install
-	cd "$builddir"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
-		INSTALL_MOD_PATH="$pkgdir" modules_install \
-		|| return 1
-	
+		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
 sha512sums="360bf588a670cb7cd67b431c0f7cddb622d0364b3c5a0f0b9b6dd63d8b5dd7d365d6e075a1ce0652d13ce6a9d26cfb85d7b68eeb506d8e8e22aa667f57cdf0b2  linux-xiaomi-armani-0d17d5761449b14f31d00044e95753f3a6ad23b2.tar.gz
