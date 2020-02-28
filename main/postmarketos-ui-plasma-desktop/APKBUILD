@@ -1,0 +1,23 @@
+# Contributor: Danct12 <danct12@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=postmarketos-ui-plasma-desktop
+pkgver=1
+pkgrel=0
+pkgdesc="(X11/Wayland) KDE Desktop Environment (works well with tablets)"
+url="https://www.kde.org"
+arch="noarch"
+license="GPL-3.0-or-later"
+depends="
+	kde-applications-base
+	plasma
+	postmarketos-artwork-wallpapers
+	qt5-qtvirtualkeyboard
+	sddm
+	xorg-server-xwayland
+	"
+install="$pkgname.post-install $pkgname.post-upgrade"
+options="!check" # No tests for a metapkg
+
+package() {
+	mkdir -p "$pkgdir"
+}
