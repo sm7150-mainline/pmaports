@@ -2,17 +2,18 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
 pkgver=1
-pkgrel=13
+pkgrel=14
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (works only with numeric passwords!)"
 url="https://puri.sm"
 arch="noarch"
 license="GPL-3.0-or-later"
 depends="phosh polkit-elogind lightdm lightdm-openrc xorg-server-xwayland postmarketos-artwork-wallpapers epiphany calls chatty kgx gnome-keyring"
+subpackages="$pkgname-qt_tweaks"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="60-lightdm-autologin.conf
 	000-gschema.override
 	osk.sh
-	fix-qt-window-decorations.sh"
+	qt-tweaks.sh"
 options="!check"
 
 package() {
@@ -22,10 +23,17 @@ package() {
 		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
 	install -Dm755 "$srcdir"/osk.sh \
 		"$pkgdir"/usr/bin/osk-wayland
-	install -Dm755 "$srcdir"/fix-qt-window-decorations.sh \
-		"$pkgdir"/etc/profile.d/fix-qt-window-decorations.sh
 }
+
+qt_tweaks() {
+	source="qt-tweaks.sh"
+	install_if="$pkgname qt5-qtbase"
+	depends="qt5-qtwayland"
+	install -Dm755 "$srcdir"/qt-tweaks.sh \
+		"$subpkgdir"/etc/profile.d/phosh-qt-tweaks.sh
+}
+
 sha512sums="c51a5cf93495069d71900dd1c6fbddfa3bdfb70dbab8141d1b115b6150975a12206c63517f18dc516e0366028b32e014b6d37a20e19ff73d5f0934c518d3ab39  60-lightdm-autologin.conf
 d487ad8171773cf60241a917466f3da1f05a380429719c738bf6832741afef5798476374f693f60bfbdb0f3d4d3ee8c22343dc143f23eb9f1a415847c14f052c  000-gschema.override
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
-7794545ed082a9132d03383fd3b93063bc12273056264916bb2013bf010667fa86fed1d38773589541b20018d4188398da01d14d1b952aef3dc9b2e43db51a81  fix-qt-window-decorations.sh"
+6e193eca3961a78d47b4656892eae34d019d9317a255a201f5ea61e3300caff04c526a27cd98d0edc072b36e3eaf3a1768f4cd27c5e2be8b19c167d535c820a6  qt-tweaks.sh"
