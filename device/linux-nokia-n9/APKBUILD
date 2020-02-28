@@ -42,10 +42,6 @@ license="GPL2"
 _abi_release=${pkgver}
 _carch="arm"
 
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 ksrcdir="$srcdir/linux-$_basever"
 
 prepare() {
@@ -78,7 +74,7 @@ prepare() {
 
 	mkdir -p "$srcdir"/build
 	cp "$srcdir"/$_config "$srcdir"/build/.config || return 1
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" \
 		olddefconfig
 }
 

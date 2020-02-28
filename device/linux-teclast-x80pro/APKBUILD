@@ -42,10 +42,6 @@ ppc*) _carch="powerpc" ;;
 s390*) _carch="s390" ;;
 esac
 
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 ksrcdir="$srcdir/linux-$_kernver"
 
 prepare() {
@@ -86,7 +82,7 @@ prepare() {
 
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" \
 		olddefconfig
 }
 
@@ -143,7 +139,7 @@ dev() {
 	# external modules, and create the scripts
 	mkdir -p "$dir"
 	cp "$srcdir"/$_config "$dir"/.config
-	make -j1 -C "$srcdir"/linux-$_kernver O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -j1 -C "$srcdir"/linux-$_kernver O="$dir" ARCH="$_carch" \
 		olddefconfig prepare modules_prepare scripts
 
 	# needed for 3rd party modules

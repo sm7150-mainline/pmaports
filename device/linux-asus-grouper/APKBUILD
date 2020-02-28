@@ -20,16 +20,12 @@ license="GPL-2.0-only"
 
 _carch="arm"
 
-# Compiler: latest GCC from Alpine
-_hostcc="${CC:-gcc}"
-_hostcc="${_hostcc#${CROSS_COMPILE}}"
-
 _ksrcdir="$srcdir/linux-$_commit"
 
 prepare() {
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$_ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$_hostcc" \
+	make -C "$_ksrcdir" O="$srcdir"/build ARCH="$_carch" \
 		olddefconfig
 }
 

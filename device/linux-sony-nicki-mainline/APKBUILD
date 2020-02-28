@@ -41,9 +41,6 @@ ppc*) _carch="powerpc" ;;
 s390*) _carch="s390" ;;
 esac
 
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 builddir="$srcdir/linux-$_commit"
 
 prepare() {
@@ -71,7 +68,7 @@ prepare() {
 
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" \
 		olddefconfig
 }
 

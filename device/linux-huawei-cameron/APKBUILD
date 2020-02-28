@@ -11,8 +11,6 @@ url="https://kernel.org"
 license="GPL2"
 options="!strip !check !tracedeps"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev python dtc"
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 # Source
 _repository="android_kernel_huawei_hi3660"
@@ -39,7 +37,7 @@ build() {
 	mkdir "$outdir"
 	cp "$srcdir/$_config" "$outdir/.config"
 	rm "$builddir/.config"
-	make ARCH="$_carch" HOSTCC="$HOSTCC" O="$outdir" oldconfig
+	make ARCH="$_carch" O="$outdir" oldconfig
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" O="$outdir"
 }

@@ -13,10 +13,6 @@ license="GPL-2.0-only"
 options="!strip !check !tracedeps"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev flex bison openssl-dev"
 
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 # Source
 _repository="linux"
 _config="config-${_flavor}.${arch}"
@@ -90,7 +86,7 @@ prepare() {
 
 	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
 	cp "$srcdir/$_config" "$builddir"/.config
-	yes "" | make -C "$builddir" ARCH="$_carch" HOSTCC="$HOSTCC" oldconfig
+	yes "" | make -C "$builddir" ARCH="$_carch" oldconfig
 }
 
 build() {

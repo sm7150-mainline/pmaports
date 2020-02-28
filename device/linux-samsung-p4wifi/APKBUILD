@@ -12,10 +12,6 @@ license="GPL2"
 options="!strip !check !tracedeps"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz flex bison openssl-dev"
 
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 # Source
 _repository="linux"
 _rev="8de8fd48d3a4765b7cef982e550cc06b806d5977"
@@ -31,7 +27,7 @@ prepare() {
 
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" \
 		olddefconfig
 }
 

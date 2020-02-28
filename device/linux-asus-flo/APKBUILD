@@ -32,10 +32,6 @@ license="GPL2"
 _abi_release=${pkgver}
 _carch="arm"
 
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 ksrcdir="$srcdir/linux-$pkgver"
 
 prepare() {
@@ -62,7 +58,7 @@ prepare() {
 
 	mkdir -p "$srcdir"/build
 	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
+	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" \
 	silentoldconfig
 }
 

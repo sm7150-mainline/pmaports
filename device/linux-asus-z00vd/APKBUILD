@@ -12,10 +12,6 @@ license="GPL2"
 options="!strip !check !tracedeps"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev python3"
 
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 # Source
 _repository="ZC500TG"
 _commit="7957ae0b17bb46d56a5cddd1d313aec76296aee8"
@@ -46,12 +42,12 @@ prepare() {
 	mkdir "$builddir/out"
 
 	# Clean up kernel source
-	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" HOSTCC="$HOSTCC" clean
-	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" HOSTCC="$HOSTCC" mrproper
+	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" clean
+	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" mrproper
 
 	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
 	cp "$srcdir"/$_config "$builddir"/out/.config
-	yes "" | make O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" HOSTCC="$HOSTCC" oldconfig
+	yes "" | make O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" oldconfig
 }
 
 build() {
