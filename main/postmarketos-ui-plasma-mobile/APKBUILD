@@ -1,7 +1,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-mobile
 pkgver=2
-pkgrel=25
+pkgrel=26
 pkgdesc="(Wayland) Mobile variant of KDE Plasma (does not run without hardware acceleration, allows only numeric passwords!)"
 url="https://wiki.postmarketos.org/wiki/Plasma_Mobile"
 arch="noarch !armhf" # Crashes on armhf due to https://gitlab.com/postmarketOS/pmaports/issues/75
@@ -54,6 +54,7 @@ source="kwinrc
 	000-gschema.override
 	gtk-app-wayland.sh
 	"
+subpackages="$pkgname-extras"
 options="!check"
 
 package() {
@@ -77,6 +78,22 @@ package() {
 
 	install -Dm644 "$srcdir"/000-gschema.override \
 		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
+}
+
+extras() {
+	pkgdesc="Meta package for additional Plasma mobile apps"
+	depends="
+		buho
+		calindori
+		kaidan
+		ktrip
+		nota
+		okular-mobile
+		trojita
+		vvave
+		"
+
+	mkdir -p "$subpkgdir"
 }
 
 sha512sums="a95d3bbd1e8051c9b394ad7a26e4beb2d1be8d3c38189819da61fd42b1c7fd3948c4737bc9246eee23eaf5fd9451cd6362fb06442f3d8f967f930d3bcc5cfbe9  kwinrc
