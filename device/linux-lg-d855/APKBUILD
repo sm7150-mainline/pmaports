@@ -10,7 +10,6 @@
 # - enable devtmpfs (needed for udev -> touch support in weston)
 # - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_vendor=lge
 _flavor=lg-d855
 _hash="efce7b0879c76224f5bf37d8a1025eaed99192b0"
 _config="config-${_flavor}.armhf"
@@ -30,7 +29,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev x
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_${_vendor}_g3/archive/${_hash}.tar.gz
+	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_lge_g3/archive/${_hash}.tar.gz
 	$_config
 	compiler-gcc6.h
 	02_gpu-msm-fix-gcc5-compile.patch
@@ -50,7 +49,7 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_${_vendor}_g3-${_hash}"
+ksrcdir="$srcdir/android_kernel_lge_g3-${_hash}"
 
 prepare() {
 	local _patch_failed=

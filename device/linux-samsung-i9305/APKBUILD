@@ -12,7 +12,6 @@
 # - add kernel modules installation
 # - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_vendor=samsung
 _flavor=samsung-i9305
 _hash="fa8fa332fdec11744ffe0c742775cc22efe0d041"
 _config="config-${_flavor}.armhf"
@@ -32,7 +31,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev x
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_${_vendor}_smdk4412/archive/${_hash}.tar.gz
+	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_samsung_smdk4412/archive/${_hash}.tar.gz
 	$_config
 	compiler-gcc6.h
 "
@@ -51,7 +50,7 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_${_vendor}_smdk4412-${_hash}"
+ksrcdir="$srcdir/android_kernel_samsung_smdk4412-${_hash}"
 
 prepare() {
 	local _patch_failed=
@@ -94,7 +93,7 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine"
 
 	echo "-- [ Build modules ] --"
-	# the 'no-pic' flag is necessary to avoid the 
+	# the 'no-pic' flag is necessary to avoid the
 	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
 	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
@@ -109,7 +108,7 @@ package() {
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-	
+
 	cd "$srcdir"/build
 	unset LDFLAGS
 
