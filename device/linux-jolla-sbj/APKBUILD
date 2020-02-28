@@ -23,16 +23,16 @@ fi
 
 # Source
 _hash="2.1.0.11"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_hash.tar.bz2::http://releases.sailfishos.org/sources/${_hash}/sailfish-${_hash}-oss-adaptation-sbj.tar.bz2
+	$pkgname-$_hash.tar.bz2::http://releases.sailfishos.org/sources/$_hash/sailfish-$_hash-oss-adaptation-sbj.tar.bz2
 	$_config
 	compiler-gcc6.h
 	02_gpu-msm-fix-gcc5-compile.patch
 	duplicate-return-address-definition.patch
 "
 kver="kernel-adaptation-sbj-3.4.108.20161101.1"
-kernelarchive="$srcdir/sailfish-${_hash}-oss-adaptation-sbj/kernel-adaptation-sbj/${kver}.tar.bz2"
+kernelarchive="$srcdir/sailfish-$_hash-oss-adaptation-sbj/kernel-adaptation-sbj/$kver.tar.bz2"
 builddir="$srcdir/$kver"
 
 prepare() {

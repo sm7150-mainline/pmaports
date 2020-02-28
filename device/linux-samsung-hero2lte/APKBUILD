@@ -16,14 +16,14 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source - use Ivan Meler's 3.18 upstream kernel
 _repository="android_kernel_samsung_herolte"
 _commit="24b577569468748591f7be6435af67e17b532886"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/ivanmeler/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/ivanmeler/$_repository/archive/$_commit.tar.gz
 	$_config
 	01-remove-android-defines.patch
 	02-fix-dtbtool.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

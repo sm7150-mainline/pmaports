@@ -24,16 +24,16 @@ fi
 # Source
 _repository="android_kernel_nokia_msm8x27"
 _commit="c76fa190cc0d20a9d803ce9bdb59eab0de67a64a"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/Android4Lumia/android_kernel_nokia_msm8x27/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Android4Lumia/android_kernel_nokia_msm8x27/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
 	psmouse_base.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

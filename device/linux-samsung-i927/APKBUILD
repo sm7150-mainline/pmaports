@@ -15,7 +15,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 
 # Source
 _repository="linux"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
 	$pkgname-$pkgver.tar.gz::https://kernel.org/pub/linux/kernel/v5.x/linux-$pkgver.tar.gz
 	$_config
@@ -79,7 +79,7 @@ source="
 	0058-ARM-dts-tegra20-glide-Bindings-for-new-audio-driver.patch
 	0059-drm-panel-s6e63m0-Workaround-screen-corruption-on-bo.patch
 "
-builddir="$srcdir/${_repository}-${pkgver}"
+builddir="$srcdir/$_repository-$pkgver"
 
 prepare() {
 	default_prepare

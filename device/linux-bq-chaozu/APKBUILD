@@ -24,16 +24,16 @@ fi
 # Source
 _repository="android_kernel_bq_msm8937"
 _commit="9fe7be06bdbbad2d9cb86d9b135d082b4d28b9ea"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	00_fix_rndis_ipa_trace_header_not_found.patch
 	01_prima_gcc6.patch
 	02_prima_misleading_indentation.patch
 	03_fix_u_f_header.patch
 	04_fix_usb_gadget_function.patch
 	$_config"
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

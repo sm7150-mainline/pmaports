@@ -24,16 +24,16 @@ fi
 # Source
 _repository="android_kernel_samsung_lt02"
 _commit="c6fb6f677aa195b07348eb7777322ca956f9c44c"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/kumajaya/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/kumajaya/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	timeconst_fix.patch
 	455bd4c430b0c0a361f38e8658a0d6cb469942b5.patch
 	418df63adac56841ef6b0f1fcf435bc64d4ed177.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -17,16 +17,16 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="android_kernel_samsung_smdk4412"
 _commit="349a3e91e76d17e67ef6213e1f6712e700695631"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
 	init
 "
 
-builddir="$srcdir/$_repository-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare_isorec() {
 	# Use Alpine's busybox.static instead of the pre-compiled busybox shipped

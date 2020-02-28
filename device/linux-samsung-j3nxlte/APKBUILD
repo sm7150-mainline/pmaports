@@ -16,9 +16,9 @@ makedepends="mkbootimg perl sed installkernel bash gmp-dev bc linux-headers elfu
 # Source
 _repository="android_kernel_samsung_sharkls"
 _commit="e3381e42b00e1ff977815b365cea53f18afff7a8"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/djeman/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/djeman/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
@@ -26,7 +26,7 @@ source="
 	qcom,msm-id_fix.patch
 	fix_touchscreen.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -24,16 +24,16 @@ fi
 # Source
 _repository="overload1"
 _commit="b3650e93fec05cfe6ecf1fe80383bcff979463a0"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/renjian2/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/renjian2/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	01_fix_gcc6_errors.patch
 	03_psci.patch
 	05_dtb-fix.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

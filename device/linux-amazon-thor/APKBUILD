@@ -24,9 +24,9 @@ fi
 # Source
 _repository="kernel_phoenix_hdx-common"
 _commit="f73e4eec8717c6104eca954cf9c259d9d37c38a5"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/ggow/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/ggow/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_smd_private.patch
@@ -38,7 +38,7 @@ source="
 	03_msm_fix_trace.patch
 	06_fix_mdss_fb_rgb_mode.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

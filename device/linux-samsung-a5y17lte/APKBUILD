@@ -17,10 +17,10 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 _repository="android_kernel_samsung_universal7880"
 _commit="9af43285ff43d74f3f40f910023e57dfad1c8e63"
 _qca_commit="48f9ab5d5c161549be098997fa0e3602c1547213"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
-	qcacld-$_qca_commit.tar.gz::https://github.com/codeauroraforum/quic-la-platform-vendor-qcom-opensource-wlan-qcacld-2.0/archive/${_qca_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	qcacld-$_qca_commit.tar.gz::https://github.com/codeauroraforum/quic-la-platform-vendor-qcom-opensource-wlan-qcacld-2.0/archive/$_qca_commit.tar.gz
 	$_config
 	fix_firmware_path.patch
 	gcc7-give-up-on-ilog2-const-optimizations.patch
@@ -32,8 +32,8 @@ source="
 	disable_knox.patch
 	debug_muic.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
-qcaclddir="$srcdir/quic-la-platform-vendor-qcom-opensource-wlan-qcacld-2.0-${_qca_commit}"
+builddir="$srcdir/$_repository-$_commit"
+qcaclddir="$srcdir/quic-la-platform-vendor-qcom-opensource-wlan-qcacld-2.0-$_qca_commit"
 
 prepare() {
 	default_prepare

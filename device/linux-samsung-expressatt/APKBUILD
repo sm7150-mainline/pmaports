@@ -23,13 +23,13 @@ fi
 # Source
 _repository="android_kernel_samsung_d2"
 _commit="0dbe2b56847b304d30b809dfd08ba3b4a61d9af8"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	kernel-use-the-gnu89-standard-explicitly.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

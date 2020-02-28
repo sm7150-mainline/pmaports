@@ -25,9 +25,9 @@ fi
 # Source
 _repository="android_kernel_samsung_msm8974"
 _commit="edfd9dd9be89d15c34f653363a9a3c9108146ca0"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	0001_fix_return_address.patch
 	0002_gpu-msm-fix-gcc5-compile.patch
@@ -44,7 +44,7 @@ source="
 	0013-Backport-ARM-wire-up-memfd_create-syscall.patch
 "
 
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

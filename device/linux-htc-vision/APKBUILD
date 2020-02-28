@@ -19,14 +19,14 @@ fi
 # Source
 _repository="android_kernel_htc_vision"
 _commit="9eb87bf88164847421895687ad86fd0ca144e6a0"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/milaq/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/milaq/$_repository/archive/$_commit.tar.gz
 	$_config
 	02_gpu-msm-fix-gcc5-compile.patch
 	fix-boot-gcc5.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

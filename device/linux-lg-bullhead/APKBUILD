@@ -24,16 +24,16 @@ fi
 # Source
 _repository="bullhead"
 _commit="57351a6494f82cda87c697e10afb98b7f3bd28a2"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/franciscofranco/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/franciscofranco/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	static-inline.patch
 	driver-fix.patch
 	undefined-screen_info.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

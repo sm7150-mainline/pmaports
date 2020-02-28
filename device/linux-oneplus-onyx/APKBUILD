@@ -23,9 +23,9 @@
 
 _flavor=oneplus-onyx
 _version="c83d4835d228f8330da7e33846eec33c64608349"
-_config="config-${_flavor}.armhf"
+_config="config-$_flavor.armhf"
 
-pkgname=linux-${_flavor}
+pkgname=linux-$_flavor
 pkgver=3.4.0
 case $pkgver in
 	*.*.*) _kernver=${pkgver%.*};;
@@ -39,8 +39,8 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev x
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_version.tar.gz::https://github.com/LineageOS/android_kernel_oneplus_onyx/archive/${_version}.tar.gz
-	${_config}
+	$pkgname-$_version.tar.gz::https://github.com/LineageOS/android_kernel_oneplus_onyx/archive/$_version.tar.gz
+	$_config
 	compiler-gcc6.h
 	00_dontpanic.patch
 	00_fix_return_address.patch
@@ -52,7 +52,7 @@ source="
 subpackages=""
 license="GPL2"
 
-_abi_release=${pkgver}
+_abi_release=$pkgver
 _carch="arm"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
@@ -64,7 +64,7 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_oneplus_onyx-${_version}"
+ksrcdir="$srcdir/android_kernel_oneplus_onyx-$_version"
 
 prepare() {
 	local _patch_failed=

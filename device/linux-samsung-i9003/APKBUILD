@@ -16,9 +16,9 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="android_kernel_samsung_latona"
 _commit="7b8d73dd32e6cd21107f9a963a32a5ed237a6e78"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/dhiru1602/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/dhiru1602/$_repository/archive/$_commit.tar.gz
 	$_config
 	00_return_address.patch
 	01_twl_power_init.patch
@@ -29,7 +29,7 @@ source="
 	kernel-use-the-gnu89-standard-explicitly.patch
 	init
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare_isorec() {
 	# Use Alpine's busybox.static instead of the pre-compiled busybox shipped

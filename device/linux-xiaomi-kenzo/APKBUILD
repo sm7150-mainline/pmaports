@@ -23,14 +23,14 @@ fi
 # Source
 _repository="android_kernel_xiaomi_msm8956"
 _commit="92430f1a110b9b49e69fb1d3bde81c0f048d0282"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	01_fix_gcc6_errors.patch
 	02_fix_msm_dba.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

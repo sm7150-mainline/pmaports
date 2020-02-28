@@ -17,9 +17,9 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="android_kernel_rhea"
 _commit="8224116dca7de79d181c0761468f569e6ac3505e"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/bcm216xx/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/bcm216xx/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
@@ -28,7 +28,7 @@ source="
 	04_fix_undefined_reference_to_to_state.patch
 	05_usb_gadget_set_random_rndis_host_MAC_address.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

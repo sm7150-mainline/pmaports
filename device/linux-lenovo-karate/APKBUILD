@@ -24,14 +24,14 @@ fi
 # Source
 _repository="android_kernel_lenovo_msm8937"
 _commit="d99e6751356d0d310db6a16f3fe7eeaea8041675"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/karthick111/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/karthick111/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	01_prima_gcc6.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -23,16 +23,16 @@ fi
 # Source
 _repository="android_kernel_cyanogen_msm8916"
 _commit="7ac9a15c55f441060e83a3b0b6a9b4573cefeea7"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	01_fix_gcc6_errors.patch
 	mdss_fb_refresh_rate.patch
 "
 
 
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

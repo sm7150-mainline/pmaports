@@ -17,9 +17,9 @@ makedepends="perl sed installkernel bash gmp-dev bc elfutils-libelf devicepkg-de
 # Source
 _repository="android_kernel_oppo_msm8974"
 _commit="60e8a8df2d253b053cdac10a0ffd196b7b9c3925"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
@@ -41,7 +41,7 @@ source="
 
 subpackages="$pkgname-dev"
 
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare
@@ -72,17 +72,17 @@ dev() {
 	pkgdesc="Headers and script for third party modules for $pkgname kernel"
 	depends="gmp-dev bash perl"
 	cd "$builddir"
-	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
+	local dir="$subpkgdir"/usr/src/linux-headers-$_abi_release
 	mkdir -p "$dir"
 	make -j1 headers_install ARCH="$_carch" INSTALL_HDR_PATH="$dir"
 	
-	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
+	mkdir -p "$subpkgdir"/lib/modules/$_abi_release
 
 	install -Dm644 "$builddir"/Module.symvers \
-		"$subpkgdir"/lib/modules/${_abi_release}/Module.symvers
+		"$subpkgdir"/lib/modules/$_abi_release/Module.symvers
 		
-	ln -sf /usr/src/linux-headers-${_abi_release} \
-		"$subpkgdir"/lib/modules/${_abi_release}/build
+	ln -sf /usr/src/linux-headers-$_abi_release \
+		"$subpkgdir"/lib/modules/$_abi_release/build
 }
 
 sha512sums="e3fa1f9ab51a2b6213b9abaa3bb5e010fd2c41e98f572022fcfff66f17fc3639e1b29184b923c437ab4ed3411feb7e5667303304600fac3e929793c10a16daa2  linux-oppo-find-7a-60e8a8df2d253b053cdac10a0ffd196b7b9c3925.tar.gz

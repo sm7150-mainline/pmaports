@@ -24,9 +24,9 @@ fi
 # Source
 _repository="android_kernel_xiaomi_cancro"
 _commit="b263a8914dcb8f9609be55070c3e40c85020188d"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	01_smd_private.patch
@@ -38,7 +38,7 @@ source="
 	tspdrv_5.patch
 	05_q6voice.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

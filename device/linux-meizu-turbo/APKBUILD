@@ -16,9 +16,9 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="m576"
 _commit="2d3fa1ca1fbc8b52c75b2bcc3784b7e52085768b"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/meizuosc/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/meizuosc/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	0001-Get-rid-of-Android-toolchain-binaries-in-Makefile.patch
@@ -27,7 +27,7 @@ source="
 	0004-Remove-loopy-symlink.patch
 	0005-Use-Samsung-MFC-from-A810.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

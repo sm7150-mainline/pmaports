@@ -24,14 +24,14 @@ fi
 # Source
 _repository="android_kernel_oneplus_msm8994"
 _commit="0178fae80ec43cefa75f590e18a9039f5b379425"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_mt_width_major_params.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

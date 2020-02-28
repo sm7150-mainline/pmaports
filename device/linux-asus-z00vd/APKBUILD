@@ -15,16 +15,16 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="ZC500TG"
 _commit="7957ae0b17bb46d56a5cddd1d313aec76296aee8"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/Danct12/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Danct12/$_repository/archive/$_commit.tar.gz
 	$_config
 	01_fix_warnings.patch
 	02_gcc8_error.patch
 	03_perf_python3.patch
 	04_dct_python3.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

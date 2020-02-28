@@ -24,15 +24,15 @@ fi
 # Source
 _repository="android_kernel_samsung_tuna"
 _commit="e14e5fe679a63eef92346cde874175d8b62b6a4a"
-_config="config-${_flavor}.armv7"
+_config="config-$_flavor.armv7"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	android_paranoid_network.patch
 	fix_old_perl_code.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

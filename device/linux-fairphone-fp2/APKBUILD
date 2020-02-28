@@ -23,9 +23,9 @@ fi
 # Source
 _repository="android_kernel_fairphone_msm8974"
 _commit="284400aea4b9f8a3c97a34408f48d0971897ae02"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
@@ -34,7 +34,7 @@ source="
 	0003-Fix-includes.patch
 	0004-msm-fix-trace.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

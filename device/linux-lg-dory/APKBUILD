@@ -12,9 +12,9 @@
 
 _flavor=lg-dory
 _hash="6924014484d3406e3d2da384efc20e40e8a5ae80"
-_config="config-${_flavor}.armhf"
+_config="config-$_flavor.armhf"
 
-pkgname=linux-${_flavor}
+pkgname=linux-$_flavor
 pkgver=3.10.40
 case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
@@ -29,7 +29,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 options="!strip !check !tracedeps"
 install=
 source="
-	$pkgname-$_hash.tar.gz::https://github.com/android/kernel_msm/archive/${_hash}.tar.gz
+	$pkgname-$_hash.tar.gz::https://github.com/android/kernel_msm/archive/$_hash.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
@@ -40,7 +40,7 @@ source="
 subpackages=""
 license="GPL2"
 
-_abi_release=${pkgver}
+_abi_release=$pkgver
 _carch="arm"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
@@ -52,7 +52,7 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-builddir="$srcdir/kernel_msm-${_hash}"
+builddir="$srcdir/kernel_msm-$_hash"
 
 prepare() {
 	default_prepare

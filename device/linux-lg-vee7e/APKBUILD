@@ -16,9 +16,9 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="lge-kernel-lproj"
 _commit="8a90ec65502bde12a03c60d6756eea3e88c02917"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/Vee7-Cyanogenmod13/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Vee7-Cyanogenmod13/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
@@ -27,7 +27,7 @@ source="
 	02_gpu-msm-fix-gcc5-compile.patch
 	0001-Makefile-fix-build-with-new-binutils.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

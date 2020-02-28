@@ -16,9 +16,9 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="android_kernel_motorola_msm8937"
 _commit="2d29701ed2d080029f0bd3ceba07df66ae4e9c2d"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/Sohamlad7/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Sohamlad7/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc8-fix-put-user.patch
 	03_fix_rndis_ipa_trace_header_not_found.patch
@@ -26,7 +26,7 @@ source="
 	06_fix_usb_gadget_function.patch
 	fb-fixed.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -24,16 +24,16 @@ fi
 # Source
 _repository="T.E.S.C.O-kernel_vivo"
 _commit="da3fd71eec35410f38808712d0edc0c5a6a42dda"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/szezso/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/szezso/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	02_gpu-msm-fix-gcc5-compile.patch
 	03_use-static-inline-in-ftrace.h.patch
 	04-fix-redefinition-of-unregister_con_driver.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -16,9 +16,9 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="android_kernel_sony_msm8x27"
 _commit="627687e4625d208248fe5fa40dcaaeb3363dfce7"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	00_fix_return_address.patch
 	01_fix_video_argb_setting.patch
@@ -31,7 +31,7 @@ source="
 	gcc8-fix-put-user.patch
 	kernel-use-the-gnu89-standard-explicitly.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

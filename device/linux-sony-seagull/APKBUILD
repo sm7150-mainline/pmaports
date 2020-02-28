@@ -26,10 +26,10 @@ fi
 # Source
 _repository="android_kernel_sony_seagull"
 _commit="e39e9203b59a21cac634a86641b0413b0100ed48"
-_srcurl="https://github.com/pmsourcedump/${_repository}/archive/${_commit}.tar.gz"
-_config="config-${_flavor}.${arch}"
+_srcurl="https://github.com/pmsourcedump/$_repository/archive/$_commit.tar.gz"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$pkgver.tar.gz::${_srcurl}
+	$pkgname-$pkgver.tar.gz::$_srcurl
 	$_config
 	compiler-gcc6.h
 	01_fix_return_address.patch
@@ -38,7 +38,7 @@ source="
 	04_timeconst_fix.patch
 	05_psmouse_base.patch
 "
-builddir="$srcdir/${_repository}-${_commit}/"
+builddir="$srcdir/$_repository-$_commit/"
 
 prepare() {
 	default_prepare

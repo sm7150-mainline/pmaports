@@ -23,16 +23,16 @@ fi
 # Source
 _repository="lge-kernel-lproj"
 _commit="45d6b0c683f3e0178e91c081133c6ebbea1d30fd"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/TeamHackLG/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/TeamHackLG/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
 	00_fix_return_address.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

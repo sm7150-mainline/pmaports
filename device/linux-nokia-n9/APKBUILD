@@ -1,13 +1,13 @@
 _flavor=nokia-n9
-_config="config-${_flavor}.armhf"
+_config="config-$_flavor.armhf"
 
-pkgname=linux-${_flavor}
+pkgname=linux-$_flavor
 pkgver=4.17_rc4
 _pkgver=${pkgver/_/-}
 _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
-_basever=${_mainver}.$((_patchlevel-1))
+_basever=$_mainver.$((_patchlevel-1))
 case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
@@ -39,7 +39,7 @@ source="
 subpackages=""
 license="GPL2"
 
-_abi_release=${pkgver}
+_abi_release=$pkgver
 _carch="arm"
 
 ksrcdir="$srcdir/linux-$_basever"
@@ -84,7 +84,7 @@ build() {
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" \
 		|| return 1
-	cd ${ksrcdir}
+	cd $ksrcdir
 }
 
 package() {

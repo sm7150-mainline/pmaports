@@ -24,14 +24,14 @@ fi
 # Source
 _repository="android_kernel_moto_shamu"
 _commit="0f791f84d1951e144f1e466ba97dd692d33d93c7"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

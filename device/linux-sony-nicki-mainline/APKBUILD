@@ -3,16 +3,16 @@
 # See: https://gitlab.com/postmarketOS/pmaports/issues/184
 
 _flavor=sony-nicki-mainline
-_config="config-${_flavor}.${CARCH}"
+_config="config-$_flavor.$CARCH"
 
-pkgname=linux-${_flavor}
+pkgname=linux-$_flavor
 
 pkgver=5.3
 _pkgver=${pkgver/_/-}
 _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
-_basever=${_mainver}.$((_patchlevel-1))
+_basever=$_mainver.$((_patchlevel-1))
 pkgrel=1
 
 arch="armv7"
@@ -27,13 +27,13 @@ _repository="linux"
 _commit="ad6ab7f8c57896cb3829e6a80408e0912d6096c2"
 
 source="
-        $pkgname-$_commit.tar.gz::https://github.com/konradybcio/${_repository}/archive/${_commit}.tar.gz
-	config-${_flavor}.armv7
+        $pkgname-$_commit.tar.gz::https://github.com/konradybcio/$_repository/archive/$_commit.tar.gz
+	config-$_flavor.armv7
 "
 
 license="GPL2"
 _abi_release=$_pkgver
-_carch=${CARCH}
+_carch=$CARCH
 case "$_carch" in
 aarch64*) _carch="arm64" ;;
 arm*) _carch="arm" ;;
@@ -76,18 +76,18 @@ build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
 		CFLAGS_MODULE=-fno-pic
 }
 
 package() {
-	cd "$srcdir/build/arch/${_carch}/boot"
+	cd "$srcdir/build/arch/$_carch/boot"
 
 	if [ "$CARCH" == "aarch64" ]; then
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image.gz" \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image.gz" \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	else
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	fi
 

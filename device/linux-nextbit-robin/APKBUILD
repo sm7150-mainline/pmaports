@@ -24,14 +24,14 @@ fi
 # Source
 _repository="android_kernel_nextbit_msm8992"
 _commit="8b8773362248bdba3224a1d92e76c5b9004519d6"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	01_psci_err.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

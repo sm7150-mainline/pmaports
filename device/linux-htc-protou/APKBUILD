@@ -23,9 +23,9 @@ fi
 # Source
 _repository="android_kernel_htc_protou"
 _commit="0e395015315c8950e85b70271b973a7d3c1a3ac5"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/ProtouProject/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/ProtouProject/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc8-fix-put-user.patch
 	kernel-use-the-gnu89-standard-explicitly.patch
@@ -35,7 +35,7 @@ source="
 	no-hardcoded-CROSS_COMPILE.patch
 	no-hardcoded-nvram-path.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

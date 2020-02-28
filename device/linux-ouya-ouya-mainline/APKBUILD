@@ -15,12 +15,12 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev x
 # Source
 _repository="linux"
 _rev="7c3acfbc49c690a8ec27f2269840a7e141182ab9"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_rev.tar.gz::https://github.com/decatf/${_repository}/archive/${_rev}.tar.gz
+	$pkgname-$_rev.tar.gz::https://github.com/decatf/$_repository/archive/$_rev.tar.gz
 	$_config
 "
-builddir="$srcdir/${_repository}-${_rev}"
+builddir="$srcdir/$_repository-$_rev"
 
 prepare() {
 	default_prepare
@@ -35,18 +35,18 @@ build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
 		CFLAGS_MODULE=-fno-pic
 }
 
 package() {
-	cd "$srcdir/build/arch/${_carch}/boot"
+	cd "$srcdir/build/arch/$_carch/boot"
 
 	if [ "$CARCH" == "aarch64" ]; then
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image" \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image" \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	else
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	fi
 

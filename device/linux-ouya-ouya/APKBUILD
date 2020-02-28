@@ -21,14 +21,14 @@ fi
 # Source
 _repository="android_kernel_boxer8_ouya"
 _commit="49f035e65e689f8c227bac7a6c4ecf89ad9158af"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/milaq/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/milaq/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch""
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

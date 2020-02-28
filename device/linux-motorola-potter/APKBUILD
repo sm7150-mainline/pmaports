@@ -24,9 +24,9 @@ fi
 # Source
 _repository="android_kernel_motorola_msm8953"
 _commit="5ec24e0225d19f2746088c88fbbc48978da5f3d5"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/boulzordev/android_kernel_motorola_msm8953/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/boulzordev/android_kernel_motorola_msm8953/archive/$_commit.tar.gz
 	$_config
 	01_prima_gcc6.patch
 	02_fix_msm_dba.patch
@@ -36,7 +36,7 @@ source="
 	06_fix_usb_gadget_function.patch
 	compiler-gcc6.h
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

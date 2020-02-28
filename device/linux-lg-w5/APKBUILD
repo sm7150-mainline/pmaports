@@ -24,16 +24,16 @@ fi
 # Source
 _repository="android_kernel_lge_msm8226"
 _commit="bf756279493c2cc4656b784afa29822b30838e98"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 	03_fix_various_include_directives.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

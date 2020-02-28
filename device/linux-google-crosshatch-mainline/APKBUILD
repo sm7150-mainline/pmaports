@@ -3,16 +3,16 @@
 # See: https://gitlab.com/postmarketOS/pmaports/issues/153
 
 _flavor=google-crosshatch-mainline
-_config="config-${_flavor}.${CARCH}"
+_config="config-$_flavor.$CARCH"
 
-pkgname=linux-${_flavor}
+pkgname=linux-$_flavor
 
 pkgver=5.3_rc5
 _pkgver=${pkgver/_/-}
 _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
-_basever=${_mainver}.$((_patchlevel-1))
+_basever=$_mainver.$((_patchlevel-1))
 pkgrel=0
 
 arch="aarch64"
@@ -27,15 +27,15 @@ _repository="linux"
 _commit="9c9b87cec239101274451cc9c086da60108f9fda"
 
 source="
-        $pkgname-$_commit.tar.gz::https://github.com/Pixel3Dev/${_repository}/archive/${_commit}.tar.gz
-	config-${_flavor}.aarch64
+        $pkgname-$_commit.tar.gz::https://github.com/Pixel3Dev/$_repository/archive/$_commit.tar.gz
+	config-$_flavor.aarch64
 "
 
 subpackages="$pkgname-dev"
 
 license="GPL2"
 _abi_release=$_pkgver
-_carch=${CARCH}
+_carch=$CARCH
 case "$_carch" in
 aarch64*) _carch="arm64" ;;
 arm*) _carch="arm" ;;
@@ -78,18 +78,18 @@ build() {
 	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-${_flavor}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
 		CFLAGS_MODULE=-fno-pic
 }
 
 package() {
-	cd "$srcdir/build/arch/${_carch}/boot"
+	cd "$srcdir/build/arch/$_carch/boot"
 
 	if [ "$CARCH" == "aarch64" ]; then
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/Image.gz" \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image.gz" \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	else
-		install -Dm644 "$srcdir/build/arch/${_carch}/boot/"*zImage \
+		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
 			"$pkgdir/boot/vmlinuz-$_flavor"
 	fi
 
@@ -121,7 +121,7 @@ dev() {
 	#
 	pkgdesc="Headers and script for third party modules for postmarketos kernel"
 	depends="gmp-dev bash perl"
-	local dir="$subpkgdir"/usr/src/linux-headers-${_abi_release}
+	local dir="$subpkgdir"/usr/src/linux-headers-$_abi_release
 
 	# first we import config, run prepare to set up for building
 	# external modules, and create the scripts
@@ -158,9 +158,9 @@ dev() {
 	install -Dm644 "$srcdir"/build/Module.symvers \
 		"$dir"/Module.symvers
 
-	mkdir -p "$subpkgdir"/lib/modules/${_abi_release}
-	ln -sf /usr/src/linux-headers-${_abi_release} \
-		"$subpkgdir"/lib/modules/${_abi_release}/build
+	mkdir -p "$subpkgdir"/lib/modules/$_abi_release
+	ln -sf /usr/src/linux-headers-$_abi_release \
+		"$subpkgdir"/lib/modules/$_abi_release/build
 }
 sha512sums="1ce235689d7ce0b40be203cb16c1bdfe9bc7b2c5e793a942afc5ea4f3268a0a15b684d9c4017a87916d989d8592a96a4223976c95bf7fcca603e71d2f20fee86  linux-google-crosshatch-mainline-9c9b87cec239101274451cc9c086da60108f9fda.tar.gz
 6fc2984314332669176efb46cb336b56e164892db0a405e31924e1ad88c4379434813ef31b9e914825f8f01ca1caec9f5427f945f0d3ef226f96c15ba1d18ff5  config-google-crosshatch-mainline.aarch64"

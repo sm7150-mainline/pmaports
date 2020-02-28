@@ -23,16 +23,16 @@ fi
 # Source
 _repository="linux-wiko-ufeel"
 _commit="225754d6fb494c6d5993f40451e415450337ba89"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/pmsourcedump/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/pmsourcedump/$_repository/archive/$_commit.tar.gz
 	$_config
 	00_disable_drvgen.patch
 	01_add_decompiled_stock_dtb_dtsi.patch
 	02_fix_various_include_directives_mt6735.patch
 	04-workaround-loading-wifi-firmware-mt6735.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

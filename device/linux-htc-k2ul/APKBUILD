@@ -27,9 +27,9 @@ fi
 # 3. Download the kernel with the 2.14.401.6 description
 _repository="k2ul-jb-3.4.10-cl157896-2"
 _commit="6ac3629384fac88beef65fd841f5135f9f832624"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/Hacker1245/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Hacker1245/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc8-fix-put-user.patch
 	fix_return_address.patch
@@ -38,7 +38,7 @@ source="
 	fix_otg_errors.patch
 	fix_kgsl_error.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

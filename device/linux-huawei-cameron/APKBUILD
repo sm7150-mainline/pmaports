@@ -15,16 +15,16 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 # Source
 _repository="android_kernel_huawei_hi3660"
 _commit="18cd8140ad09379365bcd9cb50e45662e8747834"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/JohnBergago/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/JohnBergago/$_repository/archive/$_commit.tar.gz
 	$_config
 	01_use_linux_alpine_crosscompile.patch
 	03_add_compression_methods_to_Kconfig.patch
 	04_make_rdr_hisi_adapter_compileable.patch
 	05-disable-huawei-bfmr.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 outdir="$srcdir/../out"
 
 prepare() {

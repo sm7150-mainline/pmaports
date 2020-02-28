@@ -24,9 +24,9 @@ fi
 # Source
 _repository="Samsung_STE_Kernel"
 _commit="ac7219c4b8dcec7bc5a598d42c6be0db4aa36332"
-_config="config-${_flavor}.armhf"
+_config="config-$_flavor.armhf"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/Epirex/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/Epirex/$_repository/archive/$_commit.tar.gz
 	$_config
 	00_fix_return_address.patch
 	01_remove_ramdisks_from_initramfs.patch
@@ -37,7 +37,7 @@ source="
 	compiler-gcc6.h
 	init
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

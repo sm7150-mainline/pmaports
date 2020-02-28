@@ -24,9 +24,9 @@ fi
 # Source
 _repository="TF101-GNU-kernel"
 _commit="5ddd9654ec52599fbef71657ad2e03b3cdacee31"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/jmrohwer/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/jmrohwer/$_repository/archive/$_commit.tar.gz
 	compiler-gcc6.h
 	00-fix_return_address.patch
 	01-fix-alignment.patch
@@ -37,7 +37,7 @@ source="
 	07-Added-Parameters-to-Atmel-TouchScreen-Drivers.patch
 	$_config
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

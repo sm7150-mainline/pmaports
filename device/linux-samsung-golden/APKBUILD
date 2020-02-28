@@ -24,9 +24,9 @@ fi
 # Source
 _repository="android_kernel_samsung_golden"
 _commit="2662dc4f65ef3ad5eeb4222d3aad5dd418a04510"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/NovaFusion/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/NovaFusion/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_makefile.patch
@@ -36,7 +36,7 @@ source="
 	04_fix_bcma.patch
 	05_change_dhd_firmware_path.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

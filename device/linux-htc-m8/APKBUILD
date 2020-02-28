@@ -24,15 +24,15 @@ fi
 # Source
 _repository="android_kernel_htc_msm8974"
 _commit="1e7a57485c90cb838cffe022831e6bec4a599548"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	02_gpu-msm-fix-gcc5-compile.patch
 	psmouse_base.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

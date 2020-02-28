@@ -26,13 +26,13 @@ fi
 # gts210velte uses msm8976 kernel
 _repository="android_kernel_samsung_msm8976"
 _commit="f6ab8eed124e3adc1c90d9f3106abd21c0bd0397"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	01_fix_msm_dba.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

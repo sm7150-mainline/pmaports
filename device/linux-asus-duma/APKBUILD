@@ -24,15 +24,15 @@ fi
 # Source
 _repository="ElementalX-Kernel-for-ME302KL"
 _commit="b6a8f08e43a26771947556abfc697971eb67f06b"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/yatto/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/yatto/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

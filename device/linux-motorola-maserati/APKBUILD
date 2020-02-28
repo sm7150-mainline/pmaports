@@ -24,7 +24,7 @@ fi
 # Source
 _repository="android_kernel_motorola_omap4-common"
 _commit="2a348afc315c4ab32c4a1c8cb2c7e2ad0cedaec3"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 
 _wlan_repository="android_hardware_ti_wlan"
 _wlan_commit="f75d24a45f68dfeabda86d2e8416990d796f9a7e"
@@ -33,16 +33,16 @@ _hardware_repository="android_hardware_ti_omap4"
 _hardware_commit="0f456ee3a0d8cc79b708a11b505a9e376d467a2b"
 
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/NotKit/${_repository}/archive/${_commit}.tar.gz
-	$_wlan_repository-$_wlan_commit.tar.gz::https://github.com/LineageOS/${_wlan_repository}/archive/${_wlan_commit}.tar.gz
-	$_hardware_repository-$_hardware_commit.tar.gz::https://github.com/LineageOS/${_hardware_repository}/archive/${_hardware_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/NotKit/$_repository/archive/$_commit.tar.gz
+	$_wlan_repository-$_wlan_commit.tar.gz::https://github.com/LineageOS/$_wlan_repository/archive/$_wlan_commit.tar.gz
+	$_hardware_repository-$_hardware_commit.tar.gz::https://github.com/LineageOS/$_hardware_repository/archive/$_hardware_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	01_maserati-fix-gcc6-compile.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
-_wlan_builddir="$srcdir/${_wlan_repository}-${_wlan_commit}/mac80211/compat_wl12xx"
-_pvr_builddir="$srcdir/${_hardware_repository}-${_hardware_commit}/pvr-source/eurasiacon"
+builddir="$srcdir/$_repository-$_commit"
+_wlan_builddir="$srcdir/$_wlan_repository-$_wlan_commit/mac80211/compat_wl12xx"
+_pvr_builddir="$srcdir/$_hardware_repository-$_hardware_commit/pvr-source/eurasiacon"
 
 prepare() {
 	default_prepare

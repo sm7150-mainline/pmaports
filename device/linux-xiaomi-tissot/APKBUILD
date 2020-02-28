@@ -25,9 +25,9 @@ fi
 # Source
 _repository="android_kernel_xiaomi_msm8953"
 _commit="80cb3f607eb78280642c3b9b6e89f676e9c263bf"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	fix-include-msm_isp.patch
 	fix-include-msm_camera_i2c.patch
@@ -41,7 +41,7 @@ source="
 	fix-xorg-mdss-update-fb-info.patch
 	fix-ramoops-header.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -24,16 +24,16 @@ fi
 # Source
 _repository="kernel_flatfish"
 _commit="b7e13780ed3ba80a5539a74d8704281cd6d3f5e6"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/mozilla-b2g/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/mozilla-b2g/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	01_timeconst_fix.patch
 	02_fix_paranoid_network_disabled.patch
 	03_fix_pm_build.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -24,16 +24,16 @@ fi
 # Source
 _repository="android_kernel_motorola_msm8226"
 _commit="75e7c47f8084a89b3b3019641aea9f01166bfbcb"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 	03_mdss_fb_refresh_rate.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

@@ -24,9 +24,9 @@ fi
 # Source
 _repository="android_kernel_huawei_msm8x1x"
 _commit="1880463bf10c4c2d2b348698614a613902184e22"
-_config="config-${_flavor}.armv7"
+_config="config-$_flavor.armv7"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/PieroV/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/PieroV/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
@@ -41,7 +41,7 @@ source="
 	09_fix_various_include_directives.patch
 	10_vfs-fix-proc-tid-fdinfo-fd-file-handling.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

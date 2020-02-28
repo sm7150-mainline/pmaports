@@ -24,14 +24,14 @@ fi
 # Source
 _repository="android_kernel_samsung_msm8930-common"
 _commit="0c7b2079e9ba8f945ea444bad393c8d7f8b099cc"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	01_msm-fix-perf_trace_counters.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

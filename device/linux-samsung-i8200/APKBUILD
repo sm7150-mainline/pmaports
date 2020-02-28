@@ -24,14 +24,14 @@ fi
 # Source
 _repository="kernel_i8200"
 _commit="5e4d8b5f27fb90d5a3f8aad13d9afe63e586c82d"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/MasterPlexus/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/MasterPlexus/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	timeconst_fix.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

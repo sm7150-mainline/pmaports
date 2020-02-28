@@ -24,9 +24,9 @@ fi
 # Source
 _repository="android_kernel_xiaomi_msm8953"
 _commit="3180dc01dc9577ff3655aaa8af2faa312e4e85f3"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	fix_recordmcount.patch
@@ -37,7 +37,7 @@ source="
 	05_fix_mdp3_ctrl_off.patch
 	06_fix_usb_gadget_function.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

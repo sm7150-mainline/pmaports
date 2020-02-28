@@ -30,9 +30,9 @@ fi
 # Source
 _repository="android_kernel_samsung_d2"
 _commit="716f00ee2e86adfd507842c5f193a738b57d3c49"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
@@ -40,7 +40,7 @@ source="
 	00_Input-sentelic-use-static-inline-instead-of-inline.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

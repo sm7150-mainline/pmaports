@@ -17,9 +17,9 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 _username="MoKee"
 _repository="android_kernel_xiaomi_aries"
 _commit="6a30963cf10e5b7cc938f3ac7b22af4ad72c0bf9"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/${_username}/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/$_username/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
@@ -31,7 +31,7 @@ source="
 	07_fix-kgsl-trace-h.patch
 	08_fix-red-screen.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

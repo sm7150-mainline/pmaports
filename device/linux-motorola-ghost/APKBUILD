@@ -24,9 +24,9 @@ fi
 # Source
 _repository="android_kernel_motorola_ghost"
 _commit="37aee207bbd85eb20091286258a6b2529315cae8"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	00_fix_return_address.patch
@@ -35,7 +35,7 @@ source="
 	03_Input-sentelic-use-static-inline-instead-of-inline.patch
 	04_fix-video-argb-setting.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare

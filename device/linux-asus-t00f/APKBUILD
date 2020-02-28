@@ -24,16 +24,16 @@ fi
 # Source
 _repository="android_kernel_asus_T00F"
 _commit="ffd0a7e6f0d4ccb951f3e39aa805d9c7c6cb3291"
-_config="config-${_flavor}.${arch}"
+_config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/zf5/${_repository}/archive/${_commit}.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/zf5/$_repository/archive/$_commit.tar.gz
 	$_config
 	compiler-gcc6.h
 	01_ipc-shm-fix-redefinition-of-shm_rcu_free.patch
 	02_drivers-external_drivers-remove-unused-constants.patch
 	03_ipc-fix-undefined-references.patch
 "
-builddir="$srcdir/${_repository}-${_commit}"
+builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare
