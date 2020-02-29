@@ -1,0 +1,33 @@
+# Contributor: TAKIZAWA Fumiya <takizawa.fumiya34@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-sharp-shl22"
+pkgdesc="SHARP SHL22"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-sharp-shl22 mesa-dri-swrast mkbootimg msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	initfs-hook.sh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# Disable v4l (video4linux), because without the camera firmware
+	# blobs this makes dev hang with the kernel this device uses (#1033)
+	mkdir -p "$pkgdir"/etc/udev/rules.d
+	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
+}
+
+
+sha512sums="6af7cc576c4cc32b8027d33144a30cef475d86a4123fb1821e536d4cd40c8ef2a172cb01c073de8667edb8dae8d3fc12327d11879b0ebb2d368393888f27ec22  deviceinfo
+c983fc8281167bed1de5eec3651d82ed0dea612a4267acc8edf34ac8b1f857a57d5d63c555a373749eef3119cbfc9f4d25a080c0291d5af847642b5f60fcb211  initfs-hook.sh"
