@@ -2,12 +2,22 @@
 # Maintainer: Nikita Ukhrenkov <thekit@disroot.org>
 pkgname=postmarketos-ui-hildon
 pkgver=1
-pkgrel=10
+pkgrel=11
 pkgdesc="(X11) Lightweight GTK+2 UI (optimized for single-touch touchscreens) (DISABLED FOR ARMHF, ARMV7!)"
 url="https://postmarketos.org"
 arch="noarch !armhf !armv7"
 license="GPL-3.0-or-later"
-depends="dbus-x11 gtk+2.0-maemo hildon-desktop hildon-theme-alpha mesa xorg-server lightdm lightdm-openrc"
+depends="
+	dbus-x11
+	gtk+2.0-maemo
+	hildon-desktop
+	hildon-theme-alpha
+	lightdm
+	lightdm-openrc
+	mesa
+	pulseaudio
+	xorg-server
+	"
 install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.post-upgrade"
 source="60-lightdm-autologin.conf hildon.desktop xinitrc_hildon.sh"
 options="!check"
