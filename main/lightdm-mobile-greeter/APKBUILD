@@ -1,0 +1,19 @@
+# Contributor: Raatty <me@raatty.club>
+# Maintainer: Raatty <me@raatty.club>
+pkgname="lightdm-mobile-greeter"
+pkgver=1
+pkgrel=0
+pkgdesc="A simple lightdm greeter for mobile"
+url="https://raatty.club:3000/raatty/lightdm-mobile-greeter"
+arch="noarch"
+license="MIT"
+depends="libhandy py3-gobject3 lightdm xorg-server python3"
+source="$pkgname-$pkgver.tar.gz::https://raatty.club:3000/raatty/lightdm-mobile-greeter/archive/$pkgver.tar.gz"
+builddir="$srcdir/$pkgname"
+options="!check" # No tests
+
+package() {
+	DESTDIR="$pkgdir" PREFIX="/usr" make install
+}
+
+sha512sums="efdf20a11215f818fbc32407364c2cb50a8b927571f0432effa123f9e05bc2f919e954d418f545578634eedce0c154c7fbb96bd31b59406553a3c94cce8d8e32  lightdm-mobile-greeter-1.tar.gz"
