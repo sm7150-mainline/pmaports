@@ -1,0 +1,22 @@
+# Maintainer: Ferenc Bakonyi <bakonyi.ferenc@gmail.com>
+pkgname=postmarketos-mkinitfs-hook-console-shell
+pkgver=0.1
+pkgrel=0
+pkgdesc="Root console shell in the initramfs (security hole, for debugging only)"
+url="https://postmarketos.org"
+depends="postmarketos-mkinitfs fbdebug evtest linuxconsoletools reboot-mode fbkeyboard"
+source="console-shell.sh console-shell.files"
+arch="noarch"
+license="GPL-2.0-or-later"
+options="!check" # No tests
+
+package() {
+	mkdir -p "$pkgdir"/etc/postmarketos-mkinitfs/hooks/
+	install -Dm644 "$srcdir"/console-shell.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/30-console-shell.sh
+	install -Dm644 "$srcdir"/console-shell.files \
+		"$pkgdir"/etc/postmarketos-mkinitfs/files/30-console-shell.files
+}
+
+sha512sums="3a991e598c5c5d8f4750346f5edc113238ea3f90f47b22855d94a84aca35993490a4a1a0be3c4558c94a070eb9b5761bfe268dd5a5bcf6617b4da77d274fa771  console-shell.sh
+4c64724c1ecadb831d2900cf98b04ca4f7cbae57c1868a82d5c89333a071dbc29527462f5a724afc95c4ddcc9d40e8601476f830632474cb93788d93e2d59896  console-shell.files"
