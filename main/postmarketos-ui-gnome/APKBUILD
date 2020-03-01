@@ -2,13 +2,21 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=postmarketos-ui-gnome
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="(Wayland) Gnome Shell (not for armhf)"
 url="https://gnome.org/"
 # armhf: gdm missing
 arch="noarch !armhf"
 license="GPL-3.0-or-later"
-depends="polkit-elogind gdm gnome xorg-server-xwayland postmarketos-artwork-wallpapers kgx"
+depends="
+	gdm
+	gnome
+	kgx
+	polkit-elogind
+	postmarketos-artwork-wallpapers
+	pulseaudio
+	xorg-server-xwayland
+	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="000-gschema.override"
 options="!check"
