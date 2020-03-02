@@ -1,0 +1,39 @@
+# Forked to apply Plasma Mobile specific fixes that are not in a release yet
+pkgname=plasma-workspace
+pkgver=5.18.80
+_pkgver=5.18.2
+pkgrel=0
+pkgdesc="KDE Plasma Workspace"
+arch="all !armhf" # armhf blocked by kirigami2 -> qt5-qtdeclarative
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="(GPL-2.0-only OR GPL-3.0-only) AND LGPL-2.1-or-later AND GPL-2.0-or-later AND MIT AND LGPL-2.1-only AND LGPL-2.0-or-later AND (LGPL-2.1-only OR LGPL-3.0-only) AND LGPL-2.0-only"
+depends="tzdata qt5-qtquickcontrols kirigami2 kinit qt5-qttools kwin kactivitymanagerd milou plasma-integration qtchooser kded kquickcharts"
+depends_dev="plasma-framework-dev krunner-dev kjsembed-dev knotifyconfig-dev kdesu-dev knewstuff-dev kwallet-dev kidletime-dev kdeclarative-dev ki18n-dev kcmutils-dev ktextwidgets-dev kdelibs4support-dev kcrash-dev kglobalaccel-dev kdbusaddons-dev kwayland-dev kcoreaddons-dev kded-dev libksysguard-dev kpackage-dev kscreenlocker-dev phonon-dev zlib-dev kitemmodels-dev networkmanager-qt-dev baloo-dev ktexteditor-dev kwin-dev kholidays-dev prison-dev kpeople-dev kactivities-stats-dev libkscreen-dev gpsd-dev iso-codes-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev libxtst-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/plasma/$_pkgver/plasma-workspace-$_pkgver.tar.xz
+	language-kcm-wrap-label-text.patch
+	"
+subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
+builddir="$srcdir/$pkgname-$_pkgver"
+
+build() {
+	cmake -B "$builddir"/build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make -C build
+}
+
+check() {
+	cd "$builddir"/build
+	# nightcolortest requires running dbus
+	# testdesktop is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "(nightcolortest|testdesktop)"
+}
+
+package() {
+	DESTDIR="$pkgdir" make -C build install
+}
+sha512sums="0fa91451e28b70d7602de79686afb57143eecd86e3856ed9c773bc4f5394610e5a5cf2f13fd03398b7a01624b45ab86d7e12da016980cb91ab23adac41a6793e  plasma-workspace-5.18.2.tar.xz
+5628f61e702d332cbb87b8221a2b71e80bca1789026b82e74b1eaaa0a2f8438a705aac5ec99888239390753c81ec6a036acbf9ffad800987f08953cf6631adfe  language-kcm-wrap-label-text.patch"

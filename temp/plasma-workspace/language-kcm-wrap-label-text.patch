@@ -1,0 +1,41 @@
+From b2df03a51f979066e6b0211dfd4986c2d1820089 Mon Sep 17 00:00:00 2001
+From: Bart Ribbers <bribbers@disroot.org>
+Date: Mon, 2 Mar 2020 14:10:53 +0100
+Subject: [Language KCM] Wrap the label text
+
+Summary:
+This way the text doesn't get cut off the screen on at least the
+PinePhone
+
+Test Plan:
+1. Open the Language KCM on a small screen without this patch
+2. Open the Language KCM on a small screen with this patch
+
+Reviewers: davidedmundson
+
+Reviewed By: davidedmundson
+
+Subscribers: plasma-devel
+
+Tags: #plasma
+
+Differential Revision: https://phabricator.kde.org/D27781
+---
+ kcms/translations/package/contents/ui/main.qml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kcms/translations/package/contents/ui/main.qml b/kcms/translations/package/contents/ui/main.qml
+index 24054ab..9e9d999 100644
+--- a/kcms/translations/package/contents/ui/main.qml
++++ b/kcms/translations/package/contents/ui/main.qml
+@@ -171,6 +171,7 @@ ScrollViewKCM {
+             visible: languagesList.count
+ 
+             text: i18n("The language at the top of this list is the one you want to see and use most often.")
++	    wrapMode: Text.WordWrap
+         }
+     }
+ 
+-- 
+cgit v1.1
+
