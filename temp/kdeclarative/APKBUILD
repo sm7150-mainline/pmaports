@@ -1,0 +1,46 @@
+# Forked to apply Plasma Mobile specific fixes that are not in a release yet
+pkgname=kdeclarative
+pkgver=5.67.80
+_pkgver=5.67.0
+pkgrel=0
+pkgdesc="Provides integration of QML and KDE Frameworks"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.1-or-later"
+depends_dev="qt5-qtdeclarative-dev kconfig-dev ki18n-dev kiconthemes-dev kio-dev kwidgetsaddons-dev kwindowsystem-dev kglobalaccel-dev kguiaddons-dev kpackage-dev libepoxy-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/kdeclarative-$_pkgver.tar.xz
+	respect-header-visibility.patch"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+builddir="$srcdir/$pkgname-$_pkgver"
+
+prepare() {
+	default_prepare
+
+	mkdir "$builddir"/build
+}
+
+build() {
+	cd "$builddir"/build
+	cmake "$builddir" \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	make
+}
+
+check() {
+	cd "$builddir"/build
+
+	# quickviewsharedengine requires OpenGL
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "quickviewsharedengine"
+}
+
+package() {
+	cd "$builddir"/build
+	DESTDIR="$pkgdir" make install
+}
+sha512sums="0a4eb4c2975c586286fe758c96dc34a3d5aa290c29578b957237602d4ff43a4f4f9423a2e883302e39e4e25029d5ecb18d5d49b8cdebe498b56d13a58c2ae55f  kdeclarative-5.67.0.tar.xz
+181c6389c7281a850e9db2060d289ebd78ebacdb547d14e82fb37904e92c8bc7e4b3c4e108e252f162ee42cb9010a3476591053f9a80beef10ce83c6cc31c71a  respect-header-visibility.patch"
