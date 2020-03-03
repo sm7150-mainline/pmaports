@@ -1,0 +1,51 @@
+From 6fe7f9281a4d8de4d977194b8d008323c770cf25 Mon Sep 17 00:00:00 2001
+From: Tobias Fella <fella@posteo.de>
+Date: Thu, 6 Feb 2020 10:33:23 +0100
+Subject: [PATCH] Make the virtual keyboard disappear when locking the screen
+
+Summary: Previously, the virtual keyboard did not close when locking the screen, instead blocking part of the lockscreen while not actually working. This patch actually makes the keyboard close before locking
+
+Test Plan: Open virtual keyboard -> Lock Screen -> No keyboard shown
+
+Reviewers: #kwin, davidedmundson
+
+Reviewed By: #kwin, davidedmundson
+
+Subscribers: davidedmundson, apol, kwin
+
+Tags: #kwin
+
+Differential Revision: https://phabricator.kde.org/D27172
+---
+ virtualkeyboard.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/virtualkeyboard.cpp b/virtualkeyboard.cpp
+index 5533e8d60..fd624f427 100644
+--- a/virtualkeyboard.cpp
++++ b/virtualkeyboard.cpp
+@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ #include "workspace.h"
+ #include "xkb.h"
+ #include "xdgshellclient.h"
++#include "screenlockerwatcher.h"
+ 
+ #include <KWayland/Server/display.h>
+ #include <KWayland/Server/seat_interface.h>
+@@ -87,6 +88,8 @@ void VirtualKeyboard::init()
+     }
+     m_inputWindow->setProperty("__kwin_input_method", true);
+ 
++    connect(ScreenLockerWatcher::self(), &ScreenLockerWatcher::aboutToLock, this, &VirtualKeyboard::hide);
++
+     if (waylandServer()) {
+         m_enabled = !input()->hasAlphaNumericKeyboard();
+         qCDebug(KWIN_VIRTUALKEYBOARD) << "enabled by default: " << m_enabled;
+@@ -289,6 +292,7 @@ void VirtualKeyboard::hide()
+     if (m_inputWindow.isNull()) {
+         return;
+     }
++    m_inputWindow->hide();
+     qApp->inputMethod()->hide();
+ }
+ 
