@@ -2,8 +2,8 @@
 # Kernel config based on: arch/arm64/configs/lineageos_crosshatch_defconfig
 
 pkgname="linux-google-crosshatch"
-pkgver=4.9.96
-pkgrel=1
+pkgver=4.9.200
+pkgrel=0
 pkgdesc="Google Pixel 3 XL kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -14,18 +14,19 @@ options="!strip !check !tracedeps"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool openssl-dev lz4 dtc"
 
 # Source
-_repository="android_kernel_google_crosshatch"
-# Lineage 16.0 branch
-_commit="f8cb98bcb606f94a2307f39c21dfb705fe7868d2"
+_repository="android_kernel_google_msm-4.9"
+# Lineage 17.1 branch
+_commit="d6cae0bddcfc25ce897d43a11a4d3c5d07777831"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	clk-qcom-mdss-fix-in-tree-build.patch
-	init-initramfs-disable-do_skip_initramfs.patch
 	arm64-boot-disable-building-DTBO-images.patch
-	init-ignore-dm-parameter.patch
 	sec_ts-disable-touchscreen-firmware-upgrade.patch
+	cam_sensor_io-fix-in-tree-build.patch
+	cam_sensor_module-add-cam_sensor_utils-to-include-path.patch
+	thermal-fix-build-error.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 
@@ -41,30 +42,14 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	# Pixel 3 XL uses lz4 to compress kernel.
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in Image.lz4-dtb zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	KERNEL_IMAGE_NAME="Image.lz4-dtb" downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
-sha512sums="e5f840cc4f5a1c68150d397de079db51d51943b0ed2858011ed38b834d2fdfa1f88344b3dcbe886dea2a1b5ee959d6e7b918b009762d5e06a9edf807294647e1  linux-google-crosshatch-f8cb98bcb606f94a2307f39c21dfb705fe7868d2.tar.gz
-7f051d8f3515fb85178cdd930d7f2ff50130f66bb9eaf4abe54e9050291d35884809dd66676d1ff75de259f1dc4c57dea5bbb37552aa0e3fce1e2b8092b8a6ba  config-google-crosshatch.aarch64
+sha512sums="e63d9c877182952aff07beeb2581dae15ae2316a24deb5bffdc633884a438ae30685d7cdd3302d275443a7d0bcd02b33d0d49461abe56995adf43e5a5636a81e  linux-google-crosshatch-d6cae0bddcfc25ce897d43a11a4d3c5d07777831.tar.gz
+52b99fb7bc3ed2426ef4f352c38ff768b75fbfdc0b11c1e66f94bc37463ec7da64e6fed43a68b44013b02a751dd3bc2c5b288ddec369a2f1015e4721674e322d  config-google-crosshatch.aarch64
 720c5856b7d1d8b3cb20f77507818b7fe1b4950d444f7ed20cb02d255987d8860d5ed293e81ea326f147af13004b524886c733123794ac62978fda13689a5189  clk-qcom-mdss-fix-in-tree-build.patch
-0f536e5acd0f5e6d6774918d8e226ae1f4edc486596fc5c93a110b4eb2555e0f1281f460065928a7f7a272b886f61f7967fe60cc4952ed1f4b37143bd2a28962  init-initramfs-disable-do_skip_initramfs.patch
-43b1c1bcdd653366a5d0196bf6171f67914c3c417eeba04f4f071e095e8b3191e67ec8e03b1ed1701a9a0efe5b3e134ed7fb464439e9a389aafdcf0064f20a10  arm64-boot-disable-building-DTBO-images.patch
-66ac924e2619994dad71a88223d62e911cc90c20f578eb1b0544f115de8367ea9767e7955245c70699f7af040bb8c42f9fa7aff60d4638f1e568a3b3662d30a6  init-ignore-dm-parameter.patch
-7c941332085c6a2372ad083400e354c61f38752c2706d07592a7ce6a72aa5d8bb9cb10521fe0c941ac4e49aa3dbd2f9473c42ed2a10ec66b1b50b65e8ad1e0a8  sec_ts-disable-touchscreen-firmware-upgrade.patch"
+f175233f0cd4e5658937cf50c8535a2b9f1a0d9c7c3fb52aa54096f7733f292e1ab6c2cebadde8479980f27d9b8f7d03f98da3f8166858c8519d91de2a37f1ba  arm64-boot-disable-building-DTBO-images.patch
+7c941332085c6a2372ad083400e354c61f38752c2706d07592a7ce6a72aa5d8bb9cb10521fe0c941ac4e49aa3dbd2f9473c42ed2a10ec66b1b50b65e8ad1e0a8  sec_ts-disable-touchscreen-firmware-upgrade.patch
+95c385ceefac59f863629ea684d5bf47a37cbc45537a5539cccb47eb57ed5544987b7a7824677c96089e8c6d867cda45e419b478654f8485b0694506afa43135  cam_sensor_io-fix-in-tree-build.patch
+3003e2b6f16edb8a5d3b52a65249ddce91ba3be4bed9f6f6bc193a55f667ff5e2d4ff667af623ba7b949006f2a5e45f13e12214c9068c6bfebfb34f04d2b631b  cam_sensor_module-add-cam_sensor_utils-to-include-path.patch
+7bc6d7fd84750ad9244fde9e1c74dab395a827a784c984ab51d71c7e122fb13dcef9b8863a3d31322af64da94a53327af6a83c613b3b46e6c17acf1dcb7c5823  thermal-fix-build-error.patch"
