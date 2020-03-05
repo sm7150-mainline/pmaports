@@ -22,13 +22,24 @@ install -D "$builddir/include/config/kernel.release" \
 # shellcheck disable=SC2164
 cd "$builddir/arch/$_carch/boot"
 _target="$pkgdir/boot/vmlinuz-$_flavor"
-for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-	[ -e "$_zimg" ] || continue
-	echo "zImage found: $_zimg"
-	install -Dm644 "$_zimg" "$_target"
-	break
-done
-if ! [ -e "$_target" ]; then
-	echo "Could not find zImage in $PWD!"
-	exit 1
+
+if [ -n "$KERNEL_IMAGE_NAME" ]; then
+	if ! [ -e "$KERNEL_IMAGE_NAME" ]; then
+		echo "Could not find \$KERNEL_IMAGE_NAME in $PWD!"
+		exit 1
+	else
+		echo "NOTE: using $KERNEL_IMAGE_NAME as kernel image."
+		install -Dm644 "$KERNEL_IMAGE_NAME" "$_target"
+	fi
+else
+	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
+		[ -e "$_zimg" ] || continue
+		echo "zImage found: $_zimg"
+		install -Dm644 "$_zimg" "$_target"
+		break
+	done
+	if ! [ -e "$_target" ]; then
+		echo "Could not find zImage in $PWD!"
+		exit 1
+	fi
 fi
