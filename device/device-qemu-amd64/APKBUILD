@@ -15,8 +15,6 @@ subpackages="
 	$pkgname-xfce4
 	$pkgname-kernel-virt:kernel_virt
 	$pkgname-kernel-lts:kernel_lts
-	$pkgname-kernel-stable:kernel_stable
-	$pkgname-kernel-mainline:kernel_mainline
 "
 
 source="deviceinfo weston.ini"
@@ -49,7 +47,7 @@ xfce4() {
 }
 
 kernel_virt() {
-	pkgdesc="Alpine Virt kernel"
+	pkgdesc="Alpine Virt kernel (minimal, no audio)"
 	depends="linux-virt"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
@@ -57,18 +55,6 @@ kernel_virt() {
 kernel_lts() {
 	pkgdesc="Alpine LTS kernel"
 	depends="linux-lts linux-firmware-none"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_stable() {
-	pkgdesc="Stable for everyday usage (recommended)"
-	depends="linux-postmarketos-stable"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline() {
-	pkgdesc="Newest kernel features"
-	depends="linux-postmarketos-mainline"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
