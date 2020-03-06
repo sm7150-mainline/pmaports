@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-samsung-matissevewifi"
+pkgdesc="Samsung Galaxy Tab 4 10.1 WiFi (SM-T533)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-samsung-matissevewifi-venus firmware-samsung-matissevewifi-wcnss"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="e463a2334f78abfe4791ecabb539a267b23fb923f470db6cc5fb18bf7ee201ac9638460aff2b2b5cf6b000e953dd0971dd7108836adbb0e9336daf2d28598774  deviceinfo"
