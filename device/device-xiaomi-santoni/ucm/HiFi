@@ -22,10 +22,7 @@ SectionVerb {
 }
 
 SectionDevice."Speaker" {
-        Comment "Speaker"
-
-        ConflictingDevice [
-        ]
+        Comment "Internal speaker"
 
         EnableSequence [
                 cdev "hw:msm8920sku7sndc"
@@ -51,15 +48,13 @@ SectionDevice."Speaker" {
 
         Value {
                 PlaybackChannels "2"
+                PlaybackPriority 300
         }
 
 }
 
 SectionDevice."Headphones" {
         Comment "Headset"
-
-        ConflictingDevice [
-        ]
 
         EnableSequence [
                 cdev "hw:msm8920sku7sndc"
@@ -89,18 +84,13 @@ SectionDevice."Headphones" {
 
         Value {
                 PlaybackChannels "2"
+                PlaybackPriority 100
         }
 
 }
 
 SectionDevice."Handset" {
-        Comment "Handset earpiece"
-
-        ConflictingDevice [
-                "Speaker"
-                "SpeakerMic"
-                "Headphones"
-        ]
+        Comment "Earpiece speaker"
 
         EnableSequence [
                 cdev "hw:msm8920sku7sndc"
@@ -126,16 +116,15 @@ SectionDevice."Handset" {
 
         Value {
                 PlaybackChannels "2"
+                PlaybackPriority 200
         }
 
 }
 
 SectionDevice."HandsetMic" {
-        Comment "Handset microphone"
+        Comment "Internal Microphone"
 
         ConflictingDevice [
-                "Speaker"
-                "SpeakerMic"
                 "HeadsetMic"
         ]
 
@@ -157,49 +146,17 @@ SectionDevice."HandsetMic" {
         ]
 
         Value {
-                CaptureChannels "2"
-        }
-
-}
-
-SectionDevice."SpeakerMic" {
-        Comment "Handset microphone for speaker-mode"
-
-        ConflictingDevice [
-                "Handset"
-                "HandsetMic"
-                "HeadsetMic"
-        ]
-
-        EnableSequence [
-                cdev "hw:msm8920sku7sndc"
-
-                cset "name='ADC1 Volume' 6"
-                cset "name='DEC1 MUX' ADC1"
-                cset "name='IIR1 INP1 MUX' DEC1"
-                cset "name='MultiMedia1 Mixer TERT_MI2S_TX' 1"
-        ]
-
-        DisableSequence [
-                cdev "hw:msm8920sku7sndc"
-
-                cset "name='ADC1 Volume' 4"
-                cset "name='DEC1 MUX' ZERO"
-                cset "name='MultiMedia1 Mixer TERT_MI2S_TX' 0"
-        ]
-
-        Value {
+                CapturePriority 500
                 CaptureChannels "2"
         }
 
 }
 
 SectionDevice."HeadsetMic" {
-        Comment "Headset microphone"
+        Comment "Headset Microphone"
 
         ConflictingDevice [
                 "HandsetMic"
-                "SpeakerMic"
         ]
 
         EnableSequence [
@@ -222,6 +179,7 @@ SectionDevice."HeadsetMic" {
         ]
 
         Value {
+                CapturePriority 100
                 CaptureChannels "2"
         }
 
