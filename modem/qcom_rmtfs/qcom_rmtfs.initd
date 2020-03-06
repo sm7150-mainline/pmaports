@@ -1,14 +1,22 @@
 #!/sbin/openrc-run
+supervisor=supervise-daemon
 
-depend() {
-	after udev-settle
-}
+name="RMTFS"
+description="Qualcomm remote file system service"
 
 # libqipcrtr4msmipc.so may not be present, on devices that don't need it
 export LD_PRELOAD=/usr/lib/preload/libqipcrtr4msmipc.so
 
-command="/bin/sh"
-command_args="-c 'exec /usr/sbin/qcom_rmtfs -P -r -s -v 2>&1 | logger -t qcom_rmtfs'"
-command_background="yes"
+# -P: find and use raw EFS partitions
+# -r: avoid writing to storage
+# -s: enable sync for the mss rproc instance
+command="/usr/sbin/rmtfs"
+command_args="-P -r -s"
 
-pidfile="/var/run/${SVCNAME}.pid"
+# https://github.com/andersson/rmtfs/commit/dfb8f3ed1c8fbde621cd08aaf9e7724a4c55cbd1
+respawn_delay=1
+
+depend() {
+	after udev-settle
+	need qrtr-ns
+}
