@@ -1,9 +1,10 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Contributor: Oliver Smith <ollieparanoid@postmarketos.org>
+# Contributor: Minecrell <minecrell@minecrell.net>
 pkgname=device-qemu-aarch64
-pkgver=1
-pkgrel=19
-pkgdesc="Simulated device in qemu with vexpress soc"
+pkgver=2
+pkgrel=0
+pkgdesc="Simulated device in QEMU (aarch64)"
 url="https://postmarketos.org"
 arch="aarch64"
 license="MIT"
@@ -11,9 +12,11 @@ depends="postmarketos-base mesa-dri-gallium"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-weston
-	$pkgname-kernel-lts:kernel_lts
+	$pkgname-xfce4
 	$pkgname-kernel-virt:kernel_virt
+	$pkgname-kernel-lts:kernel_lts
 "
+
 source="deviceinfo weston.ini"
 options="!check !archcheck"
 
@@ -31,6 +34,12 @@ weston() {
 		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
+xfce4() {
+	install_if="$pkgname postmarketos-ui-xfce4"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
 kernel_virt() {
 	pkgdesc="Alpine Virt kernel (minimal, no audio)"
 	depends="linux-virt"
@@ -43,5 +52,5 @@ kernel_lts() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-sha512sums="4f6954f0e7c75b431e42f3f4c6fc4ad7c366550c8948c382ee5b7314b4cd85ccb9433489e94cd410797afd838246d582d0d34789b1349b64dde2a0cea9316f1c  deviceinfo
+sha512sums="e90b874579a98701dda077c9ea699c4e25d8b581c41d4e7f267c12a2a945b2c877b6dfe67d5afb706f719c5d9493c037f6c3facc988e38d0be7f3fd7df370e6d  deviceinfo
 de794566118f1744d068a94e6a75b61d43f6749a4b0871a5270fa7a2048164d609c71fcffa61845c2a7dd4cb5fbeb72c0e4f8b73b382f36d6ff0bcc9b8a5ae25  weston.ini"
