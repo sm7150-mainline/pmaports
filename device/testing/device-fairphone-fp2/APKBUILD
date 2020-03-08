@@ -50,14 +50,14 @@ nonfree_firmware() {
 
 downstream_firmware() {
 	pkgdesc="Firmware support packages for downstream kernel"
-	depends="$pkgname-alsa adsp-audio modem-qcom-msm-downstream-common wcnss-wlan"
+	depends="$pkgname-alsa adsp-audio msm-modem-downstream wcnss-wlan"
 	install_if="$pkgname-kernel-downstream $pkgname-nonfree-firmware"
 	mkdir "$subpkgdir"
 }
 
 mainline_firmware() {
 	pkgdesc="Firmware support packages for mainline kernel"
-	depends="modem-qcom-msm-mainline-common firmware-adreno"
+	depends="msm-modem-mainline firmware-adreno"
 	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
 	mkdir "$subpkgdir"
 }
