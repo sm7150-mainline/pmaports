@@ -1,15 +1,23 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Contributor: Mis012 <michael.srba@seznam.cz>
 # Contributor: Minecrell <minecrell@minecrell.net>
+# Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname="device-asus-me176c"
 pkgdesc="ASUS MeMO Pad 7 (ME176C(X))"
-pkgver=1
-pkgrel=6
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 options="!check !archcheck"
-depends="postmarketos-base linux-asus-me176c firmware-asus-me176c-acpi intel-ucode $pkgname-factory mesa-dri-classic mesa-vulkan-intel"
+depends="
+	postmarketos-base
+	linux-asus-me176c
+	firmware-asus-me176c-acpi intel-ucode
+	$pkgname-factory
+	mesa-dri-classic mesa-vulkan-intel
+	alsa-ucm-conf
+"
 makedepends="devicepkg-dev meson eudev-dev"
 
 _commit=3155254999ac36c3051a2118c415de25a072c0f6
@@ -30,7 +38,7 @@ build() {
 		--sysconfdir=/etc \
 		--mandir=/usr/share/man \
 		--localstatedir=/var \
-		--buildtype=release \
+		--buildtype=plain \
 		-Dsystemd=false -Dopenrc=true \
 		linux-me176c-$_commit/factory build-factory
 	ninja -C build-factory
