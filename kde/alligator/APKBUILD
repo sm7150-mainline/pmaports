@@ -1,0 +1,28 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=alligator
+pkgver=0_git20200308
+pkgrel=0
+_commit="5168e06147cbdc4b3409d98b0e872e9b3dc5a24d"
+pkgdesc="Kirigami RSS Reader"
+url="https://invent.kde.org/tfella/alligator/"
+arch="all"
+license="LicenseRef-KDE-Accepted-GPL"
+depends="kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev syndication-dev"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/tfella/alligator/-/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make -C build
+}
+
+package() {
+	DESTDIR="$pkgdir" make -C build install
+}
+
+sha512sums="94f935b74d66321b215ad1239d0905a1125f805bfea3702693e8ce684ef2d020ae5667477c8e6feb16c8c10443afe6d2ca5be64e0805dd684f95e490164c9e52  alligator-5168e06147cbdc4b3409d98b0e872e9b3dc5a24d.tar.gz"
