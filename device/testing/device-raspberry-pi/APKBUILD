@@ -3,7 +3,7 @@
 pkgname="device-raspberry-pi"
 pkgdesc="Raspberry Pi"
 pkgver=0.1
-pkgrel=10
+pkgrel=11
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
@@ -39,14 +39,14 @@ package() {
 kernel_rpi() {
 	pkgdesc="Kernel for the Raspberry Pi 1 (from Alpine, depends on non free firmware!)"
 	depends="$pkgname linux-rpi"
-	install="$subpkgname.post-install"
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 }
 
 kernel_rpi2() {
 	pkgdesc="Kernel for the Raspberry Pi 2 (from Alpine, depends on non free firmware!)"
 	depends="$pkgname linux-rpi2"
-	install="$subpkgname.post-install"
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 }
 
