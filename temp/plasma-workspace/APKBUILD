@@ -2,7 +2,7 @@
 pkgname=plasma-workspace
 pkgver=5.18.80
 _pkgver=5.18.2
-pkgrel=0
+pkgrel=1
 pkgdesc="KDE Plasma Workspace"
 arch="all !armhf" # armhf blocked by kirigami2 -> qt5-qtdeclarative
 url="https://www.kde.org/workspaces/plasmadesktop/"
@@ -13,6 +13,7 @@ makedepends="$depends_dev extra-cmake-modules kdoctools-dev libxtst-dev"
 checkdepends="xvfb-run"
 source="https://download.kde.org/stable/plasma/$_pkgver/plasma-workspace-$_pkgver.tar.xz
 	language-kcm-wrap-label-text.patch
+	D27968.patch
 	"
 subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
 builddir="$srcdir/$pkgname-$_pkgver"
@@ -36,4 +37,5 @@ package() {
 	DESTDIR="$pkgdir" make -C build install
 }
 sha512sums="0fa91451e28b70d7602de79686afb57143eecd86e3856ed9c773bc4f5394610e5a5cf2f13fd03398b7a01624b45ab86d7e12da016980cb91ab23adac41a6793e  plasma-workspace-5.18.2.tar.xz
-5628f61e702d332cbb87b8221a2b71e80bca1789026b82e74b1eaaa0a2f8438a705aac5ec99888239390753c81ec6a036acbf9ffad800987f08953cf6631adfe  language-kcm-wrap-label-text.patch"
+5628f61e702d332cbb87b8221a2b71e80bca1789026b82e74b1eaaa0a2f8438a705aac5ec99888239390753c81ec6a036acbf9ffad800987f08953cf6631adfe  language-kcm-wrap-label-text.patch
+25aac2b2d8e10397e0eca2e79acb61785c48b316c3c6977d6258f33a1a05f47ea6de7c749b3cf8316c919ef67050bce379c8415addbd29695f8f3f4c35f22bd0  D27968.patch"
