@@ -356,7 +356,7 @@ generate_initramfs_extra()
 	initfs_extra_hash="$(echo "$initfs_extra_files_hashes" | md5sum | awk '{ print $1 }')"
 
 	# The hash is appended to the initramfs, check if up-to-date
-	if [ "$initfs_extra_hash" != "$(tail -c 32 "$1")" ]; then
+	if [ ! -f "$1" ] || [ "$initfs_extra_hash" != "$(tail -c 32 "$1")" ]; then
 		# Set up initramfs-extra in temp folder
 		tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
 		mkdir -p "$tmpdir_extra"
