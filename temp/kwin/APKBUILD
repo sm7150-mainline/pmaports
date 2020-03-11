@@ -1,8 +1,8 @@
 # Forked to apply Plasma Mobile specific fixes that are not in a release yet
 pkgname=kwin
 pkgver=5.18.80
-_pkgver=5.18.2
-pkgrel=0
+_pkgver=5.18.3
+pkgrel=1
 pkgdesc="An easy to use, but flexible, composited Window Manager"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 url="https://www.kde.org/workspaces/plasmadesktop/"
@@ -18,7 +18,7 @@ options="!check" # Broken
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
-	cmake -B "$builddir"/build \
+	cmake -B build \
 		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
@@ -33,5 +33,5 @@ check() {
 package() {
 	DESTDIR="$pkgdir" make -C build install
 }
-sha512sums="dab807fd97d501b6dd90cb881a571a9c60be0fc6a7159460d7b025416d10fbfbe152d3cb13c067cd0ac035590e28ed5e72d971b8fd4e10cf2d3883309230b129  kwin-5.18.2.tar.xz
+sha512sums="2eda8f94e095b9941e528e05c9c5720d213eae97c46ff5caff673a94ba4e20826f97a32d53704b422875d26be8eb38101a17ae99b726067dd89c7c62fbaf0bff  kwin-5.18.3.tar.xz
 2ac077422221c04f9a81ebb78796f6975647adbe39abd4111af2919f89a665308d69ac2aeb279130633a425f8ce27778562589d66780e1ee30686edc912162f8  make-virtualkeyboard-disappear-when-locking-screen.patch"
