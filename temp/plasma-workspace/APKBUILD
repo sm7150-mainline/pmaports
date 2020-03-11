@@ -1,8 +1,8 @@
 # Forked to apply Plasma Mobile specific fixes that are not in a release yet
 pkgname=plasma-workspace
 pkgver=5.18.80
-_pkgver=5.18.2
-pkgrel=1
+_pkgver=5.18.3
+pkgrel=2
 pkgdesc="KDE Plasma Workspace"
 arch="all !armhf" # armhf blocked by kirigami2 -> qt5-qtdeclarative
 url="https://www.kde.org/workspaces/plasmadesktop/"
@@ -19,7 +19,7 @@ subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
-	cmake -B "$builddir"/build \
+	cmake -B build \
 		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
@@ -36,6 +36,6 @@ check() {
 package() {
 	DESTDIR="$pkgdir" make -C build install
 }
-sha512sums="0fa91451e28b70d7602de79686afb57143eecd86e3856ed9c773bc4f5394610e5a5cf2f13fd03398b7a01624b45ab86d7e12da016980cb91ab23adac41a6793e  plasma-workspace-5.18.2.tar.xz
+sha512sums="a0acc751e47f6b10753a41009e2b8d99bd901cbf667ce61fec04175c12d877f8dd3fe4a7f3d8f3ca18e126b72a00a59aed1edc33bc542e6e69fdf97af44eae1e  plasma-workspace-5.18.3.tar.xz
 5628f61e702d332cbb87b8221a2b71e80bca1789026b82e74b1eaaa0a2f8438a705aac5ec99888239390753c81ec6a036acbf9ffad800987f08953cf6631adfe  language-kcm-wrap-label-text.patch
 25aac2b2d8e10397e0eca2e79acb61785c48b316c3c6977d6258f33a1a05f47ea6de7c749b3cf8316c919ef67050bce379c8415addbd29695f8f3f4c35f22bd0  D27968.patch"
