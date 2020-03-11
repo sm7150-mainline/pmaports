@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm 5.6.0-rc3 Kernel Configuration
+# Linux/arm 5.6.0-rc5 Kernel Configuration
 #
 
 #
@@ -172,7 +172,7 @@ CONFIG_RD_LZMA=y
 CONFIG_RD_XZ=y
 CONFIG_RD_LZO=y
 CONFIG_RD_LZ4=y
-CONFIG_BOOT_CONFIG=y
+# CONFIG_BOOT_CONFIG is not set
 CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
 # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
 CONFIG_SYSCTL=y
@@ -922,7 +922,7 @@ CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=m
 # CONFIG_NETFILTER_XT_MATCH_BPF is not set
 # CONFIG_NETFILTER_XT_MATCH_CGROUP is not set
 # CONFIG_NETFILTER_XT_MATCH_CLUSTER is not set
-# CONFIG_NETFILTER_XT_MATCH_COMMENT is not set
+CONFIG_NETFILTER_XT_MATCH_COMMENT=m
 # CONFIG_NETFILTER_XT_MATCH_CONNBYTES is not set
 # CONFIG_NETFILTER_XT_MATCH_CONNLABEL is not set
 # CONFIG_NETFILTER_XT_MATCH_CONNLIMIT is not set
@@ -1759,7 +1759,7 @@ CONFIG_INPUT_PM8XXX_VIBRATOR=m
 # CONFIG_INPUT_YEALINK is not set
 # CONFIG_INPUT_CM109 is not set
 # CONFIG_INPUT_REGULATOR_HAPTIC is not set
-# CONFIG_INPUT_UINPUT is not set
+CONFIG_INPUT_UINPUT=m
 # CONFIG_INPUT_PCF8574 is not set
 # CONFIG_INPUT_PWM_BEEPER is not set
 # CONFIG_INPUT_PWM_VIBRA is not set
@@ -2847,6 +2847,7 @@ CONFIG_BACKLIGHT_PWM=y
 # CONFIG_BACKLIGHT_LV5207LP is not set
 # CONFIG_BACKLIGHT_BD6107 is not set
 # CONFIG_BACKLIGHT_ARCXCNN is not set
+# CONFIG_BACKLIGHT_LED is not set
 # end of Backlight & LCD device support
 
 CONFIG_VIDEOMODE_HELPERS=y
@@ -3692,7 +3693,111 @@ CONFIG_VIRTIO_MENU=y
 # end of Microsoft Hyper-V guest support
 
 # CONFIG_GREYBUS is not set
-# CONFIG_STAGING is not set
+CONFIG_STAGING=y
+# CONFIG_PRISM2_USB is not set
+# CONFIG_COMEDI is not set
+# CONFIG_RTLLIB is not set
+# CONFIG_RTL8723BS is not set
+# CONFIG_R8712U is not set
+# CONFIG_R8188EU is not set
+# CONFIG_VT6656 is not set
+
+#
+# IIO staging drivers
+#
+
+#
+# Accelerometers
+#
+# CONFIG_ADIS16203 is not set
+# CONFIG_ADIS16240 is not set
+# end of Accelerometers
+
+#
+# Analog to digital converters
+#
+# CONFIG_AD7816 is not set
+# CONFIG_AD7192 is not set
+# CONFIG_AD7280 is not set
+# end of Analog to digital converters
+
+#
+# Analog digital bi-direction converters
+#
+# CONFIG_ADT7316 is not set
+# end of Analog digital bi-direction converters
+
+#
+# Capacitance to digital converters
+#
+# CONFIG_AD7150 is not set
+# CONFIG_AD7746 is not set
+# end of Capacitance to digital converters
+
+#
+# Direct Digital Synthesis
+#
+# CONFIG_AD9832 is not set
+# CONFIG_AD9834 is not set
+# end of Direct Digital Synthesis
+
+#
+# Network Analyzer, Impedance Converters
+#
+# CONFIG_AD5933 is not set
+# end of Network Analyzer, Impedance Converters
+
+#
+# Active energy metering IC
+#
+# CONFIG_ADE7854 is not set
+# end of Active energy metering IC
+
+#
+# Resolver to digital converters
+#
+# CONFIG_AD2S1210 is not set
+# end of Resolver to digital converters
+# end of IIO staging drivers
+
+#
+# Speakup console speech
+#
+# CONFIG_SPEAKUP is not set
+# end of Speakup console speech
+
+# CONFIG_STAGING_MEDIA is not set
+
+#
+# Android
+#
+CONFIG_ASHMEM=y
+# CONFIG_ION is not set
+# end of Android
+
+# CONFIG_STAGING_BOARD is not set
+# CONFIG_LTE_GDM724X is not set
+# CONFIG_GS_FPGABOOT is not set
+# CONFIG_UNISYSSPAR is not set
+# CONFIG_COMMON_CLK_XLNX_CLKWZRD is not set
+# CONFIG_FB_TFT is not set
+# CONFIG_WILC1000_SDIO is not set
+# CONFIG_WILC1000_SPI is not set
+# CONFIG_MOST is not set
+# CONFIG_KS7010 is not set
+# CONFIG_PI433 is not set
+
+#
+# Gasket devices
+#
+# end of Gasket devices
+
+# CONFIG_XIL_AXIS_FIFO is not set
+# CONFIG_FIELDBUS_DEV is not set
+# CONFIG_USB_WUSB_CBAF is not set
+# CONFIG_UWB is not set
+# CONFIG_STAGING_EXFAT_FS is not set
+# CONFIG_WFX is not set
 # CONFIG_GOLDFISH is not set
 # CONFIG_MFD_CROS_EC is not set
 # CONFIG_CHROME_PLATFORMS is not set
@@ -4430,7 +4535,11 @@ CONFIG_ARM_PMU=y
 #
 # Android
 #
-# CONFIG_ANDROID is not set
+CONFIG_ANDROID=y
+CONFIG_ANDROID_BINDER_IPC=y
+# CONFIG_ANDROID_BINDERFS is not set
+CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
+# CONFIG_ANDROID_BINDER_IPC_SELFTEST is not set
 # end of Android
 
 # CONFIG_DAX is not set
@@ -4548,8 +4657,8 @@ CONFIG_PROC_PAGE_MONITOR=y
 CONFIG_KERNFS=y
 CONFIG_SYSFS=y
 CONFIG_TMPFS=y
-# CONFIG_TMPFS_POSIX_ACL is not set
-# CONFIG_TMPFS_XATTR is not set
+CONFIG_TMPFS_POSIX_ACL=y
+CONFIG_TMPFS_XATTR=y
 CONFIG_MEMFD_CREATE=y
 CONFIG_CONFIGFS_FS=y
 # end of Pseudo filesystems
@@ -4565,7 +4674,21 @@ CONFIG_MISC_FILESYSTEMS=y
 # CONFIG_BFS_FS is not set
 # CONFIG_EFS_FS is not set
 # CONFIG_CRAMFS is not set
-# CONFIG_SQUASHFS is not set
+CONFIG_SQUASHFS=m
+# CONFIG_SQUASHFS_FILE_CACHE is not set
+CONFIG_SQUASHFS_FILE_DIRECT=y
+# CONFIG_SQUASHFS_DECOMP_SINGLE is not set
+# CONFIG_SQUASHFS_DECOMP_MULTI is not set
+CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y
+CONFIG_SQUASHFS_XATTR=y
+CONFIG_SQUASHFS_ZLIB=y
+# CONFIG_SQUASHFS_LZ4 is not set
+# CONFIG_SQUASHFS_LZO is not set
+CONFIG_SQUASHFS_XZ=y
+# CONFIG_SQUASHFS_ZSTD is not set
+# CONFIG_SQUASHFS_4K_DEVBLK_SIZE is not set
+# CONFIG_SQUASHFS_EMBEDDED is not set
+CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3
 # CONFIG_VXFS_FS is not set
 # CONFIG_MINIX_FS is not set
 # CONFIG_OMFS_FS is not set
