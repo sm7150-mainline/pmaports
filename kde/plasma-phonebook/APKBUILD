@@ -1,32 +1,25 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-phonebook
-pkgver=0_git20191203
+pkgver=0_git20200308
 pkgrel=0
-_commit="44a336c04684fe86eab2ef62c4abf2484996223d"
+_commit="fa6c2292ca276a92eeb3a006fc1cddf9d663d3dd"
 pkgdesc="Contacts application which allows adding, modifying and removing contacts"
 arch="all"
 url="https://invent.kde.org/kde/plasma-phonebook"
 license="GPL-2.0-only OR GPL-3.0-only"
 depends="kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev kpeople-dev kcontacts-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev kpeople-dev kcontacts-dev kpeoplevcard-dev"
 source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-phonebook/-/archive/$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
-prepare() {
-	default_prepare
-
-	mkdir "$builddir"/build
-}
-
 build() {
-	cd "$builddir"/build
-	cmake "$builddir" \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make
+	make -C build
 }
 
 check() {
@@ -35,7 +28,6 @@ check() {
 }
 
 package() {
-	cd "$builddir"/build
-	DESTDIR="$pkgdir" make install
+	DESTDIR="$pkgdir" make -C build install
 }
-sha512sums="2c43c7faa4870f30bc5186e2f9c66c27ee0a71b4df7b946d2fbcfa0654f644ae6efcd2395aa9ccd07278f2439e78929ece2823d9927d2250021f90caf4100f43  plasma-phonebook-44a336c04684fe86eab2ef62c4abf2484996223d.tar.gz"
+sha512sums="c208416e5874278044f35ed70272649fc6d52e3eaf01771c123a45b69d78e6d8c28aa189144e493f472fbf2867b0cd9ea979c813d2e03c4faf0e777c9a1b8d56  plasma-phonebook-fa6c2292ca276a92eeb3a006fc1cddf9d663d3dd.tar.gz"
