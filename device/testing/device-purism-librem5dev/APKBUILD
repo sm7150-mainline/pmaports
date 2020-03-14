@@ -1,9 +1,10 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Contributor: Clayton Craft <clayton@craftyguy.net>
-pkgname="device-purism-librem5dev"
+# Maintainer:  Clayton Craft <clayton@craftyguy.net>
+pkgname=device-purism-librem5dev
 pkgdesc="Purism Librem 5 Devkit"
-pkgver=1.0
-pkgrel=1
+pkgver=1.1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -14,10 +15,12 @@ depends="postmarketos-base
 	u-boot-librem5
 	gpsd
 	mesa-git-dri-gallium
-	ofono
 "
 makedepends="devicepkg-dev"
+_confver=16
+_confdir=$srcdir/librem5-base-v$_confver
 source="
+	https://source.puri.sm/Librem5/librem5-base/-/archive/v$_confver/librem5-base-v$_confver.tar.gz
 	deviceinfo
 	uboot-script.cmd
 	modprobe.d_rsi.conf
@@ -25,7 +28,11 @@ source="
 	00-kwin.sh
 	flash_script.lst
 "
-subpackages="$pkgname-plasma"
+subpackages="
+	$pkgname-plasma
+	$pkgname-phosh
+	$pkgname-pulseaudio
+"
 install="$pkgname.post-install"
 
 build() {
@@ -34,8 +41,29 @@ build() {
 }
 
 plasma() {
+	pkgdesc="Plasma Mobile support for the Librem 5"
 	install_if="$pkgname kwin"
 	install -D -m644 "$srcdir"/00-kwin.sh "$subpkgdir"/etc/profile.d/00-kwin.sh
+}
+
+phosh() {
+	pkgdesc="Phosh support for the Librem 5"
+	install_if="$pkgname phosh"
+	install -D -m644 "$_confdir"/default/org.freedesktop.ModemManager1.pkla \
+		"$subpkgdir"/var/lib/polkit-1/localauthority/10-vendor.d/org.freedesktop.ModemManager1.pkla
+}
+
+pulseaudio() {
+	pkgdesc="Pulseaudio support for the Librem 5"
+	install_if="$pkgname pulseaudio"
+	# install config files from upstream Purism
+	mkdir -p "$subpkgdir"/etc/pulse/
+	cp -r "$_confdir"/default/audio/pulse/daemon.conf.d "$subpkgdir"/etc/pulse/
+	install -D -m644 "$_confdir"/default/audio/pulse/librem5.pa "$subpkgdir"/etc/pulse/librem5.pa
+	mkdir -p "$subpkgdir"/usr/share/pulseaudio/alsa-mixer
+	cp -r "$_confdir"/default/audio/profile-sets "$subpkgdir"/usr/share/pulseaudio/alsa-mixer/
+	mkdir -p "$subpkgdir"/usr/share/alsa/ucm
+	cp -r "$_confdir"/default/audio/ucm "$subpkgdir"/usr/share/alsa/
 }
 
 package() {
@@ -44,10 +72,16 @@ package() {
 	install -D -m644 "$srcdir"/modprobe.d_rsi.conf "$pkgdir"/etc/modprobe.d/rsi.conf
 	install -D -m644 "$srcdir"/00-mesa.sh "$pkgdir"/etc/profile.d/00-mesa.sh
 	install -D -m644 "$srcdir"/flash_script.lst "$pkgdir"/usr/share/uuu/flash_script.lst
+	install -D -m644 "$_confdir"/default/hwdb/80-librem5.hwdb "pkgdir"/lib/udev/hwdb.d/80-librem5.hwdb
+	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-devkit-sgtl5000.udev \
+		"pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-devkit-sgtl5000.udev
+	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-pm.udev  \
+		"pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-pm.udev
+
 	devicepkg_package $startdir $pkgname
 }
-
-sha512sums="6350ff989fc1d2a0bbf98c2f0e78f7372500e0ac9f50386fcdad81a9763d9040e6a6ebc25b5539ece8536f2f0646d9ff85f7d38ca0d5b7d6847284941efbcafa  deviceinfo
+sha512sums="d93aded121b830b5b7006166d3f8cd2efadc2fa454540d653e3f1cb8f009ffb7973a4037a62a47062f6f95f8bbbe546d8e72600a5dcded4eb7be78a7e6d35d02  librem5-base-v16.tar.gz
+6350ff989fc1d2a0bbf98c2f0e78f7372500e0ac9f50386fcdad81a9763d9040e6a6ebc25b5539ece8536f2f0646d9ff85f7d38ca0d5b7d6847284941efbcafa  deviceinfo
 e4bb06e337d3f23abb0328a8e564e905ef571cdbeeefe442cbbd7e715f5a5b656d00679c48161736b3254bcba1ab39a6c99402f67bbde9838c881b1adeb360ed  uboot-script.cmd
 9dc018f0de523cbfe5a49cbe831aa30e975a8dd34635197bb52582f072ac356ef2c02223fc794d970380091a69a83a74c3fbe34520190c8536e77f9ea98c7659  modprobe.d_rsi.conf
 5fdf45859f2bb154bcfe7c7341de4d5b239ef43d3f865e30456af073a8ee9d6682515c7e1dd52ddbe3969669d60689ba93c08ead32aadcfb164ff72a02b2e1a4  00-mesa.sh
