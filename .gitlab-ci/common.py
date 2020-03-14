@@ -45,10 +45,11 @@ def run_pmbootstrap(parameters):
         exit(1)
 
 
-def get_changed_files():
+def get_changed_files(removed=True):
     """ Get all changed files and print them, as well as the branch and the
         commit that was used for the diff.
-        :returns: list of changed files
+        :param removed: also return removed files (default: True)
+        :returns: set of changed files
     """
     commit_head = run_git(["rev-parse", "HEAD"])[:-1]
     commit_upstream_master = run_git(["rev-parse", "upstream/master"])[:-1]
@@ -65,12 +66,16 @@ def get_changed_files():
     print("comparing HEAD with: " + commit)
 
     # Changed files
-    ret = run_git(["diff", "--name-only", commit, "HEAD"]).splitlines()
+    ret = set()
     print("changed file(s):")
-    for file in ret:
+    for file in run_git(["diff", "--name-only", commit, "HEAD"]).splitlines():
         message = "  " + file
         if not os.path.exists(file):
             message += " (deleted)"
+            if removed:
+                ret.add(file)
+        else:
+            ret.add(file)
         print(message)
     return ret
 
