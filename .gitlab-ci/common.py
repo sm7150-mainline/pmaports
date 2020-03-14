@@ -116,7 +116,8 @@ def get_changed_packages(with_directory=False):
         # * in the root dir of pmaports (e.g. README.md)
         # * path beginning with a dot (e.g. .gitlab-ci/)
         # * non-existing files (deleted packages)
-        if "/" not in file or file.startswith(".") or not os.path.exists(file):
+        hidden = file.startswith(".") or "/." in file
+        if "/" not in file or hidden or not os.path.exists(file):
             continue
 
         # Add to the ret set (removes duplicated automatically)
