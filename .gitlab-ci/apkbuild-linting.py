@@ -2,27 +2,27 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import common
+import os.path
 import subprocess
 import sys
 
 if __name__ == "__main__":
     common.add_upstream_git_remote()
-    packages = common.get_changed_packages(with_directory=True)
-
-    if len(packages) < 1:
+    apkbuilds = {file for file in common.get_changed_files(removed=False)
+                 if os.path.basename(file) == "APKBUILD"}
+    if len(apkbuilds) < 1:
         print("No APKBUILDs to lint")
         sys.exit(0)
 
     issues = []
-    for package in packages:
-        if "temp/" in package or \
-           "cross/" in package or \
-           "APKBUILD" not in package:
+    for apkbuild in apkbuilds:
+        if apkbuild.startswith("temp/") or apkbuild.startswith("cross/"):
+            print(f"NOTE: Skipping linting of {apkbuild}")
             continue
 
-        result = subprocess.run(["apkbuild-lint", package], capture_output=True)
+        result = subprocess.run(["apkbuild-lint", apkbuild], capture_output=True)
         if len(result.stdout) > 0:
-            issues.append([package, result.stdout.decode("utf-8")])
+            issues.append([apkbuild, result.stdout.decode("utf-8")])
 
     if len(issues) > 0:
         print("Linting issues found:")

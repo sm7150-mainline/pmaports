@@ -113,7 +113,7 @@ def get_changed_packages_sanity_check(count):
     sys.exit(1)
 
 
-def get_changed_packages(with_directory=False):
+def get_changed_packages():
     files = get_changed_files()
     ret = set()
     for file in files:
@@ -126,11 +126,8 @@ def get_changed_packages(with_directory=False):
             continue
 
         # Add to the ret set (removes duplicated automatically)
-        if with_directory:
-            ret.add(file)
-        else:
-            # device/testing/device-something/APKBUILD -> device-something
-            ret.add(file.split("/")[-2])
+        # device/testing/device-something/APKBUILD -> device-something
+        ret.add(file.split("/")[-2])
     return ret
 
 
