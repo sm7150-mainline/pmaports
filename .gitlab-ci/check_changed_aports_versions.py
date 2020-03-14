@@ -26,8 +26,8 @@ def get_package_version(args, package, revision, check=True):
 
     # Run something like "git show upstream/master:main/hello-world/APKBUILD"
     pmaports_dir = common.get_pmaports_dir()
-    pattern = pmaports_dir + "/*/" + package + "/APKBUILD"
-    path = glob.glob(pattern)[0][len(pmaports_dir + "/"):]
+    pattern = pmaports_dir + "/**/" + package + "/APKBUILD"
+    path = glob.glob(pattern, recursive=True)[0][len(pmaports_dir + "/"):]
     apkbuild_content = common.run_git(["show", revision + ":" + path], check,
                                       stderr)
     if not apkbuild_content:

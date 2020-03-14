@@ -47,7 +47,7 @@ def test_deviceinfo(args):
     # Iterate over all devices
     last_exception = None
     count = 0
-    for folder in glob.glob(args.aports + "/device/device-*"):
+    for folder in glob.glob(args.aports + "/device/*/device-*"):
         device = folder[len(args.aports):].split("-", 1)[1]
 
         try:
@@ -98,9 +98,9 @@ def device_dependency_check(apkbuild, path):
 
 def test_aports_device(args):
     """
-    Various tests performed on the /device/device-* aports.
+    Various tests performed on the /device/*/device-* aports.
     """
-    for path in glob.glob(args.aports + "/device/device-*/APKBUILD"):
+    for path in glob.glob(args.aports + "/device/*/device-*/APKBUILD"):
         apkbuild = pmb.parse.apkbuild(args, path)
 
         # Depends: Require "postmarketos-base"
@@ -130,7 +130,7 @@ def test_aports_device_kernel(args):
     """
 
     # Iterate over device aports
-    for path in glob.glob(args.aports + "/device/device-*/APKBUILD"):
+    for path in glob.glob(args.aports + "/device/*/device-*/APKBUILD"):
         # Parse apkbuild and kernels from subpackages
         apkbuild = pmb.parse.apkbuild(args, path)
         device = apkbuild["pkgname"][len("device-"):]

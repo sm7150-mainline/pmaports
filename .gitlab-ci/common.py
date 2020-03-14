@@ -123,7 +123,8 @@ def get_changed_packages(with_directory=False):
         if with_directory:
             ret.add(file)
         else:
-            ret.add(file.split("/")[1])
+            # device/testing/device-something/APKBUILD -> device-something
+            ret.add(file.split("/")[-2])
     return ret
 
 

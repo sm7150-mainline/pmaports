@@ -14,7 +14,7 @@ def get_devices():
     ret = []
     pmaports = (os.path.realpath(os.path.join(os.path.dirname(__file__) +
                 "/..")))
-    for path in glob.glob(pmaports + "/device/device-*/"):
+    for path in glob.glob(pmaports + "/device/*/device-*/"):
         device = os.path.dirname(path).split("device-", 1)[1]
         ret.append(device)
     return sorted(ret)
