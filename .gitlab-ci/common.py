@@ -114,20 +114,39 @@ def get_changed_packages_sanity_check(count):
 
 
 def get_changed_packages():
-    files = get_changed_files()
     ret = set()
-    for file in files:
+    for file in get_changed_files():
+        dirname, filename = os.path.split(file)
+
         # Skip files:
         # * in the root dir of pmaports (e.g. README.md)
-        # * path beginning with a dot (e.g. .gitlab-ci/)
-        # * non-existing files (deleted packages)
-        hidden = file.startswith(".") or "/." in file
-        if "/" not in file or hidden or not os.path.exists(file):
+        # * path with a dot (e.g. .gitlab-ci/, device/.shared-patches/)
+        if not dirname or file.startswith(".") or "/." in file:
             continue
 
-        # Add to the ret set (removes duplicated automatically)
-        # device/testing/device-something/APKBUILD -> device-something
-        ret.add(file.split("/")[-2])
+        if filename != "APKBUILD":
+            # Walk up directories until we (eventually) find the package
+            # the file belongs to (could be in a subdirectory of a package)
+            while dirname and not os.path.exists(os.path.join(dirname, "APKBUILD")):
+                dirname = os.path.dirname(dirname)
+
+            # Unable to find APKBUILD the file belong to
+            if not dirname:
+                # ... maybe the package was deleted entirely?
+                if not os.path.exists(file):
+                    continue
+
+                # Weird, file does not belong to any package?
+                # Here we just warn, there is an extra check
+                # to make sure that files are organized properly.
+                print(f"WARNING: Changed file {file} does not belong to any package")
+                continue
+
+        elif not os.path.exists(file):
+            continue  # APKBUILD was deleted
+
+        ret.add(os.path.basename(dirname))
+
     return ret
 
 
