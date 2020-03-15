@@ -1,0 +1,70 @@
+# Contributor: Lauren Kelly <lauren.kelly@msn.com>
+# Maintainer: Lauren Kelly <lauren.kelly@msn.com>
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/pop7lte_defconfig
+
+pkgname="linux-alcatel-pop7lte"
+pkgver=3.4.0
+pkgrel=0
+pkgdesc="Alcatel OneTouch Pop 7S kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="alcatel-pop7lte"
+url="https://github.com/thejsa/android_kernel_alcatel_pop7lte"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool gcc4"
+
+# Compiler: GCC 4 (doesn't compile with newer versions)
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_alcatel_pop7lte"
+_commit="675e8a12526fad083d93e3d2ddab65e2b2be7861"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/thejsa/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	kernel-use-the-gnu89-standard-explicitly.patch
+	01_timeconst.patch
+	fix-fdinfo-file-handling.patch
+	0001-fix-video-argb-setting.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	downstreamkernel_prepare "$srcdir" "$builddir" "$_config" "$_carch" "$HOSTCC"
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Generate master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$builddir/arch/arm/boot/dt.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="88a01001f63faa49518cf8cb5654e41560702c1bfa356b6bbc0d324e0054a20a1915ff2100cff1947751a8582af376a60735197d62a6b9073a35bd08e34cfd60  linux-alcatel-pop7lte-675e8a12526fad083d93e3d2ddab65e2b2be7861.tar.gz
+5008ff3dd32e596e45585c7593cd6ac7dc4b93699ef10859b5391359fe9d69d3321fe8f4575ab3f18d583070b6f8826d101bca23eb0762ee4a410b3f19e8b212  config-alcatel-pop7lte.armv7
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch
+a2bb98fb8d988bbb659cae00fbaca360828300e9b98b90aed5ee0dd839c3f740696df4094a9021b813cbada06820d115aabed581a47cdd2c947e8d853c20b145  01_timeconst.patch
+93f7870b2063d4ddb1f35dc4de4b213d83e0f54f59511b3050e880763f2374b3816ac0c879de76fe8a0b61d62c1753c5dda7326961164a8fcbfc8a9232309569  fix-fdinfo-file-handling.patch
+a48336bbfead6ad0c84d2fce0c40a3f5530aebdff356a6835cceaf59a50a6f860d2f8027703a92927955fbb18857ba78788e010d017bf67730f069b36e96fe87  0001-fix-video-argb-setting.patch"
