@@ -1,9 +1,9 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=spacebar
-pkgver=0_git20200129
+pkgver=0_git20200317
 pkgrel=0
-_commit="68390bde9309e3656bf1453fae8c13406bf4caeb"
+_commit="3483c146a62972b0c6a6d9e524db8ce5c13a1132"
 pkgdesc="Collection of stuff for running IM on Plasma Mobile"
 url="https://phabricator.kde.org/source/spacebar/"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
@@ -14,7 +14,7 @@ source="$pkgname-$_commit.tar.gz::https://github.com/kde/spacebar/archive/$_comm
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cmake -B "$builddir"/build \
+	cmake -B build \
 		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
@@ -25,4 +25,4 @@ package() {
 	DESTDIR="$pkgdir" make -C build install
 }
 
-sha512sums="99e5ae93a5fa4c597a7e070649f3ea438ce19398a4b9a1acc4d9de7412fb95a1ef9dd23f57425fc37647a283f80f165ee131f473f82a030fd6e7934d4f841451  spacebar-68390bde9309e3656bf1453fae8c13406bf4caeb.tar.gz"
+sha512sums="4666ca4d437eecafb00360c2b1401d682f750c93b23270bd931985d788a37a67c8ea541ef8076472c7a3191399dcbe26d05f8696a87919251697b85b921dc22f  spacebar-3483c146a62972b0c6a6d9e524db8ce5c13a1132.tar.gz"
