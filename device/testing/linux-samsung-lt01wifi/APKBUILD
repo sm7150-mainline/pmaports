@@ -3,9 +3,9 @@
 
 pkgname="linux-samsung-lt01wifi"
 pkgver=3.0.31
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy Tab 3 8.0 kernel fork"
-arch="armhf"
+arch="armv7"
 _carch="arm"
 _flavor="samsung-lt01wifi"
 url="https://kernel.org"
@@ -20,6 +20,7 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/gr8nole/$_repository/archive/$_commit.tar.gz
 	$_config
+	0001-usb_gadget-set-random-rndis-host-MAC-address-to-prev.patch
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
 "
@@ -34,18 +35,21 @@ build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" modules
 }
 
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	# External modules install
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
-#sha512sums="43c9a5cfe9a6f66d7fbdec04ea6a04c06864d2f6140f458fba7bcde7a871d0128d5f1bf45724923c6e7fc592863a1a0a01a067dd6255b5f7ee0dbef46958140c  linux-samsung-lt01wifi-6ad0b18a63deacaebbc3d12751c3230cedbf7335.tar.gz
-#86dafa426c54fb813e29295eeac1afca53049546a326311965d886ec93cf0b18130f143804105e7fbdf9f82abca3e94bdce23ef777031522acc6e1078156d701  config-samsung-lt01wifi.armhf
-#77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
-#197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
-#ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch"
 sha512sums="43c9a5cfe9a6f66d7fbdec04ea6a04c06864d2f6140f458fba7bcde7a871d0128d5f1bf45724923c6e7fc592863a1a0a01a067dd6255b5f7ee0dbef46958140c  linux-samsung-lt01wifi-6ad0b18a63deacaebbc3d12751c3230cedbf7335.tar.gz
-85d01f93463c67805ee88975379d6a71da2a31bbf56252f899121888c313ee375950e0fbcd78a50738f1e160c68c07dac2e3060dc9708eff10a459e0b8764025  config-samsung-lt01wifi.armhf
+44137afbcbd6228d0938454b3ac1819fd2f56656db0a5d109c727a37b5d9733af186e43416ce9253e551dcd27be48fed29d7272db2f007a2cabdf6c634503aa7  config-samsung-lt01wifi.armv7
+df6e20ac3c29cee1aa652a78cd5270bc785e824bcd5a9cd25e0681be506bf6a7547683fca1fc4170b175fa649602bddc98c34beb094ea59e8273aeb8f9703807  0001-usb_gadget-set-random-rndis-host-MAC-address-to-prev.patch
 77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
 197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"
