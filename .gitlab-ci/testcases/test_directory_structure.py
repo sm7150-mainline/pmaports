@@ -16,6 +16,7 @@ expected_directories = [
     "temp",
 ]
 
+
 # pmbootstrap allows placing APKBUILDs in arbitrarily nested directories.
 # This test makes sure all of them are in one of the expected locations.
 def test_directories():
@@ -23,6 +24,7 @@ def test_directories():
     expected = set(f for d in expected_directories for f in glob.iglob(d + "/*/APKBUILD"))
     assert apkbuilds == expected, "Found APKBUILD in unexpected directory. " \
         "Consider adding it to test_directory_structure.py!"
+
 
 # Make sure files are either:
 #  - in root directory (README.md)
@@ -49,4 +51,4 @@ def test_files_belong_to_package():
             package_dir = dirpath
 
         assert not files or package_dir, "Found files that do not belong to any package: " \
-                f"{dirpath}/{files}"
+            f"{dirpath}/{files}"
