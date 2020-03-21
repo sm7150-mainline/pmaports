@@ -1,0 +1,25 @@
+# Contributor: Nikita Utkin <shockck84@gmail.com>
+# Maintainer: Nikita Utkin <shockck84@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-xiaomi-whyred"
+pkgdesc="Xiaomi Redmi Note 5"
+pkgver=1.0
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-whyred mkbootimg mesa-dri-swrast mdss-fb-init-hack"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="b76241a7e5ec46b736e53e0a375b6b4bb3e342590b604512e11e760bf1bd9d3c7988ab3d35b6e5de244dc419d32952ff3b8e20c94cf07f3038a35c769b6520fa  deviceinfo"

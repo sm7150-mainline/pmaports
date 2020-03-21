@@ -1,0 +1,17 @@
+diff --git a/drivers/usb/gadget/debug.c b/drivers/usb/gadget/debug.c
+index 32a53299..fa5ff4ff 100644
+--- a/drivers/usb/gadget/debug.c
++++ b/drivers/usb/gadget/debug.c
+@@ -126,8 +126,12 @@ err0:
+ 	return ret;
+ }
+ 
++EXPORT_SYMBOL(debug_debugfs_init);
++
+ void debug_debugfs_exit(void)
+ {
+ 	debugfs_remove_recursive(dbg_buffer.root);
+ 	dbg_buffer.root = NULL;
+ }
++
++EXPORT_SYMBOL(debug_debugfs_exit);
