@@ -69,8 +69,7 @@ aports-static:
     - .gitlab-ci/install_pmbootstrap.sh pytest
   script:
     - apk -q add git
-    - su pmos -c ".gitlab-ci/run_testcases.sh
-        -m 'not pmaports_upstream_compat'"
+    - su pmos -c ".gitlab-ci/run_testcases.sh"
     - su pmos -c ".gitlab-ci/check_changed_aports_versions.py"
   artifacts:
     when: on_failure
@@ -116,24 +115,6 @@ mr-settings:
     - apk -q add python3
   script:
     - .gitlab-ci/check_mr_settings.py
-
-# aports checks (upstream compatibility)
-aports-static-upstream:
-  stage: second
-  only:
-    - master@postmarketOS/pmaports
-  before_script:
-    - .gitlab-ci/install_pmbootstrap.sh pytest
-  script:
-    - su pmos -c ".gitlab-ci/run_testcases.sh
-        -m 'pmaports_upstream_compat'"
-  artifacts:
-    when: on_failure
-    paths:
-      - log.txt
-      - log_testsuite_pmaports.txt
-      - pmbootstrap.cfg
-    expire_in: 1 week
 
 # build changed aports
 aports-build:
