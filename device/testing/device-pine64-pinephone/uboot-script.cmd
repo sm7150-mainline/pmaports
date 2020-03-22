@@ -1,3 +1,4 @@
+gpio set 98
 gpio set 114
 
 if test ${mmc_bootdev} -eq 0 ; then
@@ -29,4 +30,5 @@ fdt resize
 
 echo Booting kernel
 gpio set 116
+gpio clear 98
 booti ${kernel_addr_r} ${ramdisk_addr_r} ${fdt_addr_r}
