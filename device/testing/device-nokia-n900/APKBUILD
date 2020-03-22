@@ -2,12 +2,12 @@
 # Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname=device-nokia-n900
 pkgver=5
-pkgrel=7
+pkgrel=8
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
-depends="postmarketos-base linux-nokia-n900 uboot-tools kbd kbd-bkeymaps ofono mesa-dri-swrast"
+depends="postmarketos-base linux-nokia-n900 uboot-tools kbd kbd-bkeymaps ofono mesa-dri-swrast alsa-utils"
 makedepends="devicepkg-dev uboot-tools kbd kbd-bkeymaps"
 install="$pkgname.post-install"
 subpackages="
@@ -30,7 +30,8 @@ source="
 	keymaps/rx51_it.map
 	keymaps/40-xkb.conf
 	pointercal
-	asound.state
+	asound.state.speakers
+	asound.state.headset
 	weston.ini
 	i3wm/scripts/battery-bq27200
 	i3wm/scripts/ofono
@@ -44,6 +45,7 @@ source="
 	10-noroot-suspend
 	10-initfs-keymap.files
 	10-initfs-keymap.sh
+	device-nokia-n900.start
 "
 options="!check !archcheck"
 
@@ -68,12 +70,16 @@ package() {
 		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-$pkgname-backlight.sh
 	install -D -m644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
-	install -D -m644 "$srcdir"/asound.state \
-		"$pkgdir"/var/lib/alsa/asound.state
+	install -D -m644 "$srcdir"/asound.state.speakers \
+		"$pkgdir"/var/lib/alsa/asound.state.speakers
+	install -D -m644 "$srcdir"/asound.state.headset \
+		"$pkgdir"/var/lib/alsa/asound.state.headset
 	install -Dm644 "$srcdir"/10-initfs-keymap.files \
 		"$pkgdir"/etc/postmarketos-mkinitfs/files/10-initfs-keymap.files
 	install -Dm644 "$srcdir"/10-initfs-keymap.sh \
 		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/10-initfs-keymap.sh
+	install -Dm755 "$srcdir"/$pkgname.start \
+		"$pkgdir"/etc/local.d/$pkgname.start
 
 	# Udev rules
 	install -D -m644 "$srcdir"/90-touchscreen-dev.rules \
@@ -151,14 +157,15 @@ sha512sums="65317422ccbb263dd1eeb92b4a37357769f4e3e6a6f0ef812b1d4ac46fc5f00bef20
 3d55e34b95791636e44a5f41754f3d0de039dbba41f7a556d43a95c9e64afcfa930046b4b96b40020b6f196096ffba93514682927e32fa4488686fdd19c6da5a  backlight-enable.sh
 c6012aef28b096141b924fced226ec99fb93eb53b69c064a8887d8fecdf8dc08a3ba3db399e18d88374c6ef4c59013a30699c7e4d76e5cb771040582573a0527  90-touchscreen-dev.rules
 9e72035c88632d12895534e5aa5746f2c130c7dcdafa8702748d62b71ed0e1b5911b6e1f07f9b9e39b6072bbb662f66aead585baa1dcacb7d8c8953ca89b6762  10-nokia-modem.rules
-df5dcae9a32d04ba2fed8b4dbb8722f8d56d063a288dfbaeca37806bdbb8ba4de639b392859b9f24040a1032456d5dcd754f51314e3ab66515b91ae1e03c93a7  acpi_handler.sh
-7761aec6e6e219245b006e7bdc1d19812e9c5915cf3e64bb3dd46bb4b5570c1715650b53a1fc1007cb814076b5d81be0a66ba7ebf06d9a1fa4e364725c3ee633  acpi.map
+cd5ff582e935c4d28ba359944b197b5486645451790f59e96d9faa4136bf9010c425bfd3c8e46d4b490b4f36fd3336c1d49dd18bc0e2c5738b81520f356adf20  acpi_handler.sh
+b3612348af1465c6dc21ce30153fc7e2cce3ae7f9bf9ff34d5a560e173e174275c1701dd7c45337fa56caaadb252b9494bddf997a698d665d3a8c01cde6955c7  acpi.map
 e440ed7a3070c17e003b86b72dbe6d8194d01b577ca8dd56dd066f216b6dda32bb965c780950f1789a66f7c948290016b048da9f1cf63aba9e11d7e7fd6873ba  rx51_us.map
 dc585e11bf4e06e36c5c62bcc024eaacecc30437d9da5257df14be05e247a2f2bc208874be3058edc6f87cc2877da2ecafd2f627d9b465d4fd24475fc21fdc71  rx51_ch.map
 082a5166e38296b097e873b0b4aeaf007e594d3bf4470c74e91ee3efedcf28ad25cd55c23dd63e460339898ae08e77e111b0e1092fa5e661db90bb40732103a1  rx51_it.map
 181187db6d88b872233f594759373f32fd08065ee340b60f0c3ff06396d99f4b1250192d70a054fcc9e51e067f6cc063c62b7d8dfff3427b292f1d0c766db206  40-xkb.conf
 143c21f0b18a016d37cb44178e9daea09f128a90769b48353c03c3f245cb9b1f7e773b9ccee084973fc78ddd7a18c2642e54888a85bda7c7daecddc9a8c62eff  pointercal
-e023df91295fe7e410e163747d17e5b92fe3c022ff076e286778b8334368f885603b8fda65671e4a7328766da7b2552ea4df1b1399df23e504a41a6655771142  asound.state
+67acc17a33bc75113300393b4a5bba15319014032407e774d079abf310368e75f4f697dbb4856ba2d2d8ea184b056bb33561f42918de3ee91ab6a77df89a133c  asound.state.speakers
+5b87071834313a389f83d29f86f6e3ea108d0921f17dc918be7a46de7e74c73a4418044ef600a0fbf72c8fad22b7730dcd5bfe3d6d01d76bf01556f8540f0b32  asound.state.headset
 7f48d1a044f8c02f7b1d11487ec1f83978d9b0ea12529156e7418f82be556d9baee32b70c4d911174e388bb4941dc19519e93e7551d00ffcd825c848665ff096  weston.ini
 d150c2766f75c0f585380ae5f088896f0c8b03dc39df7195c84fc5dc78e487dbb3d623621652daa46e3b8722690af6c0485834856e0967bc3729f67122d435a0  battery-bq27200
 82038d38f94cb975a8d38914afca49b64957446bef7490ab684efa1df47ede2ea1c769045789bb9fded673345eea01911fbbf85fdb54c28685cad8022bfaafac  ofono
@@ -171,4 +178,5 @@ d9ef88c714e9fce8822f63b7a9d7fc3e1ed472c8c876b44ba524d44efea322839f13ddd2fa652420
 a91f98daa60efa2beb2ff6b405097f92edca5f1bbb9e7675499139be52ca2570712f8f06f9032ef29f636f99c8f8da8b992f746eab6424aac04260c16158bcc2  xorg.conf
 38ecdf876b5aa9df2e5ea61c7ebb6f9ca871bdf433029808d028d563dfd740232b3dc21dba098a7622453212af1272e2e782be861b4a96a49fd475a618442d45  10-noroot-suspend
 ae5c4c2452d8da66174d4eef9644796b29b0188ad683a6516be3710e0893db5447583f8b46ec9b76144e030c1ce4d9c316542af25b9369d9f27b8c026f6e0fe1  10-initfs-keymap.files
-4656d3b3ced0a86e2d6315c89322899f646a689e9cb64609aa8ad5a676b23d93706d8a37f3be6f6b12c6b1e8501b7d26ecafecf27322333850513a6805c61910  10-initfs-keymap.sh"
+4656d3b3ced0a86e2d6315c89322899f646a689e9cb64609aa8ad5a676b23d93706d8a37f3be6f6b12c6b1e8501b7d26ecafecf27322333850513a6805c61910  10-initfs-keymap.sh
+e6bbac8de1a198ba716f44ade76606e1e0adcc574156b855ac41be5eb5308389d3277fd89cc34b119fbc33d9801ab9f79a6ff213392596bff40bc17e931c05ef  device-nokia-n900.start"

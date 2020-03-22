@@ -2,7 +2,7 @@ state.RX51 {
 	control.1 {
 		iface MIXER
 		name 'Left Line Mixer Line2R Bypass Volume'
-		value 118
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -10,13 +10,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.2 {
 		iface MIXER
 		name 'Right Line Mixer Line2L Bypass Volume'
-		value 118
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -24,13 +24,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.3 {
 		iface MIXER
 		name 'Left HP Mixer Line2R Bypass Volume'
-		value 118
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -38,13 +38,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.4 {
 		iface MIXER
 		name 'Right HP Mixer Line2L Bypass Volume'
-		value 118
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -52,13 +52,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.5 {
 		iface MIXER
 		name 'Left HPCOM Mixer Line2R Bypass Volume'
-		value 118
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -66,13 +66,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.6 {
 		iface MIXER
 		name 'Right HPCOM Mixer Line2L Bypass Volume'
-		value 118
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -80,14 +80,14 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.7 {
 		iface MIXER
 		name 'Line Line2 Bypass Volume'
-		value.0 71
-		value.1 71
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -95,15 +95,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.8 {
 		iface MIXER
 		name 'HP Line2 Bypass Volume'
-		value.0 71
-		value.1 71
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -111,15 +111,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.9 {
 		iface MIXER
 		name 'HPCOM Line2 Bypass Volume'
-		value.0 71
-		value.1 71
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -127,15 +127,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.10 {
 		iface MIXER
 		name 'Mono Line2 Bypass Volume'
-		value.0 78
-		value.1 78
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -143,15 +143,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2000
-			dbvalue.1 -2000
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.11 {
 		iface MIXER
 		name 'Mono PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -159,8 +159,8 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.12 {
@@ -182,7 +182,7 @@ state.RX51 {
 	control.13 {
 		iface MIXER
 		name 'Mono Playback Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -191,9 +191,23 @@ state.RX51 {
 	}
 	control.14 {
 		iface MIXER
+		name 'Mono Playback Volume'
+		value 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+		}
+	}
+	control.15 {
+		iface MIXER
 		name 'PCM Playback Volume'
-		value.0 116
-		value.1 116
+		value.0 120
+		value.1 120
 		comment {
 			access 'read write'
 			type INTEGER
@@ -201,28 +215,14 @@ state.RX51 {
 			range '0 - 127'
 			dbmin -6350
 			dbmax 0
-			dbvalue.0 -550
-			dbvalue.1 -550
-		}
-	}
-	control.15 {
-		iface MIXER
-		name 'Left Line Mixer PGAR Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -350
+			dbvalue.1 -350
 		}
 	}
 	control.16 {
 		iface MIXER
-		name 'Left Line Mixer DACR1 Playback Volume'
-		value 118
+		name 'Left Line Mixer PGAR Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -230,13 +230,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.17 {
 		iface MIXER
-		name 'Right Line Mixer PGAL Bypass Volume'
-		value 118
+		name 'Left Line Mixer DACR1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -244,13 +244,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.18 {
 		iface MIXER
-		name 'Right Line Mixer DACL1 Playback Volume'
-		value 118
+		name 'Right Line Mixer PGAL Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -258,13 +258,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.19 {
 		iface MIXER
-		name 'Left HP Mixer PGAR Bypass Volume'
-		value 118
+		name 'Right Line Mixer DACL1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -272,13 +272,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.20 {
 		iface MIXER
-		name 'Left HP Mixer DACR1 Playback Volume'
-		value 118
+		name 'Left HP Mixer PGAR Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -286,13 +286,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.21 {
 		iface MIXER
-		name 'Right HP Mixer PGAL Bypass Volume'
-		value 118
+		name 'Left HP Mixer DACR1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -300,13 +300,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.22 {
 		iface MIXER
-		name 'Right HP Mixer DACL1 Playback Volume'
-		value 118
+		name 'Right HP Mixer PGAL Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -314,13 +314,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.23 {
 		iface MIXER
-		name 'Left HPCOM Mixer PGAR Bypass Volume'
-		value 118
+		name 'Right HP Mixer DACL1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -328,13 +328,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.24 {
 		iface MIXER
-		name 'Left HPCOM Mixer DACR1 Playback Volume'
-		value 118
+		name 'Left HPCOM Mixer PGAR Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -342,13 +342,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.25 {
 		iface MIXER
-		name 'Right HPCOM Mixer PGAL Bypass Volume'
-		value 118
+		name 'Left HPCOM Mixer DACR1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -356,13 +356,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.26 {
 		iface MIXER
-		name 'Right HPCOM Mixer DACL1 Playback Volume'
-		value 118
+		name 'Right HPCOM Mixer PGAL Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -370,30 +370,28 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.27 {
 		iface MIXER
-		name 'Line PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'Right HPCOM Mixer DACL1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.28 {
 		iface MIXER
-		name 'Line DAC Playback Volume'
-		value.0 78
-		value.1 78
+		name 'Line PGA Bypass Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -401,15 +399,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2000
-			dbvalue.1 -2000
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.29 {
 		iface MIXER
-		name 'HP PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'Line DAC Playback Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -417,15 +415,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.30 {
 		iface MIXER
-		name 'HP DAC Playback Volume'
-		value.0 118
-		value.1 118
+		name 'HP PGA Bypass Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -433,15 +431,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
-			dbvalue.1 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.31 {
 		iface MIXER
-		name 'HPCOM PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'HP DAC Playback Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -449,15 +447,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.32 {
 		iface MIXER
-		name 'HPCOM DAC Playback Volume'
-		value.0 109
-		value.1 109
+		name 'HPCOM PGA Bypass Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -465,11 +463,43 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -450
-			dbvalue.1 -450
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.33 {
+		iface MIXER
+		name 'HPCOM DAC Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.34 {
+		iface MIXER
+		name 'Line Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+			dbvalue.1 0
+		}
+	}
+	control.35 {
 		iface MIXER
 		name 'Line Playback Switch'
 		value.0 true
@@ -480,29 +510,61 @@ state.RX51 {
 			count 2
 		}
 	}
-	control.34 {
+	control.36 {
+		iface MIXER
+		name 'HP Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+			dbvalue.1 0
+		}
+	}
+	control.37 {
 		iface MIXER
 		name 'HP Playback Switch'
-		value.0 true
-		value.1 true
+		value.0 false
+		value.1 false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 2
 		}
 	}
-	control.35 {
+	control.38 {
+		iface MIXER
+		name 'HPCOM Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+			dbvalue.1 0
+		}
+	}
+	control.39 {
 		iface MIXER
 		name 'HPCOM Playback Switch'
-		value.0 true
-		value.1 true
+		value.0 false
+		value.1 false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 2
 		}
 	}
-	control.36 {
+	control.40 {
 		iface MIXER
 		name 'AGC Switch'
 		value.0 false
@@ -513,7 +575,7 @@ state.RX51 {
 			count 2
 		}
 	}
-	control.37 {
+	control.41 {
 		iface MIXER
 		name 'Left AGC Target level'
 		value '-5.5dB'
@@ -531,7 +593,7 @@ state.RX51 {
 			item.7 '-24dB'
 		}
 	}
-	control.38 {
+	control.42 {
 		iface MIXER
 		name 'Right AGC Target level'
 		value '-5.5dB'
@@ -549,7 +611,7 @@ state.RX51 {
 			item.7 '-24dB'
 		}
 	}
-	control.39 {
+	control.43 {
 		iface MIXER
 		name 'Left AGC Attack time'
 		value '8ms'
@@ -563,7 +625,7 @@ state.RX51 {
 			item.3 '20ms'
 		}
 	}
-	control.40 {
+	control.44 {
 		iface MIXER
 		name 'Right AGC Attack time'
 		value '8ms'
@@ -577,7 +639,7 @@ state.RX51 {
 			item.3 '20ms'
 		}
 	}
-	control.41 {
+	control.45 {
 		iface MIXER
 		name 'Left AGC Decay time'
 		value '100ms'
@@ -591,7 +653,7 @@ state.RX51 {
 			item.3 '500ms'
 		}
 	}
-	control.42 {
+	control.46 {
 		iface MIXER
 		name 'Right AGC Decay time'
 		value '100ms'
@@ -605,7 +667,7 @@ state.RX51 {
 			item.3 '500ms'
 		}
 	}
-	control.43 {
+	control.47 {
 		iface MIXER
 		name 'De-emphasis Switch'
 		value.0 false
@@ -616,11 +678,11 @@ state.RX51 {
 			count 2
 		}
 	}
-	control.44 {
+	control.48 {
 		iface MIXER
 		name 'PGA Capture Volume'
-		value.0 103
-		value.1 112
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -628,22 +690,22 @@ state.RX51 {
 			range '0 - 119'
 			dbmin 0
 			dbmax 5950
-			dbvalue.0 5150
-			dbvalue.1 5600
+			dbvalue.0 0
+			dbvalue.1 0
 		}
 	}
-	control.45 {
+	control.49 {
 		iface MIXER
 		name 'PGA Capture Switch'
 		value.0 false
-		value.1 true
+		value.1 false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 2
 		}
 	}
-	control.46 {
+	control.50 {
 		iface MIXER
 		name 'ADC HPF Cut-off'
 		value.0 Disabled
@@ -658,7 +720,7 @@ state.RX51 {
 			item.3 '0.025xFs'
 		}
 	}
-	control.47 {
+	control.51 {
 		iface MIXER
 		name 'Output Driver Power-On time'
 		value '0us'
@@ -680,7 +742,7 @@ state.RX51 {
 			item.11 '4s'
 		}
 	}
-	control.48 {
+	control.52 {
 		iface MIXER
 		name 'Output Driver Ramp-up step'
 		value '0ms'
@@ -694,10 +756,10 @@ state.RX51 {
 			item.3 '4ms'
 		}
 	}
-	control.49 {
+	control.53 {
 		iface MIXER
 		name 'TPA6130A2 Headphone Playback Volume'
-		value 0
+		value 36
 		comment {
 			access 'read write'
 			type INTEGER
@@ -705,69 +767,13 @@ state.RX51 {
 			range '0 - 42'
 			dbmin -5950
 			dbmax -540
-			dbvalue.0 -5950
-		}
-	}
-	control.50 {
-		iface MIXER
-		name 'b Left Line Mixer Line2R Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
-		}
-	}
-	control.51 {
-		iface MIXER
-		name 'b Right Line Mixer Line2L Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
-		}
-	}
-	control.52 {
-		iface MIXER
-		name 'b Left HP Mixer Line2R Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
-		}
-	}
-	control.53 {
-		iface MIXER
-		name 'b Right HP Mixer Line2L Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -850
 		}
 	}
 	control.54 {
 		iface MIXER
-		name 'b Left HPCOM Mixer Line2R Bypass Volume'
-		value 118
+		name 'b Left Line Mixer Line2R Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -775,13 +781,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.55 {
 		iface MIXER
-		name 'b Right HPCOM Mixer Line2L Bypass Volume'
-		value 118
+		name 'b Right Line Mixer Line2L Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -789,78 +795,70 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.56 {
 		iface MIXER
-		name 'b Line Line2 Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Left HP Mixer Line2R Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.57 {
 		iface MIXER
-		name 'b HP Line2 Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Right HP Mixer Line2L Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.58 {
 		iface MIXER
-		name 'b HPCOM Line2 Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Left HPCOM Mixer Line2R Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.59 {
 		iface MIXER
-		name 'b Mono Line2 Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Right HPCOM Mixer Line2L Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.60 {
 		iface MIXER
-		name 'b Mono PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Line Line2 Bypass Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -868,15 +866,15 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.61 {
 		iface MIXER
-		name 'b Mono DAC Playback Volume'
-		value.0 71
-		value.1 71
+		name 'b HP Line2 Bypass Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -884,25 +882,103 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.62 {
 		iface MIXER
+		name 'b HPCOM Line2 Bypass Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.63 {
+		iface MIXER
+		name 'b Mono Line2 Bypass Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.64 {
+		iface MIXER
+		name 'b Mono PGA Bypass Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.65 {
+		iface MIXER
+		name 'b Mono DAC Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.66 {
+		iface MIXER
 		name 'b Mono Playback Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.63 {
+	control.67 {
+		iface MIXER
+		name 'b Mono Playback Volume'
+		value 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+		}
+	}
+	control.68 {
 		iface MIXER
 		name 'b PCM Playback Volume'
-		value.0 80
-		value.1 80
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -910,84 +986,14 @@ state.RX51 {
 			range '0 - 127'
 			dbmin -6350
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
-		}
-	}
-	control.64 {
-		iface MIXER
-		name 'b Left Line Mixer PGAR Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
-		}
-	}
-	control.65 {
-		iface MIXER
-		name 'b Left Line Mixer DACR1 Playback Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
-		}
-	}
-	control.66 {
-		iface MIXER
-		name 'b Right Line Mixer PGAL Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
-		}
-	}
-	control.67 {
-		iface MIXER
-		name 'b Right Line Mixer DACL1 Playback Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
-		}
-	}
-	control.68 {
-		iface MIXER
-		name 'b Left HP Mixer PGAR Bypass Volume'
-		value 118
-		comment {
-			access 'read write'
-			type INTEGER
-			count 1
-			range '0 - 118'
-			dbmin -9999999
-			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -6350
+			dbvalue.1 -6350
 		}
 	}
 	control.69 {
 		iface MIXER
-		name 'b Left HP Mixer DACR1 Playback Volume'
-		value 118
+		name 'b Left Line Mixer PGAR Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -995,13 +1001,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.70 {
 		iface MIXER
-		name 'b Right HP Mixer PGAL Bypass Volume'
-		value 118
+		name 'b Left Line Mixer DACR1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1009,13 +1015,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.71 {
 		iface MIXER
-		name 'b Right HP Mixer DACL1 Playback Volume'
-		value 118
+		name 'b Right Line Mixer PGAL Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1023,13 +1029,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.72 {
 		iface MIXER
-		name 'b Left HPCOM Mixer PGAR Bypass Volume'
-		value 118
+		name 'b Right Line Mixer DACL1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1037,13 +1043,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.73 {
 		iface MIXER
-		name 'b Left HPCOM Mixer DACR1 Playback Volume'
-		value 118
+		name 'b Left HP Mixer PGAR Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1051,13 +1057,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.74 {
 		iface MIXER
-		name 'b Right HPCOM Mixer PGAL Bypass Volume'
-		value 118
+		name 'b Left HP Mixer DACR1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1065,13 +1071,13 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.75 {
 		iface MIXER
-		name 'b Right HPCOM Mixer DACL1 Playback Volume'
-		value 118
+		name 'b Right HP Mixer PGAL Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1079,94 +1085,84 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 0
+			dbvalue.0 -9999999
 		}
 	}
 	control.76 {
 		iface MIXER
-		name 'b Line PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Right HP Mixer DACL1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.77 {
 		iface MIXER
-		name 'b Line DAC Playback Volume'
-		value.0 71
-		value.1 71
+		name 'b Left HPCOM Mixer PGAR Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.78 {
 		iface MIXER
-		name 'b HP PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Left HPCOM Mixer DACR1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.79 {
 		iface MIXER
-		name 'b HP DAC Playback Volume'
-		value.0 71
-		value.1 71
+		name 'b Right HPCOM Mixer PGAL Bypass Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.80 {
 		iface MIXER
-		name 'b HPCOM PGA Bypass Volume'
-		value.0 71
-		value.1 71
+		name 'b Right HPCOM Mixer DACL1 Playback Volume'
+		value 0
 		comment {
 			access 'read write'
 			type INTEGER
-			count 2
+			count 1
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
 		}
 	}
 	control.81 {
 		iface MIXER
-		name 'b HPCOM DAC Playback Volume'
-		value.0 71
-		value.1 71
+		name 'b Line PGA Bypass Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1174,44 +1170,172 @@ state.RX51 {
 			range '0 - 118'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -2350
-			dbvalue.1 -2350
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.82 {
 		iface MIXER
-		name 'b Line Playback Switch'
-		value.0 true
-		value.1 true
+		name 'b Line DAC Playback Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
-			type BOOLEAN
+			type INTEGER
 			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.83 {
 		iface MIXER
-		name 'b HP Playback Switch'
-		value.0 true
-		value.1 true
+		name 'b HP PGA Bypass Volume'
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
-			type BOOLEAN
+			type INTEGER
 			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
 		}
 	}
 	control.84 {
 		iface MIXER
-		name 'b HPCOM Playback Switch'
-		value.0 true
-		value.1 true
+		name 'b HP DAC Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.85 {
+		iface MIXER
+		name 'b HPCOM PGA Bypass Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.86 {
+		iface MIXER
+		name 'b HPCOM DAC Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 118'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 -9999999
+			dbvalue.1 -9999999
+		}
+	}
+	control.87 {
+		iface MIXER
+		name 'b Line Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+			dbvalue.1 0
+		}
+	}
+	control.88 {
+		iface MIXER
+		name 'b Line Playback Switch'
+		value.0 false
+		value.1 false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 2
 		}
 	}
-	control.85 {
+	control.89 {
+		iface MIXER
+		name 'b HP Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+			dbvalue.1 0
+		}
+	}
+	control.90 {
+		iface MIXER
+		name 'b HP Playback Switch'
+		value.0 false
+		value.1 false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 2
+		}
+	}
+	control.91 {
+		iface MIXER
+		name 'b HPCOM Playback Volume'
+		value.0 0
+		value.1 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 9'
+			dbmin 0
+			dbmax 900
+			dbvalue.0 0
+			dbvalue.1 0
+		}
+	}
+	control.92 {
+		iface MIXER
+		name 'b HPCOM Playback Switch'
+		value.0 false
+		value.1 false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 2
+		}
+	}
+	control.93 {
 		iface MIXER
 		name 'b AGC Switch'
 		value.0 false
@@ -1222,7 +1346,7 @@ state.RX51 {
 			count 2
 		}
 	}
-	control.86 {
+	control.94 {
 		iface MIXER
 		name 'b Left AGC Target level'
 		value '-5.5dB'
@@ -1240,7 +1364,7 @@ state.RX51 {
 			item.7 '-24dB'
 		}
 	}
-	control.87 {
+	control.95 {
 		iface MIXER
 		name 'b Right AGC Target level'
 		value '-5.5dB'
@@ -1258,7 +1382,7 @@ state.RX51 {
 			item.7 '-24dB'
 		}
 	}
-	control.88 {
+	control.96 {
 		iface MIXER
 		name 'b Left AGC Attack time'
 		value '8ms'
@@ -1272,7 +1396,7 @@ state.RX51 {
 			item.3 '20ms'
 		}
 	}
-	control.89 {
+	control.97 {
 		iface MIXER
 		name 'b Right AGC Attack time'
 		value '8ms'
@@ -1286,7 +1410,7 @@ state.RX51 {
 			item.3 '20ms'
 		}
 	}
-	control.90 {
+	control.98 {
 		iface MIXER
 		name 'b Left AGC Decay time'
 		value '100ms'
@@ -1300,7 +1424,7 @@ state.RX51 {
 			item.3 '500ms'
 		}
 	}
-	control.91 {
+	control.99 {
 		iface MIXER
 		name 'b Right AGC Decay time'
 		value '100ms'
@@ -1314,7 +1438,7 @@ state.RX51 {
 			item.3 '500ms'
 		}
 	}
-	control.92 {
+	control.100 {
 		iface MIXER
 		name 'b De-emphasis Switch'
 		value.0 false
@@ -1325,11 +1449,11 @@ state.RX51 {
 			count 2
 		}
 	}
-	control.93 {
+	control.101 {
 		iface MIXER
 		name 'b PGA Capture Volume'
-		value.0 32
-		value.1 32
+		value.0 0
+		value.1 0
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1337,22 +1461,22 @@ state.RX51 {
 			range '0 - 119'
 			dbmin 0
 			dbmax 5950
-			dbvalue.0 1600
-			dbvalue.1 1600
+			dbvalue.0 0
+			dbvalue.1 0
 		}
 	}
-	control.94 {
+	control.102 {
 		iface MIXER
 		name 'b PGA Capture Switch'
-		value.0 true
-		value.1 true
+		value.0 false
+		value.1 false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 2
 		}
 	}
-	control.95 {
+	control.103 {
 		iface MIXER
 		name 'b ADC HPF Cut-off'
 		value.0 Disabled
@@ -1367,7 +1491,7 @@ state.RX51 {
 			item.3 '0.025xFs'
 		}
 	}
-	control.96 {
+	control.104 {
 		iface MIXER
 		name 'b Output Driver Power-On time'
 		value '0us'
@@ -1389,7 +1513,7 @@ state.RX51 {
 			item.11 '4s'
 		}
 	}
-	control.97 {
+	control.105 {
 		iface MIXER
 		name 'b Output Driver Ramp-up step'
 		value '0ms'
@@ -1403,7 +1527,7 @@ state.RX51 {
 			item.3 '4ms'
 		}
 	}
-	control.98 {
+	control.106 {
 		iface MIXER
 		name 'McBSP2 Sidetone Switch'
 		value false
@@ -1413,10 +1537,10 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.99 {
+	control.107 {
 		iface MIXER
 		name 'McBSP2 Sidetone Channel 0 Volume'
-		value 0
+		value -32768
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1424,10 +1548,10 @@ state.RX51 {
 			range '-32768 - 32767'
 		}
 	}
-	control.100 {
+	control.108 {
 		iface MIXER
 		name 'McBSP2 Sidetone Channel 1 Volume'
-		value 0
+		value -32768
 		comment {
 			access 'read write'
 			type INTEGER
@@ -1435,10 +1559,10 @@ state.RX51 {
 			range '-32768 - 32767'
 		}
 	}
-	control.101 {
+	control.109 {
 		iface MIXER
 		name 'Speaker Function'
-		value On
+		value Off
 		comment {
 			access 'read write'
 			type ENUMERATED
@@ -1447,10 +1571,10 @@ state.RX51 {
 			item.1 On
 		}
 	}
-	control.102 {
+	control.110 {
 		iface MIXER
 		name 'Input Select'
-		value 'Digital Mic'
+		value ADC
 		comment {
 			access 'read write'
 			type ENUMERATED
@@ -1459,10 +1583,10 @@ state.RX51 {
 			item.1 'Digital Mic'
 		}
 	}
-	control.103 {
+	control.111 {
 		iface MIXER
 		name 'Jack Function'
-		value Off
+		value Headset
 		comment {
 			access 'read write'
 			type ENUMERATED
@@ -1473,30 +1597,30 @@ state.RX51 {
 			item.3 Headset
 		}
 	}
-	control.104 {
+	control.112 {
 		iface MIXER
 		name 'FM Transmitter Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.105 {
+	control.113 {
 		iface MIXER
 		name 'Earphone Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.106 {
+	control.114 {
 		iface MIXER
 		name 'Left DAC Mux'
-		value DAC_L1
+		value DAC_L3
 		comment {
 			access 'read write'
 			type ENUMERATED
@@ -1506,7 +1630,7 @@ state.RX51 {
 			item.2 DAC_L2
 		}
 	}
-	control.107 {
+	control.115 {
 		iface MIXER
 		name 'Left HPCOM Mux'
 		value 'differential of HPLOUT'
@@ -1519,10 +1643,10 @@ state.RX51 {
 			item.2 single-ended
 		}
 	}
-	control.108 {
+	control.116 {
 		iface MIXER
 		name 'Right DAC Mux'
-		value DAC_R1
+		value DAC_R3
 		comment {
 			access 'read write'
 			type ENUMERATED
@@ -1532,7 +1656,7 @@ state.RX51 {
 			item.2 DAC_R2
 		}
 	}
-	control.109 {
+	control.117 {
 		iface MIXER
 		name 'Right HPCOM Mux'
 		value 'differential of HPROUT'
@@ -1547,7 +1671,7 @@ state.RX51 {
 			item.4 'external feedback'
 		}
 	}
-	control.110 {
+	control.118 {
 		iface MIXER
 		name 'Left Line1L Mux'
 		value single-ended
@@ -1559,7 +1683,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.111 {
+	control.119 {
 		iface MIXER
 		name 'Left Line1R Mux'
 		value single-ended
@@ -1571,7 +1695,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.112 {
+	control.120 {
 		iface MIXER
 		name 'Right Line1L Mux'
 		value single-ended
@@ -1583,7 +1707,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.113 {
+	control.121 {
 		iface MIXER
 		name 'Right Line1R Mux'
 		value single-ended
@@ -1595,17 +1719,17 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.114 {
+	control.122 {
 		iface MIXER
 		name 'Left PGA Mixer Line1L Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.115 {
+	control.123 {
 		iface MIXER
 		name 'Left PGA Mixer Line1R Switch'
 		value false
@@ -1615,7 +1739,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.116 {
+	control.124 {
 		iface MIXER
 		name 'Left PGA Mixer Line2L Switch'
 		value false
@@ -1625,7 +1749,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.117 {
+	control.125 {
 		iface MIXER
 		name 'Left PGA Mixer Mic3L Switch'
 		value false
@@ -1635,7 +1759,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.118 {
+	control.126 {
 		iface MIXER
 		name 'Left PGA Mixer Mic3R Switch'
 		value false
@@ -1645,7 +1769,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.119 {
+	control.127 {
 		iface MIXER
 		name 'Left Line2L Mux'
 		value single-ended
@@ -1657,17 +1781,17 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.120 {
+	control.128 {
 		iface MIXER
 		name 'Right PGA Mixer Line1R Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.121 {
+	control.129 {
 		iface MIXER
 		name 'Right PGA Mixer Line1L Switch'
 		value false
@@ -1677,7 +1801,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.122 {
+	control.130 {
 		iface MIXER
 		name 'Right PGA Mixer Line2R Switch'
 		value false
@@ -1687,7 +1811,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.123 {
+	control.131 {
 		iface MIXER
 		name 'Right PGA Mixer Mic3L Switch'
 		value false
@@ -1697,7 +1821,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.124 {
+	control.132 {
 		iface MIXER
 		name 'Right PGA Mixer Mic3R Switch'
 		value false
@@ -1707,7 +1831,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.125 {
+	control.133 {
 		iface MIXER
 		name 'Right Line2R Mux'
 		value single-ended
@@ -1719,7 +1843,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.126 {
+	control.134 {
 		iface MIXER
 		name 'Left Line Mixer PGAL Bypass Switch'
 		value false
@@ -1729,17 +1853,17 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.127 {
+	control.135 {
 		iface MIXER
 		name 'Left Line Mixer DACL1 Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.128 {
+	control.136 {
 		iface MIXER
 		name 'Left Line Mixer PGAR Bypass Switch'
 		value false
@@ -1749,7 +1873,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.129 {
+	control.137 {
 		iface MIXER
 		name 'Left Line Mixer DACR1 Switch'
 		value false
@@ -1759,7 +1883,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.130 {
+	control.138 {
 		iface MIXER
 		name 'Left Line Mixer Line2L Bypass Switch'
 		value false
@@ -1769,7 +1893,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.131 {
+	control.139 {
 		iface MIXER
 		name 'Left Line Mixer Line2R Bypass Switch'
 		value false
@@ -1779,7 +1903,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.132 {
+	control.140 {
 		iface MIXER
 		name 'Right Line Mixer PGAL Bypass Switch'
 		value false
@@ -1789,7 +1913,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.133 {
+	control.141 {
 		iface MIXER
 		name 'Right Line Mixer DACL1 Switch'
 		value false
@@ -1799,7 +1923,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.134 {
+	control.142 {
 		iface MIXER
 		name 'Right Line Mixer PGAR Bypass Switch'
 		value false
@@ -1809,89 +1933,9 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.135 {
-		iface MIXER
-		name 'Right Line Mixer DACR1 Switch'
-		value true
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.136 {
-		iface MIXER
-		name 'Right Line Mixer Line2L Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.137 {
-		iface MIXER
-		name 'Right Line Mixer Line2R Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.138 {
-		iface MIXER
-		name 'Left HP Mixer PGAL Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.139 {
-		iface MIXER
-		name 'Left HP Mixer DACL1 Switch'
-		value true
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.140 {
-		iface MIXER
-		name 'Left HP Mixer PGAR Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.141 {
-		iface MIXER
-		name 'Left HP Mixer DACR1 Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.142 {
-		iface MIXER
-		name 'Left HP Mixer Line2L Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
 	control.143 {
 		iface MIXER
-		name 'Left HP Mixer Line2R Bypass Switch'
+		name 'Right Line Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1901,7 +1945,7 @@ state.RX51 {
 	}
 	control.144 {
 		iface MIXER
-		name 'Right HP Mixer PGAL Bypass Switch'
+		name 'Right Line Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1911,7 +1955,7 @@ state.RX51 {
 	}
 	control.145 {
 		iface MIXER
-		name 'Right HP Mixer DACL1 Switch'
+		name 'Right Line Mixer Line2R Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1921,7 +1965,7 @@ state.RX51 {
 	}
 	control.146 {
 		iface MIXER
-		name 'Right HP Mixer PGAR Bypass Switch'
+		name 'Left HP Mixer PGAL Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1931,8 +1975,8 @@ state.RX51 {
 	}
 	control.147 {
 		iface MIXER
-		name 'Right HP Mixer DACR1 Switch'
-		value true
+		name 'Left HP Mixer DACL1 Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -1941,7 +1985,7 @@ state.RX51 {
 	}
 	control.148 {
 		iface MIXER
-		name 'Right HP Mixer Line2L Bypass Switch'
+		name 'Left HP Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1951,7 +1995,7 @@ state.RX51 {
 	}
 	control.149 {
 		iface MIXER
-		name 'Right HP Mixer Line2R Bypass Switch'
+		name 'Left HP Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1961,7 +2005,7 @@ state.RX51 {
 	}
 	control.150 {
 		iface MIXER
-		name 'Left HPCOM Mixer PGAL Bypass Switch'
+		name 'Left HP Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1971,8 +2015,8 @@ state.RX51 {
 	}
 	control.151 {
 		iface MIXER
-		name 'Left HPCOM Mixer DACL1 Switch'
-		value true
+		name 'Left HP Mixer Line2R Bypass Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -1981,7 +2025,7 @@ state.RX51 {
 	}
 	control.152 {
 		iface MIXER
-		name 'Left HPCOM Mixer PGAR Bypass Switch'
+		name 'Right HP Mixer PGAL Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -1991,7 +2035,7 @@ state.RX51 {
 	}
 	control.153 {
 		iface MIXER
-		name 'Left HPCOM Mixer DACR1 Switch'
+		name 'Right HP Mixer DACL1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2001,7 +2045,7 @@ state.RX51 {
 	}
 	control.154 {
 		iface MIXER
-		name 'Left HPCOM Mixer Line2L Bypass Switch'
+		name 'Right HP Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2011,7 +2055,7 @@ state.RX51 {
 	}
 	control.155 {
 		iface MIXER
-		name 'Left HPCOM Mixer Line2R Bypass Switch'
+		name 'Right HP Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2021,7 +2065,7 @@ state.RX51 {
 	}
 	control.156 {
 		iface MIXER
-		name 'Right HPCOM Mixer PGAL Bypass Switch'
+		name 'Right HP Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2031,7 +2075,7 @@ state.RX51 {
 	}
 	control.157 {
 		iface MIXER
-		name 'Right HPCOM Mixer DACL1 Switch'
+		name 'Right HP Mixer Line2R Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2041,7 +2085,7 @@ state.RX51 {
 	}
 	control.158 {
 		iface MIXER
-		name 'Right HPCOM Mixer PGAR Bypass Switch'
+		name 'Left HPCOM Mixer PGAL Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2051,8 +2095,8 @@ state.RX51 {
 	}
 	control.159 {
 		iface MIXER
-		name 'Right HPCOM Mixer DACR1 Switch'
-		value true
+		name 'Left HPCOM Mixer DACL1 Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -2061,7 +2105,7 @@ state.RX51 {
 	}
 	control.160 {
 		iface MIXER
-		name 'Right HPCOM Mixer Line2L Bypass Switch'
+		name 'Left HPCOM Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2071,7 +2115,7 @@ state.RX51 {
 	}
 	control.161 {
 		iface MIXER
-		name 'Right HPCOM Mixer Line2R Bypass Switch'
+		name 'Left HPCOM Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2081,7 +2125,7 @@ state.RX51 {
 	}
 	control.162 {
 		iface MIXER
-		name 'Mono Mixer Line2L Bypass Switch'
+		name 'Left HPCOM Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2091,7 +2135,7 @@ state.RX51 {
 	}
 	control.163 {
 		iface MIXER
-		name 'Mono Mixer PGAL Bypass Switch'
+		name 'Left HPCOM Mixer Line2R Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2101,8 +2145,8 @@ state.RX51 {
 	}
 	control.164 {
 		iface MIXER
-		name 'Mono Mixer DACL1 Switch'
-		value true
+		name 'Right HPCOM Mixer PGAL Bypass Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -2111,7 +2155,7 @@ state.RX51 {
 	}
 	control.165 {
 		iface MIXER
-		name 'Mono Mixer Line2R Bypass Switch'
+		name 'Right HPCOM Mixer DACL1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2121,7 +2165,7 @@ state.RX51 {
 	}
 	control.166 {
 		iface MIXER
-		name 'Mono Mixer PGAR Bypass Switch'
+		name 'Right HPCOM Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2131,8 +2175,8 @@ state.RX51 {
 	}
 	control.167 {
 		iface MIXER
-		name 'Mono Mixer DACR1 Switch'
-		value true
+		name 'Right HPCOM Mixer DACR1 Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -2140,6 +2184,86 @@ state.RX51 {
 		}
 	}
 	control.168 {
+		iface MIXER
+		name 'Right HPCOM Mixer Line2L Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.169 {
+		iface MIXER
+		name 'Right HPCOM Mixer Line2R Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.170 {
+		iface MIXER
+		name 'Mono Mixer Line2L Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.171 {
+		iface MIXER
+		name 'Mono Mixer PGAL Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.172 {
+		iface MIXER
+		name 'Mono Mixer DACL1 Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.173 {
+		iface MIXER
+		name 'Mono Mixer Line2R Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.174 {
+		iface MIXER
+		name 'Mono Mixer PGAR Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.175 {
+		iface MIXER
+		name 'Mono Mixer DACR1 Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.176 {
 		iface MIXER
 		name 'b Left DAC Mux'
 		value DAC_L1
@@ -2152,7 +2276,7 @@ state.RX51 {
 			item.2 DAC_L2
 		}
 	}
-	control.169 {
+	control.177 {
 		iface MIXER
 		name 'b Left HPCOM Mux'
 		value 'differential of HPLOUT'
@@ -2165,7 +2289,7 @@ state.RX51 {
 			item.2 single-ended
 		}
 	}
-	control.170 {
+	control.178 {
 		iface MIXER
 		name 'b Right DAC Mux'
 		value DAC_R1
@@ -2178,7 +2302,7 @@ state.RX51 {
 			item.2 DAC_R2
 		}
 	}
-	control.171 {
+	control.179 {
 		iface MIXER
 		name 'b Right HPCOM Mux'
 		value 'differential of HPROUT'
@@ -2193,7 +2317,7 @@ state.RX51 {
 			item.4 'external feedback'
 		}
 	}
-	control.172 {
+	control.180 {
 		iface MIXER
 		name 'b Left Line1L Mux'
 		value single-ended
@@ -2205,7 +2329,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.173 {
+	control.181 {
 		iface MIXER
 		name 'b Left Line1R Mux'
 		value single-ended
@@ -2217,7 +2341,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.174 {
+	control.182 {
 		iface MIXER
 		name 'b Right Line1L Mux'
 		value single-ended
@@ -2229,7 +2353,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.175 {
+	control.183 {
 		iface MIXER
 		name 'b Right Line1R Mux'
 		value single-ended
@@ -2241,17 +2365,17 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.176 {
+	control.184 {
 		iface MIXER
 		name 'b Left PGA Mixer Line1L Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.177 {
+	control.185 {
 		iface MIXER
 		name 'b Left PGA Mixer Line1R Switch'
 		value false
@@ -2261,7 +2385,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.178 {
+	control.186 {
 		iface MIXER
 		name 'b Left PGA Mixer Line2L Switch'
 		value false
@@ -2271,7 +2395,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.179 {
+	control.187 {
 		iface MIXER
 		name 'b Left PGA Mixer Mic3L Switch'
 		value false
@@ -2281,7 +2405,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.180 {
+	control.188 {
 		iface MIXER
 		name 'b Left PGA Mixer Mic3R Switch'
 		value false
@@ -2291,7 +2415,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.181 {
+	control.189 {
 		iface MIXER
 		name 'b Left Line2L Mux'
 		value single-ended
@@ -2303,17 +2427,17 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.182 {
+	control.190 {
 		iface MIXER
 		name 'b Right PGA Mixer Line1R Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.183 {
+	control.191 {
 		iface MIXER
 		name 'b Right PGA Mixer Line1L Switch'
 		value false
@@ -2323,7 +2447,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.184 {
+	control.192 {
 		iface MIXER
 		name 'b Right PGA Mixer Line2R Switch'
 		value false
@@ -2333,7 +2457,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.185 {
+	control.193 {
 		iface MIXER
 		name 'b Right PGA Mixer Mic3L Switch'
 		value false
@@ -2343,7 +2467,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.186 {
+	control.194 {
 		iface MIXER
 		name 'b Right PGA Mixer Mic3R Switch'
 		value false
@@ -2353,7 +2477,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.187 {
+	control.195 {
 		iface MIXER
 		name 'b Right Line2R Mux'
 		value single-ended
@@ -2365,7 +2489,7 @@ state.RX51 {
 			item.1 differential
 		}
 	}
-	control.188 {
+	control.196 {
 		iface MIXER
 		name 'b Left Line Mixer PGAL Bypass Switch'
 		value false
@@ -2375,17 +2499,17 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.189 {
+	control.197 {
 		iface MIXER
 		name 'b Left Line Mixer DACL1 Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
 			count 1
 		}
 	}
-	control.190 {
+	control.198 {
 		iface MIXER
 		name 'b Left Line Mixer PGAR Bypass Switch'
 		value false
@@ -2395,7 +2519,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.191 {
+	control.199 {
 		iface MIXER
 		name 'b Left Line Mixer DACR1 Switch'
 		value false
@@ -2405,7 +2529,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.192 {
+	control.200 {
 		iface MIXER
 		name 'b Left Line Mixer Line2L Bypass Switch'
 		value false
@@ -2415,7 +2539,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.193 {
+	control.201 {
 		iface MIXER
 		name 'b Left Line Mixer Line2R Bypass Switch'
 		value false
@@ -2425,7 +2549,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.194 {
+	control.202 {
 		iface MIXER
 		name 'b Right Line Mixer PGAL Bypass Switch'
 		value false
@@ -2435,7 +2559,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.195 {
+	control.203 {
 		iface MIXER
 		name 'b Right Line Mixer DACL1 Switch'
 		value false
@@ -2445,7 +2569,7 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.196 {
+	control.204 {
 		iface MIXER
 		name 'b Right Line Mixer PGAR Bypass Switch'
 		value false
@@ -2455,89 +2579,9 @@ state.RX51 {
 			count 1
 		}
 	}
-	control.197 {
-		iface MIXER
-		name 'b Right Line Mixer DACR1 Switch'
-		value true
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.198 {
-		iface MIXER
-		name 'b Right Line Mixer Line2L Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.199 {
-		iface MIXER
-		name 'b Right Line Mixer Line2R Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.200 {
-		iface MIXER
-		name 'b Left HP Mixer PGAL Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.201 {
-		iface MIXER
-		name 'b Left HP Mixer DACL1 Switch'
-		value true
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.202 {
-		iface MIXER
-		name 'b Left HP Mixer PGAR Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.203 {
-		iface MIXER
-		name 'b Left HP Mixer DACR1 Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
-	control.204 {
-		iface MIXER
-		name 'b Left HP Mixer Line2L Bypass Switch'
-		value false
-		comment {
-			access 'read write'
-			type BOOLEAN
-			count 1
-		}
-	}
 	control.205 {
 		iface MIXER
-		name 'b Left HP Mixer Line2R Bypass Switch'
+		name 'b Right Line Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2547,7 +2591,7 @@ state.RX51 {
 	}
 	control.206 {
 		iface MIXER
-		name 'b Right HP Mixer PGAL Bypass Switch'
+		name 'b Right Line Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2557,7 +2601,7 @@ state.RX51 {
 	}
 	control.207 {
 		iface MIXER
-		name 'b Right HP Mixer DACL1 Switch'
+		name 'b Right Line Mixer Line2R Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2567,7 +2611,7 @@ state.RX51 {
 	}
 	control.208 {
 		iface MIXER
-		name 'b Right HP Mixer PGAR Bypass Switch'
+		name 'b Left HP Mixer PGAL Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2577,8 +2621,8 @@ state.RX51 {
 	}
 	control.209 {
 		iface MIXER
-		name 'b Right HP Mixer DACR1 Switch'
-		value true
+		name 'b Left HP Mixer DACL1 Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -2587,7 +2631,7 @@ state.RX51 {
 	}
 	control.210 {
 		iface MIXER
-		name 'b Right HP Mixer Line2L Bypass Switch'
+		name 'b Left HP Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2597,7 +2641,7 @@ state.RX51 {
 	}
 	control.211 {
 		iface MIXER
-		name 'b Right HP Mixer Line2R Bypass Switch'
+		name 'b Left HP Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2607,7 +2651,7 @@ state.RX51 {
 	}
 	control.212 {
 		iface MIXER
-		name 'b Left HPCOM Mixer PGAL Bypass Switch'
+		name 'b Left HP Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2617,8 +2661,8 @@ state.RX51 {
 	}
 	control.213 {
 		iface MIXER
-		name 'b Left HPCOM Mixer DACL1 Switch'
-		value true
+		name 'b Left HP Mixer Line2R Bypass Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -2627,7 +2671,7 @@ state.RX51 {
 	}
 	control.214 {
 		iface MIXER
-		name 'b Left HPCOM Mixer PGAR Bypass Switch'
+		name 'b Right HP Mixer PGAL Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2637,7 +2681,7 @@ state.RX51 {
 	}
 	control.215 {
 		iface MIXER
-		name 'b Left HPCOM Mixer DACR1 Switch'
+		name 'b Right HP Mixer DACL1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2647,7 +2691,7 @@ state.RX51 {
 	}
 	control.216 {
 		iface MIXER
-		name 'b Left HPCOM Mixer Line2L Bypass Switch'
+		name 'b Right HP Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2657,7 +2701,7 @@ state.RX51 {
 	}
 	control.217 {
 		iface MIXER
-		name 'b Left HPCOM Mixer Line2R Bypass Switch'
+		name 'b Right HP Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2667,7 +2711,7 @@ state.RX51 {
 	}
 	control.218 {
 		iface MIXER
-		name 'b Right HPCOM Mixer PGAL Bypass Switch'
+		name 'b Right HP Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2677,7 +2721,7 @@ state.RX51 {
 	}
 	control.219 {
 		iface MIXER
-		name 'b Right HPCOM Mixer DACL1 Switch'
+		name 'b Right HP Mixer Line2R Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2687,7 +2731,7 @@ state.RX51 {
 	}
 	control.220 {
 		iface MIXER
-		name 'b Right HPCOM Mixer PGAR Bypass Switch'
+		name 'b Left HPCOM Mixer PGAL Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2697,8 +2741,8 @@ state.RX51 {
 	}
 	control.221 {
 		iface MIXER
-		name 'b Right HPCOM Mixer DACR1 Switch'
-		value true
+		name 'b Left HPCOM Mixer DACL1 Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -2707,7 +2751,7 @@ state.RX51 {
 	}
 	control.222 {
 		iface MIXER
-		name 'b Right HPCOM Mixer Line2L Bypass Switch'
+		name 'b Left HPCOM Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2717,7 +2761,7 @@ state.RX51 {
 	}
 	control.223 {
 		iface MIXER
-		name 'b Right HPCOM Mixer Line2R Bypass Switch'
+		name 'b Left HPCOM Mixer DACR1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2727,7 +2771,7 @@ state.RX51 {
 	}
 	control.224 {
 		iface MIXER
-		name 'b Mono Mixer Line2L Bypass Switch'
+		name 'b Left HPCOM Mixer Line2L Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2737,7 +2781,7 @@ state.RX51 {
 	}
 	control.225 {
 		iface MIXER
-		name 'b Mono Mixer PGAL Bypass Switch'
+		name 'b Left HPCOM Mixer Line2R Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2747,8 +2791,8 @@ state.RX51 {
 	}
 	control.226 {
 		iface MIXER
-		name 'b Mono Mixer DACL1 Switch'
-		value true
+		name 'b Right HPCOM Mixer PGAL Bypass Switch'
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
@@ -2757,7 +2801,7 @@ state.RX51 {
 	}
 	control.227 {
 		iface MIXER
-		name 'b Mono Mixer Line2R Bypass Switch'
+		name 'b Right HPCOM Mixer DACL1 Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2767,7 +2811,7 @@ state.RX51 {
 	}
 	control.228 {
 		iface MIXER
-		name 'b Mono Mixer PGAR Bypass Switch'
+		name 'b Right HPCOM Mixer PGAR Bypass Switch'
 		value false
 		comment {
 			access 'read write'
@@ -2777,8 +2821,88 @@ state.RX51 {
 	}
 	control.229 {
 		iface MIXER
+		name 'b Right HPCOM Mixer DACR1 Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.230 {
+		iface MIXER
+		name 'b Right HPCOM Mixer Line2L Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.231 {
+		iface MIXER
+		name 'b Right HPCOM Mixer Line2R Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.232 {
+		iface MIXER
+		name 'b Mono Mixer Line2L Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.233 {
+		iface MIXER
+		name 'b Mono Mixer PGAL Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.234 {
+		iface MIXER
+		name 'b Mono Mixer DACL1 Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.235 {
+		iface MIXER
+		name 'b Mono Mixer Line2R Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.236 {
+		iface MIXER
+		name 'b Mono Mixer PGAR Bypass Switch'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.237 {
+		iface MIXER
 		name 'b Mono Mixer DACR1 Switch'
-		value true
+		value false
 		comment {
 			access 'read write'
 			type BOOLEAN
