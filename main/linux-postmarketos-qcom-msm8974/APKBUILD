@@ -3,17 +3,17 @@ _config="config-$_flavor.$CARCH"
 
 pkgname=linux-$_flavor
 
-pkgver=5.4.0_rc6
-pkgrel=1
+pkgver=5.6.0_rc6
+pkgrel=0
 
 arch="armv7"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8974 devices"
 url="https://kernel.org/"
 makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
 options="!strip !check !tracedeps"
-_commit="f5cb192a3e49fc69c2c1df8b684f954152a8a80c"
+_commit="5e47680b0bbc71dbc093123790951cc81eb2b84e"
 source="
-	linux-postmarketos-qcom-$_commit.tar.gz::https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/qcom/linux-postmarketos-qcom-$_commit.tar.gz
+	https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/$_commit/linux-postmarketos-$_commit.tar.gz
 	config-$_flavor.armv7
 "
 
@@ -32,7 +32,7 @@ esac
 HOSTCC="${CC:-gcc}"
 HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
-builddir="$srcdir/linux-postmarketos-qcom-$_commit"
+builddir="$srcdir/linux-postmarketos-$_commit"
 
 prepare() {
 	local _patch_failed=
@@ -157,5 +157,5 @@ dev() {
 		"$subpkgdir"/lib/modules/$_abi_release/build
 }
 
-sha512sums="36c6b2fd37f5ae13937ab0d3900cc8ddee2c78f963d74198488264ce2b10916e8150b6fb9983fe3ef92ac5ffd6d3af290a027e51f4aa7fe9bb6677e11406de3d  linux-postmarketos-qcom-f5cb192a3e49fc69c2c1df8b684f954152a8a80c.tar.gz
-6e51ab9de1881718d4518d93c143f99bada46ce0a6d543296587483eab63d0cd2b52ca7f3a0b407ce1256006ce8231655c0b907aaf1bff05c18ef0ac0cbc29fb  config-postmarketos-qcom-msm8974.armv7"
+sha512sums="946ef7133dd980a969afd0cfbaae55652cb3ddff588511cd5396f8a9a997e7e36b18e93f197917b3a0ba4b6e73f069ee248f8b26dfcb6acdd0bd3a9e093b775e  linux-postmarketos-5e47680b0bbc71dbc093123790951cc81eb2b84e.tar.gz
+8c801e61c6e1ff691301bc940fc1a4f8b3f523c0f6460ab5a927b8ab9cf115ef2c018932e9ec90e27d743c789502a15ae47d513622936a14f20ebdb1780aa439  config-postmarketos-qcom-msm8974.armv7"
