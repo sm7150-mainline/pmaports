@@ -2,13 +2,12 @@ _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 
 pkgname=linux-$_flavor
-
 pkgver=5.5.0_git20200225
-pkgrel=2
-
+pkgrel=3
 arch="aarch64"
 pkgdesc="Kernel fork with Pine64 patches"
 url="https://gitlab.com/pine64-org/linux/"
+license="GPL2"
 makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync"
 options="!strip !check !tracedeps"
 _commit="ec1031d53ba4de194eab86f2cc2e5cb3f8fe6e81"
@@ -23,8 +22,6 @@ source="
 
 subpackages="$pkgname-dev"
 
-license="GPL2"
-_abi_release=$_pkgver
 _carch=$CARCH
 case "$_carch" in
 aarch64*) _carch="arm64" ;;
@@ -32,9 +29,6 @@ arm*) _carch="arm" ;;
 ppc*) _carch="powerpc" ;;
 s390*) _carch="s390" ;;
 esac
-
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
 
 builddir="$srcdir/linux-$_commit"
 
@@ -55,32 +49,9 @@ build() {
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
-	# zImage (find the right one)
-	cd "$builddir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
-
-	cd "$builddir"
-	local _install
-	case "$CARCH" in
-	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
-	*)		_install="modules_install" ;;
-	esac
-
-	make -j1 $_install \
+	make -j1 modules_install dtbs_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
@@ -100,6 +71,6 @@ dev() {
 
 sha512sums="e534f16f308cdce4dec45c5cd89aa9336f6f77fb2610ded9796fde5bec78201ee62f56615de2e93be9cac69a3bfda06e28acd59f46234e360c61c8b1709b9d1c  linux-postmarketos-allwinner-ec1031d53ba4de194eab86f2cc2e5cb3f8fe6e81.tar.gz
 e4e585ce787301eeee07ff8e45a97343456808a47ed237053f0c83a49b4958a75514def4c5263f4507a282ea90bd2bb3f8f468839f7e5fd05ae947a796c8c6b9  rtl8723cs-1c9c0cb9d335626a66d8063399c6e16751ecc1a8.tar.gz
-04e8ddb076fbcf6a111d6e8f19e65cf5cdac57c9591dce9d4d46477d93804090ab7190b2599a857e8a916efa0858109dd1f3c23fc219d06b1f6e6c11ee3857ce  config-postmarketos-allwinner.aarch64
+946ee0840f54050ee56bb3a35ef4fcb5d53cdb7c3db9cfb9ac0e5e2a3e0ca27f6e65e79fa077430945b2df4bb47afc77b4519c015d6ba2c909eb09ad720864c6  config-postmarketos-allwinner.aarch64
 5f403bb1e3e7528954adcba4429768ce26bf13382dc6325ced245babcfb5252d515bea812b9df16d0e5370c9d4e07b4e0267f4c750281faf3cb6ffb29906700c  touch-dts.patch
 bf06f931fb543f4bf2f0567902c3021de237fc9684f92af2ed3e956f869d907c9cff1cf3e11a72eb97bda47c8f8b28aff226634f641bdffa04b08d434f419faa  rtl8723cs.patch"
