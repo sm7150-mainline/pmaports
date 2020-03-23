@@ -1,0 +1,33 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=plasma-dialer
+pkgver=0_git20200320
+pkgrel=0
+_commit="00b39c359e26b5da5633a27155e03a25f652fb71"
+pkgdesc="A dialer for Plasma Mobile"
+arch="all !armhf"
+url="https://invent.kde.org/kde/plasma-dialer"
+license="GPL-2.0-or-later"
+depends="kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev ki18n-dev kpeople-dev kdbusaddons-dev knotifications-dev telepathy-qt-dev libphonenumber-dev"
+source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-dialer/-/archive/$_commit/plasma-dialer-$_commit.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make -C build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make -C build install
+}
+sha512sums="b658eac04edadc8f00ced9e11490e4355ca93d4f6e15a0d1074f45015c6d113b467e549130869071077cc54015ebd0be6264ae1a43a58deac4bc4987376e5af5  plasma-dialer-00b39c359e26b5da5633a27155e03a25f652fb71.tar.gz"
