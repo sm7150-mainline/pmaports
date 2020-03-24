@@ -1,0 +1,25 @@
+# Contributor: Max Pertsov <max.pertsov@gmail.com>
+# Maintainer: Max Pertsov <max.pertsov@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-nokia-beatles"
+pkgdesc="Nokia 2720 Flip"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-nokia-beatles mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="334b5a2f3cf72a3b96c0a9ae00026015cd710a4e8048b271199dafb95be5c55baa35180ed8cb1e919f32a91971dc931d51ad57a957bc318c0dbf3c73be2c52d1  deviceinfo"
