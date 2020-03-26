@@ -3,7 +3,7 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5dev
 pkgdesc="Purism Librem 5 Devkit"
-pkgver=1.1
+pkgver=1.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -72,11 +72,11 @@ package() {
 	install -D -m644 "$srcdir"/modprobe.d_rsi.conf "$pkgdir"/etc/modprobe.d/rsi.conf
 	install -D -m644 "$srcdir"/00-mesa.sh "$pkgdir"/etc/profile.d/00-mesa.sh
 	install -D -m644 "$srcdir"/flash_script.lst "$pkgdir"/usr/share/uuu/flash_script.lst
-	install -D -m644 "$_confdir"/default/hwdb/80-librem5.hwdb "pkgdir"/lib/udev/hwdb.d/80-librem5.hwdb
+	install -D -m644 "$_confdir"/default/hwdb/80-librem5.hwdb "$pkgdir"/lib/udev/hwdb.d/80-librem5.hwdb
 	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-devkit-sgtl5000.udev \
-		"pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-devkit-sgtl5000.udev
+		"$pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-devkit-sgtl5000.udev
 	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-pm.udev  \
-		"pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-pm.udev
+		"$pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-pm.udev
 
 	devicepkg_package $startdir $pkgname
 }

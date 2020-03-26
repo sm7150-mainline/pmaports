@@ -3,7 +3,7 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.2
+pkgver=1.3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -36,6 +36,7 @@ subpackages="
 	$pkgname-plasma
 	$pkgname-phosh
 	$pkgname-pulseaudio
+	$pkgname-modemmanager
 "
 install="$pkgname.post-install"
 
@@ -88,9 +89,9 @@ package() {
 	install -D -m644 "$srcdir"/modules-load.d_librem5.conf "$pkgdir"/etc/modules-load.d/librem5.conf
 	install -D -m644 "$srcdir"/00-mesa.sh "$pkgdir"/etc/profile.d/00-mesa.sh
 	install -D -m644 "$srcdir"/flash_script.lst "$pkgdir"/usr/share/uuu/flash_script.lst
-	install -D -m644 "$_confdir"/default/hwdb/80-librem5.hwdb "pkgdir"/lib/udev/hwdb.d/80-librem5.hwdb
+	install -D -m644 "$_confdir"/default/hwdb/80-librem5.hwdb "$pkgdir"/lib/udev/hwdb.d/80-librem5.hwdb
 	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-pm.udev  \
-		"pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-pm.udev
+		"$pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-pm.udev
 	# 'install' dummy mass storage file for the g_multi module
 	mkdir -p "$pkgdir"/var/lib
 	dd if=/dev/zero of="$pkgdir"/var/lib/mass_storage_dummy bs=1024 count=1
