@@ -1,9 +1,9 @@
 # Contributor: Luca Weiss <luca@z3ntu.xyz>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=itinerary
-pkgver=0_git20191214
-_commit="63caaf2daae0a105982ee774de9a3797aae3ad33"
-pkgrel=2
+pkgver=0_git20200325
+_commit="54303b62bf6f4ec0cf1ccc2967364f96104bc68a"
+pkgrel=0
 pkgdesc="Application to assist with usage of Travel Reservations"
 url="https://github.com/KDE/itinerary"
 arch="all !armhf"
@@ -11,35 +11,28 @@ license="LGPL-2.0-or-later"
 depends="prison"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtquickcontrols2-dev
 	qt5-qtlocation-dev ki18n-dev kcontacts-dev kpkpass-dev kitinerary-dev
-	kpublictransport-dev kdbusaddons-dev solid-dev shared-mime-info"
+	kpublictransport-dev kdbusaddons-dev solid-dev shared-mime-info
+	kholidays-dev knotifications-dev"
 source="$pkgname-$_commit.tar.gz::https://github.com/KDE/itinerary/archive/$_commit.tar.gz
-	0001-Fix-build.patch
-	0001-Adapt-to-KPublicTransport-API-changes.patch"
+	0001-Revert-Consider-Reservation-reservationStatus.patch" # requires kitinerary v20.04.0
 builddir="$srcdir/$pkgname-$_commit"
-options="!check" # Tests fail
+options="!check" # Tests require newest version of kitinerary
 
 build() {
-	if [ "$CBUILD" != "$CHOST" ]; then
-		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
-	fi
-	cmake \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DBUILD_SHARED_LIBS=True \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
-		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-		-DCMAKE_C_FLAGS="$CFLAGS" \
-		$CMAKE_CROSSOPTS
-	make
+		-DCMAKE_INSTALL_LIBDIR=lib
+	make -C build
 }
 
 check() {
+	cd build
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	make DESTDIR="$pkgdir" install
+	DESTDIR="$pkgdir" make -C build install
 }
-sha512sums="4d0ac75d96cfe9c996ea6b41472945d827d612fe817dff342dffbb22588753cf96d307c9132a693ab77a24819afcc4af1a35e1b59af9d406a758c7663132ebd2  itinerary-63caaf2daae0a105982ee774de9a3797aae3ad33.tar.gz
-ac2eca31b0dc066ff174f6bdb612d5387e7d31bc31b5d0e28814be4932c69dbd9cec4975420757d5b70c14d9828ee4a7a175da4eae4124840fff26f68e0df20f  0001-Fix-build.patch
-619bf1ef7c3eb2b9f8de717f291ba7aac8f038adea38b5ef0c2406d57aff6d850e57d7d720f993242ac2fd6bf8ceebf647996c32bda1105652560818e7387ff7  0001-Adapt-to-KPublicTransport-API-changes.patch"
+sha512sums="563f9d2b6adae2c03a549cb83dbf2cef0baae8fdb1cc4310b6b90e73a25adcbbbf2ce98aaab5b9ff3658823c1b9370344f9f9c932338f8499093f747b5cbda8d  itinerary-54303b62bf6f4ec0cf1ccc2967364f96104bc68a.tar.gz
+1b28272addd954bbea2dc874dc0b2f4ade256da57115db3fa54a088d0367b32cab5b218c9eb273f5c8d9613e36a72be4437f9599067d932ef704e3504653335c  0001-Revert-Consider-Reservation-reservationStatus.patch"
