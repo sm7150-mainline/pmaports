@@ -1,40 +1,32 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=ktrip
-pkgver=0_git20191219
+pkgver=0_git20200327
 pkgrel=0
-_commit="07218461e85f1d9b5b177e78ea7d57fb0e95d9e0"
+_commit="222467070c3d823d7acf5572b3e0b95be68392c3"
 pkgdesc="A public transport assistant"
 arch="all !armhf"
 url="https://invent.kde.org/kde/ktrip"
 license="GPL-2.0-only OR GPL-3.0-only"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev ki18n-dev kitemmodels-dev kconfig-dev kpublictransport-dev"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev ki18n-dev kitemmodels-dev kconfig-dev kcontacts-dev kpublictransport-dev"
 source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/ktrip/-/archive/$_commit/ktrip-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
-prepare() {
-	default_prepare
-
-	mkdir "$builddir"/build
-}
-
 build() {
-	cd "$builddir"/build
-	cmake "$builddir" \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make
+	make -C build
 }
 
 check() {
-	cd "$builddir"/build
+	cd build
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	cd "$builddir"/build
-	DESTDIR="$pkgdir" make install
+	DESTDIR="$pkgdir" make -C build install
 }
-sha512sums="5caaaa312944fbdb2af151167a12d3a6f3c5d3ef93274e1d554b295841bd24fc8b9781705355910daafd9cb1bd4f5e1c31f6b087515f86c2ae2fcb8af0cd1af1  ktrip-07218461e85f1d9b5b177e78ea7d57fb0e95d9e0.tar.gz"
+sha512sums="bd640bce67a365b03d754ffdbaa4e6e12b7a0a64467cc2dd9ccbb22035376c537e64f1f3780d4e6917a6104c0f0341c29266e00ae5030deb003ae8adbb548504  ktrip-222467070c3d823d7acf5572b3e0b95be68392c3.tar.gz"
