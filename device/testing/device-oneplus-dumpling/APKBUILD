@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Contributor: Jami Kettunen <jami.kettunen@protonmail.com>
+
+pkgname="device-oneplus-dumpling"
+pkgdesc="OnePlus 5T"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-oneplus-msm8998 mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="a8064803ccd9e70f1e2a803af39a3ebbc872a57af9a4d0902b4d0b5d7de9ad17fb8cc76dd68da7ee38b2cb2d0d009832ae1bf19e08b8536b3b8529c12056dfb7  deviceinfo"
