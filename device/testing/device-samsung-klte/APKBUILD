@@ -4,7 +4,7 @@
 pkgname="device-samsung-klte"
 pkgdesc="Samsung Galaxy S5"
 pkgver=0.3
-pkgrel=9
+pkgrel=10
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -15,6 +15,8 @@ subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-downstream-firmware:downstream_firmware
+	$pkgname-mainline-firmware:mainline_firmware
 	$pkgname-nonfree-userland:nonfree_userland
 	$pkgname-hybris:hybris
 	$pkgname-hybris-x11:hybris_x11
@@ -64,18 +66,31 @@ kernel_downstream() {
 
 kernel_mainline() {
 	pkgdesc="For kernel development only (most features aren't working)"
-	depends="linux-postmarketos-qcom-msm8974"
+	depends="linux-postmarketos-qcom-msm8974 mesa-dri-gallium"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
-	pkgdesc="Wifi firmware"
+	pkgdesc="Wifi, GPU firmware"
+	mkdir "$subpkgdir"
+}
+
+downstream_firmware() {
+	pkgdesc="Firmware packages for klte downstream kernel"
 	depends="firmware-samsung-klte"
+	install_if="$pkgname-kernel-downstream $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+mainline_firmware() {
+	pkgdesc="Firmware packages for klte mainline kernel"
+	depends="firmware-adreno"
+	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
 	mkdir "$subpkgdir"
 }
 
 nonfree_userland() {
-	pkgdesc="Pulls libhybris (Android) hardware adaptation"
+	pkgdesc="Pulls libhybris (Android) hardware adaptation, only for downstream kernel"
 	depends="$pkgname-hybris"
 	mkdir "$subpkgdir"
 }
@@ -117,7 +132,7 @@ hybris_pulse() {
 sha512sums="a68734d3fe30695d5a9302c92327e8ca564a73d06f0de87371800d1bdf4c541c3721af380b8d44cfa0b4cc1dc8a71586aec3f00bb877ee9dc18f41ba34caaeff  70-klte-android.rules
 66db173b9f1075a133efeea8bda94ef08089b7c15acbc1e3aefb9f8510daa7690a0ce2739d20647e096ba69940ac5c4c6699f3b032ec67609ca56f116bb25256  battery-status
 c66e0c57e911b644cf6c340ea19ce0a9399b8e9e6cb0da38f612e0f8b3d0812ad109cd7b7506184e840a653397a64e3e57fdc71ab8b0fc52733bf74365b9c0e7  cpufreq.start
-557f82b044a9bb157e5de8eabe7ca343e26b4ecd6322fb12019404d2c669f1431ea60c48a5f701eea8cb32ea920f4a607036a7c1de3541a68319678ee8b5a695  deviceinfo
+e4a58fb06ec478ea34529db5bf6199d92e0357d9871b6da1d88bcea2590c2a4d152e97977ea4bad21192cdf2c3e9a5c1ee448e564ffb681860f89b5159f2ff58  deviceinfo
 35f3b120152ebe709e11cebc9ced03f21f52768d88bd68ed23ed864fe1dd3b63665c8f74575882e217dd8226ae5d260e5ad2045dc4ab2470c89185f19b81c4a7  fstab.android
 f773a9792407c1ad96b11c6673093c9eeff7d538459b7772c5956760a8cbb4de8912b24c77e8812afe056db26fa3e29af09e2a3851828baa0b9a9986bf80790b  set-brightness
 3753dcd8c25cfbbdd8f087a3168537df1334f0d33f36bc8923ec3d225ceb88121aa8d1670d6c6a2baab3d7067c86a43571695ce22e3b47076f97fcb53d1d7e6f  NetworkManager-klte.conf"
