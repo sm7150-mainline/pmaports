@@ -32,7 +32,11 @@ builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare
-	downstreamkernel_prepare "$srcdir" "$builddir"/kernel "$_config" "$_carch" "$HOSTCC"
+	_builddir="$builddir"
+	builddir="$builddir"/kernel
+	. downstreamkernel_prepare
+	builddir="$_builddir"
+	unset _builddir
 }
 
 build() {
