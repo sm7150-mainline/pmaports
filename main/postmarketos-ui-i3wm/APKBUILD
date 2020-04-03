@@ -2,18 +2,18 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=postmarketos-ui-i3wm
 pkgver=0.3
-pkgrel=4
+pkgrel=5
 pkgdesc="(X11) Tiling WM (keyboard required)"
 url="https://i3wm.org"
 arch="noarch"
 license="GPL-3.0-or-later"
-depends="xorg-server mesa-egl i3wm i3status dmenu xset xinput st lightdm lightdm-openrc"
+depends="xorg-server mesa-egl i3wm i3status dmenu xset xinput st lightdm lightdm-openrc elogind"
 install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.post-upgrade"
 source="lock.sh 60-lightdm-autologin.conf"
 options="!check"
 
 package() {
-	install -D -m755 "$srcdir"/lock.sh \
+	install -Dm755 "$srcdir"/lock.sh \
 		"$pkgdir"/usr/bin/lock.sh
 
 	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
