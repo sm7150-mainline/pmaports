@@ -1,16 +1,17 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Contributor: Jasper Korten <jja2000@gmail.com>
+# Contributor: Minecrell <minecrell@minecrell.net>
 pkgname="device-samsung-gt510wifi"
 pkgdesc="Samsung Galaxy Tab A 9.7 WiFi (2015) (SM-T550)"
-pkgver=1
-pkgrel=3
+pkgver=3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="deviceinfo modprobe.conf"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -27,4 +28,5 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="6da7cbfe782bcad26a9d321bd5285e2cf835465edf8ddd8b8d6038a40f70ee16ee7cfd6fae4d38bdf5ed790c5ae7ac387703f6b379383d65509e2ee425546758  deviceinfo"
+sha512sums="b13c20886b65a870bd9a2786cb67944e17f7fa67abd65320aad549636ecce351192d682db59c896ce5988a215659931d17cfc84c9c00289a336f9b48e8d882d1  deviceinfo
+8e589824aa6f2a63e37efc4b4daed6eb0dce5771803f8a5321c9513f413e719c72caa7a952671b9657e3e340bc4bd653bffe3d4685d07f4ec83d7be16e9ddab5  modprobe.conf"
