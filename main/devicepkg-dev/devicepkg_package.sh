@@ -31,3 +31,13 @@ if [ -f "$srcdir/initfs-hook.sh" ]; then
 	install -Dm644 "$srcdir/initfs-hook.sh" \
 		"$pkgdir/etc/postmarketos-mkinitfs/hooks/00-$pkgname.sh"
 fi
+
+if [ -f "$srcdir/modules-load.conf" ]; then
+	install -Dm644 "$srcdir/modules-load.conf" \
+		"$pkgdir/etc/modules-load.d/00-$pkgname.conf"
+fi
+
+if [ -f "$srcdir/modprobe.conf" ]; then
+	install -Dm644 "$srcdir/modprobe.conf" \
+		"$pkgdir/etc/modprobe.d/$pkgname.conf"
+fi
