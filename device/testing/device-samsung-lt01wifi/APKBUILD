@@ -3,7 +3,7 @@
 pkgname="device-samsung-lt01wifi"
 pkgdesc="Samsung Galaxy Tab 3 8.0"
 pkgver=0.1
-pkgrel=4
+pkgrel=6
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -21,11 +21,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
-	install -Dm644 "$srcdir"/modprobe.conf \
-		"$pkgdir"/etc/modprobe.d/dhd.conf
 }
 
 nonfree_firmware() {

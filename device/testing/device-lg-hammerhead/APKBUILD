@@ -2,7 +2,7 @@
 # Contributor: Martijn Braam <martijn@brixit.nl>
 pkgname=device-lg-hammerhead
 pkgver=2
-pkgrel=19
+pkgrel=20
 pkgdesc="Google Nexus 5"
 url="https://postmarketos.org"
 arch="armv7"
@@ -27,8 +27,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
 	install -D -m644 "$srcdir"/brcmfmac4339-sdio.txt \
 		"$pkgdir"/lib/firmware/brcm/brcmfmac4339-sdio.txt
 }

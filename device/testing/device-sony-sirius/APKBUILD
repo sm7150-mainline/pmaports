@@ -2,7 +2,7 @@
 # Contributor: Craig Tatlor <ctatlor97@gmail.com>
 pkgname=device-sony-sirius
 pkgver=1
-pkgrel=10
+pkgrel=11
 pkgdesc="Sony Xperia Z2 device package"
 url="https://postmarketos.org"
 arch="armv7"
@@ -25,8 +25,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/modules-load.conf \
-		"$pkgdir"/etc/modules-load.d/00-$pkgname.conf
 	install -Dm644 "$srcdir"/99-touch.rules \
 		"$pkgdir"/etc/udev/rules.d/99-touch.rules
 	install -D -m644 "$srcdir"/brcmfmac4339-sdio.txt \
