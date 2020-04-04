@@ -100,8 +100,37 @@ get_modules_by_globs()
 	done
 }
 
-# NOTE: This does not work with busybox' modprobe
-# That's why postmarketos-mkinitfs depends on kmod
+# Read a modules-load.d style file into a single line. The file is expected to
+# have empty lines, lines starting with "#" that are comments or one word in
+# the line. The resulting parsed line is printed to stdout.
+# $1: file to parse
+parse_file_as_line()
+{
+	_first="true"
+	while IFS= read -r line; do
+		case "$line" in
+			""|"#"*)
+				# Comment or empty line, ignore
+				;;
+			*)
+				if [ "$_first" = "true" ]; then
+					_first="false"
+				else
+					printf " "
+				fi
+				printf "%s" "$line"
+				;;
+		esac
+	done < "$1"
+}
+
+# Parse modules by name from deviceinfo and from these files:
+# /etc/postmarketos-mkinitfs/modules/*.modules. The postmarketos-mkinitfs
+# package installs a 00-default.modules there.
+# Resolved kernel module paths get printed to stdout, informative logging to
+# stderr.
+# NOTE: This does not work with busybox' modprobe. That's why
+#       postmarketos-mkinitfs depends on kmod.
 get_modules_by_name()
 {
 	{
@@ -111,9 +140,15 @@ get_modules_by_name()
 		echo "with 'y' instead of 'm' (module)."
 	} >&2
 
+	MODULES="$deviceinfo_modules_initfs"
+	echo " - deviceinfo: $deviceinfo_modules_initfs" >&2
 
-	MODULES="dm_crypt ext4 usb_f_rndis \
-			${deviceinfo_modules_initfs}"
+	for file in "/etc/postmarketos-mkinitfs/modules/"*.modules; do
+		[ -f "$file" ] || continue
+		_modules_file="$(parse_file_as_line "$file")"
+		echo " - $(basename "$file"): $_modules_file" >&2
+		MODULES="$MODULES $_modules_file"
+	done
 
 	# shellcheck disable=SC2086
 	modprobe \

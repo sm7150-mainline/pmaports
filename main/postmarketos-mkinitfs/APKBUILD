@@ -1,5 +1,5 @@
 pkgname=postmarketos-mkinitfs
-pkgver=0.11.1
+pkgver=0.12.0
 pkgrel=0
 pkgdesc="Tool to generate initramfs images for postmarketOS"
 url="https://postmarketos.org"
@@ -7,15 +7,16 @@ url="https://postmarketos.org"
 depends="busybox-extras lddtree cryptsetup kmod multipath-tools
 	device-mapper parted e2fsprogs e2fsprogs-extra osk-sdl charging-sdl triggerhappy xz bzip2 lz4"
 triggers="$pkgname.trigger=/etc/postmarketos-mkinitfs/hooks:/usr/share/kernel/*"
-source="init.sh.in
+source="00-default.modules
+	init.sh.in
 	init_functions.sh
 	mkinitfs.sh
 	mkinitfs_functions.sh
+	mkinitfs_test.sh
 	"
 arch="noarch"
 license="GPL2"
 provides="mkinitfs=0.0.1"
-options="!check"
 
 package() {
 	for file in init.sh.in init_functions.sh mkinitfs_functions.sh; do
@@ -23,13 +24,22 @@ package() {
 			"$pkgdir/usr/share/postmarketos-mkinitfs/$file"
 	done
 
+	install -Dm644 "$srcdir/00-default.modules" \
+		"$pkgdir/etc/postmarketos-mkinitfs/modules/00-default.modules"
+
 	install -Dm755 "$srcdir/mkinitfs.sh" \
 		"$pkgdir/sbin/mkinitfs"
 
 	mkdir -p "$pkgdir/etc/postmarketos-mkinitfs/hooks/"
 }
 
-sha512sums="1d49db8a48ad513cc548b8a0ea23cc64518e71c93863155b4e9d2271fb46090506331c03d6955d693c8568c248ecc76b218efe4a6f6bba57c41c5f6d775dc61b  init.sh.in
+check() {
+	/bin/busybox sh ./mkinitfs_test.sh
+}
+
+sha512sums="5037cb7285bb7c0c40ca9e6df332d882ef9a8b379756c785f921e062dab1b7e7f3139d00897f69323a916d709ced4297fea8cbd3a13ebae575b873ec9e2cbfae  00-default.modules
+1d49db8a48ad513cc548b8a0ea23cc64518e71c93863155b4e9d2271fb46090506331c03d6955d693c8568c248ecc76b218efe4a6f6bba57c41c5f6d775dc61b  init.sh.in
 315cc6e8a73f9984e6843395d68734d26ac2fffce34039ec5f229ebcd818bdb353318398d6c824cede5d0b36e13d7589a1f1d3295d8162279b5dc6a2b939da88  init_functions.sh
 7201d4640a3e9ead8a47ffd9916b068476b7d950760a84c37e02268c942d49896bc986da6bdee27e832639c90775354d68046a6475205d8d1da995b068120d8f  mkinitfs.sh
-a3e61f10ab63000b7ee2aafe021c248367ac2dd0ac6e5c263cfaf9d510e64b6e3dc9983e3b49e47fb7d8734ebcc277948003af01fa79f5f11703f7fb79281f4b  mkinitfs_functions.sh"
+c448b6d8810deb85590ac9e4254a8390fd25b3c5f1aef0a49cfaa6d489c58d45f5f7bda376f87ce241a432aaeccf1046ba63bfda2508fd456f5a0a93e2ca6f7d  mkinitfs_functions.sh
+c7a3c33daeb12b33ac72207191941c4d634f15c22958273b52af381a70ebaba1d3a9299483f0c447d9e66c560151fe7b9588bb4bbef2c8914f83185984ee4622  mkinitfs_test.sh"
