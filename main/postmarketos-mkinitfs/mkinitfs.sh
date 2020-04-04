@@ -1,5 +1,28 @@
 #!/bin/sh
 
+# Declare used deviceinfo variables to pass shellcheck (order alphabetically)
+deviceinfo_append_dtb=""
+deviceinfo_arch=""
+deviceinfo_bootimg_append_seandroidenforce=""
+deviceinfo_bootimg_blobpack=""
+deviceinfo_bootimg_dtb_second=""
+deviceinfo_bootimg_mtk_mkimage=""
+deviceinfo_bootimg_qcdt=""
+deviceinfo_dtb=""
+deviceinfo_flash_offset_base=""
+deviceinfo_flash_offset_kernel=""
+deviceinfo_flash_offset_ramdisk=""
+deviceinfo_flash_offset_second=""
+deviceinfo_flash_offset_tags=""
+deviceinfo_flash_pagesize=""
+deviceinfo_generate_bootimg=""
+deviceinfo_generate_legacy_uboot_initfs=""
+deviceinfo_initfs_compression=""
+deviceinfo_kernel_cmdline=""
+deviceinfo_legacy_uboot_load_address=""
+deviceinfo_modules_initfs=""
+
+
 source_deviceinfo()
 {
 	if [ ! -e "/etc/deviceinfo" ]; then
@@ -8,6 +31,7 @@ source_deviceinfo()
 			"automatically.)"
 		exit 0
 	fi
+	# shellcheck disable=SC1091
 	. /etc/deviceinfo
 }
 
@@ -22,7 +46,6 @@ parse_commandline()
 	outfile=$2
 	outfile_extra=$2-extra
 	kernel=$3
-	modules_path="/lib/modules/${kernel}"
 }
 
 # Verify that each file required by the installed hooks exists and exit with an
@@ -88,6 +111,8 @@ get_modules_by_name()
 
 	MODULES="dm_crypt ext4 usb_f_rndis \
 		${deviceinfo_modules_initfs}"
+
+	# shellcheck disable=SC2086
 	modprobe \
 		-a \
 		--dry-run \
@@ -129,6 +154,7 @@ get_binaries()
 			BINARIES="${BINARIES} ${line}"
 		done < "$file"
 	done
+	# shellcheck disable=SC2086
 	sudo -u nobody lddtree -l $BINARIES | sort -u
 }
 
@@ -137,7 +163,8 @@ get_binaries()
 get_osk_config()
 {
 	fontpath=$(awk '/^keyboard-font/{print $3}' /etc/osk.conf)
-	if [ ! -f $fontpath ]; then
+	if [ ! -f "$fontpath" ]; then
+		echo "ERROR: failed to parse 'keyboard-font' from osk-sdl config!"
 		exit 1
 	fi
 	ret="
@@ -156,6 +183,8 @@ get_binaries_extra()
 	tmp1=$(mktemp /tmp/mkinitfs.XXXXXX)
 	get_binaries > "$tmp1"
 	tmp2=$(mktemp /tmp/mkinitfs.XXXXXX)
+
+	# shellcheck disable=SC2086
 	sudo -u nobody lddtree -l $BINARIES_EXTRA | sort -u > "$tmp2"
 	ret=$(comm -13 "$tmp1" "$tmp2")
 	rm "$tmp1" "$tmp2"
@@ -190,7 +219,10 @@ replace_init_variables()
 # $2: outfile
 create_cpio_image()
 {
-	cd "$1"
+	if ! cd "$1"; then
+		echo "ERROR: failed to cd to '$1'"
+		exit 1
+	fi
 	[ -z "$deviceinfo_initfs_compression" ] && deviceinfo_initfs_compression='gzip -1'
 	find . -print0 \
 		| cpio --quiet -o -H newc \
@@ -203,7 +235,7 @@ create_cpio_image()
 # $3: related deviceinfo variable (e.g. "generate_bootimg")
 require_package()
 {
-	[ "$(command -v "$1")" == "" ] || return
+	[ "$(command -v "$1")" = "" ] || return
 	echo "ERROR: 'deviceinfo_$3' is set, but the package '$2' was not"
 	echo "installed! Please add '$2' to the depends= line of your device's"
 	echo "APKBUILD. See also: <https://postmarketos.org/deviceinfo>"
@@ -214,20 +246,22 @@ require_package()
 create_uboot_files()
 {
 	arch="arm"
-	if [ "${deviceinfo_arch}" == "aarch64" ]; then
+	if [ "${deviceinfo_arch}" = "aarch64" ]; then
 		arch="arm64"
 	fi
 
-	[ "${deviceinfo_generate_legacy_uboot_initfs}" == "true" ] || return
+	[ "${deviceinfo_generate_legacy_uboot_initfs}" = "true" ] || return
 	require_package "mkimage" "uboot-tools" "generate_legacy_uboot_initfs"
 
 	echo "==> initramfs: creating uInitrd"
+	# shellcheck disable=SC2039
 	mkimage -A $arch -T ramdisk -C none -n uInitrd -d "$outfile" \
 		"${outfile/initramfs-/uInitrd-}" || exit 1
 
 	echo "==> kernel: creating uImage"
+	# shellcheck disable=SC2039
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
-	if [ "${deviceinfo_append_dtb}" == "true" ]; then
+	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
 
@@ -235,33 +269,35 @@ create_uboot_files()
 		deviceinfo_legacy_uboot_load_address="80008000"
 	fi
 
+	# shellcheck disable=SC2039
 	mkimage -A $arch -O linux -T kernel -C none -a "$deviceinfo_legacy_uboot_load_address" \
 		-e "$deviceinfo_legacy_uboot_load_address" \
-		-n postmarketos -d $kernelfile "${outfile/initramfs-/uImage-}" || exit 1
+		-n postmarketos -d "$kernelfile" "${outfile/initramfs-/uImage-}" || exit 1
 }
 
 # Android devices
 create_bootimg()
 {
-	[ "${deviceinfo_generate_bootimg}" == "true" ] || return
+	[ "${deviceinfo_generate_bootimg}" = "true" ] || return
 	require_package "mkbootimg-osm0sis" "mkbootimg" "generate_bootimg"
 
 	echo "==> initramfs: creating boot.img"
 	_base="${deviceinfo_flash_offset_base}"
 	[ -z "$_base" ] && _base="0x10000000"
 
-	if [ "${deviceinfo_bootimg_mtk_mkimage}" == "true" ]; then
+	if [ "${deviceinfo_bootimg_mtk_mkimage}" = "true" ]; then
 		require_package "mtk-mkimage" "mtk-mkimage" "bootimg_mtk_mkimage"
-		mv $outfile $outfile-orig
-		mtk-mkimage ROOTFS $outfile-orig $outfile
+		mv "$outfile" "$outfile-orig"
+		mtk-mkimage ROOTFS "$outfile-orig" "$outfile"
 	fi
 
+	# shellcheck disable=SC2039
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
-	if [ "${deviceinfo_append_dtb}" == "true" ]; then
+	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
 	_second=""
-	if [ "${deviceinfo_bootimg_dtb_second}" == "true" ]; then
+	if [ "${deviceinfo_bootimg_dtb_second}" = "true" ]; then
 		if [ -z "${deviceinfo_dtb}" ]; then
 			echo "ERROR: deviceinfo_bootimg_dtb_second is set, but"
 			echo "'deviceinfo_dtb' is missing. Set 'deviceinfo_dtb'"
@@ -280,7 +316,7 @@ create_bootimg()
 		fi
 	fi
 	_dt=""
-	if [ "${deviceinfo_bootimg_qcdt}" == "true" ]; then
+	if [ "${deviceinfo_bootimg_qcdt}" = "true" ]; then
 		_dt="--dt /boot/dt.img"
 		if ! [ -e "/boot/dt.img" ]; then
 			echo "ERROR: File not found: /boot/dt.img, but"
@@ -293,6 +329,7 @@ create_bootimg()
 			exit 1
 		fi
 	fi
+	# shellcheck disable=SC2039
 	mkbootimg-osm0sis \
 		--kernel "${kernelfile}" \
 		--ramdisk "$outfile" \
@@ -303,16 +340,18 @@ create_bootimg()
 		--ramdisk_offset "${deviceinfo_flash_offset_ramdisk}" \
 		--tags_offset "${deviceinfo_flash_offset_tags}" \
 		--pagesize "${deviceinfo_flash_pagesize}" \
-		${_second} \
-		${_dt} \
+		"${_second}" \
+		"${_dt}" \
 		-o "${outfile/initramfs-/boot.img-}" || exit 1
-	if [ "${deviceinfo_bootimg_blobpack}" == "true" ]; then
+	if [ "${deviceinfo_bootimg_blobpack}" = "true" ]; then
 		echo "==> initramfs: creating blob"
+		# shellcheck disable=SC2039
 		blobpack "${outfile/initramfs-/blob-}" LNX \
 			"${outfile/initramfs-/boot.img-}" || exit 1
 	fi
-	if [ "${deviceinfo_bootimg_append_seandroidenforce}" == "true" ]; then
+	if [ "${deviceinfo_bootimg_append_seandroidenforce}" = "true" ]; then
 		echo "==> initramfs: appending 'SEANDROIDENFORCE' to boot.img"
+		# shellcheck disable=SC2039 disable=SC2039
 		echo -n "SEANDROIDENFORCE" >> "${outfile/initramfs-/boot.img-}"
 	fi
 }
@@ -322,18 +361,19 @@ append_or_copy_dtb()
 {
 	[ -n "${deviceinfo_dtb}" ] || return
 	dtb="/usr/share/dtb/${deviceinfo_dtb}.dtb"
+	# shellcheck disable=SC2039
 	kernel="${outfile/initramfs-/vmlinuz-}"
 	echo "==> kernel: device-tree blob operations"
 	if ! [ -e "$dtb" ]; then
 		echo "ERROR: File not found: $dtb"
 		exit 1
 	fi
-	if [ "${deviceinfo_append_dtb}" == "true" ]; then
+	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
 		cat "$kernel" "$dtb" > "${kernel}-dtb"
 	else
 		echo "==> kernel: copying dtb ${deviceinfo_dtb} to boot partition"
-		cp "$dtb" "$(dirname ${outfile})"
+		cp "$dtb" "$(dirname "${outfile}")"
 	fi
 }
 
