@@ -9,19 +9,14 @@ url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
 makedepends="devicepkg-dev"
+source="deviceinfo"
 subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
-	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
-"
-
-source="
-	deviceinfo
-	fb.modes
 "
 
 build() {
@@ -30,24 +25,17 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm544 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
 }
 
 kernel_mainline() {
 	pkgdesc="Mainline kernel (no charging, no modem, audio routed directly)"
-	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+	depends="linux-postmarketos-qcom-msm8916"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline_modem() {
 	pkgdesc="Mainline kernel (no charging, non-free modem, audio routed through ADSP)"
-	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916 soc-qcom-msm8916-modem"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_downstream() {
-	pkgdesc="For charging/debugging only (prefer mainline)"
-	depends="linux-wileyfox-crackling mesa-dri-swrast mdss-fb-init-hack"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
@@ -64,5 +52,4 @@ nonfree_firmware_modem() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="4f307c36c23994ad11f5f4af3209415993f3e5b134a0f05a4b1694a02d2d83cea7a395eb33958650162f3d13e2f6dde35ada7d22c15c195705bdc8ac7da83ccf  deviceinfo
-587be41a15f5738c6f55c52f760e08810185a00af886e84864f77ce38675bdf65893779a4ea88c9811023746895818ce5829a1b060e158f2cdae87d13e13f07d  fb.modes"
+sha512sums="1dc287097cee0119c3610d6ff26dacb2a3a7a8fa981e9c331e536810985fe189c59170c2c440c21aaea09e6c84dfdf0dcbfbbaf272005b261c8d2cfdbf5c5efe  deviceinfo"
