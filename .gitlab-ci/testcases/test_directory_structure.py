@@ -6,6 +6,8 @@ import os
 expected_directories = [
     "console",
     "cross",
+    "device/community",
+    "device/main",
     "device/testing",
     "firmware",
     "hybris",
