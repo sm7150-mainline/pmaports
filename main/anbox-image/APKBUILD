@@ -7,7 +7,7 @@
 # So we use pre-built images by Anbox for now.
 
 pkgname=anbox-image
-pkgver="7.1.2_p39"
+pkgver=7.1.2_p39
 _pkgver="${pkgver/p/r}"
 pkgrel=2
 pkgdesc="Android image for running in Anbox"
@@ -30,18 +30,17 @@ builddir="$srcdir/squashfs"
 options="!check"
 
 case "$CARCH" in
-	aarch64) _image=arm64;;
-	armv7)   _image=armv7a_neon;;
-	x86_64)  _image=x86_64;;
+	aarch64) _imgarch=arm64;;
+	armv7)   _imgarch=armv7a_neon;;
+	x86_64)  _imgarch=x86_64;;
 esac
-_image="android-$_pkgver-anbox_$_image-userdebug.img"
 
 prepare() {
 	cd "$srcdir"
 
 	mkdir -p ./squashfs
 	msg "Decompressing the image"
-	unsquashfs -f -d ./squashfs "$_image"
+	unsquashfs -f -d ./squashfs android-*-anbox_$_imgarch-userdebug.img
 
 	cd ./squashfs
 
