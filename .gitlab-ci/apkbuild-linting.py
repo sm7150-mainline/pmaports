@@ -3,7 +3,6 @@
 
 import common
 import os.path
-import subprocess
 import sys
 
 if __name__ == "__main__":
@@ -20,9 +19,10 @@ if __name__ == "__main__":
             print(f"NOTE: Skipping linting of {apkbuild}")
             continue
 
-        result = subprocess.run(["apkbuild-lint", apkbuild], capture_output=True)
-        if len(result.stdout) > 0:
-            issues.append([apkbuild, result.stdout.decode("utf-8")])
+        package = os.path.basename(os.path.dirname(apkbuild))
+        result = common.run_pmbootstrap(["-q", "lint", package], output_return=True)
+        if len(result) > 0:
+            issues.append([apkbuild, result])
 
     if len(issues) > 0:
         print("Linting issues found:")

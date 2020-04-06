@@ -85,9 +85,10 @@ aports-static:
 aport-lint:
   stage: first
   before_script:
-    - apk -q add git atools python3
+    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
+    - sh ./install_pmbootstrap.sh
   script:
-    - .gitlab-ci/apkbuild-linting.py
+    - su pmos -c ".gitlab-ci/apkbuild-linting.py"
   only:
     - merge_requests
   allow_failure: true
