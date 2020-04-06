@@ -35,14 +35,14 @@ def commit_message_has_string(needle):
     return needle in run_git(["show", "-s", "--format=full", "HEAD"])
 
 
-def run_pmbootstrap(parameters):
+def run_pmbootstrap(parameters, output_return=False):
     """ Run pmbootstrap with the pmaports dir as --aports """
     cmd = ["pmbootstrap", "--aports", get_pmaports_dir()] + parameters
-    process = subprocess.Popen(cmd)
-    process.communicate()
-    if process.returncode != 0:
-        print("** Test failed")
-        exit(1)
+    stdout = subprocess.PIPE if output_return else None
+    result = subprocess.run(cmd, stdout=stdout, universal_newlines=True)
+    result.check_returncode()
+    if output_return:
+        return result.stdout
 
 
 def get_changed_files(removed=True):
