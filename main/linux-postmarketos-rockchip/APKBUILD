@@ -1,0 +1,48 @@
+# Contributor: Martijn Braam <martijn@brixit.nl>
+# Maintainer: Martijn Braam <martijn@brixit.nl>
+
+pkgname=linux-postmarketos-rockchip
+pkgver=5.6.0_git20200402
+pkgrel=0
+pkgdesc="Kernel fork with Pinebook Pro and Rockpro64 patches"
+arch="aarch64"
+_carch="arm64"
+_flavor="postmarketos-rockchip"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync"
+
+# Source
+_commit="93293259039d6fc3a725961d42b4f11bfc3f5127"
+_config="config-$_flavor.$arch"
+source="
+	https://gitlab.manjaro.org/tsys/linux-pinebook-pro/-/archive/$_commit/linux-pinebook-pro-$_commit.tar.gz
+	config-postmarketos-rockchip.aarch64
+"
+builddir="$srcdir/linux-pinebook-pro-$_commit"
+
+prepare() {
+	default_prepare
+	REPLACE_GCCH=0 \
+		. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
+		CFLAGS_MODULE=-fno-pic
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	make -j1 modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+
+sha512sums="d386cb5c562cb6ae150b34d30724a2bcf9bcee0d7ae7ae70b34853a420e6125ad7ead5b554c9861d134ad69f59ac6615072a28950fc823d31d3cdf02745da087  linux-pinebook-pro-93293259039d6fc3a725961d42b4f11bfc3f5127.tar.gz
+54d759e3bc0dd13a5dd47eb72e6c7d6c2e777ac6194089ceb93c987d2fe4ad1e439a3b47dd3177d5cd2937bc49dac9dedb55d40a8af1d5304354416ab0e304b1  config-postmarketos-rockchip.aarch64"

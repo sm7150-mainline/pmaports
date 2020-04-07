@@ -1,0 +1,35 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-pine64-rockpro64
+pkgdesc="PINE64 RockPro64"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-rockchip u-boot-rockpro64 mesa-git-dri-gallium"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="
+	deviceinfo
+	extlinux.conf
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/extlinux.conf \
+		"$pkgdir"/boot/extlinux/extlinux.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi, Bluetooth and video-out firmware"
+	depends="firmware-pine64-pinebookpro"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="434545492e9bc18ddd46080979a4df99f0339867fbd28c4e20d7500f4f567a02df07b05152ae1189ae12eb2884b3d30627463830481ab2192160076b8a7ffbf4  deviceinfo
+bd974f4f2b27b868bd63d0134c3e4c062a786be781d2585f42326cfb135211cb038be8d769ec178b94cfe860290d2e502e5eb88ff077ea04b808980237cf624c  extlinux.conf"

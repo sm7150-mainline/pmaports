@@ -1,0 +1,59 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-pine64-pinebookpro
+pkgdesc="PINE64 Pinebook Pro"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-rockchip u-boot-rockpro64 mesa-git-dri-gallium"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+install="$pkgname.post-install"
+source="
+	deviceinfo
+	extlinux.conf
+	10-usb-kbd.hwdb
+	mem_sleep.conf
+	ucm/rockchip,es8316-codec.conf
+	ucm/HiFi
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/extlinux.conf \
+		"$pkgdir"/boot/extlinux/extlinux.conf
+
+	# Keyboard mapping
+	install -D -m644 "$srcdir"/10-usb-kbd.hwdb \
+		"$pkgdir"/etc/udev/hwdb.d/10-usb-kbd.hwdb
+
+	# Sleep workaround
+	install -D -m644 "$srcdir"/mem_sleep.conf \
+		"$pkgdir"/etc/sysfs.d/mem_sleep.conf
+
+	# Alsa usecase manager config
+	install -D -m644 "$srcdir"/rockchip,es8316-codec.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/rockchip,es8316-codec.conf/rockchip,es8316-codec.conf
+	install -D -m644 "$srcdir"/HiFi \
+		"$pkgdir"/usr/share/alsa/ucm2/rockchip,es8316-codec.conf/HiFi
+
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi, Bluetooth and video-out firmware"
+	depends="firmware-pine64-pinebookpro"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="a8d2d60ae752c16a9f9e2627a367636d36d61e82cf38fdb2c4f408f2f09d6fcf8f88a25cf0091e9aa4fa8e64488968663ff73af6b9c4150821a6922ff5e65826  deviceinfo
+6b3695373d6df7b6ac9f59a8c492d2f5e1ef1c6192662224547b500b071bf00ee4335c57736ba787eec236a2e8bde3c559f3cfc3d1e6fe13a7386d7a0db3ff78  extlinux.conf
+13a53bd00dd0afb8908b0bc98d388d5f37ab1df334a3ff0f56928f0f4e4e658253c78f2c368e31979cf8b4ebcc519d0efe0e2255979c00198b82a8eb37d93dd0  10-usb-kbd.hwdb
+bcae155e24a151d3c098833680b83b6004a329962f115480d560ebe19257eab87286b8a4c194e456c067ca54fb53e59a5a16b022cea13c11135b0855145db563  mem_sleep.conf
+846384cab3e9581a03007cf4f39f8538315e804d1573903dd223d22d5ca0b6f260e348467aead5124689288fb7d2ec22c1e9aba8e89683efdbd33ddfe10de852  rockchip,es8316-codec.conf
+520157f8215bd33e89f530fc37db451cf672df697de8883c91635df4fc32c4788dde1dd313c7d8b229916579fa25e0d60c8baf4721dcd9f95550abaa6d98a536  HiFi"
