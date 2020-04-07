@@ -350,28 +350,17 @@ generate_initramfs_extra()
 		exit 1
 	fi
 
-	# Hash all input files for caching
-	initfs_extra_files=$(echo "$BINARIES_EXTRA$osk_conf" | xargs -0 -I{} sh -c 'ls $1 2>/dev/null' -- {} | sort -u)
-	initfs_extra_files_hashes="$(md5sum $initfs_extra_files)"
-	initfs_extra_hash="$(echo "$initfs_extra_files_hashes" | md5sum | awk '{ print $1 }')"
+	# Set up initramfs-extra in temp folder
+	tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
+	mkdir -p "$tmpdir_extra"
+	copy_files "$(get_binaries_extra)" "$tmpdir_extra"
+	copy_files "$osk_conf" "$tmpdir_extra"
+	create_cpio_image "$tmpdir_extra" "$1.new"
+	rm -rf "$tmpdir_extra"
 
-	# The hash is appended to the initramfs, check if up-to-date
-	if [ ! -f "$1" ] || [ "$initfs_extra_hash" != "$(tail -c 32 "$1")" ]; then
-		# Set up initramfs-extra in temp folder
-		tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
-		mkdir -p "$tmpdir_extra"
-		copy_files "$(get_binaries_extra)" "$tmpdir_extra"
-		copy_files "$osk_conf" "$tmpdir_extra"
-		create_cpio_image "$tmpdir_extra" "$1.new"
-		rm -rf "$tmpdir_extra"
-
-		# Append hash to initramfs (used to check if up-to-date)
-		echo -n "$initfs_extra_hash" >> "$1.new"
-
-		# Replace old initramfs-extra *after* we are done to make sure
-		# it does not become corrupted if something goes wrong.
-		mv "$1.new" "$1"
-	fi
+	# Replace old initramfs-extra *after* we are done to make sure
+	# it does not become corrupted if something goes wrong.
+	mv "$1.new" "$1"
 }
 
 # initialize
