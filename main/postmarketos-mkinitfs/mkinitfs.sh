@@ -129,7 +129,7 @@ get_binaries()
 			BINARIES="${BINARIES} ${line}"
 		done < "$file"
 	done
-	lddtree -l $BINARIES | sort -u
+	sudo -u nobody lddtree -l $BINARIES | sort -u
 }
 
 # Collect non-binary files for osk-sdl and its dependencies
@@ -156,14 +156,13 @@ get_binaries_extra()
 	tmp1=$(mktemp /tmp/mkinitfs.XXXXXX)
 	get_binaries > "$tmp1"
 	tmp2=$(mktemp /tmp/mkinitfs.XXXXXX)
-	lddtree -l $BINARIES_EXTRA | sort -u > "$tmp2"
+	sudo -u nobody lddtree -l $BINARIES_EXTRA | sort -u > "$tmp2"
 	ret=$(comm -13 "$tmp1" "$tmp2")
 	rm "$tmp1" "$tmp2"
 	echo "${ret}"
 }
 
 # Copy files to the destination specified
-# FIXME: this is a performance bottleneck
 # $1: files
 # $2: destination
 copy_files()
