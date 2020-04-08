@@ -1,0 +1,44 @@
+pkgname=firmware-bq-picmt
+pkgver=0.1
+pkgrel=0
+pkgdesc="Firmware for Samsung Aquaris X5"
+url="https://github.com/JonnyMe/picmt-firmware"
+subpackages="$pkgname-adreno $pkgname-modem $pkgname-wcnss"
+arch="armv7"
+license="proprietary"
+options="!check !strip !archcheck"
+source="https://github.com/JonnyMe/picmt-firmware/raw/master/picmt_firmware_files.tar.xz"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	mkdir -p "$pkgdir"
+	mkdir -p "$pkgdir"/lib/firmware/postmarketos
+	mkdir -p "$pkgdir"/lib/firmware/postmarketos/wlan/prima
+}
+
+modem() {
+	pkgdesc="Aquaris X5 modem firmware"
+	cd "$srcdir"
+	install -D -m644 modem.* -t "$subpkgdir"/lib/firmware/postmarketos
+	install -D -m644 mba.* -t "$subpkgdir"/lib/firmware/postmarketos
+}
+
+adreno() {
+	pkgdesc="Aquaris X5 adreno gpu firmware"
+	cd "$srcdir"
+	install -D -m644 tz* -t "$subpkgdir"/lib/firmware/postmarketos
+	install -D -m644 a225* -t "$subpkgdir"/lib/firmware/qcom
+	install -D -m644 a330* -t "$subpkgdir"/lib/firmware/qcom
+	install -D -m644 a420* -t "$subpkgdir"/lib/firmware/qcom
+}
+
+wcnss() {
+	pkgdesc="Aquaris X5 WiFi/BT firmware"
+	depends="wcnss-wlan"
+	cd "$srcdir"
+	install -D -m644 wcnss.* -t "$subpkgdir"/lib/firmware/postmarketos
+	install -D -m644 WCNSS_* -t "$subpkgdir"/lib/firmware/postmarketos/wlan/prima
+}
+
+sha512sums="986f32ac33b895ca80abfe476cd1abd47a778ae8ddc6593ed4a6a91a244c5fe7ced6766b98ea2a3bdb4720fbabc40a50a8972106e6be2227f5ed8d7ffcdf2c0d  picmt_firmware_files.tar.xz"

@@ -1,0 +1,31 @@
+# Contributor: Jonathan Albrieux <jonathan.albrieux@gmail.com>
+# Maintainer: Jonathan Albrieux <jonathan.albrieux@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname="device-bq-picmt"
+pkgdesc="BQ Aquaris X5"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-bq-picmt mkbootimg qemu mesa-dri-swrast msm-fb-refresher"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi(/Modem in progress)/Adreno firmware"
+	depends="firmware-bq-picmt-wcnss firmware-bq-picmt-modem msm-modem-downstream firmware-bq-picmt-adreno"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="29f99696dc50e624223b3ee1cfbccc3d99fbe63b06b4bc340a57a796fed009e6048d4bbd440d2fc5fd38dcb4823fd172a019030230cb56164cc2498f7677cf76  deviceinfo"
