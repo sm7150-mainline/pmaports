@@ -8,13 +8,13 @@ rust_triplet() {
 			echo "x86_64-alpine-linux-musl"
 			;;
 		armhf)
-			echo "arm-unknown-linux-musleabihf"
+			echo "armv6-alpine-linux-musleabihf"
 			;;
 		armv7)
-			echo "armv7-unknown-linux-musleabihf"
+			echo "armv7-alpine-linux-musleabihf"
 			;;
 		aarch64)
-			echo "aarch64-unknown-linux-musl"
+			echo "aarch64-alpine-linux-musl"
 			;;
 		*)
 			echo "ERROR: don't know the rust triple for $1!" >&2
