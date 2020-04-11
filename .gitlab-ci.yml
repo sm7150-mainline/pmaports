@@ -67,7 +67,8 @@ aports-static:
   stage: first
   <<: *only-default
   before_script:
-    - .gitlab-ci/install_pmbootstrap.sh pytest
+    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
+    - sh ./install_pmbootstrap.sh pytest
   script:
     - apk -q add git
     - su pmos -c ".gitlab-ci/run_testcases.sh"
@@ -102,7 +103,8 @@ kernel-kconfig:
       - device/*/linux-*/config-*
       - main/linux-*/config-*
   before_script:
-    - .gitlab-ci/install_pmbootstrap.sh pytest
+    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
+    - sh ./install_pmbootstrap.sh pytest
   script:
     - su pmos -c "pmbootstrap kconfig check"
 
@@ -122,6 +124,7 @@ aports-build:
   stage: second
   <<: *only-default
   before_script:
-    - .gitlab-ci/install_pmbootstrap.sh git
+    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
+    - sh ./install_pmbootstrap.sh
   script:
     - PYTHONUNBUFFERED=1 su pmos -c ".gitlab-ci/build_changed_aports.py"
