@@ -19,6 +19,7 @@ sh_files="
 	./main/postmarketos-mkinitfs/init.sh.in
 	./main/postmarketos-mkinitfs/init_functions.sh
 	./main/postmarketos-mkinitfs/mkinitfs.sh
+	./main/postmarketos-mkinitfs/mkinitfs_functions.sh
 	./main/postmarketos-mkinitfs-hook-debug-shell/20-debug-shell.sh
 	./main/postmarketos-update-kernel/update-kernel.sh
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
