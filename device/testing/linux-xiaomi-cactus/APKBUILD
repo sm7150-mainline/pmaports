@@ -1,0 +1,47 @@
+# Contributor: Fedorov Bohdan <misterjdr@yandex.ru>
+# Maintainer: Fedorov Bohdan <misterjdr@yandex.ru>
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/cactus_defconfig
+
+pkgname="linux-xiaomi-cactus"
+pkgver=4.9.117
+pkgrel=0
+pkgdesc="Xiaomi Redmi 6A kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="xiaomi-cactus"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl python3"
+
+# Source
+_repository="Xiaomi_Kernel_OpenSource"
+_commit="b417db1e025f22dff9dfc65819ecf2db4d9d85f8"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/MiCode/$_repository/archive/$_commit.tar.gz
+	$_config
+	0001-Port-build-scripts-to-Python3.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+}
+
+sha512sums="7328c6fd8a8aad72a2b88b24319dd0887685d2c1f684f922b258df79aba9eaa151196ed0cb34f2364f7c04ccf1504b3749755ed6cadfd8568e92ae3f8d7f58e5  linux-xiaomi-cactus-b417db1e025f22dff9dfc65819ecf2db4d9d85f8.tar.gz
+6d3cecc1edff130c5be0da75f193629c19d518ab391d1e9631bf4ba4649ebdafb69f38d502d8f6b597296412f4421c32fffa61bce25a80bd28108f0f4b451b64  config-xiaomi-cactus.armv7
+3f295c4ed0eb6d2bcdb88e986a640b20f5fb4c299ae792b01b70b5319d6b3e0d59475a2f3686ed167249aa091a7156760b90f73e9d8dc5505cbaef4cc19d3ffb  0001-Port-build-scripts-to-Python3.patch"
