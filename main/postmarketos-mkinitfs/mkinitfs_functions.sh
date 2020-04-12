@@ -374,7 +374,7 @@ create_bootimg()
 			exit 1
 		fi
 	fi
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC2039 disable=SC2086
 	mkbootimg-osm0sis \
 		--kernel "${kernelfile}" \
 		--ramdisk "$outfile" \
@@ -385,8 +385,8 @@ create_bootimg()
 		--ramdisk_offset "${deviceinfo_flash_offset_ramdisk}" \
 		--tags_offset "${deviceinfo_flash_offset_tags}" \
 		--pagesize "${deviceinfo_flash_pagesize}" \
-		"${_second}" \
-		"${_dt}" \
+		${_second} \
+		${_dt} \
 		-o "${outfile/initramfs-/boot.img-}" || exit 1
 	if [ "${deviceinfo_bootimg_blobpack}" = "true" ]; then
 		echo "==> initramfs: creating blob"
