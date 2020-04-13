@@ -1,0 +1,48 @@
+# Contributor: Venji10 <bennisteinir@gmail.com>
+# Maintainer: Venji10 <bennisteinir@gmail.com>
+
+pkgname=firmware-xiaomi-beryllium
+pkgver=0
+pkgrel=0.1
+_commit="c91d13e6ee4c91b5665911816607ddc7bb60f0a4"
+pkgdesc="Firmware files for Xiaomi Poco F1"
+url="https://postmarketos.org"
+arch="aarch64"
+license="proprietary"
+options="!strip !check !archcheck !spdx"
+
+# Source
+_files="a630_zap.mdt a630_zap.elf a630_zap.b02 a630_zap.b01 a630_zap.b00 a630_sqe.fw a630_gmu.bin "
+
+_files_sdm845="sdm845/adsp.mbn sdm845/adspr.jsn sdm845/adspua.jsn sdm845/cdsp.mbn
+	 sdm845/cdspr.jsn sdm845/mba.mbn sdm845/modem.mbn sdm845/modemuw.jsn sdm845/wlanmdsp.mbn"
+
+_files_venus="venus-5.2/venus.b00 venus-5.2/venus.b01 venus-5.2/venus.b02 venus-5.2/venus.b03
+	venus-5.2/venus.b04 venus-5.2/venus.mbn venus-5.2/venus.mdt"
+
+source="$pkgname-$_commit.tar.gz::https://github.com/Venji10/firmware-xiaomi-beryllium/archive/$_commit.tar.gz"
+builddir="$srcdir/firmware-xiaomi-beryllium-$_commit"
+
+package() {
+	# /lib/firmware/qcom
+	for _i in $_files; do
+		install -D -m644 "$_i" \
+			"$pkgdir"/lib/firmware/qcom/"$_i"
+	done
+
+	# /lib/firmware/qcom/sdm845
+	for _i in $_files_sdm845; do
+		install -D -m644 "$_i" \
+			"$pkgdir"/lib/firmware/qcom/"$_i"
+	done
+
+	# /lib/firmware/qcom/venus-5.2
+	for _i in $_files_venus; do
+		install -D -m644 "$_i" \
+			"$pkgdir"/lib/firmware/qcom/"$_i"
+	done
+
+
+}
+
+sha512sums="d48484ce1fed8d40cc8ae9164121a521e60617700a27d557f08ab55c89d2cf88bb2ca7842a5001e30bde0c46051026c90bea02137060048878e41eb641841b6c  firmware-xiaomi-beryllium-c91d13e6ee4c91b5665911816607ddc7bb60f0a4.tar.gz"

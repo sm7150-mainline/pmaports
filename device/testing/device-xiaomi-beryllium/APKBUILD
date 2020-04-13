@@ -1,0 +1,49 @@
+# Contributor: Venji10 <bennisteinir@gmail.com>
+# Maintainer: Venji10 <bennisteinir@gmail.com>
+
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-beryllium
+pkgdesc="Xiaomi Poco F1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+"
+
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU, venus, modem firmware"
+	depends="firmware-xiaomi-beryllium"
+	mkdir "$subpkgdir"
+}
+
+kernel_downstream() {
+	pkgdesc="USB, display (w/o HW acceleration) and touchscreen works (see device page in wiki for details)"
+	depends="linux-xiaomi-beryllium mesa-dri-swrast"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="USB and display works (see device page in wiki for details) (GPU firmware needed)"
+	depends="linux-xiaomi-beryllium-mainline mesa-dri-freedreno"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+sha512sums="722dc0db90f7e09e5d09520d52a67e8d1810c2c65e53b9bb4fbac6b1e90c087733994ddd58786be19e678e06641f407a268a70eac6457277b62da193085dc807  deviceinfo"
