@@ -1,15 +1,15 @@
 # Contributor: Jonathan Albrieux <jonathan.albrieux@gmail.com>
 # Maintainer: Jonathan Albrieux <jonathan.albrieux@gmail.com>
 # Reference: <https://postmarketos.org/devicepkg>
-pkgname="device-bq-picmt"
-pkgdesc="BQ Aquaris X5"
+pkgname="device-bq-paella"
+pkgdesc="BQ Aquaris X5 Cyanogen Edition"
 pkgver=1
-pkgrel=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
-arch="armv7"
+arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-bq-picmt mkbootimg qemu mesa-dri-swrast msm-fb-refresher"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
@@ -23,9 +23,9 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Wifi(/Modem in progress)"
-	depends="firmware-bq-picmt-wcnss wcnss-wlan firmware-bq-picmt-modem msm-modem-downstream"
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-bq-picmt-venus firmware-bq-picmt-wcnss"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="29f99696dc50e624223b3ee1cfbccc3d99fbe63b06b4bc340a57a796fed009e6048d4bbd440d2fc5fd38dcb4823fd172a019030230cb56164cc2498f7677cf76  deviceinfo"
+sha512sums="e813ad9c744845b0520830bc14fe9ca603999d6b7fbc8309fa7a3a6816ebb102310ec99d7cf163fe2d5735ac65f8f7f43b3f584a7ec2d556d414ee88275facb5  deviceinfo"

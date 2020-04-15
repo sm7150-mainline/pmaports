@@ -1,10 +1,10 @@
 pkgname=firmware-bq-picmt
-pkgver=0.1
+pkgver=1
 pkgrel=0
-pkgdesc="Firmware for Samsung Aquaris X5"
+pkgdesc="Firmware for BQ Aquaris X5"
 url="https://github.com/JonnyMe/picmt-firmware"
-subpackages="$pkgname-adreno $pkgname-modem $pkgname-wcnss"
-arch="armv7"
+subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss"
+arch="aarch64 armv7"
 license="proprietary"
 options="!check !strip !archcheck"
 source="https://github.com/JonnyMe/picmt-firmware/raw/master/picmt_firmware_files.tar.xz"
@@ -12,33 +12,27 @@ source="https://github.com/JonnyMe/picmt-firmware/raw/master/picmt_firmware_file
 _fwdir="/lib/firmware/postmarketos"
 
 package() {
+	# parent package is empty
 	mkdir -p "$pkgdir"
-	mkdir -p "$pkgdir"/lib/firmware/postmarketos
-	mkdir -p "$pkgdir"/lib/firmware/postmarketos/wlan/prima
 }
 
 modem() {
-	pkgdesc="Aquaris X5 modem firmware"
+	pkgdesc="BQ Aquaris X5 modem firmware"
 	cd "$srcdir"
-	install -D -m644 modem.* -t "$subpkgdir"/lib/firmware/postmarketos
-	install -D -m644 mba.* -t "$subpkgdir"/lib/firmware/postmarketos
+	install -Dm644 "$srcdir"/modem.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 "$srcdir"/mba.* -t "$subpkgdir/$_fwdir"
 }
 
-adreno() {
-	pkgdesc="Aquaris X5 adreno gpu firmware"
-	cd "$srcdir"
-	install -D -m644 tz* -t "$subpkgdir"/lib/firmware/postmarketos
-	install -D -m644 a225* -t "$subpkgdir"/lib/firmware/qcom
-	install -D -m644 a330* -t "$subpkgdir"/lib/firmware/qcom
-	install -D -m644 a420* -t "$subpkgdir"/lib/firmware/qcom
+venus() {
+	pkgdesc="BQ Aquaris X5 video firmware"
+	install -Dm644 "$srcdir"/venus.* -t "$subpkgdir/$_fwdir"/qcom/venus-1.8
 }
 
 wcnss() {
-	pkgdesc="Aquaris X5 WiFi/BT firmware"
-	depends="wcnss-wlan"
+	pkgdesc="BQ Aquaris X5 WiFi/BT firmware"
 	cd "$srcdir"
-	install -D -m644 wcnss.* -t "$subpkgdir"/lib/firmware/postmarketos
-	install -D -m644 WCNSS_* -t "$subpkgdir"/lib/firmware/postmarketos/wlan/prima
+	install -Dm644 "$srcdir"/wcnss.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 "$srcdir"/WCNSS_* -t "$subpkgdir/$_fwdir"/wlan/prima
 }
 
-sha512sums="986f32ac33b895ca80abfe476cd1abd47a778ae8ddc6593ed4a6a91a244c5fe7ced6766b98ea2a3bdb4720fbabc40a50a8972106e6be2227f5ed8d7ffcdf2c0d  picmt_firmware_files.tar.xz"
+sha512sums="7f426e5fdb20319ed22c16be1ce13d069532bdfb8dc754a735c2a019342758b1f0210614dfeaa1d850802083a550ec8a6931d3572d203267cae8ec59f6613d82  picmt_firmware_files.tar.xz"
