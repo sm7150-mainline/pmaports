@@ -11,6 +11,8 @@ rc-update add acpid default
 rc-update add hwdrivers boot
 # Enable ofono
 rc-update add ofono default
+# Enable swclock
+rc-update -q add swclock boot
 
 # Load nokia-modem module on boot
 NMC=/etc/modules-load.d/nokia-modem.conf
@@ -22,11 +24,6 @@ fi
 if [ -z "$(grep /dev/rtc0 /etc/conf.d/hwclock)" ]; then
         sed -i 's/clock_args=\"/clock_args=\" -f \/dev\/rtc/' /etc/conf.d/hwclock
 fi
-
-exit 0
-
-# Enable swclock OpenRC service
-rc-update -q add swclock boot
 
 # Prime swclock with a reasonable date/time on first boot
 mkdir -p /run/openrc
