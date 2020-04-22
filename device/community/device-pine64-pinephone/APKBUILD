@@ -1,23 +1,22 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Martijn Braam <martijn@brixit.nl>
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
+pkgver=0.3
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
-pkgver=0.2
-pkgrel=9
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-subpackages="
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
-depends="postmarketos-base u-boot-pinephone uboot-tools mesa-git-dri-gallium linux-postmarketos-allwinner gpsd atinout bluez"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+depends="postmarketos-base u-boot-pinephone uboot-tools mesa-git-dri-gallium linux-postmarketos-allwinner gpsd atinout"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
-source="
-	deviceinfo
+source="deviceinfo
 	uboot-script.cmd
 	sysrq.conf
-	weston.ini
 	hwtest.ini
 	gpsd_pinephone.initd
 	gpsd_device-hook.sh
@@ -79,7 +78,6 @@ nonfree_firmware() {
 sha512sums="d652289aee7c54e2785136fbcd360e5909d80b0940758771cdb8f01504f397ed36a38e5015e947007b84bc58b29fd0f67dc7b886facfe47e15d694bf54617d7e  deviceinfo
 8a7c4f2ee8ce946c611e5023a1d23f5e1898faee02c2171ce03b2ce0e83a6d79cd4301f80e404ae62fb7e7db7b6bbb2b5e0e0480b396532e941db37300feee1e  uboot-script.cmd
 f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
-c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
 ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd46444dd3c0a637ec08ce6125b18240fe6bfc13f624a15192e648  gpsd_device-hook.sh
