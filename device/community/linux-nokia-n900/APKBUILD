@@ -1,8 +1,8 @@
 # Maintainer: Daniele Debernardi <drebrez@gmail.com>
 
 pkgname=linux-nokia-n900
-pkgver=5.3.2
-pkgrel=2
+pkgver=5.7.0
+pkgrel=0
 pkgdesc="Mainline kernel fork for Nokia N900"
 arch="armv7"
 url="https://kernel.org/"
@@ -26,15 +26,11 @@ source="
 "
 if [ "${pkgver%.0}" = "$pkgver" ]; then
 	source="$source
-	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
+	linux-$pkgver.patch.xz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
 fi
 builddir="$srcdir/linux-$_kernver"
 
 prepare() {
-	if [ "$_kernver" != "$pkgver" ]; then
-		msg "Applying patch-$pkgver.xz"
-		unxz -c < "$srcdir"/patch-$pkgver.xz | patch -p1 -N
-	fi
 	default_prepare
 	cp -v "$srcdir"/$_config .config
 }
@@ -49,6 +45,7 @@ package() {
 	mkdir -p "$pkgdir"/boot
 	make zinstall modules_install dtbs_install \
 		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
@@ -57,9 +54,8 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="6b5edef47c319a3fa7f6c20a3e0903a5acd89ec75e32dc5f99adcb60c9fe118ea312722d9c3d27e2e3900afa2455afb86e83a8b6bb131009bc79ddbe6fb0595d  linux-5.3.tar.xz
-1bb77dba5753194437fae7304a8304d4f4f0a2e4c5bf9c8c410ee07486e7eccff44ffbd3fd81e937bf32a2c5ead766f0606203addc8a024cbf6b471040c3d051  config-nokia-n900.armv7
+sha512sums="45bde01593f6147c8c169b9e46b4b56eee998142552ae0ff82f1dd21b1fd54f3b32f6283f6bd77ea717d374672167849e468c157f235d2f12f7d7816e4623bf6  linux-5.7.tar.xz
+91fa33ac6abf6908d9054ef651e724ceb825ee004e8931b66437ff442d9755cffc75c52b4b3cec1891b205360a504e4485ab3948cfd9fce4dcb5e99a2f96250d  config-nokia-n900.armv7
 04a39253afd25a7de03dc45ff322161672005406543c44b97d2dc293f202de7de446aee9707a690a290641c55c7bed6e78bbe096ca323dd7d88d3207427c8d31  0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
 c1055c7a4d2e39ce13db3871d948022b62eb7ebeb898777d197169b3e7c04d705ce7f52f28214754e3cefe99d1dd66f339a1a5770bae1ee970d5926067032061  0002-ARM-dts-n900-remove-rx51-battery.patch
-cca336961620cc8aea700bf22d4d788f514177c37fb2a660478b731cf2f01d4e63bfa0951aae39b7dfa722966a1692bc237eda1951e4fe1da3f597aa68b56ebe  0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
-3528b4355ebbf1a1cbc4ac7efd7cdd5b5dddb28c30e182e8c0f3119c61a97d6bc1fb07ec8f2cf0a78067b098c27535bc006485428c76d6c8fb653f215218dff3  patch-5.3.2.xz"
+93e82f7041e347b63fc32ce54176ee3fe7e8260cc793810bcf0146a3699567b63a0cb7ce8c531b0484390907a25c51bfbeb15b32dddb2220c2481ec1f86e5eb5  0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch"
