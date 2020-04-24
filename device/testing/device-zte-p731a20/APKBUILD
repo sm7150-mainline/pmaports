@@ -1,19 +1,17 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Contributor: km2 <gtk3@inbox.ru>
-pkgname="device-zte-p731a20"
+pkgname=device-zte-p731a20
 pkgdesc="ZTE Blade AF3"
 pkgver=0.1
-pkgrel=4
+pkgrel=5
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-zte-p731a20 mkbootimg mesa-dri-swrast alsa-utils"
+depends="postmarketos-base linux-zte-p731a20 mkbootimg mesa-dri-swrast alsa-utils soc-sprd-audio-sc8830"
 makedepends="devicepkg-dev"
 source="deviceinfo
-	initfs-hook.sh
-	asound.state
-	asound.conf"
+	initfs-hook.sh"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -21,16 +19,8 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	# ALSA
-	install -D -m644 "$srcdir"/asound.conf \
-		"$pkgdir"/etc/asound.conf
-	install -D -m644 "$srcdir"/asound.state \
-		"$pkgdir"/var/lib/alsa/asound.state
 }
 
 
 sha512sums="0364dd8e3e2f074bed7e4e714246ee7e991d6a4bb52efba39ca3c0fdfa0f7860a62c47c4f39033f0e7f817ed45c883a494ae54f49e6ed84d550a90ac4fa7cb6c  deviceinfo
-46c58ff11a1f6cecc3f450f462c9a2b01d2a651f933a796c8a9c2e72f5fba0a0fe876429b5e7dad2fbc64fb056150d56929cd932b39053bed64b389c825bac0d  initfs-hook.sh
-e088ff8ae1fdf1e9b36949223208fb1dd04000a685ee054ed751d856c41f487807992c9cf67d9fbff804999d16b0430f1443b139b067e9c33c590eadda58e9ff  asound.state
-369df19f9bf7546236b81a33c00b6384e88e979c4711fead3749f8e60f4cd99f37b31baf1f00d05a821cb71ca2f440648e13083653f1a4ec0c178c7c1c415a58  asound.conf"
+46c58ff11a1f6cecc3f450f462c9a2b01d2a651f933a796c8a9c2e72f5fba0a0fe876429b5e7dad2fbc64fb056150d56929cd932b39053bed64b389c825bac0d  initfs-hook.sh"
