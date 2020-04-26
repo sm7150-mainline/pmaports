@@ -1,0 +1,55 @@
+# Contributor: Hadi Charara <hadicharara@ymail.com>
+# Maintainer: Hadi Charara <hadicharara@ymail.com>
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/suez_defconfig
+
+pkgname=linux-amazon-suez
+pkgver=3.18.19
+pkgrel=0
+pkgdesc="Amazon Fire HD 10 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="amazon-suez"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6"
+
+
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_amazon_suez"
+_commit="675c2bedfab1575365d8fda8a5dd986a8cc2101d"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/hadicharara/$_repository/archive/$_commit.tar.gz
+	$_config
+	compiler-gcc6.h
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+}
+
+sha512sums="c9ab203deb69e4a0a7c7c2397e9f55c0adc033a05d9613bd33a06782669f56d9fa56989e4b7b4cdf15fd6f48d5950471832ca18dccad503cbb2018d59ff32d2f  linux-amazon-suez-675c2bedfab1575365d8fda8a5dd986a8cc2101d.tar.gz
+2b70155a886ac45b62b195872f9a9dcca96fee78ee905aa1616fd4d52e0cd96c69795a7069948fcbd34a569d220091293951ea4b449d4bc436f1f5e73a6a954b  config-amazon-suez.aarch64
+d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
