@@ -1,0 +1,49 @@
+# Contributor: Jean-Etienne Tremblay <jean.etienne.tremblay@gmail.com>
+# Maintainer: Jean-Etienne Tremblay <jean.etienne.tremblay@gmail.com>
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/channel_defconfig
+
+pkgname=linux-motorola-channel
+pkgver=4.9.203
+pkgrel=0
+pkgdesc="Motorola G7 Play kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="motorola-channel"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps"
+makedepends="bash bc dtc bison devicepkg-dev flex openssl-dev perl dtbtool xz"
+
+# Source
+_repository="android_kernel_motorola_sdm632"
+_commit="db8fd3bcfeee53f5ad5ae71df30c2b88076ff002"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	disable_tty_port_set_policy.patch
+	disable_skip_initramfs.patch
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" DTC=dtc \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+}
+
+sha512sums="41bbbe33864866407877c5769882782e099a3f48898eb26ea08f172ff0bcc1239e2fb2d250c491a44c3bc5a3718d373ced4b26682aaa574077d1cb7abbb282c5  linux-motorola-channel-db8fd3bcfeee53f5ad5ae71df30c2b88076ff002.tar.gz
+0fd5fd59e16c24a85302de83f61468591df472afbddaeab2b3dbf59cf9d48af2ac8ecc1a48a72b7a1db44077fbd4856dc60f2b2885eb1adf1f8e96b3a311eaad  disable_tty_port_set_policy.patch
+65048fb6474fd543b14bc99d9d95cfe5297da239af211d327a8509f7777d489bd01dd911364e0c62ec0e68f4c22ebb3b145eabfe01cad2abf57cf46896a1e58f  disable_skip_initramfs.patch
+d976d46e1892db749e5b9fd7037c747f80733e611919f98b19155d6419a79ce5fa2bb9720c250b1a11ba7a999fa1384063549a0014cd66c5e6986a2167282bbb  config-motorola-channel.aarch64"
