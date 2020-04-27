@@ -1,0 +1,24 @@
+# Maintainer: Avery Dorgan <avery.dorgan@protonmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-essential-mata
+pkgdesc="Essential PH1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-essential-mata mkbootimg mesa-dri-swrast mdss-fb-init-hack"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="d3c9a19a57bedc8e9ffead4e90ccdccd8194d793951966930b157d790313533f26501fd79df914cf9da9818b8c07e71f41048381dafc644e734c5b1b5138df16  deviceinfo"
