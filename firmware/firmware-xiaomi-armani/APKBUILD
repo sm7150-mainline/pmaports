@@ -1,42 +1,36 @@
 pkgname=firmware-xiaomi-armani
 pkgver=1
-pkgrel=2
+pkgrel=3
 pkgdesc="Firmware files for Xiaomi Redmi 1S"
 url="https://github.com/TheMuppets/proprietary_vendor_xiaomi"
 arch="armhf"
 license="proprietary"
 depends="wcnss-wlan"
-options="!strip !check !archcheck"
+options="!strip !check !archcheck !spdx"
 
 # Source
 _files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 wcnss.b07
 	wcnss.b08 wcnss.b09 wcnss.mdt"
 _files_prima="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
 _commit="20c75ad6131d16bb4b0daf54dd64cc6612f222f5"
-_prima_commit="1815c7a6e5a9d124ae44d0290cd2e4a75dd338cf"
-_url="https://gitlab.com/the-muppets/proprietary_vendor_xiaomi/raw/$_commit/armani/proprietary/etc/firmware/"
-_prima_url="https://github.com/LineageOS/android_device_xiaomi_armani/raw/$_prima_commit/wifi"
-source=""
+_commit_prima="1815c7a6e5a9d124ae44d0290cd2e4a75dd338cf"
+_url="https://gitlab.com/the-muppets/proprietary_vendor_xiaomi/raw/$_commit/armani/proprietary/etc/firmware"
+_url_prima="https://github.com/LineageOS/android_device_xiaomi_armani/raw/$_commit_prima/wifi"
 for _i in $_files; do
 	source="$source $pkgname-$_commit-$_i::$_url/$_i"
 done
 for _i in $_files_prima; do
-	source="$source $pkgname-$_commit-$_i::$_prima_url/$_i"
+	source="$source $pkgname-$_commit-$_i::$_url_prima/$_i"
 done
 
 package() {
-	cd "$srcdir"
-
-	# /lib/firmware/postmarketos
 	for _i in $_files; do
-		install -D -m644 "$pkgname-$_commit-$_i" \
-			"$pkgdir/lib/firmware/postmarketos/$_i"
+		install -Dm644 "$srcdir/$pkgname-$_commit-$_i" \
+			"$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
-
-	# /lib/firmware/postmarketos/wlan/prima
 	for _i in $_files_prima; do
-		install -D -m644 "$pkgname-$_commit-$_i" \
-			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
+		install -Dm644 "$srcdir/$pkgname-$_commit-$_i" \
+			"$pkgdir"/lib/firmware/postmarketos/wlan/prima/"$_i"
 	done
 }
 
