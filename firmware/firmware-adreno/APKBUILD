@@ -1,11 +1,11 @@
 pkgname=firmware-adreno
 pkgver=1
-pkgrel=6
+pkgrel=7
 pkgdesc="Firmware for adreno gpus"
 url="https://github.com/TheMuppets/proprietary_vendor_sony"
 arch="armhf aarch64 armv7"
 license="proprietary"
-options="!check !archcheck"
+options="!check !archcheck !strip !spdx"
 
 # Sources
 _files1="a225_pm4.fw a225_pfp.fw a225p5_pm4.fw a330_pfp.fw a330_pm4.fw"
@@ -13,7 +13,6 @@ _files2="a420_pfp.fw a420_pm4.fw"
 _commit="bf15795df1d1dcd61d37f6215c1eda47e669d54e"
 _url1="https://github.com/TheMuppets/proprietary_vendor_sony/raw/$_commit/shinano-common/proprietary/etc/firmware"
 _url2="https://github.com/TheMuppets/proprietary_vendor_sony/raw/$_commit/ivy/proprietary/etc/firmware"
-source=""
 for _i in $_files1; do
 	source="$source $pkgname-$_commit-$_i::$_url1/$_i";
 done
