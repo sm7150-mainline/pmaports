@@ -1,21 +1,19 @@
 pkgname=firmware-samsung-espresso10
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy Tab 2 Firmware"
 url="https://github.com/TheMuppets/proprietary_vendor_samsung"
 arch="armv7"
 license="proprietary"
-options="!check"
+options="!check !strip !archcheck !spdx"
 
 # Source
-_files="
-	bcmdhd_apsta.bin
-	bcmdhd_p2p.bin
-	bcmdhd_sta.bin
-	nvram_net.txt
-"
 _commit="89fe5020dbaf2920dece954ce86aa2edf3389852"
 _url="https://github.com/TheMuppets/proprietary_vendor_samsung/raw/$_commit/espresso-common/proprietary/system/etc/wifi"
+_files="bcmdhd_apsta.bin
+	bcmdhd_p2p.bin
+	bcmdhd_sta.bin
+	nvram_net.txt"
 for _i in $_files; do
 	source="$source $pkgname-$_commit-$_i::$_url/$_i";
 done
@@ -23,7 +21,7 @@ done
 package() {
 	for _i in $_files; do
 		install -Dm644 "$srcdir/$pkgname-$_commit-$_i" \
-			"$pkgdir/lib/firmware/postmarketos/$_i"
+			"$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 }
 sha512sums="a4c740f11cdc7123adeed80c616c35bbdce42c8e71cbb7cfb447f8c4537a45cf0fb0419a86d02a834ae518a6674b9cd1e9de05e0b4ec8c7e6e5c40fbd32d1a41  firmware-samsung-espresso10-89fe5020dbaf2920dece954ce86aa2edf3389852-bcmdhd_apsta.bin
