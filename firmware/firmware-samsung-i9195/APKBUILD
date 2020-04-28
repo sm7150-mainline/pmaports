@@ -1,33 +1,22 @@
 pkgname=firmware-samsung-i9195
-# XDA post explains the meaning of the firmware version, which I've translated into pkgver
+# XDA post explains the meaning of the firmware version, which has been translated into the $pkgver
 pkgver=1.1.0
 _ver=I9195XXUCQG1
-pkgrel=0
+pkgrel=1
+_commit="f3c513732580e500fe27000683db268406806ed7"
+_commit_2="fb69a737df5f13c2975fd385a15908389fe5d5bd"
 pkgdesc="Samsung Galaxy S 4 Mini firmware"
 subpackages="$pkgname-modem $pkgname-wlan"
 url="https://forum.xda-developers.com/galaxy-s4-mini/general/modem-samsung-galaxy-s4-mini-gt-i9195-t3390780"
-url2="https://github.com/j0ki/firmware-samsung-i9195"
-url3="https://github.com/LineageOS/android_device_samsung_serrano-common"
 arch="armhf"
 license="proprietary"
-options="!check !strip !archcheck"
+source="$pkgname-$_ver.tar.xz::https://drive.google.com/uc?export=download&id=1bKQ6m9avN6k2puJTZr55dIeGb8B7K_lT
+	$pkgname-$pkgver.tar.gz::https://github.com/j0ki/firmware-samsung-i9195/archive/$_commit.tar.gz
+	$pkgname-$pkgver-2.tar.gz::https://github.com/LineageOS/android_device_samsung_serrano-common/archive/$_commit_2.tar.gz"
+options="!check !strip !archcheck !spdx"
 
-# Source
-source="$_ver.tar.xz::https://drive.google.com/uc?export=download&id=1bKQ6m9avN6k2puJTZr55dIeGb8B7K_lT"
-
-_commit_2="f3c513732580e500fe27000683db268406806ed7"
-_files_2="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b05 wcnss.b06 wcnss.mdt"
-
-_commit_3="fb69a737df5f13c2975fd385a15908389fe5d5bd"
-_files_3="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
-
-for _i in $_files_2; do
-        source="$source $_i-$_commit_2::$url2/raw/$_commit_2/$_i";
-done
-
-for _i in $_files_3; do
-        source="$source $_i-$_commit_3::$url3/raw/$_commit_3/prima/$_i";
-done
+_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b05 wcnss.b06 wcnss.mdt"
+_files_2="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
 
 package() {
 	# parent package is empty
@@ -39,7 +28,7 @@ modem() {
 
 	cd "$srcdir"
 	for _i in *.b?? *.mdt; do
-		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
+		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 }
 
@@ -47,25 +36,19 @@ wlan() {
 	pkgdesc="Samsung Galaxy S4 Mini LTE: wifi firmware"
 	depends="wcnss-wlan"
 
-	cd "$srcdir"
+	cd "$srcdir"/firmware-samsung-i9195-"$_commit"
+	for _i in $_files; do
+		install -Dm644 "$_i" \
+			"$subpkgdir"/lib/firmware/postmarketos/"$_i"
+	done
+
+	cd "$srcdir"/android_device_samsung_serrano-common-"$_commit_2"
 	for _i in $_files_2; do
-                install -Dm644 "$_i-$_commit_2" \
-                        "$subpkgdir/lib/firmware/postmarketos/$_i"
-        done
-        for _i in $_files_3; do
-                install -Dm644 "$_i-$_commit_3" \
-                        "$subpkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
-        done
+		install -Dm644 prima/"$_i" \
+			"$subpkgdir"/lib/firmware/postmarketos/wlan/prima/"$_i"
+	done
 }
 
-sha512sums="32e27bf12f40abd9a049562e4830d061518bd9efaf991cdc48c1aa3736bdc8c581eea14fa240fbaead255f83c7692d186f53a491837a662ac6368ca943634684  I9195XXUCQG1.tar.xz
-af5569e34aff9d5b2feb229a3707f340da18f8c1953111ce147d5735bd6009e47864d6985acb03c33f3394d4cfb40b3b537ec6ca48027952c6fcfad101536ea5  wcnss.b00-f3c513732580e500fe27000683db268406806ed7
-5ede1dd63c42117a8bdd0fdd7f0d59a1f260807e56b8f38bbee2940ba80e6c34f6d879f7757bff33785c1e725d374a3a93e9443113ce4262bd0bb279f1665fc3  wcnss.b01-f3c513732580e500fe27000683db268406806ed7
-13cc289f1f3cddefd131efa1425be4d5838b68047272832346da57edb3664b16e54798d3a4ee59726c7594ebe4b7d7b5e63eebc61c9cb9d787865cd8d6061bb4  wcnss.b02-f3c513732580e500fe27000683db268406806ed7
-5831fa53401a857625094d2abd5f8a1b0adf16c0d4c166991055491d5907e4873cb02c57e47e3d0c7fd4ce802700fe3628a55a65e35797943e0eb3514f3c6c8e  wcnss.b04-f3c513732580e500fe27000683db268406806ed7
-7b0cd3003367df8cad6a93b9c378f5780def6f42081f7395acbbe0905c6c83c2c1b943f505e08be89928a97071b92695baff64cc99ef68f9bbf677053ec1e27b  wcnss.b05-f3c513732580e500fe27000683db268406806ed7
-1b7409ccf0d5a34d3a77eaabfa9fe27427655be9297127ee9522aa1bf4046d4f945983678169cb1a7348edcac47ef0d9e2c924130e5bcc5f0d94937852c42f1b  wcnss.b06-f3c513732580e500fe27000683db268406806ed7
-e9cdea19701552c25d1c29254bd22fd54857125a0f76fc61554a6f63796e9ee7a6aec7f78928ba1fdf2c32ede6cd9816261f6710fd8a8d71dc2bcb6fc912aff1  wcnss.mdt-f3c513732580e500fe27000683db268406806ed7
-523dd31de87d657fa0872a65d5e120caa3dfcc6e55c9d7f18b546d53c0a5d1ebf5558240ad5d4de880622673d8ffa3f0ab1c984e1c53046948b05eea2f81642f  WCNSS_cfg.dat-fb69a737df5f13c2975fd385a15908389fe5d5bd
-42eee878832c10892251cf4c0fbccd28c156738d1fff8422a4b963ebdfff360319b8ce5dc310d764d5f3bd3aadb1bb235e86d4221c2e9096e150adc867b363b8  WCNSS_qcom_cfg.ini-fb69a737df5f13c2975fd385a15908389fe5d5bd
-6c320726bc42acad35941ff6113bfddbe600766424d93a5e2448f8a57a2909bef86afbf6176c4b09fdaa589a882dcd2ec85273c69b153ffb8f2f4c1c13833f93  WCNSS_qcom_wlan_nv.bin-fb69a737df5f13c2975fd385a15908389fe5d5bd"
+sha512sums="32e27bf12f40abd9a049562e4830d061518bd9efaf991cdc48c1aa3736bdc8c581eea14fa240fbaead255f83c7692d186f53a491837a662ac6368ca943634684  firmware-samsung-i9195-I9195XXUCQG1.tar.xz
+fdfd2aeb780a73dcb152e4f3554781c1338b8bd683cdc61e92965c7e0006ad2d88f55b0514e15e13b322ec83cdf11ba9ae2cd49892b4470807966b4ed8f55d5b  firmware-samsung-i9195-1.1.0.tar.gz
+8ac342f7a332512a4d04cd1c38937abd8634937a1b975b29290a265daf8cb37e0b1d739442e5b50e6c85ab14475f2837373d6994ebd9e6fc1f7fbac3204cc733  firmware-samsung-i9195-1.1.0-2.tar.gz"
