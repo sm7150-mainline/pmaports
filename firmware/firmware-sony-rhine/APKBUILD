@@ -1,12 +1,12 @@
 pkgname=firmware-sony-rhine
 pkgver=2
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware files for Sony Rhine platform"
 url="https://github.com/TheMuppets/proprietary_vendor_sony"
 arch="armv7"
 license="proprietary"
 depends="wcnss-wlan"
-options="!strip !check !archcheck"
+options="!strip !check !archcheck !spdx"
 
 # Source
 _files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 wcnss.b07
@@ -14,7 +14,6 @@ _files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 wcnss.b07
 _files_prima="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
 _commit="bf15795df1d1dcd61d37f6215c1eda47e669d54e"
 _url="https://github.com/TheMuppets/proprietary_vendor_sony/raw/$_commit/rhine-common/proprietary/etc/firmware"
-source=""
 for _i in $_files; do
 	source="$source $pkgname-$_commit-$_i::$_url/$_i"
 done
@@ -23,18 +22,13 @@ for _i in $_files_prima; do
 done
 
 package() {
-	cd "$srcdir"
-
-	# /lib/firmware/postmarketos
 	for _i in $_files; do
-		install -D -m644 "$pkgname-$_commit-$_i" \
-			"$pkgdir/lib/firmware/postmarketos/$_i"
+		install -Dm644 "$srcdir/$pkgname-$_commit-$_i" \
+			"$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
-
-	# /lib/firmware/postmarketos/wlan/prima
 	for _i in $_files_prima; do
-		install -D -m644 "$pkgname-$_commit-$_i" \
-			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
+		install -Dm644 "$srcdir/$pkgname-$_commit-$_i" \
+			"$pkgdir"/lib/firmware/postmarketos/wlan/prima/"$_i"
 	done
 }
 
