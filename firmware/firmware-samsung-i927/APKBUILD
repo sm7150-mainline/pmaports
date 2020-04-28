@@ -1,28 +1,19 @@
 pkgname=firmware-samsung-i927
 pkgver=2
-pkgrel=0
+pkgrel=1
+_commit="ce33751ae5f0681818780945016fd3f139519af4"
 pkgdesc="Samsung SGH-i927 Firmware"
 url="https://github.com/The-Covenant"
 arch="armv7"
 license="proprietary"
-options="!check"
-
-# Source
-_fw_file="brcmfmac4330-sdio.bin"
-_nvram_file="brcmfmac4330-sdio.txt"
-_commit="ce33751ae5f0681818780945016fd3f139519af4"
-_url_fw="https://gitlab.com/cerg2010cerg2010/i927-firmware/raw/$_commit/$_fw_file"
-_url_nvram="https://gitlab.com/cerg2010cerg2010/i927-firmware/raw/$_commit/$_nvram_file"
-
-source=""
-source="$source $pkgname-$_commit-$_fw_file::$_url_fw";
-source="$source $pkgname-$_commit-$_nvram_file::$_url_nvram";
+source="$pkgname-$_commit.tar.gz::https://gitlab.com/cerg2010cerg2010/i927-firmware/-/archive/$_commit.tar.gz"
+options="!check !archcheck !strip !spdx"
+builddir="$srcdir/i927-firmware-$_commit"
 
 package() {
-	install -Dm644 "$srcdir/$pkgname-$_commit-$_fw_file" \
-		"$pkgdir/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.bin"
-	install -Dm644 "$srcdir/$pkgname-$_commit-$_nvram_file" \
-		"$pkgdir/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.txt"
+	install -Dm644 brcmfmac4330-sdio.bin \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.bin
+	install -Dm644 brcmfmac4330-sdio.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.txt
 }
-sha512sums="08e9aa9a223f9d2465d78c7310abce9ca32aef3d656d5dd31dabdf312c4c05d4e7253234d917106e9dcec841d82d08aefafb86226f34bc97eb1990883cfa5b54  firmware-samsung-i927-ce33751ae5f0681818780945016fd3f139519af4-brcmfmac4330-sdio.bin
-eecce363252930a6e928d0e458b48abb7f610bda7a8e0f05f2e6e51f688dea22888a47f3e8e5aa552cee4ec01c98449b15675364f95555a269a58c77181bd612  firmware-samsung-i927-ce33751ae5f0681818780945016fd3f139519af4-brcmfmac4330-sdio.txt"
+sha512sums="40290d85bfe8512558604142cc6b2ac433ca1e3dae837f3f244229060018aac0f978de24c8cbc8e32c4a6505e811d85c23635d557bc8685fd5becb97f36f3f95  firmware-samsung-i927-ce33751ae5f0681818780945016fd3f139519af4.tar.gz"
