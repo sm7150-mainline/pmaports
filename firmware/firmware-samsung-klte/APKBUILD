@@ -1,27 +1,24 @@
 pkgname=firmware-samsung-klte
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy S5 Firmware"
 url="https://github.com/TheMuppets/proprietary_vendor_samsung"
 arch="armv7"
 license="proprietary"
-_commit="63715ce31aedd827bd1f8bac5e5c42cc47f28f85"
-options="!check !strip"
+options="!check !strip !archcheck !spdx"
 
 # Source
-source="
-bcmdhd_sta.bin::https://github.com/TheMuppets/proprietary_vendor_samsung/raw/${_commit}/klte-common/proprietary/etc/wifi/bcmdhd_sta.bin
-nvram_net.txt::https://raw.githubusercontent.com/TheMuppets/proprietary_vendor_samsung/${_commit}/klte-common/proprietary/etc/wifi/nvram_net.txt"
-
+_commit="63715ce31aedd827bd1f8bac5e5c42cc47f28f85"
+source="$pkgname-$_commit-bcmdhd_sta.bin::https://github.com/TheMuppets/proprietary_vendor_samsung/raw/$_commit/klte-common/proprietary/etc/wifi/bcmdhd_sta.bin
+	$pkgname-$_commit-nvram_net.txt::https://raw.githubusercontent.com/TheMuppets/proprietary_vendor_samsung/$_commit/klte-common/proprietary/etc/wifi/nvram_net.txt"
 
 package() {
 	# Wifi
-	mkdir -p "$pkgdir/lib/firmware/postmarketos"
-	install -Dm644 "${srcdir}/bcmdhd_sta.bin" \
-		"$pkgdir/lib/firmware/postmarketos/bcmdhd_sta.bin"
-	install -Dm644 "${srcdir}/nvram_net.txt" \
-		"$pkgdir/lib/firmware/postmarketos/nvram_net.txt"
+	install -Dm644 "$srcdir/$pkgname-$_commit-bcmdhd_sta.bin" \
+		"$pkgdir"/lib/firmware/postmarketos/bcmdhd_sta.bin
+	install -Dm644 "$srcdir/$pkgname-$_commit-nvram_net.txt" \
+		"$pkgdir"/lib/firmware/postmarketos/nvram_net.txt
 }
 
-sha512sums="e382700c6af5f592ebb10c4eca038289ae09a3de36a3f330b81c2c6322b75a85d1bbe1e3061f4c2d889bf32e9cf92f17e3474c324e166aa89847bd401aa902df  bcmdhd_sta.bin
-3619fc3b569f34600a6709f7e003843ceeb9a6e6779e5e57e02a3ebdf7d66a949717026c414fe3eefe0f7a0bfa769c179ec10d6cdf2f010b98477ba3e81c8b52  nvram_net.txt"
+sha512sums="e382700c6af5f592ebb10c4eca038289ae09a3de36a3f330b81c2c6322b75a85d1bbe1e3061f4c2d889bf32e9cf92f17e3474c324e166aa89847bd401aa902df  firmware-samsung-klte-63715ce31aedd827bd1f8bac5e5c42cc47f28f85-bcmdhd_sta.bin
+3619fc3b569f34600a6709f7e003843ceeb9a6e6779e5e57e02a3ebdf7d66a949717026c414fe3eefe0f7a0bfa769c179ec10d6cdf2f010b98477ba3e81c8b52  firmware-samsung-klte-63715ce31aedd827bd1f8bac5e5c42cc47f28f85-nvram_net.txt"
