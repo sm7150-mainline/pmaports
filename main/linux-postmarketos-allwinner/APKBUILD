@@ -1,15 +1,15 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.6.0_git20200411
+pkgver=5.6.0_git20200429
 pkgrel=0
 arch="aarch64"
 pkgdesc="Kernel fork with Pine64 patches"
 url="https://gitlab.com/pine64-org/linux/"
 license="GPL-2.0-only"
-makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync"
+makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync xz"
 options="!strip !check !tracedeps pmb:cross-native"
-_commit="ed8620f53f4691ca23e90f2a9f11aeb12e1c846e"
+_commit="2a6074e53b019db8a4a63cb255bc29422db3fe19"
 source="
 	$pkgname-$_commit.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/$_commit/linux-$_commit.tar.gz
 	config-$_flavor.aarch64
@@ -48,6 +48,7 @@ package() {
 
 	make -j1 modules_install dtbs_install \
 		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
@@ -63,7 +64,7 @@ dev() {
 		ARCH="$_carch" \
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
-sha512sums="3b0c3289ed16ef43e6a57f0633a16540d5e96333acc366076ad420b8aa1b2311c0c78bf584836ca478450d6f1bd2219b0a63a02bad4ba658751f0b8d43dbf2ce  linux-postmarketos-allwinner-ed8620f53f4691ca23e90f2a9f11aeb12e1c846e.tar.gz
-40c01377dec3e7a5bd482e81310b9a17579b4261ef4dc3a17badbdd752597c9a1a5b2e38b08ebe71ee3e1d22270dc3f1c37a14dbba9b6bc9bcf60ff2137c64ef  config-postmarketos-allwinner.aarch64
+sha512sums="5c416e18ab0f798a18549cc63591d3eb29ea9e82ee9e48a34f2debfac590c516cecaa09fc1b51d0baedb330bd0f11c1e1f5868a3010591e73413b6d5397acfde  linux-postmarketos-allwinner-2a6074e53b019db8a4a63cb255bc29422db3fe19.tar.gz
+3a7750223417969ddb92dd7f96ba5bdca0ebd8fc5aac5a41407d348b936d6897483d761a2bd713c823c9361c52657ca10dc720dfc28c6dd36b9b929c378ad024  config-postmarketos-allwinner.aarch64
 8cdfb6d8a894e610c261446663dfbe34c01612a091fa029645e86913634de4394db0d1ab7dedb190052dff82330f0ddabe31860bbf7cd6fe0cdf23e37d0a6ca6  disable-power-save.patch
 5f403bb1e3e7528954adcba4429768ce26bf13382dc6325ced245babcfb5252d515bea812b9df16d0e5370c9d4e07b4e0267f4c750281faf3cb6ffb29906700c  touch-dts.patch"
