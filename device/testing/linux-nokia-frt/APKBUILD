@@ -3,7 +3,7 @@
 # Maintainer: Piotr Halama <skrzynka@halamix2.pl>
 pkgname=linux-nokia-frt
 pkgver=3.18.79
-pkgrel=1
+pkgrel=2
 pkgdesc="Nokia 1 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -11,7 +11,7 @@ _flavor="nokia-frt"
 url="https://www.nokia.com/phones/en_int/opensource/"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev python"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev python3"
 
 # Source
 _repository="android_kernel_nokia_1"
@@ -25,8 +25,9 @@ source="
 	01_makefile_path.patch
 	02_drvgen_mk.patch
 	03_vdsomunge_upstream.patch
+	py3-compat.patch
 "
-#gcc7-give-up-on-ilog2-const-optimizations.patch
+
 builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
@@ -57,4 +58,5 @@ sha512sums="676be1813c0886c509591a4940b9fdbd91243aaf84a8efebd7229f681e84211d86cc
 1d1a99de49b29069eb1711ad884e3f0db0956d8eeb81bdb332e6aa13fb7f5cdd48cd75791cebc08b1aa0644cdd643d7632791a272333547a6ffe68a75295e7a8  00_symlinks.patch
 ef8b9da80ca67424a02acfbf99924e3ea06574c83c6a737031f6ac41b718742ef0bd66b968b14118cac021067e29184e2199f238ace2a43dc2176d9cce796bc5  01_makefile_path.patch
 aaf7e208f307db3126202f3f3410d4f8a74b450ef719717a064c817258cb428a150a798494f57e43f9e1f747ad83527e565f8d81c3c746d1fb0b4e42e6e30d50  02_drvgen_mk.patch
-19a6c3445bfd8057e4fabe1709f3d2344f3a99fef49b44636c07a18ba8791fab1bcff77f93aadff887946ae6f83c9d86e1c28f9b88d03c6ba156704d430b4470  03_vdsomunge_upstream.patch"
+19a6c3445bfd8057e4fabe1709f3d2344f3a99fef49b44636c07a18ba8791fab1bcff77f93aadff887946ae6f83c9d86e1c28f9b88d03c6ba156704d430b4470  03_vdsomunge_upstream.patch
+0729fc816ea28693e7cbf4b71fc4117b124907a6a5327589e9ec2d222105c0bd0cba2320461c86b7322fc708973122bb66ca745e32cc70791225c5bbb872f999  py3-compat.patch"
