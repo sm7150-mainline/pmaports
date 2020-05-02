@@ -3,15 +3,15 @@
 
 pkgname=linux-planet-geminipda
 pkgver=3.18.41
-pkgrel=0
+pkgrel=1
 pkgdesc="Gemini PDA kernel fork"
 arch="aarch64"
 _carch="arm64"
 _flavor="planet-geminipda"
 url="https://kernel.org"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6 python"
+options="!strip !check !archcheck !tracedeps pmb:cross-native"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6 python3"
 
 # Compiler: GCC 6 (doesn't boot when compiled with newer versions)
 if [ "${CC:0:5}" != "gcc6-" ]; then
@@ -27,58 +27,27 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/gemian/$_repository/archive/$_commit.tar.gz
 	$_config
+	py3-compat.patch
 "
 builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
 	default_prepare
-
-	# support newer GCC versions
-	cp -v "/usr/share/devicepkg-dev/compiler-gcc.h" "$builddir/include/linux/"
-
-	# Remove -Werror from all makefiles
-	makefiles="$(find "$builddir" -type f -name Makefile)
-		$(find "$builddir" -type f -name Kbuild)"
-	for i in $makefiles; do
-		sed -i 's/-Werror-/-W/g' "$i"
-		sed -i 's/-Werror//g' "$i"
-	done
-
-	# Device kernel must(!) be build out-of-tree to avoid include errors
-	mkdir -p "$builddir"/KERNEL_OBJ
-
-	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
-	cp "$srcdir"/$_config "$builddir"/KERNEL_OBJ/.config
-	yes "" | make -C "$builddir" ARCH="$_carch" HOSTCC="$HOSTCC" \
-		O="$builddir"/KERNEL_OBJ oldconfig
+	. downstreamkernel_prepare
 }
 
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
-		O="$builddir"/KERNEL_OBJ
+		O="$_outdir"
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/KERNEL_OBJ/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	# zImage (find the right one)
-	cd "$builddir/KERNEL_OBJ/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
-	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
-		[ -e "$_zimg" ] || continue
-		msg "zImage found: $_zimg"
-		install -Dm644 "$_zimg" "$_target"
-		break
-	done
-	if ! [ -e "$_target" ]; then
-		error "Could not find zImage in $PWD!"
-		return 1
-	fi
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
 sha512sums="84579ba59ada9166794ec02843616049128c199f9c68b519d3e33056822a22d12921b6589ff058d08e580e877a227a124f999f041e29b6d81a8fde7ce7480b11  linux-planet-geminipda-bf7daa4483d5dce94c9d478fc28854f5978d60da.tar.gz
-019e2cb30c6d61b37c5c6c5f583da5be42e37bb7eb695bba4dc30dfe91196d3f20ba57ae3ac6931f9ea4cbf4a7c2cdd95f603191e387c3e292b667049a4e9876  config-planet-geminipda.aarch64"
+019e2cb30c6d61b37c5c6c5f583da5be42e37bb7eb695bba4dc30dfe91196d3f20ba57ae3ac6931f9ea4cbf4a7c2cdd95f603191e387c3e292b667049a4e9876  config-planet-geminipda.aarch64
+9c12d5d2064d2f0b2b35e3c068ed2406c0a7dc8ffbc55712fd0a8411b40b08eb73987c1b2a3e710eea0e83f659c0eae99dbf11d306d43a30cebcafd009459ad6  py3-compat.patch"
