@@ -1,6 +1,6 @@
 pkgname=firmware-samsung-klte
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Samsung Galaxy S5 Firmware"
 url="https://github.com/TheMuppets/proprietary_vendor_samsung"
 arch="armv7"
@@ -15,9 +15,9 @@ source="$pkgname-$_commit-bcmdhd_sta.bin::https://github.com/TheMuppets/propriet
 package() {
 	# Wifi
 	install -Dm644 "$srcdir/$pkgname-$_commit-bcmdhd_sta.bin" \
-		"$pkgdir"/lib/firmware/postmarketos/bcmdhd_sta.bin
+		"$pkgdir/lib/firmware/postmarketos/brcm/brcmfmac4354-sdio.bin"
 	install -Dm644 "$srcdir/$pkgname-$_commit-nvram_net.txt" \
-		"$pkgdir"/lib/firmware/postmarketos/nvram_net.txt
+		"$pkgdir/lib/firmware/postmarketos/brcm/brcmfmac4354-sdio.samsung,klte.txt"
 }
 
 sha512sums="e382700c6af5f592ebb10c4eca038289ae09a3de36a3f330b81c2c6322b75a85d1bbe1e3061f4c2d889bf32e9cf92f17e3474c324e166aa89847bd401aa902df  firmware-samsung-klte-63715ce31aedd827bd1f8bac5e5c42cc47f28f85-bcmdhd_sta.bin
