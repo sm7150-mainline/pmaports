@@ -25,8 +25,4 @@ if [ -z "$(grep /dev/rtc0 /etc/conf.d/hwclock)" ]; then
         sed -i 's/clock_args=\"/clock_args=\" -f \/dev\/rtc/' /etc/conf.d/hwclock
 fi
 
-# Prime swclock with a reasonable date/time on first boot
-mkdir -p /run/openrc
-touch /run/openrc/shutdowntime
-
 exit 0

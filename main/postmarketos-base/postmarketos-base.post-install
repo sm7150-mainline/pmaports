@@ -18,6 +18,10 @@ for service in mount-ro killprocs savecache; do
 	rc-update -q add $service shutdown
 done
 
+# Prime swclock with a reasonable date/time on first boot
+mkdir -p /run/openrc
+touch /run/openrc/shutdowntime
+
 # Replace a config file from stock Alpine, unless apk reports that the user has
 # modified it (note that this does not allow properly updating these configs
 # when postmarketos-base gets updated yet, see issue pmaports#258).
