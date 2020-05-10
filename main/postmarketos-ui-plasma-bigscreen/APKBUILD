@@ -1,0 +1,47 @@
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=postmarketos-ui-plasma-bigscreen
+pkgver=0.1
+pkgrel=0
+_commit_configs="757db09c8738b88d59e5d7b35b9939e91a7a31d7"
+pkgdesc="(Wayland) 10-feet variant of Plasma, made for big screen TVs"
+url="https://wiki.postmarketos.org/wiki/Plasma_Mobile"
+arch="noarch !armhf" # Crashes on armhf due to https://gitlab.com/postmarketOS/pmaports/issues/75
+license="GPL-3.0-or-later"
+depends="
+	elogind
+	plasma-bigscreen
+	postmarketos-artwork-wallpapers
+	pulseaudio
+	qt5-qtvirtualkeyboard
+	xdg-desktop-portal-kde
+	"
+# Required to launch
+depends="$depends
+	lightdm
+	lightdm-openrc
+	xorg-server
+	"
+_pmb_recommends="
+	breeze-icons
+	mycroft-core
+	plasma-mycroft
+	"
+install="$pkgname.post-install $pkgname.post-upgrade"
+source="$pkgname-$_commit_configs.tar.gz::https://invent.kde.org/bshah/mycroft-devices/-/archive/$_commit_configs/mycroft-devices-$_commit_configs.tar.gz
+	60-lightdm-autologin.conf
+	qtlogging.ini
+	"
+options="!check"
+
+package() {
+	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
+
+	install -Dm644 "$srcdir"/qtlogging.ini \
+		"$pkgdir"/etc/xdg/QtProject/qtlogging.ini
+
+	mv "$srcdir"/mycroft-devices-"$_commit_configs"/overlays/bigscreen/etc/xdg/* "$pkgdir"/etc/xdg
+}
+sha512sums="81bda2692c7321337505814ded1eb8b3d22d92090a1a1ad4a3ac37cec95fdb1ce7158c2b1ee7cdf1d12753ded1adf3216ffe9fc64382ed2ea3fed357bf43003f  postmarketos-ui-plasma-bigscreen-757db09c8738b88d59e5d7b35b9939e91a7a31d7.tar.gz
+9fb85f27ba581babeda96c492ca4884ef89106f7cae427783d70a6f1a3182652ee226bf4e6cf7e5e4b730aa55b806b03d50124264d6c8fb1d7e727700ab6e232  60-lightdm-autologin.conf
+341f0b866c315f37868ef3e7137cce8b53a0e8e6164e5af71b3e8e2fa68321afbf0652d76124ef84bade1393f701748852ac939aef9daff7e272a0df827780eb  qtlogging.ini"
