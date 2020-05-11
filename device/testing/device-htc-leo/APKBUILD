@@ -1,0 +1,21 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-htc-leo
+pkgdesc="HTC HD2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-htc-leo mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+sha512sums="be7a9638313f9376460bc3f5b6b35038ecdb16e37369cec32771e457c0a081a1b9dff699adcdff317d3f47ebfc04d4563800b390fae3e5807bd350efbba4acd9  deviceinfo"
