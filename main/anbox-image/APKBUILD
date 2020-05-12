@@ -7,7 +7,7 @@
 pkgname=anbox-image
 pkgver=7.1.2_p39
 _pkgver="${pkgver/p/r}"
-pkgrel=2
+pkgrel=3
 pkgdesc="Android image for running in Anbox"
 url="https://anbox.io"
 arch="x86_64 armv7 aarch64"
@@ -23,9 +23,10 @@ source="
 	http://anbox.postmarketos.org/android-$_pkgver.1-anbox_armv7a_neon-userdebug.img
 	https://f-droid.org/repo/$_fdroid
 	https://f-droid.org/repo/$_fdroidpriv
+	pma#480.patch
 "
 builddir="$srcdir/squashfs"
-options="!check pmb:cross-native"
+options="!check !archcheck !tracedeps pmb:cross-native"
 
 case "$CARCH" in
 	aarch64) _imgarch=arm64;;
@@ -44,6 +45,9 @@ prepare() {
 
 	# apply patches
 	default_prepare
+
+	# remove su, it's broken and less apps will refuse to start
+	rm -v system/xbin/su
 
 	msg "Installing FDroid"
 	mkdir system/app/FDroid
@@ -68,4 +72,5 @@ sha512sums="174476153fc5f0f204a8044f32d010e7a22303c7961265976df424c53322969b590d
 240d931c68378f80eafa670a19083c5dd11c02f216bec5de955bee3a04063c15830b603a062c83427aa7ad6f4da5425f411147f93815fa67c86cdc850b68a2a1  android-7.1.2_r39-anbox_arm64-userdebug.img
 c0de307cdea7ddc19d5990998cb3f59dac59912a08dacb0d92be09c31bf8f2312d1e02fa8321b950151995120fa9401052b8e97dde620c1739a8314a4470e47d  android-7.1.2_r39.1-anbox_armv7a_neon-userdebug.img
 1b5be16578a86cf5a65591b0c923f791587699b79a50986e68ac290e20e0d252fe57db5a49a0628eb6c66542a6caea76bd382018447fd5ae4d13b54f12b908a7  org.fdroid.fdroid_1007051.apk
-3c34eb04c96ebee2a1baa06bcf4ebf16915a1fd69143502639998caf34beb744458823705a65617c3bc4e134e5c9fc7fbca4196e1430d7b4d701748fbc29b9dc  org.fdroid.fdroid.privileged_2110.apk"
+3c34eb04c96ebee2a1baa06bcf4ebf16915a1fd69143502639998caf34beb744458823705a65617c3bc4e134e5c9fc7fbca4196e1430d7b4d701748fbc29b9dc  org.fdroid.fdroid.privileged_2110.apk
+17926716e13368e5dfc1e46724b1addf7a69b0fa4abd0557333882ef0235d93883e99d33a652806b5c296a00e4391faa3d862fcb5c7a5513e0b2a781c5053968  pma#480.patch"
