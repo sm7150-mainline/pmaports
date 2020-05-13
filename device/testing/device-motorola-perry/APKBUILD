@@ -1,0 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-motorola-perry
+pkgdesc="Motorola Moto E4"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+options="!check !archcheck"
+depends="postmarketos-base linux-motorola-perry mkbootimg mesa-dri-swrast msm-fb-refresher mdss-fb-init-hack"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-motorola-perry-wcnss wcnss-wlan"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="bbc01cefc4eb6b750438fd10ccea75ecd222bc3aa53f6fb84badbc1437f2360775891fbce9dbee8359d9e99a9553d68b7b5c0b8780f596bfd3ae90bf5bc23d5c  deviceinfo
+f33e8f7287659bcf738397f8f09bb51666820362dffd2c1dbb9afd28640ba22cc5e8f714ffbb1e0913d913fffdc95191cef38f933cfa77b15466ac633ab92d95  initfs-hook.sh"
