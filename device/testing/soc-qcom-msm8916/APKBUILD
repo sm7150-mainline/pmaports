@@ -1,7 +1,7 @@
 # Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname=soc-qcom-msm8916
 pkgdesc="Common package for Qualcomm MSM8916 devices"
-pkgver=5
+pkgver=6
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -11,7 +11,9 @@ depends="mesa-dri-gallium"
 subpackages="$pkgname-modem"
 
 _ucm_commit="8b9065809e15e6818d85a7ebfdb36a025d5b02f9"
-source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8916-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz"
+source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8916-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz
+	q6voiced.conf
+	"
 
 package() {
 	cd "$srcdir/alsa-ucm-conf-$_ucm_commit"/ucm2
@@ -21,8 +23,11 @@ package() {
 }
 
 modem() {
-	depends="msm-modem-mainline"
-	mkdir "$subpkgdir"
+	depends="msm-modem-mainline q6voiced"
+	install="$subpkgname.post-install"
+
+	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
-sha512sums="d0736fae04fdc8fc6a4827841090b315fee5e0c9b6ce799d80b6c1752b5fde85f08342edb814d72ef93cc75e4f977d2d62d70bd8b544926fc52f9b75a3458eed  soc-qcom-msm8916-8b9065809e15e6818d85a7ebfdb36a025d5b02f9.tar.gz"
+sha512sums="d0736fae04fdc8fc6a4827841090b315fee5e0c9b6ce799d80b6c1752b5fde85f08342edb814d72ef93cc75e4f977d2d62d70bd8b544926fc52f9b75a3458eed  soc-qcom-msm8916-8b9065809e15e6818d85a7ebfdb36a025d5b02f9.tar.gz
+3a4a9322839d4b3ef9d79668a37840a9f444954759ae3c512e694051d2f9a2573db42ad6c4c1a5c75eeb861232a27ba1a8cef9b503decd54ead25a96e3dd6f98  q6voiced.conf"
