@@ -104,7 +104,20 @@ echo_libinput_calibration()
 	echo "ENV{LIBINPUT_CALIBRATION_MATRIX}=\"$1 $2 $x_offset $4 $5 $y_offset\", \\"
 }
 
+# Generate the contents for /etc/machine-info
+generate_machine_info()
+{
+	{
+		# shellcheck disable=SC2154
+		echo "PRETTY_HOSTNAME=\"$deviceinfo_name\""
+		# shellcheck disable=SC2154
+		echo "CHASSIS=\"${deviceinfo_chassis}\""
+	} > "$srcdir/machine-info"
+}
+
 generate_splash_screens
+
+generate_machine_info
 
 # shellcheck disable=SC2154
 if [ -n "$deviceinfo_dev_touchscreen" ]; then
