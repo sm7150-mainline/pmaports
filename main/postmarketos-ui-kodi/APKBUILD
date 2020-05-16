@@ -1,21 +1,21 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-kodi
 pkgver=1
-pkgrel=3
+pkgrel=4
 pkgdesc="(Wayland) 10-foot UI useful on TV's"
 url="https://kodi.tv"
 arch="noarch !armhf"
 license="GPL-3.0-or-later"
 depends="kodi-wayland kodi cage lightdm lightdm-openrc elogind pulseaudio upower"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="60-lightdm-autologin.conf kodi.desktop"
+source="63-lightdm-autologin.conf kodi.desktop"
 options="!check"
 
 package() {
-	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
-		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
+	install -Dm644 "$srcdir"/63-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/63-autologin.conf
 	install -Dm644 "$srcdir"/kodi.desktop \
 		"$pkgdir"/usr/share/wayland-sessions/kodi-wayland.desktop
 }
-sha512sums="4cbef7ef9b4da927e123ea28c5918f49ec4dc1367774596e1bc192f172e1e09cb9711015e20743a7fbb3bbbc8ca6df2bee66571a28fb530e2e9d24d945eb982a  60-lightdm-autologin.conf
+sha512sums="4cbef7ef9b4da927e123ea28c5918f49ec4dc1367774596e1bc192f172e1e09cb9711015e20743a7fbb3bbbc8ca6df2bee66571a28fb530e2e9d24d945eb982a  63-lightdm-autologin.conf
 fc7d545310a77845af88638e95a72f8774be4fb91231554ac91a2dfcd65d11aed5e6cea550548df5e12c49963968a17a89429fc0fb3ebf4a6843d95dccad7eee  kodi.desktop"

@@ -1,7 +1,7 @@
 # Maintainer: Danct12 <danct12@disroot.org>
 pkgname=postmarketos-ui-sway
 pkgver=1
-pkgrel=5
+pkgrel=6
 pkgdesc="(Wayland) Tiling WM, drop-in replacement for i3wm (DOES NOT RUN WITHOUT HW ACCELERATION!)"
 url="https://postmarketos.org"
 arch="noarch"
@@ -9,14 +9,14 @@ license="GPL-3.0-or-later"
 depends="sway swaylock swayidle xorg-server-xwayland postmarketos-artwork-wallpapers
 	rxvt-unicode lightdm lightdm-openrc elogind"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="60-lightdm-autologin.conf postmarketos_background"
+source="67-lightdm-autologin.conf postmarketos_background"
 options="!check" # no testsuite
 
 package() {
-	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
-		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
+	install -Dm644 "$srcdir"/67-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/67-autologin.conf
 	install -Dm644 "$srcdir"/postmarketos_background \
 		"$pkgdir"/etc/sway/config.d/postmarketos_background
 }
-sha512sums="5cf8c2e04ec1e1f7a330a3c81f82bc8c9eff4af0b61fb1b4f4a3b2f00fd0f149ab4e517ba38b4be97b22b6316c20861977e99548a9ecf0d89d81faf916c4e714  60-lightdm-autologin.conf
+sha512sums="5cf8c2e04ec1e1f7a330a3c81f82bc8c9eff4af0b61fb1b4f4a3b2f00fd0f149ab4e517ba38b4be97b22b6316c20861977e99548a9ecf0d89d81faf916c4e714  67-lightdm-autologin.conf
 1a70c9a0709d4474317b75ad4929673509a1198e4b95378f8dd02f795b2585ad296b409f06c66d4375c5b6732643f86d04a5220a32de794f464b9375af8487ec  postmarketos_background"

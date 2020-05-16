@@ -1,23 +1,23 @@
 # Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=postmarketos-ui-mate
 pkgver=1
-pkgrel=9
+pkgrel=10
 pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
 url="http://mate-desktop.org/"
 arch="noarch"
 license="GPL-3.0-or-later"
 depends="mate-desktop-environment xorg-server dbus-x11 mesa-egl postmarketos-artwork-wallpapers gtk+2.0 lightdm lightdm-openrc"
 install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.post-upgrade"
-source="000-system-background.gschema.override 60-lightdm-autologin.conf"
+source="000-system-background.gschema.override 61-lightdm-autologin.conf"
 options="!check"
 
 package() {
 	install -Dm644 "$srcdir"/000-system-background.gschema.override \
 		"$pkgdir"/usr/share/glib-2.0/schemas/000-system-background.gschema.override
 
-	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
-		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
+	install -Dm644 "$srcdir"/61-lightdm-autologin.conf \
+		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/61-autologin.conf
 }
 
 sha512sums="b4eded3d1aba2086d53507d434da6f2d5aae24fa49c7a8619abb1d81f87898d7a6d813be777a285ce988d78db236bea7507e7868c39fe020e5d23c230dd36242  000-system-background.gschema.override
-225c4d1bccad4bdacad34958322015147077158b395b8db095b7afd47e18638044780b381124c3b82bf639af66ea565e1763c54ab9599ec13177c289e0d2a000  60-lightdm-autologin.conf"
+225c4d1bccad4bdacad34958322015147077158b395b8db095b7afd47e18638044780b381124c3b82bf639af66ea565e1763c54ab9599ec13177c289e0d2a000  61-lightdm-autologin.conf"
