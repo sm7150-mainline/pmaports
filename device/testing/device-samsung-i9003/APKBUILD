@@ -1,17 +1,16 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9003
 pkgver=1
-pkgrel=25
-pkgdesc="Samsung Galaxy SI SLC"
+pkgrel=26
+pkgdesc="Samsung Galaxy SL"
 url="https://postmarketos.org"
 arch="armhf"
 license="MIT"
 depends="postmarketos-base linux-samsung-i9003 libsamsung-ipc mkbootimg mesa-dri-swrast"
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
+source="deviceinfo
 	90-android-touch-dev.rules
-"
+	"
 options="!check !archcheck"
 
 build() {
@@ -23,6 +22,5 @@ package() {
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 }
-
-sha512sums="c36176a712ed37370dbce3cca6d7f081d92f7e2ace22cf5077856d0897cf8818613e0faf25c686a3f3f60ac4cc318d607def00f6ad4aa2078168d4668085a270  deviceinfo
+sha512sums="eaeb459baa89a570e91f87658f60a0c39a799eae03634b1f5b61e728f70d0329aea1c66477e4b60744711f77f66d1e18f38e0489294f6cffcf80028350e11056  deviceinfo
 079336f0a62fe45e839dcaa56479736fb67125ef5adf9bf73fc513c696d5a9fe14cfc9912f4aeb989476aa23bcd1befca25f0163c827691eea7eec1c7b97f303  90-android-touch-dev.rules"
