@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Caleb Connolly <caleb@connolly.tech>
+
+pkgname=device-oneplus-enchilada
+pkgdesc="OnePlus 6"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-oneplus-sdm845 mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="ce061f1a55d4982a11ecde1272398e9c756baed748ccaa254fc574ab4c12083f40797a1058c8d0521461acb85255f4b4c3a42d4fc863f36306d2243b5bdb03c2  deviceinfo"
