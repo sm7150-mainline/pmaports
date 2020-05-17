@@ -1,0 +1,63 @@
+# Maintainer: Caleb Connolly <caleb@connolly.tech>
+# Kernel config based on: arch/arm64/configs/defconfig
+
+_flavor="oneplus-sdm845"
+pkgname=linux-$_flavor
+pkgver=5.7_git20200507
+pkgrel=0
+pkgdesc="Mainline kernel fork for OnePlus SDM845 devices"
+arch="aarch64"
+_carch="arm64"
+url="https://gitlab.com/sdm845-mainline/sdm845-linux-next"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bison findutils flex installkernel openssl-dev perl"
+
+_config="config-$_flavor.$arch"
+
+# Source
+source="
+	$url/-/archive/$pkgver-sdm845/sdm845-linux-next-$pkgver-sdm845.tar.gz
+	$_config
+"
+builddir="$srcdir/sdm845-linux-next-$pkgver-sdm845"
+
+prepare() {
+	default_prepare
+	mkdir -p "$srcdir"/build
+	cp -v "$srcdir"/$_config "$srcdir"/build/.config
+	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" \
+		olddefconfig
+	# localversion-next is appended to the kernel image name when on a next
+	# tag, delete it to ensure name becomes vmlinuz-$_flavor
+	rm $builddir/localversion-next
+	# Ensure extraversion is $_flavour.
+	# NOTE: mkinitfs WILL fail if CONFIG_LOCALVERSION is set or
+	# CONFIG_LOCALVERSION_AUTO is set
+	sed -i "s/^EXTRAVERSION =.*/EXTRAVERSION = -$_flavor/g" $builddir/Makefile
+}
+
+build() {
+	cd "$srcdir"/build
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+}
+
+package() {
+	cd "$srcdir/build/arch/$_carch/boot"
+
+	install -D "$srcdir/build/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	cd "$srcdir"/build
+	mkdir -p "$pkgdir"/boot
+	make -j1 zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot/ \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+
+sha512sums="2ed04f7d285192b48cffe3272c41a4659b063907f296de66ed66ba9bdebdcf2e8d0143094dfd3f530e61ccb6ad509554184aed316fd104af50d94e95046f2452  sdm845-linux-next-5.7_git20200507-sdm845.tar.gz
+1cfde45168ba129a28ddd64644eaaff18146082b652f8bc4081a01197fe7f16647778fcffb9b5ce06df8c0e57a3d72b5ee1895fdc6d58f8e36c4a646b9ab067b  config-oneplus-sdm845.aarch64"
