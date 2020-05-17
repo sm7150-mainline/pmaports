@@ -96,11 +96,23 @@ def device_dependency_check(apkbuild, path):
                                " <https://postmarketos.org/devicepkg>.")
 
 
+def test_aports_kernel(args):
+    """
+    Various tests performed on the /**/linux-* aports.
+    """
+    for path in glob.iglob(args.aports + "**/linux-*/APKBUILD", recursive=True):
+        apkbuild = pmb.parse.apkbuild(args, path)
+
+        if "pmb:cross-native" not in apkbuild["options"]:
+            raise RuntimeError("\"pmb:cross-native\" missing in"
+                               f" options= line: {path}")
+
+
 def test_aports_device(args):
     """
     Various tests performed on the /device/*/device-* aports.
     """
-    for path in glob.glob(args.aports + "/device/*/device-*/APKBUILD"):
+    for path in glob.iglob(args.aports + "/device/*/device-*/APKBUILD"):
         apkbuild = pmb.parse.apkbuild(args, path)
 
         # Depends: Require "postmarketos-base"
