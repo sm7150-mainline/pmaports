@@ -4,22 +4,22 @@
 
 pkgname=linux-xiaomi-willow
 pkgver=4.14.117
-pkgrel=0
+pkgrel=1
 pkgdesc="Xiaomi Redmi Note 8T kernel fork"
 arch="aarch64"
 _carch="arm64"
 _flavor="xiaomi-willow"
 url="https://kernel.org"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps"
+options="!strip !check !tracedeps pmb:cross-native"
 makedepends="bash bc bison devicepkg-dev flex openssl-dev perl"
 
 # Source
-_repository="android_kernel_xiaomi_sm6125"
+_repository="lineage_kernel_sm6125"
 _commit="111707a52c4b7bffbc28d61ee1edb24979725e4d"
 _config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/Xiaomi-trinket-dev/$_repository/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/rjeli/$_repository/archive/$_commit.tar.gz
 	$_config
 	fix_gcc.patch
 	selinux_include_generated_headers.patch
@@ -50,7 +50,7 @@ package() {
 		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
-sha512sums="d0efc7a211f8f3eb4ad034406f27237fe9b7915e1a908e5e94e32c02ce8f8ffc81d041bd82771cb8b1b85f312557fcbc215c6650815c18bd9482d277b84bb6bd  linux-xiaomi-willow-111707a52c4b7bffbc28d61ee1edb24979725e4d.tar.gz
+sha512sums="6ee15c755bccbb4b36096cc11ae8a696be03d347f98de1805c58737ad5776b6d1542bc5ea89099e58bb502034af37b5183a461abf868bed7e90c161081bc2a99  linux-xiaomi-willow-111707a52c4b7bffbc28d61ee1edb24979725e4d.tar.gz
 59826215a97c1ef51b8eb493237625442fe3c4aa6efd5d4c8ca8cf60eb5f9b28136b2525e2b95cb767f144b1925f43193bc9d5f1ee7a65e6d468d4235d4ddb58  config-xiaomi-willow.aarch64
 f9339f17504e0d37c5f7847d09b5e38bf608ef146696a352d3a102fe59cf285984a94b4c5a0c7dad63c11fef82df94213a9c3fe4b3f8ff64b18e99741ed11561  fix_gcc.patch
 6ab9db01d35f7f5cc2c19ebe5f65a7dc479a1c68de587300cdde9a6c759d34610666c72f0f321cd450cf56c13df3b54a774e0f7ebdbf0f8608fbfd66b49d04e7  selinux_include_generated_headers.patch
