@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-asus-x00td
+pkgdesc="Asus ZenFone Max Pro M1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-asus-x00td mkbootimg mesa-dri-gallium msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="381b37d83afd97610527af7fe78058717d5a48f198c8d006b0f3461f5fc962c8c6de099d57430549d27fe17ce0a5b4848d870211066834bc49d5c468b26446f2  deviceinfo"
