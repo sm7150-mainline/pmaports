@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import glob
 import os
+import stat
 
 expected_directories = [
     "console",
@@ -26,6 +27,23 @@ def test_directories():
     expected = set(f for d in expected_directories for f in glob.iglob(d + "/*/APKBUILD"))
     assert apkbuilds == expected, "Found APKBUILD in unexpected directory. " \
         "Consider adding it to test_directory_structure.py!"
+
+
+# Ensure no file in pmaports are executable.
+# see https://gitlab.com/postmarketOS/pmaports/-/issues/593.
+def test_executable_files():
+    for file in glob.iglob("**/*", recursive=True):
+        if os.path.isdir(file) or os.path.islink(file):
+            continue
+            # still check other less common inode types
+        permissions = os.stat(file).st_mode
+        executable_bits = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+        if permissions & executable_bits != 0:
+            raise RuntimeError(f"\"{file}\" is executable. Files in pmaports" +
+                               " should not be executables. post-* files" +
+                               " don't need to be executable and executables" +
+                               " should be installed using `install -D" +
+                               "m0755` or a variation thereof.")
 
 
 # Make sure files are either:
