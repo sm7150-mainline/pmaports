@@ -1,40 +1,32 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qrca
-pkgver=0_git20191031
+pkgver=0_git20200408
 pkgrel=0
-_commit="72a599eafeadb14e1a547bac128e9e9b7c38ba52"
+_commit="4efd1aacd861492b5480173a513cbadaf55b6efd"
 pkgdesc="QR-Code scanner for Plasma Mobile"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 url="https://invent.kde.org/kde/qrca"
 license="GPL-3.0-or-later"
 depends="kirigami2"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev qt5-qtmultimedia-dev kirigami2-dev purpose-dev ki18n-dev kcontacts-dev kcoreaddons-dev zxing-cpp-dev"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/qrca/-/archive/$_commit.tar.gz"
-options="!check" # No tests
+checkdepends="xvfb-run"
+source="https://invent.kde.org/kde/qrca/-/archive/$_commit/qrca-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
-prepare() {
-	default_prepare
-
-	mkdir "$builddir"/build
-}
-
 build() {
-	cd "$builddir"/build
-	cmake "$builddir" \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make
+	cmake --build build
 }
 
 check() {
-	cd "$builddir"/build
-	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
 }
 
 package() {
-	cd "$builddir"/build
-	DESTDIR="$pkgdir" make install
+	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="4d6646d60aeec699583d56848c338799f5c77e221809aaf5ccbae518660e927b119558ca7ddccd4effdd9467b3c34222b1b560c53c82d8e103a187806a0d1393  qrca-72a599eafeadb14e1a547bac128e9e9b7c38ba52.tar.gz"
+sha512sums="9c5da05252db7a53bdb14fc77de35d5df7595f2fd38d48bc01b1203927f0e9fb44095791b30dd3c801e83b2e88bf4a46ce88243078fa165c66a88773ea24a66c  qrca-4efd1aacd861492b5480173a513cbadaf55b6efd.tar.gz"
