@@ -12,12 +12,12 @@ subpackages=""
 # Replace the last dot with a minus
 _pkgver="$(echo "$pkgver" | sed 's/\([0-9]*\.[0-9]*\)\.*/\1-/')"
 source="
-	$pkgname-$_pkgver.tar.gz::https://git.replicant.us/replicant/external_libsamsung-ipc/snapshot/external_libsamsung-ipc-replicant-${_pkgver}.tar.gz
+	$pkgname-$_pkgver.tar.gz::https://git.replicant.us/replicant/hardware_replicant_libsamsung-ipc/snapshot/replicant-${_pkgver}.tar.gz
 	0001-i9100-modem-firmware-device-path.patch
 "
 options="!check"
 
-builddir="$srcdir"/external_libsamsung-ipc-replicant-$_pkgver
+builddir="$srcdir"/replicant-$_pkgver
 build() {
 	cd "$builddir"
 	./autogen.sh CFLAGS=-Dloff_t=off_t --prefix=/usr --sysconfdir=/etc
@@ -29,5 +29,5 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="4606021a0f3fb4257bc6bb156165f4faa6873c4dff2e5ace37293ae488e6ffa0685e12b64dcf7a96bba014aa110b4bf8e1de73b643b61ca58ca518f6df467da7  libsamsung-ipc-6.0-0003.tar.gz
+sha512sums="b38758e810623ecf3899e8a0778072014aa434e5e2ec6ea0bd8047ad53583a5a86e9a5f213e44665bb10cfe4dc90eed082d4e7f67ef6c9c18b3eda77959268d8  libsamsung-ipc-6.0-0003.tar.gz
 b4a092fca35825d3d20886cb96135d944a4a3fbdb596b925c02c1a294160b7abbe1e5fa9f832816fe35f4a5d6b87546504b67950e17173e145b505e8108d0ccc  0001-i9100-modem-firmware-device-path.patch"
