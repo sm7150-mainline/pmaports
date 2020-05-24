@@ -129,3 +129,8 @@ aports-build:
     - sh ./install_pmbootstrap.sh
   script:
     - PYTHONUNBUFFERED=1 su pmos -c ".gitlab-ci/build_changed_aports.py"
+    - cp -r /home/pmos/.local/var/pmbootstrap/packages/ packages/ || true
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - packages/
