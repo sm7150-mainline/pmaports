@@ -1,0 +1,24 @@
+# Maintainer: Max Buchholz <2maxax2@gmx.de>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-htc-enrc2b
+pkgdesc="HTC One X+"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-htc-enrc2b mkbootimg mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="7f44ec1b75ac2eb2fb0035103ac920a395c877068e3e6780d5a5fe47a385a3faeca55dc8918e71de2ecf665d6cd6155e34bbd75b97b47f615c81955d18d769bd  deviceinfo"
