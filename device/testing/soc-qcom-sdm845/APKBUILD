@@ -1,0 +1,22 @@
+# Maintainer: Caleb Connolly (kalube) <caleb@connolly.tech>
+pkgname=soc-qcom-sdm845
+pkgdesc="Common package for Qualcomm SDM845 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !archcheck !tracedeps"
+depends="mesa-dri-gallium"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi and GPU Firmware"
+	depends="pd-mapper pd-mapper-openrc tqftpserv tqftpserv-openrc msm-modem-mainline"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
