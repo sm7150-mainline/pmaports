@@ -1,0 +1,28 @@
+# Maintainer: Caleb Connolly <caleb@connolly.tech>
+
+pkgname=firmware-oneplus-sdm845
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for OnePlus 6 / 6T"
+url="https://gitlab.com/sdm845-mainline/firmware-oneplus-sdm845"
+arch="aarch64"
+depends="soc-qcom-sdm845-nonfree-firmware linux-firmware-qcom linux-firmware-ath10k"
+license="proprietary"
+options="!check !strip !archcheck"
+
+_version="fe476f817dcde28bcfa2ce5ad0e2872c0e81a348"
+
+source="$pkgname.tar.gz::$url/-/archive/$_version/$pkgname-$_version.tar.gz
+firmware.files"
+
+package() {
+	cd "$srcdir/$pkgname-$_version/"
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$pkgdir/$_i"
+	done < "$srcdir/firmware.files"
+}
+
+sha512sums="9c4dce1f25bb78f478a773922e87cf06ace5c6025f46806a046af37e78cad21c192d10d18eeaf58a10bddbdb4adb4e217fc0709dd34f8c0ce576cd332f724fb3  firmware-oneplus-sdm845.tar.gz
+94dabbeb6f49dfed747862ba70ba0837095650d0c3dfb918d112458d674fa4574b0e608c436c89e40900718d72306b305a8d18c48a174570fdfa9609458465f9  firmware.files"
