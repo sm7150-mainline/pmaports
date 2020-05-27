@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Caleb Connolly <caleb@connolly.tech>
+
+pkgname=device-oneplus-fajita
+pkgdesc="OnePlus 6"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-oneplus-sdm845 mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="5698c115b427f490ef5c7248f965d6dd9b0bbf833b8e293d5e78f764a96ef21da028b3619f2f2a53dba1a21daaf70e263e6e06c3ed871b3f02ebb81bb14afce8  deviceinfo"
