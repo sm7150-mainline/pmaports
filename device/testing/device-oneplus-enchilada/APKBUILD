@@ -9,9 +9,10 @@ url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-oneplus-sdm845 mkbootimg mesa-dri-gallium"
+depends="postmarketos-base mkbootimg linux-oneplus-sdm845 soc-qcom-sdm845"
 makedepends="devicepkg-dev"
 source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -19,6 +20,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi and GPU Firmware"
+	depends="firmware-oneplus-sdm845"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="98b7861dc862b740df65ea2abb0301c9cb0c0cd8b9324acfb095b3c6dd8d75f927a71cb90f1df85000386c4cc5f63b14e0ff361134ee141707d158f7c218cc3b  deviceinfo"
