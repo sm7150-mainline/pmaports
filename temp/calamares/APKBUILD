@@ -1,0 +1,122 @@
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+pkgname=calamares
+pkgver=3.2.25
+pkgrel=0
+arch="all"
+url="https://calamares.io/"
+pkgdesc="Distribution-independent installer framework"
+license="GPL-3.0-or-later AND LGPL-2.1-only"
+depends="ckbcomp os-prober musl-locales cryptsetup"
+depends_dev="
+	cmake
+	kcoreaddons-dev
+	qt5-qttools-dev
+	yaml-cpp-dev
+"
+makedepends="
+	$depends_dev
+	boost-dev
+	boost-python3
+	extra-cmake-modules
+	kconfig-dev
+	kcrash-dev
+	ki18n-dev
+	kpackage-dev
+	kparts-dev
+	kpmcore-dev
+	kservice-dev
+	kwidgetsaddons-dev
+	libatasmart-dev
+	libpwquality-dev
+	parted-dev
+	plasma-framework-dev
+	polkit-qt-1-dev
+	python3-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtsvg-dev
+"
+checkdepends="xvfb-run"
+source="https://github.com/calamares/calamares/archive/v$pkgver/calamares-v$pkgver.tar.gz"
+subpackages="$pkgname-doc $pkgname-lang $pkgname-dev"
+
+# Modules to build:
+# https://github.com/calamares/calamares/tree/master/src/modules
+_modules="
+	keyboardq
+	localeq
+	mount
+	services-openrc
+	shellprocess
+	unpackfs
+	welcomeq
+"
+
+for i in $_modules; do
+	subpackages="$pkgname-mod-$i:_module $subpackages"
+done
+
+# Check if $1 is in $_modules
+is_module_enabled() {
+	local i
+	for i in $_modules; do
+		[ "$i" = "$1" ] && return 0
+	done
+	return 1
+}
+
+prepare() {
+	default_prepare
+
+	local i
+	cd "$builddir/src/modules"
+
+	# Fill $_skip_modules, list disabled modules
+	msg "disabled modules:"
+	for i in *; do
+		if ! [ -d "$i" ] || is_module_enabled "$i"; then
+			continue
+		fi
+		_skip_modules="$_skip_modules $i"
+		echo " - $i"
+	done
+
+	# List enabled modules
+	msg "enabled modules:"
+	for i in $_modules; do
+		echo " - $i"
+	done
+}
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DSKIP_MODULES="$_skip_modules"
+	make -C build
+}
+
+_module() {
+	local module=${subpkgname##calamares-mod-}
+	local path="usr/lib/calamares/modules"
+
+	mkdir -p "$subpkgdir/$path"
+	mv "$pkgdir/$path/$module" "$subpkgdir/$path/$module"
+
+	# Module-specific dependencies
+	case "$module" in
+		unpackfs) depends="$depends rsync" ;;
+	esac
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" make -C build install
+}
+
+sha512sums="8227f92e1e6fac7bceb60e92a7e755334501c843f3097aa2ea8755e048e355c62f974d465bdd73725fb6130e2385ce804cd2cadf72c4f866c1a4e623ac901300  calamares-v3.2.25.tar.gz"
