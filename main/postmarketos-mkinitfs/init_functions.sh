@@ -111,11 +111,30 @@ find_root_partition() {
 			[ "$x" = "${x#pmos_root=}" ] && continue
 			DEVICE="${x#pmos_root=}"
 		done
+
+		# On-device installer: before postmarketOS is installed,
+		# we want to use the installer partition as root. It is the
+		# partition behind pmos_root. pmos_root will either point to
+		# reserved space, or to an unfinished installation.
+		# p1: boot
+		# p2: (reserved space) <--- pmos_root
+		# p3: pmOS_install
+		# Details: https://postmarketos.org/on-device-installer
+		if [ -n "$DEVICE" ]; then
+			next="$(echo "$DEVICE" | sed 's/2$/3/')"
+
+			# If the next partition is labeled pmOS_install (and
+			# not pmOS_deleteme), then postmarketOS is not
+			# installed yet.
+			if blkid | grep "$next" | grep -q pmOS_install; then
+				DEVICE="$next"
+			fi
+		fi
 	fi
 
 	# Try partitions in /dev/mapper and /dev/dm-* first
 	if [ -z "$DEVICE" ]; then
-		for id in pmOS_root crypto_LUKS; do
+		for id in pmOS_install pmOS_root crypto_LUKS; do
 			for path in /dev/mapper /dev/dm; do
 				DEVICE="$(blkid | grep "$path" | grep "$id" \
 					| cut -d ":" -f 1 | head -n 1)"
@@ -126,7 +145,7 @@ find_root_partition() {
 
 	# Then try all devices
 	if [ -z "$DEVICE" ]; then
-		for id in pmOS_root crypto_LUKS; do
+		for id in pmOS_install pmOS_root crypto_LUKS; do
 			DEVICE="$(blkid | grep "$id" | cut -d ":" -f 1 \
 				| head -n 1)"
 			[ -z "$DEVICE" ] || break
@@ -180,6 +199,13 @@ wait_root_partition() {
 
 resize_root_partition() {
 	partition=$(find_root_partition)
+
+	# Do not resize the installer partition
+	if blkid "$partition" | grep -q pmOS_install; then
+		echo "Resize root partition: skipped (on-device installer)"
+		return
+	fi
+
 	# Only resize the partition if it's inside the device-mapper, which means
 	# that the partition is stored as a subpartition inside another one.
 	# In this case we want to resize it to use all the unused space of the
