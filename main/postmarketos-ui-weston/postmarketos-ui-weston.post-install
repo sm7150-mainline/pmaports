@@ -2,6 +2,6 @@
 
 sed -i "s/username/$(getent passwd 10000 | cut -d: -f1)/g" /usr/share/lightdm/lightdm.conf.d/66-autologin.conf
 
-sed -i "s/^Exec=weston$/Exec=start_weston.sh/g" /usr/share/wayland-sessions/weston.desktop
+sed -i "s/^Exec=weston$/Exec=dbus-run-session start_weston.sh/g" /usr/share/wayland-sessions/weston.desktop
 
 rc-update add lightdm default
