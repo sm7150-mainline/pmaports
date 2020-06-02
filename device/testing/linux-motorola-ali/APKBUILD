@@ -1,24 +1,17 @@
+# Maintainer: Uclydde <julianbraha@gmail.com>
 # Reference: <https://postmarketos.org/vendorkernel>
-# Kernel config based on: arch/arm/configs/ali_defconfig
 
 pkgname=linux-motorola-ali
 pkgver=3.18.140
-pkgrel=0
+pkgrel=1
 pkgdesc="Motorola Moto G6 kernel fork"
-arch="armv7"
-_carch="arm"
+arch="aarch64"
+_carch="arm64"
 _flavor="motorola-ali"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool gcc6"
-
-# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev openssl-dev"
 
 # Source
 _repository="kernel-msm"
@@ -27,7 +20,6 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/Uclydde/$_repository/archive/$_commit.tar.gz
 	$_config
-	01_prima_gcc6.patch
 	04_fix_stmvl53l0_headers.patch
 	fix_focaltech_recursive_dependency.patch
 	fix_mdp_ctrl_off.patch
@@ -46,11 +38,8 @@ prepare() {
 
 build() {
 	unset LDFLAGS
-	make ARCH="$_carch" O="$_outdir" CC="${CC:-gcc}" \
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
-
-	# Generate master DTB (deviceinfo_bootimg_qcdt)
-	dtbTool -s 2048 -p "scripts/dtc/" -o "$_outdir/arch/arm/boot/dt.img" "$_outdir/arch/arm/boot/"
 }
 
 package() {
@@ -58,8 +47,7 @@ package() {
 }
 
 sha512sums="9ce6156aa8fd62ba1dff15413b526a870f45368d72774690f43229de82935acc52fcc58467e9bb72cca889ce03f6978ef1be454fd671c0fe845341c09d51d648  linux-motorola-ali-974646412f6e865f6847a7c6b72528f3a14bdb56.tar.gz
-18b2bcf7dacfd2b963162a85a21bed437bbb78aa68f1dd33637d7d853b83897876055467276f8d2d9c057ee6cea139231b37ea4757af3a281ba7e0676a55b818  config-motorola-ali.armv7
-e32df5d5251c74bafa4a27973129b4a7b79097a8d406832316ae2ff18f516d76fbc0cd289b67344981efdf62d92ff439f7b573a1ac895c3e79271ee95fcf9610  01_prima_gcc6.patch
+791085fd1dff2041a7346d7665736bfd638b5f96216171254ba5cc2fd164722e41022d38ada700a6d998f40372b09bcb8fddcc41b0cba72f10155022afb2f74c  config-motorola-ali.aarch64
 1a128e1483459144726458175314c58528e6b1f1a85e5f4230fa0461b0c3dd650037567f672c220a95618f9df023a82a35f010e8e8b784e349806516c1daaf7e  04_fix_stmvl53l0_headers.patch
 e2cf5b20831c05881780b7db1f40135ca7c8e0d2a4f7a8afa4eee16c7eae1711f2f02f72266309d52cb4437e9580ed58472e768c266f1283994ab1098861e9fc  fix_focaltech_recursive_dependency.patch
 3ccfaf591befba3b67d24134a516352173767cac0479d3011f077866e02a792f3581e50d05110375a8f84876213823d37d3791c4cb82f19f212bc4bee57934c8  fix_mdp_ctrl_off.patch
