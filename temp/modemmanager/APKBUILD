@@ -1,0 +1,87 @@
+# Forked from Alpine QMI rpmsg support (certain Qualcomm MSM* modems)
+
+pkgname=modemmanager
+pkgver=9999
+_pkgver=1.14.6
+pkgrel=0
+pkgdesc="ModemManager library"
+url="http://www.freedesktop.org/wiki/Software/ModemManager"
+arch="all"
+license="GPL-2.0-or-later AND LGPL-2.1-or-later"
+depends_dev="libmm-glib"
+makedepends="$depends_dev gobject-introspection-dev gtk-doc vala
+	libgudev-dev polkit-dev libmbim-dev libqmi-dev linux-headers"
+checkdepends="glib-dev"
+options="!check" # https://bugs.freedesktop.org/show_bug.cgi?id=101197
+subpackages="
+	$pkgname-lang
+	$pkgname-doc
+	libmm-glib:libmm
+	$pkgname-dev
+	$pkgname-openrc
+	$pkgname-bash-completion
+	"
+source="https://www.freedesktop.org/software/ModemManager/ModemManager-$_pkgver.tar.xz
+	$pkgname.rules
+	$pkgname.initd
+	rpmsg.patch
+	rpmsg-udev.rules"
+builddir="$srcdir"/ModemManager-$_pkgver
+
+build() {
+	# Note: --enable-gtk-doc is disabled to speed up build time
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--localstatedir=/var \
+		--with-polkit=permissive \
+		--disable-static \
+		--with-dbus-sys-dir=/etc/dbus-1/system.d \
+		--enable-vala=yes
+	make
+}
+
+libmm() {
+	cd "$builddir"
+	mkdir -p "$subpkgdir"
+	make DESTDIR="$subpkgdir" -C libmm-glib install
+	# move dev files to modemmnager-dev
+	mv -f "$subpkgdir/usr/include/libmm-glib" "$pkgdir/usr/include/"
+	mv -f "$subpkgdir/usr/share/gir-1.0" "$pkgdir/usr/share/"
+	rmdir "$subpkgdir/usr/include" "$subpkgdir/usr/share"
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	make DESTDIR="$pkgdir" -C libmm-glib uninstall
+	rmdir "$pkgdir"/usr/lib/girepository-1.0 # in libmm-glib
+	rm -rf "$pkgdir"/usr/share/dbus-1/system-services #systemd-service
+	mkdir -p "$pkgdir/usr/share/polkit-1/rules.d"
+	install -m644 -D "$srcdir/$pkgname.rules" \
+		"$pkgdir/usr/share/polkit-1/rules.d/01-org.freedesktop.ModemManager.rules"
+	install -m755 -D "$srcdir/$pkgname.initd" \
+		"$pkgdir/etc/init.d/$pkgname"
+	install -Dm644 "$srcdir/rpmsg-udev.rules" "$pkgdir/usr/lib/udev/rules.d/80-modemmanager-pmos.rules"
+	# post-install message
+	mkdir -p "$pkgdir/usr/share/doc/$pkgname"
+	cat > $pkgdir/usr/share/doc/$pkgname/README.alpine <<EOF
+If your USB modem shows up as a Flash drive when you plug it in:
+
+install 'usb-modeswitch' to automatically switch to USB modem mode whenever you plug it in.
+To control your modem without the root password: add your user account to the 'plugdev' group.
+EOF
+}
+
+check() {
+	make check
+}
+
+sha512sums="b55fe9048e76228aba6e4cd3117a9e48cbb50a1a535f675a2356011d932035815616f13092a57167309b5030bfaa006e79342325b6c566b1e86803c247f83c90  ModemManager-1.14.6.tar.xz
+8d736f477649e42c05b34ac55391353c7f0c17138d039e049b16b07624d86fd9968ef1aa14672a63decf8b2c0ae984a34a0770322198b326775efba58f566685  modemmanager.rules
+e2769401c52c3fff0b8057c13c6f7f2e5656c2963239ecbd647a01e66a344f6852cf2ba065358248315945bdf6ebbc4976903565b12ace2d15df6586dcc1de5b  modemmanager.initd
+64270c00630f3dd73b5e06547e441f5cf8d75b96032da423c4132af2fc84b2c35042800e105c66bae354d61c66b716cc602421ac0ff82f7b4a8f0ce798855e24  rpmsg.patch
+0928a7b658d0eeb37daf40930ea930b266151df743c2c7b1d863bce9447fedb904924a5e673732d5bc765dc2ec6d8f4a2b47bc946575e8f18712c0f7ee81fb73  rpmsg-udev.rules"
