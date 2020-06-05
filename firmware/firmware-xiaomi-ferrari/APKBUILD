@@ -1,0 +1,53 @@
+pkgname=firmware-xiaomi-ferrari
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware files for Xiaomi Mi 4i"
+url="https://github.com/TheMuppets/proprietary_vendor_xiaomi"
+arch="aarch64"
+license="proprietary"
+depends="wcnss-wlan"
+options="!strip !check !archcheck"
+
+# Source
+_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06 wcnss.b09 wcnss.b10 wcnss.b11 wcnss.mdt"
+_files_prima="WCNSS_cfg.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
+_commit="d963fe57af50bae41c0412d38abb7ea068ac4e35"
+_prima_commit="0e096905ac1db7a6aa726e797ad9a3f9ee0d9035"
+_url="https://github.com/SUNGOLDSV/proprietary_vendor_xiaomi_ferrari/raw/$_commit/proprietary/etc/firmware"
+_prima_url="https://github.com/SUNGOLDSV/device_xiaomi_ferrari/raw/$_prima_commit/wifi"
+source=""
+for _i in $_files; do
+	source="$source $pkgname-$_commit-$_i::$_url/$_i"
+done
+for _i in $_files_prima; do
+	source="$source $pkgname-$_commit-$_i::$_prima_url/$_i"
+done
+
+package() {
+	cd "$srcdir"
+
+	# /lib/firmware/postmarketos
+	for _i in $_files; do
+		install -D -m644 "$pkgname-$_commit-$_i" \
+			"$pkgdir/lib/firmware/postmarketos/$_i"
+	done
+
+	# /lib/firmware/postmarketos/wlan/prima
+	for _i in $_files_prima; do
+		install -D -m644 "$pkgname-$_commit-$_i" \
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
+	done
+}
+
+sha512sums="cd7c5e582a624b1aa34e46d62259e646acf16cb22544d4d95cfa871af1078ff4805651051a433d8d073df74b4ee05bf5a3f58b1e180e34af46b9696a5c610d7e  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b00
+af61d9e71389574ab9ef7c3e5ffa9cfd99cabf581d83aec2c68062cc29fafb3a6943eec44390f67d2f29a6df57259e55ed327e45ebdd874078cb7d89ad3cb6c3  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b01
+c921fc7edc4a208b23b405482c6be351ba7a52e1c1162bc148247805f26e038782e7b1a436954dd57677d6311470f3edf7da8a5bb9fa02b8afa4c6f70c0c43ab  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b02
+33aec5659e3226b7fba3c95a3064d6bc74f24223dab27455f0c168892826e1d1d8c758c0bde4bef94a7f10d6712343038e1941af2d8adb20aba5ac9ce56a6207  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b04
+1bd5f3dc7314bfcd3f7423e6c0a1db3c712be1810177bb5fe20c25cd03913a0f4cb6265021e9b4bb0ac7cb08eb1019a614b11732479fe6680936a001ff5f9827  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b06
+c331a2a21695186c1ebd2c9facdc5fa856bedc757a50936b72577e76147373747d26bacfce0e165f089e182cc227ada737a0b42e51d9bdec16fb5f8ca795b091  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b09
+8a8f52b7cb06a2c78e980c75c794a64bd67e085ed52478e9f1aa734493f3e074b1f810eaff4760120b6c1a8d69a866e00fd43d414b8c85d1cc5117b6052db6c3  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b10
+8b4e4c575c5f7e6c1aab9f798025ff515dd897b3921d9ca48a823ccfa9c41ba8bacdbc961317764fb9041c3dbbc8ebe955398f3a83fce613fec2e1e9847275fe  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.b11
+2fe76aec3fbd313ab597bad6a424e59b7fa6265a08e601d34e8866b476185ec76b7b71aead91b8a29b1b887912e41fec47e99f016b87181604335c5aadfc2c07  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-wcnss.mdt
+fb92214f928143228c0683934342ceff11f19bec0581684e98e155262bed03f51c21a21881ec03316f917c127b607a2943efea4847b908f1c02864a1e507fb50  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-WCNSS_cfg.dat
+284fe8cfceff62b07089db11f994571de18554aa5d94cda825c36c1ec64cffab0acd0ae797fdb49bdb37ca47944cbd738da709e9f858fb459866f38f17163c98  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-WCNSS_qcom_cfg.ini
+78060e3a4fa87ff5abd5eb649d9321a5c2c40b2eaeb411438dae97e0e78a62b3835bdc44d2880bb8b83359ec3b0ee845a17f4404f578854e59becb06a02fb0fc  firmware-xiaomi-ferrari-d963fe57af50bae41c0412d38abb7ea068ac4e35-WCNSS_qcom_wlan_nv.bin"

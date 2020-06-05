@@ -1,0 +1,58 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/ferrari_defconfig
+
+pkgname=linux-xiaomi-ferrari
+pkgver=3.10.104
+pkgrel=0
+pkgdesc="Xiaomi Mi 4i kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="xiaomi-ferrari"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl dtbtool gcc6 linux-headers"
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+# Source
+_repository="android_kernel_xiaomi_ferrari"
+_commit="2368662e6a4fa4f5e3782666638e8f0f22bad650"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	01_prima_gcc6.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool -p scripts/dtc/ -o "$_outdir/arch/$_carch/boot"/dt.img "$_outdir/arch/$_carch/boot/"
+	install -Dm644 "$_outdir/arch/$_carch/boot"/dt.img "$pkgdir"/boot/dt.img
+}
+
+sha512sums="2cd2854045eaada791e912612ce609ca4cb5d7082a5019fc86effa92db3fe4a1df8bce433feaf32a04ecd3d1eb368a19b24de706298ad8fce4d6d32269ddf949  linux-xiaomi-ferrari-2368662e6a4fa4f5e3782666638e8f0f22bad650.tar.gz
+1a7c0a9d56541d7d22e05914d6bbc8a6c06fca596c5aa700d2e83408510a5aa4b65da2312fa1c85f4101264d845fefa6c72943b3b498b970d4b4d8d72b9e2ad1  config-xiaomi-ferrari.aarch64
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+a246e10cd979a7f5defb3a97049448b70cff892d667e41f998431ddbeb0e19a84687296b2456e807dd48090823bec63a340f07f3b4ba32121113914e41d299da  01_prima_gcc6.patch"
