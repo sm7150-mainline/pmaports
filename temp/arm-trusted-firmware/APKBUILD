@@ -1,8 +1,8 @@
 # Forked for adding rk3399 support
 pkgname=arm-trusted-firmware
-_pkgver=2.2
+_pkgver=2.3
 pkgver=9999
-pkgrel=0
+pkgrel=1
 pkgdesc="ARM Trusted Firmware-A (TF-A)"
 url="https://github.com/ARM-software/arm-trusted-firmware"
 arch="aarch64"
@@ -14,6 +14,7 @@ source="
 	$pkgname-$_pkgver.tar.gz::https://github.com/ARM-software/$pkgname/archive/v$_pkgver.tar.gz
 	rk3399-baudrate.patch
 "
+options="!check" # no testsuite
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
@@ -37,5 +38,5 @@ rk3399() {
 	install "$builddir"/build/rk3399/release/bl31/bl31.elf "$subpkgdir"/usr/share/$subpkgname/
 }
 
-sha512sums="7bdeb1044612a9fd0d61097f7cc9b27830d992a41a06359bb6653dab15296abf3d8b4dc63fc1988ede709d7c011afcfb304ff2818f80b91c1fc471be2a3c72be  arm-trusted-firmware-2.2.tar.gz
+sha512sums="c7d65e3d7cb9ee4502beac1a9e2e4e1c9f8d439412c457ee6a24e391ddba0b9becda8f1ed2c1356d92a5c0615b943b59f4e15686e6a4648d944d6bf2c060a957  arm-trusted-firmware-2.3.tar.gz
 86d8c60157145ab05e9b870aad11d2acaf2137ba00bf71419f8a54a4fd2b1906c19bc8bfeccc735344d1dcf11ba81bd9396bfd8854cdb972a72503b632d1e900  rk3399-baudrate.patch"
