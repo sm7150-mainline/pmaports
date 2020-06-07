@@ -1,0 +1,80 @@
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+pkgname=postmarketos-ondev
+pkgver=0.1.4
+pkgrel=0
+_calamaresver=3.2.25
+pkgdesc="Calamares based on-device installer"
+url="https://postmarketos.org"
+arch="all"
+license="GPL-3.0-or-later"
+depends="
+	$pkgname-openrc
+	calamares
+	calamares-mod-mount
+	calamares-mod-shellprocess
+	calamares-mod-unpackfs
+	i3wm
+	kirigami2
+	lightdm
+	lightdm-openrc
+	mesa-egl
+	qt5-qtvirtualkeyboard
+	xorg-server
+"
+makedepends="
+	calamares-dev
+	qt5-qtquickcontrols2-dev
+	qt5-qtsvg-dev
+"
+subpackages="$pkgname-openrc"
+install="$pkgname.post-install"
+source="postmarketos-ondev.initd
+	https://gitlab.com/postmarketOS/postmarketos-ondev/-/archive/$pkgver/postmarketos-ondev-$pkgver.tar.bz2
+	calamares-$_calamaresver.tar.gz::https://github.com/calamares/calamares/archive/v$_calamaresver.tar.gz"
+options="!check"  # has no tests
+
+prepare() {
+	default_prepare
+
+	# Workaround for broken out-of-tree builds:
+	# https://github.com/calamares/calamares/issues/1428
+	cd "$srcdir/calamares-$_calamaresver/"
+	ln -s "$PWD/CMakeModules" "$builddir/calamares"
+	ln -s "$PWD/src/libcalamares" "$builddir/calamares"
+	ln -s "$PWD/src/libcalamaresui" "$builddir/calamares"
+}
+
+build() {
+	cd calamares
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None
+	make -C build
+}
+
+package() {
+	# Calamares modules (don't conflict with official modules)
+	make -C calamares/build DESTDIR="$pkgdir" install
+	mv "$pkgdir/usr/lib/calamares/modules" \
+		"$pkgdir/usr/lib/calamares/modules-pmos"
+
+	# Calamares configs
+	mkdir -p "$pkgdir/etc"
+	cp -r "$builddir/calamares/config/" "$pkgdir/etc/calamares"
+
+	# Scripts
+	install -Dm755 "$builddir/ondev-prepare.sh" \
+		"$pkgdir/usr/bin/ondev-prepare"
+	install -Dm755 "$builddir/ondev-boot.sh" \
+		"$pkgdir/usr/bin/ondev-boot"
+
+	# OpenRC
+	install -Dm755 "$srcdir/postmarketos-ondev.initd" \
+		"$pkgdir/etc/init.d/postmarketos-ondev"
+}
+
+sha512sums="eff2c9f4ddcc7d22d8afd4c5d1cac92f6e6e9fef7713af2370dae715819ca2aba2d33b1cd0ea0478526c503dfc6948fee2242b6d804f8e9dcd6ef5cf1500fc7f  postmarketos-ondev.initd
+190e44d97641f1b5c8b5a44c7ae8e3584768cf8d22ddcaf5616927a72b89e776f578c1cab026a393f5a303bea4ebdfcd548feff5764905fb265569a62dacbbd8  postmarketos-ondev-0.1.4.tar.bz2
+8227f92e1e6fac7bceb60e92a7e755334501c843f3097aa2ea8755e048e355c62f974d465bdd73725fb6130e2385ce804cd2cadf72c4f866c1a4e623ac901300  calamares-3.2.25.tar.gz"

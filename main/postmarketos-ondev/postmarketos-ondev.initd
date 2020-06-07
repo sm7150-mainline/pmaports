@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+description="postmarketOS on-device installer"
+
+depend()
+{
+	need localmount dbus
+}
+
+start()
+{
+	ebegin "Running postmarketOS on-device installer"
+	ondev-boot &
+}
