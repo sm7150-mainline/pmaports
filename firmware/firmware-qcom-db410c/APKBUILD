@@ -1,6 +1,6 @@
 pkgname=firmware-qcom-db410c
 pkgver=1034.2.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for DragonBoard 410c"
 url="https://releases.linaro.org/96boards/dragonboard410c/qualcomm/firmware/"
 subpackages="$pkgname-doc $pkgname-modem $pkgname-wcnss $pkgname-wcnss-nv:wcnss_nv"
@@ -34,6 +34,9 @@ modem() {
 
 wcnss() {
 	pkgdesc="DragonBoard 410c WiFi/BT firmware"
+	provides="firmware-qcom-msm8916-wcnss"
+	provider_priority=100
+
 	install -Dm644 "$srcdir"/wcnss.* -t "$subpkgdir/$_fwdir"
 }
 
