@@ -1,13 +1,14 @@
 pkgname=firmware-bq-picmt
-pkgver=1
+pkgver=2
 pkgrel=0
+_commit="04cced17ab21d84ea6145e58f0b12fd67ef640d0"
 pkgdesc="Firmware for BQ Aquaris X5"
 url="https://github.com/JonnyMe/picmt-firmware"
-subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss"
+subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss $pkgname-wcnss-nv:wcnss_nv"
 arch="aarch64 armv7"
 license="proprietary"
-options="!check !strip !archcheck"
-source="https://github.com/JonnyMe/picmt-firmware/raw/master/picmt_firmware_files.tar.xz"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+source="https://github.com/JonnyMe/picmt-firmware/raw/$_commit/picmt_firmware_files.tar.xz"
 
 _fwdir="/lib/firmware/postmarketos"
 
@@ -18,21 +19,33 @@ package() {
 
 modem() {
 	pkgdesc="BQ Aquaris X5 modem firmware"
-	cd "$srcdir"
 	install -Dm644 "$srcdir"/modem.* -t "$subpkgdir/$_fwdir"
 	install -Dm644 "$srcdir"/mba.* -t "$subpkgdir/$_fwdir"
 }
 
 venus() {
 	pkgdesc="BQ Aquaris X5 video firmware"
-	install -Dm644 "$srcdir"/venus.* -t "$subpkgdir/$_fwdir"/qcom/venus-1.8
+	install -Dm644 "$srcdir"/venus.mdt "$srcdir"/venus.b* \
+		-t "$subpkgdir/$_fwdir"/qcom/venus-1.8
 }
 
 wcnss() {
 	pkgdesc="BQ Aquaris X5 WiFi/BT firmware"
-	cd "$srcdir"
+	provides="firmware-qcom-msm8916-wcnss"
+
 	install -Dm644 "$srcdir"/wcnss.* -t "$subpkgdir/$_fwdir"
-	install -Dm644 "$srcdir"/WCNSS_* -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+wcnss_nv() {
+	pkgdesc="BQ Aquaris X5 WiFi/BT firmware configuration"
+
+	case "$CARCH" in
+		# WCNSS_cfg.dat etc are only needed on downstream (armv7)
+		armv7)	files="WCNSS_*" ;;
+		*)	files="WCNSS_qcom_wlan_nv.bin" ;;
+	esac
+
+	install -Dm644 "$srcdir"/$files -t "$subpkgdir/$_fwdir"/wlan/prima
 }
 
 sha512sums="7f426e5fdb20319ed22c16be1ce13d069532bdfb8dc754a735c2a019342758b1f0210614dfeaa1d850802083a550ec8a6931d3572d203267cae8ec59f6613d82  picmt_firmware_files.tar.xz"
