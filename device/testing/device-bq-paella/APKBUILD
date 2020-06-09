@@ -2,16 +2,21 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-bq-paella
 pkgdesc="BQ Aquaris X5 Cyanogen Edition"
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
 makedepends="devicepkg-dev"
 source="deviceinfo modprobe.conf"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -21,11 +26,30 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_mainline() {
+	pkgdesc="Mainline kernel (no modem, audio routed directly)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Mainline kernel (non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video firmware"
 	depends="linux-firmware-qcom firmware-bq-picmt-venus firmware-bq-picmt-wcnss"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="d847b04c30460e05d4d30aa62608e1e1e26beb72f976125a967e74e11d0ee083cd8a0b559a1acb6c3ce2db0720e5c899dd1c8c3d93b1682be1535b856a75e01e  deviceinfo
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-bq-picmt-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="d7550da6176c4dd1beedc904bd56320f59bfec977b57a20979797a12932ee6feb75cd0e7fb3a18dadf1565c9c28077be6131b6a0128af8d3401eb2237c83d801  deviceinfo
 84ab0cbcdcab61aaceabff46d2c13aa29242a2eeab2f666ee996041f1969396a8124228c204d81aaf0b6427ee51b8a70bfdaa11b53c94390263d8af96a2fd511  modprobe.conf"
