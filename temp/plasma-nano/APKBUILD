@@ -1,31 +1,31 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-nano
-pkgver=5.18.80_git20200215
+pkgver=5.19.0_git20200605
 pkgrel=0
-_commit="c1c57efa066baf81f0ad6bea16637d4f0c76c854"
+_commit="3cd021537cbf4f24842f38698b54faab5b7d997f"
 pkgdesc="A minimal Plasma shell package intended for embedded devices"
 arch="all !armhf"
 url="https://invent.kde.org/kde/plasma-nano"
 license="GPL-2.0-or-later AND LGPL-2.1-or-later"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev plasma-framework-dev kwindowsystem-dev kwayland-dev"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-nano/-/archive/$_commit/plasma-nano-$_commit.tar.gz"
+source="https://invent.kde.org/kde/plasma-nano/-/archive/$_commit/plasma-nano-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cmake -B "$builddir"/build \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make -C build
+	cmake --build build
 }
 
 check() {
-	cd "$builddir"/build
+	cd build
 	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
-	DESTDIR="$pkgdir" make -C build install
+	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="80c355fa7941478b510eadd445cc3098cb74ab894fc168b83f5fbef5a747852cbdfe4d99923826fe12d2cb08da8966821accab8792e6a2e943472a27311a1e47  plasma-nano-c1c57efa066baf81f0ad6bea16637d4f0c76c854.tar.gz"
+sha512sums="e423fab257f03dd02233daade7b67f202336f5f1604059bf505ac26b4e726b36446804ee115f41754c552d4220db09e4bfb929b35fd190511dcbf3a698c5461d  plasma-nano-3cd021537cbf4f24842f38698b54faab5b7d997f.tar.gz"
