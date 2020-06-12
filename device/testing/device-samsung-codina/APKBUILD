@@ -1,0 +1,23 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-codina
+pkgdesc="Samsung Galaxy Ace 2"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="mkbootimg postmarketos-base linux-samsung-codina mesa-dri-swrast"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+
+sha512sums="5d5ba88194ad01f6057289165776758375a319ed2c3509c0a1d051eb94f08a68fac41baf48b31cec18d7b335c6e26f4866038ce3faaeed034828c9e6845dd1f8  deviceinfo"
