@@ -2,19 +2,19 @@
 pkgname=device-pine64-pinebookpro
 pkgdesc="PINE64 Pinebook Pro"
 pkgver=0.1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-rockchip u-boot-rockpro64 mesa-git-dri-gallium"
+depends="postmarketos-base linux-postmarketos-rockchip u-boot-rockpro64 mesa-git-dri-gallium alsa-ucm-conf"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 install="$pkgname.post-install"
 source="
 	deviceinfo
 	extlinux.conf
-	10-usb-kbd.hwdb
+	10-pinebookpro.hwdb
 	mem_sleep.conf
 	ucm/rockchip,es8316-codec.conf
 	ucm/HiFi
@@ -30,8 +30,8 @@ package() {
 		"$pkgdir"/boot/extlinux/extlinux.conf
 
 	# Keyboard mapping
-	install -D -m644 "$srcdir"/10-usb-kbd.hwdb \
-		"$pkgdir"/etc/udev/hwdb.d/10-usb-kbd.hwdb
+	install -D -m644 "$srcdir"/10-pinebookpro.hwdb \
+		"$pkgdir"/etc/udev/hwdb.d/10-pinebookpro.hwdb
 
 	# Sleep workaround
 	install -D -m644 "$srcdir"/mem_sleep.conf \
@@ -39,9 +39,9 @@ package() {
 
 	# Alsa usecase manager config
 	install -D -m644 "$srcdir"/rockchip,es8316-codec.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/rockchip,es8316-codec/rockchip,es8316-codec.conf
+		"$pkgdir"/usr/share/alsa/ucm2/rockchip_es8316/rockchip,es8316-codec.conf
 	install -D -m644 "$srcdir"/HiFi \
-		"$pkgdir"/usr/share/alsa/ucm2/rockchip,es8316-codec/HiFi
+		"$pkgdir"/usr/share/alsa/ucm2/rockchip_es8316/HiFi
 
 }
 
@@ -53,7 +53,7 @@ nonfree_firmware() {
 
 sha512sums="3247ea65950e82311bf2a56273c7523849682fa3cc2dfc19e54c0154a626869181b22e9545bf952cf262e188d032f5342e5a679a63d0c02d6cb972ad0cd2206a  deviceinfo
 6b3695373d6df7b6ac9f59a8c492d2f5e1ef1c6192662224547b500b071bf00ee4335c57736ba787eec236a2e8bde3c559f3cfc3d1e6fe13a7386d7a0db3ff78  extlinux.conf
-13a53bd00dd0afb8908b0bc98d388d5f37ab1df334a3ff0f56928f0f4e4e658253c78f2c368e31979cf8b4ebcc519d0efe0e2255979c00198b82a8eb37d93dd0  10-usb-kbd.hwdb
+d3988fe83c54228d743f4a8c190e9530404a436a7fbc0b004bf20d3986b502d864717d8cc9c76812e599266bf84cb08f9a86e1bfd220875799c5a022aea588ec  10-pinebookpro.hwdb
 bcae155e24a151d3c098833680b83b6004a329962f115480d560ebe19257eab87286b8a4c194e456c067ca54fb53e59a5a16b022cea13c11135b0855145db563  mem_sleep.conf
 846384cab3e9581a03007cf4f39f8538315e804d1573903dd223d22d5ca0b6f260e348467aead5124689288fb7d2ec22c1e9aba8e89683efdbd33ddfe10de852  rockchip,es8316-codec.conf
 520157f8215bd33e89f530fc37db451cf672df697de8883c91635df4fc32c4788dde1dd313c7d8b229916579fa25e0d60c8baf4721dcd9f95550abaa6d98a536  HiFi"
