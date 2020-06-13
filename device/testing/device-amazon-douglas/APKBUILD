@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-amazon-douglas
+pkgdesc="Amazon Fire HD 8 (2017)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-amazon-douglas mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="9a399829c2ba8f613990e427b8e117ef40284520cfab339217bd2711fd6c49b9401233f8bbf67c0572eab7bd8c2a5818c7ccf7d082fbf90b85eb7daa60656df8  deviceinfo"

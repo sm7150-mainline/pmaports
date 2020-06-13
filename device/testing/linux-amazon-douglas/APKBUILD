@@ -1,0 +1,55 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config is based on arch/arm64/configs/douglas_debug_defconfig
+#
+# However, this didn't seem to work initially as the generated config
+# file via pmbootstrap was somehow missing CONFIG_USB_G_ANDROID. I then
+# output of the kernel build script provided by Amazon, which printed
+# out the .config used for building the kernel.
+
+pkgname=linux-amazon-douglas
+pkgver=3.18.19
+pkgrel=0
+pkgdesc="Amazon Fire HD 8 (2017) kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="amazon-douglas"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6"
+
+# Compiler: GCC 6
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="kernel_douglas"
+_commit="4ff2b5a4534e275748920ba4ad105af36495bf89"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/shuhaowu/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+}
+
+sha512sums="eb3804fcbadb268429640a5171ea4788cf8974444a1aa1005801902dbce1c4d67d88cb43d0cee259dc082161a92b285de0a0d18d721220f6d2dff84a179a7dc5  linux-amazon-douglas-4ff2b5a4534e275748920ba4ad105af36495bf89.tar.gz
+49da89d9a12db904685da02d14e43f92af1d9375cda9644592a898089b45e246214b8eab9a8b23ddf742e23cceda4fd348d7088deb47c3bc0330affa7c48c148  config-amazon-douglas.aarch64"
