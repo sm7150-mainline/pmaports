@@ -1,7 +1,7 @@
 # Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=telephony-service
 pkgver=0_git20200218
-pkgrel=1
+pkgrel=2
 # uses git sha from integration branch, since changes are still pending to be merged
 _commit="aa9e19d766c8dfcc23ab0531ade02054d4fd8492"
 pkgdesc="Telephony service"
@@ -10,23 +10,23 @@ arch="all !armhf" # armhf blocked by qt5-qtmultimedia -> qt5-qtdeclarative
 license="GPL-3.0-only"
 depends="ofono"
 makedepends="cmake qt5-qtbase-dev qt5-qtpim-dev libphonenumber-dev telepathy-qt-dev sqlite-dev telepathy-mission-control-dev libofono-qt-dev qt5-qtpim-dev qt5-qtfeedback-dev libnotify-dev qt5-qtmultimedia-dev pulseaudio-dev glib-dev coreutils lcov gcovr dconf"
-source="$pkgname-$_commit.tar.gz::https://github.com/ubports/telephony-service/archive/$_commit.tar.gz
+source="https://github.com/ubports/telephony-service/archive/$_commit/telephony-service-$_commit.tar.gz
 	telephony-service-handler.desktop"
-options="!check" # no tests
+options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cmake \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib \
 		-DSKIP_QML_TESTS=ON \
 		-DWANT_UI_SERVICES=OFF
-	make
+	make -C build
 }
 
 package() {
-	DESTDIR="$pkgdir" make install
+	DESTDIR="$pkgdir" make -C build install
 
 	install -Dm644 "$srcdir"/telephony-service-handler.desktop \
 		"$pkgdir"/etc/xdg/autostart/telephony-service-handler.desktop

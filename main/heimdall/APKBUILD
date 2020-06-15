@@ -1,27 +1,27 @@
 pkgname=heimdall
 pkgver=1.4.2
-pkgrel=4
+pkgrel=5
 pkgdesc="Flasher for Samsung Galaxy S devices"
 url="https://gitlab.com/BenjaminDobell/Heimdall"
 arch="all"
 license="MIT"
 makedepends="libusb-dev cmake"
-source="
-	https://gitlab.com/BenjaminDobell/Heimdall/-/archive/v$pkgver/Heimdall-v$pkgver.tar.gz
+source="https://gitlab.com/BenjaminDobell/Heimdall/-/archive/v$pkgver/Heimdall-v$pkgver.tar.gz
 	heimdall_flash_kernel.sh
 	heimdall_wait_for_device.sh
-"
-options="!check"
+	"
+options="!check" # No tests
 builddir="$srcdir/Heimdall-v$pkgver"
 
 build() {
-	cmake \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DDISABLE_FRONTEND=ON
-	make
+	cmake --build build
 }
 
 package() {
+	cd build
 	for i in bin/heimdall "$srcdir"/heimdall_flash_kernel.sh "$srcdir"/heimdall_wait_for_device.sh; do
 		install -Dm755 "$i" "$pkgdir"/usr/bin/"$(basename "$i")"
 	done

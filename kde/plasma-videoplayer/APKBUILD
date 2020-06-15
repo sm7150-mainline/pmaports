@@ -2,39 +2,26 @@
 pkgname=plasma-videoplayer
 _pkgname=videoplayer
 pkgver=0.3_git20190505
-pkgrel=0
+pkgrel=1
 _commit="efd715ef60ab321035ab44ddca36a95a8aad176f"
 pkgdesc="Video Player for Plasma Mobile"
 url="https://invent.kde.org/jbbgameich/videoplayer"
 arch="all"
 license="LGPL-2.1-or-later"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev plasma-framework-dev kdeclarative-dev ki18n-dev kdbusaddons-dev"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/jbbgameich/videoplayer/-/archive/$_commit/videoplayer-$_commit.tar.gz"
+source="https://invent.kde.org/jbbgameich/videoplayer/-/archive/$_commit/videoplayer-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$_pkgname-$_commit"
 
-prepare() {
-	default_prepare
-
-	mkdir "$builddir"/build
-}
-
 build() {
-	cd "$builddir"/build
-	cmake "$builddir" \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make
-}
-
-check() {
-	cd "$builddir"/build
-	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+	make -C build
 }
 
 package() {
-	cd "$builddir"/build
-	DESTDIR="$pkgdir" make install
+	DESTDIR="$pkgdir" make -C build install
 }
-sha512sums="fbd4d320264ae820f3e7f64b41df93a3242ec47d5ad05a241f293926509bdd8799eb90295fe18cbd4ac80c4f7ab87c29b53528c671023ddcd9c42ccbafc99ca7  plasma-videoplayer-efd715ef60ab321035ab44ddca36a95a8aad176f.tar.gz"
+sha512sums="fbd4d320264ae820f3e7f64b41df93a3242ec47d5ad05a241f293926509bdd8799eb90295fe18cbd4ac80c4f7ab87c29b53528c671023ddcd9c42ccbafc99ca7  videoplayer-efd715ef60ab321035ab44ddca36a95a8aad176f.tar.gz"

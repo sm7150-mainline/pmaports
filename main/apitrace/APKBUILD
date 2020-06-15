@@ -1,21 +1,22 @@
 # Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=apitrace
 pkgver=9.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Tools for tracing OpenGL, Direct3D, and other graphics APIs"
 arch="all"
 url="http://apitrace.github.io/"
 license="MIT"
 depends_dev="mesa-dev zlib-dev libpng-dev libx11-dev linux-headers qt5-qtbase-dev"
 makedepends="$depends_dev cmake python3"
-source="$pkgname-$pkgver.tar.gz::https://github.com/apitrace/apitrace/archive/$pkgver.tar.gz
-	0001-Support-libc-that-don-t-have-RTLD_DEEPBIND.patch"
+source="https://github.com/apitrace/apitrace/archive/$pkgver/apitrace-$pkgver.tar.gz
+	0001-Support-libc-that-don-t-have-RTLD_DEEPBIND.patch
+	"
 subpackages="$pkgname-doc"
 options="!check" # Tests fail under QEMU
 
 build() {
-	cmake -B "$builddir"/build \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
 	make -C build
