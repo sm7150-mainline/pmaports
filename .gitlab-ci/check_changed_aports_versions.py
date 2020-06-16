@@ -19,7 +19,7 @@ import pmb.helpers.logging
 
 def get_package_version(args, package, revision, check=True):
     # Redirect stderr to /dev/null, so git doesn't complain about files not
-    # existing in master for new packages
+    # existing in upstream branch for new packages
     stderr = None
     if not check:
         stderr = subprocess.DEVNULL
@@ -56,6 +56,7 @@ def version_compare_operator(result):
 
 
 def exit_with_error_message():
+    branch = common.get_upstream_branch()
     print()
     print("ERROR: Modified package(s) don't have an increased version or a")
     print("new package has a nonzero pkgrel!")
@@ -63,15 +64,15 @@ def exit_with_error_message():
     print("This can happen if you added a new package with a nonzero")
     print("pkgrel, or if you did not change the pkgver/pkgrel")
     print("variables in the APKBUILDs. Or you did change them, but the")
-    print("packages have been updated in the official master branch, and now")
-    print("your versions are not higher anymore.")
+    print(f"packages have been updated in the official '{branch}' branch, and")
+    print("now your versions are not higher anymore.")
     print()
     print("Your options:")
     print("a) If you made changes to the packages, and did not increase the")
     print("   pkgrel/pkgver: increase them now, and force push your branch.")
     print("   => https://postmarketos.org/howto-bump-pkgrel-pkgver")
     print("b) If you had already increased the package versions, rebase on")
-    print("   master, increase the versions again and then force push:")
+    print(f"   '{branch}', increase the versions again and then force push:")
     print("   => https://postmarketos.org/rebase")
     print("c) If you made a change, that does not require rebuilding the")
     print("   packages, such as only changing the arch=... line: you can")
@@ -85,24 +86,25 @@ def exit_with_error_message():
 def check_versions(args, packages):
     error = False
 
-    # Get relevant commits: compare HEAD against upstream/master or HEAD~1
-    # (the latter if this CI check is running on upstream/master). Note that
+    # Get relevant commits: compare HEAD against upstream branch or HEAD~1
+    # (the latter if this CI check is running on upstream branch). Note that
     # for the common.get_changed_files() code, we don't check against
-    # upstream/master, but against the latest common ancestor. This is not
+    # upstream branch HEAD, but against the latest common ancestor. This is not
     # desired here, since we already know what packages changed, and really
-    # want to check if the version was increased towards *current* master.
-    commit = "upstream/master"
+    # want to check if the version was increased towards *current* upstream
+    # branch HEAD.
+    commit = f"upstream/{common.get_upstream_branch()}"
     if common.run_git(["rev-parse", "HEAD"]) == common.run_git(["rev-parse",
                                                                 commit]):
-        print("NOTE: upstream/master is on same commit as HEAD, comparing"
+        print(f"NOTE: {commit} is on same commit as HEAD, comparing"
               " HEAD against HEAD~1.")
         commit = "HEAD~1"
 
     for package in packages:
         # Get versions, skip new packages
         head = get_package_version(args, package, "HEAD")
-        master = get_package_version(args, package, commit, False)
-        if not master:
+        upstream = get_package_version(args, package, commit, False)
+        if not upstream:
             if head.rpartition('r')[2] != "0":
                 print(f"- {package}: {head} (HEAD) (new package) [ERROR]")
                 error = True
@@ -110,8 +112,8 @@ def check_versions(args, packages):
                 print(f"- {package}: {head} (HEAD) (new package)")
             continue
 
-        # Compare head and master versions
-        result = pmb.parse.version.compare(head, master)
+        # Compare head and upstream versions
+        result = pmb.parse.version.compare(head, upstream)
         if result != 1:
             error = True
 
@@ -120,7 +122,7 @@ def check_versions(args, packages):
         if result != 1:
             formatstr += " [ERROR]"
         operator = version_compare_operator(result)
-        print(formatstr.format(package, head, operator, master, commit))
+        print(formatstr.format(package, head, operator, upstream, commit))
 
     if error:
         exit_with_error_message()

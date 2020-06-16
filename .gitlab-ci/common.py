@@ -4,6 +4,7 @@
 
 # Various functions used in CI scripts
 
+import configparser
 import os
 import subprocess
 import sys
@@ -53,24 +54,56 @@ def run_pmbootstrap(parameters, output_return=False):
         return result.stdout
 
 
+def get_upstream_branch():
+    """ Use pmaports.cfg from current branch (e.g. "v20.05_fix-ci") and
+        channels.cfg from master to retrieve the upstream branch.
+
+        :returns: branch name, e.g. "v20.05" """
+    global cache
+    if "upstream_branch" in cache:
+        return cache["upstream_branch"]
+
+    # Get channel (e.g. "stable") from pmaports.cfg
+    # https://postmarketos.org/pmaports.cfg
+    pmaports_dir = get_pmaports_dir()
+    pmaports_cfg = configparser.ConfigParser()
+    pmaports_cfg.read(f"{pmaports_dir}/pmaports.cfg")
+    channel = pmaports_cfg["pmaports"]["channel"]
+
+    # Get branch_pmaports (e.g. "v20.05") from channels.cfg
+    # https://postmarketos.org/channels.cfg
+    channels_cfg_str = run_git(["show", "upstream/master:channels.cfg"])
+    channels_cfg = configparser.ConfigParser()
+    channels_cfg.read_string(channels_cfg_str)
+    assert channel in channels_cfg, \
+        f"Channel '{channel}' from pmaports.cfg in your branch is unknown." \
+        " This appears to be an old branch, consider recreating your change" \
+        " on top of master."
+
+    ret = channels_cfg[channel]["branch_pmaports"]
+    cache["upstream_branch"] = ret
+    return ret
+
+
 def get_changed_files(removed=True):
     """ Get all changed files and print them, as well as the branch and the
         commit that was used for the diff.
         :param removed: also return removed files (default: True)
         :returns: set of changed files
     """
+    branch_upstream = f"upstream/{get_upstream_branch()}"
     commit_head = run_git(["rev-parse", "HEAD"])[:-1]
-    commit_upstream_master = run_git(["rev-parse", "upstream/master"])[:-1]
+    commit_upstream = run_git(["rev-parse", branch_upstream])[:-1]
     print("commit HEAD: " + commit_head)
-    print("commit upstream/master: " + commit_upstream_master)
+    print(f"commit {branch_upstream}: f{commit_upstream}")
 
-    # Check if we are latest upstream/master
-    if commit_head == commit_upstream_master:
+    # Check if we are HEAD on the upstream branch
+    if commit_head == commit_upstream:
         # then compare with previous commit
         commit = "HEAD~1"
     else:
         # otherwise compare with latest common ancestor
-        commit = run_git(["merge-base", "upstream/master", "HEAD"])[:-1]
+        commit = run_git(["merge-base", branch_upstream, "HEAD"])[:-1]
     print("comparing HEAD with: " + commit)
 
     # Changed files
@@ -96,6 +129,7 @@ def get_changed_packages_sanity_check(count):
     if count <= 10:
         return
 
+    branch = get_upstream_branch()
     print()
     print("ERROR: Too many packages have changed!")
     print()
@@ -105,7 +139,7 @@ def get_changed_packages_sanity_check(count):
     print()
     print("Your options:")
     print("a) If you *did not* modify everything listed above, then rebase")
-    print("   your branch on the official postmarketOS/pmaports.git master")
+    print(f"   your branch on the official postmarketOS/pmaports.git {branch}")
     print("   branch. Feel free to ask in the chat for help if you need any.")
     print("b) If you *did* modify all these packages, and you assume that")
     print("   they will build within one hour: skip this sanity check by")
