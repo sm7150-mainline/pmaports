@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-j53g
+pkgdesc="Samsung Galaxy J5 2015 (SM-J500H)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-samsung-j53g-venus firmware-samsung-j53g-wcnss"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="0b8185d2c9f118c7a0ca8cb08aeeccd7c358d56981901d5f272f3a5f51a8780872493d0f5bdb548164e05ec4bea1e6a8d5e67054704667abc744bb1459272811  deviceinfo"
