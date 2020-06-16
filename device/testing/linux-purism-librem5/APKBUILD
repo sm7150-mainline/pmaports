@@ -2,7 +2,7 @@
 # Kernel config based on: arch/arm64/configs/librem5-devkit_defconfig
 pkgname=linux-purism-librem5
 # <kernel ver>.<purism kernel release>
-pkgver=5.6.5
+pkgver=5.7.0
 _purismver=${pkgver}+librem5.1
 pkgrel=0
 pkgdesc="Purism Librem 5 phone kernel fork"
@@ -41,17 +41,11 @@ build() {
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 
-	local _install
-	case "$CARCH" in
-	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
-	*)		_install="modules_install" ;;
-	esac
-
-	make -j1 $_install \
+	make modules_install dtbs_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 
 }
-sha512sums="dcfb78b87f46e03c1c3ed070ac85693f00534c113715279ac2848e8ff4d7a615bc853faaf5b8b02979e7e058ca1297bcab9ac633612ae399104d1b49a38e644d  linux-purism-librem5-5.6.5+librem5.1.tar.gz
-1edff35701c61acd82243550ed9cf63e344e32ca0c13d87524e64918b3b712736f44862188990fa2be6fe5e582a8e9b9d9e13a96fcd4b956ee8eea93a3ca2d81  config-purism-librem5.aarch64"
+sha512sums="1ef367fb4835780e440d65076c5b7ba611a8e37f745ed4a1f76f4bf9e01f4b27010f5d0728ea05ab0af094134e5007a67ffa49d3e753722a917786241b421b8f  linux-purism-librem5-5.7.0+librem5.1.tar.gz
+4d1f3b99c1f6ce3f95eab375403c6c4ca1ebb7131379ef3355e583993940b537d5026c9283289c1f512f0bfdbfad05c3153b4d5374ef8f13af74926f473b252c  config-purism-librem5.aarch64"
