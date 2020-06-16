@@ -9,8 +9,16 @@ import subprocess
 import sys
 
 
+cache = {}
+
+
 def get_pmaports_dir():
-    return os.path.realpath(os.path.join(os.path.dirname(__file__) + "/.."))
+    global cache
+    if "pmaports_dir" in cache:
+        return cache["pmaports_dir"]
+    ret = os.path.realpath(os.path.join(os.path.dirname(__file__) + "/.."))
+    cache["pmaports_dir"] = ret
+    return ret
 
 
 def run_git(parameters, check=True, stderr=None):
