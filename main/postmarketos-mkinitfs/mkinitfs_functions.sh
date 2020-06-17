@@ -405,20 +405,25 @@ create_bootimg()
 append_or_copy_dtb()
 {
 	[ -n "${deviceinfo_dtb}" ] || return
-	dtb="/usr/share/dtb/${deviceinfo_dtb}.dtb"
+	echo "==> kernel: device-tree blob operations"
+	dtb=""
+	for filename in $deviceinfo_dtb; do
+		if ! [ -e "/usr/share/dtb/$filename.dtb" ]; then
+			echo "ERROR: File not found: $dtb"
+			exit 1
+		fi
+		dtb="$dtb /usr/share/dtb/$filename.dtb"
+	done
 	# shellcheck disable=SC2039
 	kernel="${outfile/initramfs-/vmlinuz-}"
-	echo "==> kernel: device-tree blob operations"
-	if ! [ -e "$dtb" ]; then
-		echo "ERROR: File not found: $dtb"
-		exit 1
-	fi
 	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
-		cat "$kernel" "$dtb" > "${kernel}-dtb"
+		# shellcheck disable=SC2086
+		cat "$kernel" $dtb > "${kernel}-dtb"
 	else
 		echo "==> kernel: copying dtb ${deviceinfo_dtb} to boot partition"
-		cp "$dtb" "$(dirname "${outfile}")"
+		# shellcheck disable=SC2086
+		cp $dtb "$(dirname "${outfile}")"
 	fi
 }
 
