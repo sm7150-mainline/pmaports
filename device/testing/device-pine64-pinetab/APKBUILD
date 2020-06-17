@@ -2,12 +2,12 @@
 pkgname=device-pine64-pinetab
 pkgdesc="PINE64 PineTab"
 pkgver=0.1
-pkgrel=20
+pkgrel=21
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-allwinner u-boot-pinephone uboot-tools mesa-git-dri-gallium bluez"
+depends="postmarketos-base linux-postmarketos-allwinner u-boot-pinephone uboot-tools mesa-git-dri-gallium bluez alsa-ucm-conf"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-sway
@@ -74,9 +74,9 @@ package() {
 
 	# Alsa usecase manager config
 	install -D -m644 "$srcdir"/sun50i-a64-audio.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/sun50i-a64-audio.conf
+		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/sun50i-a64-audio.conf
 	install -D -m644 "$srcdir"/HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/HiFi.conf
+		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/HiFi.conf
 
 	# Fix for the meta key on v1 keyboard dock, probably not needed on newer revisions
 	install -Dm644 "$srcdir"/99-pinetab-keyboard.hwdb \
