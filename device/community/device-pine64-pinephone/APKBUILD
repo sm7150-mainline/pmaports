@@ -4,14 +4,14 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
 pkgver=0.3
-pkgrel=1
+pkgrel=2
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-depends="postmarketos-base u-boot-pinephone uboot-tools mesa-git-dri-gallium linux-postmarketos-allwinner gpsd atinout"
+depends="postmarketos-base u-boot-pinephone uboot-tools mesa-git-dri-gallium linux-postmarketos-allwinner gpsd atinout alsa-ucm-conf"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 source="deviceinfo
@@ -56,11 +56,11 @@ package() {
 
 	# Alsa usecase manager config
 	install -D -m644 "$srcdir"/sun50i-a64-audio.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/sun50i-a64-audio.conf
+		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/sun50i-a64-audio.conf
 	install -D -m644 "$srcdir"/HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/HiFi.conf
+		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/HiFi.conf
 	install -D -m644 "$srcdir"/VoiceCall.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audio/VoiceCall.conf
+		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/VoiceCall.conf
 
 	# Modem
 	install -Dm755 "$srcdir"/eg25.initd "$pkgdir"/etc/init.d/eg25
