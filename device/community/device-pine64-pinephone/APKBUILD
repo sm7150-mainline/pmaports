@@ -4,7 +4,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
 pkgver=0.5
-pkgrel=0
+pkgrel=1
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -38,6 +38,11 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
+
+	# Make /boot/allwinner/sun50i-a64-pine64-pinephone*.dtb resolve to /boot/sun50i-a64-pine64-pinephone*.dtb
+	# this is because the device tree names in u-boot include the vendor and the one in postmarketOS doesn't
+	ln -s .. "$pkgdir"/boot/allwinner
+
 	install -D -m644 "$srcdir"/hwtest.ini \
 		"$pkgdir"/usr/share/hwtest.ini
 
@@ -81,8 +86,8 @@ phosh() {
 	depends="wys-pinephone"
 	mkdir "$subpkgdir"
 }
-sha512sums="712dbae8d8799ab251068863d0bc542e29dba7b8783685c1c56fac234c2b7f3f88c360b3bed511f9b83dfb46fc3bf67aa21c185d5d19427d0049c3f54ae4d19e  deviceinfo
-8a7c4f2ee8ce946c611e5023a1d23f5e1898faee02c2171ce03b2ce0e83a6d79cd4301f80e404ae62fb7e7db7b6bbb2b5e0e0480b396532e941db37300feee1e  uboot-script.cmd
+sha512sums="d07b9e6770af73bf477f6a04206ff4739a60e08ac3fa458c6549d2245b0be0627f425d663025565d8571920b2f51f796c36090db07a5258065d84d221e87db98  deviceinfo
+5363e63606e2934ffe8352af85e0481b8d45cf35befe4b42168c3b1db9f836a9054ac14f4eb97f666f2c88c6f1d824c8590ca9a57479277c76b6a74370945362  uboot-script.cmd
 f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
