@@ -1,15 +1,15 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-camera
-pkgver=0_git20200305
+pkgver=1.0_git20200618
 pkgrel=0
-_commit="54db509bc66ca990678d7c6fdb2e0ed88654ea96"
-pkgdesc="Simple camera application for mobile devices"
+_commit="af2638fb6a1a1642a3b9b3320ca0ac352fdc0e78"
+pkgdesc="Camera application for Plasma Mobile"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
-url="https://community.kde.org/Plasma/Mobile"
+url="https://invent.kde.org/plasma-mobile/plasma-camera"
 license="GPL-3.0-or-later AND BSD-3-Clause"
 depends="kirigami2 qt5-qtmultimedia gst-plugins-bad gst-plugins-good"
-makedepends="extra-cmake-modules qt5-qtbase-dev kpackage-dev kcoreaddons-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev"
-source="$pkgname-$_commit.tar.gz::https://invent.kde.org/kde/plasma-camera/-/archive/$_commit/plasma-camera-$_commit.tar.gz"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev kcoreaddons-dev ki18n-dev"
+source="https://invent.kde.org/plasma-mobile/plasma-camera/-/archive/$_commit/plasma-camera-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
@@ -17,7 +17,7 @@ build() {
 		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make -C build
+	cmake --build build
 }
 
 check() {
@@ -26,6 +26,6 @@ check() {
 }
 
 package() {
-	DESTDIR="$pkgdir" make -C build install
+	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="66cad2ac38fc4962b564970962994acffce4ade1d289d350f51b0d45e9ccb2a09f5a317d0d04b34c6227e2b0e051af22949c3db7d7a92dd2bf3c7dbda4dbd159  plasma-camera-54db509bc66ca990678d7c6fdb2e0ed88654ea96.tar.gz"
+sha512sums="30ec7046e66c79a0eee0233502a5a46b1733886a1ab862d2f7ddcedea9edf4c43a6cd0479b3b7f9f831595478dc09b7d18edcc1592124284332086f99fbfdcdd  plasma-camera-af2638fb6a1a1642a3b9b3320ca0ac352fdc0e78.tar.gz"
