@@ -1,15 +1,14 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qrca
-pkgver=0_git20200408
+pkgver=0_git20200625
 pkgrel=0
-_commit="4efd1aacd861492b5480173a513cbadaf55b6efd"
+_commit="3098679f37be8cb0968b17e719dff487957c294f"
 pkgdesc="QR-Code scanner for Plasma Mobile"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 url="https://invent.kde.org/kde/qrca"
 license="GPL-3.0-or-later"
-depends="kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev qt5-qtmultimedia-dev kirigami2-dev purpose-dev ki18n-dev kcontacts-dev kcoreaddons-dev zxing-cpp-dev"
-checkdepends="xvfb-run"
+depends="kirigami2 purpose"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev qt5-qtmultimedia-dev kirigami2-dev purpose-dev ki18n-dev kcontacts-dev kcoreaddons-dev zxing-cpp-dev"
 source="https://invent.kde.org/kde/qrca/-/archive/$_commit/qrca-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -23,10 +22,10 @@ build() {
 
 check() {
 	cd build
-	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
 package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="9c5da05252db7a53bdb14fc77de35d5df7595f2fd38d48bc01b1203927f0e9fb44095791b30dd3c801e83b2e88bf4a46ce88243078fa165c66a88773ea24a66c  qrca-4efd1aacd861492b5480173a513cbadaf55b6efd.tar.gz"
+sha512sums="b16206ccf81ab5d300326b1078630e17d6913b924225af032c96f9fcf98d4f7b23e2dc81f0d4f3083f967b3326a128f21f1ed055d5a37de20e0c595737f5ae4e  qrca-3098679f37be8cb0968b17e719dff487957c294f.tar.gz"
