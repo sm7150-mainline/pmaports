@@ -1,8 +1,7 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-ondev
-pkgver=0.1.4
+pkgver=0.1.5
 pkgrel=0
-_calamaresver=3.2.25
 pkgdesc="Calamares based on-device installer"
 url="https://postmarketos.org"
 arch="all !armhf" # blocked by qt5-qtdeclarative
@@ -28,21 +27,10 @@ makedepends="
 "
 subpackages="$pkgname-openrc"
 install="$pkgname.post-install"
-source="postmarketos-ondev.initd
-	https://gitlab.com/postmarketOS/postmarketos-ondev/-/archive/$pkgver/postmarketos-ondev-$pkgver.tar.bz2
-	calamares-$_calamaresver.tar.gz::https://github.com/calamares/calamares/archive/v$_calamaresver.tar.gz"
+source="https://gitlab.com/postmarketOS/postmarketos-ondev/-/archive/$pkgver/postmarketos-ondev-$pkgver.tar.bz2
+	postmarketos-ondev.initd
+	"
 options="!check"  # has no tests
-
-prepare() {
-	default_prepare
-
-	# Workaround for broken out-of-tree builds:
-	# https://github.com/calamares/calamares/issues/1428
-	cd "$srcdir/calamares-$_calamaresver/"
-	ln -s "$PWD/CMakeModules" "$builddir/calamares"
-	ln -s "$PWD/src/libcalamares" "$builddir/calamares"
-	ln -s "$PWD/src/libcalamaresui" "$builddir/calamares"
-}
 
 build() {
 	cd calamares
@@ -75,6 +63,5 @@ package() {
 		"$pkgdir/etc/init.d/postmarketos-ondev"
 }
 
-sha512sums="eff2c9f4ddcc7d22d8afd4c5d1cac92f6e6e9fef7713af2370dae715819ca2aba2d33b1cd0ea0478526c503dfc6948fee2242b6d804f8e9dcd6ef5cf1500fc7f  postmarketos-ondev.initd
-190e44d97641f1b5c8b5a44c7ae8e3584768cf8d22ddcaf5616927a72b89e776f578c1cab026a393f5a303bea4ebdfcd548feff5764905fb265569a62dacbbd8  postmarketos-ondev-0.1.4.tar.bz2
-8227f92e1e6fac7bceb60e92a7e755334501c843f3097aa2ea8755e048e355c62f974d465bdd73725fb6130e2385ce804cd2cadf72c4f866c1a4e623ac901300  calamares-3.2.25.tar.gz"
+sha512sums="b0bd4c4b73425b8155136bea3cc1f991f8848988e5e1651216bd4b79c40841d3e2615600821e55c0627d5921cc8928e783b5304e9595912d9861a093133dff0e  postmarketos-ondev-0.1.5.tar.bz2
+eff2c9f4ddcc7d22d8afd4c5d1cac92f6e6e9fef7713af2370dae715819ca2aba2d33b1cd0ea0478526c503dfc6948fee2242b6d804f8e9dcd6ef5cf1500fc7f  postmarketos-ondev.initd"
