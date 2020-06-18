@@ -1,15 +1,16 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=spacebar
-pkgver=0_git20200317
+pkgver=0_git20200618
 pkgrel=0
-_commit="3483c146a62972b0c6a6d9e524db8ce5c13a1132"
+_commit="bc86bd0effbbd34b6eed62125521667ff0ab7671"
 pkgdesc="Collection of stuff for running IM on Plasma Mobile"
 url="https://phabricator.kde.org/source/spacebar/"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
-license="LGPL-2.1-or-later"
-depends="kirigami2 qt5-qtquickcontrols qt5-qtquickcontrols2 plasma-framework"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev kpeople-dev kservice-dev kdbusaddons-dev ki18n-dev ktp-common-internals-dev"
-source="$pkgname-$_commit.tar.gz::https://github.com/kde/spacebar/archive/$_commit.tar.gz"
+license="GPL-2.0-or-later AND LicenseRef-KDE-Accepted-GPL"
+depends="kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kirigami2-dev ki18n-dev kpeople-dev kcontacts-dev telepathy-qt-dev"
+source="https://github.com/kde/spacebar/archive/$_commit/spacebar-$_commit.tar.gz"
+options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
@@ -17,11 +18,11 @@ build() {
 		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make -C build
+	cmake --build build
 }
 
 package() {
-	DESTDIR="$pkgdir" make -C build install
+	DESTDIR="$pkgdir" cmake --build build --target install
 }
 
-sha512sums="4666ca4d437eecafb00360c2b1401d682f750c93b23270bd931985d788a37a67c8ea541ef8076472c7a3191399dcbe26d05f8696a87919251697b85b921dc22f  spacebar-3483c146a62972b0c6a6d9e524db8ce5c13a1132.tar.gz"
+sha512sums="e7df59ca523c291ee7f1e2aab26ba3181c6e8873d90c5602420ea881e03dba9bb00e821de64868e26c2be87d72bbe28317ea87265f2613403463783a19b52148  spacebar-bc86bd0effbbd34b6eed62125521667ff0ab7671.tar.gz"
