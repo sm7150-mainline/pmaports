@@ -1,28 +1,28 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qmlkonsole
-pkgver=0_git20200128
-pkgrel=1
-_commit="78e4277efde0d0a58f0ff6244038f680dd6c572c"
+pkgver=0_git20200618
+pkgrel=0
+_commit="937e07137847e58626f100116103451902cd210f"
 pkgdesc="Terminal app for Plasma Mobile"
-arch="all !armhf"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 url="https://invent.kde.org/jbbgameich/qmlkonsole"
 license="GPL-3.0-or-later"
-depends="qmltermwidget kirigami2 qt5-qtquickcontrols"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev"
-source="https://invent.kde.org/jbbgameich/qmlkonsole/-/archive/$_commit/qmlkonsole-$_commit.tar.gz"
+depends="qmltermwidget kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev ki18n-dev"
+source="https://invent.kde.org/plasma-mobile/qmlkonsole/-/archive/$_commit/qmlkonsole-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
 build() {
-	cmake -B "$builddir"/build \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib
-	make -C build
+	cmake --build build
 }
 
 package() {
-	DESTDIR="$pkgdir" make -C build install
+	DESTDIR="$pkgdir" cmake --build build --target install
 }
 
-sha512sums="ad2592b3d28538293602b7228a049840d782ead51e709e1f8b6f463c93d7088783f53a0c34c5b55f895e28b2c6dde2bc3ef1b2c1de26a503054a15e973a785d1  qmlkonsole-78e4277efde0d0a58f0ff6244038f680dd6c572c.tar.gz"
+sha512sums="f71558cf5f0cf584cd41cf47704586c7632a9a5417869f5c39b99b6f9cc0096b7c7e1b1df001a9e8fbaaa1c4f0c321b0f7491f5871893e0a89d6a870af25c399  qmlkonsole-937e07137847e58626f100116103451902cd210f.tar.gz"
