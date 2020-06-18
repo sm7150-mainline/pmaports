@@ -1,15 +1,15 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oneplus-onyx
-pkgver=1
-pkgrel=13
 pkgdesc="OnePlus X"
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
-arch="armhf"
 license="MIT"
-depends="postmarketos-base linux-oneplus-onyx mkbootimg msm-fb-refresher mesa-dri-swrast"
-makedepends="devicepkg-dev"
-source="deviceinfo 90-android-touch-dev.rules fb.modes"
+arch="armv7"
 options="!check !archcheck"
+depends="postmarketos-base linux-oneplus-onyx mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -17,13 +17,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir"/90-android-touch-dev.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-	install -Dm644 "$srcdir"/fb.modes \
-		"$pkgdir"/etc/fb.modes
-
 }
 
-sha512sums="a7f092950d151d884af62652f947830a241c35ee8a1fd91cf8a1ded8e952fc21fb203524d828c0857410fd01a69f440880329fa1810517f0270ea606215605d8  deviceinfo
-73963817cab7b798642f91894eb17975212a323d0e8bf8ce4f477fe33ace90b0050180877cbb605a074d07871d640c654cd581f0359532b9edb072013e6346a5  90-android-touch-dev.rules
-1452360bab1146643d8c6e0c881bfc145030cd5e3704765fc17f701dcec3f3e890a93db77e1b6afd6884d48b790e7dfc1013bbeedd619ae798baccaeab118847  fb.modes"
+sha512sums="fcbd191028ee1829e6642d71ff1edf045218571442e3d2abebd8de1127c4bb27c63cbf2ccc3c8bbc45676ef062d8045860dcd51b01fb22c71d0389959170b98e  deviceinfo"
