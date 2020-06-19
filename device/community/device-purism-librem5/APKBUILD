@@ -2,34 +2,35 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.3
-pkgrel=1
+pkgver=1.4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
+	alsa-ucm-conf
 	gpsd
 	linux-purism-librem5
-	mesa-git-dri-gallium
+	mesa-dri-gallium
 	postmarketos-base
 	u-boot-librem5
 	uboot-tools
 "
 makedepends="devicepkg-dev"
-_confver=16
+_confver=19
 _confdir=$srcdir/librem5-base-v$_confver
 source="
 	https://source.puri.sm/Librem5/librem5-base/-/archive/v$_confver/librem5-base-v$_confver.tar.gz
-	deviceinfo
-	uboot-script.cmd
-	modprobe.d_rsi.conf
-	modprobe.d_librem5.conf
-	modules-load.d_librem5.conf
-	00-mesa.sh
 	00-kwin.sh
-	flash_script.lst
+	00-mesa.sh
+	70-gnss.rules
 	77-mm-broadmobi-port-types.rules
+	deviceinfo
+	flash_script.lst
+	modprobe.d_rsi.conf
+	modules-load.d_librem5.conf
+	uboot-script.cmd
 "
 subpackages="
 	$pkgname-plasma
@@ -76,34 +77,35 @@ pulseaudio() {
 	install -D -m644 "$_confdir"/default/audio/pulse/librem5.pa "$subpkgdir"/etc/pulse/librem5.pa
 	mkdir -p "$subpkgdir"/usr/share/pulseaudio/alsa-mixer
 	cp -r "$_confdir"/default/audio/profile-sets "$subpkgdir"/usr/share/pulseaudio/alsa-mixer/
-	mkdir -p "$subpkgdir"/usr/share/alsa/ucm
-	cp -r "$_confdir"/default/audio/ucm "$subpkgdir"/usr/share/alsa/
 }
 
 package() {
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
 	install -D -m644 "$srcdir"/modprobe.d_rsi.conf "$pkgdir"/etc/modprobe.d/rsi.conf
-	install -D -m644 "$srcdir"/modprobe.d_librem5.conf "$pkgdir"/etc/modprobe.d/librem5.conf
 	install -D -m644 "$srcdir"/modules-load.d_librem5.conf "$pkgdir"/etc/modules-load.d/librem5.conf
 	install -D -m644 "$srcdir"/00-mesa.sh "$pkgdir"/etc/profile.d/00-mesa.sh
 	install -D -m644 "$srcdir"/flash_script.lst "$pkgdir"/usr/share/uuu/flash_script.lst
+
+	# udev
 	install -D -m644 "$_confdir"/default/hwdb/80-librem5.hwdb "$pkgdir"/lib/udev/hwdb.d/80-librem5.hwdb
 	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-pm.udev  \
-		"$pkgdir"/usr/lib/udev/rules.d/librem5-base-defaults.librem5-pm.udev
-	# 'install' dummy mass storage file for the g_multi module
-	mkdir -p "$pkgdir"/var/lib
-	dd if=/dev/zero of="$pkgdir"/var/lib/mass_storage_dummy bs=1024 count=1
+		"$pkgdir"/usr/lib/udev/rules.d/librem5-pm.rules
+	install -D -m644 "$srcdir"/70-gnss.rules "$pkgdir"/usr/lib/udev/rules.d/70-gnss.rules
+
+	# install audio config files from upstream Purism
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm
+	cp -r "$_confdir"/default/audio/ucm "$pkgdir"/usr/share/alsa/
 
 	devicepkg_package $startdir $pkgname
 }
-sha512sums="d93aded121b830b5b7006166d3f8cd2efadc2fa454540d653e3f1cb8f009ffb7973a4037a62a47062f6f95f8bbbe546d8e72600a5dcded4eb7be78a7e6d35d02  librem5-base-v16.tar.gz
-431e77f596f1c39dde38344d4416a42db10c09060bfd9bd13ad72351763f63ef3a1756e263b74cabc91beb525d233a164f02f697fca585ce33f19a25bd2626cd  deviceinfo
-3bc45540000e438e525501b2e816282d778fca10d426e42c9a80c0e752618ce50deb12c3edd9f3edc52edd8eb229d16afae7d407fe2c4ba0dbfefbcb4214780c  uboot-script.cmd
-9dc018f0de523cbfe5a49cbe831aa30e975a8dd34635197bb52582f072ac356ef2c02223fc794d970380091a69a83a74c3fbe34520190c8536e77f9ea98c7659  modprobe.d_rsi.conf
-6b70883cddda58e4bf162d195c163926e50087b9b1fdc6c6aae1a3043d3e7df6e3f1e8f5b1982acffec04ba79748b8f6298cd7b5436ca297a959e28938a0b55b  modprobe.d_librem5.conf
-8c9f338e661fc287ba0a65b3556c6da127dbbc912510b1e5a29f79626a4a56316be63b2bde37cc6e048eac2e3bc3744eb54553ed4630e00cb86296859e63107a  modules-load.d_librem5.conf
-5fdf45859f2bb154bcfe7c7341de4d5b239ef43d3f865e30456af073a8ee9d6682515c7e1dd52ddbe3969669d60689ba93c08ead32aadcfb164ff72a02b2e1a4  00-mesa.sh
+sha512sums="69b8f46299c7072ce2fe321a8e33d3e55a03fbb8f4387a82e59dbbf9925dbbe270ee070ef69506bfaa4faac1b8228dafb1bb7977459866313d8b75761abd0eed  librem5-base-v19.tar.gz
 685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  00-kwin.sh
+5fdf45859f2bb154bcfe7c7341de4d5b239ef43d3f865e30456af073a8ee9d6682515c7e1dd52ddbe3969669d60689ba93c08ead32aadcfb164ff72a02b2e1a4  00-mesa.sh
+be0cf9f9e37c33d526fdf5fb61de1b42b3bb9309faf1feb0db51fa9639c3c0b35608977c898130ff60ebf2e8081ac36799b96c748b7efa9dcef7501753bc4890  70-gnss.rules
+00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
+1cb3ca568d96797696b2d69cb156f097e15668ff357b12f37bd8b74a88cb977fa545e2adf7fbeefb87a6d09914e57debea3db7c5230f5800637ff4eaacb3d1dc  deviceinfo
 d033df2b9125622c946af67dad83070473c86937b5825f57ad272c9145b594071dd6913949127803c45af4ea3226526551718d40739f9f1ee4bfe6446e62c856  flash_script.lst
-00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules"
+9dc018f0de523cbfe5a49cbe831aa30e975a8dd34635197bb52582f072ac356ef2c02223fc794d970380091a69a83a74c3fbe34520190c8536e77f9ea98c7659  modprobe.d_rsi.conf
+a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f6e65a5d1b1a9099936382c99b49a44303f7b6d77a075a471  modules-load.d_librem5.conf
+3bc45540000e438e525501b2e816282d778fca10d426e42c9a80c0e752618ce50deb12c3edd9f3edc52edd8eb229d16afae7d407fe2c4ba0dbfefbcb4214780c  uboot-script.cmd"
