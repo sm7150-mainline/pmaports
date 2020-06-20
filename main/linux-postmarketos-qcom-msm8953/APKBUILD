@@ -1,0 +1,48 @@
+# Maintainer: Ultracoolguy <myownpersonalaccount@protonmail.com>
+# Kernel config based on: arch/arm64/configs/msm8953_defconfig
+
+_flavor="postmarketos-qcom-msm8953"
+pkgname=linux-$_flavor
+pkgver=5.8_rc7
+pkgrel=0
+pkgdesc="Mainline kernel fork for Qualcomm MSM8953 devices"
+arch="aarch64"
+url="https://github.com/msm8953-mainline/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
+makedepends="bison findutils flex installkernel openssl-dev perl"
+
+_carch="arm64"
+# Source
+_commit="7954ed6020fd3eb3f6f0535fea893ff7a81260e7"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/msm8953-mainline/linux/archive/$_commit.tar.gz
+	config-$_flavor.$arch
+"
+builddir="$srcdir/linux-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+sha512sums="c9d97139d50cf16c76c7efaaa948410ed6d036a0a1291b475dcca9a7583aaa7724f522fc858c129e3c3a11b80b92ca43d3b05d8fddc2fa7ba5095b78f73a50ee  linux-postmarketos-qcom-msm8953-7954ed6020fd3eb3f6f0535fea893ff7a81260e7.tar.gz
+dfce0d420b97ecba4a3a3b5c5774b631387fc13238336b4b6a53f624fd4dac649a06131418590b7a1b774c90cfd61d371861fe266f5deb502ec1df238f8fe1b3  config-postmarketos-qcom-msm8953.aarch64"
