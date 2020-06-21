@@ -2,7 +2,7 @@
 pkgname=soc-qcom-msm8916
 pkgdesc="Common package for Qualcomm MSM8916 devices"
 pkgver=7
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64 armv7"
@@ -23,7 +23,7 @@ package() {
 }
 
 modem() {
-	depends="msm-modem-mainline q6voiced"
+	depends="msm-modem-rpmsg q6voiced"
 	install="$subpkgname.post-install"
 
 	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced

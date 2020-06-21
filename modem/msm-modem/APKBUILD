@@ -1,25 +1,25 @@
 pkgname=msm-modem
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc="Common support for Qualcomm MSM modems"
 url="https://postmarketos.org/"
 arch="armhf armv7 aarch64"
 license="GPL-3.0-or-later"
 depends="rmtfs rmtfs-openrc"
 install="$pkgname.post-install"
-subpackages="$pkgname-mainline $pkgname-downstream"
-source="udev-mainline.rules udev-downstream.rules"
+subpackages="$pkgname-rpmsg $pkgname-downstream"
+source="udev-rpmsg.rules udev-downstream.rules"
 options="!check"
 
 package() {
 	mkdir -p "$pkgdir"
 }
 
-mainline() {
-	pkgdesc="$pkgdesc (mainline)"
+rpmsg() {
+	pkgdesc="$pkgdesc (via RPMSG)"
 	depends="$pkgname rpmsgexport"
 
-	install -Dm644 "$srcdir/udev-mainline.rules" "$subpkgdir/usr/lib/udev/rules.d/55-$pkgname.rules"
+	install -Dm644 "$srcdir/udev-rpmsg.rules" "$subpkgdir/usr/lib/udev/rules.d/55-$pkgname.rules"
 }
 
 downstream() {
@@ -29,5 +29,5 @@ downstream() {
 	install -Dm644 "$srcdir/udev-downstream.rules" "$subpkgdir/usr/lib/udev/rules.d/55-$pkgname.rules"
 }
 
-sha512sums="f842f617c441b8e6c1f8a7802792f5dfc22ab92216641f54e1a1fb8faec00a78b473baf02ef85b6ec295a88aa89a25325479380e1e65db62be879064782790ab  udev-mainline.rules
+sha512sums="f842f617c441b8e6c1f8a7802792f5dfc22ab92216641f54e1a1fb8faec00a78b473baf02ef85b6ec295a88aa89a25325479380e1e65db62be879064782790ab  udev-rpmsg.rules
 64a40fb88d40ae0ff64d3545f7a54c6f10f2ab366ef75b8b158c2d5a3733223839c87aed8d5c6685d5056a5840d3943e68c76bd1bda2b48388161849d5e253f3  udev-downstream.rules"
