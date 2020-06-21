@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-gtelwifi
+pkgdesc="Samsung Galaxy Tab E 9.6"
+pkgver=0
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-gtelwifi mkbootimg mesa-dri-gallium msm-fb-refresher"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-gtelwifi-wifi"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="662ba186385ae40817bbeeeddcc8ad7808d1e364463677d613afae81dce0dccea19e6081226bb83c58b65bdd24a48f253a2b233426fc2d7c3c5b803f13161e2c  deviceinfo"
