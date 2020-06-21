@@ -13,6 +13,7 @@ subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kwin
 "
 source="
 	deviceinfo
@@ -50,15 +51,17 @@ kernel_mainline() {
 	pkgdesc="Close to mainline kernel"
 	depends="linux-postmarketos-stericsson mesa-git-dri-gallium"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-
-	# Plasma Mobile
-	install -Dm644 "$srcdir"/kwin.sh "$subpkgdir"/etc/profile.d/kwin.sh
 }
 
 nonfree_firmware() {
 	pkgdesc="WiFi/BT firmware"
 	depends="firmware-samsung-u8500"
 	mkdir "$subpkgdir"
+}
+
+kwin() {
+	install_if="$pkgname-kernel-mainline kwin"
+	install -Dm644 "$srcdir"/kwin.sh "$subpkgdir"/etc/profile.d/kwin.sh
 }
 
 sha512sums="93462211fc2f425c1b7cc50a8289568f8c1aa538a4805551a47a33c25f15f6fb4b874a53c1a5be238c5ea90a3e6621b2e9c39aba9b871277f1ee8f181741dea2  deviceinfo
