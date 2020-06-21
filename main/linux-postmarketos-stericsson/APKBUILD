@@ -1,22 +1,17 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/u8500_defconfig
 
-_flavor="postmarketos-novathor"
-pkgname=linux-${_flavor}
+_flavor="postmarketos-stericsson"
+pkgname=linux-$_flavor
 pkgver=5.5_rc3
 pkgrel=0
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
 _carch="arm"
-url="https://github.com/novathor-mainline/linux"
+url="https://github.com/stericsson-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-depends_dev="perl gmp-dev elfutils-dev bash flex bison"
-makedepends="$depends_dev sed installkernel bc linux-headers openssl-dev"
-
-# Compiler: latest GCC from Alpine
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
+makedepends="bison findutils flex installkernel openssl-dev perl"
 
 # Source
 _tag=v${pkgver//_/-}-novathor
@@ -50,5 +45,5 @@ package() {
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
-sha512sums="fad6e5ee0d239c3f656a266217d3a9e7faddeb2f1c727faf20d28669f173cbfab89d1f47b9d7b6f1c9f9ac6219db37f5b84451530baebb281145b4027559efd8  linux-postmarketos-novathor-v5.5-rc3-novathor.tar.gz
-eac1c7d68fded40fae94f2430f5bb527c69a04e518dfdeed996ea8863bcc918309d955c9c850de08181c58811f18e362156899b15ecdaa85347d4809157504b2  config-postmarketos-novathor.armv7"
+sha512sums="fad6e5ee0d239c3f656a266217d3a9e7faddeb2f1c727faf20d28669f173cbfab89d1f47b9d7b6f1c9f9ac6219db37f5b84451530baebb281145b4027559efd8  linux-postmarketos-stericsson-v5.5-rc3-novathor.tar.gz
+033abd2ffbd40ff03ab6fbe6f3851702b0d007ca65029c8c155416d43fad68baae2c8364911c0e7eab95da3ad67591ea395ea9a06ec1ce35c2ce33a90a7de59e  config-postmarketos-stericsson.armv7"
