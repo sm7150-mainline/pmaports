@@ -1,0 +1,63 @@
+# Forked from Alpine to apply Purism's mobile patches
+pkgname=geary
+pkgver=9999_git20201113
+pkgrel=0
+_commit="d5b0c31a0cf26903ab5a4dfa3c320475f5618245"
+pkgdesc="Geary is an email application built around conversations"
+url="https://wiki.gnome.org/Apps/Geary"
+# libhandy is not available on s390x or mips
+arch="all !s390x !mips !mips64"
+license="LGPL-2.1-or-later AND CC-BY-3.0 AND BSD-2-Clause"
+depends="iso-codes dbus:org.freedesktop.Secrets"
+makedepends="
+	appstream-glib-dev
+	enchant2-dev
+	folks-dev
+	gcr-dev
+	glib-dev
+	gmime-dev
+	gnome-online-accounts-dev
+	gspell-dev
+	gtk+3.0-dev
+	iso-codes-dev
+	itstool
+	json-glib-dev
+	libcanberra-dev
+	libgee-dev
+	libhandy1-dev
+	libnotify-dev
+	libpeas-dev
+	libsecret-dev
+	libxml2-dev
+	meson
+	sqlite-dev
+	vala
+	webkit2gtk-dev
+	ytnef-dev
+	"
+checkdepends="
+	desktop-file-utils
+	ibus
+	xvfb-run
+	"
+options="!check" # https://gitlab.gnome.org/GNOME/geary/-/issues/776
+subpackages="$pkgname-lang $pkgname-doc"
+source="https://source.puri.sm/Librem5/geary/-/archive/$_commit/geary-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	abuild-meson \
+		-Dlibunwind_optional=true \
+		. output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+check() {
+	xvfb-run meson test --no-rebuild -v -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+}
+
+sha512sums="f1bfaacac6075b6c1f42906872b859ee9391826f9ef53ac3cbfa6f8305f006e66e2da99160802178059d65f57d5a1c628c31a4bbeba14ed29e131ce36e7f4aef  geary-d5b0c31a0cf26903ab5a4dfa3c320475f5618245.tar.gz"
