@@ -4,19 +4,20 @@
 pkgname=device-samsung-a3ulte
 pkgdesc="Samsung Galaxy A3 (SM-A300FU)"
 pkgver=3
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base mkbootimg soc-qcom-msm8916"
 makedepends="devicepkg-dev"
-source="deviceinfo modprobe.conf"
+source="deviceinfo modprobe.conf rootston.ini"
 subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+	$pkgname-phosh
 "
 
 build() {
@@ -52,5 +53,12 @@ nonfree_firmware_modem() {
 	mkdir "$subpkgdir"
 }
 
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
 sha512sums="5bc4a4168addd501ef2278bc01a13d747fa7969f2f602e30db7ffd073b85dc5e8e9f2869a930bdf17ae7aaf9dbea2d540705994386ba4a780fd891771feb6558  deviceinfo
-ee4263607eee2d12bd796d19606de35005f0a1ae4b8ff86e4556f2233c533b62d651dabe558081b5ff768a6b8158f34dd9b74b3dcece159e55d635b1d807928b  modprobe.conf"
+ee4263607eee2d12bd796d19606de35005f0a1ae4b8ff86e4556f2233c533b62d651dabe558081b5ff768a6b8158f34dd9b74b3dcece159e55d635b1d807928b  modprobe.conf
+f3667b914bb955be9e97db31dc7ed4a7c5d0c369be9549d587bb7208e270590c0c3fa36a0dd997d6f8305c5c9afb3b906423af6ca8724e806f995e61226cfc83  rootston.ini"
