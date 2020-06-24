@@ -1,0 +1,26 @@
+From 6e9b042ff704e410ff8eadc4a07724f1f395f2f2 Mon Sep 17 00:00:00 2001
+From: Oliver Smith <ollieparanoid@postmarketos.org>
+Date: Wed, 24 Jun 2020 09:51:29 +0200
+Subject: [PATCH] ViewManager: remove mainLayout border
+
+This does not look good on mobile. Upstream issue with photo and request
+to make it configurable: https://github.com/calamares/calamares/issues/1446
+---
+ src/libcalamaresui/ViewManager.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/libcalamaresui/ViewManager.cpp b/src/libcalamaresui/ViewManager.cpp
+index c78680418..e72c434f8 100644
+--- a/src/libcalamaresui/ViewManager.cpp
++++ b/src/libcalamaresui/ViewManager.cpp
+@@ -71,6 +71,7 @@ ViewManager::ViewManager( QObject* parent )
+     Q_ASSERT( !s_instance );
+ 
+     QBoxLayout* mainLayout = new QVBoxLayout;
++    mainLayout->setContentsMargins( 0, 0, 0, 0 );
+     m_widget->setObjectName( "viewManager" );
+     m_widget->setLayout( mainLayout );
+ 
+-- 
+2.20.1
+

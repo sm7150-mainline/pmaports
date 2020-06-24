@@ -1,6 +1,6 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=calamares
-pkgver=3.2.26
+pkgver=3.2.26.1
 pkgrel=0
 arch="all !armhf" # blocked by qt5-qtdeclarative
 url="https://calamares.io/"
@@ -37,7 +37,9 @@ makedepends="
 	qt5-qtsvg-dev
 "
 checkdepends="xvfb-run"
-source="https://github.com/calamares/calamares/archive/v$pkgver/calamares-v$pkgver.tar.gz"
+source="https://github.com/calamares/calamares/archive/v$pkgver/calamares-v$pkgver.tar.gz
+	0001-ViewManager-remove-mainLayout-border.patch
+"
 subpackages="$pkgname-doc $pkgname-lang $pkgname-dev"
 
 # Modules to build:
@@ -119,4 +121,5 @@ package() {
 	DESTDIR="$pkgdir" make -C build install
 }
 
-sha512sums="c7d6723c9c170aac8e59b026ed2100f7cfb3ce51003d69beec2a9727ac46037d8642b98d4a8a5605f63a2ae0f37649a689fb81c66e66d2685732d314769be5ab  calamares-v3.2.26.tar.gz"
+sha512sums="ef851e329988d31cb54112462dee7125d6ae4094926e9ed31cc02b25f808bbb8446652ffc03d0c12b8b489eb15d712d7eeef829451583c60c99ef5942286be6d  calamares-v3.2.26.1.tar.gz
+6b5e9a27bbc504f702e6dc8b464d3581c1de850477ef1e195b39b9128ec11577693d67808dd24886689ee2b7b6bced2c0d6ef43a07af0114e64bb60b2e7bee57  0001-ViewManager-remove-mainLayout-border.patch"
