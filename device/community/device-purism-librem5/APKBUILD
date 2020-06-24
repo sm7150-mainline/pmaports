@@ -2,7 +2,7 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.4
+pkgver=1.5
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -18,7 +18,7 @@ depends="
 	uboot-tools
 "
 makedepends="devicepkg-dev"
-_confver=19
+_confver=21
 _confdir=$srcdir/librem5-base-v$_confver
 source="
 	https://source.puri.sm/Librem5/librem5-base/-/archive/v$_confver/librem5-base-v$_confver.tar.gz
@@ -36,7 +36,6 @@ subpackages="
 	$pkgname-plasma
 	$pkgname-phosh
 	$pkgname-pulseaudio
-	$pkgname-modemmanager
 "
 install="$pkgname.post-install"
 
@@ -59,13 +58,6 @@ phosh() {
 	"
 	install -D -m644 "$_confdir"/default/org.freedesktop.ModemManager1.pkla \
 		"$subpkgdir"/var/lib/polkit-1/localauthority/10-vendor.d/org.freedesktop.ModemManager1.pkla
-}
-
-modemmanager() {
-	pkgdesc="ModemManager support for the Librem 5"
-	install_if="$pkgname modemmanager"
-	install -D -m644 "$srcdir"/77-mm-broadmobi-port-types.rules \
-		"$subpkgdir"/lib/udev/rules.d/77-mm-broadmobi-port-types.rules
 }
 
 pulseaudio() {
@@ -99,7 +91,7 @@ package() {
 
 	devicepkg_package $startdir $pkgname
 }
-sha512sums="69b8f46299c7072ce2fe321a8e33d3e55a03fbb8f4387a82e59dbbf9925dbbe270ee070ef69506bfaa4faac1b8228dafb1bb7977459866313d8b75761abd0eed  librem5-base-v19.tar.gz
+sha512sums="34170ff33c0d120e961e66fd3f252bed9eea4e5df9a9da0d0d8f00b9f832e4e45543246593199f4ed23a140c98409b17038e4a05474bb1b1589f7030a733f2b8  librem5-base-v21.tar.gz
 685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  00-kwin.sh
 5fdf45859f2bb154bcfe7c7341de4d5b239ef43d3f865e30456af073a8ee9d6682515c7e1dd52ddbe3969669d60689ba93c08ead32aadcfb164ff72a02b2e1a4  00-mesa.sh
 be0cf9f9e37c33d526fdf5fb61de1b42b3bb9309faf1feb0db51fa9639c3c0b35608977c898130ff60ebf2e8081ac36799b96c748b7efa9dcef7501753bc4890  70-gnss.rules
