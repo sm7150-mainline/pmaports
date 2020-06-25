@@ -12,21 +12,24 @@
 #  1 - map to first slot (the only slot)
 #
 QDAI_CONFIG="1,0,0,2,0,1,1,1"
+QCFG_CONFIG="physical"
 
 DEV=/dev/EG25.AT
 
 # Read current config
-RET=$(echo "AT+QDAI?" | atinout - $DEV -)
+QDAI_ACTUAL_CONFIG=$(echo "AT+QDAI?" | atinout - $DEV -)
+QCFG_ACTUAL_CONFIG=$(echo 'AT+QCFG="risignaltype"' | atinout - $DEV -)
 
-if echo $RET | grep -q $QDAI_CONFIG
+if echo $QDAI_ACTUAL_CONFIG | grep -q $QDAI_CONFIG && echo $QCFG_ACTUAL_CONFIG | grep -q $QCFG_CONFIG
 then
-	echo "Modem audio already configured"
+	echo "Modem already configured"
 	exit 0
 fi
 
-
 # Modem not configured, we need to send it the digital interface configuration,
 # then reboot it
+
+# Configure audio
 RET=$(echo "AT+QDAI=$QDAI_CONFIG" | atinout - $DEV -)
 
 if echo $RET | grep -q OK
@@ -35,6 +38,16 @@ then
 else
 	echo "Failed to set modem audio up: $RET"
 	exit 1
+fi
+
+# Configure ring device
+RET=$(echo 'AT+QCFG="risignaltype","$QCFG_CONFIG"' | atinout - $DEV -)
+
+if echo $RET | grep -q OK
+then
+	echo "Successfully configured modem ring wakeup"
+else
+	echo "Failed to set modem ring wakeup: $RET"
 fi
 
 # Reset module

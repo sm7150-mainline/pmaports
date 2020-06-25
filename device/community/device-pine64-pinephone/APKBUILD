@@ -3,8 +3,8 @@
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
-pkgver=0.3
-pkgrel=4
+pkgver=0.5
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -25,9 +25,9 @@ source="deviceinfo
 	ucm/HiFi.conf
 	ucm/VoiceCall.conf
 	eg25.initd
-	setup-modem-audio.sh
-	setup-modem-audio.initd
-"
+	setup-modem.sh
+	setup-modem.initd
+	"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -64,10 +64,10 @@ package() {
 
 	# Modem
 	install -Dm755 "$srcdir"/eg25.initd "$pkgdir"/etc/init.d/eg25
-	install -Dm755 "$srcdir"/setup-modem-audio.sh \
-		"$pkgdir"/usr/bin/pinephone_setup-modem-audio
-	install -Dm755 "$srcdir"/setup-modem-audio.initd \
-		"$pkgdir"/etc/init.d/pinephone_setup-modem-audio
+	install -Dm755 "$srcdir"/setup-modem.sh \
+		"$pkgdir"/usr/bin/pinephone_setup-modem
+	install -Dm755 "$srcdir"/setup-modem.initd \
+		"$pkgdir"/etc/init.d/pinephone_setup-modem
 }
 
 nonfree_firmware() {
@@ -92,5 +92,5 @@ e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d
 03e2ed3a4212c0ed336586de38b4882c1bb640e04d34dc63ec218c80ff7046c19aaf82c8cdb48db4d3d42f6124addc16b689fd686a90a0f3174c586d1f50e6f2  HiFi.conf
 d44307c4cbd1fcd4846d30bc1e72800ebd4cbc43fe75e896a501dff06f1b3df21385a009ba5f81ed3f19a5e039bd082da3a88efdf3c034089c8fff3bc16e0a7a  VoiceCall.conf
 5a1a9c774253e8211cc54f4b3961c4bdc35427726d037b0ecad099915e856590e8267a4a47943ab753772d57261eef89924b407b305b1099a9c4ecd7b5f00b35  eg25.initd
-dc110f617efe28df3001630836c7df0cab20e74e99c4bb9d2c2f86367ae024dd30060e8c051c7be0e66e86f4656bef345189a6c13276808c4301d1a6deb8be7d  setup-modem-audio.sh
-dadfb8ceb7a82fd4a684a0fd4459bfdf0330fccc1d1781dd8549ee9ab5d571b97ee1e5b8dde66ec85e08db410e2d66e63f9da3d0c327ee80bd8303bf81d03eaf  setup-modem-audio.initd"
+cd94afca9c3f7d48d9bca9a6d8d8917961143e109e9921160cd8b249770191dc5c73f4cdcc7fe1d7b2ff7aa97236c9483213c6108f62da0d37f3716d41840786  setup-modem.sh
+c8996a62e4cad92a3b4392912d070ab16515a24937c4c96c25a8b72fbf1632df572df2629c2724d17b6587b3e10ad91e3d5801cee807c0f53324612a47b6cf3c  setup-modem.initd"
