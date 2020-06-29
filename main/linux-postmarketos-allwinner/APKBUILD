@@ -1,15 +1,15 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.6.0_git20200528
-pkgrel=1
+pkgver=5.7.0_git20200629
+pkgrel=0
 arch="aarch64"
 pkgdesc="Kernel fork with Pine64 patches"
 url="https://gitlab.com/pine64-org/linux/"
 license="GPL-2.0-only"
 makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync xz"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
-_commit="be7bb465172f294e407757313b76e8d509f56626"
+_commit="aad90c10f4ff90ec9c541447ccddd6a0d58afd1e"
 source="$pkgname-$_commit.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/$_commit/linux-$_commit.tar.gz
 	config-$_flavor.aarch64
 	disable-power-save.patch
@@ -64,7 +64,7 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="b26791eb313fe0b0059ede16042e4b344751affc1fc8522072b95a8a08fe8010daf5a969ce706b694d9c95419c2c64b40a52fc0341307a0d9bf34a1a5d6da11f  linux-postmarketos-allwinner-be7bb465172f294e407757313b76e8d509f56626.tar.gz
-0e8c3a22a563a482799ad14abba68019d3bef324f7e599597a22a35baf6f0ceb68530d365aa9dd49d563ba2abca9736c8ee4672d02c039da7a37b797de62ee04  config-postmarketos-allwinner.aarch64
-6826e5541b1abcb64f6cf7fb03dd013c278e3173ef500bdebafdb66baca45908d96a9424a6d3a2bcd38b93aa74b30a60fe577ab817241eb3d557c023a21e2a58  disable-power-save.patch
+sha512sums="2a5b845a9879a2dd2757b51160d712a4375bf3db2bea4a212191c68f6c4472b131b64066af2b83889ac0ccdf1e4443ef83c789aabeca93db7502e6ac21eb3934  linux-postmarketos-allwinner-aad90c10f4ff90ec9c541447ccddd6a0d58afd1e.tar.gz
+82b01ae04c813a5d3d4c07d35864824a0db1149a4949decc22af0aed299c0a53f400dbbbf839e41317d0fe51f08898593b44983262d76fa164898377e244af69  config-postmarketos-allwinner.aarch64
+3c0d9d282a36a5f6a442b434839d77851f9b20185725cb73aee88e6e209c68fd3d71df8e2a36ffcdb605c47f86df5dbcda5d00353c75c23303861936196924e0  disable-power-save.patch
 c6e1ff1c060f68a59fa57a7cfc573a500fc8d200f56193530f7c1967e4f70f17cb2c930496f6a6489a6a10de130a2e66f5cd328eb6c4ae936f4af348a7413c3b  touch-dts.patch"
