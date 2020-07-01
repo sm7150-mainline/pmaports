@@ -1,0 +1,31 @@
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+pkgname=postmarketos-welcome-gtk3
+pkgver=0.1.0
+pkgrel=0
+pkgdesc="postmarketOS welcome app"
+url="https://gitlab.com/postmarketOS/postmarketos-welcome-gtk3"
+arch="all"
+license="GPL-3.0-or-later"
+makedepends="meson libhandy-dev"
+source="https://gitlab.com/postmarketOS/postmarketos-welcome-gtk3/-/archive/$pkgver/postmarketos-welcome-gtk3-$pkgver.tar.bz2"
+options="!check" # No tests
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		. output
+	ninja -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+
+	install -Dm644 "data/welcome-message" \
+		"$pkgdir/etc/welcome-message"
+}
+
+sha512sums="80c125b60fe1d9a188fe726a7f419a9b99ab8f913db070825438de97a1f7696ab3b8eb90941fd30e6d2694646c3ca4646cfe35352da263de187c024eacc51d30  postmarketos-welcome-gtk3-0.1.0.tar.bz2"
