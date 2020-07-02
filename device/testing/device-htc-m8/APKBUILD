@@ -2,13 +2,14 @@
 pkgname=device-htc-m8
 pkgdesc="HTC One M8"
 pkgver=0.1
-pkgrel=7
+pkgrel=8
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
 options="!check !archcheck"
 depends="linux-htc-m8 mkbootimg mesa-dri-swrast msm-fb-refresher postmarketos-base"
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo
 	initfs-hook.sh
 	90-android-touch-dev.rules"
@@ -21,6 +22,12 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-htc-m8"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="b0be08a058c9191e650e0df56706048afd0e4c1b78ac787bbe65d89d51ee296880c82155b396ba308d9359c589e041e19d393e1e5f66d3a6e4276f66330257b2  deviceinfo
