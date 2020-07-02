@@ -70,7 +70,6 @@ aports-static:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
     - sh ./install_pmbootstrap.sh pytest
   script:
-    - apk -q add git
     - su pmos -c ".gitlab-ci/run_testcases.sh"
     - su pmos -c ".gitlab-ci/check_changed_aports_versions.py"
   artifacts:
