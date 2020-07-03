@@ -1,9 +1,14 @@
 # Automatically generated aport, do not edit!
 # Generator: pmbootstrap aportgen busybox-static-armhf
 
+# Stub for apkbuild-lint
+if [ -z "$(type -t arch_to_hostspec)" ]; then
+	arch_to_hostspec() { :; }
+fi
+
 pkgname=busybox-static-armhf
-pkgver=1.31.1
-pkgrel=21
+pkgver=1.32.0
+pkgrel=0
 
 _arch="armhf"
 _mirror="http://dl-cdn.alpinelinux.org/alpine/"
@@ -16,14 +21,14 @@ pkgdesc="Statically linked Busybox for $_arch"
 _target="$(arch_to_hostspec $_arch)"
 
 source="
-    busybox-static-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/busybox-static-$pkgver-r$pkgrel.apk
+	busybox-static-$pkgver-r$pkgrel-$_arch-edge.apk::$_mirror/edge/main/$_arch/busybox-static-$pkgver-r$pkgrel.apk
 "
 
 package() {
-    mkdir -p "$pkgdir/usr/$_target"
-    cd "$pkgdir/usr/$_target"
-    tar -xf $srcdir/busybox-static-$pkgver-r$pkgrel-$_arch.apk
-    rm .PKGINFO .SIGN.*
+	mkdir -p "$pkgdir/usr/$_target"
+	cd "$pkgdir/usr/$_target"
+	tar -xf $srcdir/busybox-static-$pkgver-r$pkgrel-$_arch-edge.apk
+	rm .PKGINFO .SIGN.*
 }
 
-sha512sums="f6e47ed398112d2e2d33a297d8f8a711ead5c7a10a5e6acf89b38b9d0ef51a51a5adffb5f08237754fd733eccf7df7c387d4435ca6b78806dbbb79ff3add5066  busybox-static-1.31.1-r21-armhf.apk"
+sha512sums="55bcc5283dc867a2eeaacefb84981dc123fe3c00b0d8889a11fe37423935ee5392717566c0c6846f9012959a4d867798efd0f0ce56f19934049fa3b2493953a7  busybox-static-1.32.0-r0-armhf-edge.apk"
