@@ -22,36 +22,25 @@ done
 mkdir -p /run/openrc
 touch /run/openrc/shutdowntime
 
-# Replace a config file from stock Alpine, unless apk reports that the user has
-# modified it (note that this does not allow properly updating these configs
-# when postmarketos-base gets updated yet, see issue pmaports#258).
-write_unless_modified() {
-	# Redirect the stdin to the file unless it has been modified
-	# $1: file path
-	if apk audit "$(dirname "$1")" | grep -q "${1:1}"; then
-		echo "- NOT modifying (file was changed before): $1"
-	else
-		echo "- Modifying: $1"
-		cat > "$1"
-	fi
-}
-
 # Install /etc/fstab
+echo "- Modifying: /etc/fstab"
 {
 	echo '# <file system> <mount point>   <type>  <options>               <dump>  <pass>'
 	echo 'LABEL="pmOS_root"	/	ext4	relatime,data=ordered	0	1'
 	echo 'LABEL="pmOS_boot"	/boot	auto	defaults		0	2'
-} | write_unless_modified /etc/fstab
+} >/etc/fstab
 
 # Set /etc/issue
+echo "- Modifying: /etc/issue"
 {
 	echo 'Welcome to postmarketOS'
 	echo 'Kernel \r on an \m (\l)'
 	# setterm -powersave on -blank 5
 	echo -ne "\033[9;5]"
-} | write_unless_modified /etc/issue
+} >/etc/issue
 
 # Set /etc/motd
+echo "- Modifying: /etc/motd"
 {
 	echo 'Welcome to postmarketOS!'
 	echo ''
@@ -62,7 +51,7 @@ write_unless_modified() {
 	echo ''
 	echo 'You may change this message by editing /etc/motd.'
 	echo ''
-} | write_unless_modified /etc/motd
+} >/etc/motd
 
 # Enable syslog to SHM. Note: size is 4048KiB, which *should* be More Than Enough(TM) for all but the most chattiest of devices.
 echo "- Modifying: /etc/conf.d/syslog"
