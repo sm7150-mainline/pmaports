@@ -1,7 +1,7 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.7.0_git20200704
+pkgver=5.7.0_git20200705
 pkgrel=0
 arch="aarch64"
 pkgdesc="Kernel fork with Pine64 patches"
@@ -9,7 +9,7 @@ url="https://gitlab.com/pine64-org/linux/"
 license="GPL-2.0-only"
 makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync xz"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
-_commit="b7b625b8b43859aa1c46d34106541eb5cda373a5"
+_commit="c3e42484fd1be12ef573bc77f91626ccb7efd1ad"
 source="$pkgname-$_commit.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/$_commit/linux-$_commit.tar.gz
 	config-$_flavor.aarch64
 	disable-power-save.patch
@@ -64,7 +64,7 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="99adf9816c40691ebe2213f16c4c3ccbefdc564974115482f772ff3252fcb4b419f63368964e999a946997ce90e0e339fbe1653a4bc4c2cee69f51fd528175d9  linux-postmarketos-allwinner-b7b625b8b43859aa1c46d34106541eb5cda373a5.tar.gz
-8bf4c9811e8e4abef7210567c5901efc9a8a80a8434289b9c92d0d3755508c246f13e00f1c83d83b69dafb61336d5e0a9e671ab5341bbba77e9269d7fdb100f5  config-postmarketos-allwinner.aarch64
+sha512sums="3655b68deffcdd2384f900354695098d85a646ef55b581406d734ef27511f3cc6bd5084b5524955ca3536aed38375f07f0500d465faeb162cd13fd220281a494  linux-postmarketos-allwinner-c3e42484fd1be12ef573bc77f91626ccb7efd1ad.tar.gz
+d3d73ddfa5d1611731a29c6b5af13849380d3f78d398d63851a96a1aadd230c17570089cf5967612000edf1a72e82a520169e1be30662d873eb575017f471ef5  config-postmarketos-allwinner.aarch64
 3c0d9d282a36a5f6a442b434839d77851f9b20185725cb73aee88e6e209c68fd3d71df8e2a36ffcdb605c47f86df5dbcda5d00353c75c23303861936196924e0  disable-power-save.patch
 c6e1ff1c060f68a59fa57a7cfc573a500fc8d200f56193530f7c1967e4f70f17cb2c930496f6a6489a6a10de130a2e66f5cd328eb6c4ae936f4af348a7413c3b  touch-dts.patch"
