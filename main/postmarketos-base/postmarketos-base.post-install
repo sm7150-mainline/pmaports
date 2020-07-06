@@ -23,12 +23,14 @@ mkdir -p /run/openrc
 touch /run/openrc/shutdowntime
 
 # Install /etc/fstab
-echo "- Modifying: /etc/fstab"
-{
-	echo '# <file system> <mount point>   <type>  <options>               <dump>  <pass>'
-	echo 'LABEL="pmOS_root"	/	ext4	relatime,data=ordered	0	1'
-	echo 'LABEL="pmOS_boot"	/boot	auto	defaults		0	2'
-} >/etc/fstab
+if ! grep -q "postmarketos\.org/fstab" /etc/fstab; then
+	echo "- Modifying: /etc/fstab"
+	{
+		echo
+		echo "# This file is *not* used to mount / or /boot."
+		echo "# More information: https://postmarketos.org/fstab"
+	} >> /etc/fstab
+fi
 
 # Set /etc/issue
 echo "- Modifying: /etc/issue"
