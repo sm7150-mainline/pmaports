@@ -164,6 +164,11 @@ find_boot_partition() {
 	findfs LABEL="pmOS_boot"
 }
 
+# $1: path
+# $2: set to "rw" for read-write
+# Mount the boot partition. It gets mounted twice, first at /boot (ro), then at
+# /sysroot/boot (rw), after root has been mounted at /sysroot, so we can
+# switch_root to /sysroot and have the boot partition properly mounted.
 mount_boot_partition() {
 	partition=$(find_boot_partition)
 	if [ -z "$partition" ]; then
@@ -171,8 +176,17 @@ mount_boot_partition() {
 		show_splash /splash-noboot.ppm.gz
 		loop_forever
 	fi
-	echo "Mount boot partition ($partition)"
-	mount -r "$partition" /boot
+
+	if [ "$2" = "rw" ]; then
+		mount_opts=""
+		echo "Mount boot partition ($partition) to $1 (read-write)"
+	else
+		mount_opts="-o ro"
+		echo "Mount boot partition ($partition) to $1 (read-only)"
+	fi
+
+	# shellcheck disable=SC2086
+	mount $mount_opts "$partition" "$1"
 }
 
 # $1: initramfs-extra path
@@ -257,7 +271,7 @@ resize_root_filesystem() {
 
 mount_root_partition() {
 	partition="$(find_root_partition)"
-	echo "Mount root partition ($partition)"
+	echo "Mount root partition ($partition) to /sysroot (read-only)"
 	mount -t ext4 -o ro "$partition" /sysroot
 	if ! [ -e /sysroot/usr ]; then
 		echo "ERROR: unable to mount root partition!"

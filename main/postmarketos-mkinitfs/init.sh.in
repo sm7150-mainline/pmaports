@@ -35,7 +35,7 @@ show_splash /splash-loading.ppm.gz
 setup_usb_network
 start_udhcpd
 
-mount_boot_partition
+mount_boot_partition /boot
 extract_initramfs_extra @INITRAMFS_EXTRA@
 start_charging_mode
 wait_root_partition
@@ -44,12 +44,15 @@ unlock_root_partition
 resize_root_filesystem
 mount_root_partition
 
+# Mount boot partition into sysroot, so OpenRC doesn't need to do it (#664)
+umount /boot
+mount_boot_partition /sysroot/boot "rw"
+
 init="/sbin/init"
 setup_bootchart2
 
 # Switch root
 killall telnetd mdev msm-fb-refresher 2>/dev/null
-umount /boot
 umount /proc
 umount /sys
 umount /dev/pts
