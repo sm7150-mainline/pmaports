@@ -3,7 +3,7 @@
 
 pkgname=linux-fairphone-fp1
 pkgver=3.4.5
-pkgrel=4
+pkgrel=5
 pkgdesc="Fairphone 1 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -11,7 +11,7 @@ _flavor="fairphone-fp1"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev grep coreutils mtk-mkimage gcc6"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl grep coreutils gcc6"
 
 # Compiler: GCC 6 (doesn't boot when compiled with newer versions)
 if [ "${CC:0:5}" != "gcc6-" ]; then
@@ -29,6 +29,7 @@ source="
 	$_config
 "
 builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
 	default_prepare
@@ -40,23 +41,15 @@ prepare() {
 }
 
 build() {
-	cd "$builddir"/kernel
+	cd kernel
 	unset LDFLAGS
 	TARGET_BUILD_VARIANT=user TARGET_PRODUCT=ahong89_wet_jb2 \
-		make ARCH="$_carch" CC="${CC:-gcc}" \
+		make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	# kernel.release
-	install -D "$builddir/kernel/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	cd "$builddir/kernel/arch/$_carch/boot"
-	# Add mediatek header to zImage
-	mtk-mkimage KERNEL zImage zImage-mtk
-	# Install modified zImage
-	install -Dm644 zImage-mtk "$pkgdir/boot/vmlinuz-$_flavor"
+	downstreamkernel_package "$builddir"/kernel "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
 sha512sums="9ab967c0635dc5b3dca457725d25b44cfc391cb8fb5b9417fe5d6636131aecdf36575375f6151496d5269aaaf14cf15a4580aaee6a4699f0644822af66efba06  linux-fairphone-fp1-328160cf6ddec4ad417cdf648b61d26cc09f9e73.tar.gz
