@@ -1,7 +1,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
-pkgver=1
-pkgrel=20
+pkgver=2
+pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (works only with numeric passwords!)"
 url="https://puri.sm"
 arch="noarch !armhf"
@@ -29,7 +29,10 @@ source="60-lightdm-autologin.conf
 	000-gschema.override
 	osk.sh
 	gtk-app-wayland.sh
-	qt-tweaks.sh"
+	qt-tweaks.sh
+	dconf-profile-postmarketos
+	01-phoc-scaling
+	"
 options="!check"
 
 package() {
@@ -41,6 +44,10 @@ package() {
 		"$pkgdir"/etc/profile.d/gtk-app-wayland.sh
 	install -Dm755 "$srcdir"/osk.sh \
 		"$pkgdir"/usr/bin/osk-wayland
+	install -Dm755 "$srcdir"/dconf-profile-postmarketos \
+		"$pkgdir"/etc/dconf/profile/user
+	install -Dm755 "$srcdir"/01-phoc-scaling \
+		"$pkgdir"/etc/dconf/db/postmarketos.d/01-phoc-scaling
 }
 
 qt_tweaks() {
@@ -55,4 +62,6 @@ sha512sums="c51a5cf93495069d71900dd1c6fbddfa3bdfb70dbab8141d1b115b6150975a12206c
 2bc94b0c457a85cadac88e48685b95e9c9a6f8d9e611a7aaf3c4dcd5c0fc846f1e6eb31f21a7e28e35507333e4c1f14d87845f042f86f00418aaec3a90d343d0  000-gschema.override
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
 57793bb079c76ba3bdcfca7880aa887de11fe80e7a05557b78435e57feabab70fbaeedc42da3aec6f914c35bba8e8ee9918367516eb45ee247f63f694624f179  gtk-app-wayland.sh
-6e193eca3961a78d47b4656892eae34d019d9317a255a201f5ea61e3300caff04c526a27cd98d0edc072b36e3eaf3a1768f4cd27c5e2be8b19c167d535c820a6  qt-tweaks.sh"
+6e193eca3961a78d47b4656892eae34d019d9317a255a201f5ea61e3300caff04c526a27cd98d0edc072b36e3eaf3a1768f4cd27c5e2be8b19c167d535c820a6  qt-tweaks.sh
+e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742eee51d93dc83859a7ead553f4dcbc8b6fcefa33ae344ba178  dconf-profile-postmarketos
+6d99bd718fece9d202ebf76b807335b1e31ebeca52f2b8870bb4772787cf76bf4602f2506bc4ed077da0eac584ec72b879ad8317c926aabcf2ed48b0d7ba48f7  01-phoc-scaling"
