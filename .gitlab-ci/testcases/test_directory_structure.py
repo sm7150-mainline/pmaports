@@ -25,7 +25,7 @@ def test_directories():
     apkbuilds = set(glob.iglob("**/APKBUILD", recursive=True))
     expected = set(f for d in expected_directories for f in glob.iglob(d + "/*/APKBUILD"))
     assert apkbuilds == expected, "Found APKBUILD in unexpected directory. " \
-        "Consider adding it to test_directory_structure.py!"
+        "Note that we moved firmware/* to device/{main,community,testing}/*."
 
 
 # Ensure no file in pmaports are executable.
