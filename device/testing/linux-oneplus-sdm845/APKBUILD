@@ -8,7 +8,7 @@ pkgrel=0
 pkgdesc="Mainline kernel fork for OnePlus SDM845 devices"
 arch="aarch64"
 _carch="arm64"
-url="https://gitlab.com/sdm845-mainline/sdm845-linux-next"
+url="https://gitlab.com/sdm845-mainline/sdm845-linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="bison findutils flex installkernel openssl-dev perl"
@@ -18,10 +18,10 @@ _commit="d99aa17c6fd4528f0fc375b86d3390562046ba88"
 
 # Source
 source="
-	sdm845-linux-next-$_commit.tar.gz::https://gitlab.com/sdm845-mainline/sdm845-linux-next/-/archive/$_commit/sdm845-linux-next-$_commit-sdm845.tar.gz
+	sdm845-linux-$_commit.tar.gz::https://gitlab.com/sdm845-mainline/sdm845-linux/-/archive/$_commit/sdm845-linux-$_commit-sdm845.tar.gz
 	$_config
 "
-builddir="$srcdir/sdm845-linux-next-$_commit"
+builddir="$srcdir/sdm845-linux-$_commit"
 
 prepare() {
 	default_prepare
@@ -53,5 +53,5 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-sha512sums="1d83ab75660fa6fe5c3a2b5c78bdb8568f24656e4ddf93ebc9bc209a9adcd7d6bc47f14b7e2ab2cd664072020e2cf7de08260eb788ee219c69f9c80cfb2f6820  sdm845-linux-next-d99aa17c6fd4528f0fc375b86d3390562046ba88.tar.gz
+sha512sums="cc533f97d5bf6a42f50c3487bb44286b6ebc594fe37b0818575bef6ef70a8d55ee630ba9c1534bf39159a7ec88ba7fccef4457dca2864268f6ca38400e6857a7  sdm845-linux-d99aa17c6fd4528f0fc375b86d3390562046ba88.tar.gz
 af0d5d106a89e852e8bddec8a3b4320d054e3ea664d072a22631eb82149a85562e152a9e0d5c8900e46c1da90c2530509f5d047ca7e64b50ad17f0d42d3cdb7c  config-oneplus-sdm845.aarch64"
