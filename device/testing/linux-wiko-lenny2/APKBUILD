@@ -32,15 +32,15 @@ source="$pkgname-$_commit.tar.gz::https://github.com/pmsourcedump/linux-wiko-len
 	$_config
 "
 builddir="$srcdir/$pkgname-$_commit"
+_outdir="KERNEL_OBJ"
 
 prepare() {
 	default_prepare
 
-	mkdir KERNEL_OBJ
-	cp "$srcdir/$_config" "$builddir"/KERNEL_OBJ/.config
+	mkdir "$_outdir"
+	cp "$srcdir/$_config" "$_outdir"/.config
 
-	yes "" | make -C "$builddir" ARCH="$_carch" HOSTCC="$HOSTCC" \
-		O="$builddir"/KERNEL_OBJ oldconfig
+	yes "" | make ARCH="$_carch" HOSTCC="$HOSTCC" O="$_outdir" oldconfig
 }
 
 
@@ -49,16 +49,16 @@ build() {
 
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
-		O="$builddir"/KERNEL_OBJ
+		O="$_outdir"
 }
 
 package() {
 	# kernel.release
-	install -D "$builddir/KERNEL_OBJ/include/config/kernel.release" \
+	install -D "$_outdir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
 	# zImage (find the right one)
-	cd "$builddir/KERNEL_OBJ/arch/$_carch/boot"
+	cd "$_outdir/arch/$_carch/boot"
 	_target="$pkgdir/boot/vmlinuz-$_flavor"
 	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
 		[ -e "$_zimg" ] || continue
