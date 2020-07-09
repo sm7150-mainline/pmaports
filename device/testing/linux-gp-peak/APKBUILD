@@ -42,7 +42,6 @@ prepare() {
 
 build() {
 	unset LDFLAGS
-	rm .config # Avoid complaints that the source is not clean
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
