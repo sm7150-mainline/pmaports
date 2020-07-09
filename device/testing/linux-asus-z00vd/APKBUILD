@@ -25,6 +25,7 @@ source="
 	04_dct_python3.patch
 "
 builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
 	default_prepare
@@ -39,30 +40,30 @@ prepare() {
 	done
 
 	# Requires a out folder for some reason
-	mkdir "$builddir/out"
+	mkdir "$_outdir"
 
 	# Clean up kernel source
-	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" clean
-	make -C "$builddir" O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" mrproper
+	make O="$_outdir" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" clean
+	make O="$_outdir" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" mrproper
 
 	# Prepare kernel config ('yes ""' for kernels lacking olddefconfig)
 	cp "$srcdir"/$_config "$builddir"/out/.config
-	yes "" | make O="$builddir/out" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" oldconfig
+	yes "" | make O="$_outdir" ARCH="$_carch" ARCH_MTK_PLATFORM="mt6580" oldconfig
 }
 
 build() {
 	unset LDFLAGS
-	make O="$builddir/out" ARCH="$_carch" CC="${CC:-gcc}" ARCH_MTK_PLATFORM="mt6580" \
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" ARCH_MTK_PLATFORM="mt6580" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
 	# kernel.release
-	install -D "$builddir/out/include/config/kernel.release" \
+	install -D "$_outdir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
 	# zImage (find the right one)
-	cd "$builddir/out/arch/$_carch/boot"
+	cd "$_outdir/arch/$_carch/boot"
 	_target="$pkgdir/boot/vmlinuz-$_flavor"
 	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
 		[ -e "$_zimg" ] || continue
