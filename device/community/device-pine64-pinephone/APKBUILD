@@ -4,13 +4,13 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
 pkgver=0.3
-pkgrel=3
+pkgrel=4
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 depends="postmarketos-base u-boot-pinephone uboot-tools mesa-git-dri-gallium linux-postmarketos-allwinner gpsd atinout alsa-ucm-conf"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
@@ -73,6 +73,12 @@ package() {
 nonfree_firmware() {
 	pkgdesc="Wifi and Bluetooth firmware"
 	depends="linux-firmware-rtlwifi linux-firmware-rtl_bt firmware-pine64-rtl8723bt"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	depends="wys-pinephone"
 	mkdir "$subpkgdir"
 }
 sha512sums="712dbae8d8799ab251068863d0bc542e29dba7b8783685c1c56fac234c2b7f3f88c360b3bed511f9b83dfb46fc3bf67aa21c185d5d19427d0049c3f54ae4d19e  deviceinfo
