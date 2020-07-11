@@ -10,13 +10,11 @@ fi
 
 if tty -s; then
 	tty=/dev/tty0
-	rows=$(stty -F $tty size | awk '{print $1}')
-	stty -F $tty rows $(($rows * 2 / 3))
-	fbkeyboard &
+	modprobe uinput
+	fbkeyboard -r $(cat /sys/class/graphics/fbcon/rotate) 2>$tty &
 	echo "Exit the shell to continue booting:" > $tty
 	sh +m <$tty >$tty 2>$tty
 	pkill -f fbkeyboard
-	stty -F $tty rows $rows
 else
 	echo "No tty attached, exiting."
 fi
