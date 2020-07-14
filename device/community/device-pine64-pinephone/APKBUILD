@@ -4,7 +4,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
 pkgver=0.5
-pkgrel=3
+pkgrel=4
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -18,6 +18,7 @@ source="deviceinfo
 	uboot-script.cmd
 	sysrq.conf
 	hwtest.ini
+	10-pinephone-proximity.rules
 	gpsd_pinephone.initd
 	gpsd_device-hook.sh
 	90-modem-eg25.rules
@@ -53,6 +54,8 @@ package() {
 		"$pkgdir"/etc/gpsd/device-hook
 	install -D -m644 "$srcdir"/90-modem-eg25.rules \
 		"$pkgdir"/usr/lib/udev/rules.d/90-modem-eg25.rules
+	install -D -m644 "$srcdir"/10-pinephone-proximity.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/10-pinephone-proximity.rules
 
 	# Fix "sysrq: HELP..." messages in dmesg while playing audio
 	# (Headphone output interferes with the serial console on the headphone jack)
@@ -90,6 +93,7 @@ sha512sums="d07b9e6770af73bf477f6a04206ff4739a60e08ac3fa458c6549d2245b0be0627f42
 462cf12a3bb29d9a67759f568aea702d0201c61508a352c86ecf23b91d43a0ccc2adf510ee3110f0d748d98d11a54bce3084f2380ebe1714556477b47ed6f473  uboot-script.cmd
 f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
+b53cc6f2531854cc9c1e4c334185a20551d64c8675ee8a8eaa03b99d80808fad421a0f6e99e5be212a974d88c85f461a71ba59ac59c29f298c82f211e3be1ef4  10-pinephone-proximity.rules
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
 ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd46444dd3c0a637ec08ce6125b18240fe6bfc13f624a15192e648  gpsd_device-hook.sh
 aa0b7191548e89ddfc6cf5b1f637c7ee7ab4c2025cbfc6328e7e482e5b179ea072779ca332a18094e3d424708b923c2334210591fc369831426992f540c07abc  90-modem-eg25.rules
