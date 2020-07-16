@@ -1,7 +1,7 @@
 # U-boot with patches to make the PinePhone boot faster and have control over the ddr clock speed
 pkgname=u-boot-pinephone
 pkgver=2020.07_git20200612
-pkgrel=0
+pkgrel=1
 _commit="78c99d82596fef01444c076f4c975b60e084a09b"
 pkgdesc="u-boot bootloader for the PINE64 PinePhone"
 url="https://gitlab.com/pine64-org/u-boot"
@@ -10,10 +10,10 @@ license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
 	ISC LGPL-2.0-only LGPL-2.1-only X11"
 makedepends="$depends_dev bc dtc python3-dev swig bison flex openssl-dev arm-trusted-firmware-sun50i crust"
 options="!check"
-source="
-	https://github.com/crust-firmware/u-boot/archive/$_commit/u-boot-$_commit.tar.gz
+source="https://github.com/crust-firmware/u-boot/archive/$_commit/u-boot-$_commit.tar.gz
 	update-u-boot
-"
+	0001-sunxi-support-asymmetric-dual-rank-DRAM-on-A64-R40.patch
+	"
 builddir="$srcdir/u-boot-$_commit"
 
 build() {
@@ -35,5 +35,7 @@ package() {
 		"$pkgdir"/usr/share/u-boot/pine64-pinephone/u-boot-sunxi-with-spl.bin
 	install -D -m 755 "$srcdir"/update-u-boot "$pkgdir"/usr/sbin/update-u-boot
 }
+
 sha512sums="3fe43a9d3364a68ba88f5c895da5fbc2e309461d64be0fb0493840ef70fe07e89c71ce13f5ae97b61526ba223ea1a5efa505f97f40bc9c74fe336019973e27bc  u-boot-78c99d82596fef01444c076f4c975b60e084a09b.tar.gz
-4a3a1772a7309d44e7977dee4aca499d5c79675d99cda1395d8765abb415b8456260c7a989650f0bd2dfda0377af2346917fbcbf3e356a36265ed07e161ddc3b  update-u-boot"
+4a3a1772a7309d44e7977dee4aca499d5c79675d99cda1395d8765abb415b8456260c7a989650f0bd2dfda0377af2346917fbcbf3e356a36265ed07e161ddc3b  update-u-boot
+7369f4d1f28d1ec2adf9640636940b3672eb5d4573160f2906451778369b67a02d4a684fb81246b3e2b9983acf0c9632b1c880f7d77c850a00a41080fca65481  0001-sunxi-support-asymmetric-dual-rank-DRAM-on-A64-R40.patch"
