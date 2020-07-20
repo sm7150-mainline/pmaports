@@ -211,6 +211,13 @@ wait_root_partition() {
 	done
 }
 
+# $1: path to device
+has_unallocated_space() {
+	# Check if there is unallocated space at the end of the device
+	parted -s "$1" print free | tail -n2 | \
+		head -n1 | grep -qi "free space"
+}
+
 resize_root_partition() {
 	partition=$(find_root_partition)
 
@@ -228,9 +235,7 @@ resize_root_partition() {
 		# Get physical device
 		partition_dev=$(dmsetup deps -o devname "$partition" | \
 			awk -F "[()]" '{print "/dev/"$2}')
-		# Check if there is unallocated space at the end of the device
-		if parted -s "$partition_dev" print free | tail -n2 | \
-			head -n1 | grep -qi "free space"; then
+		if has_unallocated_space "$partition_dev"; then
 			echo "Resize root partition ($partition)"
 			# unmount subpartition, resize and remount it
 			kpartx -d "$partition"
@@ -242,9 +247,12 @@ resize_root_partition() {
 	# except for QEMU devices (where PMOS_FORCE_PARTITION_RESIZE gets passed as
 	# kernel parameter).
 	if grep -q PMOS_FORCE_PARTITION_RESIZE /proc/cmdline; then
-		echo "Resize root partition ($partition)"
-		parted -s "$(echo "$partition" | sed -E 's/p?2$//')" resizepart 2 100%
-		partprobe
+		partition_dev="$(echo "$partition" | sed -E 's/2$//')"
+		if has_unallocated_space "$partition_dev"; then
+			echo "Resize root partition ($partition)"
+			parted -s "$partition_dev" resizepart 2 100%
+			partprobe
+		fi
 	fi
 }
 
