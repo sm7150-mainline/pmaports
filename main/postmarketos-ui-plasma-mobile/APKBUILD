@@ -1,42 +1,26 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-mobile
-pkgver=2
-pkgrel=27
+pkgver=3
+pkgrel=0
 pkgdesc="(Wayland) Mobile variant of KDE Plasma (does not run without hardware acceleration, allows only numeric passwords!)"
 url="https://wiki.postmarketos.org/wiki/Plasma_Mobile"
 arch="noarch !armhf" # Crashes on armhf due to https://gitlab.com/postmarketOS/pmaports/issues/75
 license="GPL-3.0-or-later"
-depends="
-	bluedevil
+depends="bluedevil
 	breeze
-	breeze-gtk
 	elogind
 	iio-sensor-proxy
-	index
-	kaccounts-providers
-	kde-gtk-config
-	kirigami-gallery
-	koko
-	kpeoplesink
-	kpeoplevcard
 	kscreen
 	kwallet-pam
 	kwayland-integration
 	ofono
 	ofono-openrc
-	plasma-angelfish
-	plasma-dialer
-	plasma-phonebook
-	plasma-camera
 	plasma-phone-components
 	plasma-nm-mobile
 	polkit-kde-agent-1
-	postmarketos-artwork-wallpapers
 	powerdevil
 	pulseaudio
 	qt5-qtvirtualkeyboard
-	qmlkonsole
-	spacebar
 	xdg-desktop-portal-kde
 	urfkill
 	urfkill-openrc
@@ -46,6 +30,23 @@ depends="$depends
 	lightdm
 	lightdm-openrc
 	xorg-server
+	"
+_pmb_recommends="breeze-gtk
+	firefox
+	index
+	kaccounts-providers
+	kde-gtk-config
+	kirigami-gallery
+	koko
+	kpeoplesink
+	kpeoplevcard
+	plasma-angelfish
+	plasma-dialer
+	plasma-phonebook
+	plasma-camera
+	postmarketos-artwork-wallpapers
+	qmlkonsole
+	spacebar
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="kwinrc
@@ -84,14 +85,13 @@ package() {
 
 extras() {
 	pkgdesc="Meta package for additional Plasma mobile apps"
-	depends="
+	_pmb_recommends="
 		buho
 		calindori
 		kaidan
 		ktrip
 		nota
 		okular-mobile
-		trojita
 		vvave
 		"
 
