@@ -243,9 +243,11 @@ resize_root_partition() {
 			kpartx -afs "$partition_dev"
 		fi
 	fi
-	# Resize the root partition (non-subpartitions). Usually we do not want this,
-	# except for QEMU devices (where PMOS_FORCE_PARTITION_RESIZE gets passed as
-	# kernel parameter).
+
+	# Resize the root partition (non-subpartitions). Usually we do not want
+	# this, except for QEMU devices and non-android devices (e.g.
+	# PinePhone). For them, it is fine to use the whole storage device and
+	# so we pass PMOS_FORCE_PARTITION_RESIZE as kernel parameter.
 	if grep -q PMOS_FORCE_PARTITION_RESIZE /proc/cmdline; then
 		partition_dev="$(echo "$partition" | sed -E 's/2$//')"
 		if has_unallocated_space "$partition_dev"; then
