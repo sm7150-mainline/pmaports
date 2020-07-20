@@ -1,12 +1,29 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-weston
-pkgver=4
-pkgrel=17
+pkgver=5
+pkgrel=0
 pkgdesc="(Wayland) Reference compositor (demo, not a phone interface)"
 url="https://postmarketos.org"
 arch="noarch"
 license="GPL-3.0-or-later"
-depends="weston-clients weston weston-shell-desktop weston-backend-fbdev weston-backend-drm weston-backend-x11 weston-terminal weston-xwayland xorg-server-xwayland postmarketos-demos postmarketos-artwork-wallpapers elogind lightdm lightdm-openrc xorg-server htop"
+depends="elogind
+	lightdm
+	lightdm-openrc
+	weston-clients
+	weston
+	weston-shell-desktop
+	weston-backend-fbdev
+	weston-backend-drm
+	xorg-server
+	"
+_pmb_recommends="htop
+	postmarketos-artwork-wallpapers
+	postmarketos-demos
+	weston-clients
+	weston-terminal
+	weston-xwayland
+	xorg-server-xwayland
+	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="start_weston.sh weston.ini.default 66-lightdm-autologin.conf"
 options="!check" # Meta package, no test suite
