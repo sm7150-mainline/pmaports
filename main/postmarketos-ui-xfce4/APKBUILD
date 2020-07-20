@@ -1,15 +1,33 @@
 # Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=postmarketos-ui-xfce4
 pkgver=0.3
-pkgrel=3
+pkgrel=4
 pkgdesc="(X11) Lightweight desktop (stylus recommended)"
 url="https://gitlab.com/postmarketOS/xfce4-phone"
 arch="noarch"
 license="GPL-3.0-or-later"
-depends="xfce4 xfce4-terminal xfce4-battery-plugin xfce4-pulseaudio-plugin xfce4-screensaver xfce4-whiskermenu-plugin
-	network-manager-applet xorg-server lightdm lightdm-openrc lxpolkit mesa-egl gnome-keyring
-	postmarketos-artwork-wallpapers postmarketos-artwork-icons faenza-icon-theme
-	pm-utils pavucontrol pulseaudio-utils elogind"
+depends="elogind
+	lightdm
+	lightdm-openrc
+	lxpolkit
+	mesa-egl
+	xfce4
+	xorg-server
+	"
+_pmb_recommends="faenza-icon-theme
+	gnome-keyring
+	pavucontrol
+	pm-utils
+	postmarketos-artwork-icons
+	postmarketos-artwork-wallpapers
+	pulseaudio-utils
+	network-manager-applet
+	xfce4-battery-plugin
+	xfce4-pulseaudio-plugin
+	xfce4-screensaver
+	xfce4-terminal
+	xfce4-whiskermenu-plugin
+	"
 install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.post-upgrade"
 source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketOS/xfce4-phone/-/archive/$pkgver/xfce4-phone-$pkgver.tar.gz
 	64-lightdm-autologin.conf"
