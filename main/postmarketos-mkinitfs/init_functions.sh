@@ -211,6 +211,21 @@ wait_root_partition() {
 	done
 }
 
+delete_old_install_partition() {
+	# The on-device installer leaves a "pmOS_deleteme" (p3) partition after
+	# successful installation, located after "pmOS_root" (p2). Delete it,
+	# so we can use the space.
+	partition="$(find_root_partition | sed 's/2$/3/')"
+	if ! blkid "$partition" | grep -q pmOS_deleteme; then
+		return
+	fi
+
+	device="$(echo "$partition" | sed -E 's/3$//')"
+	echo "First boot after running on-device installer - deleting old" \
+		"install partition: $partition"
+	parted -s "$device" rm 3
+}
+
 # $1: path to device
 has_unallocated_space() {
 	# Check if there is unallocated space at the end of the device
