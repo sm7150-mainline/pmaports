@@ -1,0 +1,64 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Nikita Travkin <nikitos.tr@gmail.com>
+# Maintainer: Minecrell <minecrell@minecrell.net>
+pkgname=device-samsung-a3lte
+pkgdesc="Samsung Galaxy A3 (SM-A300F)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo modprobe.conf rootston.ini"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+	$pkgname-phosh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
+	depends="linux-firmware-qcom firmware-samsung-a3lte-venus firmware-samsung-a3lte-wcnss"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-samsung-a3lte-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
+sha512sums="6f6b53fce933f25793aeca747411b32c31244fd149e971d640b3330913d9d443532b2b4c1138f58f13a46dda2d3854503256a0212cddac28b1f17df9c6d7c519  deviceinfo
+ee4263607eee2d12bd796d19606de35005f0a1ae4b8ff86e4556f2233c533b62d651dabe558081b5ff768a6b8158f34dd9b74b3dcece159e55d635b1d807928b  modprobe.conf
+f3667b914bb955be9e97db31dc7ed4a7c5d0c369be9549d587bb7208e270590c0c3fa36a0dd997d6f8305c5c9afb3b906423af6ca8724e806f995e61226cfc83  rootston.ini"

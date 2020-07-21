@@ -1,0 +1,37 @@
+pkgname=firmware-samsung-a3lte
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Samsung Galaxy A3 (SM-A300F)"
+url="https://rizzotherat.gitlab.io/firmware/"
+subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck"
+source="https://pepethekingprawn.gitlab.io/firmware/SM-A300F.tar.xz"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+modem() {
+	pkgdesc="Samsung Galaxy A3 (SM-A300F) modem firmware"
+	install -Dm644 "$srcdir"/mba.mbn -t "$subpkgdir/$_fwdir"
+	install -Dm644 "$srcdir"/modem.* -t "$subpkgdir/$_fwdir"
+}
+
+venus() {
+	pkgdesc="Samsung Galaxy A3 (SM-A300F) video firmware"
+	install -Dm644 "$srcdir"/venus.* -t "$subpkgdir/$_fwdir"/qcom/venus-1.8
+}
+
+wcnss() {
+	pkgdesc="Samsung Galaxy A3 (SM-A300F) WiFi/BT firmware"
+	cd "$srcdir"
+	install -Dm644 wcnss.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 WCNSS_* -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+sha512sums="7aeeeca56f629589a02434f6e24ac141139d1080fae369864450917fb3ad2bc8a64803201e9771ff932bf79a379207772b975fc4c184561338e87213093380df  SM-A300F.tar.xz"
