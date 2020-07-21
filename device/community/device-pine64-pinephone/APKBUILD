@@ -4,7 +4,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
 pkgver=0.5
-pkgrel=4
+pkgrel=5
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -27,7 +27,6 @@ source="deviceinfo
 	ucm/VoiceCall.conf
 	eg25.initd
 	setup-modem.sh
-	setup-modem.initd
 	"
 
 build() {
@@ -37,45 +36,43 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/boot.scr \
+	install -Dm644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
 
 	# Make /boot/allwinner/sun50i-a64-pine64-pinephone*.dtb resolve to /boot/sun50i-a64-pine64-pinephone*.dtb
 	# this is because the device tree names in u-boot include the vendor and the one in postmarketOS doesn't
 	ln -s .. "$pkgdir"/boot/allwinner
 
-	install -D -m644 "$srcdir"/hwtest.ini \
+	install -Dm644 "$srcdir"/hwtest.ini \
 		"$pkgdir"/usr/share/hwtest.ini
 
 	# GPS
-	install -D -m755 "$srcdir"/gpsd_pinephone.initd \
+	install -Dm755 "$srcdir"/gpsd_pinephone.initd \
 		"$pkgdir"/etc/init.d/gpsd_pinephone
-	install -D -m755 "$srcdir"/gpsd_device-hook.sh \
+	install -Dm755 "$srcdir"/gpsd_device-hook.sh \
 		"$pkgdir"/etc/gpsd/device-hook
-	install -D -m644 "$srcdir"/90-modem-eg25.rules \
-		"$pkgdir"/usr/lib/udev/rules.d/90-modem-eg25.rules
 	install -D -m644 "$srcdir"/10-pinephone-proximity.rules \
 		"$pkgdir"/usr/lib/udev/rules.d/10-pinephone-proximity.rules
 
 	# Fix "sysrq: HELP..." messages in dmesg while playing audio
 	# (Headphone output interferes with the serial console on the headphone jack)
-	install -D -m644 "$srcdir"/sysrq.conf \
+	install -Dm644 "$srcdir"/sysrq.conf \
 		"$pkgdir"/etc/sysctl.d/sysrq.conf
 
 	# Alsa usecase manager config
-	install -D -m644 "$srcdir"/sun50i-a64-audio.conf \
+	install -Dm644 "$srcdir"/sun50i-a64-audio.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/sun50i-a64-audio.conf
-	install -D -m644 "$srcdir"/HiFi.conf \
+	install -Dm644 "$srcdir"/HiFi.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/HiFi.conf
-	install -D -m644 "$srcdir"/VoiceCall.conf \
+	install -Dm644 "$srcdir"/VoiceCall.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/VoiceCall.conf
 
 	# Modem
 	install -Dm755 "$srcdir"/eg25.initd "$pkgdir"/etc/init.d/eg25
 	install -Dm755 "$srcdir"/setup-modem.sh \
 		"$pkgdir"/usr/bin/pinephone_setup-modem
-	install -Dm755 "$srcdir"/setup-modem.initd \
-		"$pkgdir"/etc/init.d/pinephone_setup-modem
+	install -Dm644 "$srcdir"/90-modem-eg25.rules -t "$pkgdir"/usr/lib/udev/rules.d/
+
 }
 
 nonfree_firmware() {
@@ -96,10 +93,9 @@ f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8
 b53cc6f2531854cc9c1e4c334185a20551d64c8675ee8a8eaa03b99d80808fad421a0f6e99e5be212a974d88c85f461a71ba59ac59c29f298c82f211e3be1ef4  10-pinephone-proximity.rules
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
 ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd46444dd3c0a637ec08ce6125b18240fe6bfc13f624a15192e648  gpsd_device-hook.sh
-aa0b7191548e89ddfc6cf5b1f637c7ee7ab4c2025cbfc6328e7e482e5b179ea072779ca332a18094e3d424708b923c2334210591fc369831426992f540c07abc  90-modem-eg25.rules
+7dc2b7c20b4a2b15f597a6417bd01797643dad84a3683b0dee648e030fb6326e9d020307643fdcdf1bb43fc44af9975697e417003bd359610bae2d8ce614fc00  90-modem-eg25.rules
 e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d74533f9ffb9aacc1703da2a06693f85fa04ff97fd7528012  sun50i-a64-audio.conf
 03e2ed3a4212c0ed336586de38b4882c1bb640e04d34dc63ec218c80ff7046c19aaf82c8cdb48db4d3d42f6124addc16b689fd686a90a0f3174c586d1f50e6f2  HiFi.conf
 d44307c4cbd1fcd4846d30bc1e72800ebd4cbc43fe75e896a501dff06f1b3df21385a009ba5f81ed3f19a5e039bd082da3a88efdf3c034089c8fff3bc16e0a7a  VoiceCall.conf
 5a1a9c774253e8211cc54f4b3961c4bdc35427726d037b0ecad099915e856590e8267a4a47943ab753772d57261eef89924b407b305b1099a9c4ecd7b5f00b35  eg25.initd
-cd94afca9c3f7d48d9bca9a6d8d8917961143e109e9921160cd8b249770191dc5c73f4cdcc7fe1d7b2ff7aa97236c9483213c6108f62da0d37f3716d41840786  setup-modem.sh
-6d025c526af93d976472713573c156d2a8365e0350dfc482edf2bfbcfa32f4e74b2debe6b9bb393f5c39bf3638e9ec024f548e53774535dae8a7cce2613040ab  setup-modem.initd"
+3a1af3979232a31995f5c103e092e075987d6e62509f4de59dbb64d6559d74e73c62161707108e27137faab49ae16612e5ada350c5633428d30df37e1b7b7f10  setup-modem.sh"
