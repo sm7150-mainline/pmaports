@@ -7,8 +7,8 @@ if [ -z "$(type -t arch_to_hostspec)" ]; then
 fi
 
 pkgname=musl-aarch64
-pkgver=1.1.24
-pkgrel=9
+pkgver=1.2.0
+pkgrel=0
 arch="armhf armv7 x86_64 x86"
 subpackages="musl-dev-aarch64:package_dev"
 
@@ -23,8 +23,8 @@ pkgdesc="the musl library (lib c) implementation for $_arch"
 _target="$(arch_to_hostspec $_arch)"
 
 source="
-	musl-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-$pkgver-r$pkgrel.apk
-	musl-dev-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-dev-$pkgver-r$pkgrel.apk
+	musl-$pkgver-r$pkgrel-$_arch-edge.apk::$_mirror/edge/main/$_arch/musl-$pkgver-r$pkgrel.apk
+	musl-dev-$pkgver-r$pkgrel-$_arch-edge.apk::$_mirror/edge/main/$_arch/musl-dev-$pkgver-r$pkgrel.apk
 "
 
 package() {
@@ -32,7 +32,7 @@ package() {
 	cd "$pkgdir/usr/$_target"
 	# Use 'busybox tar' to avoid 'tar: Child returned status 141'
 	# on some machines (builds.sr.ht, gitlab-ci). See pmaports#26.
-	busybox tar -xf $srcdir/musl-$pkgver-r$pkgrel-$_arch.apk
+	busybox tar -xf $srcdir/musl-$pkgver-r$pkgrel-$_arch-edge.apk
 	rm .PKGINFO .SIGN.*
 }
 package_dev() {
@@ -40,7 +40,7 @@ package_dev() {
 	cd "$subpkgdir/usr/$_target"
 	# Use 'busybox tar' to avoid 'tar: Child returned status 141'
 	# on some machines (builds.sr.ht, gitlab-ci). See pmaports#26.
-	busybox tar -xf $srcdir/musl-dev-$pkgver-r$pkgrel-$_arch.apk
+	busybox tar -xf $srcdir/musl-dev-$pkgver-r$pkgrel-$_arch-edge.apk
 	rm .PKGINFO .SIGN.*
 
 	# symlink everything from /usr/$_target/usr/* to /usr/$_target/*
@@ -55,5 +55,5 @@ package_dev() {
 	done
 }
 
-sha512sums="0aa5ddaea60c3d2bceb4a0f08c02354a5bcddde59f2a6041be5270ab194d698fb5ac4a73f7bd2e28ec4b9ff1d29a4826ae2cfc7ee106ae77e81e271873ef9b2e  musl-1.1.24-r9-aarch64.apk
-b11d9414ab16477b6b1fbc97cd7dd222ec8a6d60fd85200d1d8159dfa70c8b5ea2875a7f138eb29b3923f9a6c1b2e02008533d83bd9855783a5f53d5649e6723  musl-dev-1.1.24-r9-aarch64.apk"
+sha512sums="c0d1dca6f9269fc0d49e4d1d7b91d25e84cd43c12b83dedb13bd34f6d35c1399bb9c0e71db5259a42bac427a664c15f12d7367b058599306e0c807209b73bfc2  musl-1.2.0-r0-aarch64-edge.apk
+3b5102c0a711d94d606270632173b50c8d08bdcb01cb56face242b880d4374db66fd4d82c6228e93beb9d24a5b7b3e1b28324c3ec7341d3b185b818e40c2295f  musl-dev-1.2.0-r0-aarch64-edge.apk"

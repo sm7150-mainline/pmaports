@@ -7,8 +7,8 @@ if [ -z "$(type -t arch_to_hostspec)" ]; then
 fi
 
 pkgname=musl-armv7
-pkgver=1.1.24
-pkgrel=9
+pkgver=1.2.0
+pkgrel=0
 arch="armhf aarch64 x86_64 x86"
 subpackages="musl-dev-armv7:package_dev"
 
@@ -23,8 +23,8 @@ pkgdesc="the musl library (lib c) implementation for $_arch"
 _target="$(arch_to_hostspec $_arch)"
 
 source="
-	musl-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-$pkgver-r$pkgrel.apk
-	musl-dev-$pkgver-r$pkgrel-$_arch.apk::$_mirror/edge/main/$_arch/musl-dev-$pkgver-r$pkgrel.apk
+	musl-$pkgver-r$pkgrel-$_arch-edge.apk::$_mirror/edge/main/$_arch/musl-$pkgver-r$pkgrel.apk
+	musl-dev-$pkgver-r$pkgrel-$_arch-edge.apk::$_mirror/edge/main/$_arch/musl-dev-$pkgver-r$pkgrel.apk
 "
 
 package() {
@@ -32,7 +32,7 @@ package() {
 	cd "$pkgdir/usr/$_target"
 	# Use 'busybox tar' to avoid 'tar: Child returned status 141'
 	# on some machines (builds.sr.ht, gitlab-ci). See pmaports#26.
-	busybox tar -xf $srcdir/musl-$pkgver-r$pkgrel-$_arch.apk
+	busybox tar -xf $srcdir/musl-$pkgver-r$pkgrel-$_arch-edge.apk
 	rm .PKGINFO .SIGN.*
 }
 package_dev() {
@@ -40,7 +40,7 @@ package_dev() {
 	cd "$subpkgdir/usr/$_target"
 	# Use 'busybox tar' to avoid 'tar: Child returned status 141'
 	# on some machines (builds.sr.ht, gitlab-ci). See pmaports#26.
-	busybox tar -xf $srcdir/musl-dev-$pkgver-r$pkgrel-$_arch.apk
+	busybox tar -xf $srcdir/musl-dev-$pkgver-r$pkgrel-$_arch-edge.apk
 	rm .PKGINFO .SIGN.*
 
 	# symlink everything from /usr/$_target/usr/* to /usr/$_target/*
@@ -55,5 +55,5 @@ package_dev() {
 	done
 }
 
-sha512sums="7cada2cbad1cb2d5e28b2b35ba72125d6f133051a6f9718640f51cd71bef8b9db3b66c0554847cdd5781bb5fd9fcab6f2e9af3cc60583fe3332086da1e8dd18a  musl-1.1.24-r9-armv7.apk
-6754eabd258c2c8ab908bd3b0b461cea79c9a01822c90fc72e23a90fda0006659f99e75c92877a42d0015d2579e10bd285126bfc02219aad07101dc6ca4e2126  musl-dev-1.1.24-r9-armv7.apk"
+sha512sums="58857098e6b8c1dcd9224738f56e110fe10a22ac99fd10cc82eaa2f4572c138aafc91ff11263c059053e7a2fb92e0ced46f18ff5f91802630492fb16320da987  musl-1.2.0-r0-armv7-edge.apk
+5cbc6d9d276a6fbc08287dbcdb2737d227052e4d945e3c555c4db322de62113b309143ed1ec0b52d26884c6bf0d031628a97b9f48e803ca6b17c9cd40b5fef23  musl-dev-1.2.0-r0-armv7-edge.apk"
