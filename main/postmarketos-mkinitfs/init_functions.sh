@@ -220,7 +220,7 @@ delete_old_install_partition() {
 		return
 	fi
 
-	device="$(echo "$partition" | sed -E 's/3$//')"
+	device="$(echo "$partition" | sed -E 's/p?3$//')"
 	echo "First boot after running on-device installer - deleting old" \
 		"install partition: $partition"
 	parted -s "$device" rm 3
@@ -264,7 +264,7 @@ resize_root_partition() {
 	# PinePhone). For them, it is fine to use the whole storage device and
 	# so we pass PMOS_FORCE_PARTITION_RESIZE as kernel parameter.
 	if grep -q PMOS_FORCE_PARTITION_RESIZE /proc/cmdline; then
-		partition_dev="$(echo "$partition" | sed -E 's/2$//')"
+		partition_dev="$(echo "$partition" | sed -E 's/p?2$//')"
 		if has_unallocated_space "$partition_dev"; then
 			echo "Resize root partition ($partition)"
 			parted -s "$partition_dev" resizepart 2 100%
