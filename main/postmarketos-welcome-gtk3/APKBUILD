@@ -1,6 +1,6 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-welcome-gtk3
-pkgver=0.1.0
+pkgver=0.2.0
 pkgrel=0
 pkgdesc="postmarketOS welcome app"
 url="https://gitlab.com/postmarketOS/postmarketos-welcome-gtk3"
@@ -26,6 +26,12 @@ package() {
 
 	install -Dm644 "data/welcome-message" \
 		"$pkgdir/etc/welcome-message"
+
+	# Autostart on first login, the app removes the symlink when started
+	local _autostartdir="$pkgdir/etc/skel/.config/autostart"
+	mkdir -p "$_autostartdir"
+	ln -s "/usr/share/applications/org.postmarketos.Welcome.desktop" \
+		"$_autostartdir/org.postmarketos.Welcome.desktop"
 }
 
-sha512sums="80c125b60fe1d9a188fe726a7f419a9b99ab8f913db070825438de97a1f7696ab3b8eb90941fd30e6d2694646c3ca4646cfe35352da263de187c024eacc51d30  postmarketos-welcome-gtk3-0.1.0.tar.bz2"
+sha512sums="a975e33bcd9520316dd83c36293f5e2a8945781f4f3e3b80a13bc7016e3757dbefc2e98af31c21bf7231d0fc20e82fe8555a5c3352a37348099f7007f52d9c72  postmarketos-welcome-gtk3-0.2.0.tar.bz2"
