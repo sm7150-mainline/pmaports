@@ -1,19 +1,19 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=itinerary
-pkgver=0_git20200325
-_commit="54303b62bf6f4ec0cf1ccc2967364f96104bc68a"
+pkgver=0_git20200401
+_commit="33e7602d04e281b6021972e750d498e40ee1b980"
 pkgrel=0
 pkgdesc="Application to assist with usage of Travel Reservations"
 url="https://github.com/KDE/itinerary"
 arch="all !armhf"
 license="LGPL-2.0-or-later"
-depends="prison"
+depends="kirigami2 prison"
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtquickcontrols2-dev
 	qt5-qtlocation-dev ki18n-dev kcontacts-dev kpkpass-dev kitinerary-dev
 	kpublictransport-dev kdbusaddons-dev solid-dev shared-mime-info
 	kholidays-dev knotifications-dev"
 source="$pkgname-$_commit.tar.gz::https://github.com/KDE/itinerary/archive/$_commit.tar.gz
-	0001-Revert-Consider-Reservation-reservationStatus.patch" # requires kitinerary v20.04.0
+	0001-Remove-unnecessary-forward-declaration.patch"
 builddir="$srcdir/$pkgname-$_commit"
 options="!check" # Tests require newest version of kitinerary
 
@@ -33,5 +33,5 @@ check() {
 package() {
 	DESTDIR="$pkgdir" make -C build install
 }
-sha512sums="563f9d2b6adae2c03a549cb83dbf2cef0baae8fdb1cc4310b6b90e73a25adcbbbf2ce98aaab5b9ff3658823c1b9370344f9f9c932338f8499093f747b5cbda8d  itinerary-54303b62bf6f4ec0cf1ccc2967364f96104bc68a.tar.gz
-1b28272addd954bbea2dc874dc0b2f4ade256da57115db3fa54a088d0367b32cab5b218c9eb273f5c8d9613e36a72be4437f9599067d932ef704e3504653335c  0001-Revert-Consider-Reservation-reservationStatus.patch"
+sha512sums="133844df20d4ac657458aa0e6f5686f6aa0735085c76202f1fa1ccae840ebff90ec874f5ddbf10a93470cc68a3517db99134db7c91fbfc2219b119004e24e71d  itinerary-33e7602d04e281b6021972e750d498e40ee1b980.tar.gz
+858ea5391098e1fcc701004b2b632f939ce96207ef086398138f70a1fc073c314bacadcbf5e880c09c730e0fa8067dc18f0d007d69bf5ea14fca52a625d723a1  0001-Remove-unnecessary-forward-declaration.patch"
