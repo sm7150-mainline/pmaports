@@ -2,7 +2,7 @@
 pkgname=device-vernee-k506
 pkgdesc="Vernee Thor"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -10,6 +10,9 @@ options="!check !archcheck"
 depends="postmarketos-base linux-vernee-k506 mkbootimg mesa-dri-gallium"
 makedepends="devicepkg-dev"
 source="deviceinfo initfs-hook.sh"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -17,6 +20,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="SoC firmware (WiFi, BT, GPS, Modem, FM)"
+	depends="firmware-vernee-k506"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="d690398cea697cf28d7974c9d5f9a20f2851375c0c2f6ea8a27c66c3f593b46e58463dd4f9ff79f97eca7edbd0913ade1ff53bb15b28ad51af030e613749eb58  deviceinfo
