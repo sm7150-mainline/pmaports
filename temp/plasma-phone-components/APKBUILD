@@ -1,8 +1,8 @@
 # Forked from Alpine to package newer commits
 pkgname=plasma-phone-components
-pkgver=5.19.4_git20200626
+pkgver=5.19.4_git20200728
 pkgrel=0
-_commit="d76fc145f924e06353e38defb088b4e9b32e0e52"
+_commit="0d438d87d33d53030f19351105dff52f00022842"
 pkgdesc="Modules providing phone functionality for Plasma"
 arch="all !armhf !armv7 !x86" # armv7,x86: alpine#11807
 url="https://www.plasma-mobile.org/"
@@ -11,6 +11,7 @@ depends="plasma-nano qt5-qtquickcontrols2 plasma-workspace dbus-x11 kactivities 
 makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kactivities-dev plasma-framework-dev kservice-dev ki18n-dev kio-dev kcoreaddons-dev kconfig-dev kbookmarks-dev kwidgetsaddons-dev kcompletion-dev kitemviews-dev kjobwidgets-dev solid-dev kxmlgui-dev kconfigwidgets-dev kauth-dev kcodecs-dev kpackage-dev kwindowsystem-dev kwayland-dev gst-plugins-base-dev"
 source="https://invent.kde.org/plasma/plasma-phone-components/-/archive/$_commit/plasma-phone-components-$_commit.tar.gz
 	set-postmarketos-wallpaper.patch
+	0001-Revert-new-look-for-the-search-applet.patch
 	"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -39,5 +40,6 @@ vkbd_style() {
 
 	amove usr/lib/qt5/qml/QtQuick/VirtualKeyboard/Styles/Plasma
 }
-sha512sums="afc9e55324945dbee4f73693e31869fcc5326bda7a136f0fddaaa936cd88fccc7773d1360e85a183c548cbbdc84a376ddb85fb90a8f5351d4130f1ef998b1f6f  plasma-phone-components-d76fc145f924e06353e38defb088b4e9b32e0e52.tar.gz
-5853e72077c356f8347ea1c8503d5e301505acaa39ccf2fa105abe054a3063e735f5bcb2db1c1357f53032714599bfbf687fff2cbe21a1743930b946900ff7cf  set-postmarketos-wallpaper.patch"
+sha512sums="faa6d1cbbec775f1eac7c2cb158c0f04c2e4ce4fa1a774b7a8434e44d47a5f628c2a08f9669b3ffc5d57ea18ff1732e3c6122658ea9fe6147e9b0ea8aa9e383e  plasma-phone-components-0d438d87d33d53030f19351105dff52f00022842.tar.gz
+aef46ceb3cd4c49fe22b62a9821951bec366291e8ec060c7304d9db9c150a58311f545445c47605afc17dc061466b04bde0abe2d7a3791fa254ef0b7f4ec4e1e  set-postmarketos-wallpaper.patch
+7acec6223be2807d51bebc2969383c7c2d761793863b3818517c1685b7ba050b34a5172a0fe0a5efa2ff25ae610e9e92da643dd6d23049d266c2f0e675dff059  0001-Revert-new-look-for-the-search-applet.patch"

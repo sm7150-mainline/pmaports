@@ -1,0 +1,86 @@
+This commit requires Kirigami 2.14 which isn't released yet.
+The patch is obsolete when kirigami2 5.73.0 hits the repositories
+
+From f005174010a58b039dc0b71942386195a97a0cfa Mon Sep 17 00:00:00 2001
+From: Bart Ribbers <bribbers@disroot.org>
+Date: Tue, 28 Jul 2020 14:16:50 +0200
+Subject: [PATCH] Revert "new look for the search applet"
+
+This reverts commit e18f7b4560d54e39ed4eccd76780f5772c60bb02.
+---
+ applets/krunner/contents/ui/main.qml | 34 ++++------------------------
+ applets/krunner/metadata.desktop     |  2 +-
+ 2 files changed, 6 insertions(+), 30 deletions(-)
+
+diff --git a/applets/krunner/contents/ui/main.qml b/applets/krunner/contents/ui/main.qml
+index 51c8281..3c12bb5 100644
+--- a/applets/krunner/contents/ui/main.qml
++++ b/applets/krunner/contents/ui/main.qml
+@@ -25,46 +25,22 @@ import QtQuick.Layouts 1.1
+ import org.kde.plasma.plasmoid 2.0
+ import org.kde.plasma.core 2.0 as PlasmaCore
+ import org.kde.plasma.components 3.0 as PlasmaComponents
+-import org.kde.plasma.extras 2.0 as PlasmaExtras
+ import org.kde.milou 0.1 as Milou
+-import org.kde.kirigami 2.14 as Kirigami
++import org.kde.kirigami 2.10 as Kirigami
+ 
+ Item {
+     PlasmaCore.ColorScope.colorGroup: PlasmaCore.Theme.NormalColorGroup
+     Plasmoid.backgroundHints: PlasmaCore.Types.ShadowBackground | PlasmaCore.Types.ConfigurableBackground
+     Layout.minimumWidth: Math.min(plasmoid.availableScreenRect.width, plasmoid.availableScreenRect.height) - Kirigami.Units.gridUnit * 2
+ 
+-    Rectangle {
+-        id: background
++    PlasmaComponents.TextField {
++        id: bigClock
+ 
+         anchors {
+-            left: parent.left
+-            right: parent.right
+-            verticalCenter: parent.verticalCenter
++            fill: parent
+             margins: units.gridUnit
+         }
+-        radius: height/2
+-        height: layout.implicitHeight + units.gridUnit
+-        color: Qt.rgba(1,1,1, 0.3)
+-
+-        RowLayout {
+-            id: layout
+-            anchors {
+-                left: parent.left
+-                verticalCenter: parent.verticalCenter
+-                margins: background.radius/2
+-            }
+-            Kirigami.Icon {
+-                source: "search"
+-                Layout.fillHeight: true
+-                Layout.preferredWidth: height
+-                color: "white"
+-            }
+-            PlasmaExtras.Heading {
+-                level: 2
+-                text: i18n("Search...")
+-            }
+-        }
++        text: i18n("Search...")
+         MouseArea {
+             anchors.fill: parent
+             onClicked: window.showMaximized()
+diff --git a/applets/krunner/metadata.desktop b/applets/krunner/metadata.desktop
+index e120883..6e1e655 100644
+--- a/applets/krunner/metadata.desktop
++++ b/applets/krunner/metadata.desktop
+@@ -56,7 +56,7 @@ Comment[x-test]=xxSearch and run Applications and servicesxx
+ Comment[zh_CN]=搜索和运行应用程序及服务
+ Comment[zh_TW]=搜尋並執行應用程式及服務
+ 
+-Icon=search
++Icon=preferences-system-time
+ Type=Service
+ X-KDE-ParentApp=
+ X-KDE-PluginInfo-Author=Marco Martin
+-- 
+2.28.0
+
