@@ -2,22 +2,20 @@
 # Generator: pmbootstrap aportgen binutils-armv7
 # Based on: main/binutils
 
-
-builddir="$srcdir/binutils-2.34"
-
 pkgname=binutils-armv7
 pkgver=2.34
 pkgrel=1
 pkgdesc="Tools necessary to build programs for armv7 targets"
 url="https://www.gnu.org/software/binutils/"
 makedepends="gettext libtool autoconf automake bison texinfo"
-arch="armhf aarch64 x86_64 x86"
+arch="x86_64"
 license="GPL-2.0 GPL-3.0-or-later LGPL-2.0 BSD"
 source="https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.xz
 	binutils-ld-fix-static-linking.patch
 	gold-mips.patch
 	ld-bfd-mips.patch
 	"
+builddir="$srcdir/binutils-$pkgver"
 
 if [ "$CHOST" != "$CTARGET" ]; then
 	pkgname="binutils-$CTARGET_ARCH"
