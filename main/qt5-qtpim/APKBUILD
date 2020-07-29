@@ -1,27 +1,24 @@
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=qt5-qtpim
-pkgver=0_git20190227
-_commit="0b4522ae19d560881fdf85e8762c0d7f28310d50"
-pkgrel=1
+pkgver=0_git20190618
+_commit="8fec622c186d254bc9750606d54c32670a9046a5"
+pkgrel=0
 arch="all"
 url='http://qt-project.org/'
 license="LGPL-2.1-only AND LGPL-3.0-only AND GPL-3.0-only AND Qt-GPL-exception-1.0"
 pkgdesc='Qt Personal Information Management'
 depends_dev="qt5-qtdeclarative-dev"
-makedepends="$depends_dev git"
-source="$pkgname-$_commit.tar.gz::https://github.com/qt/qtpim/archive/$_commit.tar.gz"
+makedepends="$depends_dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/qt/qtpim/archive/$_commit.tar.gz
+	0001-Add-missing-break-in-switch.patch
+	0002-Set-PLUGIN_CLASS_NAME-in-.pro-files.patch
+	0003-Set-MODULE_VERSION-to-5.0.0.patch"
 subpackages="$pkgname-dev $pkgname-doc"
 builddir="$srcdir/qtpim-$_commit"
 options="!check"
 
-prepare() {
-	default_prepare
-	# Something in the build system only runs the syncqt.pl script when it's in a git repo
-	git init
-}
-
 build() {
-	qmake-qt5
+	qmake-qt5 CONFIG+=git_build
 	make
 }
 
@@ -35,4 +32,7 @@ package() {
 	install -d "$pkgdir"/usr/share/licenses
 	ln -s /usr/share/licenses/qt5-base "$pkgdir"/usr/share/licenses/$pkgname
 }
-sha512sums="e4304c6d67b12d48321510cf6e9f5efebdf8134dc58fb4a06a1ee07a1b52c55aed1e4e99a914e2cd0fd9bf0d47c1c376fca694e88d70405cc9a7b700aba4c22d  qt5-qtpim-0b4522ae19d560881fdf85e8762c0d7f28310d50.tar.gz"
+sha512sums="26424fe7943eb22282b66fb738fa86df6e9a6728258cc3b19dfdfb96e7aeb866d218686a351d7f8beaa8f51bcab7cc00484d1fd9552f4ba79298f0a82d215d3f  qt5-qtpim-8fec622c186d254bc9750606d54c32670a9046a5.tar.gz
+36884169108674ef62016b405c4571a517ca3b2a84ceab8dd3b8b0ffddc1ba422fae547a4921f785075c40dfc516b7e162ac7ce78278b10d1af7db446871dedf  0001-Add-missing-break-in-switch.patch
+58d5ce29035506c4c922f8392ba59d956697d4f972c6e7d65b20b5ee4b9bf1edb14609e6800ebff9ec7f102ca360572b26d46ddcabed776ff3b901f137fbee6d  0002-Set-PLUGIN_CLASS_NAME-in-.pro-files.patch
+a97d5cedb7f6cce848e135c3eff26931a38682a5bb85ef1b1a1c85aa5b7d08744bc111fde006f355c80d056aa901be7efa33fc84a997e66fc524c6d218d6c9a6  0003-Set-MODULE_VERSION-to-5.0.0.patch"
