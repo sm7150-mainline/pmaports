@@ -5,6 +5,7 @@
 import shutil
 import sys
 import os
+import importlib
 from distutils.sysconfig import get_python_lib
 
 
@@ -33,5 +34,7 @@ def path_pmbootstrap():
     sys.exit(1)
 
 
-# Add pmbootstrap dir to import path
-sys.path.append(os.path.realpath(path_pmbootstrap()))
+# Check if pmb module can be imported
+if importlib.util.find_spec("pmb") is None:
+    # Add pmbootstrap dir to import path
+    sys.path.append(os.path.realpath(path_pmbootstrap()))
