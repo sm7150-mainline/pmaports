@@ -1,0 +1,35 @@
+# Maintainer: Ultracoolguy <myownpersonalaccount@protonmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-motorola-ocean
+pkgdesc="Motorola Moto G7 Power"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+# Without msm-fb-refresher the display works as long as you execute
+#	cat /sys/class/graphics/fb0/modes > /sys/class/graphics/fb0/mode
+# as root (at least on weston). With it installed, it makes the screen too dim
+# to be usable. Which is why it shouldn't be added until the issue gets fixed
+# somehow.
+depends="postmarketos-base linux-motorola-ocean mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi and video firmware"
+	depends="firmware-motorola-ocean"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="fbeb62e9fff42feb6e1ec926ca584f630968b5a7aefa1f637c80b089dcd9897e55b7f6e73d5c75767493ef373e2253e7506a0a55417f5bfc67de4ddc66fcb966  deviceinfo"

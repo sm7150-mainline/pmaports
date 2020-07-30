@@ -1,0 +1,22 @@
+pkgname=firmware-motorola-ocean
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Motorola Moto G7 Power"
+url="https://gitlab.com/Ultracoolguy/firmware-motorola-ocean"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck"
+depends="wcnss-wlan"
+_commit="8ac6914c1e6559016db55981d575d6034413b286"
+source="https://gitlab.com/Ultracoolguy/firmware-motorola-ocean/-/archive/$_commit/firmware-motorola-ocean-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	install -Dm644 "$builddir"/wcnss.* -t "$pkgdir/$_fwdir"
+	install -Dm644 "$builddir"/wlan/prima/WCNSS_* -t "$pkgdir/$_fwdir"/wlan/prima
+	install -Dm644 "$builddir"/venus.* -t "$pkgdir/$_fwdir"
+}
+
+sha512sums="b382c3497dfac931c346d7a680e4144229d56584a6dbd3b7ceeca6083730608c774980a1a7db51834b4b7206c6ade8f2200c37373ffc2a92c8407b5a0e20b030  firmware-motorola-ocean-8ac6914c1e6559016db55981d575d6034413b286.tar.gz"
