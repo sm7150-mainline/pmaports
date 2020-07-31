@@ -2,7 +2,7 @@
 pkgname=device-samsung-klte
 pkgdesc="Samsung Galaxy S5"
 pkgver=0.3
-pkgrel=11
+pkgrel=12
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -15,10 +15,6 @@ subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-downstream-firmware:downstream_firmware
 	$pkgname-mainline-firmware:mainline_firmware
-	$pkgname-nonfree-userland:nonfree_userland
-	$pkgname-hybris:hybris
-	$pkgname-hybris-x11:hybris_x11
-	$pkgname-hybris-pulse:hybris_pulse
 "
 source="
 	70-klte-android.rules
@@ -84,46 +80,6 @@ mainline_firmware() {
 	pkgdesc="Firmware packages for klte mainline kernel"
 	depends="firmware-adreno"
 	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
-	mkdir "$subpkgdir"
-}
-
-nonfree_userland() {
-	pkgdesc="Pulls libhybris (Android) hardware adaptation, only for downstream kernel"
-	depends="$pkgname-hybris"
-	mkdir "$subpkgdir"
-}
-
-hybris() {
-	pkgdesc="libhybris (Android) hardware adaptation"
-	depends="hybris-base"
-	install="$pkgname-hybris.post-install"
-
-	mkdir "$subpkgdir"
-
-	# Android mounts (needed for loading firmware and configs from android container)
-	# Appended to fstab in post-install script
-	install -Dm644 "$startdir"/fstab.android "$subpkgdir"/etc/fstab.android
-
-	# Android udev rules, depend on android users and groups presence
-	install -Dm644 "$startdir"/70-klte-android.rules \
-		"$subpkgdir"/etc/udev/rules.d/70-klte-android.rules
-}
-
-hybris_x11() {
-	# Installs libhybris xorg support
-	pkgdesc="x11 modules for libhybris adaptation"
-	depends="hybris-base-x11-caf"
-	install_if="$pkgname-hybris xorg-server"
-
-	mkdir "$subpkgdir"
-}
-
-hybris_pulse() {
-	# Installs libhybris pulseaudio support
-	pkgdesc="pulseaudio modules for libhybris adaptation"
-	depends="alsa-plugins-pulse pulseaudio-modules-droid-7.1-caf"
-	install_if="$pkgname-hybris pulseaudio"
-
 	mkdir "$subpkgdir"
 }
 
