@@ -1,0 +1,71 @@
+# Maintainer: Miles Alan <m@milesalan.com>
+pkgname=sxmo-utils
+pkgver=1.1.10
+pkgrel=0
+pkgdesc="Utility scripts, programs, and configs that hold the Sxmo UI environment together"
+url="https://git.sr.ht/~mil/sxmo-utils"
+arch="all"
+license="MIT"
+makedepends="libx11-dev xproto linux-headers"
+depends="
+	sxmo-dmenu
+	sxmo-dwm
+	sxmo-st
+	sxmo-surf
+	sxmo-svkbd
+
+	alsa-utils
+	autocutsel
+	codemadness-frontends
+	conky
+	coreutils
+	curl
+	dunst
+	ffmpeg
+	gawk
+	geoclue
+	grep
+	inotify-tools
+	lisgd
+	mediainfo
+	modemmanager
+	mpv
+	ncurses
+	sfeed
+	sxiv
+	terminus-font
+	tzdata
+	v4l-utils
+	vis
+	w3m
+	xclip
+	xdotool
+	xdpyinfo
+	xinput
+	xprop
+	xrandr
+	xrdb
+	xsel
+	xset
+	xsetroot
+	xwininfo
+	youtube-dl
+"
+
+options="suid !check" # has no tests
+source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-utils/archive/$pkgver.tar.gz"
+install="$pkgname.post-install $pkgname.pre-deinstall"
+
+package() {
+	mkdir -p "$pkgdir/etc/modules-load.d/"
+	printf %b "snd-aloop" > "$pkgdir/etc/modules-load.d/sxmo.conf"
+	mkdir -p "$pkgdir/etc/modprobe.d/"
+	printf %b "options snd slots=,snd-aloop" > "$pkgdir/etc/modprobe.d/sxmo.conf"
+
+	make  -C "$builddir" PREFIX=$pkgdir install
+	chmod u+s $pkgdir/usr/bin/sxmo_setpineled
+	chmod u+s $pkgdir/usr/bin/sxmo_setpinebacklight
+	chmod u+s $pkgdir/usr/bin/sxmo_screenlock
+}
+
+sha512sums="23c7ef68ed5a00a028af9a9da209ce7d4a949d74de1022fc762ba576115071c1dd6ad2c3a1d5b9b57a34aabf2bb34ff8e60136e3e931a4de47e5f021a98eb6cf  sxmo-utils-1.1.10.tar.gz"
