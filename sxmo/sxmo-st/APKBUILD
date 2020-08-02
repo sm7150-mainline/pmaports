@@ -1,0 +1,41 @@
+# Maintainer: Miles Alan <m@milesalan.com>
+pkgname=sxmo-st
+pkgver=0.8.3.3
+pkgrel=0
+pkgdesc="St fork for Sxmo UI; supports scrollback, invert, and other patches"
+url="https://git.sr.ht/~mil/sxmo-st"
+arch="all"
+license="MIT"
+depends="ncurses-terminfo"
+makedepends="fontconfig-dev freetype-dev libx11-dev libxext-dev libxft-dev"
+subpackages="$pkgname-doc $pkgname-dbg"
+provides="st"
+source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-st/archive/$pkgver.tar.gz"
+options="!check" # has no tests
+
+prepare() {
+	default_prepare
+	sed -i '/tic/d' Makefile
+}
+
+build() {
+	make -C "$builddir"
+}
+
+package() {
+	make install PREFIX=/usr DESTDIR="$pkgdir"
+	mkdir -p "$pkgdir"/usr/share/applications
+
+	cat > "$pkgdir"/usr/share/applications/st.desktop <<-EOF
+		[Desktop Entry]
+		Name=st
+		Comment=st is a simple virtual terminal emulator for X which sucks less
+		Exec=st
+		Terminal=false
+		Type=Application
+		Icon=gnome-xterm
+		Categories=System;TerminalEmulator;
+	EOF
+}
+
+sha512sums="c75708e9508373bf35730921d9198c53758bde0b3da7e6fcf726215ca353ad6b3be9bca16e0915a7c8afd767e73ba9e6bfcedc93ca3c1190938c131047cf0ced  sxmo-st-0.8.3.3.tar.gz"
