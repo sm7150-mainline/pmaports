@@ -14,6 +14,7 @@ expected_directories = [
     "maemo",
     "main",
     "modem",
+    "sxmo",
     "temp",
 ]
 
