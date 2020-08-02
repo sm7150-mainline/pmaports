@@ -1,0 +1,35 @@
+# Maintainer: Miles Alan <m@milesalan.com>
+pkgname=sxmo-dwm
+pkgver=6.2.9
+pkgrel=0
+pkgdesc="Dwm fork for Sxmo UI; supports volume-key hotkeys, swallow, keyboard, among other patches"
+url="https://git.sr.ht/~mil/sxmo-dwm"
+arch="all"
+license="MIT/X"
+depends="xorg-server"
+makedepends="libxft-dev libx11-dev libxinerama-dev"
+subpackages="$pkgname-doc"
+provides="dwm"
+options="!check" # has no tests
+source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-dwm/archive/$pkgver.tar.gz"
+
+prepare() {
+	default_prepare
+	sed -i -e '/CFLAGS/{s/-Os//;s/=/+=/}' \
+		-e '/LDFLAGS/{s/=/+=/}' \
+		"$builddir"/config.mk
+}
+
+build() {
+	make X11INC=/usr/include/X11 \
+		X11LIB=/usr/lib/X11 \
+		FREETYPEINC=/usr/include/freetype2 \
+		-C "$builddir"
+}
+
+package() {
+	make PREFIX=/usr DESTDIR="$pkgdir" \
+		-C "$builddir" install
+}
+
+sha512sums="37738af79d8797742bf3df32001db4543c5cb8c5b8b7d6ded53a5f22de498c305c80a7b1d8f17d84717950d0be237b51a06c9ca65a36bb8bc51f4b01e7b358aa  sxmo-dwm-6.2.9.tar.gz"
