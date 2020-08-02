@@ -1,0 +1,35 @@
+# Maintainer: Miles Alan <m@milesalan.com>
+pkgname=sxmo-surf
+pkgver=2.0.3
+pkgrel=0
+pkgdesc="Surf fork for Sxmo UI; supports externalpipe, keyword searching, non-JS by default"
+url="https://git.sr.ht/~mil/sxmo-surf"
+arch="all"
+license="MIT"
+depends="xprop libxml2-utils sxmo-dmenu"
+makedepends="webkit2gtk-dev"
+provides="surf"
+source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-surf/archive/$pkgver.tar.gz"
+subpackages="$pkgname-doc"
+options="!check" # has no tests
+
+prepare() {
+	default_prepare
+	sed -i -e '/CFLAGS/{s/-Os//;s/=/+=/}' \
+		-e '/LDFLAGS/{s/-s//;s/=/+=/}' \
+		"$builddir"/config.mk
+}
+
+build() {
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" PREFIX="/usr" install
+
+	mkdir -p "$pkgdir"/usr/share/doc/$pkgname
+	install -m644 README TODO.md \
+		"$pkgdir"/usr/share/doc/$pkgname
+}
+
+sha512sums="12c0806126c55baf2ce6ac208825e4324b8c6eeaae913c341fe85cddc3ef39f7b316bbf0baf2fee03bc580a0839950c2845c0895127000e3fdfcdceceba6d328  sxmo-surf-2.0.3.tar.gz"
