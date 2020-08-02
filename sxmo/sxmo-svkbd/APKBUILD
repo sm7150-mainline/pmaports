@@ -1,0 +1,29 @@
+# Maintainer: Miles Alan <m@milesalan.com>
+pkgname=sxmo-svkbd
+pkgver=1.0.5
+pkgrel=0
+pkgdesc="Svkbd fork for Sxmo UI; supports mobile-optimized layout, Xft, SIGTERM, multiple layers functionality"
+url="https://git.sr.ht/~mil/sxmo-svkbd"
+arch="all"
+license="MIT/X"
+makedepends="libxtst-dev libxft-dev libxinerama-dev"
+provides="svkbd"
+options="!check" # has no tests
+source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-svkbd/archive/$pkgver.tar.gz"
+
+prepare() {
+	default_prepare
+	sed -i -e '/CFLAGS/{s/-Os//;s/=/+=/}' \
+		-e '/LDFLAGS/{s/=/+=/}' \
+		"$builddir"/config.mk
+}
+
+build() {
+	make svkbd-sxmo X11INC=/usr/include/X11 X11LIB=/usr/lib/X11 FREETYPEINC=/usr/include/freetype2 -C "$builddir"
+}
+
+package() {
+	LAYOUT=sxmo make PREFIX=/usr DESTDIR="$pkgdir"  -C "$builddir" install
+}
+
+sha512sums="7666c42197e7505036b824ff07955d12c246fd176c2eb2be0dcf108aab367c4769f55ac5265250711c408079ec5dc9d640d31f6e7b0ba66e224c359a0322d167  sxmo-svkbd-1.0.5.tar.gz"
