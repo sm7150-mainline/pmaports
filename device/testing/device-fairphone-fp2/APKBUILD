@@ -2,7 +2,7 @@
 pkgname=device-fairphone-fp2
 pkgdesc="Fairphone 2"
 pkgver=2
-pkgrel=13
+pkgrel=14
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -11,7 +11,9 @@ depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
 source="deviceinfo
 	FP2.conf
-	hifi"
+	hifi
+	rootston.ini
+"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
@@ -19,6 +21,7 @@ subpackages="
 	$pkgname-downstream-firmware:downstream_firmware
 	$pkgname-mainline-firmware:mainline_firmware
 	$pkgname-alsa
+	$pkgname-phosh
 "
 
 build() {
@@ -69,6 +72,13 @@ alsa() {
 	install -Dm644 "$srcdir"/hifi "$subpkgdir"/usr/share/alsa/ucm/FP2/
 }
 
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
 sha512sums="af14d0dbe3c04d0eea28028e4051b9f63239dda9476e4667bd00be0bec57768e3da76d7ca188b319d4012ae932078d994a219f5bec074fa5f21f1e7059d5befc  deviceinfo
 55360b1ba4ddadea341c9edb13c32ba5f19aabf75ab28602f30cfb79b9df8834f115ef979c70569f23ec1293b1fcd408baf320d87803293ce7106bdc73a26c9f  FP2.conf
-b834461c6866bb0c473dd089dd5da641dd42a00f610aad6503117aa50fe6e200db9ad0a264bb609f12350d59faee1f772907bacd75439f702ea7d52f6f85e2b1  hifi"
+b834461c6866bb0c473dd089dd5da641dd42a00f610aad6503117aa50fe6e200db9ad0a264bb609f12350d59faee1f772907bacd75439f702ea7d52f6f85e2b1  hifi
+aad7cce10db5ec156585893c82932bd42f2c86e4d68208b5f3816ac7f5f80eb6ddf15157666e81de97d30b20897f88e1027545a87fe5c96c37b5e75e3e125ee4  rootston.ini"
