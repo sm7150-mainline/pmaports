@@ -4,22 +4,16 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-santoni
 pkgdesc="Xiaomi Redmi 4X"
-pkgver=0.5
-pkgrel=6
+pkgver=0.6
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-xiaomi-santoni mkbootimg mesa-dri-swrast msm-fb-refresher"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware
-		$pkgname-nonfree-userland:nonfree_userland
-		$pkgname-hybris:hybris
-		$pkgname-hybris-x11:hybris_x11"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
-	hybris/10-santoni-android-x11.conf
-	hybris/70-santoni-android.rules
-	hybris/fstab.android
 	misc/100-charging.rules
 	misc/charging.sh
 	misc/discharging.sh
@@ -67,41 +61,7 @@ nonfree_firmware() {
 		"$subpkgdir"/etc/udev/rules.d/90-device-xiaomi-santoni-audio.rules
 }
 
-nonfree_userland() {
-	pkgdesc="Pulls libhybris (Android) hardware adaptation, see the device's wiki page for post-install."
-	depends="$pkgname-hybris"
-	mkdir "$subpkgdir"
-}
-
-hybris() {
-	pkgdesc="libhybris (Android) hardware adaptation"
-	depends="hybris-base pulseaudio-modules-droid-7.1-caf alsa-plugins-pulse alsa-utils"
-	install="$pkgname-hybris.post-install"
-
-	mkdir "$subpkgdir"
-
-	# Android mounts (needed for loading firmware and configs from android container)
-	# Appended to fstab in post-install script
-	install -Dm644 "$srcdir"/fstab.android "$subpkgdir"/etc/fstab.android
-
-	# Android udev rules, depend on android users and groups presence
-	install -Dm644 "$srcdir"/70-santoni-android.rules \
-		"$subpkgdir"/etc/udev/rules.d/70-santoni-android.rules
-}
-
-hybris_x11() {
-	pkgdesc="X11 modules for libhybris adaptation"
-	depends="hybris-base-x11-caf"
-	install_if="$pkgname-hybris xorg-server"
-
-	# X11 Hybris configuration
-	install -Dm644 "$srcdir"/10-santoni-android-x11.conf \
-		"$subpkgdir"/etc/X11/xorg.conf.d/10-santoni-android-x11.conf
-}
-sha512sums="dc68956408da82ac9775f23814fb6e1498e65a4c760ceda369a60a202cfc92ad27761d6da27f1802307042affc8a1925c576816a8acbf394dd6a15f32e3ea3c0  10-santoni-android-x11.conf
-7c0cda58ddc36e8a6120ce969c1e7afc445817e20b38a4c33e986d3d584bcf0fbb4d82eeda4dab5abdf3429845621a4ffa155512f40e885be615042faf1de171  70-santoni-android.rules
-8419c1c5d20bc7c7e4d8d72ec2848655526f99cabf9037ae1f7152f5df31363b70b724769225a88c1d614bea6ebe4ee24190702ea947229a843cc2884eac7175  fstab.android
-7b1b138372cb173be38e820a1c386c3d30930d6753303478ae08c1362de3099d81c26eb2b833c5a0b340a82d821bd53309058ecb9b62e00c7ff323b632af2346  100-charging.rules
+sha512sums="7b1b138372cb173be38e820a1c386c3d30930d6753303478ae08c1362de3099d81c26eb2b833c5a0b340a82d821bd53309058ecb9b62e00c7ff323b632af2346  100-charging.rules
 c4853babd5cd6371297e5e5d64364c064d540cd4beaba06d79b1001fe5c78fe3ee8bc5f6f4ba3e383743a09263028abc55f41bad45240b1c505e27ed087725c9  charging.sh
 6012be4184af6c4f12f9b20a6f2d377ebd72b9b334df4fbb921ed9d8da865633631f77d19b02748ebee70442e2f3ffcb6af511ee5deaa40635bc53730c301076  discharging.sh
 dc4bf7871307e659f220aebc3c9f7d74b861f46e1f3df1be37d724af984e46d91e553dbd36c2bd4482aa17dbe4d76d28dabe214952638f00830907466b110146  90-device-xiaomi-santoni-audio.rules
