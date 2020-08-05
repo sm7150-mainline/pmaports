@@ -330,17 +330,16 @@ create_bootimg()
 	_base="${deviceinfo_flash_offset_base}"
 	[ -z "$_base" ] && _base="0x10000000"
 
-	if [ "${deviceinfo_bootimg_mtk_mkimage}" = "true" ]; then
-		require_package "mtk-mkimage" "mtk-mkimage" "bootimg_mtk_mkimage"
-		mv "$outfile" "$outfile-orig"
-		mtk-mkimage ROOTFS "$outfile-orig" "$outfile"
-	fi
-
 	# shellcheck disable=SC2039
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
 	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		kernelfile="${kernelfile}-dtb"
 	fi
+
+	if [ "${deviceinfo_bootimg_mtk_mkimage}" = "true" ]; then
+		kernelfile="${kernelfile}-mtk"
+	fi
+
 	_second=""
 	if [ "${deviceinfo_bootimg_dtb_second}" = "true" ]; then
 		if [ -z "${deviceinfo_dtb}" ]; then
@@ -425,6 +424,24 @@ append_or_copy_dtb()
 		# shellcheck disable=SC2086
 		cp $dtb "$(dirname "${outfile}")"
 	fi
+}
+
+# Add Mediatek header to kernel & initramfs
+add_mtk_header()
+{
+	[ "${deviceinfo_bootimg_mtk_mkimage}" = "true" ] || return
+	require_package "mtk-mkimage" "mtk-mkimage" "bootimg_mtk_mkimage"
+
+	echo "==> initramfs: adding Mediatek header"
+	mv "$outfile" "$outfile-orig"
+	mtk-mkimage ROOTFS "$outfile-orig" "$outfile"
+	rm "$outfile-orig"
+
+	echo "==> kernel: adding Mediatek header"
+	# shellcheck disable=SC2039
+	kernel="${outfile/initramfs-/vmlinuz-}"
+	rm -f "${kernel}-mtk"
+	mtk-mkimage KERNEL "$kernel" "${kernel}-mtk"
 }
 
 # Create the initramfs-extra archive

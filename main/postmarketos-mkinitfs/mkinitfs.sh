@@ -31,6 +31,7 @@ install -Dm755 "/usr/share/postmarketos-mkinitfs/init_functions.sh" \
 replace_init_variables
 create_cpio_image "$tmpdir" "$outfile"
 append_or_copy_dtb
+add_mtk_header
 create_uboot_files
 create_bootimg
 
