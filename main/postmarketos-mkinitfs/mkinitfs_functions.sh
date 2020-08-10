@@ -409,7 +409,7 @@ append_or_copy_dtb()
 	dtb=""
 	for filename in $deviceinfo_dtb; do
 		if ! [ -e "/usr/share/dtb/$filename.dtb" ]; then
-			echo "ERROR: File not found: $dtb"
+			echo "ERROR: File not found: /usr/share/dtb/$filename.dtb"
 			exit 1
 		fi
 		dtb="$dtb /usr/share/dtb/$filename.dtb"
