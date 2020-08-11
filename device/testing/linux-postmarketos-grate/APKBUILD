@@ -1,10 +1,10 @@
 _flavor=postmarketos-grate
-_commit="79c504641f2f2cecc4e345b5a2890f82d12d6a11"
+_commit="74b07f6af3c68d220565b36729eb2aa8b022bb2c"
 _config="config-$_flavor.armv7"
 
 pkgname=linux-postmarketos-grate
 pkgver=5.8.0
-pkgrel=0
+pkgrel=1
 arch="armv7"
 pkgdesc="Linux kernel with experimental patches for Tegra"
 url="https://postmarketos.org"
@@ -53,8 +53,9 @@ package() {
 
 	make -j1 $_install \
 		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
-sha512sums="a678be8e466400b57266dca856f28274c00e9d3d1ebcfe1a142b64c1e88754d6fcd04587664f65c464028e898382e30faf49c8ecc04f7e076323163d0a2fa519  linux-postmarketos-grate-5.8.0-79c504641f2f2cecc4e345b5a2890f82d12d6a11.tar.gz
-46dd50c6ba8fd01bf6a69f5b907da40c47c0412466fbb80f5aa79f3f9bd424bd609ecee11dd557d12649759be626aa4dd37071585b8ce0e026d48be1f4612d0c  config-postmarketos-grate.armv7"
+sha512sums="17d6db09ff0fc3829dd9f43c883b7e34c103d1197b23e75baf5385b93c7fa3ba9fa2c6d4c8769846d09512c03c0e81f1545fb29b65706c9eedd1e4e2797dd19f  linux-postmarketos-grate-5.8.0-74b07f6af3c68d220565b36729eb2aa8b022bb2c.tar.gz
+e9684bd739095fde02a465e34b7af35c9f6984b949a916413b22bffc6e7dc5da1c62574881f18a01730f1493ec8c8b695bcba1116e89ab03f42a64b84944b230  config-postmarketos-grate.armv7"
