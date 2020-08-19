@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
 pkgver=3
-pkgrel=36
+pkgrel=37
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -11,17 +11,17 @@ depends="
 	cryptsetup
 	eudev
 	haveged
+	networkmanager
 	openssh
 	postmarketos-mkinitfs
+	shadow
 	sudo
 	util-linux
 	wpa_supplicant
-	shadow
-	networkmanager
 	"
 install="$pkgname.post-install"
 triggers="$pkgname.trigger=/etc"
-subpackages="$pkgname-x11"
+subpackages="$pkgname-x11 $pkgname-elogind"
 source="
 	firmwareload.sh
 	50-firmware.rules
@@ -70,6 +70,12 @@ x11() {
 		libinput
 		xf86-input-libinput
 		xf86-video-fbdev"
+	mkdir "$subpkgdir"
+}
+
+elogind() {
+	install_if="$pkgname elogind"
+	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
 }
 
