@@ -3,7 +3,7 @@
 
 pkgname=linux-fly-iq4404
 pkgver=3.10.89
-pkgrel=2
+pkgrel=3
 pkgdesc="Fly Spark kernel fork"
 arch="armv7"
 _carch="arm"
@@ -11,7 +11,7 @@ _flavor="fly-iq4404"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev xz  mtk-mkimage gcc6"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev xz gcc6"
 
 # Compiler: >GCC 6 (Hangs on disk load)
 if [ "${CC:0:5}" != "gcc6-" ]; then
@@ -47,10 +47,7 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
 	cd "$builddir/arch/$_carch/boot"
-	# Add mediatek header to zImage
-	mtk-mkimage KERNEL zImage zImage-mtk
-	# Install modified zImage
-	install -Dm644 zImage-mtk "$pkgdir/boot/vmlinuz-$_flavor"
+	install -Dm644 zImage "$pkgdir/boot/vmlinuz-$_flavor"
 }
 
 sha512sums="ae53fe32e91a46ddc553ca6ea27bebb9ec3bb0dd01f15336d4570fa789c04ec1a52146fdd03f7ee409f16a11f8f90625546b447a39d7b6d2f10032c91283788e  linux-fly-iq4404-a619869f394bc2f00226efa230bc33894648af4e.tar.gz
