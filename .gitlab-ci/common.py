@@ -190,15 +190,3 @@ def get_changed_packages():
         ret.add(os.path.basename(dirname))
 
     return ret
-
-
-def check_build(packages, verify_only=False):
-    # Initialize build environment with less logging
-    run_pmbootstrap(["build_init"])
-
-    if verify_only:
-        run_pmbootstrap(["--details-to-stdout", "checksum", "--verify"] +
-                        list(packages))
-    else:
-        run_pmbootstrap(["--details-to-stdout", "build", "--strict",
-                         "--force"] + list(packages))
