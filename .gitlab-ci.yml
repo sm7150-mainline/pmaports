@@ -133,16 +133,31 @@ mr-settings:
     - python3 ./check_mr_settings.py
 
 # build changed aports
-aports-build:
+.build:
   stage: second
   <<: *only-default
   before_script:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
     - sh ./install_pmbootstrap.sh
   script:
-    - PYTHONUNBUFFERED=1 su pmos -c ".gitlab-ci/build_changed_aports.py"
+    - .gitlab-ci/build.sh
     - cp -r /home/pmos/.local/var/pmbootstrap/packages/ packages/ || true
   artifacts:
     expire_in: 1 week
     paths:
       - packages/
+
+build-x86_64:
+  extends: .build
+
+build-x86:
+  extends: .build
+
+build-aarch64:
+  extends: .build
+
+build-armv7:
+  extends: .build
+
+build-armhf:
+  extends: .build
