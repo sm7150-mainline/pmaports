@@ -6,6 +6,7 @@ import shutil
 import sys
 import os
 import importlib
+import importlib.util
 from distutils.sysconfig import get_python_lib
 
 
