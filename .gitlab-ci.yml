@@ -5,8 +5,8 @@ image: alpine:latest
 after_script:
   - .gitlab-ci/move_logs.sh $CI_PROJECT_DIR
 stages:
-  - first
-  - second
+  - lint
+  - build
 
 # defaults for "only"
 # We need to run the CI jobs in a "merge request specific context", if CI is
@@ -24,7 +24,7 @@ stages:
 
 # device documentation
 wiki:
-  stage: first
+  stage: lint
   <<: *only-default
   only:
     refs:
@@ -38,7 +38,7 @@ wiki:
 
 # testcases linting
 testcases-linting:
-  stage: first
+  stage: lint
   <<: *only-default
   only:
     refs:
@@ -53,7 +53,7 @@ testcases-linting:
 
 # shellcheck
 shellcheck:
-  stage: first
+  stage: lint
   <<: *only-default
   image: alpine:edge
   before_script:
@@ -64,7 +64,7 @@ shellcheck:
 
 # aports checks (generic)
 aports-static:
-  stage: first
+  stage: lint
   <<: *only-default
   before_script:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
@@ -81,7 +81,7 @@ aports-static:
     expire_in: 1 week
 
 distfile-check:
-  stage: first
+  stage: lint
   <<: *only-default
   before_script:
     - apk -q add make findutils
@@ -94,7 +94,7 @@ distfile-check:
 
 # APKBUILD linting
 aport-lint:
-  stage: first
+  stage: lint
   before_script:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
     - sh ./install_pmbootstrap.sh
@@ -106,7 +106,7 @@ aport-lint:
 
 # kernel kconfig check
 kernel-kconfig:
-  stage: first
+  stage: lint
   only:
     refs:
       - master
@@ -123,7 +123,7 @@ kernel-kconfig:
 # MR settings
 # (Checks for "Allow commits from members who can merge to the target branch")
 mr-settings:
-  stage: first
+  stage: lint
   only:
     - merge_requests
   before_script:
@@ -134,7 +134,7 @@ mr-settings:
 
 # build changed aports
 .build:
-  stage: second
+  stage: build
   <<: *only-default
   before_script:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
