@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-oppo-a51f
+pkgdesc="OPPO Mirror 5s"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-oppo-a51f-venus
+		 firmware-qcom-msm8916-wcnss firmware-oppo-a51f-wcnss-nv"
+
+	mkdir "$subpkgdir"
+}
+sha512sums="1db537a1d7f04dabd55912593070eac900a5fd07fb20d840f9fe5b4871e4e878a0423c7c17096f8c64375835fc55a7526304f6d8f986f74820494d252857a922  deviceinfo"
