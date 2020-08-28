@@ -184,7 +184,7 @@ def test_aports_ui(args):
         for path in glob.iglob(args.aports + "/main/postmarketos-ui-*/APKBUILD"):
             apkbuild = pmb.parse.apkbuild(args, path)
             # Skip if arch isn't enabled
-            if not pmb.helpers.package.check_arch(args, apkbuild["pkgname"], arch):
+            if not pmb.helpers.package.check_arch(args, apkbuild["pkgname"], arch, False):
                 continue
 
             for package in apkbuild["_pmb_recommends"]:
