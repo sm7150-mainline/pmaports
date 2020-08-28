@@ -1,25 +1,47 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 
+# This is seperate from linux-edge so we can control the release cycle better.
+# If this kernel is updated and fails to boot it's quite hard to recover the 
+# rk3399 devices due to the boot order. This kernel also has a kconfig that has
+# more modules built-in that are required for successfully booting on these
+# devices.
+
+# It's important that CONFIG_ROCKCHIP_CDN_DP is _disabled_ because it causes
+# boot failure
+
 pkgname=linux-postmarketos-rockchip
-pkgver=5.6.0_git20200402
+pkgver=5.11.2
 pkgrel=0
-pkgdesc="Kernel fork with Pinebook Pro and Rockpro64 patches"
+pkgdesc="Mainline kernel for rockchip devices"
 arch="aarch64"
 _carch="arm64"
-_flavor="postmarketos-rockchip"
+_flavor="${pkgname#linux-}"
 url="https://kernel.org"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native"
-makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync"
+options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
+makedepends="
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	installkernel
+	openssl-dev
+	perl
+	rsync
+	xz
+	"
 
 # Source
-_commit="93293259039d6fc3a725961d42b4f11bfc3f5127"
 _config="config-$_flavor.$arch"
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.0};;
+	*.*)	_kernver=$pkgver;;
+esac
 source="
-	https://gitlab.manjaro.org/tsys/linux-pinebook-pro/-/archive/$_commit/linux-pinebook-pro-$_commit.tar.gz
-	config-postmarketos-rockchip.aarch64
+	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
+	$_config
 "
-builddir="$srcdir/linux-pinebook-pro-$_commit"
+builddir="$srcdir/linux-$_kernver"
 
 prepare() {
 	default_prepare
@@ -30,8 +52,7 @@ prepare() {
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
-		CFLAGS_MODULE=-fno-pic
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
@@ -39,9 +60,11 @@ package() {
 
 	make -j1 modules_install dtbs_install \
 		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs-$_flavor"
 }
 
-sha512sums="d386cb5c562cb6ae150b34d30724a2bcf9bcee0d7ae7ae70b34853a420e6125ad7ead5b554c9861d134ad69f59ac6615072a28950fc823d31d3cdf02745da087  linux-pinebook-pro-93293259039d6fc3a725961d42b4f11bfc3f5127.tar.gz
-54d759e3bc0dd13a5dd47eb72e6c7d6c2e777ac6194089ceb93c987d2fe4ad1e439a3b47dd3177d5cd2937bc49dac9dedb55d40a8af1d5304354416ab0e304b1  config-postmarketos-rockchip.aarch64"
+
+sha512sums="16090ec6dea7a8c417ca7483b296902c9b55b423482ad8a881dffcaae76411806bc9502373efd6a51b0acefec3a44c19c5a7d42c5b76c1321183a4798a5959d3  linux-5.11.2.tar.xz
+b399eaaa7121b93468432e9f0a6d544199caa7c85b835c084fa24af7627d3e148a4f0e88eb703c3902f18e2df8202bf4a1e6d058a5901d4819b3673ef407266a  config-postmarketos-rockchip.aarch64"

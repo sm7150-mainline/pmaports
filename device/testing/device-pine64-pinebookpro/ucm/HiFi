@@ -29,17 +29,18 @@ SectionDevice."Speaker" {
 		cset "name='Speaker Switch' off"
 	]
 	Value {
-		PlaybackPriority 200
-		PlaybackChannels "2"
-		PlaybackPCM "hw:${CardId},0"
 		PlaybackVolume "DAC Playback Volume"
+		PlaybackSwitch "Speaker Switch"
+		PlaybackChannels 2
+		PlaybackPriority 300
+		PlaybackPCM "hw:${CardId},0"
 	}
 	ConflictingDevice [
-		"Headphone"
+		"Headphones"
 	]
 }
-SectionDevice."Headphone" {
-	Comment "Headphones"
+SectionDevice."Headphones" {
+	Comment "Headset"
 	EnableSequence [
 		cset "name='Headphone Playback Volume' 50%"
 		cset "name='Headphone Mixer Volume' 100%"
@@ -48,10 +49,10 @@ SectionDevice."Headphone" {
 	DisableSequence [
 	]
 	Value {
-		PlaybackPriority 100
-		PlaybackChannels "2"
-		PlaybackPCM "hw:${CardId},0"
 		PlaybackVolume "DAC Playback Volume"
+		PlaybackChannels 2
+		PlaybackPriority 500
+		PlaybackPCM "hw:${CardId},0"
 		JackControl "Headphones Jack"
 	}
 	ConflictingDevice [
