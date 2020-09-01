@@ -1,0 +1,35 @@
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=krecorder
+pkgver=0_git20201103
+pkgrel=0
+_commit="75ede7cd45a5ce0160dffea2ef03a21b41643c5d"
+pkgdesc="Audio recorder for Plasma Mobile (and other platforms)"
+url="https://invent.kde.org/plasma-mobile/krecorder"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+license="GPL-3.0-or-later"
+depends="kirigami2"
+makedepends="
+	extra-cmake-modules
+	ki18n-dev
+	kirigami2-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtmultimedia-dev
+	qt5-qtquickcontrols2-dev
+	"
+source="https://invent.kde.org/plasma-mobile/krecorder/-/archive/$_commit/krecorder-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="59f203f60f5ab4baa90ad50dd8245bd14030c62105993f37fe1d81bda180ecff4a0c51600d2525c98dc2a04a020d889fbbf94bcdb8ec552504f8050522a8cf63  krecorder-75ede7cd45a5ce0160dffea2ef03a21b41643c5d.tar.gz"
