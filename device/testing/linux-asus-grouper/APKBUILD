@@ -23,6 +23,8 @@ _carch="arm"
 _ksrcdir="$srcdir/linux-$_commit"
 
 prepare() {
+	default_prepare
+
 	mkdir -p "$srcdir"/build
 	cp -v "$srcdir"/$_config "$srcdir"/build/.config
 	make -C "$_ksrcdir" O="$srcdir"/build ARCH="$_carch" \
