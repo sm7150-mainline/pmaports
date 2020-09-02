@@ -1,0 +1,30 @@
+This is being upstreamed, https://gitlab.com/pine64-org/u-boot/-/merge_requests/3
+
+From 74ec7d4ab140e88158212f4e565dc7ab22d5d4f0 Mon Sep 17 00:00:00 2001
+From: Bart Ribbers <bribbers@disroot.org>
+Date: Wed, 2 Sep 2020 11:13:50 +0200
+Subject: [PATCH] Set RAM clock back to 552
+
+Any higher will cause random freezes. We've experienced this in the past
+and now I've been experiencing it with a 1.2a device. Decreasing it back
+to 552 fixed the issue for me.
+---
+ configs/pinephone_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configs/pinephone_defconfig b/configs/pinephone_defconfig
+index 1ffd495d79..9268a861bf 100644
+--- a/configs/pinephone_defconfig
++++ b/configs/pinephone_defconfig
+@@ -3,7 +3,7 @@ CONFIG_ARCH_SUNXI=y
+ CONFIG_SPL=y
+ CONFIG_MACH_SUN50I=y
+ CONFIG_SUNXI_DRAM_LPDDR3_STOCK=y
+-CONFIG_DRAM_CLK=624
++CONFIG_DRAM_CLK=552
+ CONFIG_DRAM_ZQ=3881949
+ CONFIG_MMC_SUNXI_SLOT_EXTRA=2
+ # CONFIG_VIDEO_DE2 is not set
+-- 
+2.28.0
+
