@@ -1,4 +1,34 @@
-// HOSTSPEC is defined at compile time, see APKBUILD
+/* Copyright 2020 Zhuowei Zhang, Oliver Smith
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * This program gets built to a set of wrapper executables, which launch native
+ * cross compilers inside foreign arch chroots. Speeds up cross compilation a
+ * lot, compared to using just qemu user mode emulation or using the previous
+ * distcc-based methods.
+ *
+ * How this program gets called:
+ * - pmbootstrap creates one native arch chroot and one foreign arch chroot.
+ * - The native chroot gets mounted as /native in the foreign chroot.
+ * - When calling "abuild", pmbootstrap sets PATH to:
+ *   /native/usr/lib/crossdirect/<ARCH>:$PATH
+ * - That crossdirect directory contains a crossdirect-<ARCH> binary built with
+ *   the matching HOSTSPEC (e.g. crossdirect-aarch64 binary with HOSTSPEC
+ *   aarch64-alpine-linux-musl). This binary is symlinked to:
+ *	- <HOSTSPEC>-c++
+ *	- <HOSTSPEC>-cc
+ *	- <HOSTSPEC>-clang
+ *	- <HOSTSPEC>-clang++
+ *	- <HOSTSPEC>-cpp
+ *	- <HOSTSPEC>-g++
+ *	- <HOSTSPEC>-gcc
+ *	- c++
+ *	- cc
+ *	- clang
+ *	- clang++
+ *	- cpp
+ *	- g++
+ *	- gcc
+ */
 
 #include <errno.h>
 #include <libgen.h>
@@ -52,20 +82,26 @@ int main(int argc, char **argv)
 		}
 	}
 
+	// prepend the HOSTSPEC to GCC binaries
 	if (isClang || startsWithHostSpec) {
 		snprintf(newExecutable, sizeof(newExecutable), NATIVE_BIN_DIR "/%s", executableName);
 	} else {
 		snprintf(newExecutable, sizeof(newExecutable), NATIVE_BIN_DIR "/" HOSTSPEC "-%s", executableName);
 	}
 
+	// prepare new arguments for GCC / clang
 	char **newArgsPtr = newargv;
 	*newArgsPtr++ = newExecutable;
 	if (isClang) {
+		// clang does not use a HOSTSPEC prefix for the cross compiler
+		// binary, but instead have a -target argument
 		*newArgsPtr++ = "-target";
 		*newArgsPtr++ = HOSTSPEC;
 	}
 	*newArgsPtr++ = "--sysroot=/";
 
+	// add all arguments passed to this executable to GCC / clang and set
+	// the last arg in newargv to NULL to mark its end
 	memcpy(newArgsPtr, argv + 1, sizeof(char *) * (argc - 1));
 	newArgsPtr += (argc - 1);
 	*newArgsPtr = NULL;
@@ -85,6 +121,7 @@ int main(int argc, char **argv)
 		}
 	}
 
+	// finally exec GCC / clang
 	if (execve(newExecutable, newargv, env) == -1) {
 		fprintf(stderr, "ERROR: crossdirect: failed to execute %s: %s\n", newExecutable, strerror(errno));
 		fprintf(stderr, "Maybe the target arch is missing in the ccache-cross-symlinks package?\n");
