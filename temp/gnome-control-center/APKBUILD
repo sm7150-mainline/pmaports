@@ -1,0 +1,82 @@
+# Forked from Alpine to apply Purism's mobile patches
+pkgname=gnome-control-center
+pkgver=9999_git20200326
+pkgrel=0
+_commit="ec619479bf2805792eae5eda7afde317473015c6"
+pkgdesc="GNOME control center"
+url="https://gitlab.gnome.org/GNOME/gnome-control-center"
+# limited by gnome-online-accounts
+arch="all !s390x !mips !mips64"
+license="GPL-2.0-or-later"
+depends="cups-pk-helper openrc-settingsd dbus:org.freedesktop.Secrets"
+makedepends="
+	clutter-dev
+	clutter-gtk-dev
+	gnome-desktop-dev
+	gnome-settings-daemon-dev
+	gnome-online-accounts-dev
+	grilo-dev
+	libgtop-dev
+	gnome-bluetooth-dev
+	colord-gtk-dev
+	samba-dev
+	accountsservice-dev
+	libpwquality-dev
+	networkmanager-dev
+	libnma-dev
+	modemmanager-dev
+	krb5-dev
+	itstool
+	libxml2-utils
+	libxslt
+	docbook-xml
+	docbook-xsl
+	pulseaudio-dev
+	udisks2-dev
+	cups-dev
+	meson
+	libsecret-dev
+	gsound-dev
+	libgudev-dev
+	polkit-dev
+	libhandy-dev
+	cheese-dev
+	ibus-dev"
+options="!check" # needs unpackaged py-dbusmock
+install="$pkgname.pre-install $pkgname.pre-upgrade"
+subpackages="$pkgname-dev $pkgname-lang $pkgname-dbg $pkgname-doc $pkgname-bash-completion"
+source="https://source.puri.sm/Librem5/gnome-control-center/-/archive/$_commit/gnome-control-center-$_commit.tar.gz
+	README.alpine
+	build-fix.patch
+	"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		-Dcheese=true \
+		-Dibus=true \
+		. output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+
+	mkdir -p "$pkgdir"/usr/lib
+	mv "$pkgdir"/usr/share/pkgconfig "$pkgdir"/usr/lib
+
+	install -Dm0644 "$srcdir"/README.alpine -t "$pkgdir"/usr/share/doc/"$pkgname"
+}
+
+sha512sums="3c184658a77713680108d5f36236c867ff800beae7658bff651c431587a2f90aac64d9d688f3c94a2b3189acda9a672acfeb635a7e5276496b5988ba03b40d0b  gnome-control-center-ec619479bf2805792eae5eda7afde317473015c6.tar.gz
+350aa443149c71851ad4de0976c7fc5cb626ba0c57a8d41e6ef80da1c65ed84a4dfa2483ae92630a3b611c4bfa9360ded82b55e8cd0e3907294c025e4f6b1671  README.alpine
+78a87bfddb1a660873ec1380a5f8f0f3ad5ef04dd3414d9a7f25ec55a8d4b653769f8e49f519d45c8b17bb3c6549d855e472a33a61c8cca1f9e18f16a05d1cb8  build-fix.patch"
