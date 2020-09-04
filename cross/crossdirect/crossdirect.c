@@ -82,6 +82,11 @@ int main(int argc, char **argv)
 		}
 	}
 
+	// Translate "cc" to "gcc": /usr/bin/cc is a symlink to /usr/bin/gcc,
+	// but there is no <HOSTSPEC>-cc symlink (pmaports#732)
+	if (strcmp(executableName, "cc") == 0)
+		executableName = "gcc";
+
 	// prepend the HOSTSPEC to GCC binaries
 	if (isClang || startsWithHostSpec) {
 		snprintf(newExecutable, sizeof(newExecutable), NATIVE_BIN_DIR "/%s", executableName);
