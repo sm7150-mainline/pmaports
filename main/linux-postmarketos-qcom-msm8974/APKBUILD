@@ -4,7 +4,7 @@ _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 
 pkgver=5.6.0_rc6
-pkgrel=5
+pkgrel=6
 
 arch="armv7"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8974 devices"
@@ -12,14 +12,14 @@ url="https://kernel.org/"
 makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex findutils"
 options="!strip !check !tracedeps pmb:cross-native"
 _commit="b9f39bdf61e5c8f5db63afe7ab1c9ff77aa6b4bc"
-source="
-	https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/$_commit/linux-postmarketos-$_commit.tar.gz
+source="https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/$_commit/linux-postmarketos-$_commit.tar.gz
 	config-$_flavor.armv7
-"
+	fix-gcc10-build.patch
+	"
 
 subpackages="$pkgname-dev"
 
-license="GPL2"
+license="GPL-2.0-only"
 _abi_release=$_pkgver
 _carch=$CARCH
 case "$_carch" in
@@ -158,4 +158,5 @@ dev() {
 }
 
 sha512sums="92866a037fd1bd3b17572754548c19423f6e762d90fb1ebca52c252ace85c87b6f747515f8606fe627d34c59828cbebf83054b9d6e5dd977e0398d9c46fcc176  linux-postmarketos-b9f39bdf61e5c8f5db63afe7ab1c9ff77aa6b4bc.tar.gz
-b32f04de0e5b0b3bb09fe9efda05f82320633b13e5bd159b89ac01881a40add78275d7e4951ce850adb508050aaefdab60d009856d14720150ecf2a415c17f96  config-postmarketos-qcom-msm8974.armv7"
+0d387d375d542bfaba0080be2952a6c2aa1bb20318ccf1352240c69e47309d13d74a633768adbc2cd9b213bd89aaf7b7d8a924059c9a14539c9330de20150d9f  config-postmarketos-qcom-msm8974.armv7
+fcb8c823e9943f409876bbec88e78ee2bbac3a30888ed3b10eb790157f568167e29d37763af4ebbf3ae9ce7fc0ed7f39710f58487069579a5eafa7e540e1e7e1  fix-gcc10-build.patch"
