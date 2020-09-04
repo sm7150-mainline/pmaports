@@ -1,14 +1,33 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-settings
-pkgver=0_git20200618
+pkgver=0_git20200829
 pkgrel=0
-_commit="280f43d3ea5b546c616254b97fe0ef20af03365e"
+_commit="08fa0c465ba93f6621529897bfaa844f0f58b066"
 pkgdesc="Settings application for Plasma Mobile"
 arch="all !armhf"
 url="https://community.kde.org/Plasma/Mobile"
 license="GPL-2.0-or-later AND LGPL-2.1-or-later"
-depends="kirigami2 qt5-qtquickcontrols2 kded"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kwindowsystem-dev kcoreaddons-dev solid-dev kconfig-dev kauth-dev kdbusaddons-dev ki18n-dev plasma-framework-dev kdeclarative-dev kio-dev kdelibs4support-dev"
+depends="
+	kded
+	kirigami2
+	qt5-qtquickcontrols2
+	"
+makedepends="
+	extra-cmake-modules
+	kauth-dev
+	kconfig-dev
+	kcoreaddons-dev
+	kdbusaddons-dev
+	kdeclarative-dev
+	kdelibs4support-dev
+	ki18n-dev
+	kio-dev
+	kwindowsystem-dev
+	plasma-framework-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	solid-dev
+	"
 source="https://invent.kde.org/plasma-mobile/plasma-settings/-/archive/$_commit/plasma-settings-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -29,4 +48,4 @@ check() {
 package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="99ab8c6b6370b6e6c55aff9d14b47929123b12a36a96f8307ac16d7ab0ca4ee0db3e9b91a201a7493485c5bebb29c34828f7ba9d016b12a6b96e66832d83c49c  plasma-settings-280f43d3ea5b546c616254b97fe0ef20af03365e.tar.gz"
+sha512sums="074006d91118c3805c6c73d7963496adf8b67fb2560d7acfa717618bc4e9f0a45a1e58c0edb45395c1a8205024089f095cb8f0b53634b83eed089ea3a61c9b05  plasma-settings-08fa0c465ba93f6621529897bfaa844f0f58b066.tar.gz"
