@@ -3,43 +3,37 @@
 pkgname=device-asus-me176c
 pkgdesc="ASUS MeMO Pad 7 (ME176C(X))"
 pkgver=2
-pkgrel=1
+pkgrel=2
+_commit=3155254999ac36c3051a2118c415de25a072c0f6
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 options="!check !archcheck"
 depends="
-	postmarketos-base
-	linux-asus-me176c
-	firmware-asus-me176c-acpi intel-ucode
 	$pkgname-factory
-	mesa-dri-classic mesa-vulkan-intel
 	alsa-ucm-conf
-"
+	firmware-asus-me176c-acpi
+	intel-ucode
+	linux-asus-me176c
+	mesa-dri-classic
+	mesa-vulkan-intel
+	postmarketos-base
+	"
 makedepends="devicepkg-dev meson eudev-dev"
-
-_commit=3155254999ac36c3051a2118c415de25a072c0f6
-source="
+source="https://github.com/me176c-dev/linux-me176c/archive/$_commit.tar.gz
 	deviceinfo
-	https://github.com/me176c-dev/linux-me176c/archive/$_commit.tar.gz
-"
-subpackages="
-	$pkgname-factory
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
+	"
+subpackages="$pkgname-factory $pkgname-nonfree-firmware:nonfree_firmware"
+builddir="$srcdir/linux-me176c-$_commit"
 
 build() {
 	devicepkg_build $startdir $pkgname
 
-	meson \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--mandir=/usr/share/man \
-		--localstatedir=/var \
-		--buildtype=plain \
-		-Dsystemd=false -Dopenrc=true \
-		linux-me176c-$_commit/factory build-factory
-	ninja -C build-factory
+	cd factory
+	abuild-meson . output \
+		-Dsystemd=false \
+		-Dopenrc=true
+	meson compile ${JOBS:+-j ${JOBS}} -C output
 }
 
 package() {
@@ -49,7 +43,8 @@ package() {
 factory() {
 	pkgdesc="WiFi/BT MAC address loader"
 	depends="bluez-btmgmt"
-	DESTDIR="$subpkgdir" ninja -C "$srcdir"/build-factory install
+	cd "$builddir"/factory
+	DESTDIR="$subpkgdir" meson install -C output
 }
 
 nonfree_firmware() {
