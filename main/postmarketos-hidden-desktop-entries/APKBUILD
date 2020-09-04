@@ -1,25 +1,24 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-hidden-desktop-entries
-pkgver=1.2
+pkgver=1.3
 pkgrel=0
 pkgdesc="Hide useless .desktop icons (vim, htop, Firefox safe mode, ...)"
 url="https://postmarketos.org"
 arch="noarch"
 license="GPL-3.0-or-later"
 source="nodisplay.desktop"
-builddir="$srcdir/"
 
 # Find original .desktop files in /usr/share/applications
+# v20.05: must hide org.gnome.Cheese (doesn't have aports!12086)
 _hidden="
 	firefox-safe
 	htop
 	nvim
-	org.gnome.Cheese
 	org.gnome.eog
 	org.gnome.Extensions
 	org.mozilla.firefox-safe
 	vim
-"
+	"
 
 package() {
 	local nodisplay="/usr/share/applications/nodisplay.desktop"
