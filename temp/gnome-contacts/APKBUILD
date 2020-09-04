@@ -1,0 +1,37 @@
+# Forked from Alpine to apply Purism's mobile patches
+pkgname=gnome-contacts
+pkgver=9999_git20200619
+pkgrel=0
+_commit="334f9cdb5173358221da9be5b83a796b1c285904"
+pkgdesc="A contacts manager for GNOME"
+url="https://wiki.gnome.org/Apps/Contacts"
+arch="all !s390x !mips !mips64" # libhandy is missing
+license="GPL-2.0-or-later"
+makedepends="meson vala folks-dev libgee-dev glib-dev gnome-desktop-dev
+	gnome-online-accounts-dev cheese-dev evolution-data-server-dev telepathy-glib-dev
+	libhandy-dev gtk+3.0-dev"
+checkdepends="appstream-glib desktop-file-utils"
+subpackages="$pkgname-lang $pkgname-doc"
+source="https://source.puri.sm/Librem5/gnome-contacts/-/archive/$_commit/gnome-contacts-$_commit.tar.bz2"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		. output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="c984391a9fe4fab76da168a521a08b3c2798d152266dfe1af7172dcb74c9fe3a0c41534dc55f41ebfca16ab24d928e12b19fd5b278136c5ab2945d810bd42cb8  gnome-contacts-334f9cdb5173358221da9be5b83a796b1c285904.tar.bz2"
