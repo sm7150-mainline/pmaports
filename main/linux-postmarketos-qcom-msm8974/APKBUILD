@@ -1,162 +1,55 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
 _flavor=postmarketos-qcom-msm8974
 _config="config-$_flavor.$CARCH"
 
 pkgname=linux-$_flavor
-
 pkgver=5.6.0_rc6
-pkgrel=6
-
-arch="armv7"
-pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8974 devices"
-url="https://kernel.org/"
-makedepends="dtbtool perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex findutils"
-options="!strip !check !tracedeps pmb:cross-native"
+pkgrel=7
 _commit="b9f39bdf61e5c8f5db63afe7ab1c9ff77aa6b4bc"
+pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8974 devices"
+arch="armv7"
+_carch="arm"
+url="https://kernel.org/"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bison
+	findutils
+	flex
+	installkernel
+	openssl-dev
+	perl
+	"
 source="https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/$_commit/linux-postmarketos-$_commit.tar.gz
 	config-$_flavor.armv7
 	fix-gcc10-build.patch
 	"
-
-subpackages="$pkgname-dev"
-
-license="GPL-2.0-only"
-_abi_release=$_pkgver
-_carch=$CARCH
-case "$_carch" in
-aarch64*) _carch="arm64" ;;
-arm*) _carch="arm" ;;
-ppc*) _carch="powerpc" ;;
-s390*) _carch="s390" ;;
-esac
-
-HOSTCC="${CC:-gcc}"
-HOSTCC="${HOSTCC#${CROSS_COMPILE}}"
-
 builddir="$srcdir/linux-postmarketos-$_commit"
 
 prepare() {
-	local _patch_failed=
-	ls "$srcdir"
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch|*.patch::*)
-			_patch=${i%::*}
-			msg "Applying $_patch..."
-			if ! patch -s -p1 -N -i "$srcdir"/$_patch; then
-				echo $_patch >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	mkdir -p "$srcdir"/build
-	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		olddefconfig
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
-		CFLAGS_MODULE=-fno-pic
-
-	dtbTool -s 2048 -p scripts/dtc/ -o arch/arm/boot/dt.img arch/arm/boot/dts --version=2
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
 }
 
 package() {
-	cd "$srcdir/build/arch/$_carch/boot"
-
-	if [ "$CARCH" == "aarch64" ]; then
-		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image" \
-			"$pkgdir/boot/vmlinuz-$_flavor"
-	else
-		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
-			"$pkgdir/boot/vmlinuz-$_flavor"
-	fi
-
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	install -Dm644 "$srcdir/build/arch/arm/boot/dt.img" \
-		"$pkgdir/boot/dt.img"
-
-	cd "$srcdir"/build
-
-	local _install
-	case "$CARCH" in
-	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
-	*)		_install="modules_install" ;;
-	esac
-
-	make -j1 $_install \
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
 		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
-}
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
-
-dev() {
-	# copy the only the parts that we really need for build 3rd party
-	# kernel modules and install those as /usr/src/linux-headers,
-	# similar to what ubuntu does
-	#
-	# this way you don't need to install the 300-400 kernel sources to
-	# build a tiny kernel module
-	#
-	pkgdesc="Headers and script for third party modules for postmarketos kernel"
-	depends="gmp-dev bash perl"
-	local dir="$subpkgdir"/usr/src/linux-headers-$_abi_release
-
-	# first we import config, run prepare to set up for building
-	# external modules, and create the scripts
-	mkdir -p "$dir"
-	cp "$srcdir"/$_config "$dir"/.config
-	make -j1 -C "$builddir" O="$dir" ARCH="$_carch" HOSTCC="$HOSTCC" \
-		olddefconfig prepare modules_prepare scripts
-
-	# needed for 3rd party modules
-	# https://bugzilla.kernel.org/show_bug.cgi?id=11143
-	case "$CARCH" in
-	ppc*) (cd "$dir" && make arch/powerpc/lib/crtsavres.o);;
-	esac
-
-	# remove the stuff that points to real sources. we want 3rd party
-	# modules to believe this is the sources
-	rm "$dir"/Makefile "$dir"/source
-
-	# copy the needed stuff from real sources
-	#
-	# this is taken from ubuntu kernel build script
-	# http://kernel.ubuntu.com/git/ubuntu/ubuntu-zesty.git/tree/debian/rules.d/3-binary-indep.mk
-
-	cd "$builddir"
-	find . -path './include/*' -prune \
-		-o -path './scripts/*' -prune -o -type f \
-		\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
-		   -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
-		-print | cpio -pdm "$dir"
-	cp -a scripts include "$dir"
-	find $(find arch -name include -type d -print) -type f \
-		| cpio -pdm "$dir"
-
-	install -Dm644 "$srcdir"/build/Module.symvers \
-		"$dir"/Module.symvers
-
-	mkdir -p "$subpkgdir"/lib/modules/$_abi_release
-	ln -sf /usr/src/linux-headers-$_abi_release \
-		"$subpkgdir"/lib/modules/$_abi_release/build
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
 sha512sums="92866a037fd1bd3b17572754548c19423f6e762d90fb1ebca52c252ace85c87b6f747515f8606fe627d34c59828cbebf83054b9d6e5dd977e0398d9c46fcc176  linux-postmarketos-b9f39bdf61e5c8f5db63afe7ab1c9ff77aa6b4bc.tar.gz
-0d387d375d542bfaba0080be2952a6c2aa1bb20318ccf1352240c69e47309d13d74a633768adbc2cd9b213bd89aaf7b7d8a924059c9a14539c9330de20150d9f  config-postmarketos-qcom-msm8974.armv7
+bcaf8bcba8a16cf6ff0218fe857a2c8e064edf495d168422c80e4785e1b2b17346319a3bcb3f1a33f9f6caab8cb4a13032dfd1cfdba40bb2acb74379c52d077a  config-postmarketos-qcom-msm8974.armv7
 fcb8c823e9943f409876bbec88e78ee2bbac3a30888ed3b10eb790157f568167e29d37763af4ebbf3ae9ce7fc0ed7f39710f58487069579a5eafa7e540e1e7e1  fix-gcc10-build.patch"
