@@ -7,39 +7,36 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=wys-pinephone
 pkgver=0.1.7
-pkgrel=0
+pkgrel=1
 pkgdesc="A daemon to bring up and take down PulseAudio loopbacks for phone call audio."
 arch="all"
 url="https://source.puri.sm/Librem5/wys"
 license="GPL-3.0-or-later"
 depends="pulseaudio-utils"
-makedepends="meson pulseaudio-dev glib-dev modemmanager-dev"
-source="
-	$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/wys/-/archive/v$pkgver/wys-v$pkgver.tar.gz
+makedepends="
+	glib-dev
+	meson
+	modemmanager-dev
+	pulseaudio-dev
+	"
+source="$pkgname-$pkgver.tar.gz::https://source.puri.sm/Librem5/wys/-/archive/v$pkgver/wys-v$pkgver.tar.gz
 	0001-Simplify-daemon-to-only-switch-card-profiles.patch
-	wys.desktop"
+	wys.desktop
+	"
 
-builddir="$srcdir"/wys-v$pkgver
+builddir="$srcdir/wys-v$pkgver"
 
 build() {
-	meson \
-		-Dprefix=$pkgdir/usr \
-		-Dsysconfdir=$pkgdir/etc \
-		-Dmandir=share/man \
-		-Dlocalstatedir=$pkgdir/var \
-		-Dbuildtype=plain \
-		build
-
-	ninja -C ./build
+	abuild-meson . output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
 }
 
 check() {
-	ninja -C ./build test
+	meson test -C output
 }
 
 package() {
-	mkdir -p $pkgdir
-	ninja -C $builddir/build install
+	DESTDIR="$pkgdir" meson install -C output
 	install -D -m644 $srcdir/wys.desktop $pkgdir/etc/xdg/autostart/wys.desktop
 }
 
