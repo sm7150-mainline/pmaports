@@ -1,14 +1,26 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-dialer
-pkgver=0.1_git20200618
+pkgver=0.1_git20200829
 pkgrel=0
-_commit="6be48498b6b93a8ce18ce923c2ea2d8f3d357e8b"
+_commit="a0f1423e8bc919d837123e4bf07ee2833f7133e6"
 pkgdesc="A dialer for Plasma Mobile"
 arch="all !armhf" # Blocked qt5-qtdeclarative
 url="https://invent.kde.org/plasma-mobile/plasma-dialer"
 license="GPL-2.0-or-later"
 depends="kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev ki18n-dev kpeople-dev kdbusaddons-dev knotifications-dev pulseaudio-dev telepathy-qt-dev libphonenumber-dev"
+makedepends="
+	extra-cmake-modules
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	kcoreaddons-dev
+	ki18n-dev
+	kpeople-dev
+	kdbusaddons-dev
+	knotifications-dev
+	pulseaudio-dev
+	telepathy-qt-dev
+	libphonenumber-dev
+	"
 source="https://invent.kde.org/plasma-mobile/plasma-dialer/-/archive/$_commit/plasma-dialer-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -29,4 +41,4 @@ check() {
 package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="67e9ad2e5f80946598cbf573fd81f9e695d780d7001fc18afd736f3861ef19a7ba1227468ce2ff8d7b8adb9bcde4b1bf5c75958e824c1c52519c89ec4461e438  plasma-dialer-6be48498b6b93a8ce18ce923c2ea2d8f3d357e8b.tar.gz"
+sha512sums="59e86967c539bd9a1a096de647be6383c1f746232ef3c555d7ed2b9b3cc14eb2294af697bd238826418b3de0bc3a4c28b62bf9a0d69155ffdedeeaa90b7d1525  plasma-dialer-a0f1423e8bc919d837123e4bf07ee2833f7133e6.tar.gz"
