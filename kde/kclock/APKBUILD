@@ -1,14 +1,31 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kclock
-pkgver=0_git20200618
-pkgrel=2
-_commit="608247addaf4e6666c9985c82eb0b73aa6840310"
+pkgver=0_git20200905
+pkgrel=0
+_commit="940e00c0128c8e04626dc7aa39a6d5ee7e2cc474"
 pkgdesc="Clock app for Plasma Mobile"
 url="https://invent.kde.org/plasma-mobile/kclock"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 license="LicenseRef-KDE-Accepted-GPL"
-depends="kirigami2 kirigami-addons"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kconfig-dev kirigami2-dev ki18n-dev kcoreaddons-dev kconfig-dev knotifications-dev kdbusaddons-dev"
+depends="
+	kirigami-addons
+	kirigami2
+	"
+makedepends="
+	extra-cmake-modules
+	kconfig-dev
+	kcoreaddons-dev
+	kdbusaddons-dev
+	ki18n-dev
+	kirigami2-dev
+	knotifications-dev
+	plasma-framework-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtmultimedia-dev
+	qt5-qtquickcontrols2-dev
+	qt5-qtsvg-dev
+	"
 source="https://invent.kde.org/plasma-mobile/kclock/-/archive/$_commit/kclock-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -35,4 +52,4 @@ package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
 
-sha512sums="a3b63cace341c6ece2cd79df47c86c741b113e0d556ff8b427314d7bea1043d7b310007808fa8c7e03bd82fd063953cc53835cc9ad6d4f6fbb0dec48f81fec61  kclock-608247addaf4e6666c9985c82eb0b73aa6840310.tar.gz"
+sha512sums="0f3159356a7f4bc750f17eee11eb390b672dd0c0112c36dafd4106334539886c9d835a24560a6e302c6d72465bab8a8495a981d1e1a97a07994fa4a02029b466  kclock-940e00c0128c8e04626dc7aa39a6d5ee7e2cc474.tar.gz"
