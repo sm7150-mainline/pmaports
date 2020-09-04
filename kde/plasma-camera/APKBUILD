@@ -1,14 +1,28 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-camera
-pkgver=1.0_git20200618
+pkgver=1.0_git20200901
 pkgrel=0
-_commit="af2638fb6a1a1642a3b9b3320ca0ac352fdc0e78"
+_commit="5f6f37b04f38bdf71dfea2f5995023d12584d0af"
 pkgdesc="Camera application for Plasma Mobile"
 arch="all !armhf" # armhf: qt5-qtdeclarative
 url="https://invent.kde.org/plasma-mobile/plasma-camera"
 license="GPL-3.0-or-later AND BSD-3-Clause"
-depends="kirigami2 qt5-qtmultimedia gst-plugins-bad gst-plugins-good"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev kcoreaddons-dev ki18n-dev"
+depends="
+	gst-plugins-bad
+	gst-plugins-good
+	kirigami2
+	qt5-qtmultimedia
+	"
+makedepends="
+	extra-cmake-modules
+	kcoreaddons-dev
+	ki18n-dev
+	kirigami2-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtquickcontrols2-dev
+	qt5-qtsvg-dev
+	"
 source="https://invent.kde.org/plasma-mobile/plasma-camera/-/archive/$_commit/plasma-camera-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -28,4 +42,4 @@ check() {
 package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="30ec7046e66c79a0eee0233502a5a46b1733886a1ab862d2f7ddcedea9edf4c43a6cd0479b3b7f9f831595478dc09b7d18edcc1592124284332086f99fbfdcdd  plasma-camera-af2638fb6a1a1642a3b9b3320ca0ac352fdc0e78.tar.gz"
+sha512sums="a5beb9ceeb23e44e81e3ffc209850907856cdfaa94b73b91bd9f8d9a4905e5e388cbfb7d5e76603561b8b2e2e9b0aa004c3c4f35166ba18054cb641b69837fb5  plasma-camera-5f6f37b04f38bdf71dfea2f5995023d12584d0af.tar.gz"
