@@ -1,0 +1,68 @@
+# Forked from Alpine to apply Purism's mobile patches
+pkgname=evince
+pkgver=9999_git20191211
+pkgrel=0
+_commit="9cdae2585128d3546a4af28eadc25414ef073380"
+pkgdesc="simple document viewer for GTK+"
+url="https://wiki.gnome.org/Apps/Evince"
+arch="all !s390x !mips !mips64" # Limited by adwaita-icon-theme needing librsvg
+license="GPL-2.0-or-later"
+depends="adwaita-icon-theme gsettings-desktop-schemas"
+depends_dev="gtk+3.0-dev poppler-dev libsm-dev libevent-dev libxrandr-dev
+	libx11-dev libxcursor-dev libxcomposite-dev libxi-dev util-linux-dev
+	tiff-dev gobject-introspection-dev libxml2-dev libspectre-dev libhandy-dev"
+makedepends="$depends_dev itstool meson libexecinfo-dev nautilus-dev
+	adwaita-icon-theme-dev gtk-doc yelp-tools appstream-glib-dev
+	libgxps-dev gspell-dev gstreamer-dev libsecret-dev gst-plugins-base-dev"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang $pkgname-nautilus $pkgname-libs"
+source="https://source.puri.sm/Librem5/evince/-/archive/$_commit/evince-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+# secfixes:
+#   3.32.0-r1:
+#     - CVE-2019-11459
+#   3.24.0-r2:
+#     - CVE-2017-1000083
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		-Dsystemduserunitdir=no \
+		-Dgtk_doc=false \
+		output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+nautilus() {
+	pkgdesc="$pkgname (Nautilus extension)"
+	install_if="$pkgname=$pkgver-r$pkgrel nautilus"
+
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/nautilus "$subpkgdir"/usr/lib
+}
+
+libs() {
+	default_libs
+	mv "$pkgdir"/usr/lib/* "$subpkgdir"/usr/lib/
+}
+
+doc() {
+	default_doc
+	if [ -d "$pkgdir"/usr/share/help ]; then
+		mv "$pkgdir"/usr/share/help "$subpkgdir"/usr/share/
+	fi
+}
+
+sha512sums="1f3eaf56f3c99bb591e5fe2352ee31517de023af07d720e0083cfe77e81ba410fbe7613dc7fcf78879899b524b7882e689a55b864032ba5087c59adf185a0629  evince-9cdae2585128d3546a4af28eadc25414ef073380.tar.gz"
