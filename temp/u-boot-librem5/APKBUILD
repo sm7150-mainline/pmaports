@@ -1,13 +1,13 @@
 # Forked from Alpine, so we can build it with Librem 5 phone support
 pkgname=u-boot-librem5
-pkgver=0.6
+pkgver=0.7
 pkgrel=0
 # 'librem5' branch in atf repo
 _atfversion="92c2de12d36b31938ce940d5cac3c30a98665237"
 # 'librem5' branch in uboot repo
-_ubootversion="586f40403aa6baf6cba8181b871313d6c696edd3"
+_ubootversion="9a62f4df58d521c4a0c4f1c3157aae8870905b07"
 _m4version="a017421c340a69f2392086da93841244f78a03c5"
-_firmwareversion="7.9"
+_firmwareversion="8.8"
 pkgdesc="u-boot bootloader for the Purism Librem5 phone"
 url="http://www.denx.de/wiki/U-Boot/"
 arch="aarch64"
@@ -18,7 +18,7 @@ source="
 	uboot-imx-${_ubootversion}.tar.gz::https://source.puri.sm/Librem5/uboot-imx/-/archive/${_ubootversion}/uboot-imx-${_ubootversion}.tar.gz
 	m4-${_m4version}.tar.gz::https://source.puri.sm/Librem5/Cortex_M4/-/archive/${_m4version}/Cortex_M4-${_m4version}.tar.gz
 	arm-trusted-firmware-${_atfversion}.tar.gz::https://source.puri.sm/Librem5/arm-trusted-firmware/-/archive/${_atfversion}/arm-trusted-firmware-${_atfversion}.tar.gz
-        https://www.nxp.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-${_firmwareversion}.bin
+	https://www.nxp.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-${_firmwareversion}.bin
 	"
 _ubootbuilddir="$srcdir"/uboot-imx-${_ubootversion}
 _atfbuilddir="$srcdir"/arm-trusted-firmware-${_atfversion}
@@ -38,54 +38,52 @@ build() {
 	# Overwrite default bl31 binary with one made here
 	cp -v "$_atfbuilddir"/build/imx8mq/release/bl31.bin "$_ubootbuilddir"/
 
-        msg "Extracting DDR & HDMI firmware"
-        cd "$srcdir"
-        chmod +x firmware-imx-${_firmwareversion}.bin
-        ./firmware-imx-${_firmwareversion}.bin --auto-accept
-        cp -v "$_firmwarebuilddir"/firmware/ddr/synopsys/lpddr4*.bin "$_ubootbuilddir"/
-        cp -v "$_firmwarebuilddir"/firmware/hdmi/cadence/signed*.bin "$_ubootbuilddir"/
+	msg "Extracting DDR & HDMI firmware"
+	cd "$srcdir"
+	chmod +x firmware-imx-${_firmwareversion}.bin
+	./firmware-imx-${_firmwareversion}.bin --auto-accept
+	cp -v "$_firmwarebuilddir"/firmware/ddr/synopsys/lpddr4*.bin "$_ubootbuilddir"/
+	cp -v "$_firmwarebuilddir"/firmware/hdmi/cadence/signed*.bin "$_ubootbuilddir"/
 
 	msg "Building u-boot"
 	cd "$_ubootbuilddir"
-	make distclean
 	# Note: HOSTCC is set explicitly here else it tries to use cc, which
 	# doesn't exist on Alpine
-        #
-        # Devkit uboot firmware
+	#
+	# Devkit uboot firmware
+	make distclean
 	make ARCH=arm HOSTCC=gcc librem5_devkit_defconfig
-	make ARCH=arm HOSTCC=gcc
-        make ARCH=arm HOSTCC=gcc flash.bin
-        make ARCH=arm HOSTCC=gcc u-boot.imx
-        mv flash.bin devkit-flash.bin
+	make ARCH=arm HOSTCC=gcc flash.bin
+	mv flash.bin devkit-flash.bin
 
-        # Phone uboot firmware
-        make distclean
+	# Phone uboot firmware
+	make distclean
 	make ARCH=arm HOSTCC=gcc librem5_defconfig
-	make ARCH=arm HOSTCC=gcc
-        make ARCH=arm HOSTCC=gcc flash.bin
-        make ARCH=arm HOSTCC=gcc u-boot.imx
-        mv flash.bin phone-flash.bin
+	make ARCH=arm HOSTCC=gcc flash.bin
+	mv flash.bin phone-flash.bin
 
 	msg "Building u-boot flashing images"
-        dd if=/dev/zero of=devkit-boot.img bs=1024 count=1055
-        dd if="$_m4builddir"/m4.bin conv=notrunc of="$_ubootbuilddir"/devkit-boot.img bs=1024
-        dd if="$_ubootbuilddir"/devkit-flash.bin conv=notrunc of="$_ubootbuilddir"/devkit-boot.img bs=1024 seek=31
+	# devkit
+	dd if=/dev/zero of=devkit-boot.img bs=1024 count=1055
+	dd if="$_m4builddir"/m4.bin conv=notrunc of="$_ubootbuilddir"/devkit-boot.img bs=1024
+	dd if="$_ubootbuilddir"/devkit-flash.bin conv=notrunc of="$_ubootbuilddir"/devkit-boot.img bs=1024 seek=31
 
-        dd if=/dev/zero of=phone-boot.img bs=1024 count=1055
-        dd if="$_m4builddir"/m4.bin conv=notrunc of="$_ubootbuilddir"/phone-boot.img bs=1024
-        dd if="$_ubootbuilddir"/phone-flash.bin conv=notrunc of="$_ubootbuilddir"/phone-boot.img bs=1024 seek=31
+	# phone
+	dd if=/dev/zero of=phone-boot.img bs=1024 count=1055
+	dd if="$_m4builddir"/m4.bin conv=notrunc of="$_ubootbuilddir"/phone-boot.img bs=1024
+	dd if="$_ubootbuilddir"/phone-flash.bin conv=notrunc of="$_ubootbuilddir"/phone-boot.img bs=1024 seek=31
 	msg "done!"
 }
 
 package() {
-        install -D -m644 "$_ubootbuilddir"/devkit-boot.img \
+	install -D -m644 "$_ubootbuilddir"/devkit-boot.img \
 		"$pkgdir/usr/share/firmware/librem5/devkit-boot.img"
 	install -D -m644 "$_ubootbuilddir"/phone-boot.img \
 		"$pkgdir/usr/share/firmware/librem5/phone-boot.img"
 }
 
 
-sha512sums="9a9fe715e8f78891b19256a42ae5fa4c2f3b6489a5d6ab0a780e600dd660cedaef5090555594a7d4c6163ff1ce1a107bf53c459a24742a5d1f2e5e84750b9f11  uboot-imx-586f40403aa6baf6cba8181b871313d6c696edd3.tar.gz
+sha512sums="7e1fe5e330558e2339afd311f879255ace2680039a8a3bca03b19b9e907a29aaf5f3f67500ee7dfabe73aaff016942556995d45ff4d8325b7aed971a9a5f7d80  uboot-imx-9a62f4df58d521c4a0c4f1c3157aae8870905b07.tar.gz
 035a4358ddf586c829da7fa2fb0d9d1df913c0c454f2d0e57ff0c6794552e49950fb6373f9aaf72e0e4c78ab411496aabbc60bf66cd76e35053f7a2d77911735  m4-a017421c340a69f2392086da93841244f78a03c5.tar.gz
 cd8c9411ae0e57d2c8c700bf3e8c8d03e7dab955ace249a00911dd8c42b42929e0de3a5885eb9b1d945174abc8cfb177595d83c235e757c70640f451b62547ba  arm-trusted-firmware-92c2de12d36b31938ce940d5cac3c30a98665237.tar.gz
-d7c221e0c1cc5a22c9b98ba369f481d690a2227b0897836fb0b18975f0d2f0a085f7a120d24bdd161850d32f878e7f1aa47015dee76f7b40e84f45adf379e22c  firmware-imx-7.9.bin"
+309d3b8afd0884b055037396098f7eb938e4768604affc60e18b09e67596a593ccebe85ad130abf1e81a8fad257e5473152f259fa6cbb6d9730f6b3c11a3809d  firmware-imx-8.8.bin"
