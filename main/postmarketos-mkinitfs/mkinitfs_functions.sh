@@ -17,6 +17,7 @@ deviceinfo_flash_offset_tags=""
 deviceinfo_flash_pagesize=""
 deviceinfo_generate_bootimg=""
 deviceinfo_generate_legacy_uboot_initfs=""
+deviceinfo_mesa_driver=""
 deviceinfo_initfs_compression=""
 deviceinfo_kernel_cmdline=""
 deviceinfo_legacy_uboot_load_address=""
@@ -224,6 +225,16 @@ get_binaries_extra()
 		/usr/sbin/resize2fs
 		/usr/sbin/thd
 	"
+
+	if [ -n "$deviceinfo_mesa_driver" ]; then
+		BINARIES_EXTRA="
+			$BINARIES_EXTRA
+			/usr/lib/libEGL.so.1
+			/usr/lib/libgbm.so.1
+			/usr/lib/libudev.so.1
+			/usr/lib/xorg/modules/dri/${deviceinfo_mesa_driver}_dri.so
+		"
+	fi
 
 	tmp1=$(mktemp /tmp/mkinitfs.XXXXXX)
 	get_binaries > "$tmp1"

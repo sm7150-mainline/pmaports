@@ -455,8 +455,16 @@ setup_directfb_tslib() {
 }
 
 start_onscreen_keyboard() {
-	setup_directfb_tslib
+	# shellcheck disable=SC2154
+	if [ -n "$deviceinfo_mesa_driver" ]; then
+		export SDL_VIDEODRIVER="kmsdrm"
+	else
+		setup_directfb_tslib
+	fi
+
 	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
+
+	unset SDL_VIDEODRIVER
 	unset DFBARGS
 	unset TSLIB_TSDEVICE
 }
