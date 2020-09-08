@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=linux-purism-librem5
-pkgver=5.9.0_rc8
+pkgver=5.9.1
 pkgrel=0
 _purismrel=1
 # <kernel ver>.<purism kernel release>
@@ -22,6 +22,7 @@ _repository="linux-next"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_purismver.tar.gz::https://source.puri.sm/Librem5/$_repository/-/archive/pureos/$_purismver/$_repository-pureos-$_purismver.tar.gz
+	8f11380ec32912370b8ae9134a0387a6f18862f7.patch
 	$_config
 "
 builddir="$srcdir/$_repository-pureos-$_purismver"
@@ -48,5 +49,6 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 
 }
-sha512sums="e56f74e73265809726be0b36c93cba607dd61adeb788abd74b7995a56c55c35a924e9e03852e31f807642b82a48ec2ba6e46d37cbc0851046f0923c436429b11  linux-purism-librem5-5.9.0_rc8+librem5.1.tar.gz
-8b2c94fe28ea177093c7521462c6d0a765374756c262180df9c1ccc407a07f807b7eee763e17db7cf39d4c26b9412e273e711a3898b87416c932847caf306997  config-purism-librem5.aarch64"
+sha512sums="fe54371b0532649a7fac1ff8fa03a37d1f7f5e57ac902530e13e6126204750c9a20132215e3b9c9d6c1a40ea00a559baa62bb90ff3010391c8d1e52297981173  linux-purism-librem5-5.9.1+librem5.1.tar.gz
+9870bff4b187188b519b23264c2634ee4232011fed6d2f66a7b4971db354ac3dffa0e1552bd0dc953c66ec622e18ce8899fdbcfba94f60867fc5004d6da96753  8f11380ec32912370b8ae9134a0387a6f18862f7.patch
+d1a3212587de47926972acebb6e9670945134321ef957db30221464d472e03e1b9065b404a2f39890362ffb9a8c9a541c3b1b35482a1b4c6f3f32cf8315020a3  config-purism-librem5.aarch64"
