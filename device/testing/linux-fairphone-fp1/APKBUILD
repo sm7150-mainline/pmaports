@@ -3,7 +3,7 @@
 
 pkgname=linux-fairphone-fp1
 pkgver=3.4.5
-pkgrel=5
+pkgrel=6
 pkgdesc="Fairphone 1 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -28,20 +28,15 @@ source="
 	$pkgname-$_commit.tar.gz::https://github.com/z3ntu/$_repository/archive/$_commit.tar.gz
 	$_config
 "
-builddir="$srcdir/$_repository-$_commit"
+builddir="$srcdir/$_repository-$_commit/kernel"
 _outdir="out"
 
 prepare() {
 	default_prepare
-	_builddir="$builddir"
-	builddir="$builddir"/kernel
 	. downstreamkernel_prepare
-	builddir="$_builddir"
-	unset _builddir
 }
 
 build() {
-	cd kernel
 	unset LDFLAGS
 	TARGET_BUILD_VARIANT=user TARGET_PRODUCT=ahong89_wet_jb2 \
 		make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
@@ -49,7 +44,7 @@ build() {
 }
 
 package() {
-	downstreamkernel_package "$builddir"/kernel "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
 sha512sums="9ab967c0635dc5b3dca457725d25b44cfc391cb8fb5b9417fe5d6636131aecdf36575375f6151496d5269aaaf14cf15a4580aaee6a4699f0644822af66efba06  linux-fairphone-fp1-328160cf6ddec4ad417cdf648b61d26cc09f9e73.tar.gz
