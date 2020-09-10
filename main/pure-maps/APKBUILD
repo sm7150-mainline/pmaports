@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=pure-maps
 pkgver=1.29.0
-pkgrel=0
+pkgrel=1
 _commit_geomag="8eb9a730c8643fb7d63fdee4fd9a195ee8ba4df2"
 pkgdesc="Maps and navigation"
 url="https://github.com/rinigus/pure-maps"
@@ -29,9 +29,9 @@ makedepends="
 	qt5-qttools-dev
 	"
 subpackages="$pkgname-lang"
-install="$pkgname.post-install"
 source="https://github.com/rinigus/pure-maps/archive/$pkgver/pure-maps-$pkgver.tar.gz
 	https://github.com/rinigus/geomag/archive/$_commit_geomag/geomag-$_commit_geomag.tar.gz
+	change_default_map_router_providers.patch
 	"
 options="!check" # Requires jsonlint which is not available
 
@@ -60,4 +60,5 @@ package() {
 }
 
 sha512sums="7e4d4ba14071ac410ff8f4b8841fd4822bcac139fc4610b2940fad6306c7c38fc20edb3f6664eb31f1851498b2e4f28dc8fb90eef7065525aa073261f55a24ee  pure-maps-1.29.0.tar.gz
-13e11b6cb35162315deb86c6c6240a3555760397d7aa88ac9c3348d476e9e9547b03210134119c60790511489e3f2a13afb93a3c77d40b1258c664b6fcc0425c  geomag-8eb9a730c8643fb7d63fdee4fd9a195ee8ba4df2.tar.gz"
+13e11b6cb35162315deb86c6c6240a3555760397d7aa88ac9c3348d476e9e9547b03210134119c60790511489e3f2a13afb93a3c77d40b1258c664b6fcc0425c  geomag-8eb9a730c8643fb7d63fdee4fd9a195ee8ba4df2.tar.gz
+ecad0bd2bca1039d641cc90157e8c195aeafccd3369ee1cd5b45b5059ec82a5892f26b9958fc3bed6a77be00e518b64486730e1787eac9597b9b42b528ea7377  change_default_map_router_providers.patch"
