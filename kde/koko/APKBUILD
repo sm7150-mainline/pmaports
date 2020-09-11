@@ -22,6 +22,12 @@ prepare() {
 	mv "$srcdir"/geonames-$_geonames_pkgver/cities1000.zip src/
 	mv "$srcdir"/geonames-$_geonames_pkgver/admin1CodesASCII.txt src/
 	mv "$srcdir"/geonames-$_geonames_pkgver/admin2Codes.txt src/
+
+	# qmlplugindump fails for armv7+qemu (pmb#1970). This is purely for
+	# packager knowledge and doesn't affect runtime, so we can disable it.
+	if [ "$CARCH" = "armv7" ]; then
+		sed -i "s/ecm_find_qmlmodule/# ecm_find_qmlmodule/g" CMakeLists.txt
+	fi
 }
 
 build() {
