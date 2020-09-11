@@ -1,0 +1,65 @@
+# Forked from Alpine, armv7 builder is stuck, but needed for kde/itinerary
+
+pkgname=kitinerary
+pkgver=20.08.1
+pkgrel=1
+arch="armv7"
+url="https://kontact.kde.org/"
+pkgdesc="Data model and extraction system for travel reservation information"
+license="LGPL-2.0-or-later"
+depends_dev="
+	kmime-dev
+	kcalendarcore-dev
+	kcontacts-dev
+	kpkpass-dev
+	"
+makedepends="
+	$depends_dev
+	extra-cmake-modules
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	ki18n-dev
+	poppler-dev
+	zlib-dev
+	libxml2-dev
+	shared-mime-info
+	"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kitinerary-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+
+	# jsonlddocumenttest, mergeutiltest, airportdbtest, pkpassextractortest,
+	# postprocessortest, calendarhandlertest, extractortest and knowledgedbtest are broken
+	local skipped_tests="("
+	local tests="
+		jsonlddocument
+		mergeutil
+		airportdb
+		pkpassextractor
+		postprocessor
+		calendarhandler
+		extractor
+		knowledgedb
+		"
+	for test in $tests; do
+		skipped_tests="$skipped_tests|$test"
+	done
+	skipped_tests="$skipped_tests)test"
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "$skipped_tests"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="20e218a988c54be15432ac4a070647901547383416001178c2151a20e8d3044caf98bbdbb82fc87379ef620069409a7f0026de2112f4e35cd6c51a3ac14c7760  kitinerary-20.08.1.tar.xz"
