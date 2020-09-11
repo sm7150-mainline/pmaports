@@ -1,32 +1,36 @@
+# Maintainer: Martijn Braam <martijn@brixit.nl>
+# Co-Maintainer: Luca Weiss <luca@z3ntu.xyz>
+# Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.7.0_git20200705
-pkgrel=2
-arch="aarch64"
+pkgver=5.8.0_git20200911
+pkgrel=0
+_commit="e1c26b7bd643515d3be20268cd2385df2388f8b9"
 pkgdesc="Kernel fork with Pine64 patches"
+arch="aarch64"
+_carch="arm64"
 url="https://gitlab.com/pine64-org/linux/"
 license="GPL-2.0-only"
-makedepends="devicepkg-dev perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex rsync xz"
+makedepends="
+	bison
+	devicepkg-dev
+	flex
+	installkernel
+	openssl-dev
+	perl
+	rsync
+	xz
+	"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
-_commit="c3e42484fd1be12ef573bc77f91626ccb7efd1ad"
 source="$pkgname-$_commit.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/$_commit/linux-$_commit.tar.gz
 	config-$_flavor.aarch64
 	disable-power-save.patch
 	touch-dts.patch
 	convergence.patch
+	camera-added-bggr-bayer-mode.patch
 	"
-
 subpackages="$pkgname-dev"
-
-_carch=$CARCH
-case "$_carch" in
-aarch64*) _carch="arm64" ;;
-arm*) _carch="arm" ;;
-ppc*) _carch="powerpc" ;;
-s390*) _carch="s390" ;;
-esac
-
 builddir="$srcdir/linux-$_commit"
 
 prepare() {
@@ -65,8 +69,9 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="3655b68deffcdd2384f900354695098d85a646ef55b581406d734ef27511f3cc6bd5084b5524955ca3536aed38375f07f0500d465faeb162cd13fd220281a494  linux-postmarketos-allwinner-c3e42484fd1be12ef573bc77f91626ccb7efd1ad.tar.gz
-3a77fb1493fa82760cecfb1a6c1496da03bec2b24feaef4f950f08e50b9fc0ef5b5f2c11b1bbef192fd0a1d7298e92032c1931ceb44e752eef33b0822514b04d  config-postmarketos-allwinner.aarch64
+sha512sums="a976daf8ffeeff1d650edc48a3268e84e7ac7a1b1151311376590d2972826e24f5b4c9c2880a1f1bcb1324d5162e06be96ef74e46fd96f081193ba376957a921  linux-postmarketos-allwinner-e1c26b7bd643515d3be20268cd2385df2388f8b9.tar.gz
+53c7fcd5334099d05011d27d0c7d7b4624c55dff5216011fe5c154925eb4b5ec56c6c8c44af889578dca6bf43051b6dc49e9fa0fad6ce0750d8f020765863a26  config-postmarketos-allwinner.aarch64
 3c0d9d282a36a5f6a442b434839d77851f9b20185725cb73aee88e6e209c68fd3d71df8e2a36ffcdb605c47f86df5dbcda5d00353c75c23303861936196924e0  disable-power-save.patch
 c6e1ff1c060f68a59fa57a7cfc573a500fc8d200f56193530f7c1967e4f70f17cb2c930496f6a6489a6a10de130a2e66f5cd328eb6c4ae936f4af348a7413c3b  touch-dts.patch
-ace7821ed3f31681aaf8cc983df155f98c01343d908cec1d32fcfd28999bbd9727ecca173a4b31026c966c6bf762f60549c3b09f7d7f8de74900271a7ad78d1a  convergence.patch"
+3e38a3d25c5981d0bb2e40cedb1ff473477be48b1ed3919e77aea23a108f12e8a3794aced53d8e96ce03f03a81dbcad59d61cff023f8714971e01e714f74b368  convergence.patch
+fc708cbb12b6419858f4d4efd885bdd34eee72be78601bc9542cbd69e6ba576ac15426a75ccbc7ca57b01db735f0d097e4410afdbb9fd35a20806cdb170e4115  camera-added-bggr-bayer-mode.patch"
