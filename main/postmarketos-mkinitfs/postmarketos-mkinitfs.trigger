@@ -19,6 +19,11 @@ for i in "$@"; do
 			rebuild_all="true"
 			break ;;
 
+		# osk-sdl change
+		/usr/share/postmarketos-mkinitfs-triggers)
+			rebuild_all="true"
+			break ;;
+
 		# Kernel flavor change
 		/usr/share/kernel/*)
 			flavor=${i##*/}
