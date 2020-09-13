@@ -1,0 +1,49 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-grandpplte
+pkgdesc="Samsung Galaxy Grand Prime Plus"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	dtc
+	linux-postmarketos-mediatek-mt6735
+	mkbootimg
+	mt6735-bootshim
+	postmarketos-base
+	u-boot-grandpplte
+	u-boot-tools
+"
+makedepends="devicepkg-dev"
+source="
+	boot.cmd
+	boot-image.its
+	deviceinfo
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	cat "/boot/bootshim" "/usr/share/u-boot/grandpplte/u-boot.bin" \
+		> "$startdir/u-boot-shimmed.bin"
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	mkdir -p "$pkgdir/usr/share/u-boot/grandpplte/"
+	install -Dm644 "$startdir/u-boot-shimmed.bin" \
+		"$pkgdir/usr/share/u-boot/grandpplte/"
+	install -Dm644 "$srcdir/boot.cmd" \
+		"$pkgdir/usr/share/u-boot/grandpplte/"
+	install -D -m644 "$srcdir/boot-image.its" \
+		"$pkgdir/usr/share/u-boot/grandpplte/"
+}
+
+sha512sums="
+7c44c3ebf446083853a9e343f397406a4176118c23bfcf564392dd9ac00208fe63cab56870269e2ff8b9db181f039fd945991d7b3faea196ef2a8902017a6aa7  boot.cmd
+8226a99856b5613c5f4a9bb4314c1bfad676126df1260381baf40b92b201aa460522998b87b1b50b7ce31cd688d023d3bf4bae0977d7d586268c63e719e6770a  boot-image.its
+3418aafdcbff0cbfbadfa0a6e4b075c9667f56306bed6da1ba9658ac817eaba797d4b3acfb8d1dad1538841291c2166644617882529c9e083e23866cfc2df4fb  deviceinfo
+"
