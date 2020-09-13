@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-scorpio
+pkgdesc="Xiaomi Mi Note 2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-xiaomi-scorpio
+	mdss-fb-init-hack
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	reboot-mode
+	"
+makedepends="devicepkg-dev"
+
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="06a42c3ebd24b96498a10ec87a8ce4b6c3e5663082b556da5033c1556364f35cca2a808d5bd257c70e541334d35e32cd01c65a1bebf6b34aa4c4c6eb034a6676  deviceinfo"
