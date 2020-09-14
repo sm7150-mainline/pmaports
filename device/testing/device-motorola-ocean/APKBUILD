@@ -8,15 +8,10 @@ url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-# Without msm-fb-refresher the display works as long as you execute
-#	cat /sys/class/graphics/fb0/modes > /sys/class/graphics/fb0/mode
-# as root (at least on weston). With it installed, it makes the screen too dim
-# to be usable. Which is why it shouldn't be added until the issue gets fixed
-# somehow.
-depends="postmarketos-base linux-motorola-ocean mkbootimg mesa-dri-gallium"
+depends="postmarketos-base mkbootimg mesa-dri-gallium"
 makedepends="devicepkg-dev"
 source="deviceinfo"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-kernel-downstream:kernel_downstream $pkgname-kernel-mainline:kernel_mainline $pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -26,10 +21,22 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_downstream() {
+	pkgdesc="Wifi, USB, partially screen, and other miscellanious stuff works. (See device table for details)"
+	depends="linux-motorola-ocean wcnss-wlan"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="It's currently WIP. Most features don't work."
+	depends="linux-postmarketos-qcom-msm8953"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
 	pkgdesc="Wifi and video firmware"
 	depends="firmware-motorola-ocean"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="fbeb62e9fff42feb6e1ec926ca584f630968b5a7aefa1f637c80b089dcd9897e55b7f6e73d5c75767493ef373e2253e7506a0a55417f5bfc67de4ddc66fcb966  deviceinfo"
+sha512sums="c056fa543261d20f4582d1e7c25a23982157fc54c95fb714bd75e69db0d747779ae218b57a9a71cd92c4708645f024f891ba715cc494dc080d28199ac63065db  deviceinfo"
