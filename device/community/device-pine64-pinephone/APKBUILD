@@ -4,13 +4,13 @@
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
 pkgver=0.7
-pkgrel=0
+pkgrel=1
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh $pkgname-megapixels"
 depends="postmarketos-base u-boot-pinephone uboot-tools mesa-dri-gallium linux-postmarketos-allwinner gpsd atinout alsa-ucm-conf"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
@@ -27,6 +27,7 @@ source="deviceinfo
 	ucm/VoiceCall.conf
 	eg25.initd
 	setup-modem.sh
+	megapixels.ini
 	"
 
 build() {
@@ -86,6 +87,12 @@ phosh() {
 	depends="wys-pinephone"
 	mkdir "$subpkgdir"
 }
+
+megapixels() {
+	install_if="$pkgname megapixels"
+	install -Dm644 "$srcdir"/megapixels.ini "$subpkgdir"/etc/megapixels.ini
+}
+
 sha512sums="c862454638db61f998c72848073bb7c97ccc51ac689865c5aa201d5e93a757b3d84c3807c3e5300ea0c3bd8adf0471e5148ad45ee203a690d4b909e7b90becbb  deviceinfo
 462cf12a3bb29d9a67759f568aea702d0201c61508a352c86ecf23b91d43a0ccc2adf510ee3110f0d748d98d11a54bce3084f2380ebe1714556477b47ed6f473  uboot-script.cmd
 f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
@@ -98,4 +105,5 @@ e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d
 12549cc90082d69daac3d8350764c5ced4895a8c48abf2b3eb69049981a4ecaa9a659eae04ee32fe1e046e0a47df002a99ff8656c4c9e284a6f0ff9d3f027084  HiFi.conf
 d44307c4cbd1fcd4846d30bc1e72800ebd4cbc43fe75e896a501dff06f1b3df21385a009ba5f81ed3f19a5e039bd082da3a88efdf3c034089c8fff3bc16e0a7a  VoiceCall.conf
 5a1a9c774253e8211cc54f4b3961c4bdc35427726d037b0ecad099915e856590e8267a4a47943ab753772d57261eef89924b407b305b1099a9c4ecd7b5f00b35  eg25.initd
-3a1af3979232a31995f5c103e092e075987d6e62509f4de59dbb64d6559d74e73c62161707108e27137faab49ae16612e5ada350c5633428d30df37e1b7b7f10  setup-modem.sh"
+3a1af3979232a31995f5c103e092e075987d6e62509f4de59dbb64d6559d74e73c62161707108e27137faab49ae16612e5ada350c5633428d30df37e1b7b7f10  setup-modem.sh
+e09680534c0c5f33e329aeb5ab9a52f9a50f9f964e14940c77f7221430b0dc00190f53cb94cfc3aa05499bc9df2a66b0e5891e294605434af08b270ba3b22e29  megapixels.ini"
