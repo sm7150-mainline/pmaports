@@ -3,7 +3,7 @@
 
 pkgname=linux-finepower-f1
 pkgver=3.10.65
-pkgrel=1
+pkgrel=2
 pkgdesc="FinePower F1 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -11,7 +11,7 @@ _flavor="finepower-f1"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool-sprd"
 
 # Source
 _commit="b30390f1645dcf1ebd08148d7d4086a544c56435"
@@ -20,19 +20,25 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.zip::https://github.com/jedld/$_repository/archive/$_commit.zip
 	$_config
+	sprd-scx20_sp7731ceb.dts::https://raw.githubusercontent.com/HenriDellal/generic-kernels-code/master/arch/arm/boot/dts/finepower-f1.dts
+	https://raw.githubusercontent.com/HenriDellal/generic-kernels-code/master/drivers/video/sprdfb/lcd/lcd_st7796s_mipi.c
 	kernel-use-the-gnu89-standard-explicitly.patch
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
+	gcc10-extern_YYLOC_global_declaration.patch
 	01-remove-path-to-missing-driver.patch
 	02-fix-includes-dump-lowpower-regs.patch
-	03-replace-dts.patch
+	03-set-BGR565-color-mode.patch
 	04-add-st7796s-mipi-panel-support.patch
+	05-fix-X11.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
 	default_prepare
 	. downstreamkernel_prepare
+	cp "$srcdir"/sprd-scx20_sp7731ceb.dts "$builddir"/arch/arm/boot/dts/
+	cp "$srcdir"/lcd_st7796s_mipi.c "$builddir"/drivers/video/sprdfb/lcd/
 }
 
 build() {
@@ -41,7 +47,7 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
 	# Generate master DTB (deviceinfo_bootimg_qcdt)
-	dtbTool -s 2048 -p "scripts/dtc" -o "arch/arm/boot/dt.img" "arch/arm/boot"
+	dtbTool-sprd -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/dts/"
 }
 
 package() {
@@ -54,11 +60,15 @@ package() {
 
 
 sha512sums="bcbb8f6e99bd53b173715765c86845f991c2f769e9c13c72503e4f9062dc7bc97a073a4ad730e804d43efd2bcbcd7b91a0890d6194b5986e453d40a79f08249b  linux-finepower-f1-b30390f1645dcf1ebd08148d7d4086a544c56435.zip
-d4085aeaddbe39f0e5293f8bcae47404f595f9f9176703cde00ec8f6d461434f462cc5e11822a1fda651fb65b33f7f469f7091bd8420080b4b007eed2f8f1a25  config-finepower-f1.armv7
+c90c0a6193f99b7fcda34e26b460efb75454899ae58bfae6bd5f14392d3d658ad097b2b6c6739255d5937f74a441cc1ee06dd7377a1d4f0d0c9f6e2d3613183a  config-finepower-f1.armv7
+c626828d9eac7b52a4509055d8d3b14b4dd74100e254cc212349bc4046e5583d91042f9332fb903e8d9dc6bade03cc898f26e3ac43732f423d8b6473182b357c  sprd-scx20_sp7731ceb.dts
+31f289fc3b63ace4dcd56ce289e63c55b1f622084b5d2fecc96f8f44eccccf51463ae6c7b9cdded3781d652a9be1b9f45ca4c64dfaa6160aa2f96b56d4af91ce  lcd_st7796s_mipi.c
 ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch
 77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
 197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
-57ebedabe0caa29773b0e65f219bb7c3e19bf53bd30fca69c07b1345185658dcc33498a39fe3c77bd9579012075f66887c0057ec1d41febe7f041fd0029a1102  01-remove-path-to-missing-driver.patch
-8cfb51f2a2b645c5b0bee1ce84c368d475b7f23bf337fa21c0695f8c110a6e9644b96a267dacbda822f29ccd9c39c65881c91922605247398f3cd49d274e2bee  02-fix-includes-dump-lowpower-regs.patch
-f72b3616da6f2fc77e36199be295bb5066c93340a2d715bdce196900a4c42371f61a37513b660de0ed978006939af5aa89d85acba2997267d6bc0e7e4d0e32c7  03-replace-dts.patch
-37be4144e4effcb3b2db61bd25706e2eb842328ddc57babb758c23c3a69aecb886c36d09a2557a3ff08ce8d58869914a46c5ff71cdf1dbeff8b7c8c7500c2377  04-add-st7796s-mipi-panel-support.patch"
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+5e271f6e8ef2b1a31acafaf3b38b64cccd5d6732e93e92a2fcaa885f4ac24529bd1598e9982b553797e85d64deed6390e41768e0d952ef659add0766b44a6687  01-remove-path-to-missing-driver.patch
+3a3d94c4912e8b9d64c1c4af5a568dbc8061c623bb39bcb605f30de0fa9e2f2b3c805cd0e0c9401c21ecdb49a61852e458f7b3fc599491f743e52d5d80e530e7  02-fix-includes-dump-lowpower-regs.patch
+fb72f9c38f5305b92872c784a06e8eaca2ebb7b75d904f0a75473bb10b87ca56aca7d33c14d26362c2eba4797d3503ac84447e08660fd90e8ec2eb06ed83da0a  03-set-BGR565-color-mode.patch
+d54f7bf0cfd991ce303b5ac31cecb5a8b658f7e1794dcc2901a773601a521dade50ee186160b75e78040a18060a6d4c01d92eb56b121de50016739638adb980d  04-add-st7796s-mipi-panel-support.patch
+1bab85f34cb955f25eae3c28e519c325dca3b1b87ad25c15a78f5538a775b3bc2699b615bfc5182e1cb0fdb4520999ff7a0ee03fe3c6a1cef70baa4fb3809b40  05-fix-X11.patch"
