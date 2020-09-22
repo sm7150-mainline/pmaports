@@ -1,7 +1,7 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-ondev
-pkgver=0.2.1
-pkgrel=4
+pkgver=0.3.2
+pkgrel=0
 pkgdesc="Calamares based on-device installer"
 url="https://postmarketos.org"
 arch="all !armhf" # armhf: qt5-qtdeclarative
@@ -9,62 +9,30 @@ license="GPL-3.0-or-later"
 depends="
 	$pkgname-openrc
 	calamares
+	calamares-extensions-brand-default-mobile
+	calamares-extensions-mod-mobile
 	calamares-mod-mount
 	calamares-mod-shellprocess
 	calamares-mod-unpackfs
 	e2fsprogs
 	i3wm
 	kirigami2
-	lightdm
-	lightdm-openrc
 	mesa-egl
 	qt5-qtvirtualkeyboard
 	qtvirtualkeyboard-plasma
+	tinydm
+	tinydm-openrc
 	unclutter-xfixes
 	xorg-server
-"
-makedepends="
-	calamares-dev
-	qt5-qtquickcontrols2-dev
-	qt5-qtsvg-dev
+	xset
 "
 subpackages="$pkgname-openrc"
 install="$pkgname.post-install"
-source="https://gitlab.com/postmarketOS/postmarketos-ondev/-/archive/$pkgver/postmarketos-ondev-$pkgver.tar.bz2
-	postmarketos-ondev.initd
-	"
+source="https://gitlab.com/postmarketOS/postmarketos-ondev/-/archive/$pkgver/postmarketos-ondev-$pkgver.tar.bz2"
 options="!check"  # has no tests
 
-build() {
-	cd calamares
-	cmake -B build \
-		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_LIBDIR=lib \
-		-DBUILD_SHARED_LIBS=True \
-		-DCMAKE_BUILD_TYPE=None
-	make -C build
-}
-
 package() {
-	# Calamares modules (don't conflict with official modules)
-	make -C calamares/build DESTDIR="$pkgdir" install
-	mv "$pkgdir/usr/lib/calamares/modules" \
-		"$pkgdir/usr/lib/calamares/modules-pmos"
-
-	# Calamares configs
-	mkdir -p "$pkgdir/etc"
-	cp -r "$builddir/calamares/config/" "$pkgdir/etc/calamares"
-
-	# Scripts
-	install -Dm755 "$builddir/ondev-prepare.sh" \
-		"$pkgdir/usr/bin/ondev-prepare"
-	install -Dm755 "$builddir/ondev-boot.sh" \
-		"$pkgdir/usr/bin/ondev-boot"
-
-	# OpenRC
-	install -Dm755 "$srcdir/postmarketos-ondev.initd" \
-		"$pkgdir/etc/init.d/postmarketos-ondev"
+	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="5838b8b592918818ed40dc6c2364a1f233f31b14c0283ac1dffd0e01b6bddf0462424a233d060f8740e0d393fe0f907fb8f33386e0ae633218c49db18c136310  postmarketos-ondev-0.2.1.tar.bz2
-eff2c9f4ddcc7d22d8afd4c5d1cac92f6e6e9fef7713af2370dae715819ca2aba2d33b1cd0ea0478526c503dfc6948fee2242b6d804f8e9dcd6ef5cf1500fc7f  postmarketos-ondev.initd"
+sha512sums="e90a0db3f0c9535a107cf0331754c9704d0d2208a36faac311a03705bd7577bff82397a5f77346e2d58651efa0de14419368fb9379ea34213122bf9f21866bfe  postmarketos-ondev-0.3.2.tar.bz2"
