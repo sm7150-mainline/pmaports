@@ -1,0 +1,16 @@
+#!/bin/busybox sh
+
+echo "### isorec initramfs ###"
+busybox mount -t proc proc /proc
+busybox mount -t sysfs sysfs /sys
+
+# Load the "isorec"-style lzop compressed 
+# initramfs from the recovery partition.
+load_image=/isorec.cpio
+busybox lzop -dc /dev/block/mmcblk0p6 > ${load_image}
+busybox cpio -iu < ${load_image}
+busybox rm ${load_image}
+
+busybox umount /sys
+busybox umount /proc
+exec /init

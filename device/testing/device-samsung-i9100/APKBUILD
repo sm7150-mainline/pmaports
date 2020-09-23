@@ -1,20 +1,24 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9100
-pkgver=1
-pkgrel=29
+pkgver=2
+pkgrel=0
 pkgdesc="Samsung Galaxy SII"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
-depends="postmarketos-base linux-samsung-i9100 libsamsung-ipc mesa-dri-swrast"
+depends="postmarketos-base libsamsung-ipc"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+options="!check !archcheck"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 source="
 	deviceinfo
 	90-android-touch-dev.rules
 "
-options="!check !archcheck"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,6 +28,18 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-samsung-i9100 mesa-dri-swrast"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel"
+	depends="linux-samsung-i9100-mainline mesa-dri-gallium"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
