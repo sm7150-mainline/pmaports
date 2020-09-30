@@ -1,16 +1,17 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 # Co-Maintainer: Luca Weiss <luca@z3ntu.xyz>
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
+# Co-Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.8.0_git20200911
-pkgrel=3
-_commit="e1c26b7bd643515d3be20268cd2385df2388f8b9"
-pkgdesc="Kernel fork with Pine64 patches"
+pkgver=5.9.1_git20201019
+pkgrel=0
+_tag="orange-pi-5.9-20201019-1553"
+pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64"
 _carch="arm64"
-url="https://gitlab.com/pine64-org/linux/"
+url="https://megous.com/git/linux/"
 license="GPL-2.0-only"
 makedepends="
 	bison
@@ -23,15 +24,20 @@ makedepends="
 	xz
 	"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
-source="$pkgname-$_commit.tar.gz::https://gitlab.com/pine64-org/linux/-/archive/$_commit/linux-$_commit.tar.gz
+source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar.gz
 	config-$_flavor.aarch64
-	disable-power-save.patch
-	touch-dts.patch
-	convergence.patch
-	camera-added-bggr-bayer-mode.patch
+	0001-dts-add-dontbeevil-pinephone-devkit.patch
+	0002-dts-add-pinetab-dev-old-display-panel.patch
+	0003-Disable-8723cs-power-saving.patch
+	0004-media-gc2145-Added-BGGR-bayer-mode.patch
+	0005-dts-pinephone-Disable-flash-led-in-OV5640-node.patch
+	0006-dts-pinetab-add-missing-bma223-ohci1.patch
+	0007-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
+	0008-pinetab-bluetooth.patch
+	0009-dts-pinephone-remove-bt-firmware-suffix.patch
 	"
 subpackages="$pkgname-dev"
-builddir="$srcdir/linux-$_commit"
+builddir="$srcdir/linux-$_tag"
 
 prepare() {
 	default_prepare
@@ -69,9 +75,14 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="a976daf8ffeeff1d650edc48a3268e84e7ac7a1b1151311376590d2972826e24f5b4c9c2880a1f1bcb1324d5162e06be96ef74e46fd96f081193ba376957a921  linux-postmarketos-allwinner-e1c26b7bd643515d3be20268cd2385df2388f8b9.tar.gz
-61e9afb2dae5edb09e4660bea66655acd0fdb283396961ef8148af8fc35e4e8e7a8fd8b8b08ec0aafc93701cf9f9b2c763551288522221d3c9af0a95c8a4c853  config-postmarketos-allwinner.aarch64
-3c0d9d282a36a5f6a442b434839d77851f9b20185725cb73aee88e6e209c68fd3d71df8e2a36ffcdb605c47f86df5dbcda5d00353c75c23303861936196924e0  disable-power-save.patch
-c6e1ff1c060f68a59fa57a7cfc573a500fc8d200f56193530f7c1967e4f70f17cb2c930496f6a6489a6a10de130a2e66f5cd328eb6c4ae936f4af348a7413c3b  touch-dts.patch
-3e38a3d25c5981d0bb2e40cedb1ff473477be48b1ed3919e77aea23a108f12e8a3794aced53d8e96ce03f03a81dbcad59d61cff023f8714971e01e714f74b368  convergence.patch
-fc708cbb12b6419858f4d4efd885bdd34eee72be78601bc9542cbd69e6ba576ac15426a75ccbc7ca57b01db735f0d097e4410afdbb9fd35a20806cdb170e4115  camera-added-bggr-bayer-mode.patch"
+sha512sums="fd08e2c580ca2e89513d5d78e09af2c782dc8b06165fa5125ee0ebdafc002f0748c631aaba54415d0dbc520b8b7388f39076de4ce0c6510878089877478dacf0  linux-postmarketos-allwinner-orange-pi-5.9-20201019-1553.tar.gz
+87158c006c26bdb05e2e071d465035bfa065c2d7203d2b2e75ce751af2080a13218ded455d899acb8b8ec470591f2c6a986f15e14787e6f78c9c5f08c656e1fa  config-postmarketos-allwinner.aarch64
+bfeb383784e495a5d7c58fdd7abf44fa0d3460b48ddae09d69997791bb58beb55da8d04f05f30d12f4bdadbe81d0d5f8781c37a4904c1d7a283da3f7ecbadeda  0001-dts-add-dontbeevil-pinephone-devkit.patch
+c157e2495a02417c2ef54c9e1788db7b32a111dd412146c4c925f2f489d0b5a94be4b484d71285abe83c4523f1ae1d4ec6f4af0acad922cb676e8a8f07611698  0002-dts-add-pinetab-dev-old-display-panel.patch
+ab72dffc08e56c7ee96f87b30454f38eed6c4deb041f4cc562bdbf358a66821a698517ba9b095e327a0648cfc10e3b014187d428926ab87cb1c2441171ce2040  0003-Disable-8723cs-power-saving.patch
+38d024a472dfc070b09c922548ba4eb952fde16bedbf265667c7609056f06d6d637a6236227a511198e488120bd0a2dcec5ccfc4708dc3efd800402c1904384c  0004-media-gc2145-Added-BGGR-bayer-mode.patch
+796d59dc83b331e72be5943cdf899244e47f6ef14cace26950b1bb6b3f0fe5a942adf6da126a27ee0421c9a2cf862a9a18be4f1832e0ea15e4afe8a10151643a  0005-dts-pinephone-Disable-flash-led-in-OV5640-node.patch
+60322820a6048c95f7a62180f3aa872f929c8c0aa6bc5cecff882cf671c132666ef803c6754e6d6f4b3d4342362ba9901c21cb23e5186601327ea17ac3d97573  0006-dts-pinetab-add-missing-bma223-ohci1.patch
+36c310b00520650aec1e4ece3e995ab649d79315e5057f85587f3a6b1b5546549599c7db14bbf9b6cba76d87512116e132d0064f14aed0a6b7bbe66856e322d9  0007-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
+5bb1352b0bf35ff72eb9729248162faa37b0f1fe28c5cf9bd39b54148ff7750ca53d5934d6a128002a7a190180ef8e626733f260db722831ac35e3a5c1b25661  0008-pinetab-bluetooth.patch
+a392e7b04dc411986b90adf8774ce8f4b77617993e7ca068ea202aa3c925d0ec3bdbd4c395505696816dce6284955bf96901d75833a9b6ca9df544386b07ff65  0009-dts-pinephone-remove-bt-firmware-suffix.patch"

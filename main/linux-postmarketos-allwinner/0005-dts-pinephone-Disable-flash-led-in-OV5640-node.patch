@@ -1,0 +1,27 @@
+From 06812a9cf09e1990ed94f7bbe944cfb1978384da Mon Sep 17 00:00:00 2001
+From: Martijn Braam <martijn@brixit.nl>
+Date: Mon, 19 Oct 2020 09:17:07 +0200
+Subject: [PATCH] dts: pinephone: Disable flash-led in OV5640 node
+
+v4l2 can't deal with it yet, so having it enabled results in broken
+camera.
+---
+ arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+index 3781eb8ead66..6bc0e9d6d847 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+@@ -439,8 +439,6 @@ ov5640: rear-camera@4c {
+ 		reset-gpios = <&pio 3 3 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>; /* PD3 */
+ 		powerdown-gpios = <&pio 2 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* PC0 */
+ 
+-		flash-leds = <&sgm3140_flash>;
+-
+ 		port {
+ 			ov5640_ep: endpoint {
+ 				remote-endpoint = <&csi_ov5640_ep>;
+-- 
+2.25.4
+
