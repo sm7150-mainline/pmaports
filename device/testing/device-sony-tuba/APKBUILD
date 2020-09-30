@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-sony-tuba
+pkgdesc="Sony Xperia XA"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-sony-tuba mkbootimg msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="2359f64c32600836a46677e72afefd44e23585aeb608250ae094f844481b86bbd28abd1b99db4488c13db4bd4ea68bb6f0de4333fe442197462c4617657e8f1d  deviceinfo"
