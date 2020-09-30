@@ -10,28 +10,24 @@ depend()
 start()
 {
 	ebegin "Enabling EG25 WWAN module"
-	# GPIO35 is PWRKEY
-	# GPIO68 is RESET_N
-	# GPIO232 is W_DISABLE#
-	for i in 35 68 232
-	do
-		[ -e /sys/class/gpio/gpio$i ] && continue
-		echo $i > /sys/class/gpio/export || return 1
-		echo out > /sys/class/gpio/gpio$i/direction || return 1
-	done
-
-	echo 0 > /sys/class/gpio/gpio68/value || return 1
-	echo 0 > /sys/class/gpio/gpio232/value || return 1
-
-	( echo 1 > /sys/class/gpio/gpio35/value && sleep 2 && echo 0 > /sys/class/gpio/gpio35/value ) || return 1
+	echo 1 > /sys/class/modem-power/modem-power/device/powered
+	eend $?
 }
 
 stop()
 {
-	ebegin "Disabling EG25 WWAN module"
-	echo 1 > /sys/class/gpio/gpio68/value
-	echo 1 > /sys/class/gpio/gpio232/value
+	if [ -d /sys/class/modem-power/modem-power ]; then
+		ebegin "Disabling EG25 WWAN module (modem_power)"
+		echo 0 > /sys/class/modem-power/modem-power/device/powered
+		eend $?
+	else
+		# Keep legacy code path for shutdown of old kernel after upgrade
+		ebegin "Disabling EG25 WWAN module (legacy)"
+		echo 1 > /sys/class/gpio/gpio68/value
+		echo 1 > /sys/class/gpio/gpio232/value
 
-	echo 1 > /sys/class/gpio/gpio35/value && sleep 2 && echo 0 > /sys/class/gpio/gpio35/value
-	sleep 30 # Wait for the module to power off
+		echo 1 > /sys/class/gpio/gpio35/value && sleep 2 && echo 0 > /sys/class/gpio/gpio35/value
+		sleep 30 # Wait for the module to power off
+		eend 0
+	fi
 }

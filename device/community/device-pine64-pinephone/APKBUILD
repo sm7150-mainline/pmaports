@@ -3,8 +3,8 @@
 # Co-Maintainer: Luca Weiss <luca@z3ntu.xyz>
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
-pkgver=0.7
-pkgrel=2
+pkgver=0.8
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -22,7 +22,7 @@ source="deviceinfo
 	gpsd_pinephone.initd
 	gpsd_device-hook.sh
 	90-modem-eg25.rules
-	ucm/sun50i-a64-audio.conf
+	ucm/PinePhone.conf
 	ucm/HiFi.conf
 	ucm/VoiceCall.conf
 	eg25.initd
@@ -60,12 +60,12 @@ package() {
 		"$pkgdir"/etc/sysctl.d/sysrq.conf
 
 	# Alsa usecase manager config
-	install -Dm644 "$srcdir"/sun50i-a64-audio.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/sun50i-a64-audio.conf
+	install -Dm644 "$srcdir"/PinePhone.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/PinePhone.conf
 	install -Dm644 "$srcdir"/HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/HiFi.conf
+		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/HiFi.conf
 	install -Dm644 "$srcdir"/VoiceCall.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/VoiceCall.conf
+		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/VoiceCall.conf
 
 	# Modem
 	install -Dm755 "$srcdir"/eg25.initd "$pkgdir"/etc/init.d/eg25
@@ -95,8 +95,8 @@ b53cc6f2531854cc9c1e4c334185a20551d64c8675ee8a8eaa03b99d80808fad421a0f6e99e5be21
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
 ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd46444dd3c0a637ec08ce6125b18240fe6bfc13f624a15192e648  gpsd_device-hook.sh
 7dc2b7c20b4a2b15f597a6417bd01797643dad84a3683b0dee648e030fb6326e9d020307643fdcdf1bb43fc44af9975697e417003bd359610bae2d8ce614fc00  90-modem-eg25.rules
-e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d74533f9ffb9aacc1703da2a06693f85fa04ff97fd7528012  sun50i-a64-audio.conf
-12549cc90082d69daac3d8350764c5ced4895a8c48abf2b3eb69049981a4ecaa9a659eae04ee32fe1e046e0a47df002a99ff8656c4c9e284a6f0ff9d3f027084  HiFi.conf
-d44307c4cbd1fcd4846d30bc1e72800ebd4cbc43fe75e896a501dff06f1b3df21385a009ba5f81ed3f19a5e039bd082da3a88efdf3c034089c8fff3bc16e0a7a  VoiceCall.conf
-5a1a9c774253e8211cc54f4b3961c4bdc35427726d037b0ecad099915e856590e8267a4a47943ab753772d57261eef89924b407b305b1099a9c4ecd7b5f00b35  eg25.initd
-3a1af3979232a31995f5c103e092e075987d6e62509f4de59dbb64d6559d74e73c62161707108e27137faab49ae16612e5ada350c5633428d30df37e1b7b7f10  setup-modem.sh"
+e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d74533f9ffb9aacc1703da2a06693f85fa04ff97fd7528012  PinePhone.conf
+c3abc45269fb135075f5e227161c68ac234775b87fcf224385c5f40123108bf87e1351a1f1ec6786e964f493129511b8363070116a9a451e53cd7b17b3a76cc8  HiFi.conf
+4bf91e0a3cdd9020322d6fdf9990b6885c35a2f21276f412dffea3e7026da9e14437878f254a156cfd7dae3c44769ff37ae24b99ace854f56bc49d19bc7a9bb7  VoiceCall.conf
+db57bd1613ae988a05df86fa962352145f480e1a4e5a0ff921e734cf35ecd755b7f14775a70bb31a7e875813cbc7a4722202cf76023f1b15862bbd5390d0b757  eg25.initd
+0c81d758e1bcb56ed2cdaf91124121ebbd4dd7a5e25f02a7685b837faf660949d05f6b07b39a1c6a9ca22a7029cdcf3c6dac8f1038e37c8a34cb7c5702e9df51  setup-modem.sh"

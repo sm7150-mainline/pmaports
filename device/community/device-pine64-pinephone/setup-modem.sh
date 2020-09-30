@@ -7,15 +7,15 @@ log() {
 # Current modem routing
 #
 #  1 - Digital PCM
-#  0 - I2S master
+#  1 - I2S slave
 #  0 - Primary mode (short sync)
-#  2 - 512kHz clock (512kHz / 16bit = 32k samples/s)
+#  1 - 256kHz clock (256kHz / 16bit = 16k samples/s)
 #  0 - 16bit linear format
-#  1 - 16k sample/s
+#  0 - 8k sample/s
 #  1 - 1 slot
 #  1 - map to first slot (the only slot)
 #
-QDAI_CONFIG="1,0,0,2,0,1,1,1"
+QDAI_CONFIG="1,1,0,1,0,0,1,1"
 QCFG_RISIGNALTYPE_CONFIG="physical"
 QMBNCFG_CONFIG="1"
 QCFG_IMS_CONFIG="1"
