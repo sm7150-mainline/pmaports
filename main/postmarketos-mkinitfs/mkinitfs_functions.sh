@@ -270,7 +270,7 @@ create_cpio_image()
 	fi
 	[ -z "$deviceinfo_initfs_compression" ] && deviceinfo_initfs_compression='gzip -1'
 	find . -print0 \
-		| cpio --quiet -o -H newc \
+		| cpio --quiet -o -0 -H newc \
 		| $deviceinfo_initfs_compression > "$2"
 }
 
