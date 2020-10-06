@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-libra
+pkgdesc="Xiaomi Mi 4c"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-libra mkbootimg mesa-dri-gallium msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-xiaomi-libra wcnss-wlan"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="ae161fb2e552876a0e8d3b25a52a8d71411664bddd84b491cf249fbed1b67356baa807b57ec844a89995fcfceada9523308ede48c6abc273df5c10c3563def50  deviceinfo"
