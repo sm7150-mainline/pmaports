@@ -1,18 +1,23 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-fairphone-fp2
 pkgdesc="Fairphone 2"
-pkgver=2
-pkgrel=15
+pkgver=3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg"
+depends="
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	"
 makedepends="devicepkg-dev"
 source="deviceinfo
 	FP2.conf
 	hifi
 	rootston.ini
+	30-gpu-firmware.files
 "
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
@@ -34,13 +39,13 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Downstream kernel"
-	depends="linux-fairphone-fp2 mesa-dri-swrast ofono"
+	depends="linux-fairphone-fp2"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline() {
 	pkgdesc="Close to mainline kernel"
-	depends="linux-postmarketos-qcom-msm8974 mesa-dri-freedreno"
+	depends="linux-postmarketos-qcom-msm8974 mesa-egl"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
@@ -62,6 +67,9 @@ mainline_firmware() {
 	depends="msm-modem-rpmsg firmware-adreno"
 	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
 	mkdir "$subpkgdir"
+
+	install -Dm644 "$srcdir/30-gpu-firmware.files" \
+		"$subpkgdir/etc/postmarketos-mkinitfs/files/30-gpu-firmware.files"
 }
 
 alsa() {
@@ -78,7 +86,8 @@ phosh() {
 		"$subpkgdir"/etc/phosh/rootston.ini
 }
 
-sha512sums="f594853f973525c59c689d1f46d9be9005e05e170339daaca6d06f07a4a60d0de3db47785aebb35bdb2b129fae6bdd6c32f92e986e9fd09db07aba4534156ef2  deviceinfo
+sha512sums="f41b13840337d006ca925c7aff244f8e5202427aa30f7b5db5473650205932e52b96f99480369696bd9daf376f8f8cc65c1f17b5eaab6e95ae0cea9f2a924e17  deviceinfo
 55360b1ba4ddadea341c9edb13c32ba5f19aabf75ab28602f30cfb79b9df8834f115ef979c70569f23ec1293b1fcd408baf320d87803293ce7106bdc73a26c9f  FP2.conf
 b834461c6866bb0c473dd089dd5da641dd42a00f610aad6503117aa50fe6e200db9ad0a264bb609f12350d59faee1f772907bacd75439f702ea7d52f6f85e2b1  hifi
-aad7cce10db5ec156585893c82932bd42f2c86e4d68208b5f3816ac7f5f80eb6ddf15157666e81de97d30b20897f88e1027545a87fe5c96c37b5e75e3e125ee4  rootston.ini"
+aad7cce10db5ec156585893c82932bd42f2c86e4d68208b5f3816ac7f5f80eb6ddf15157666e81de97d30b20897f88e1027545a87fe5c96c37b5e75e3e125ee4  rootston.ini
+bbe6d6f530a9fa1934dd065dd4f6da48450e2115e4656b219d7f3aebc8b6a2775c02a2e5ffb5790950bb8183fca4677fbeaf9d8a267089c9f0d08461fc8ed45d  30-gpu-firmware.files"
