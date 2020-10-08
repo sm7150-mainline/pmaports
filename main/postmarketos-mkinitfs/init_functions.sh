@@ -458,12 +458,15 @@ start_onscreen_keyboard() {
 	# shellcheck disable=SC2154
 	if [ -n "$deviceinfo_mesa_driver" ]; then
 		export SDL_VIDEODRIVER="kmsdrm"
+                # needed for librem 5
+                export ETNA_MESA_DEBUG="no_supertile"
 	else
 		setup_directfb_tslib
 	fi
 
 	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
 
+	unset ETNA_MESA_DEBUG
 	unset SDL_VIDEODRIVER
 	unset DFBARGS
 	unset TSLIB_TSDEVICE
