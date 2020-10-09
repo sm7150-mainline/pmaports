@@ -1,15 +1,17 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-pine64-pinetab
 pkgdesc="PINE64 PineTab"
-pkgver=0.1
-pkgrel=23
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-allwinner u-boot-pinephone uboot-tools mesa-dri-gallium bluez alsa-ucm-conf"
+depends="postmarketos-base u-boot-pinephone uboot-tools mesa-dri-gallium bluez alsa-ucm-conf"
 makedepends="devicepkg-dev"
 subpackages="
+	$pkgname-kernel-allwinner:kernel_allwinner
+	$pkgname-kernel-allwinner-dev:kernel_allwinner_dev
 	$pkgname-sway
 	$pkgname-weston
 	$pkgname-phosh
@@ -18,7 +20,7 @@ subpackages="
 install="$pkgname.post-install"
 source="
 	ucm/HiFi.conf
-	ucm/sun50i-a64-audio.conf
+	ucm/PineTab.conf
 	deviceinfo
 	uboot-script.cmd
 	sysrq.conf
@@ -28,8 +30,23 @@ source="
 	rootston.ini
 "
 
+prepare() {
+	default_prepare
+	for version in pinetab-dev pinetab; do
+		sed "1s;^;\nsetenv pinetabfdt sun50i-a64-$version.dtb\;\n;" \
+			"$srcdir"/uboot-script.cmd > "$srcdir/uboot-script-$version.cmd"
+	done
+}
+
 build() {
 	devicepkg_build $startdir $pkgname
+}
+
+kernel_allwinner() {
+	pkgdesc="Allwinner kernel with support for Pinetab LCD panel (from Early Adopter)"
+	depends="linux-postmarketos-allwinner"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
 	mkimage \
 		-A arm \
 		-O linux \
@@ -38,8 +55,33 @@ build() {
 		-a 0 \
 		-e 0 \
 		-n postmarketos \
-		-d "$srcdir"/uboot-script.cmd \
+		-d "$srcdir"/uboot-script-pinetab.cmd \
 		"$srcdir"/boot.scr
+
+	# U-Boot
+	install -Dm644 "$srcdir"/boot.scr \
+		"$subpkgdir"/boot/boot.scr
+}
+
+kernel_allwinner_dev() {
+	pkgdesc="Allwinner kernel with support for old Pinetab LCD panel (pre Early Adopter)"
+	depends="linux-postmarketos-allwinner"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	mkimage \
+		-A arm \
+		-O linux \
+		-T script \
+		-C none \
+		-a 0 \
+		-e 0 \
+		-n postmarketos \
+		-d "$srcdir"/uboot-script-pinetab-dev.cmd \
+		"$srcdir"/boot_dev.scr
+
+	# U-Boot
+	install -Dm644 "$srcdir"/boot_dev.scr \
+		"$subpkgdir"/boot/boot.scr
 }
 
 sway() {
@@ -63,20 +105,16 @@ phosh() {
 package() {
 	devicepkg_package $startdir $pkgname
 
-	# U-Boot
-	install -Dm644 "$srcdir"/boot.scr \
-		"$pkgdir"/boot/boot.scr
-
 	# Fix "sysrq: HELP..." messages in dmesg while playing audio
 	# (Headphone output interferes with the serial console on the headphone jack)
 	install -D -m644 "$srcdir"/sysrq.conf \
 		"$pkgdir"/etc/sysctl.d/sysrq.conf
 
 	# Alsa usecase manager config
-	install -D -m644 "$srcdir"/sun50i-a64-audio.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/sun50i-a64-audio.conf
+	install -D -m644 "$srcdir"/PineTab.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/PineTab/PineTab.conf
 	install -D -m644 "$srcdir"/HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/sun50i-a64-audi/HiFi.conf
+		"$pkgdir"/usr/share/alsa/ucm2/PineTab/HiFi.conf
 
 	# Fix for the meta key on v1 keyboard dock, probably not needed on newer revisions
 	install -Dm644 "$srcdir"/99-pinetab-keyboard.hwdb \
@@ -89,10 +127,10 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="61bbb5467b51c3cee041f5c8eccf704a5b7861a2a3efff06cf91eb3291034636f78d9fd9d5ad9826c6a781092065f5a5eb72068e692712aed30f41e4f661b902  HiFi.conf
-3bdf9d4c41058680d488d9b4a2ac5fd693ceddc5f319a577480546f8af7d9d64c9d3196e73cb0c00e793697eef4ad075c88c3d274702a5387c15945bc749d844  sun50i-a64-audio.conf
-0f5efb1ab4b23f086e41ee8851872201778c0a149d7cac4feeb5c9a2ef50b48499500da296b581f69c6aa675720298df301a464b3ae3e7499a36a7bc0d101e75  deviceinfo
-1f3108007bd443f86ed8af2b2d84705c52ffcf73809a90ef5e4a1f618b73ab39baf8f8139d578c88e66f589464f8c47d53f72bf46f14b8fa78d962ae10d7d6d2  uboot-script.cmd
+sha512sums="2cf8d22f6c324633b4e72dea7a6b642e767b9bf50dac801ffc9e57347d272655b7087956afd50c3e65cd87c2f24e0e69c11b648b00bd58d31608d4e98e99e5d9  HiFi.conf
+3bdf9d4c41058680d488d9b4a2ac5fd693ceddc5f319a577480546f8af7d9d64c9d3196e73cb0c00e793697eef4ad075c88c3d274702a5387c15945bc749d844  PineTab.conf
+21e31f6f12923b764538b605ba4d510b41f0eb572ab260010540f35810e5845a0b32c6ee10714b249e6afabe765d9e55c56b3cb709cba46e066981bb0c0c0bce  deviceinfo
+9a03472963dbdc17ec263ecfa001d33dcd5931b6e8b80069eade1d5baf029dccc6f5ff7bd3472fcf47cfcb1a48601b27facb2f3325646ec6c443f1bd8a1bd1e6  uboot-script.cmd
 f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
 9e71c61bfa72b60e749c4dc04f17eb59d25de822765e81e65c937d6be5236d3951a652b69a1ab973abe6add9f34705be5dbaa98bbfa25daf7504dd50b28524c2  sway.conf
 8d1ef04911f1cfa7eda8185f4f4d807af23105a7c8f23d8c18f02afeccd8ab124de70c2e2760c154a3128fe3793447039fb0abf37aa496f597d27051e275033e  99-pinetab-keyboard.hwdb
