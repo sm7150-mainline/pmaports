@@ -1,0 +1,25 @@
+From 9f101dfd8a271fe05a4cad45c795453a2afcd696 Mon Sep 17 00:00:00 2001
+From: Clayton Craft <clayton@craftyguy.net>
+Date: Tue, 3 Nov 2020 02:08:30 -0800
+Subject: [PATCH] Fix uninitialized error on newer gcc
+
+---
+ main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/main.c b/main.c
+index 9c31f45..3f03275 100644
+--- a/main.c
++++ b/main.c
+@@ -76,7 +76,7 @@ void child_main(struct passwd *pwd, char* user_cmd, char** env) {
+ 
+ int main(int argc, char *argv[]) {
+ 	struct pam_conv conv = { pam_null_conv, NULL };
+-	struct pam_handle* handle;
++	struct pam_handle* handle = NULL;
+ 
+ 	check_pam(handle, "pam_start", pam_start("autologin", argv[1], &conv, &handle));
+ 	check_pam(handle, "pam_acct_mgmt", pam_acct_mgmt(handle, PAM_SILENT));
+-- 
+2.29.2
+

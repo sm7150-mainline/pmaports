@@ -1,0 +1,30 @@
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+pkgname=autologin
+pkgver=0_git20200406
+pkgrel=0
+_commit="feecd542c380e2147c7c7666237c917f88464a81"
+pkgdesc="Daemon for automatic login on TTY"
+url="https://git.sr.ht/~kennylevinsen/autologin"
+arch="all"
+license="GPL-3.0-only"
+makedepends="meson linux-pam-dev linux-headers"
+options="!check"
+source="https://git.sr.ht/~kennylevinsen/autologin/archive/$_commit.tar.gz
+	autologin.pamd
+	0001-Fix-uninitialized-error-on-newer-gcc.patch
+	"
+builddir="$srcdir/autologin-$_commit"
+
+build() {
+	abuild-meson . output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install -C output
+	install -Dm644 "$srcdir"/autologin.pamd "$pkgdir"/etc/pam.d/autologin
+}
+
+sha512sums="555070d2c8240b448f18f0198f68ef1ff6ac159ab9fe09a380dd7cf4ea97c2bb263707953c7946f6d89f1a557d45954c904f08c8964ea3ac3b46acc209035752  feecd542c380e2147c7c7666237c917f88464a81.tar.gz
+889c568bdbf407d730a68e648d03e17aaaed3e29da31b14a429277971eda34ddbf33e0f196213ebb36ee4714f6b743a18dfc1949dd3a40d5f50f29e5af226942  autologin.pamd
+3261f9a9bdee59b93ce277b7ab06c2a6064ab05664fa9cee5e74d11640e57e30f3ddbf986c6aa3536d4a8fd369653999a107a8b4f17ed3c2080808ed7306e039  0001-Fix-uninitialized-error-on-newer-gcc.patch"
