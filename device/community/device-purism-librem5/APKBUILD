@@ -2,7 +2,7 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.5
+pkgver=1.6
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -18,7 +18,7 @@ depends="
 	uboot-tools
 "
 makedepends="devicepkg-dev"
-_confver=21
+_confver=25
 _confdir=$srcdir/librem5-base-v$_confver
 source="
 	https://source.puri.sm/Librem5/librem5-base/-/archive/v$_confver/librem5-base-v$_confver.tar.gz
@@ -31,6 +31,7 @@ source="
 	modprobe.d_rsi.conf
 	modules-load.d_librem5.conf
 	uboot-script.cmd
+	xorg.conf
 "
 subpackages="
 	$pkgname-plasma
@@ -78,9 +79,10 @@ package() {
 	install -D -m644 "$srcdir"/modules-load.d_librem5.conf "$pkgdir"/etc/modules-load.d/librem5.conf
 	install -D -m644 "$srcdir"/00-mesa.sh "$pkgdir"/etc/profile.d/00-mesa.sh
 	install -D -m644 "$srcdir"/flash_script.lst "$pkgdir"/usr/share/uuu/flash_script.lst
+	install -Dm644 "$srcdir"/xorg.conf \
+		"$pkgdir"/etc/X11/xorg.conf.d/10-video.conf
 
 	# udev
-	install -D -m644 "$_confdir"/default/hwdb/80-librem5.hwdb "$pkgdir"/lib/udev/hwdb.d/80-librem5.hwdb
 	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-pm.udev  \
 		"$pkgdir"/usr/lib/udev/rules.d/librem5-pm.rules
 	install -D -m644 "$srcdir"/70-gnss.rules "$pkgdir"/usr/lib/udev/rules.d/70-gnss.rules
@@ -91,13 +93,14 @@ package() {
 
 	devicepkg_package $startdir $pkgname
 }
-sha512sums="34170ff33c0d120e961e66fd3f252bed9eea4e5df9a9da0d0d8f00b9f832e4e45543246593199f4ed23a140c98409b17038e4a05474bb1b1589f7030a733f2b8  librem5-base-v21.tar.gz
+sha512sums="f37d08f1a325cbf79870976da9893ac2f43713677d9048057deeff3aae282b630ceb8ebdd8874a6f631870a6ddbe889090fa5ee25cc91a23ffa3c603ead63114  librem5-base-v25.tar.gz
 685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  00-kwin.sh
-5fdf45859f2bb154bcfe7c7341de4d5b239ef43d3f865e30456af073a8ee9d6682515c7e1dd52ddbe3969669d60689ba93c08ead32aadcfb164ff72a02b2e1a4  00-mesa.sh
+9b4ecf6692db6d291799b2ebcdd7f3ceba52d657c01b40a15f4d819f1f9d2f0576bfcf94b1889da767d1757f3af86f4056160b9b31b1ecab0517acfb958f22a9  00-mesa.sh
 be0cf9f9e37c33d526fdf5fb61de1b42b3bb9309faf1feb0db51fa9639c3c0b35608977c898130ff60ebf2e8081ac36799b96c748b7efa9dcef7501753bc4890  70-gnss.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
 1cb3ca568d96797696b2d69cb156f097e15668ff357b12f37bd8b74a88cb977fa545e2adf7fbeefb87a6d09914e57debea3db7c5230f5800637ff4eaacb3d1dc  deviceinfo
 d033df2b9125622c946af67dad83070473c86937b5825f57ad272c9145b594071dd6913949127803c45af4ea3226526551718d40739f9f1ee4bfe6446e62c856  flash_script.lst
 9dc018f0de523cbfe5a49cbe831aa30e975a8dd34635197bb52582f072ac356ef2c02223fc794d970380091a69a83a74c3fbe34520190c8536e77f9ea98c7659  modprobe.d_rsi.conf
 a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f6e65a5d1b1a9099936382c99b49a44303f7b6d77a075a471  modules-load.d_librem5.conf
-3bc45540000e438e525501b2e816282d778fca10d426e42c9a80c0e752618ce50deb12c3edd9f3edc52edd8eb229d16afae7d407fe2c4ba0dbfefbcb4214780c  uboot-script.cmd"
+3bc45540000e438e525501b2e816282d778fca10d426e42c9a80c0e752618ce50deb12c3edd9f3edc52edd8eb229d16afae7d407fe2c4ba0dbfefbcb4214780c  uboot-script.cmd
+1cbc65cf2cb8fad4b0332d012a0256a266205b9b64371f5c0dae09dbb7f1e45b254e8c43993b896097e9d7035a72d547d9bce1ab2133addc56a5abdb80b44616  xorg.conf"
