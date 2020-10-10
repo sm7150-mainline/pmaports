@@ -1,7 +1,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
 pkgver=6
-pkgrel=1
+pkgrel=2
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (works only with numeric passwords!)"
 url="https://puri.sm"
 arch="noarch !armhf !x86" # x86: aports#11807
@@ -10,11 +10,10 @@ depends="bluez
 	gnome-keyring
 	iio-sensor-proxy
 	iio-sensor-proxy-openrc
-	lightdm
-	lightdm-openrc
 	phosh
 	polkit-elogind
 	pulseaudio
+	tinydm
 	"
 _pmb_recommends="calls
 	chatty
@@ -38,7 +37,7 @@ _pmb_recommends="calls
 	"
 subpackages="$pkgname-qt_tweaks"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="60-lightdm-autologin.conf
+source="
 	000-gschema.override
 	osk.sh
 	gtk-app-wayland.sh
@@ -51,8 +50,6 @@ source="60-lightdm-autologin.conf
 options="!check"
 
 package() {
-	install -Dm644 "$srcdir"/60-lightdm-autologin.conf \
-		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/60-autologin.conf
 	install -Dm644 "$srcdir"/000-gschema.override \
 		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
 	install -Dm755 "$srcdir"/gtk-app-wayland.sh \
@@ -76,8 +73,7 @@ qt_tweaks() {
 	install -Dm755 "$srcdir"/qt-tweaks.sh \
 		"$subpkgdir"/etc/profile.d/phosh-qt-tweaks.sh
 }
-sha512sums="c51a5cf93495069d71900dd1c6fbddfa3bdfb70dbab8141d1b115b6150975a12206c63517f18dc516e0366028b32e014b6d37a20e19ff73d5f0934c518d3ab39  60-lightdm-autologin.conf
-77a8aec2a43829422481c17beaf4224d686cc973f80d72be383103a6be0bf5d0689486c50a1dffecf9f2605bd607647e23ab539dc283978792d248625ab327d5  000-gschema.override
+sha512sums="77a8aec2a43829422481c17beaf4224d686cc973f80d72be383103a6be0bf5d0689486c50a1dffecf9f2605bd607647e23ab539dc283978792d248625ab327d5  000-gschema.override
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
 57793bb079c76ba3bdcfca7880aa887de11fe80e7a05557b78435e57feabab70fbaeedc42da3aec6f914c35bba8e8ee9918367516eb45ee247f63f694624f179  gtk-app-wayland.sh
 6e193eca3961a78d47b4656892eae34d019d9317a255a201f5ea61e3300caff04c526a27cd98d0edc072b36e3eaf3a1768f4cd27c5e2be8b19c167d535c820a6  qt-tweaks.sh
