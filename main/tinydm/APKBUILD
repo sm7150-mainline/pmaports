@@ -1,0 +1,24 @@
+# Maintainer: Oliver Smith <ollieparaoid@postmarketos.org>
+pkgname=tinydm
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Tiny Display Manager"
+url="https://postmarketos.org"
+source="https://gitlab.com/postmarketOS/tinydm/-/archive/$pkgver/tinydm-$pkgver.tar.bz2"
+arch="noarch"
+license="GPL-3.0-or-later"
+options="!check" # No tests
+depends="autologin $pkgname-openrc"
+subpackages="$pkgname-openrc"
+
+prepare() {
+	default_prepare
+
+	# default user in pmOS has a UID of 10000
+	sed -i "s/# AUTOLOGIN_UID=1000/AUTOLOGIN_UID=10000/" tinydm.confd
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="1d680d7d5abf777c41d64751b676ba743f29ab11db7f9e306fcdc9668e7d9368b5237c6711bf9ba2836aba7e63f09dccf8cb201cd8bc8d01313cfb78216cba24  tinydm-1.0.0.tar.bz2"
