@@ -1,0 +1,54 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Antony J.R. <antonyjr@pm.me>
+pkgname=device-asus-z00l
+pkgdesc="ASUS Zenfone 2 Laser (720p)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel (no charging, no modem, audio routed directly)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Close to mainline kernel (no charging, non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
+	depends="linux-firmware-qcom firmware-asus-z00l-venus firmware-asus-z00l-wcnss"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-asus-z00l-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="2d92c308f212fdd8d45528290795604f1eef42b85cf5ecb149118ff0ee9777d8f76b26386b5aaf707ced28f7f90d7d1572c34ea1cff2157a6b8f0525daf79098  deviceinfo"
