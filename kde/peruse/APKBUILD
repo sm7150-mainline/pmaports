@@ -1,0 +1,40 @@
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=peruse
+pkgver=0_git20201022
+pkgrel=0
+_commit="ecf28af788851773fb29cc57fab2922abb6fa670"
+pkgdesc="A comic book viewer based on Frameworks 5, for use on multiple form factors"
+# armhf blocked by extra-cmake-modules
+arch="all !armhf"
+url="https://invent.kde.org/graphics/peruse"
+license="LGPL-2.1-or-later AND LicenseRef-KDE-Accepted-LGPL"
+depends="
+	kirigami2
+	qt5-qtbase-sqlite
+	qt5-qtimageformats
+	qt5-qtquickcontrols
+	"
+makedepends="
+	extra-cmake-modules
+	kdeclarative-dev
+	kfilemetadata-dev
+	knewstuff-dev
+	qt5-qtdeclarative-dev
+	"
+source="https://invent.kde.org/graphics/peruse/-/archive/$_commit/peruse-$_commit.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="f0cfa4c802d757dafe86bdd85d82c2c1b4a837f4a211e7d073fcc20312f89d74e6e5e23a5eb84d13e7740ae663aad82cb208a998f067419eae4b9a58849388bc  peruse-ecf28af788851773fb29cc57fab2922abb6fa670.tar.gz"
