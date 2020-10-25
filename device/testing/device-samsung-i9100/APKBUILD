@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9100
 pkgver=2
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy SII"
 url="https://postmarketos.org"
 arch="armv7"
@@ -13,6 +13,7 @@ options="!check !archcheck"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline_exynos:kernel_mainline_exynos
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-weston:weston
 "
@@ -44,6 +45,12 @@ kernel_mainline() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
+kernel_mainline_exynos() {
+	pkgdesc="Close to mainline kernel (exynos4 package)"
+	depends="linux-postmarketos-exynos4 mesa-dri-gallium"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
 	pkgdesc="Wifi firmware"
 	depends="firmware-samsung-i9100"
@@ -56,6 +63,6 @@ weston() {
 		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
-sha512sums="2ae133ce0126b38ee05e62f3cf560d1b336816928c2fd896686bd8b64fcab1920a1b0270df1a844dc7b977948308a02110f88b82225ee0f0cbcab17b9fa10a3d  deviceinfo
+sha512sums="f7d0864c8c2c0a122b95eb21d396c1c8f871c27c3b5f7c9cac135a7f66f6d1501624fb99b70c8b9f009a59fb30e86c919e90f7f2c8e090399153a0cd923dfe42  deviceinfo
 089635daddd88eec35451bfe98dc3713035e3623c896dd21305b990ecf422e8fbb54e010cf347919bbb3a7385f639ab119280477fe0783df3228168d97d96fc6  90-android-touch-dev.rules
 de794566118f1744d068a94e6a75b61d43f6749a4b0871a5270fa7a2048164d609c71fcffa61845c2a7dd4cb5fbeb72c0e4f8b73b382f36d6ff0bcc9b8a5ae25  weston.ini"
