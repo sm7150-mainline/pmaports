@@ -9,6 +9,9 @@ case $1 in
 		;;
 esac
 
+# Declare used deviceinfo variables to pass shellcheck
+deviceinfo_append_dtb=""
+
 # shellcheck disable=SC1091
 . /etc/deviceinfo
 
@@ -23,8 +26,15 @@ case $METHOD in
 	heimdall-isorec)
 		KERNEL_PARTITION=$(findfs PARTLABEL="${deviceinfo_flash_heimdall_partition_kernel:?}")
 		INITFS_PARTITION=$(findfs PARTLABEL="${deviceinfo_flash_heimdall_partition_initfs:?}")
-		echo "Flashing kernel..."
-		dd if=/boot/vmlinuz-"$FLAVOR" of="$KERNEL_PARTITION" bs=1M
+
+		KERNEL="vmlinuz-$FLAVOR"
+		if [ "${deviceinfo_append_dtb}" = "true" ]; then
+			KERNEL="$KERNEL-dtb"
+		fi
+
+		echo "Flashing kernel ($KERNEL)..."
+		dd if=/boot/"$KERNEL" of="$KERNEL_PARTITION" bs=1M
+
 		echo "Flashing initramfs..."
 		gunzip -c /boot/initramfs-"$FLAVOR" | lzop | dd of="$INITFS_PARTITION" bs=1M
 		;;
