@@ -24,7 +24,6 @@ sh_files="
 	./main/postmarketos-mkinitfs-hook-debug-shell/20-debug-shell.sh
 	./main/postmarketos-update-kernel/update-kernel.sh
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
-	./device/community/device-pine64-pinephone/elogind-system-sleep_musb-hdrc-quirk.hook
 
 	$(find . -path './main/postmarketos-ui-*/*.sh')
 	$(find . -path './main/postmarketos-ui-*/*.pre-install')

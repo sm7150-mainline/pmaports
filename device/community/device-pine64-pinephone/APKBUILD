@@ -3,14 +3,14 @@
 # Co-Maintainer: Luca Weiss <luca@z3ntu.xyz>
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
-pkgver=0.9
+pkgver=0.10
 pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh $pkgname-elogind"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 depends="postmarketos-base u-boot-pinephone uboot-tools mesa-dri-gallium linux-postmarketos-allwinner gpsd atinout alsa-ucm-conf"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
@@ -27,7 +27,6 @@ source="deviceinfo
 	ucm/VoiceCall.conf
 	eg25.initd
 	setup-modem.sh
-	elogind-system-sleep_musb-hdrc-quirk.hook
 	"
 
 build() {
@@ -88,12 +87,6 @@ phosh() {
 	mkdir "$subpkgdir"
 }
 
-elogind() {
-	install_if="$pkgname elogind"
-	install -Dm755 "$srcdir"/elogind-system-sleep_musb-hdrc-quirk.hook \
-		"$subpkgdir"/usr/libexec/elogind/system-sleep/musb-hdrc-quirk.hook
-}
-
 sha512sums="c862454638db61f998c72848073bb7c97ccc51ac689865c5aa201d5e93a757b3d84c3807c3e5300ea0c3bd8adf0471e5148ad45ee203a690d4b909e7b90becbb  deviceinfo
 b20d4fb9f08a1bbc1c12ce6940e438a00f5c8d400fbc5071e951ffc69f77d2421204472e86f1a7df0488d250f3ec16205b75d4eac8c3cb5521fe9a02ea24865a  uboot-script.cmd
 f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
@@ -106,5 +99,4 @@ e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d
 c3abc45269fb135075f5e227161c68ac234775b87fcf224385c5f40123108bf87e1351a1f1ec6786e964f493129511b8363070116a9a451e53cd7b17b3a76cc8  HiFi.conf
 4bf91e0a3cdd9020322d6fdf9990b6885c35a2f21276f412dffea3e7026da9e14437878f254a156cfd7dae3c44769ff37ae24b99ace854f56bc49d19bc7a9bb7  VoiceCall.conf
 db57bd1613ae988a05df86fa962352145f480e1a4e5a0ff921e734cf35ecd755b7f14775a70bb31a7e875813cbc7a4722202cf76023f1b15862bbd5390d0b757  eg25.initd
-0c81d758e1bcb56ed2cdaf91124121ebbd4dd7a5e25f02a7685b837faf660949d05f6b07b39a1c6a9ca22a7029cdcf3c6dac8f1038e37c8a34cb7c5702e9df51  setup-modem.sh
-d664ffce64e8f5bd76fea74a1952065ac1da62cf323be8af110a2fc1765ca52029370292a044b878aabec15778f8d0924b1ebf585e9e9e2ce40dd57c19bd40ee  elogind-system-sleep_musb-hdrc-quirk.hook"
+0c81d758e1bcb56ed2cdaf91124121ebbd4dd7a5e25f02a7685b837faf660949d05f6b07b39a1c6a9ca22a7029cdcf3c6dac8f1038e37c8a34cb7c5702e9df51  setup-modem.sh"
