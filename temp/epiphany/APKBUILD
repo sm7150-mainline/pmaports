@@ -1,15 +1,15 @@
 # Forked from Alpine to apply Purism's mobile patches
 pkgname=epiphany
-pkgver=9999_git20191213
+pkgver=9999_git20201019
 pkgrel=0
-_commit="13d5ab17bcb3bc9dea6c4a37bac988c24fb7ce15"
+_commit="a14d0fd642b71fdafc639df1330c2ee8d3271089"
 pkgdesc="A simple, clean, beautiful view of the web"
 url="https://wiki.gnome.org/Apps/Web"
 arch="all !s390x !mips !mips64" # libhandy is not available on s390x
 license="GPL-3.0-or-later"
-depends="gsettings-desktop-schemas dbus:org.freedesktop.Secrets"
+depends="gsettings-desktop-schemas dbus:org.freedesktop.Secrets libportal"
 makedepends="meson iso-codes-dev gtk+3.0-dev gsettings-desktop-schemas-dev
-	icu-dev json-glib-dev libdazzle-dev libhandy-dev libnotify-dev libsecret-dev
+	icu-dev json-glib-dev libdazzle-dev libhandy1-dev libnotify-dev libportal-dev libsecret-dev
 	libsoup-dev libxml2-dev nettle-dev sqlite-dev webkit2gtk-dev gcr-dev itstool"
 checkdepends="appstream-glib desktop-file-utils xvfb-run ibus"
 subpackages="$pkgname-lang $pkgname-doc $pkgname-dbg"
@@ -37,4 +37,4 @@ package() {
 	DESTDIR="$pkgdir" ninja -C output install
 }
 
-sha512sums="c3da3002377280d1be58e634c15c071264fe1d667d269062668ae519baaebb5c6300f954d16e9b335810e5666bcf15e9260ed9522450b3da63c86cf65f46a00c  epiphany-13d5ab17bcb3bc9dea6c4a37bac988c24fb7ce15.tar.gz"
+sha512sums="42081464bd0ab4d3b954de9b0a98e1b69c0adff948a0b1410232cbbd565463b11a38c4ae1f3fd5511f2e9297c151d5aa07fe1c8236848a684686a0714c9a5b3d  epiphany-a14d0fd642b71fdafc639df1330c2ee8d3271089.tar.gz"
