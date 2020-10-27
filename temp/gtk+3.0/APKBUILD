@@ -1,7 +1,7 @@
 # Forked from Alpine to apply Purism's patches for responsivness
 pkgname=gtk+3.0
 pkgver=9999_git20200616
-pkgrel=2
+pkgrel=3
 _commit="21ecddab70544dc4421cd34247e9c7c2ef551409"
 pkgdesc="The GTK+ Toolkit (v3)"
 url="https://www.gtk.org/"
@@ -69,12 +69,13 @@ builddir="$srcdir/gtk-$_commit"
 prepare() {
 	default_prepare
 
-	# Prevent unexpected downgrade (pma#694)
+	# Prevent unexpected downgrade: 3.90.99 is higher than Alpine's version
+	# (pma#694), but still passes the libportal check (pma#841)
 	for _ver in gtk_minor_version gtk_micro_version gtk_interface_age; do
-		sed -i "s/m4_define(\[$_ver\], \[.*\])/m4_define([$_ver], [99])/g" configure.ac
+		sed -i "s/m4_define(\[$_ver\], \[.*\])/m4_define([$_ver], [90])/g" configure.ac
 	done
-	sed -i "s/        version: '.*',/        version: '3.99.99',/g" meson.build
-	sed -i "s/^gtk_interface_age = .*/gtk_interface_age = 99/g" meson.build
+	sed -i "s/        version: '.*',/        version: '3.90.99',/g" meson.build
+	sed -i "s/^gtk_interface_age = .*/gtk_interface_age = 90/g" meson.build
 
 	# Upstream forgot to include this in the tarball
 	# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/1776
