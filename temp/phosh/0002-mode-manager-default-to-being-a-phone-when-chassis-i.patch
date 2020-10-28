@@ -1,0 +1,38 @@
+Upstream: no
+Needed until openrc-settingsd reports chassis:
+https://gitlab.com/postmarketOS/pmaports/-/issues/851
+
+From 4833a4e29df2ce3fff1f3b082537569e48bf4340 Mon Sep 17 00:00:00 2001
+From: Martijn Braam <martijn@brixit.nl>
+Date: Wed, 28 Oct 2020 17:33:22 +0100
+Subject: [PATCH] mode-manager: default to being a phone when chassis isn't set
+
+---
+ src/mode-manager.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/mode-manager.c b/src/mode-manager.c
+index 7b9b30b..963587e 100644
+--- a/src/mode-manager.c
++++ b/src/mode-manager.c
+@@ -102,7 +102,7 @@ update_props (PhoshModeManager *self)
+   } else if (g_strcmp0 (self->chassis, "tablet") == 0) {
+     device_type = PHOSH_MODE_DEVICE_TYPE_TABLET;
+   } else {
+-    device_type = PHOSH_MODE_DEVICE_TYPE_UNKNOWN;
++    device_type = PHOSH_MODE_DEVICE_TYPE_PHONE;
+   }
+   mimicry = device_type;
+ 
+@@ -346,7 +346,7 @@ static void
+ phosh_mode_manager_init (PhoshModeManager *self)
+ {
+   self->hw_flags = PHOSH_MODE_HW_NONE;
+-  self->device_type = PHOSH_MODE_DEVICE_TYPE_UNKNOWN;
++  self->device_type = PHOSH_MODE_DEVICE_TYPE_PHONE;
+   self->mimicry = PHOSH_MODE_DEVICE_TYPE_UNKNOWN;
+ }
+ 
+-- 
+2.29.0
+

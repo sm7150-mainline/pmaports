@@ -1,8 +1,8 @@
 # Forked from Alpine to apply Hide-Logout-action patch
 pkgname=phosh
 pkgver=9999
-_pkgver=0.4.5
-pkgrel=1
+_pkgver=0.5.0
+pkgrel=2
 pkgdesc="Shell PoC for the Librem5"
 # Blocked on mips and s390x by gnome-session, gnome-settings-daemon, squeekboard and libhandy
 # Blocked on ppc64le by gnome-session
@@ -19,6 +19,7 @@ source="$pkgname-$_pkgver.tar.xz::https://repo.pureos.net/pureos/pool/main/p/pho
 	phosh.desktop
 	sm.puri.OSK0.desktop
 	0001-PMOS-Hide-Logout-action.patch
+	0002-mode-manager-default-to-being-a-phone-when-chassis-i.patch
 	"
 options="!check" # Needs a running Wayland compositor
 builddir="$srcdir/$pkgname-$_pkgver"
@@ -42,7 +43,8 @@ package() {
 		"$pkgdir"/usr/share/applications/sm.puri.OSK0.desktop
 
 }
-sha512sums="ca106d66d8a9067d0062f6a56142d7a5476e963a9f4a4ca173ce54b32ec5cdefe93b5274d1aeadafb09e4feed180a1247718a233c0e9ff629bc6f3321e14c13c  phosh-0.4.5.tar.xz
+sha512sums="949deaf40672e69e8facb61cdf36bf689ebfc99197c78b05f0122bb9fe53352baf0e787293f74e2c861844be5ba8a9a57f88139a0f6fc5cf98e316edc75dc092  phosh-0.5.0.tar.xz
 6644870edbbbc6b88d6e19f7771d81dba1a11066c2b34e4c22736db73a2dfd0d4909b4967503059c35385c5139a834a5c06a3c56b148ba1275d7f089c0c5f33c  phosh.desktop
 f97019598323276cf97ae62f04b6245983198e04b228ddc605835ee46845d9b88c6890fb86e97e4bb6f1ad73361437d9ed18c91e81fe1284a88cdcb92d3fdc69  sm.puri.OSK0.desktop
-f289c8a9db01741058881ca6b20c386fcd87f00d3f638f1d32d181bed70d36e9696d84f4c210b581138fff6fceeafa5dcbcb4e1097f04eb29d8cee2930ca4446  0001-PMOS-Hide-Logout-action.patch"
+f289c8a9db01741058881ca6b20c386fcd87f00d3f638f1d32d181bed70d36e9696d84f4c210b581138fff6fceeafa5dcbcb4e1097f04eb29d8cee2930ca4446  0001-PMOS-Hide-Logout-action.patch
+00b29af6c3540b7c7518d5b5e09d79748bd23899a2d292e3c5b4e6c26f8c27f42100db88450c34904787d89a28b727486aa77eff9aa57bb1c2a7954e9b8fcbf1  0002-mode-manager-default-to-being-a-phone-when-chassis-i.patch"
