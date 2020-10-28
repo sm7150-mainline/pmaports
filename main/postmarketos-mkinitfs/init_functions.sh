@@ -448,23 +448,36 @@ setup_directfb_tslib() {
 	# Note: linux_input module is disabled since it will try to take over
 	# the touchscreen device from tslib (e.g. on the N900)
 	export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input"
+	export SDL_VIDEODRIVER="directfb"
 	# shellcheck disable=SC2154
 	if [ -n "$deviceinfo_dev_touchscreen" ]; then
 		export TSLIB_TSDEVICE="$deviceinfo_dev_touchscreen"
 	fi
 }
 
+setup_kmsdrm() {
+	# Set up SDL and Mesa env to use kmsdrm backend
+	export SDL_VIDEODRIVER="kmsdrm"
+	# needed for librem 5
+	export ETNA_MESA_DEBUG="no_supertile"
+}
+
+run_osk_sdl() {
+	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
+}
+
 start_onscreen_keyboard() {
 	# shellcheck disable=SC2154
 	if [ -n "$deviceinfo_mesa_driver" ]; then
-		export SDL_VIDEODRIVER="kmsdrm"
-                # needed for librem 5
-                export ETNA_MESA_DEBUG="no_supertile"
+		setup_kmsdrm
 	else
 		setup_directfb_tslib
 	fi
 
-	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
+	if ! run_osk_sdl; then
+		setup_directfb_tslib
+		run_osk_sdl
+	fi
 
 	unset ETNA_MESA_DEBUG
 	unset SDL_VIDEODRIVER
