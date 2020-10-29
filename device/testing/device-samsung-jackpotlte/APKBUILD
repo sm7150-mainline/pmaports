@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-jackpotlte
+pkgdesc="Samsung Galaxy A8 (2018)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-jackpotlte mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="26194837ca66607030ad14654ab21fe373db8d068f8b0f1820fb3f1aa45a22590e06265abe6f478df50c78932a53a20c5b36f57986a442762d1cb0f07f920682  deviceinfo"

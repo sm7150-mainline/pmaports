@@ -1,0 +1,57 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/exynos7885-jackpotlte_defconfig
+
+pkgname=linux-samsung-jackpotlte
+pkgver=4.4.177
+pkgrel=0
+pkgdesc="Samsung Galaxy A8 (2018) kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-jackpotlte"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl dtbtool-exynos"
+
+# Source
+_repository="Universal7885_native_linux"
+_commit="8ab619fec5ab7fadc8dfb2cf8e994d4a89b212c3"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/VDavid003/$_repository/archive/$_commit.tar.gz
+	kernel-define-android-version.patch
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+
+	# Needed for the SoC's power management. When booting without it, the kernel is
+	# unusably slow and glitchy.
+	objcopy -I binary -O ihex firmware/exynos7885_acpm_fvp.fw firmware/exynos7885_acpm_fvp.fw.ihex
+
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	dtbTool-exynos --pagesize 2048 --platform 0x50a6 --subtype 0x217584da \
+		-o "$_outdir/arch/arm64/boot/dtb.img" $(find "$_outdir/arch/arm64/boot/dts/exynos/" -name *jackpotlte_eur*.dtb)
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	install -Dm644 "$_outdir/arch/arm64/boot/dtb.img" \
+		"$pkgdir/boot/dt.img"
+}
+
+sha512sums="2ed2ec274982a52736942fd88dc79e57fefa17151460c2d143d6eef5511fc018fc9d498d972e770350b454c206ea11c0d5b84d8a8a22218f684fa3c70ff238eb  linux-samsung-jackpotlte-8ab619fec5ab7fadc8dfb2cf8e994d4a89b212c3.tar.gz
+f3161f62a6ba0de56342b1410e509dce8320e43f788ae2670ebd59d93e5504aab77a913eecdebae33ff9135228869c5fd0559211c511f503fdc25f2fbab48351  kernel-define-android-version.patch
+d97a6b08b432d71ed2dd26fc2a82f7fcaa5a53ab15fdc5c05d0722231c6143f88b83e2d883b4fec4d97643f032fefffaf62c1fa0d9ef7b4d7a490cb325a2c087  config-samsung-jackpotlte.aarch64"
