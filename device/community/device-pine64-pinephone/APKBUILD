@@ -4,7 +4,7 @@
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=device-pine64-pinephone
 pkgver=0.10
-pkgrel=2
+pkgrel=3
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -28,6 +28,9 @@ source="deviceinfo
 	eg25.initd
 	setup-modem.sh
 	"
+# workaround to purge the -elogind subpackage that was previously
+# created/installed
+provides="$pkgname-elogind=$pkgver-r$pkgrel"
 
 build() {
 	devicepkg_build $startdir $pkgname
