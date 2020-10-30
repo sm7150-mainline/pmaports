@@ -3,5 +3,7 @@
 # Stop the power key from powering down the device
 echo "- Modifying: /etc/elogind/logind.conf"
 sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=ignore/' /etc/elogind/logind.conf
+# needed for any hooks that inhibit suspend
+sed -i 's/#AllowSuspendInterrupts=no/AllowSuspendInterrupts=yes/' /etc/elogind/logind.conf
 
 exit 0
