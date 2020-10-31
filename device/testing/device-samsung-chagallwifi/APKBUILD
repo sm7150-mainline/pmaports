@@ -1,9 +1,10 @@
 # Maintainer: David Davies-Jones <david@exultantmonkey.co.uk>
+# Co-Maintainer: Henrik Grimler <henrik@grimler.se>
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-chagallwifi
 pkgdesc="Samsung Galaxy Tab S 10.5"
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -11,6 +12,7 @@ options="!check !archcheck"
 depends="postmarketos-base linux-samsung-chagallwifi mkbootimg mesa-dri-swrast"
 makedepends="devicepkg-dev"
 source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -20,5 +22,10 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+nonfree_firmware() {
+	pkgdesc="Non-free firmware for the Samsung Galaxy Tab S"
+	depends="firmware-samsung-chagall"
+	mkdir "$subpkgdir"
+}
 
 sha512sums="13fa79ac7803810fa4000619835334a8802e15fa55d184388b430e5dbbc4e7b69403deb043bfc144541b00558dbbd4b5dea8cc5ad2443f573ff97f18560f5c8d  deviceinfo"
