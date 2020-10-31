@@ -4,6 +4,7 @@
 
 CTARGET_ARCH=armhf
 CTARGET="$(arch_to_hostspec ${CTARGET_ARCH})"
+LANG_D=false
 LANG_OBJC=false
 LANG_JAVA=false
 LANG_GO=false
@@ -22,7 +23,7 @@ CBUILDROOT="/"
 
 _cross_configure="--disable-bootstrap --with-sysroot=/usr/$CTARGET"
 
-pkgname="gcc6-armhf"
+pkgname=gcc6-armhf
 pkgver=9999
 _pkgver=6.4.0
 pkgrel=7
@@ -34,7 +35,6 @@ _gccrel=$_pkgver-r$pkgrel
 depends="isl binutils-armhf mpc1"
 makedepends_build="gcc g++ paxmark bison flex texinfo gawk zip gmp-dev mpfr-dev mpc1-dev zlib-dev"
 makedepends_host="linux-headers gmp-dev mpfr-dev mpc1-dev isl-dev zlib-dev musl-dev-armhf binutils-armhf"
-subpackages=""
 options="!strip !tracedeps"
 
 # We only care about C, so we can compile old Linux kernels
