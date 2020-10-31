@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
-pkgname=device-samsung-i9305
-pkgdesc="Samsung Galaxy SIII LTE"
+pkgname=device-samsung-i9300
+pkgdesc="Samsung Galaxy SIII"
 pkgver=1
-pkgrel=28
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -12,7 +12,8 @@ makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
-	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-i9300:kernel_mainline_i9300
+	$pkgname-kernel-mainline-i9305:kernel_mainline_i9305
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="
@@ -32,21 +33,27 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Display and wifi works (see device table for details)"
-	depends="linux-samsung-i9305"
+	depends="linux-samsung-i9300"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-kernel_mainline() {
-	pkgdesc="For kernel development only (most features aren't working)"
+kernel_mainline_i9300() {
+	pkgdesc="(SIII) For kernel development only (most features aren't working)"
+	depends="linux-postmarketos-exynos4"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_i9305() {
+	pkgdesc="(SIII LTE) For kernel development only (most features aren't working)"
 	depends="linux-postmarketos-exynos4"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
 	pkgdesc="Wifi firmware"
-	depends="firmware-samsung-i9305"
+	depends="firmware-samsung-i9300"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="02e3cd88ae7d3f4af22cb3fb007d0eef931328dd1575677bca4bfbe735f25a2c74e44ba12be54fd4c7ad8c1b192b3035ff629cef56259c81d642d1b591d02ac4  deviceinfo
+sha512sums="d4c20476b353e40e2f74f07088f000165ccc555f04bfa96e6b87ed03c59365f131dc4e1739fbd39e6633967cd393e010170c9c3a8ca62ba7e0b24966a9b2d59b  deviceinfo
 d70a03210458c771f94db920a8d3162a03fc7727f0fbafef4c1575ebc659c937c082f5c7a4dcdd1572925b973d628c6f4cf895c3b8b2a59af8142824468fe7c4  90-android-touch-dev.rules"
