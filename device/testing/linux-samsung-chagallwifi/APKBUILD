@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm/configs/lineageos_chagallwifi_defconfig
 
 pkgname=linux-samsung-chagallwifi
-pkgver=3.4.39
+pkgver=3.4.113
 pkgrel=1
 pkgdesc="Samsung Galaxy Tab S 10.5 kernel fork"
 arch="armv7"
@@ -16,10 +16,10 @@ makedepends="bash bc bison devicepkg-dev flex openssl-dev perl xz"
 
 # Source
 _repository="android_kernel_samsung_exynos5420"
-_commit="61dd0870a1982be7567f9cb288f3f76f03f017f4"
+_commit="e434b9d0170c86d1ee063b1915921c4af73effad"
 _config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/exynos5420/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
@@ -42,7 +42,7 @@ package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
-sha512sums="b10abf35473b5ac8109d35c86485c1a83e7874feb9fa15bd69f0d5a3f063ecaa94914cb86e6ed0cb3f8c8cb2d89f93ba51b651f095d364ddb00688a887532081  linux-samsung-chagallwifi-61dd0870a1982be7567f9cb288f3f76f03f017f4.tar.gz
-6bce0a8d0e108d8102d29de3425ae6863a6ba3fdd16c3e618ce5a1fa9be853cad84837e81571c8a864b82bd61e2df4f9208ec34a19eaa52fe15bb2b075b80ee9  config-samsung-chagallwifi.armv7
+sha512sums="058d72726920b7d670ab32156168546be39975164a867dbeb38b236988a3014f302fc094d9fb3ecff2379aac7d31014cc25ac1d1e0d390ce282e6aa799857391  linux-samsung-chagallwifi-e434b9d0170c86d1ee063b1915921c4af73effad.tar.gz
+437f7450b07ff6098531649242317ce767b9f51bfd1a1184a5e094b6d674ad7b2de175e36b45bd1cf5ab069c073f6eae2ad77505938e4fe3e052c3f96cd5204b  config-samsung-chagallwifi.armv7
 77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
 197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch"
