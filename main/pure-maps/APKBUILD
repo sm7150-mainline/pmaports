@@ -1,13 +1,13 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=pure-maps
-pkgver=1.29.0
-pkgrel=1
+pkgver=2.0.0
+pkgrel=0
 _commit_geomag="8eb9a730c8643fb7d63fdee4fd9a195ee8ba4df2"
 pkgdesc="Maps and navigation"
 url="https://github.com/rinigus/pure-maps"
 # armhf blocked by mapbox-gl-qml -> qt5-qtdeclarative-dev
-arch="noarch !armhf"
+arch="all !armhf"
 license="GPL-3.0-or-later"
 depends="
 	kirigami2
@@ -26,12 +26,15 @@ makedepends="
 	gettext
 	py3-pyflakes
 	python3
+	qt5-qtbase-dev
+	qt5-qtlocation-dev
+	qt5-qtquickcontrols2-dev
 	qt5-qttools-dev
+	qtchooser
 	"
 subpackages="$pkgname-lang"
 source="https://github.com/rinigus/pure-maps/archive/$pkgver/pure-maps-$pkgver.tar.gz
 	https://github.com/rinigus/geomag/archive/$_commit_geomag/geomag-$_commit_geomag.tar.gz
-	change_default_map_router_providers.patch
 	"
 options="!check" # Requires jsonlint which is not available
 
@@ -43,7 +46,7 @@ prepare() {
 }
 
 build() {
-	make platform-kirigami
+	qmake DEFAULT_BASEMAP=OpenCycleMap DEFAULT_ROUTER=OSRM FLAVOR=kirigami PREFIX=/usr
 	make
 }
 
@@ -52,13 +55,12 @@ check() {
 }
 
 package() {
-	make DESTDIR="$pkgdir" install
+	INSTALL_ROOT="$pkgdir" make install
 
 	# Locales get installed to the wrong location and thus have to be moved
 	# to get picked up by abuild lang()
-	mv "$pkgdir"/usr/share/pure-maps/locale "$pkgdir"/usr/share/
+	mv "$pkgdir"/usr/share/pure-maps/locale "$pkgdir"/usr/share
 }
 
-sha512sums="7e4d4ba14071ac410ff8f4b8841fd4822bcac139fc4610b2940fad6306c7c38fc20edb3f6664eb31f1851498b2e4f28dc8fb90eef7065525aa073261f55a24ee  pure-maps-1.29.0.tar.gz
-13e11b6cb35162315deb86c6c6240a3555760397d7aa88ac9c3348d476e9e9547b03210134119c60790511489e3f2a13afb93a3c77d40b1258c664b6fcc0425c  geomag-8eb9a730c8643fb7d63fdee4fd9a195ee8ba4df2.tar.gz
-ecad0bd2bca1039d641cc90157e8c195aeafccd3369ee1cd5b45b5059ec82a5892f26b9958fc3bed6a77be00e518b64486730e1787eac9597b9b42b528ea7377  change_default_map_router_providers.patch"
+sha512sums="5018e8cc07d78092002592e616931feb4228ec3cee8a95abac5c5f7f0b03dfb6707964a7d287eb89c2aebaedc7b9a5c55ec5a5d62ecd1c6a3a65c8667c1ac580  pure-maps-2.0.0.tar.gz
+13e11b6cb35162315deb86c6c6240a3555760397d7aa88ac9c3348d476e9e9547b03210134119c60790511489e3f2a13afb93a3c77d40b1258c664b6fcc0425c  geomag-8eb9a730c8643fb7d63fdee4fd9a195ee8ba4df2.tar.gz"
