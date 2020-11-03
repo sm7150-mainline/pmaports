@@ -1,7 +1,7 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=sxmo-utils
 pkgver=1.1.11
-pkgrel=0
+pkgrel=1
 pkgdesc="Utility scripts, programs, and configs that hold the Sxmo UI environment together"
 url="https://git.sr.ht/~mil/sxmo-utils"
 arch="all"
@@ -53,7 +53,9 @@ depends="
 "
 
 options="suid !check" # has no tests
-source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-utils/archive/$pkgver.tar.gz"
+source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-utils/archive/$pkgver.tar.gz
+	0001-enable-bluetooth-and-modem-drivers-during-crust-susp.patch
+	"
 install="$pkgname.post-install $pkgname.pre-deinstall"
 
 package() {
@@ -68,4 +70,5 @@ package() {
 	chmod u+s $pkgdir/usr/bin/sxmo_screenlock
 }
 
-sha512sums="e1a23a0899f5a6bc25a3fe0d20401ccb218b6f0150f3cc06dda822c81075af9b08d59b310acf1310844c44b0adc0f1973c3d0a74ea53c4e7d8e1ab2132eb1684  sxmo-utils-1.1.11.tar.gz"
+sha512sums="e1a23a0899f5a6bc25a3fe0d20401ccb218b6f0150f3cc06dda822c81075af9b08d59b310acf1310844c44b0adc0f1973c3d0a74ea53c4e7d8e1ab2132eb1684  sxmo-utils-1.1.11.tar.gz
+7afe015b5f7a0c6fb644f0268d5558e02ee4d141d0c7f6167ce262c42e2ca767d7b4cdd9fc5cc52ca516bbbbb513d720fec5fd70269ef93f1511d5b6e6017fbd  0001-enable-bluetooth-and-modem-drivers-during-crust-susp.patch"

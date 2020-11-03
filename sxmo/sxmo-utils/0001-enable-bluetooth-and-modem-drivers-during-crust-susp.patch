@@ -1,0 +1,46 @@
+Upstream: yes
+https://lists.sr.ht/~mil/sxmo-devel/patches/14544
+
+From a0c6e4c2e293cc2d663c35c4798b2e53462ca54b Mon Sep 17 00:00:00 2001
+From: Anjandev Momi <anjan@momi.ca>
+Date: Tue, 27 Oct 2020 16:14:49 -0400
+Subject: [PATCH] enable bluetooth and modem drivers during crust suspend
+
+With the megi 5.9 kernel and other suspend-related merge requests in
+postmarketos, disabling these drivers is no longer needed. All of this
+should result in a more reliable suspending system.
+
+Source: https://gitlab.com/postmarketOS/pmaports/-/merge_requests/1651
+Signed-off-by: Miles Alan <m@milesalan.com>
+---
+ programs/sxmo_screenlock.c | 14 --------------
+ 1 file changed, 14 deletions(-)
+
+diff --git a/programs/sxmo_screenlock.c b/programs/sxmo_screenlock.c
+index 791511f..34ed5e7 100644
+--- a/programs/sxmo_screenlock.c
++++ b/programs/sxmo_screenlock.c
+@@ -169,20 +169,6 @@ configuresuspendsettingsandwakeupsources()
+ 	//set RTC wake
+ 	if (wakeinterval > 0) setup_rtc_wakeup();
+ 
+-	// Temporary hack to disable USB driver that doesn't suspend
+-	fprintf(stderr, "Disabling buggy USB driver\n");
+-	writefile(
+-		"/sys/devices/platform/soc/1c19000.usb/driver/unbind",
+-		"1c19000.usb"
+-	);
+-
+-	// Temporary hack to disable Bluetooth driver that crashes on suspend 1/5th the time
+-	fprintf(stderr, "Disabling buggy Bluetooth driver\n");
+-	writefile(
+-		"/sys/bus/serial/drivers/hci_uart_h5/unbind",
+-		"serial0-0"
+-	);
+-
+ 	// E.g. make sure we're using CRUST
+ 	fprintf(stderr, "Flip mem_sleep setting to use crust\n");
+ 	writefile("/sys/power/mem_sleep", "deep");
+-- 
+2.20.1
+
