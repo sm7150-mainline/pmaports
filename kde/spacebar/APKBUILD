@@ -1,14 +1,24 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=spacebar
-pkgver=0_git20200618
+pkgver=0_git20201103
 pkgrel=0
-_commit="bc86bd0effbbd34b6eed62125521667ff0ab7671"
+_commit="025d265297f9fb05a8e735ae32c1f25716424d20"
 pkgdesc="Collection of stuff for running IM on Plasma Mobile"
 url="https://phabricator.kde.org/source/spacebar/"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 license="GPL-2.0-or-later AND LicenseRef-KDE-Accepted-GPL"
 depends="kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kirigami2-dev ki18n-dev kpeople-dev kcontacts-dev telepathy-qt-dev"
+makedepends="
+	extra-cmake-modules
+	kcontacts-dev
+	ki18n-dev
+	kirigami2-dev
+	knotifications-dev
+	kpeople-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	telepathy-qt-dev
+	"
 source="https://github.com/kde/spacebar/archive/$_commit/spacebar-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -35,4 +45,4 @@ package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
 
-sha512sums="e7df59ca523c291ee7f1e2aab26ba3181c6e8873d90c5602420ea881e03dba9bb00e821de64868e26c2be87d72bbe28317ea87265f2613403463783a19b52148  spacebar-bc86bd0effbbd34b6eed62125521667ff0ab7671.tar.gz"
+sha512sums="0686148bf9d6630bc4d344c5d1898856796a489ab268cfbe532b03f97b8cb7afde6ce6ffc1fbd2adebdcb3d226d7ed6a58275702fb1abb7f5683419660831eda  spacebar-025d265297f9fb05a8e735ae32c1f25716424d20.tar.gz"
