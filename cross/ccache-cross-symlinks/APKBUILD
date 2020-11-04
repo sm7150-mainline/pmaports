@@ -4,8 +4,8 @@
 # ccache, which can then cache the results.
 
 pkgname=ccache-cross-symlinks
-pkgver=2
-pkgrel=1
+pkgver=3
+pkgrel=0
 pkgdesc="Enable ccache for cross-compilers with symlinks"
 url="https://ccache.samba.org/"
 arch="noarch"
@@ -30,5 +30,11 @@ package() {
 			# /native/usr/bin/ccache)
 			ln -v -s ../../../bin/ccache ${_hostspec}-${_bin}
 		done
+
+		ln -v -s ../../../bin/ccache gcc4-${_hostspec}-gcc
+		ln -v -s ../../../bin/ccache gcc6-${_hostspec}-gcc
 	done
+
+	ln -v -s ../../../bin/ccache gcc4-gcc
+	ln -v -s ../../../bin/ccache gcc6-gcc
 }
