@@ -22,6 +22,8 @@ options="!strip !check !tracedeps pmb:cross-native"
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
 	config-$_flavor.x86_64
+	net-phy-micrel-Use-strlcpy-for-ethtool-get_strings.patch
+	x86-boot-compressed-Don-t-declare-__force_order-in-k.patch
 "
 
 if [ "${pkgver%.0}" = "$pkgver" ]; then
@@ -175,4 +177,6 @@ dev() {
 
 sha512sums="77e43a02d766c3d73b7e25c4aafb2e931d6b16e870510c22cef0cdb05c3acb7952b8908ebad12b10ef982c6efbe286364b1544586e715cf38390e483927904d8  linux-4.14.tar.xz
 393ea8e7ad25063c1a610d3245e50ae32e9780788259bc56876cb1960ee0bd73f0e3ac4be5eb91ca109571c6a1a3ce6bb93a2fa5b0aaa50f3256cbeb01b3cac6  config-teclast-x80pro.x86_64
+b081e9bfb3eb3f024486de2952d4b0dc6c81facb31ddf4456b386fb5c043a3a11cefe1636dece5cf0ea655746ed35a79c8318cabba8661e39c580e6faed97ba7  net-phy-micrel-Use-strlcpy-for-ethtool-get_strings.patch
+2df069bdb782fffe57988da34ac51607d59ce728e9bfbf7a26e9845729ef0888a18f528103318693c602b251e103bd224c3aef8d703599ede81144dcb2599bca  x86-boot-compressed-Don-t-declare-__force_order-in-k.patch
 d509365295b6bb5ad55d8859a6cc7cae00ef7b7b34aef21167fcfc992accbf9ac1f4191446c911b55844b09ff0c7f83fd422aea71c2877521331b7b0e05a9205  patch-4.14.73.xz"
