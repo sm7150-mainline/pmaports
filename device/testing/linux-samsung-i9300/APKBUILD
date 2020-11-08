@@ -21,7 +21,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=0
+pkgrel=1
 arch="armv7"
 _config="config-$_flavor.$arch"
 pkgdesc="Samsung Galaxy SIII kernel from LineageOS"
@@ -47,71 +47,44 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_samsung_smdk4412-$_hash"
+builddir="$srcdir/android_kernel_samsung_smdk4412-$_hash"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
+	default_prepare
 
 	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+	cp -v "$srcdir"/compiler-gcc6.h "$builddir"/include/linux/
+	cp -v "$srcdir"/$_config .config
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
 
 	echo "-- [ Build kernel ] --"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS"
 
 	echo "-- [ Build modules ] --"
 	# the 'no-pic' flag is necessary to avoid the
 	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
 	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" CONFIG_NO_ERROR_ON_MISMATCH=y \
 		modules
 }
 
 package() {
 	echo "--[ Installing kernel ]--"
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
+	install -Dm644 "$builddir/arch/arm/boot/zImage" \
 		"$pkgdir/boot/vmlinuz-$_flavor"
 
-	install -D "$srcdir/build/include/config/kernel.release" \
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-
-	cd "$srcdir"/build
 	unset LDFLAGS
 
 	echo "--[ Installing modules ]--"
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" CONFIG_NO_ERROR_ON_MISMATCH=y \
 		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
