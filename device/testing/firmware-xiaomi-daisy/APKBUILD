@@ -1,0 +1,40 @@
+pkgname=firmware-xiaomi-daisy
+pkgver=0.1
+pkgrel=0
+pkgdesc="Firmware files for Xiaomi Mi A2 Lite"
+url="https://postmarketos.org"
+arch="aarch64"
+license="proprietary"
+depends="wcnss-wlan"
+_repository="daisy-firmware"
+_commit="10eb55e6dc7b9b6d0b5c98eb0d22238707cd43b4"
+source="$pkgname-$_commit.tar.gz::https://github.com/NotLugozzi/daisy-firmware/archive/$_commit.tar.gz"
+options="!strip !check !archcheck !spdx"
+builddir="$srcdir/daisy-firmware-$_commit"
+
+_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06
+	wcnss.b09 wcnss.b10 wcnss.b11 wcnss.b12 wcnss.mdt
+	adsp.b00 adsp.b01 adsp.b02 adsp.b03 adsp.b04
+	adsp.b05 adsp.b06 adsp.b07 adsp.b08 adsp.b09
+	adsp.b10 adsp.b11 adsp.b12 adsp.b13 adsp.b14 adsp.mdt
+	qdsp6m.qdb
+	a506_zap.b00 a506_zap.b01 a506_zap.b02 a506_zap.mdt"
+_files_prima="WCNSS_wlan_dictionary.dat
+	WCNSS_qcom_cfg.ini
+	WCNSS_qcom_wlan_nv.bin"
+
+package() {
+	# /lib/firmware/postmarketos
+	for _i in $_files; do
+		install -Dm0755 "$_i" \
+			"$pkgdir"/lib/firmware/postmarketos/"$_i"
+	done
+
+	# /lib/firmware/postmarketos/wlan/prima
+	for _i in $_files_prima; do
+		install -Dm0755 wlan/prima/"$_i" \
+			"$pkgdir"/lib/firmware/postmarketos/wlan/prima/"$_i"
+	done
+}
+
+sha512sums="a0216a84ebf10a6ab9ac793f322dd50698c6e80c82c284eeda0ac3e4a50b618cb5472f60450ce65c23653cd32a49a27e2fd195d67e55e0d34c9caffadca16a5c  firmware-xiaomi-daisy-10eb55e6dc7b9b6d0b5c98eb0d22238707cd43b4.tar.gz"

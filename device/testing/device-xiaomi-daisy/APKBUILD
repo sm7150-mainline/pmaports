@@ -1,0 +1,38 @@
+# Contributor: Matthew5pl <matteofo06@gmail.com>
+# Maintainer: NotLugozzi <thomas.bassi@outlook.it>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-daisy
+pkgdesc="Xiaomi Mi A2 Lite"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-daisy mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	fb.modes
+	pointercal
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm0755 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
+	install -Dm0755 "$srcdir"/pointercal "$pkgdir"/etc/pointercal
+}
+
+nonfree_firmware() {
+	pkgdesc="Wi-Fi, ADSP Firmware"
+	depends="firmware-xiaomi-daisy"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="ad71d15408a4d852c7202d12819708193b3ef5de2aef5d60c542631194b3207a9acb017fd91954b0c245a3c4ff95fbb3835ffef493877fc00fb6c54944c601f9  deviceinfo
+9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
+4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal"
