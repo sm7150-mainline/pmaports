@@ -8,9 +8,8 @@ Change-Id: I1f426c864a0377b33b27da5cc6476f6ff888b6cb
  arch/arm/include/asm/ftrace.h    | 2 +-
  arch/arm/kernel/return_address.c | 5 -----
  include/linux/i2c/twl.h          | 2 +-
- kernel/timeconst.pl              | 2 +-
  scripts/mod/elf.h                | 5 -----
- 5 files changed, 3 insertions(+), 13 deletions(-)
+ 4 files changed, 2 insertions(+), 12 deletions(-)
 
 diff --git a/arch/arm/include/asm/ftrace.h b/arch/arm/include/asm/ftrace.h
 index f89515adac6..2bb8cac28b9 100644
@@ -54,19 +53,6 @@ index 947543a0fba..ec7c8855117 100644
  #endif
  
  struct twl4030_codec_audio_data {
-diff --git a/kernel/timeconst.pl b/kernel/timeconst.pl
-index eb51d76e058..2ccb8fb87a1 100644
---- a/kernel/timeconst.pl
-+++ b/kernel/timeconst.pl
-@@ -370,7 +370,7 @@ if ($hz eq '--can') {
- 	}
- 
- 	@val = @{$canned_values{$hz}};
--	if (!defined(@val)) {
-+	if (!@val) {
- 		@val = compute_values($hz);
- 	}
- 	output($hz, @val);
 diff --git a/scripts/mod/elf.h b/scripts/mod/elf.h
 index aba4d0c4c1c..f898d3ee28b 100644
 --- a/scripts/mod/elf.h

@@ -12,8 +12,7 @@ Subject: [PATCH 3/5] Enable USB Networking
  arch/arm/configs/tf101-linux_defconfig | 357 +++++++++++--------------
  drivers/usb/gadget/fsl_udc_core.c      |   1 +
  drivers/video/tegra/dc/nvhdcp.c        |   2 +-
- kernel/timeconst.pl                    |   2 +-
- 4 files changed, 162 insertions(+), 200 deletions(-)
+ 3 files changed, 161 insertions(+), 199 deletions(-)
 
 diff --git a/arch/arm/configs/tf101-linux_defconfig b/arch/arm/configs/tf101-linux_defconfig
 index a669d07c160..650b894915d 100644
@@ -908,19 +907,6 @@ index 3566e2bd33b..8489ebf6971 100644
  
  	nvhdcp_vdbg("repeater found:fetching repeater info\n");
  
-diff --git a/kernel/timeconst.pl b/kernel/timeconst.pl
-index eb51d76e058..04612394c53 100644
---- a/kernel/timeconst.pl
-+++ b/kernel/timeconst.pl
-@@ -370,7 +370,7 @@ if ($hz eq '--can') {
- 	}
- 
- 	@val = @{$canned_values{$hz}};
--	if (!defined(@val)) {
-+	if (!@val) {
- 		@val = compute_values($hz);
- 	}
- 	output($hz, @val);
 -- 
 2.19.1
 
