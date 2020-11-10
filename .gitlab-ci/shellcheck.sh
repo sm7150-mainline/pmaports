@@ -15,8 +15,8 @@ fi
 
 # Shell: shellcheck
 sh_files="
-	./main/postmarketos-base/firmwareload.sh
-	./main/postmarketos-base/elogind-system-suspend-disable-conditions.hook
+	./main/postmarketos-base/rootfs-usr-lib-firmwareload.sh
+	./main/postmarketos-base/rootfs-usr-libexec-elogind-system-sleep-suspend-disable-conditions.hook
 	./main/postmarketos-mkinitfs/init.sh.in
 	./main/postmarketos-mkinitfs/init_functions.sh
 	./main/postmarketos-mkinitfs/mkinitfs.sh

@@ -1,5 +1,5 @@
 pkgname=postmarketos-base
-pkgver=4
+pkgver=5
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
@@ -23,47 +23,42 @@ depends="
 install="$pkgname.post-install"
 triggers="$pkgname.trigger=/etc"
 subpackages="$pkgname-x11 $pkgname-elogind"
-source="
-	firmwareload.sh
-	50-firmware.rules
-	networkmanager.conf
-	swapfile/swapfile
-	swapfile/swapfile.init
-	swapfile/swapfile.conf
-	devmappings.initd
-	deferred-initcalls.init
-	50-org.freedesktop.NetworkManager.rules
-	elogind-system-suspend-disable-conditions.hook
-	"
 options="!check"
 
+_source644="
+	etc/NetworkManager/conf.d/00-postmarketos.conf
+	etc/conf.d/swapfile
+	etc/udev/rules.d/50-firmware.rules
+	"
+_source755="
+	etc/init.d/deferred-initcalls
+	etc/init.d/devmappings
+	etc/init.d/swapfile
+	etc/polkit-1/rules.d/50-org.freedesktop.NetworkManager.rules
+	sbin/swapfile
+	usr/lib/firmwareload.sh
+	usr/libexec/elogind/system-sleep/suspend-disable-conditions.hook
+	"
+
+# Avoid filename based checksum conflicts by including the whole path:
+# https://gitlab.alpinelinux.org/alpine/abuild/-/issues/10013
+flatpath() {
+	local i
+	for i in $@; do
+		echo "rootfs-$i" | sed s./.-.g
+	done
+}
+
+source="$(flatpath $_source644) $(flatpath $_source755)"
+
 package() {
-	install -D -m644 "$srcdir"/50-firmware.rules \
-		"$pkgdir"/etc/udev/rules.d/50-firmware.rules
-	install -D -m755 "$srcdir"/firmwareload.sh \
-		"$pkgdir"/usr/lib/firmwareload.sh
-
-	install -d -m755 "$pkgdir"/etc/skel
-
-	# Install swapfile
-	install -Dm755 "$srcdir"/swapfile \
-		"$pkgdir"/sbin/swapfile
-	install -Dm644 "$srcdir"/swapfile.conf \
-		"$pkgdir"/etc/conf.d/swapfile
-	install -Dm755 "$srcdir"/swapfile.init \
-		"$pkgdir"/etc/init.d/swapfile
-
-	install -D -m644 "$srcdir"/networkmanager.conf \
-		"$pkgdir"/etc/NetworkManager/conf.d/00-postmarketos.conf
-
-	install -Dm755 "$srcdir"/devmappings.initd \
-		"$pkgdir"/etc/init.d/devmappings
-
-	install -Dm755 "$srcdir"/deferred-initcalls.init \
-		"$pkgdir"/etc/init.d/deferred-initcalls
-
-	install -Dm755 "$srcdir"/50-org.freedesktop.NetworkManager.rules \
-		"$pkgdir"/etc/polkit-1/rules.d/50-org.freedesktop.NetworkManager.rules
+	local i
+	for i in $_source644; do
+		install -Dm644 "$srcdir/$(flatpath "$i")" "$pkgdir/$i"
+	done
+	for i in $_source755; do
+		install -Dm755 "$srcdir/$(flatpath "$i")" "$pkgdir/$i"
+	done
 }
 
 x11() {
@@ -80,17 +75,16 @@ elogind() {
 	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
 
-	install -Dm755 "$srcdir"/elogind-system-suspend-disable-conditions.hook \
-		"$subpkgdir"/usr/libexec/elogind/system-sleep/suspend-disable-conditions.hook
+	amove usr/libexec/elogind/system-sleep/suspend-disable-conditions.hook
 }
 
-sha512sums="38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  firmwareload.sh
-0b098828080055d3646ea54891cb0e1b578cbc30f5e16f7284f2814c08192f18079a38fb686d192715ae6a3d2cd6625d9e3cf99f234a6f0d94088bb0cb2ce43d  50-firmware.rules
-67a031f309a3232ac1e8abc3fedeaee912c035f9c81b4f709248895905a27ab5844ec92c65e55b79af3894450ba3883549d4004f11efebb47114d41f730e4a5f  networkmanager.conf
-3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  swapfile
-f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  swapfile.init
-e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  swapfile.conf
-dadd251229eb5759e3cba77c39a4afc6f28bcbe0f272cd3ab41b7ff4fe6a3d2b9ee765e1a0b8f9241274e757ed3b2ce035ee5abe91843e55fb4188a3c401ca78  devmappings.initd
-5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  deferred-initcalls.init
-7b34e861bc4ec57d970d2a7aacca36e3c3742a63ff995af1336f80b666e4a38c1035b35e129322e0d62dc75011bfaf495eb2bcae5392f2bf39f1d7b1400afcce  50-org.freedesktop.NetworkManager.rules
-c6bd4e0a84c56698f6d3ffc531610a778a3983ecf31b9609527598b5733c35a8619db4e390705c893c011797753431886028002d7745a113167b1e58d99e2129  elogind-system-suspend-disable-conditions.hook"
+sha512sums="67a031f309a3232ac1e8abc3fedeaee912c035f9c81b4f709248895905a27ab5844ec92c65e55b79af3894450ba3883549d4004f11efebb47114d41f730e4a5f  rootfs-etc-NetworkManager-conf.d-00-postmarketos.conf
+e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  rootfs-etc-conf.d-swapfile
+0b098828080055d3646ea54891cb0e1b578cbc30f5e16f7284f2814c08192f18079a38fb686d192715ae6a3d2cd6625d9e3cf99f234a6f0d94088bb0cb2ce43d  rootfs-etc-udev-rules.d-50-firmware.rules
+5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  rootfs-etc-init.d-deferred-initcalls
+dadd251229eb5759e3cba77c39a4afc6f28bcbe0f272cd3ab41b7ff4fe6a3d2b9ee765e1a0b8f9241274e757ed3b2ce035ee5abe91843e55fb4188a3c401ca78  rootfs-etc-init.d-devmappings
+f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  rootfs-etc-init.d-swapfile
+7b34e861bc4ec57d970d2a7aacca36e3c3742a63ff995af1336f80b666e4a38c1035b35e129322e0d62dc75011bfaf495eb2bcae5392f2bf39f1d7b1400afcce  rootfs-etc-polkit-1-rules.d-50-org.freedesktop.NetworkManager.rules
+3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  rootfs-sbin-swapfile
+38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  rootfs-usr-lib-firmwareload.sh
+c6bd4e0a84c56698f6d3ffc531610a778a3983ecf31b9609527598b5733c35a8619db4e390705c893c011797753431886028002d7745a113167b1e58d99e2129  rootfs-usr-libexec-elogind-system-sleep-suspend-disable-conditions.hook"
