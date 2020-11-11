@@ -27,6 +27,10 @@ def verify_checksums(packages, arch):
               " not here.")
         return
 
+    if len(packages) == 0:
+        print("no packages changed, not doing any checksums verification")
+        return
+
     common.run_pmbootstrap(["build_init"])
     common.run_pmbootstrap(["--details-to-stdout", "checksum", "--verify"] +
                            list(packages))
