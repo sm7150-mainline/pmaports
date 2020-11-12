@@ -1,0 +1,34 @@
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=rattlesnake
+pkgver=0_git20201112
+pkgrel=0
+_commit="40ee1e44f654008892c600c6e0139bedee48f710"
+pkgdesc="A metronome app for mobile and desktop"
+url="https://invent.kde.org/mbruchert/rattlesnake"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+license="LicenseRef-KDE-Accepted-GPL"
+depends="kirigami2"
+makedepends="
+	extra-cmake-modules
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtmultimedia-dev
+	kirigami2-dev
+	"
+source="https://invent.kde.org/mbruchert/rattlesnake/-/archive/$_commit/rattlesnake-$_commit.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="908a902576afbc2c2f21274abe15f3160b752c5f2b3b371ac4503e9f3a8ed536a54adc513fe07d4c899870aaed94b8e6bbaca61c4829388b431ebfe5ff7644a1  rattlesnake-40ee1e44f654008892c600c6e0139bedee48f710.tar.gz"
