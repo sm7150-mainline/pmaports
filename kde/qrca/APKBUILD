@@ -1,14 +1,30 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qrca
-pkgver=0_git20200803
+pkgver=0_git20201104
 pkgrel=0
-_commit="b5a7db2b2dd0e04978bce23d5a97c3dedc190bbe"
+_commit="e4ac4c565d76b15c6908e70de2094e110898759b"
 pkgdesc="QR-Code scanner for Plasma Mobile"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
-url="https://invent.kde.org/kde/qrca"
+url="https://invent.kde.org/plasma-mobile/qrca"
 license="GPL-3.0-or-later"
-depends="kirigami2 purpose"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev qt5-qtmultimedia-dev kirigami2-dev purpose-dev ki18n-dev kcontacts-dev kcoreaddons-dev zxing-cpp-dev"
+depends="
+	kirigami2
+	purpose
+	"
+makedepends="
+	extra-cmake-modules
+	kcontacts-dev
+	kcoreaddons-dev
+	ki18n-dev
+	kirigami2-dev
+	purpose-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtmultimedia-dev
+	qt5-qtquickcontrols2-dev
+	qt5-qtsvg-dev
+	zxing-cpp-dev
+	"
 source="https://invent.kde.org/kde/qrca/-/archive/$_commit/qrca-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -38,4 +54,4 @@ check() {
 package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
-sha512sums="e4e61fd6202f1199fa7affc69b7dcf55440a2eb057bd0766ef047732a4d9237b66d234f77f1cb0b990f81e6fbb403bf5bc44168b600f10935112d1eab8a12be2  qrca-b5a7db2b2dd0e04978bce23d5a97c3dedc190bbe.tar.gz"
+sha512sums="35a6a11af2d8ef2df1648d3eea7e9caa87aecdadd54b3020bc0a5cddebda5db99a9404acaeaa81957dde9b438f6d164d8a5a449db7b080fef90784bbb84edb0a  qrca-e4ac4c565d76b15c6908e70de2094e110898759b.tar.gz"
