@@ -1,14 +1,25 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=alligator
-pkgver=0_git20200618
+pkgver=0_git20201101
 pkgrel=0
-_commit="5d8865a8f19824625847b14c1fd49c45df5b34f6"
+_commit="7d75c6cf9b0f5d337f0bac4a700ec94c2adacc49"
 pkgdesc="A convergent RSS/Atom feed reader"
 url="https://invent.kde.org/tfella/alligator/"
 arch="all !armhf"
 license="LicenseRef-KDE-Accepted-GPL"
-depends="kirigami2 qt5-qtbase-sqlite"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtquickcontrols2-dev kcoreaddons-dev syndication-dev kconfig-dev ki18n-dev"
+depends="
+	kirigami2
+	qt5-qtbase-sqlite
+	"
+makedepends="
+	extra-cmake-modules
+	kconfig-dev
+	kcoreaddons-dev
+	ki18n-dev
+	qt5-qtbase-dev
+	qt5-qtquickcontrols2-dev
+	syndication-dev
+	"
 source="https://invent.kde.org/plasma-mobile/alligator/-/archive/$_commit/alligator-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -35,4 +46,4 @@ package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
 
-sha512sums="b8411f2e499e213d55d21f1fdb3208f6301dc6eadf00be761d6b671683b047c039e31e6cf23e234593d6e1109206ca86f9709a8bcc30cd6d44ba5b10bf69f02d  alligator-5d8865a8f19824625847b14c1fd49c45df5b34f6.tar.gz"
+sha512sums="ef5a7b9d749c796ad91f887bd9f7ce5da40b3f02cb434d7e91260c49d26bc3876335b071e0f7a022b957deb3241531743f46f46a3fa4e1160f37e22a28a71964  alligator-7d75c6cf9b0f5d337f0bac4a700ec94c2adacc49.tar.gz"
