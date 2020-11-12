@@ -1,14 +1,25 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qmlkonsole
-pkgver=0_git20200827
+pkgver=0_git20201001
 pkgrel=0
-_commit="61017be0ffd4d35b4c462625a6aba365bbacb4b4"
+_commit="d34cab3771e1327f7b91a02c4bd49037c770d4e4"
 pkgdesc="Terminal app for Plasma Mobile"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
-url="https://invent.kde.org/jbbgameich/qmlkonsole"
+url="https://invent.kde.org/plasma-mobile/qmlkonsole"
 license="GPL-3.0-or-later"
-depends="qmltermwidget kirigami2"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev ki18n-dev"
+depends="
+	qmltermwidget
+	kirigami2
+	"
+makedepends="
+	extra-cmake-modules
+	ki18n-dev
+	kirigami2-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtquickcontrols2-dev
+	qt5-qtsvg-dev
+	"
 source="https://invent.kde.org/plasma-mobile/qmlkonsole/-/archive/$_commit/qmlkonsole-$_commit.tar.gz"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -35,4 +46,4 @@ package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
 }
 
-sha512sums="33596da9dd2e2480b68d007a9297a19938e558d0ef2a6a0b704c61291c88a48341b3c680aa0727c6235e7452c0e5d8dd61603b95756033c5a1ac21cc0c93b038  qmlkonsole-61017be0ffd4d35b4c462625a6aba365bbacb4b4.tar.gz"
+sha512sums="17905ea6cb85b5361cda68c07930069fd5aa7339e44849c25b14e99148489669c3d49613c829d8e7c12449fa1aa2ee21d3d73e352aa80aed60225954ed57eca3  qmlkonsole-d34cab3771e1327f7b91a02c4bd49037c770d4e4.tar.gz"
