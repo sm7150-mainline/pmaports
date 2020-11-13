@@ -1,9 +1,8 @@
 #!/bin/sh
 
-sed -i "s/username/$(getent passwd 10000 | cut -d: -f1)/g" /usr/share/lightdm/lightdm.conf.d/62-autologin.conf
-
-rc-update add lightdm default
+rc-update add tinydm default
 rc-update add urfkill default
 rc-update add ofono default
 rc-update add ofono-auto-enable default
 rc-update add iio-sensor-proxy default
+tinydm-set-session -s /usr/share/wayland-sessions/plasma-mobile.desktop
