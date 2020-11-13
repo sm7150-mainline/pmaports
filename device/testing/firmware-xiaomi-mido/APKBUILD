@@ -1,33 +1,37 @@
 pkgname=firmware-xiaomi-mido
-pkgver=1
-pkgrel=2
-pkgdesc="Firmware files for Xiaomi Redmi Note 4"
-url="https://postmarketos.org"
+pkgver=2
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Redmi Note 4X"
+url="https://github.com/Kiciuk/proprietary_firmware_mido"
 arch="aarch64"
 license="proprietary"
-depends="wcnss-wlan"
-options="!strip !check !archcheck !spdx"
+options="!check !strip !archcheck"
+_commit="bc001cbb255a0ded2b58af07b93f712cd9322483"
+source="https://github.com/Kiciuk/proprietary_firmware_mido/archive/$_commit.zip"
+builddir="$srcdir/proprietary_firmware_mido-$_commit"
 
-# Source
-_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06
-	    wcnss.b09 wcnss.b10 wcnss.b11 wcnss.b12 wcnss.mdt"
-_files_prima="WCNSS_wlan_dictionary.dat WCNSS_qcom_cfg.ini WCNSS_qcom_wlan_nv.bin"
-_commit="9a07efe4fcf2d13bcdb4490ea0cb08ad78c56e0b"
-source="$pkgname-$_commit.tar.gz::https://github.com/Nikolay0054/vendor_xiaomi_mido/archive/$_commit.tar.gz"
-builddir="$srcdir/vendor_xiaomi_mido-$_commit"
+_fwdir="/lib/firmware/postmarketos"
 
 package() {
-	# /lib/firmware/postmarketos
-	for _i in $_files; do
-		install -D -m644 "$_i" \
-			"$pkgdir"/lib/firmware/postmarketos/"$_i"
-	done
+	# parent package is empty
+	mkdir -p "$pkgdir"
 
-	# /lib/firmware/postmarketos/wlan/prima
-	for _i in $_files_prima; do
-		install -D -m644 wlan/prima/"$_i" \
-			"$pkgdir"/lib/firmware/postmarketos/wlan/prima/"$_i"
-	done
+	# modem firmware
+	install -Dm644 modem/mba.mbn -t "$pkgdir/$_fwdir"
+	install -Dm644 modem/modem.* -t "$pkgdir/$_fwdir"
+
+	# video firmware
+	install -Dm644 apnhlos/venus.* -t "$pkgdir/$_fwdir"
+
+	# WiFi/BT firmware
+	install -Dm644 apnhlos/wcnss.* -t "$pkgdir/$_fwdir"
+	install -Dm644 firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin -t "$pkgdir/$_fwdir"/wlan/prima
+
+	# ADSP firmware
+	install -Dm644 modem/adsp.* -t "$pkgdir/$_fwdir"
+
+	# GPU firmware
+	install -Dm644 apnhlos/a506_zap.* -t "$pkgdir/$_fwdir"
 }
 
-sha512sums="a9a3a5d717e6cef0407ab964f7a85a530d6839e51ae95ae11e9f6cc9a191852622415dad1f241377d607b4b23f05db0e6d017da1c2c2bcee0d28f6d450a9ffe6  firmware-xiaomi-mido-9a07efe4fcf2d13bcdb4490ea0cb08ad78c56e0b.tar.gz"
+sha512sums="09a671286f1bc2389763432b42be30d2a7b52717cc2f2cb1dc0e144d3ade84fadcfd3971b5dec7bbc04750fac93be0ef2bba81bbd6740ce3da396899c03f0a1c  bc001cbb255a0ded2b58af07b93f712cd9322483.zip"

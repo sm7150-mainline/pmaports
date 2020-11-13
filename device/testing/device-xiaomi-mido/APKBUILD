@@ -1,17 +1,17 @@
-# Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-mido
-pkgdesc="Xiaomi Redmi Note 4"
-pkgver=0.1
-pkgrel=5
+pkgdesc="Xiaomi Redmi Note 4X"
+pkgver=1.0
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-xiaomi-mido mkbootimg mesa-dri-swrast mdss-fb-init-hack"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916 linux-postmarketos-qcom-msm8953"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo"
-
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 build() {
 	devicepkg_build $startdir $pkgname
 }
@@ -21,9 +21,9 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Wifi firmware"
-	depends="firmware-xiaomi-mido"
+	pkgdesc="Proprietary firmware"
+	depends="linux-firmware-qcom firmware-xiaomi-mido"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="26da380409c031cec4b5ba4f777a03a98f753aca7d80b0f8496f5eea365d10d8ff8ca1628d9c97d9f7317f6bd8610fe915ae8f1057d32250de3edd645d7788a9  deviceinfo"
+sha512sums="7f5304a0267839100c13af2d2d868cb1fa4f8318a452333667038685fc7829abaabceb67263c28b2d84c82426425ebb133f6d0f6fea3ac33b413b4f78fccdafa  deviceinfo"
