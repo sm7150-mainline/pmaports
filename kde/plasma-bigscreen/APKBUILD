@@ -1,9 +1,9 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-bigscreen
-pkgver=0_git20200731
+pkgver=0_git20201102
 pkgrel=0
-_commit="c0497ce2a98db02a62f5e1eb15dcb4761cef2f96"
+_commit="8a1ef82ab51006b4bf5b21388367377e7370f508"
 pkgdesc="A 10-feet interface made for TVs"
 url="https://invent.kde.org/plasma/plasma-bigscreen/"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
@@ -35,10 +35,7 @@ makedepends="
 	qt5-qtdeclarative-dev
 	qt5-qtmultimedia-dev
 	"
-source="https://invent.kde.org/plasma/plasma-bigscreen/-/archive/$_commit/plasma-bigscreen-$_commit.tar.gz
-	plasma-bigscreen.sh
-	plasma-bigscreen.desktop
-	"
+source="https://invent.kde.org/plasma/plasma-bigscreen/-/archive/$_commit/plasma-bigscreen-$_commit.tar.gz"
 builddir="$srcdir/plasma-bigscreen-$_commit"
 
 prepare() {
@@ -69,14 +66,6 @@ check() {
 
 package() {
 	DESTDIR="$pkgdir" cmake --build build --target install
-
-	install -Dm755 "$srcdir"/plasma-bigscreen.sh \
-		"$pkgdir"/usr/bin/plasma-bigscreen
-
-	install -Dm755 "$srcdir"/plasma-bigscreen.desktop \
-		"$pkgdir"/usr/share/wayland-sessions/plasma-bigscreen.desktop
 }
 
-sha512sums="0a8086cccefb039013f81f539da658d8d86237ff219fe47126ff2efbf9fa5c7d2466a5943bda1ed587e454f0ef986b49c4bf51963a8f9c405cb20ae474b4404e  plasma-bigscreen-c0497ce2a98db02a62f5e1eb15dcb4761cef2f96.tar.gz
-dae4247c695fd76d666a605d882817fa0e72d101bc36e15715663c3c980ba01fcb0936761d587f693bb642c957f0ed51b938428ef2d4ee144e8dcf99135049d6  plasma-bigscreen.sh
-d7b18b9ebbd1e2f1aad9e30d512c2203d6e610c715494aaa8fef0c63bd52e211b62a639c477073c26309b401af4e9183a5b54ab617eac6f74e58b45f4103d57b  plasma-bigscreen.desktop"
+sha512sums="0eed8a0048684b6487136f6f3026e2a409e273aaca9bc84d9df3537ca0a3c6657ae16fd4e219be4a4ede83640c9d250c0580757aeaf3ab96b2e47b39aaad2c1e  plasma-bigscreen-8a1ef82ab51006b4bf5b21388367377e7370f508.tar.gz"
