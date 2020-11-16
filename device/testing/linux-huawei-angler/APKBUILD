@@ -1,42 +1,17 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm64/configs/lineageos_angler_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_flavor=huawei-angler
-_hash="04d1557af1259b211609fa41adbe852b5f9cf2da"
-_config="config-$_flavor.aarch64"
-
-pkgname=linux-$_flavor
+pkgname=linux-huawei-angler
 pkgver=3.10.73
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=9
+pkgrel=10
+pkgdesc="Google Nexus 6P kernel fork"
 arch="aarch64"
-pkgdesc="LineageOS kernel for Nexus 6P Angler"
-url="https://github.com/LineageOS/android_kernel_huawei_angler"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev gcc6"
-options="!strip !check !tracedeps pmb:cross-native"
-source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_huawei_angler/archive/$_hash.tar.gz
-	$_config
-	compiler-gcc6.h
-	kernel-use-the-gnu89-standard-explicitly.patch
-	gcc10-extern_YYLOC_global_declaration.patch
-"
-license="GPL2"
-
-_abi_release=$pkgver
 _carch="arm64"
+_flavor="huawei-angler"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
 # request if you find out that it is booting working with newer GCCs as
@@ -47,58 +22,35 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_huawei_angler-$_hash"
+# Source
+_repository="android_kernel_huawei_angler"
+_commit="04d1557af1259b211609fa41adbe852b5f9cf2da"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc10-extern_YYLOC_global_declaration.patch
+	kernel-use-the-gnu89-standard-explicitly.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	echo "--[ silentoldconfig ]--"
-	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		oldconfig
+	default_prepare
+	. downstreamkernel_prepare
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm64/boot/Image.gz-dtb" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
 sha512sums="de3f5ab1c6609b94d416b0eebd5ae948698f0f6ec81e84fbee152df7c2778d8df94cec43b5abca583fe5977bb28037b3b6d2c3ff652a50493a1f24da31dadd7f  linux-huawei-angler-04d1557af1259b211609fa41adbe852b5f9cf2da.tar.gz
 aa46647bd35d1938ddf03ca2d2240e06d928bf83408b50642f9f8bfa3227d4d897dd3b609b77db25ccce7c09332163345ff70beeb6b99b4921624298bbd3d332  config-huawei-angler.aarch64
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch
-2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch"
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch"
