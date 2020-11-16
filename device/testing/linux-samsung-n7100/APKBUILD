@@ -1,47 +1,17 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/cyanogenmod_n7100_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# Patches:
-# extdsp_inline.patch: Fix for extern and inline errors on compile
-# fimc_lite.patch: Fix for inline error
-# timeconst_fix.patch: Removed condition for deprecated feature in Perl (bug present in Linux 3.9 and under)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_flavor=samsung-n7100
-_hash="5790cd7defee9cb6f9b392af4e3569e51230917a"
-_config="config-$_flavor.armhf"
-
-pkgname=linux-$_flavor
+pkgname=linux-samsung-n7100
 pkgver=3.0.64
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=9
+pkgrel=10
+pkgdesc="Samsung Galaxy Note II kernel fork"
 arch="armhf"
-pkgdesc="Samsung Galaxy Note II (GSM) Kernel from ParanoidNote"
-url="https://github.com/bigbiff/android_kernel_samsung_smdk4412"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev gcc6"
-options="!strip !check !tracedeps pmb:cross-native"
-source="
-	$pkgname-$_hash.tar.gz::https://github.com/bigbiff/android_kernel_samsung_smdk4412/archive/$_hash.tar.gz
-	$_config
-	compiler-gcc6.h
-	timeconst.pl-Eliminate-Perl-warning.patch
-	fimc_lite.patch
-	extdsp_inline.patch
-"
-license="GPL2"
-
-_abi_release=$pkgver
 _carch="arm"
+_flavor="samsung-n7100"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
 # request if you find out that it is booting working with newer GCCs as
@@ -52,57 +22,37 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_samsung_smdk4412-$_hash"
+# Source
+_repository="android_kernel_samsung_smdk4412"
+_commit="5790cd7defee9cb6f9b392af4e3569e51230917a"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/bigbiff/$_repository/archive/$_commit.tar.gz
+	$_config
+	timeconst.pl-Eliminate-Perl-warning.patch
+	extdsp_inline.patch
+	fimc_lite.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -k -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+	default_prepare
+	. downstreamkernel_prepare
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
+
 sha512sums="02dc37618cee9366ad34ca3e435253323d19cc687d6f25dc15fef1ba8ef9b637f96231ce05991979ff250b8f547fde6c54d64eaa8a9d3369d4a896339524bb98  linux-samsung-n7100-5790cd7defee9cb6f9b392af4e3569e51230917a.tar.gz
 05e40dc9d1d0c27a73a8c30fd5dfef82baf7a0b6612b79d792d8857e9fae8c58c234ae93ce75eb7e57ba69ef0a630159730dc980046a5a026597e161b1eebacc  config-samsung-n7100.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 1fcfb5f06a2bfdcc55d53054ca80d1b989599a39a5379d057a0724fc405187d74da4309a650e70b9c79d39444e81923cfc5c9199ed8c0a77c83dcd7998446bb7  timeconst.pl-Eliminate-Perl-warning.patch
-fe682960d8d8534e14712a4d2bf9e41abed34ec3a29dcaace0fc1115cda08f6bc4c83cd130413d92cda2091be711e3ded91767c30f080a6d9cf7952f068f052c  fimc_lite.patch
-54b345e988b20078260c859d047fc67eec4de0a82cc4c7a19537dac3a797cfc7adbcd41f2af51814d7a6b5d93c5825078381aa7207b5db0cc2b671e495682140  extdsp_inline.patch"
+54b345e988b20078260c859d047fc67eec4de0a82cc4c7a19537dac3a797cfc7adbcd41f2af51814d7a6b5d93c5825078381aa7207b5db0cc2b671e495682140  extdsp_inline.patch
+fe682960d8d8534e14712a4d2bf9e41abed34ec3a29dcaace0fc1115cda08f6bc4c83cd130413d92cda2091be711e3ded91767c30f080a6d9cf7952f068f052c  fimc_lite.patch"
