@@ -1,43 +1,17 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - add xz package (necessary to build)
-#
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/ace_defconfig
-# Changes:
-# - apply patches to compile
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
-# - disable KINETO_GAN (caused problems when used with networkmanager, dhcpcd)
-# - patch framebuffer to report refresh rate of 60Hz
 
-_flavor=htc-ace
-_config="config-$_flavor.armv7"
-_hash="887cd64b8361ac89ac56810460947a537112bdc9"
-
-pkgname=linux-$_flavor
+pkgname=linux-htc-ace
 pkgver=3.0.101
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=15
+pkgrel=16
+pkgdesc="HTC Desire HD kernel fork"
 arch="armv7"
-pkgdesc="HTC Desire kernel from OpenDesireProject"
-url="https://github.com/OpenDesireProject/android_kernel_htc_msm7x30"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz gcc6"
-options="!strip !check !tracedeps pmb:cross-native"
-source="
-	$pkgname-$_hash.tar.gz::https://github.com/OpenDesireProject/android_kernel_htc_msm7x30/archive/$_hash.tar.gz
-	$_config
-	compiler-gcc6.h
-	02_gpu-msm-fix-gcc5-compile.patch
-	03_msm-fb-pixclock.patch
-"
-license="GPL2"
-
-_abi_release=$pkgver
 _carch="arm"
+_flavor="htc-ace"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl xz gcc6"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
 # request if you find out that it is booting working with newer GCCs as
@@ -48,60 +22,35 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_htc_msm7x30-$_hash"
+# Source
+_repository="android_kernel_htc_msm7x30"
+_commit="887cd64b8361ac89ac56810460947a537112bdc9"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/OpenDesireProject/$_repository/archive/$_commit.tar.gz
+	$_config
+	02_gpu-msm-fix-gcc5-compile.patch
+	03_msm-fb-pixclock.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		oldconfig
+	default_prepare
+	. downstreamkernel_prepare
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-
-	echo "--[ Build kernel + modules ]--"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	echo "--[ Installing kernel ]--"
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
 sha512sums="72fc35e1c7fe848ae5c1139176d4c45ef042d494403ab38e5fa98e3620fce3253ffc4bf7151738c7dd47967f2ad96b034a9365dc68f1c025aef87e985d5b1776  linux-htc-ace-887cd64b8361ac89ac56810460947a537112bdc9.tar.gz
 ded34e991159f4925546a7db31f38da379344819d4886e52266f87fdd3371c84a405188c41dd22a0a695807aac52fd6a6e2631536b048d32f29a05ca0f391965  config-htc-ace.armv7
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
 2962e853aea3bec3cfea762584a6722023c5c9041994065a7ee75b6c4584121890d6dd1ac74317a2bb8069bff49583a9cccd73cca539665a76713465e05a2cf6  02_gpu-msm-fix-gcc5-compile.patch
 6a4079863ca09f8bca1dd9c80487860a8f6fc6c20d18961bc54988bb1831517e36092605cc593e5e1531ebb80eb76d0b1a006c339a7e334dc0d85bd91b20c72a  03_msm-fb-pixclock.patch"
