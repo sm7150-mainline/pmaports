@@ -1,44 +1,16 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - enabled CONFIG_VT (needed for weston to work)
-# - Added ata2001's refresh rate fix for 60hz (otherwise screen is stuck at 15hz)
-# - Enable generation of dtb
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
+# Reference: <https://postmarketos.org/vendorkernel>
 
-_flavor=lg-lenok
-_hash="7044f08636f6b8407bb00404a2e27ae0ce859f1e"
-_config="config-$_flavor.armhf"
-
-pkgname=linux-$_flavor
+pkgname=linux-lg-lenok
 pkgver=3.10.105
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=13
+pkgrel=14
+pkgdesc="LG G Watch R kernel fork"
 arch="armhf"
-pkgdesc="G Watch R kernel"
-url="https://github.com/pmsourcedump/kernel_lge_bass-lenok"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev gcc6"
-options="!strip !check !tracedeps pmb:cross-native"
-source="
-	$pkgname-$_hash.tar.gz::$url/archive/$_hash.tar.gz
-	$_config
-	compiler-gcc6.h
-	02_mdss_fb_refresh_rate.patch
-	gcc10-extern_YYLOC_global_declaration.patch
-"
-license="GPL2"
-
-_abi_release=$pkgver
 _carch="arm"
+_flavor="lg-lenok"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6 linux-headers"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
 # request if you find out that it is booting working with newer GCCs as
@@ -49,57 +21,35 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/kernel_lge_bass-lenok-$_hash"
+# Source
+_repository="kernel_lge_bass-lenok"
+_commit="7044f08636f6b8407bb00404a2e27ae0ce859f1e"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/pmsourcedump/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc10-extern_YYLOC_global_declaration.patch
+	02_mdss_fb_refresh_rate.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		silentoldconfig
+	default_prepare
+	. downstreamkernel_prepare
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
 sha512sums="ae4dbdf716cf446e9788c5e1d847ff45cca60831b6199568c9a46d6319824e57515f63eabf5250ceffee5f543c1de0813a1fb48e559c2f7d51cfc73a809ee934  linux-lg-lenok-7044f08636f6b8407bb00404a2e27ae0ce859f1e.tar.gz
 9958b0e58a8ace822277330f861dc12f131118c802bc2fb91018a7070d2dfb667cbe0662376bf4df3827dfddc3d5443f210ba4e207cdda071e70233fd17ab2f2  config-lg-lenok.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
-a8c955bf718f155011e980f3d0948be98e1fee5649f418299a4851780543019daf7afa406aa7b0829375645107e4e6fbf241026b0cabe2b2ac895a47df83d2d8  02_mdss_fb_refresh_rate.patch
-2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch"
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+a8c955bf718f155011e980f3d0948be98e1fee5649f418299a4851780543019daf7afa406aa7b0829375645107e4e6fbf241026b0cabe2b2ac895a47df83d2d8  02_mdss_fb_refresh_rate.patch"
