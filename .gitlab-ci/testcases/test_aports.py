@@ -176,6 +176,45 @@ def test_aports_device_kernel(args):
                                path)
 
 
+def test_aports_unreferenced_files(args):
+    """
+    Raise an error if an unreferenced file is found
+    """
+    for apkbuild_path in glob.iglob(args.aports + "/**/APKBUILD", recursive=True):
+        print(f"Checking {apkbuild_path}...")
+        apkbuild = pmb.parse.apkbuild(args, apkbuild_path)
+
+        # Collect install files from subpackages
+        subpackage_installs = []
+        if apkbuild["subpackages"]:
+            for subpackage in apkbuild["subpackages"].values():
+                if not subpackage:
+                    continue
+                try:
+                    subpackage_installs += subpackage["install"]
+                except KeyError:
+                    continue
+
+        # Collect trigger files
+        trigger_sources = []
+        if apkbuild["triggers"]:
+            for trigger in apkbuild["triggers"]:
+                trigger_sources.append(trigger.split("=")[0])
+
+        dirname = os.path.dirname(apkbuild_path)
+        for file in glob.iglob(dirname + "/**", recursive=True):
+            rel_file_path = os.path.relpath(file, dirname)
+            # Skip APKBUILDs and directories
+            if rel_file_path == "APKBUILD" or os.path.isdir(file):
+                continue
+
+            if rel_file_path not in apkbuild["source"] \
+                    and rel_file_path not in apkbuild["install"] \
+                    and rel_file_path not in subpackage_installs \
+                    and rel_file_path not in trigger_sources:
+                raise RuntimeError(f"{apkbuild_path}: found unreferenced file: {rel_file_path}")
+
+
 def test_aports_ui(args):
     """
     Raise an error if package in _pmb_recommends is not found
