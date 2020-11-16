@@ -5,9 +5,9 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.9.3_git20201101
-pkgrel=1
-_tag="orange-pi-5.9-20201101-2057"
+pkgver=5.9.8_git20201115
+pkgrel=0
+_tag="orange-pi-5.9-20201115-2230"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64"
 _carch="arm64"
@@ -35,6 +35,7 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	0007-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
 	0008-pinetab-bluetooth.patch
 	0009-dts-pinephone-remove-bt-firmware-suffix.patch
+	0010-dts-pinephone-allow-leds-in-suspend.patch
 	"
 subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
@@ -75,7 +76,7 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="4b082e90284b8febf2d8379ef0212d899cdbe5ae36e0885446412bc5d7a49e7c970f140d939e54bb10ddb43a5bdfe970a83fbc45749c6dae37e079a6a56e0955  linux-postmarketos-allwinner-orange-pi-5.9-20201101-2057.tar.gz
+sha512sums="a7095545fc2843c6235f7dbac21cda4f47bf0d78fc752455c98827936cf996201c56a41110fe2c00fdcec78f09ffdf2f15e72c7e62e2582a244ce5ca384df6f5  linux-postmarketos-allwinner-orange-pi-5.9-20201115-2230.tar.gz
 0006b939af9c2af70266e9dc5a5b527a57cdd1abf9b6ca55c43254637519b166af88ead4f97a36b1607f96c711b287b0ba08769b5b2314407cfb41f087c50172  config-postmarketos-allwinner.aarch64
 bfeb383784e495a5d7c58fdd7abf44fa0d3460b48ddae09d69997791bb58beb55da8d04f05f30d12f4bdadbe81d0d5f8781c37a4904c1d7a283da3f7ecbadeda  0001-dts-add-dontbeevil-pinephone-devkit.patch
 c157e2495a02417c2ef54c9e1788db7b32a111dd412146c4c925f2f489d0b5a94be4b484d71285abe83c4523f1ae1d4ec6f4af0acad922cb676e8a8f07611698  0002-dts-add-pinetab-dev-old-display-panel.patch
@@ -85,4 +86,5 @@ ab72dffc08e56c7ee96f87b30454f38eed6c4deb041f4cc562bdbf358a66821a698517ba9b095e32
 60322820a6048c95f7a62180f3aa872f929c8c0aa6bc5cecff882cf671c132666ef803c6754e6d6f4b3d4342362ba9901c21cb23e5186601327ea17ac3d97573  0006-dts-pinetab-add-missing-bma223-ohci1.patch
 36c310b00520650aec1e4ece3e995ab649d79315e5057f85587f3a6b1b5546549599c7db14bbf9b6cba76d87512116e132d0064f14aed0a6b7bbe66856e322d9  0007-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
 5bb1352b0bf35ff72eb9729248162faa37b0f1fe28c5cf9bd39b54148ff7750ca53d5934d6a128002a7a190180ef8e626733f260db722831ac35e3a5c1b25661  0008-pinetab-bluetooth.patch
-a392e7b04dc411986b90adf8774ce8f4b77617993e7ca068ea202aa3c925d0ec3bdbd4c395505696816dce6284955bf96901d75833a9b6ca9df544386b07ff65  0009-dts-pinephone-remove-bt-firmware-suffix.patch"
+a392e7b04dc411986b90adf8774ce8f4b77617993e7ca068ea202aa3c925d0ec3bdbd4c395505696816dce6284955bf96901d75833a9b6ca9df544386b07ff65  0009-dts-pinephone-remove-bt-firmware-suffix.patch
+e254e1872617d13589b4c87c2fa5f1dff2f01b76b36fc8a4b23f843db997254013da495c419b5bef5da1bff0b1bdccfa8c650ff9e17e593e37720d16f589c047  0010-dts-pinephone-allow-leds-in-suspend.patch"

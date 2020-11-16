@@ -1,0 +1,45 @@
+From 52fd9463e180df272039eec04771274b6b981dfe Mon Sep 17 00:00:00 2001
+From: Miles Alan <m@milesalan.com>
+Date: Wed, 11 Nov 2020 12:51:01 +0100
+Subject: [PATCH] dts: pinephone: allow leds in suspend
+
+Seems to be a regression since we switched to the 5.9/megi kernel - LEDs
+should be allowed to stay on in suspend for status etc. Sxmo depends on
+this functionality so that the users know the phone is on and in suspend
+rather then off.
+
+Patch taken from:
+https://gitlab.com/postmarketOS/pmaports/-/merge_requests/1691
+---
+ arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+index d897b6a28cc4..73b3f54528ff 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+@@ -204,18 +204,21 @@ blue {
+ 			function = LED_FUNCTION_INDICATOR;
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			gpios = <&pio 3 20 GPIO_ACTIVE_HIGH>; /* PD20 */
++			retain-state-suspended;
+ 		};
+ 
+ 		green {
+ 			function = LED_FUNCTION_INDICATOR;
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&pio 3 18 GPIO_ACTIVE_HIGH>; /* PD18 */
++			retain-state-suspended;
+ 		};
+ 
+ 		red {
+ 			function = LED_FUNCTION_INDICATOR;
+ 			color = <LED_COLOR_ID_RED>;
+ 			gpios = <&pio 3 19 GPIO_ACTIVE_HIGH>; /* PD19 */
++			retain-state-suspended;
+ 		};
+ 	};
+ 
+-- 
+2.25.4
+
