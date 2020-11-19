@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-huawei-kiwi
+pkgdesc="Huawei Honor 5X"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-huawei-kiwi mkbootimg mesa-dri-gallium msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="357b58de0ecc26c95aff3eb52b662374a1459da2192c6421ff19c0323e9024a2a2619b91327b0c49a72f4273c27b75460b7053a8560e5b1d5f1211dbd1d5e2b1  deviceinfo"
