@@ -41,6 +41,7 @@ install_gcc_h
 
 # Remove -Werror from all makefiles
 makefiles="$(find "$builddir" -type f -name Makefile)
+	$(find "$builddir" -type f -name Makefile.common)
 	$(find "$builddir" -type f -name Kbuild)"
 for i in $makefiles; do
 	sed -i 's/-Werror-/-W/g' "$i"
