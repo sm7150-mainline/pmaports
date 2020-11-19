@@ -1,0 +1,47 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=neochat
+pkgver=0_git20201121
+pkgrel=0
+_commit="14e58ca358803d8a10dfa2bd846037c8f351e791"
+pkgdesc="A client for Matrix, the decentralized communication protocol"
+url="https://invent.kde.org/network/neochat/"
+# armhf blocked by extra-cmake-modules
+arch="all !armhf"
+license="GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND BSD-2-Clause"
+depends="
+	kirigami2
+	kitemmodels
+	"
+makedepends="
+	extra-cmake-modules
+	cmark-dev
+	kconfig-dev
+	kcoreaddons-dev
+	ki18n-dev
+	kirigami2-dev
+	knotifications-dev
+	libquotient-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtkeychain-dev
+	qt5-qtmultimedia-dev
+	qt5-qtquickcontrols2-dev
+	qt5-qtsvg-dev
+	"
+source="https://invent.kde.org/network/neochat/-/archive/$_commit/neochat-$_commit.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/neochat-$_commit"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="561e7aec76b5cafde6068b40d3b52d8d00b5f68f9aefd2df53b6df4f519959e202d282b33bea36c9443d0fe712cf308232496686636c0ea582b1a681b44c12d5  neochat-14e58ca358803d8a10dfa2bd846037c8f351e791.tar.gz"
