@@ -525,6 +525,16 @@ show_splash() {
 	fbsplash -s /tmp/splash.ppm
 }
 
+show_splash_loading() {
+	# Allow overriding the default loading splash screen with a
+	# "splash.ppm.gz" file on the boot partition
+	if [ -e /boot/splash.ppm.gz ]; then
+		show_splash /boot/splash.ppm.gz
+	else
+		show_splash /splash-loading.ppm.gz
+	fi
+}
+
 set_framebuffer_mode() {
 	[ -e "/sys/class/graphics/fb0/modes" ] || return
 	[ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
