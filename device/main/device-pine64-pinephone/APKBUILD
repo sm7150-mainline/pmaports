@@ -4,7 +4,7 @@
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-pine64-pinephone
-pkgver=0.14
+pkgver=0.15
 pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
@@ -38,6 +38,7 @@ source="deviceinfo
 	ucm/VoiceCall.conf
 	eg25.initd
 	setup-modem.sh
+	asound.conf
 	"
 # workaround to purge the -elogind subpackage that was previously
 # created/installed
@@ -72,6 +73,10 @@ package() {
 	# (Headphone output interferes with the serial console on the headphone jack)
 	install -Dm644 "$srcdir"/sysrq.conf \
 		"$pkgdir"/etc/sysctl.d/sysrq.conf
+
+	# Alsa default audio must be stereo
+	install -Dm644 "$srcdir"/asound.conf \
+		"$pkgdir"/etc/asound.conf
 
 	# Alsa usecase manager config
 	install -Dm644 "$srcdir"/PinePhone.conf \
@@ -113,4 +118,5 @@ e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d
 420c0053c7eb115065a2a30ce7e669f05bda0dd7f416633e4917ed50db46a52ce0b613b2452bcd12d2813cf0401b0a1b489306b0f0e77e5b46a2a2e46368d6a2  HiFi.conf
 5bb910286b2e224aaee0bc08d18d75d9d6466f6c83ef8939036cf0f6aba6a8bcb56d114002d88eb6ed8266d03ee599fbac2f5b43e786b86b7c2eda10547a3878  VoiceCall.conf
 db57bd1613ae988a05df86fa962352145f480e1a4e5a0ff921e734cf35ecd755b7f14775a70bb31a7e875813cbc7a4722202cf76023f1b15862bbd5390d0b757  eg25.initd
-fa063e2863afc48e627acc1a5b213a81499ba1dd30325f74f118a44e3964aec7e597b1f4bd318b7cf5bf14f27daf88e6ad9fc277ab106cbbe1189fdcc650d5c1  setup-modem.sh"
+fa063e2863afc48e627acc1a5b213a81499ba1dd30325f74f118a44e3964aec7e597b1f4bd318b7cf5bf14f27daf88e6ad9fc277ab106cbbe1189fdcc650d5c1  setup-modem.sh
+5736444fd38ab4351d148ae96c479085f469bd1e51a692fb1827f8ac921a584389f7696985e1fba21c2deac88709910531f4ece282f45ff54e590c2b54b84ba3  asound.conf"
