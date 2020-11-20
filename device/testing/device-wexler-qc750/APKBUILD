@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-wexler-qc750
+pkgdesc="WEXLER Tab 7t"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-wexler-qc750 mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="4f39d73cbfb1a1233bc32abe2e186d66d9c8dc7436c711b5ffd6cb5426c517d77e3e9f0fc108cd9a6a64349623843ed2d5ea8363f4f8785597e12c0a2e34bdd6  deviceinfo"
