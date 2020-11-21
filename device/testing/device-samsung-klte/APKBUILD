@@ -2,12 +2,15 @@
 pkgname=device-samsung-klte
 pkgdesc="Samsung Galaxy S5"
 pkgver=0.3
-pkgrel=12
+pkgrel=13
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg"
+depends="
+	mkbootimg
+	postmarketos-base
+	"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
@@ -36,7 +39,12 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Display, touchscreen, Wi-Fi works (see device table for details)"
-	depends="linux-samsung-klte cpufrequtils msm-fb-refresher"
+	depends="
+		cpufrequtils
+		dropbear
+		linux-samsung-klte
+		msm-fb-refresher
+		"
 	install="$pkgname-kernel-downstream.post-install"
 
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
@@ -59,7 +67,7 @@ kernel_downstream() {
 }
 
 kernel_mainline() {
-	pkgdesc="Close to mainline; for kernel development only (most features aren't working)"
+	pkgdesc="Close to mainline kernel. Display, touchscreen, Wi-Fi works. Work in progress!"
 	depends="linux-postmarketos-qcom-msm8974 mesa-dri-gallium"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
@@ -78,7 +86,7 @@ downstream_firmware() {
 
 mainline_firmware() {
 	pkgdesc="Firmware packages for klte mainline kernel"
-	depends="firmware-adreno"
+	depends="firmware-adreno firmware-samsung-klte"
 	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
 	mkdir "$subpkgdir"
 }

@@ -8,3 +8,8 @@ rc-update -q add deferred-initcalls sysinit
 if ! grep -q "i wlan0" /etc/conf.d/wpa_supplicant ; then
 	sed -i 's/-Dwext,nl80211/-Dwext,nl80211 -i wlan0/' /etc/conf.d/wpa_supplicant
 fi
+
+# Replace sshd with dropbear (workaround for sshd failure on downstream
+# kernels, see issue #808 https://gitlab.com/postmarketOS/pmaports/-/issues/808 )
+rc-update -q del sshd default
+rc-update -q add dropbear default
