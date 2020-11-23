@@ -1,42 +1,17 @@
-# APKBUILD based on linux-vanilla aport. Changes:
-# - disabled module installation
-# - add !check !tracedeps
-# - package: just install zimage and kernel.release, because the kernel config
-#	does not generate modules or dtb files
-# - do not create -dev subpackage (makes no sense without module support)
-#
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/lineageos_i9305_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - adding xz to makedepends because of lzma: unrecognized option: 9 (https://wiki.postmarketos.org/wiki/Troubleshooting:kernel)
-# - add kernel modules installation
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_flavor=samsung-i9300
-_hash="fa8fa332fdec11744ffe0c742775cc22efe0d041"
-
-pkgname=linux-$_flavor
+pkgname=linux-samsung-i9300
 pkgver=3.0.101
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=1
+pkgrel=2
+pkgdesc="Samsung Galaxy SIII kernel fork"
 arch="armv7"
-_config="config-$_flavor.$arch"
-pkgdesc="Samsung Galaxy SIII kernel from LineageOS"
-url="https://github.com/LineageOS/android_kernel_samsung_smdk4412"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev xz busybox-static-$arch gcc6"
-options="!strip !check !tracedeps pmb:cross-native"
-source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_samsung_smdk4412/archive/$_hash.tar.gz
-	$_config
-	compiler-gcc6.h
-"
-license="GPL2"
-
-_abi_release=$pkgver
 _carch="arm"
+_flavor="samsung-i9300"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl xz gcc6"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
 # request if you find out that it is booting working with newer GCCs as
@@ -47,47 +22,42 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-builddir="$srcdir/android_kernel_samsung_smdk4412-$_hash"
+# Source
+_repository="android_kernel_samsung_smdk4412"
+_commit="fa8fa332fdec11744ffe0c742775cc22efe0d041"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
 	default_prepare
-
-	# gcc6 support
-	cp -v "$srcdir"/compiler-gcc6.h "$builddir"/include/linux/
-	cp -v "$srcdir"/$_config .config
+	. downstreamkernel_prepare
 }
 
 build() {
 	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
-	echo "-- [ Build kernel ] --"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS"
-
-	echo "-- [ Build modules ] --"
 	# the 'no-pic' flag is necessary to avoid the
 	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
-	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		CFLAGS_MODULE="-fno-pic" modules
 }
 
 package() {
-	echo "--[ Installing kernel ]--"
-	install -Dm644 "$builddir/arch/arm/boot/zImage" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
-
-	install -D "$builddir/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 
 	unset LDFLAGS
-
-	echo "--[ Installing modules ]--"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		INSTALL_MOD_PATH="$pkgdir" modules_install
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install
 }
 
 sha512sums="d87dd54152980b30012fead62e639dde6ff0862d376790eac32800aeffd91482a220c7b1f233933a1879796dcaa3722e86c42a5f0e4df4168ae1f65362952779  linux-samsung-i9300-fa8fa332fdec11744ffe0c742775cc22efe0d041.tar.gz
-c1c667ff55603101ae0bb3cfb085a0536a4e817ee9e116b62bead734f758099b1abcbe21c2d8e4790de2a62bd48e3b60ae8e0eb529b829ad71e2ddf1e0296b8d  config-samsung-i9300.armv7
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h"
+c1c667ff55603101ae0bb3cfb085a0536a4e817ee9e116b62bead734f758099b1abcbe21c2d8e4790de2a62bd48e3b60ae8e0eb529b829ad71e2ddf1e0296b8d  config-samsung-i9300.armv7"
