@@ -1,38 +1,17 @@
-# APKBUILD based on linux-vanilla aport. Changes:
+# Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm/configs/lineageos_w55ds_defconfig
-# Changes:
-# - enable devtmpfs (needed for udev -> touch support in weston)
-# - disable ANDROID_PARANOID_NETWORK (removes network restrictions)
 
-_flavor=lg-d285
-_hash="75a583b12772acf3a6e7422cf781ddd7a9e9a5c5"
-_config="config-lg-d285.armhf"
-
-pkgname=linux-$_flavor
+pkgname=linux-lg-d285
 pkgver=3.4.0
-case $pkgver in
-	*.*.*)  _kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
-esac
-pkgrel=8
+pkgrel=9
+pkgdesc="LG L65 kernel fork"
 arch="armhf"
-pkgdesc="LineageOS kernel for LG L65"
-url="https://github.com/LineageOS/android_kernel_lge_msm8226"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev gcc6"
-options="!strip !check !tracedeps pmb:cross-native"
-source="
-	$pkgname-$_hash.tar.gz::https://github.com/LineageOS/android_kernel_lge_msm8226/archive/$_hash.tar.gz
-	$_config
-	compiler-gcc6.h
-	00_fix_return_address.patch
-	02_gpu-msm-fix-gcc5-compile.patch
-	03_mdss_fb_refresh_rate.patch
-	gcc10-extern_YYLOC_global_declaration.patch
-"
-license="GPL2"
-
-_abi_release=$pkgver
 _carch="arm"
+_flavor="lg-d285"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6"
 
 # Compiler: this kernel was only tested with GCC6. Feel free to make a merge
 # request if you find out that it is booting working with newer GCCs as
@@ -43,71 +22,44 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
 fi
 
-ksrcdir="$srcdir/android_kernel_lge_msm8226-$_hash"
+# Source
+_repository="android_kernel_lge_msm8226"
+_commit="75a583b12772acf3a6e7422cf781ddd7a9e9a5c5"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc10-extern_YYLOC_global_declaration.patch
+	00_fix_return_address.patch
+	02_gpu-msm-fix-gcc5-compile.patch
+	03_mdss_fb_refresh_rate.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
 
 prepare() {
-	local _patch_failed=
-	cd "$ksrcdir"
-
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch)
-			msg "Applying $i..."
-			if ! patch -s -p1 -N -i "$srcdir"/$i; then
-				echo $i >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
-
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	# gcc6 support
-	cp -v "$srcdir/compiler-gcc6.h" "$ksrcdir/include/linux/"
-
-	mkdir -p "$srcdir"/build
-	cp "$srcdir"/$_config "$srcdir"/build/.config
-	echo "--[ silentoldconfig ]--"
-	yes "" | make -C "$ksrcdir" O="$srcdir"/build ARCH="$_carch" HOSTCC="$HOSTCC" \
-		oldconfig
+	default_prepare
+	. downstreamkernel_prepare
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y
-	echo "--[ Build modules ]--"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
-		modules
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	cd "$srcdir"/build
 	unset LDFLAGS
-	echo "--[ Installing modules ]--"
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine" CONFIG_NO_ERROR_ON_MISMATCH=y \
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
 		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 modules_install
 }
 
 sha512sums="d201e20557edea08947f10be1465560d292522f07099e2f8927164766da57e4f8a2c3fcd3e3ed427e856a86afe4fb3a4233753e19d4b7cb96b8258c6355be9f0  linux-lg-d285-75a583b12772acf3a6e7422cf781ddd7a9e9a5c5.tar.gz
 ced52e69fca2bb06541e1b809c9559fc99e6cf40d7ed9107108bbaba8d19ea4630b3a5c6ce6315e47bbc89e1991812b383410e88e98cdf3edbdd9151e578e2b7  config-lg-d285.armhf
-d80980e9474c82ba0ef1a6903b434d8bd1b092c40367ba543e72d2c119301c8b2d05265740e4104ca1ac5d15f6c4aa49e8776cb44264a9a28dc551e0d1850dcc  compiler-gcc6.h
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  00_fix_return_address.patch
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
-a8c955bf718f155011e980f3d0948be98e1fee5649f418299a4851780543019daf7afa406aa7b0829375645107e4e6fbf241026b0cabe2b2ac895a47df83d2d8  03_mdss_fb_refresh_rate.patch
-2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch"
+a8c955bf718f155011e980f3d0948be98e1fee5649f418299a4851780543019daf7afa406aa7b0829375645107e4e6fbf241026b0cabe2b2ac895a47df83d2d8  03_mdss_fb_refresh_rate.patch"
