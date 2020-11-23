@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm64/configs/vince_defconfig
 
 pkgname=linux-xiaomi-vince
-pkgver=4.9.236
+pkgver=4.9.245
 pkgrel=1
 pkgdesc="Xiaomi Redmi Note 5 Plus kernel fork"
 arch="aarch64"
@@ -12,11 +12,11 @@ _flavor="xiaomi-vince"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="sed gcc-arm-none-eabi bash bc bison devicepkg-dev flex openssl-dev perl"
+makedepends="sed gcc-armv7 bash bc bison devicepkg-dev flex openssl-dev perl"
 
 # Source
 _repository="M0Rf30/kernel_xiaomi_vince"
-_commit="1c360dbfc792d1ef2761a74036e6db0d83cfcba1"
+_commit="674b72dc7c02c8cdd6cbc4e86ecf15b8222212cc"
 _config="config-$_flavor.$arch"
 source="$pkgname-$_commit.tar.gz::https://github.com/$_repository/archive/$_commit.tar.gz
 	$_config
@@ -45,5 +45,5 @@ package() {
 		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
-sha512sums="627301618b515b81cdeb3ef956129ddaacc68d34c8cf6da84b60f6924283d423f4251092613cf2450099996c2fa89fe3a4bfd1f752ae8d62b35f22c192dfe690  linux-xiaomi-vince-1c360dbfc792d1ef2761a74036e6db0d83cfcba1.tar.gz
-95c12dff223bdea9d1bcc6aaab37a166967bfefd2874b8658465d1386d2ef61a5e9fd2f765f24d31b5a4c787a3136461205640f9f1232095ce8bc7fca244025b  config-xiaomi-vince.aarch64"
+sha512sums="0579f804509f1f670b0ab233de23689bcd0975e2040623d7ee27e8fcb60f5b20a548423fc45ea2e30c6305b49ad5806525265099fd68ac2e7025a1cffa80abd6  linux-xiaomi-vince-674b72dc7c02c8cdd6cbc4e86ecf15b8222212cc.tar.gz
+5ce1263f527a3d6284a57fb4b21682af251523e8746cac81afecfd5b65b05ddf299adf0c42f5cd10c81072db914e76ebee03ba37fb89b078af6cbb30c727f2d8  config-xiaomi-vince.aarch64"
