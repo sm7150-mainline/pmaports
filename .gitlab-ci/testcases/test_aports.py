@@ -17,8 +17,9 @@ import pmb.helpers.repo
 @pytest.fixture
 def args(request):
     # Initialize args
+    pmaports = os.path.realpath(f"{os.path.dirname(__file__)}/../..")
     sys.argv = ["pmbootstrap",
-                "--aports", os.path.dirname(__file__) + "/../..",
+                "--aports", pmaports,
                 "--log", "$WORK/log_testsuite_pmaports.txt"
                 "chroot"]
     args = pmb.parse.arguments()
