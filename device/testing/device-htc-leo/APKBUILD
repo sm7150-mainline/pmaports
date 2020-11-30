@@ -2,7 +2,7 @@
 pkgname=device-htc-leo
 pkgdesc="HTC HD2"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -17,5 +17,11 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-aosp-broadcom-wlan"
+	mkdir "$subpkgdir"
 }
 sha512sums="be7a9638313f9376460bc3f5b6b35038ecdb16e37369cec32771e457c0a081a1b9dff699adcdff317d3f47ebfc04d4563800b390fae3e5807bd350efbba4acd9  deviceinfo"
