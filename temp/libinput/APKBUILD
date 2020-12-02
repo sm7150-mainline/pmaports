@@ -1,0 +1,47 @@
+# Forked from Alpine: missing for armv7, just like xorg-server
+# https://postmarketos.org/edge/2020/12/01/xorg-server-moved/
+
+pkgname=libinput
+pkgver=1.16.4
+pkgrel=0
+pkgdesc="Library for handling input devices"
+url="https://www.freedesktop.org/wiki/Software/libinput"
+arch="armv7"
+license="MIT"
+makedepends="eudev-dev libevdev-dev meson mtdev-dev"
+checkdepends="diffutils bash"
+subpackages="
+	$pkgname-dev
+	$pkgname-doc
+	$pkgname-libs
+	$pkgname-zsh-completion
+	"
+source="https://freedesktop.org/software/libinput/libinput-$pkgver.tar.xz"
+options="!check"
+
+build() {
+	abuild-meson \
+		-Ddocumentation=false \
+		-Dlibwacom=false \
+		-Ddebug-gui=false \
+		-Dtests=false builddir/
+	meson compile ${JOBS:+-j ${JOBS}} -C builddir/
+}
+
+check() {
+	meson test --no-rebuild -v -C builddir
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C builddir
+}
+
+libs() {
+	default_libs
+
+	mv "$pkgdir"/usr/lib/udev "$subpkgdir"/usr/lib
+	mkdir -p "$subpkgdir"/usr/share/
+	mv "$pkgdir"/usr/share/libinput "$subpkgdir"/usr/share
+}
+
+sha512sums="a95a3bcf58a9298946d15f4f2fd93dc5807d3042f8797950a1ffd96d3c979b55a764f035a9f7680d0ea400b033698c322eb61a4387dbc280db6110ffd3e137ee  libinput-1.16.4.tar.xz"
