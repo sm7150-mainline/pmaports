@@ -1,8 +1,8 @@
 # Forked from Alpine to apply Purism's mobile patches
 pkgname=gnome-control-center
-pkgver=9999_git20201014
+pkgver=9999_git20201203
 pkgrel=0
-_commit="fbc4f08fb6cb51494f95822ff6ce61999460946c"
+_commit="d748dfeff8ca3c4a5c3a85bf81089246ce5b70cb"
 pkgdesc="GNOME control center"
 url="https://gitlab.gnome.org/GNOME/gnome-control-center"
 # limited by gnome-online-accounts
@@ -48,6 +48,7 @@ subpackages="$pkgname-dev $pkgname-lang $pkgname-dbg $pkgname-doc $pkgname-bash-
 source="https://source.puri.sm/Librem5/gnome-control-center/-/archive/$_commit/gnome-control-center-$_commit.tar.gz
 	README.alpine
 	build-fix.patch
+	0001-panels-info-overview-Use-GNOME-logo.patch
 	"
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -77,6 +78,7 @@ package() {
 	install -Dm0644 "$srcdir"/README.alpine -t "$pkgdir"/usr/share/doc/"$pkgname"
 }
 
-sha512sums="5a1361b4494c947bd533df20cb87fae1491439acf623d1971ee290dac75acd12414599e39a04dd45ffd84e15bd516e9a553acfd55bbfc31ce2d6d4fdff6be3c9  gnome-control-center-fbc4f08fb6cb51494f95822ff6ce61999460946c.tar.gz
+sha512sums="2e16e8e9a497224db249838c4767ac5feae78b7f68b77fd6f54d03cb7b1e6ed91cae4979afaa8a7b5316a7cd309373b531c30d669e1a89778f3e160da0327bcc  gnome-control-center-d748dfeff8ca3c4a5c3a85bf81089246ce5b70cb.tar.gz
 350aa443149c71851ad4de0976c7fc5cb626ba0c57a8d41e6ef80da1c65ed84a4dfa2483ae92630a3b611c4bfa9360ded82b55e8cd0e3907294c025e4f6b1671  README.alpine
-78a87bfddb1a660873ec1380a5f8f0f3ad5ef04dd3414d9a7f25ec55a8d4b653769f8e49f519d45c8b17bb3c6549d855e472a33a61c8cca1f9e18f16a05d1cb8  build-fix.patch"
+78a87bfddb1a660873ec1380a5f8f0f3ad5ef04dd3414d9a7f25ec55a8d4b653769f8e49f519d45c8b17bb3c6549d855e472a33a61c8cca1f9e18f16a05d1cb8  build-fix.patch
+718c057c2213d39bc30b0975ecd063caa216d11683ca6d6d9ecdee223fa6952daa7db7ea5df56712ca29e209fe231c86edcdecf0c2530f1a4bcfea8ddaef9b45  0001-panels-info-overview-Use-GNOME-logo.patch"
