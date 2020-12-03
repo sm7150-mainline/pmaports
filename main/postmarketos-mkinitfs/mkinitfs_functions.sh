@@ -192,7 +192,7 @@ get_binaries()
 # This gets called as $(get_osk_config), so the exit code can be checked/handled.
 get_osk_config()
 {
-	fontpath=$(awk '/^keyboard-font/{print $3}' /etc/osk.conf)
+	fontpath=$(awk '/^keyboard-font = /{print $3}' /etc/osk.conf)
 	if [ ! -f "$fontpath" ]; then
 		echo "ERROR: failed to parse 'keyboard-font' from osk-sdl config!"
 		exit 1
