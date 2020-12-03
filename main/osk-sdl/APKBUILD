@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Oliver Smith <ollieparanod@postmarketos.org>
 pkgname=osk-sdl
-pkgver=0.59
+pkgver=0.60
 pkgrel=0
 pkgdesc="Onscreen keyboard for unlocking LUKS devices"
 url="https://gitlab.com/postmarketOS/osk-sdl"
@@ -18,9 +18,11 @@ makedepends="
 	linux-headers
 	sdl2-dev
 	sdl2_ttf-dev
+	scdoc
 	"
 source="https://gitlab.com/postmarketOS/osk-sdl/-/archive/$pkgver/osk-sdl-$pkgver.tar.gz"
 options="!strip !check" # No tests
+subpackages="$pkgname-doc"
 
 build() {
 	make
@@ -31,9 +33,10 @@ package() {
 		"$pkgdir"/usr/bin/osk-sdl
 	install -D -m755 osk.conf \
 		"$pkgdir"/etc/osk.conf
+	install -Dm644 doc/osk-sdl.1 "$pkgdir"/usr/share/man/man1/osk-sdl.1
 
 	touch osk-sdl
 	install -Dm644 osk-sdl \
 		"$pkgdir"/usr/share/postmarketos-mkinitfs-triggers/osk-sdl
 }
-sha512sums="0f72a5b44705cd31e7add67a34ca8895892f9576acd1130d1dfcdd2ee8088903bd4bf9bce701216429da30aae7c290c10b8bbfe19ae0edaaf3d9bf6a3bd3ca5b  osk-sdl-0.59.tar.gz"
+sha512sums="33e1f0f07373f976efe8dc21e31c0b14de1c8200737654d37831a9585a4c72d35508c92e3229be11b07e98d8e35cf6dbe109b8b0a535b11103533489b5a7493f  osk-sdl-0.60.tar.gz"
