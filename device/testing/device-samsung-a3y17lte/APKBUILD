@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-a3y17lte
+pkgdesc="Samsung Galaxy A3 (2017)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-a3y17lte mkbootimg mesa-dri-gallium msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="7501ab9e70310006133a3038ec47ac5c8a2bbcca088cd6f5d3e2b933c9a2c5f00916cf0fc3e624332cd226b3416df907281be3603c5bf9d543bf24f8fe25edcd  deviceinfo"
