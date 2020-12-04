@@ -3,7 +3,7 @@
 
 pkgname=linux-samsung-j3nxlte
 pkgver=3.10.100
-pkgrel=1
+pkgrel=2
 pkgdesc="Samsung Galaxy J3 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -11,7 +11,7 @@ _flavor="samsung-j3nxlte"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="mkbootimg perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool"
+makedepends="mkbootimg perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool-sprd"
 
 # Source
 _repository="android_kernel_samsung_sharkls"
@@ -24,8 +24,9 @@ source="
 	gcc8-fix-put-user.patch
 	gcc10-extern_YYLOC_global_declaration.patch
 	fix_recordmcount.patch
-	qcom,msm-id_fix.patch
 	fix_touchscreen.patch
+	sprdfb-check-for-buffering.patch
+	sprdfb-fix-swapped-colors.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 
@@ -40,7 +41,7 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
 	# Generate master DTB (deviceinfo_bootimg_qcdt)
-	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+	dtbTool-sprd -p scripts/dtc/ -o "arch/arm/boot/dt.img" "arch/arm/boot/dts/"
 }
 
 package() {
@@ -57,5 +58,6 @@ fd2938deffd68ec451139193c8cb9383bdd8455358e6ee8fc5d8174e4857d6c55887e41b3201b088
 197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
 2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
 6aa11a75f422ac5c20cddfce23bff81940e61e65bc86fe1070c60714a6ccf631b2da70bff20e2b88e723706f0f233eb03540a8d9389adffd495592e8ab6bd82a  fix_recordmcount.patch
-dd6e3113ad7d87da76e92d5a656a683e735e1b18e6217c1beb4238ad60f48b1bc429c9e62dc9752b7242201610e95990dafc13f499aa09c74a26079022ae17ec  qcom,msm-id_fix.patch
-54eb205043b9e1b12f4f88d8163611e6769a702490045f5704483c92b17c9297250fde7d257b6d0e82d0cdbaed88d52d85137aeafcd4c4b138cecfffc921857e  fix_touchscreen.patch"
+54eb205043b9e1b12f4f88d8163611e6769a702490045f5704483c92b17c9297250fde7d257b6d0e82d0cdbaed88d52d85137aeafcd4c4b138cecfffc921857e  fix_touchscreen.patch
+e33ed12de874c1c8bc9231aea3b0389b18ee0ff804e39c0f47d9cbf657ea19015370d6114846c2d142fbdb88f472f0e65811c53b9b335feb8ae2f30dffdf4846  sprdfb-check-for-buffering.patch
+6836001b24508d413a059f19b0c6f6f547037f68886c22159ad51be91d1a089e3d1d9ed79c3c62724648df7f810cd81d96a83f4a34368b373524b649e5539656  sprdfb-fix-swapped-colors.patch"
