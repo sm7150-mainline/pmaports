@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=linux-purism-librem5
-pkgver=5.9.5
+pkgver=5.9.12
 pkgrel=0
 _purismrel=1
 # <kernel ver>.<purism kernel release>
@@ -13,8 +13,21 @@ _flavor="purism-librem5"
 url="https://source.puri.sm/Librem5/linux-next"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
-	     devicepkg-dev bison flex openssl-dev"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	elfutils-dev
+	findutils
+	flex
+	gmp-dev
+	installkernel
+	linux-headers
+	openssl-dev
+	perl
+	sed
+	"
 
 # Source
 _repository="linux-next"
@@ -49,6 +62,6 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 
 }
-sha512sums="9b22e1e8fe16cc03c17c5fda1b39825723294ab99accde380f4d27f8053bba88f48c87ad4d91f4e99205e507e909fc04e28c4eeae2fc7f4e425fb183cb35ee38  linux-purism-librem5-5.9.5+librem5.1.tar.gz
+sha512sums="2b3a325aa56100e0d6ddcbdc5ac0472e01d51887a33570f23c3ee99abc2e697d59a1e7ffc32527aaaa6d882d6d1a8641b9aaf0f1df48f55979a3f0e315a8fc00  linux-purism-librem5-5.9.12+librem5.1.tar.gz
 9870bff4b187188b519b23264c2634ee4232011fed6d2f66a7b4971db354ac3dffa0e1552bd0dc953c66ec622e18ce8899fdbcfba94f60867fc5004d6da96753  8f11380ec32912370b8ae9134a0387a6f18862f7.patch
-79d9b73d2f29deab02cb342a187ca97f2c9c39d3faf1142edcc75feb797329c87b07ffff08458d51b4fdcace28c3e68aa39b60ec11e16a658decd7e137f761bb  config-purism-librem5.aarch64"
+3e74dfcb545577dd61a1367cdf57bbbd7a3f70ec62ffe47c5a4d125a528e2ff2724534bb431cdc7ec2e63fef8ee5aa8559e5ac56ffd7bd1432386027c35c7c54  config-purism-librem5.aarch64"
