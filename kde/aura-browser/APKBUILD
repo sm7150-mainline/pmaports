@@ -1,0 +1,37 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=aura-browser
+pkgver=0_git20201105
+pkgrel=0
+_commit="70babf80c67bc7541bf0f5d4a575427836b7223c"
+pkgdesc="Browser for a fully immersed Big Screen experience allowing you to navigate the world wide web using just your remote control"
+url="https://invent.kde.org/adityam/aura-browser"
+# armhf blocked by extra-cmake-modules
+arch="all !armhf"
+license="GPL-2.0-or-later"
+depends="kirigami2"
+makedepends="
+	extra-cmake-modules
+	kirigami2-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtquickcontrols2-dev
+	qt5-qtwebengine-dev
+	"
+source="https://invent.kde.org/adityam/aura-browser/-/archive/$_commit/aura-browser-$_commit.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}
+
+sha512sums="d4170cf955e069132bbfc23a2ee1842fc06e7326d77adc4324da39be0eeeba24defe7996d450d1eca300c727e168a6bd3c9547259757feb888726f78c0b96852  aura-browser-70babf80c67bc7541bf0f5d4a575427836b7223c.tar.gz"
