@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm/configs/exynos_defconfig
 
 pkgname=linux-postmarketos-exynos4
-pkgver=5.9.1
+pkgver=5.9.12
 pkgrel=0
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
@@ -24,6 +24,7 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	$_config
 	0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
+	0002-Input-atmel_mxt_ts-fix-lost-interrupts.patch
 	initramfs.list
 	init
 "
@@ -62,8 +63,9 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="96af08c1dc964e5dbb3d221880ef8ca246f13370d2dc2f5ae64039f0352efc687c7446a2b4f86dad553b776ee75f78bbf58bb9bc845c9b57a9013ece63264874  linux-5.9.1.tar.xz
-c817cbc005b7f3c14c2f171c800753b6180f3a72d8164db977c341015b331fe0865c4024454a22604765bc53f1df4554b29f3c8b86c3ab9f8020c8ba148960e7  config-postmarketos-exynos4.armv7
+sha512sums="164a89388a56140140e0b4ba3f39a45f85a73c9862f5104cf591a6d6826cfc2498b4080f862cc592f04853328ba9236f8aa305e4f0f876f6b18eda2e42ea6dcb  linux-5.9.12.tar.xz
+287dccd4028590a94aa6c068975ec94f7fe5fc3184acb4c70ffebb2e39d62ed2e5f1456b78db1120d38046c42b6cbddbe3aac30134812c101ace7c8c3752c148  config-postmarketos-exynos4.armv7
 4bb111db4396a1981ad0883737c6594ca93701699846298b940d2ea202c666be0158a0f9ddc5b95b9147fa4cfe62639512ae78e9315f8d975b379ccc4e15da36  0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
+fa5cd612690276dd3f37906674a86e0de74208bfc8ab28a689d0ea4cec13987deda75f72c084a7da03699738cd03d5977d597942796aacaac59d399e7369b236  0002-Input-atmel_mxt_ts-fix-lost-interrupts.patch
 aaff0332b90e1f9f62de1128cace934717336e54ab09de46477369fa808302482d97334e43a85ee8597c1bcab64d3484750103559fea2ce8cd51776156bf7591  initramfs.list
 09f1f214a24300696809727a7b04378887c06ca6f40803ca51a12bf2176a360b2eb8632139d6a0722094e05cb2038bdb04018a1e3d33fc2697674552ade03bee  init"
