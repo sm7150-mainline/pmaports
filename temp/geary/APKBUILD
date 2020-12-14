@@ -1,8 +1,8 @@
 # Forked from Alpine to apply Purism's mobile patches
 pkgname=geary
-pkgver=9999_git20201126
+pkgver=9999_git20201210
 pkgrel=0
-_commit="7644e034c4034658305c23008db8d12dcf01a9c9"
+_commit="dd971251d7fd85c7b73f2e153beef9939354cec7"
 pkgdesc="Geary is an email application built around conversations"
 url="https://wiki.gnome.org/Apps/Geary"
 # libhandy is not available on s390x or mips
@@ -11,6 +11,7 @@ license="LGPL-2.1-or-later AND CC-BY-3.0 AND BSD-2-Clause"
 depends="iso-codes dbus:org.freedesktop.Secrets"
 makedepends="
 	appstream-glib-dev
+	cmake
 	enchant2-dev
 	folks-dev
 	gcr-dev
@@ -18,6 +19,7 @@ makedepends="
 	gmime-dev
 	gnome-online-accounts-dev
 	gspell-dev
+	gsound-dev
 	gtk+3.0-dev
 	iso-codes-dev
 	itstool
@@ -28,6 +30,7 @@ makedepends="
 	libnotify-dev
 	libpeas-dev
 	libsecret-dev
+	libunwind-dev
 	libxml2-dev
 	meson
 	sqlite-dev
@@ -45,9 +48,22 @@ subpackages="$pkgname-lang $pkgname-doc"
 source="https://source.puri.sm/Librem5/geary/-/archive/$_commit/geary-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
+prepare() {
+	default_prepare
+	# The branch of geary is from Purism's fork, which has all adaptive
+	# patches in the /debian dir in this branch for generating a debian
+	# package. There are dozens of patches, so we apply them here manually
+	# (the location is not compatible with what abuild expects for package
+	# patches).
+	# Patches have to be applied in the order they are listed in
+	# debian/pathes/series
+	grep "\.patch$" debian/patches/series |xargs -I {} -t -r -n1 patch -p1 -i debian/patches/{}
+}
+
 build() {
 	abuild-meson \
 		-Dlibunwind_optional=true \
+		-Dprofile=release \
 		. output
 	meson compile ${JOBS:+-j ${JOBS}} -C output
 }
@@ -60,4 +76,4 @@ package() {
 	DESTDIR="$pkgdir" meson install --no-rebuild -C output
 }
 
-sha512sums="bd208108f6f22864422daf26a0a689f4100d30c1eadbac31bb67b8cd897faf5353064b5af99f8b74882d794cf3050483e84ffddc356bc1768cff2dabd0358054  geary-7644e034c4034658305c23008db8d12dcf01a9c9.tar.gz"
+sha512sums="f88317a690e8ea54572a3550738ccc1cec6f071e939c5cb857923c213db506ed16f249c980a2fc4a53af389ea5ebf001cfef60700623b7c9cc83f5baa79b3821  geary-dd971251d7fd85c7b73f2e153beef9939354cec7.tar.gz"
