@@ -1,0 +1,30 @@
+# Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+# Co-Maintainer: Ion Agorria
+
+pkgname=firmware-asus-tf201
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware files for Transformer Prime (asus-tf201)"
+url="https://github.com/clamor95/linux-firmware"
+arch="armv7"
+license="proprietary"
+options="!check !strip !archcheck"
+
+# source
+_commit="91a0663493d9760bfd428f915093ba7635b0341f"
+source="BCM4329B1_002.002.023.0797.0879.hcd::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/BCM4329B1_002.002.023.0797.0879.hcd
+	brcmfmac4329-sdio.asus,tf201.txt::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/brcmfmac4329-sdio.asus%2Ctf201.txt
+"
+
+package() {
+	# Bluetooth
+	install -D -m644 "$srcdir"/BCM4329B1_002.002.023.0797.0879.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4329B1.hcd
+
+	# Wi-Fi
+	install -D -m644 "$srcdir"/brcmfmac4329-sdio.asus,tf201.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4329-sdio.asus,tf201.txt
+}
+
+sha512sums="26534cbef298d7594ed6d8a58380ed3b1593a195aaa2c9e5108dce82dbaec4da922f49217342397d405131d827873dca1c78ab2e73c4bae0901b2c77ff56f9b2  BCM4329B1_002.002.023.0797.0879.hcd
+655f2bda94ca1c9ff26fba4c2eb69121fed461325dfd14342262240d5833d063839311bd0b8e2efffbab9b19a0852c5ab57b267c97e8a0205f810a2259840159  brcmfmac4329-sdio.asus,tf201.txt"

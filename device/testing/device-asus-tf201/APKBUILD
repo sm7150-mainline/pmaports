@@ -1,0 +1,59 @@
+# Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+# Co-Maintainer: Ion Agorria
+
+pkgname=device-asus-tf201
+pkgdesc="Asus Transformer Prime TF201"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-grate mkbootimg mesa-dri-gallium mkbootimg alsa-ucm-conf asus-transformer-blobtools"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-phosh
+	$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	rootston.ini
+	ucm/tegra-hda.conf
+	ucm/tegra-hda-HiFi.conf
+	ucm/TF201_RT5631.conf
+	ucm/TF201_RT5631-HiFi.conf"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# Alsa usecase manager config
+	install -D -m644 "$srcdir"/TF201_RT5631.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/TF201_RT5631/TF201_RT5631.conf
+	install -D -m644 "$srcdir"/TF201_RT5631-HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/TF201_RT5631/HiFi.conf
+	install -D -m644 "$srcdir"/tegra-hda.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/tegra-hda.conf
+	install -D -m644 "$srcdir"/tegra-hda-HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/HiFi.conf
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Asus Transformer Prime TF201 WiFi & BT firmware"
+	depends="firmware-asus-tf201 linux-firmware-brcm"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="344e1a878b654c9f50438ad44e68b5cb2c86c01815a29a4eb6c1c791cfd37ff0ea681f5755bdcb2b9035d6608b4ddc87d44c0e3838eb0bdf8e8c8f79e16e84db  deviceinfo
+6ec993e278d2a73c72fb96f001716ded63543d99183847d22d172cd81ac410791c79370ecf391d0c24822c975d91b84dc1db296e1b28dbf66d5c227bff8d4011  rootston.ini
+5dead806f7568fad5f240957158864faab7a4dbbdae18b2a18110f64caa0254a001fbd5711789718cfde055528af57cebca11bbc4d7f55e12c9853f3d9e8534c  tegra-hda.conf
+1cdaa43350d69a021d2ff0b8b91ab537032b6861003bea506e429948c615934f6ee56cc4603dd94d4923c8be4a52a63cac110761b51167761c096b6880ce6c0c  tegra-hda-HiFi.conf
+5a692d53097c5791bfa6adf149947ec95e9a8392dc14581a62b20ce086ff40afc1a5988dcaa5083df44cfaea51902a9ec09ee9d623df2e595bf1ef1fb1c1f1e8  TF201_RT5631.conf
+9dc4bd7f3b5f24323655ef997d80d310bea00fabfd9bb5f1fbe06682b336ed5ad6ead0b81f84ba83eda0a0202ca279e78b792e6c1bc044315ecbe92fb382d51e  TF201_RT5631-HiFi.conf"
