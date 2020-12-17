@@ -1,15 +1,22 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-motorola-osprey
-pkgver=1
-pkgrel=14
+pkgver=2
+pkgrel=0
 pkgdesc="Motorola Moto G 3rd gen. (2015)"
 url="https://postmarketos.org"
-arch="armhf"
+arch="aarch64"
 license="MIT"
-depends="postmarketos-base linux-motorola-osprey mkbootimg mesa-dri-swrast"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
 makedepends="devicepkg-dev"
-source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules fb-workaround.sh"
+source="deviceinfo"
 options="!check !archcheck"
+
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -17,13 +24,31 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
-		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-	install -D -m644 "$srcdir"/fb-workaround.sh \
-		"$pkgdir"/etc/profile.d/00-fb-workaround.sh
 }
 
-sha512sums="c80b73b2a17713a5f7e6129d11cc3f6dbd028120a9c8bd6e139db166b5bcb937b28766e6215745100a520e18a216294567d220e9263e6c4e532dbe97630c7729  deviceinfo
-3e9d6bf1bd45328104b91b724472ac0e39cb595fb87f84b6793527019477a73234ae37d33e99419bc5810c018402ea6e68e76c26ace112ee11efc416ac0a7398  initfs-hook.sh
-60597699b58aca14a1696329eba4ffb46d98c721d442fb024752e3301ea992ac1727d4609083a299573115288d2039c17831e7c70c2ffdd195a3c20323e6b5fb  90-android-touch-dev.rules
-857da7bfe3a44d960ca1c05f8646eedd16140fa339f3b0421353f6cdb4b42f8e5c6457522e70c2eb2f76717404c688c0d92525b9d1e99895f3febb5ae3687420  fb-workaround.sh"
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/Wi-Fi/Bluetooth/Video(/Modem) firmware"
+	depends="linux-firmware-qcom firmware-motorola-osprey-wcnss firmware-motorola-osprey-venus"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-motorola-osprey-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="84722de140aee0e6b11b49c1cd5df40efcc68f64637d646623f30b9aacfc45aab6707719c5bed3b117660f1018d7dd69551b8a5a7704f6246b944dca28d42f9c  deviceinfo"
