@@ -60,7 +60,7 @@ setup_mdev() {
 mount_subpartitions() {
 	# Do not create subpartition mappings if pmOS_boot
 	# already exists (e.g. installed on an sdcard)
-	blkid |grep -q "pmOS_boot"  && return
+	[ -n "$(find_boot_partition)" ] && return
 	attempt_count=0
 	echo "Trying to mount subpartitions for 10 seconds..."
 	while [ -z "$(find_boot_partition)" ]; do
@@ -74,7 +74,7 @@ mount_subpartitions() {
 					# Ensure that this was the *correct* subpartition
 					# Some devices have mmc partitions that appear to have
 					# subpartitions, but aren't our subpartition.
-					if blkid | grep -q "pmOS_boot"; then
+					if [ -n "$(find_boot_partition)" ]; then
 						break
 					fi
 					kpartx -d "$partition"
@@ -161,7 +161,7 @@ find_boot_partition() {
 		echo "${x#pmos_boot=}"
 		return
 	done
-	findfs LABEL="pmOS_boot"
+	findfs LABEL="pmOS_inst_boot" || findfs LABEL="pmOS_boot"
 }
 
 # $1: path
