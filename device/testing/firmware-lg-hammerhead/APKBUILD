@@ -1,15 +1,26 @@
 pkgname=firmware-lg-hammerhead
 pkgver=1
-pkgrel=1
+pkgrel=2
+_modem_commit="d0565ebb2033bbd267b8be698373f075c9a82cd5"
 pkgdesc="Firmware for LG hammerhead (Nexus 5)"
-subpackages="$pkgname-modem $pkgname-adsp"
-url="https://github.com/TheMuppets/proprietary_vendor_lge"
+subpackages="$pkgname-modem $pkgname-adsp $pkgname-bluetooth"
+url="https://developers.google.com/android/drivers#hammerheadm4b30z"
 arch="armv7"
 license="proprietary"
 options="!check !strip !archcheck"
 
 # Sources
-source="https://bshah.in/hammerhead-firmware.tar.gz"
+source="https://gitlab.com/JuniorJPDJ/hammerhead-modem/-/archive/$_modem_commit/hammerhead-modem-$_modem_commit.tar.gz
+	https://dl.google.com/dl/android/aosp/qcom-hammerhead-m4b30z-d6c0fe26.tgz
+	https://dl.google.com/dl/android/aosp/broadcom-hammerhead-m4b30z-21cf8433.tgz"
+
+unpack() {
+	default_unpack
+
+	mkdir -p "$srcdir/qcom" "$srcdir/broadcom"
+	tail -n +315 "$srcdir/extract-qcom-hammerhead.sh" | tar -C "$srcdir/qcom" -zx
+	tail -n +276 "$srcdir/extract-broadcom-hammerhead.sh" | tar -C "$srcdir/broadcom" -zx
+}
 
 package() {
 	# parent package is empty
@@ -19,8 +30,8 @@ package() {
 modem() {
 	pkgdesc="LG Nexus 5 modem firmware"
 
-	cd "$srcdir"
-	for _i in modem.* mba.*; do
+	cd "$srcdir/hammerhead-modem-$_modem_commit/image"
+	for _i in *; do
 		install -Dm644 $_i "$subpkgdir"/lib/firmware/$_i
 	done
 }
@@ -28,10 +39,18 @@ modem() {
 adsp() {
 	pkgdesc="LG Nexus 5 adsp firmware"
 
-	cd "$srcdir"
+	cd "$srcdir/qcom/vendor/qcom/hammerhead/proprietary"
 	for _i in adsp.*; do
 		install -Dm644 $_i "$subpkgdir"/lib/firmware/$_i
 	done
 }
 
-sha512sums="ae8cd5ad7bd6486117131b407454be79df9e8b092d7eabfcb0eec029867d6aa037f52ec0a15dd2bf268a9d9eb74e01dca7e8a4b779eb1564a95ab19457402f64  hammerhead-firmware.tar.gz"
+bluetooth() {
+	pkgdesc="LG Nexus 5 Bluetooth firmware"
+
+	install -Dm644 "$srcdir/broadcom/vendor/broadcom/hammerhead/proprietary/bcm4335c0.hcd" "$subpkgdir"/lib/firmware/brcm/BCM4335C0.hcd
+}
+
+sha512sums="a63a0fad2c7e5920c8a30213e149c51a745cdb2b34c1b13772737d1da51cd712aa81d3e03de6f3397d0705e59d0130727979f2c1c6f529788e0fbc9bbcde6a8a  hammerhead-modem-d0565ebb2033bbd267b8be698373f075c9a82cd5.tar.gz
+a421b547c78b71f73faa017325e291259aa37250c68613230f30a6bad8b773eb89bf2f1cf194e1d0182874ce346996107544dde00f742cf56d23076e02435df2  qcom-hammerhead-m4b30z-d6c0fe26.tgz
+003502fff6f8e69dea91f0c24e75021f9b5099c1bb65e6167f388e26d3a820e7649eb618ae7925ebc9a2b97121759308c6e9ccf4d8b49b369918bdd7b59b1ed0  broadcom-hammerhead-m4b30z-21cf8433.tgz"
