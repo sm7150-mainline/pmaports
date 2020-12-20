@@ -1,0 +1,25 @@
+# Maintainer: Johannes Marbach <n0-0ne+gitlab@mailbox.org>
+pkgname=gpodder-adaptive
+pkgver=3.10.17_git20210121
+_commit=b3cacc0184cc727e9effdafa9e0208213f7ab66e
+pkgrel=0
+pkgdesc="Podcast aggregator"
+url="https://github.com/tpikonen/gpodder"
+arch="noarch"
+license="GPL-3.0-or-later"
+depends="python3 py3-gobject3 py3-cairo py3-podcastparser py3-mygpoclient py3-requests py3-dbus xdg-utils"
+makedepends="py3-setuptools intltool help2man"
+checkdepends="py3-pytest py3-pytest-httpserver py3-pytest-cov py3-minimock desktop-file-utils"
+subpackages="$pkgname-doc"
+source="https://github.com/tpikonen/gpodder/archive/$_commit.tar.gz"
+builddir="$srcdir/gpodder-$_commit"
+
+check() {
+	make unittest
+}
+
+package() {
+	make install PREFIX=/usr DESTDIR=$pkgdir
+}
+
+sha512sums="b92e411c62aa71fd3c3250a202dd74337fc1c1fdd51fd0fe9fca91b4e8b5af52c5b4698ba11de855471c1bb8d35c64c9150f176416bd961d75df9b47037c4975  b3cacc0184cc727e9effdafa9e0208213f7ab66e.tar.gz"
