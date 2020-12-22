@@ -7,6 +7,7 @@ deviceinfo_bootimg_append_seandroidenforce=""
 deviceinfo_bootimg_blobpack=""
 deviceinfo_bootimg_dtb_second=""
 deviceinfo_bootimg_mtk_mkimage=""
+deviceinfo_bootimg_pxa=""
 deviceinfo_bootimg_qcdt=""
 deviceinfo_dtb=""
 deviceinfo_flash_offset_base=""
@@ -335,7 +336,14 @@ create_uboot_files()
 create_bootimg()
 {
 	[ "${deviceinfo_generate_bootimg}" = "true" ] || return
-	require_package "mkbootimg-osm0sis" "mkbootimg" "generate_bootimg"
+
+	if [ "${deviceinfo_bootimg_pxa}" = "true" ]; then
+		require_package "pxa-mkbootimg" "pxa-mkbootimg" "bootimg_pxa"
+		MKBOOTIMG=pxa-mkbootimg
+	else
+		require_package "mkbootimg-osm0sis" "mkbootimg" "generate_bootimg"
+		MKBOOTIMG=mkbootimg-osm0sis
+	fi
 
 	echo "==> initramfs: creating boot.img"
 	_base="${deviceinfo_flash_offset_base}"
@@ -385,7 +393,7 @@ create_bootimg()
 		fi
 	fi
 	# shellcheck disable=SC2039 disable=SC2086
-	mkbootimg-osm0sis \
+	"${MKBOOTIMG}" \
 		--kernel "${kernelfile}" \
 		--ramdisk "$outfile" \
 		--base "${_base}" \
