@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
-pkgver=5
-pkgrel=3
+pkgver=6
+pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -53,6 +53,7 @@ _source644="
 	etc/fstab
 	etc/issue
 	etc/motd
+	etc/sleep-inhibitor.conf
 	etc/udev/rules.d/50-firmware.rules
 	"
 _source755="
@@ -62,7 +63,6 @@ _source755="
 	etc/polkit-1/rules.d/50-org.freedesktop.NetworkManager.rules
 	sbin/swapfile
 	usr/lib/firmwareload.sh
-	usr/libexec/elogind/system-sleep/suspend-disable-conditions.hook
 	"
 
 # Avoid filename based checksum conflicts by including the whole path:
@@ -109,11 +109,15 @@ x11() {
 
 elogind() {
 	install_if="$pkgname=$pkgver-r$pkgrel elogind"
-	install="$subpkgname.pre-upgrade"
-	replaces="elogind"
+	depends="sleep-inhibitor"
+	install="$subpkgname.pre-upgrade $subpkgname.post-install"
+	replaces="
+		elogind
+		sleep-inhibitor
+		"
 
 	amove etc/elogind/logind.conf
-	amove usr/libexec/elogind/system-sleep/suspend-disable-conditions.hook
+	amove etc/sleep-inhibitor.conf
 
 	postmarketos-mvcfg-package "$subpkgdir" "$subpkgname"
 }
@@ -135,11 +139,11 @@ fe0651904c1f40ffa67d83daca190af199f63247e53642a59a1e1147cd06776fcf20b7b2fcc53737
 9b8d0493bb64457fe176fea801e0771d3c5279302c61559824bf81b3d2b66d2c1e076f4aaac65f55389005acb18c27e44bed858c2bdbad37d74199f07c86c354  rootfs-etc-fstab
 45bd0742a64a9d3c4a88e152b97edcf3fa1edca28884f9ea69e7c4c365f1e41ef9056dbe204545de7d4b2ba92e1e5872b2a929c2dcc1dd468e627cc3f090b8e6  rootfs-etc-issue
 2989a2701d96c496bcdb536ce93984c75604e7b248d427f7b7106ea1946760549d4c29590257a598c9ad8d3fa88735d9b168dbda28c2294816065acdbab2e93f  rootfs-etc-motd
+041e50a7f78f7f03153175027439fc203f3dc81ed9970c579a16728d36e006e77f49b0321ee4bb7bb127fa6e4c31de3e7029f80ea75c4afc83bae7d24906372d  rootfs-etc-sleep-inhibitor.conf
 0b098828080055d3646ea54891cb0e1b578cbc30f5e16f7284f2814c08192f18079a38fb686d192715ae6a3d2cd6625d9e3cf99f234a6f0d94088bb0cb2ce43d  rootfs-etc-udev-rules.d-50-firmware.rules
 5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  rootfs-etc-init.d-deferred-initcalls
 dadd251229eb5759e3cba77c39a4afc6f28bcbe0f272cd3ab41b7ff4fe6a3d2b9ee765e1a0b8f9241274e757ed3b2ce035ee5abe91843e55fb4188a3c401ca78  rootfs-etc-init.d-devmappings
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  rootfs-etc-init.d-swapfile
 7b34e861bc4ec57d970d2a7aacca36e3c3742a63ff995af1336f80b666e4a38c1035b35e129322e0d62dc75011bfaf495eb2bcae5392f2bf39f1d7b1400afcce  rootfs-etc-polkit-1-rules.d-50-org.freedesktop.NetworkManager.rules
 3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  rootfs-sbin-swapfile
-38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  rootfs-usr-lib-firmwareload.sh
-c6bd4e0a84c56698f6d3ffc531610a778a3983ecf31b9609527598b5733c35a8619db4e390705c893c011797753431886028002d7745a113167b1e58d99e2129  rootfs-usr-libexec-elogind-system-sleep-suspend-disable-conditions.hook"
+38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  rootfs-usr-lib-firmwareload.sh"
