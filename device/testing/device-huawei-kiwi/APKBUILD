@@ -10,6 +10,13 @@ options="!check !archcheck"
 depends="postmarketos-base linux-huawei-kiwi mkbootimg mesa-dri-gallium msm-fb-refresher"
 makedepends="devicepkg-dev"
 source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+nonfree_firmware() {
+	pkgdesc="Modem/GPU/WiFi/BT/Video firmware"
+	depends="linux-firmware-qcom firmware-huawei-kiwi wcnss-wlan"
+	mkdir "$subpkgdir"
+}
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -19,4 +26,4 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-sha512sums="357b58de0ecc26c95aff3eb52b662374a1459da2192c6421ff19c0323e9024a2a2619b91327b0c49a72f4273c27b75460b7053a8560e5b1d5f1211dbd1d5e2b1  deviceinfo"
+sha512sums="2d0ee66a7125f40b82be6ce748d37f791fc65b02c38af056756b6e6ddbdc21e3d5d9127521e0844fa2a305451dcf7b0d356c4c1118d7667f95b3d9967cedf758  deviceinfo"
