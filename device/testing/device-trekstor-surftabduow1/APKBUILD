@@ -1,0 +1,26 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-trekstor-surftabduow1
+pkgdesc="Trekstor Surftab Duo W1"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="x86_64"
+options="!check !archcheck"
+depends="grub-x86 postmarketos-base linux-lts mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo grub.cfg"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	mkdir -p "$pkgdir"/boot/grub/
+	install -D -m644 "$srcdir"/grub.cfg \
+		"$pkgdir"/boot/grub/grub.cfg
+}
+
+sha512sums="17d38cd52168cf96f03ef610341fc6e84c1e15c67be18199ef38238b1c8175f88e57f25dd4df13290cd595d9410430300fa2d2f00d72ceef2ded06c0743a65eb  deviceinfo
+13007aa683165b257cb9cc11112020d97debfa2a26746b1cdd805b7fdaabf072d4a743edd7553e02ec77f5802fd439f4e1ab22107a4aa26905ee70e400754b53  grub.cfg"
