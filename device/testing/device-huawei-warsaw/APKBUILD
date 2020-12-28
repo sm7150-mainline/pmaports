@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-huawei-warsaw
+pkgdesc="Huawei P10 Lite"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-huawei-warsaw mkbootimg mesa-dri-gallium msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="1d677f67178d34509af45f620a79657ccbe53d5e9e050686be941a62eed47a7b3850f0c5c63cefa45cfa3fda9e8bb2dcda54c8ce26ae1227da0a646d3e20bdcc  deviceinfo"
