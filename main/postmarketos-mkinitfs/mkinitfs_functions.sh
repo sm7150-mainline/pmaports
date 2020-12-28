@@ -406,11 +406,17 @@ create_bootimg()
 		${_second} \
 		${_dt} \
 		-o "${outfile/initramfs-/boot.img-}" || exit 1
-	if [ "${deviceinfo_bootimg_blobpack}" = "true" ]; then
+	if [ "${deviceinfo_bootimg_blobpack}" = "true" ] || [ "${deviceinfo_bootimg_blobpack}" = "sign" ]; then
 		echo "==> initramfs: creating blob"
+		_flags=""
+		if [ "${deviceinfo_bootimg_blobpack}" = "sign" ]; then
+			_flags="-s"
+		fi
 		# shellcheck disable=SC2039
-		blobpack "${outfile/initramfs-/blob-}" LNX \
-			"${outfile/initramfs-/boot.img-}" || exit 1
+		blobpack $_flags "${outfile/initramfs-/blob-}" \
+				LNX "${outfile/initramfs-/boot.img-}" || exit 1
+		# shellcheck disable=SC2039
+		mv "${outfile/initramfs-/blob-}" "${outfile/initramfs-/boot.img-}"
 	fi
 	if [ "${deviceinfo_bootimg_append_seandroidenforce}" = "true" ]; then
 		echo "==> initramfs: appending 'SEANDROIDENFORCE' to boot.img"
