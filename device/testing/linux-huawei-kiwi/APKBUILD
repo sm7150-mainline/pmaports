@@ -1,63 +1,50 @@
 # Reference: <https://postmarketos.org/vendorkernel>
-# Kernel config based on: arch/arm64/configs/kiwi-64_defconfig
+# Kernel config based on: arch/arm64/configs/msm8939_defconfig
 
 pkgname=linux-huawei-kiwi
-pkgver=3.10.108
+pkgver=5.9_rc7
 pkgrel=0
 pkgdesc="Huawei Honor 5X kernel fork"
 arch="aarch64"
 _carch="arm64"
 _flavor="huawei-kiwi"
-url="https://kernel.org"
+url="https://git.sr.ht/~bo41/msm8939-mainline-linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="bash bc bison devicepkg-dev flex openssl-dev perl dtbtool gcc6"
+makedepends="bash bc bison devicepkg-dev installkernel flex openssl-dev perl"
 
-# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
-
-# Source
-_repository="android_kernel_huawei_kiwi"
-_commit="6e870147270171fb00496ac229ffa5eb86a496d1"
+_repository="msm8939-mainline-linux"
+_commit="cf997bbb83ffb33f40d3707419e0141bb668dbbc"
 _config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz
 	$_config
-	gcc8-fix-put-user.patch
-	gcc10-extern_YYLOC_global_declaration.patch
-	wlan_nv_template_builtin.patch
 "
 builddir="$srcdir/$_repository-$_commit"
-_outdir="out"
 
 prepare() {
 	default_prepare
-	. downstreamkernel_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
 }
 
 build() {
 	unset LDFLAGS
-	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
-
-	# Generate master DTB (deviceinfo_bootimg_qcdt)
-	dtbTool -p scripts/dtc/ -o "$_outdir/arch/$_carch/boot/dt.img" "$_outdir/arch/$_carch/boot/"
 }
 
 package() {
-	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
-	# Master DTB (deviceinfo_bootimg_qcdt)
-	install -Dm644 "$_outdir/arch/$_carch/boot/dt.img" \
-		"$pkgdir/boot/dt.img"
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
-sha512sums="2d98bae9a04d7d55f11bab18acd43fd23411b33a19942769def24da7273664368f6f81883f1bfb93b77614acb62bece8131a5b7a42f0ddbf3f7e2276a762b989  linux-huawei-kiwi-6e870147270171fb00496ac229ffa5eb86a496d1.tar.gz
-2f8ec631c27ec8cee7f47591ae70ce76fad824269bcc0f0b0de921f00bf031e4d8f990aebb378665f2c7a2ca4a1ce06d09fdc7486be573e992bf24e1d5a50f45  config-huawei-kiwi.aarch64
-197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
-2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
-edebf62a38a558369eb914475bc341d1fedc1c0bbeb2989172f9f99a2bc57c231a995176702335cd754701449b145e0231c1f2860d9ea93e84f52916a64d8d98  wlan_nv_template_builtin.patch"
+sha512sums="d0126c017b5253039800c6e743e7e8c178e6745c76f15078fee025dcd9584cfd888c1cc2acac5d8718f2635e0db30c4e2867124a818eb77b64da5cc4d866d0ba  linux-huawei-kiwi-cf997bbb83ffb33f40d3707419e0141bb668dbbc.tar.gz
+89fb4b215a3e6144b6c3ccd57af694f561c91bfa3c4c93093cb15fc57717b81720d68f9c0298c66eb9efe2173b71a5c7ccbbb812387bc2af63f010fec2918a52  config-huawei-kiwi.aarch64"
