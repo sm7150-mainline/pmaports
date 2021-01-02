@@ -1,21 +1,19 @@
 # U-boot with patches to make the PinePhone boot faster and have control over the ddr clock speed
 pkgname=u-boot-pinephone
-pkgver=2020.07_git20200803
-pkgrel=1
+pkgver=2021.01_git20201228
+pkgrel=0
 # Last commit from "crust" branch, as used in "crust-meta":
 # https://gitlab.com/pine64-org/crust-meta/-/blob/8886bcc829179bf77216fade71f0ede9bd014e67/Makefile#L78
-_commit="5433de221199bd5458f3ef71a8366f8031b61cb1"
+_commit="7492749fec31b1086bc8933bf113a766aea021aa"
 pkgdesc="u-boot bootloader for the PINE64 PinePhone"
 url="https://gitlab.com/pine64-org/u-boot"
 arch="aarch64"
 license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
 	ISC LGPL-2.0-only LGPL-2.1-only X11"
-makedepends="$depends_dev bc dtc python3-dev swig bison flex openssl-dev arm-trusted-firmware-sun50i crust"
+makedepends="$depends_dev bc dtc python3-dev py3-setuptools swig bison flex openssl-dev arm-trusted-firmware-sun50i crust"
 options="!check"
 source="https://gitlab.com/pine64-org/u-boot/-/archive/$_commit/u-boot-$_commit.tar.gz
 	update-u-boot
-	0001-sunxi-support-asymmetric-dual-rank-DRAM-on-A64-R40.patch
-	0001-Set-RAM-clock-back-to-552.patch
 	"
 builddir="$srcdir/u-boot-$_commit"
 
@@ -32,6 +30,15 @@ build() {
 	make O="$BUILD_DIR" HOSTCC=gcc ARCH=arm all
 }
 
+prepare() {
+	default_prepare
+
+	if ! grep -q "CONFIG_DRAM_CLK=552" configs/pinephone_defconfig; then
+		error "CONFIG_DRAM_CLK must be 552!"
+		return 1
+	fi
+}
+
 package() {
 	cd build
 	install -D -m644 "u-boot-sunxi-with-spl.bin" \
@@ -39,7 +46,5 @@ package() {
 	install -D -m 755 "$srcdir"/update-u-boot "$pkgdir"/usr/sbin/update-u-boot
 }
 
-sha512sums="89cf93893e5cd9a3ecebdcc1e6dc28e6c2bb58aef7d18371e06e85d197d0d4fbdced5856349fdca35b97ad2d55a87d5fe2eaec8d5d2019f29e6a3af62d737ab0  u-boot-5433de221199bd5458f3ef71a8366f8031b61cb1.tar.gz
-4a3a1772a7309d44e7977dee4aca499d5c79675d99cda1395d8765abb415b8456260c7a989650f0bd2dfda0377af2346917fbcbf3e356a36265ed07e161ddc3b  update-u-boot
-7369f4d1f28d1ec2adf9640636940b3672eb5d4573160f2906451778369b67a02d4a684fb81246b3e2b9983acf0c9632b1c880f7d77c850a00a41080fca65481  0001-sunxi-support-asymmetric-dual-rank-DRAM-on-A64-R40.patch
-e412f968e9107b5d2c7282135fe343fd27c2ae9830344e367c2ee9ee4b0ba7be8b305356468011a4f04cf0d81e908827d7d3ddfd23f9c107ba5c91170503601c  0001-Set-RAM-clock-back-to-552.patch"
+sha512sums="73b132cdc26113a83d060f0d243320ca989b4efa98fe95a2205526a42f615ced7046bb9d4878c67a9a550b04c2519d90be3c2272be97c878d759bf5d027cf536  u-boot-7492749fec31b1086bc8933bf113a766aea021aa.tar.gz
+4a3a1772a7309d44e7977dee4aca499d5c79675d99cda1395d8765abb415b8456260c7a989650f0bd2dfda0377af2346917fbcbf3e356a36265ed07e161ddc3b  update-u-boot"
