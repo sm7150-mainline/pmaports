@@ -1,0 +1,33 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-superior
+pkgdesc="Samsung Galaxy Premier"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-superior mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="
+	deviceinfo
+	modules-load.conf
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-superior"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="0118c9baf51c562f64673e764c7f2f0ee77bcafca08e04565e2679eca24a620687faf8341a2932f159f9a5a0bf0b6edd91db91d956b994e09672e41b50ac1b64  deviceinfo
+761387a44a2280589336a69b24a24bc33e81aebc441f4033ffd992820edee6b386cc817d7b8519cbf52467a56180ec6b9a88929ee54e73f01217107ef206cab4  modules-load.conf"
