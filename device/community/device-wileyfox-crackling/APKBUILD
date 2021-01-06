@@ -4,7 +4,7 @@
 pkgname=device-wileyfox-crackling
 pkgdesc="Wileyfox Swift"
 pkgver=3
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -28,13 +28,13 @@ package() {
 }
 
 kernel_mainline() {
-	pkgdesc="Close to mainline kernel (no charging, no modem, audio routed directly)"
+	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
 	depends="linux-postmarketos-qcom-msm8916"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline_modem() {
-	pkgdesc="Close to mainline kernel (no charging, non-free modem, audio routed through ADSP)"
+	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
 	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
@@ -52,4 +52,4 @@ nonfree_firmware_modem() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="2b2b3ca29bfbe70c47550de1736595b7b613a34728e2339e45baa3188615531cca17690b6c85118aecc0dcc695a1586f49a806663eea841612b17ef7a1ca595c  deviceinfo"
+sha512sums="d1d9a7be40ff1273c844544f80788270e92c409add355c30500f4f6405f688744bd944c192330e4c62e256bd53f26772af4ec59a62861ac71110d993c83d6c14  deviceinfo"
