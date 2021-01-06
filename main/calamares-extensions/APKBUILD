@@ -1,8 +1,10 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+# Do not change arch to noarch, until this bug is resolved:
+# https://gitlab.alpinelinux.org/alpine/abuild/-/issues/10022
 pkgname=calamares-extensions
 pkgver=1.0.0
-pkgrel=0
-arch="noarch !armhf" # blocked by qt5-qtdeclarative
+pkgrel=1
+arch="all !armhf" # !armhf: qt5-qtdeclarative
 url="https://github.com/calamares/calamares-extensions"
 pkgdesc="Calamares Branding and Module Examples"
 license="GPL-3.0-or-later"
@@ -25,7 +27,7 @@ _brandings="
 	"
 
 for i in $_modules; do
-	subpackages="$pkgname-mod-$i:_module:$CARCH $subpackages"
+	subpackages="$pkgname-mod-$i:_module $subpackages"
 done
 for i in $_brandings; do
 	subpackages="$pkgname-brand-$i:_branding $subpackages"
