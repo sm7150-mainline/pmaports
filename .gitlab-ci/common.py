@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2020 Oliver Smith
+# Copyright 2021 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Various functions used in CI scripts
