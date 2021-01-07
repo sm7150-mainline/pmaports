@@ -1,13 +1,16 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=plasma-dialer
 pkgver=0.1_git20201109
-pkgrel=0
+pkgrel=1
 _commit="45daa12e959981f25d594480c27f6cc5bdf98820"
 pkgdesc="A dialer for Plasma Mobile"
 arch="all !armhf" # Blocked qt5-qtdeclarative
 url="https://invent.kde.org/plasma-mobile/plasma-dialer"
 license="GPL-2.0-or-later"
-depends="kirigami2"
+depends="
+	kirigami2
+	oxygen
+	"
 makedepends="
 	extra-cmake-modules
 	kcontacts-dev
@@ -50,6 +53,6 @@ check() {
 }
 
 package() {
-	DESTDIR="$pkgdir" cmake --build build --target install
+	DESTDIR="$pkgdir" cmake --install build
 }
 sha512sums="4ebb7959e794bd6b5b245d5d177e9db162c549e7385dac628c36166464419a72aa45422c7968150a0d1582cef39d4afdb79c97bac4249b02aaaef69d996994fe  plasma-dialer-45daa12e959981f25d594480c27f6cc5bdf98820.tar.gz"
