@@ -2,7 +2,7 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.10
+pkgver=1.11
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -20,17 +20,18 @@ depends="
 	uboot-tools
 "
 makedepends="devicepkg-dev"
-_confver=27
-_confdir=$srcdir/librem5-base-v$_confver
+_confver=33
+builddir=$srcdir/librem5-base-pureos-$_confver
 source="
-	https://source.puri.sm/Librem5/librem5-base/-/archive/v$_confver/librem5-base-v$_confver.tar.gz
+	https://source.puri.sm/Librem5/librem5-base/-/archive/pureos/$_confver/librem5-base-pureos-$_confver.tar.gz
 	00-kwin.sh
 	00-mesa.sh
-	70-gnss.rules
 	70-wifi-pm.rules
 	77-mm-broadmobi-port-types.rules
 	deviceinfo
 	flash_script.lst
+	librem5-base-ucm2.patch
+	librem5-shipmode.initd
 	modprobe.d_rsi.conf
 	modules-load.d_librem5.conf
 	uboot-script.cmd
@@ -60,7 +61,7 @@ phosh() {
 	depends="
 		wys
 	"
-	install -D -m644 "$_confdir"/default/org.freedesktop.ModemManager1.pkla \
+	install -D -m644 "$builddir"/default/org.freedesktop.ModemManager1.pkla \
 		"$subpkgdir"/var/lib/polkit-1/localauthority/10-vendor.d/org.freedesktop.ModemManager1.pkla
 }
 
@@ -69,10 +70,10 @@ pulseaudio() {
 	install_if="$pkgname pulseaudio"
 	# install config files from upstream Purism
 	mkdir -p "$subpkgdir"/etc/pulse/
-	cp -r "$_confdir"/default/audio/pulse/daemon.conf.d "$subpkgdir"/etc/pulse/
-	install -D -m644 "$_confdir"/default/audio/pulse/librem5.pa "$subpkgdir"/etc/pulse/librem5.pa
+	cp -r "$builddir"/default/audio/pulse/daemon.conf.d "$subpkgdir"/etc/pulse/
+	install -D -m644 "$builddir"/default/audio/pulse/librem5.pa "$subpkgdir"/etc/pulse/librem5.pa
 	mkdir -p "$subpkgdir"/usr/share/pulseaudio/alsa-mixer
-	cp -r "$_confdir"/default/audio/profile-sets "$subpkgdir"/usr/share/pulseaudio/alsa-mixer/
+	cp -r "$builddir"/default/audio/profile-sets "$subpkgdir"/usr/share/pulseaudio/alsa-mixer/
 }
 
 package() {
@@ -86,27 +87,37 @@ package() {
 		"$pkgdir"/etc/X11/xorg.conf.d/10-video.conf
 
 	# udev
-	install -D -m644 "$_confdir"/debian/librem5-base-defaults.librem5-pm.udev  \
+	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-pm.udev  \
 		"$pkgdir"/usr/lib/udev/rules.d/librem5-pm.rules
-	install -D -m644 "$srcdir"/70-gnss.rules "$pkgdir"/usr/lib/udev/rules.d/70-gnss.rules
+	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-modem.udev  \
+		"$pkgdir"/usr/lib/udev/rules.d/librem5-modem.rules
+	install -D -m644 "$builddir"/default/gpsd/99-gnss.rules  \
+		"$pkgdir"/usr/lib/udev/rules.d/librem5-gnss.rules
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t "$pkgdir"/usr/lib/udev/rules.d/
 
 	# install audio config files from upstream Purism
-	mkdir -p "$pkgdir"/usr/share/alsa/ucm
-	cp -r "$_confdir"/default/audio/ucm "$pkgdir"/usr/share/alsa/
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2
+	cp -r "$builddir"/default/audio/ucm2 "$pkgdir"/usr/share/alsa/
+
+	# device-specific services
+	install -Dm755 "$builddir"/default/shipmode/l5-poweroff-shipmode  \
+		"$pkgdir"/usr/bin/librem5-shipmode
+	install -Dm755 	"$srcdir"/librem5-shipmode.initd \
+		"$pkgdir"/etc/init.d/librem5-shipmode
 
 	devicepkg_package $startdir $pkgname
 }
-sha512sums="d23e23a48bdea8df65b7df2475caa5b85c8e999c7dff1e48e359a8fb9166019c4c609b5855876f603d60a422e43a0378d4dbdd89c71b8f6ec054bb7f1dc59ca5  librem5-base-v27.tar.gz
+sha512sums="e89e75480bda1150e11579faba78058b15824adaaa67e199909583c67d3e519916fed783743f0e510abe3fd571610c7a3f26a9bd2008e85f1eafb114e9ffe652  librem5-base-pureos-33.tar.gz
 685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  00-kwin.sh
 9b4ecf6692db6d291799b2ebcdd7f3ceba52d657c01b40a15f4d819f1f9d2f0576bfcf94b1889da767d1757f3af86f4056160b9b31b1ecab0517acfb958f22a9  00-mesa.sh
-be0cf9f9e37c33d526fdf5fb61de1b42b3bb9309faf1feb0db51fa9639c3c0b35608977c898130ff60ebf2e8081ac36799b96c748b7efa9dcef7501753bc4890  70-gnss.rules
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
-aefd60a66454529fe80852ed9fffc89babda10937ba1c805379bfbe0e4ea6cf3276409cbb5570975e0ff14d813adcf3e9664a904f93c3e7ac8c408bc5473065e  deviceinfo
+db7708ea7d34fc877aacdd249403ea5468d652bdf65ffa41f2f0471f3c4dcc9db9af743dfd792f3a21db721ecc040152f7ea8b76912556088a22a99e2bfd370f  deviceinfo
 d033df2b9125622c946af67dad83070473c86937b5825f57ad272c9145b594071dd6913949127803c45af4ea3226526551718d40739f9f1ee4bfe6446e62c856  flash_script.lst
+35e7a1ca1e1924878fcb377d22508d8fbd5fc81398c117259e40c0ba4b86d76b019f352d73e7d201dfb9ceb304fe1e2e3d2f7fc4a3cd06ddd6cd6e2c3f848057  librem5-base-ucm2.patch
+76b06cc1ac82c3fc0e298c9d7d5c9139624b1269bf846fe3bc07b9af877d882362b60ba90028ad3182cb1d6426aacdb560fe060b026778a56e7f038d495eadd4  librem5-shipmode.initd
 9dc018f0de523cbfe5a49cbe831aa30e975a8dd34635197bb52582f072ac356ef2c02223fc794d970380091a69a83a74c3fbe34520190c8536e77f9ea98c7659  modprobe.d_rsi.conf
 a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f6e65a5d1b1a9099936382c99b49a44303f7b6d77a075a471  modules-load.d_librem5.conf
-ed4f8caa061e51ffb123261c89454554e6773feea733de4b78be929a36dc5ac0ff448ac1ed69a0a97e7fa54f9d711076e8965465b180ba6a05237dab4fb45924  uboot-script.cmd
+3b1782aafdc2e14c4b85b5eca52c31083c2058147a12cedb288903a34a3f49693d8d479048e30e0605fcc49cd00dda6f9e1c671618c5dcb878d7a3d01dcb1a90  uboot-script.cmd
 1cbc65cf2cb8fad4b0332d012a0256a266205b9b64371f5c0dae09dbb7f1e45b254e8c43993b896097e9d7035a72d547d9bce1ab2133addc56a5abdb80b44616  xorg.conf"
