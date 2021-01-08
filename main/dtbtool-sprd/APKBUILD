@@ -1,23 +1,25 @@
 # Maintainer: Anri Dellal <anridellal@gmail.com>
 pkgname=dtbtool-sprd
-pkgver=1.0.0
+pkgver=1.1.2
 pkgrel=0
-_commit="f0e4a4c5025b8f7a13e69db3af9446717702f4f2"
 pkgdesc="Tool for compiling a dtb.img for Spreadtrum SoC"
-url="https://github.com/yonglongliu/vendor/"
+url="https://gitlab.com/Grimler/dtbtool-sprd"
 arch="all"
 license="MIT"
 makedepends="dtc-dev"
 options="!check" # There is no testsuite
-source="$pkgname-$_commit-dtbtool.c::https://raw.githubusercontent.com/yonglongliu/vendor/$_commit/sprd/external/tools-build/dtbtool/dtbtool.c"
+source="
+	https://gitlab.com/Grimler/dtbtool-sprd/-/archive/v$pkgver/dtbtool-sprd-v$pkgver.tar.gz
+"
+builddir="dtbtool-sprd-v$pkgver"
 
 build() {
-	gcc $pkgname-$_commit-dtbtool.c -o dtbTool-sprd.o -c
+	gcc dtbtool.c -o dtbTool-sprd.o -c
 	gcc dtbTool-sprd.o -o dtbTool-sprd
 }
 
 package() {
-	install -Dm755 "$srcdir"/dtbTool-sprd \
+	install -Dm755 "$srcdir"/dtbtool-sprd-v$pkgver/dtbTool-sprd \
 		"$pkgdir"/usr/bin/dtbTool-sprd
 }
-sha512sums="2b79cbdaffb73dc99b673375f386218858f7a638433af1cf4da9310fea90485e42054b87bf1a4aa23e134595f1cf956f9bade07bc73076a8553e1363c3002b39  dtbtool-sprd-f0e4a4c5025b8f7a13e69db3af9446717702f4f2-dtbtool.c"
+sha512sums="3fe3398bf89a12f47b2dc409912dfac88413467e09af66244dcf359a30a220f5c44413458566f7d762bc4cfcbf1d3404dd74160617df8ef020fa383e53017c82  dtbtool-sprd-v1.1.2.tar.gz"
