@@ -1,0 +1,57 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/lineageos_zerofltexx_defconfig
+
+pkgname=linux-samsung-zerofltexx
+pkgver=3.10.108
+pkgrel=0
+pkgdesc="Samsung Galaxy S6 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-zerofltexx"
+url="https://github.com/Exynos7420/android_kernel_samsung_exynos7420"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc linux-headers installkernel devicepkg-dev dtbtool-exynos"
+
+# Source
+_repository="android_kernel_samsung_exynos7420"
+_commit="31cf7c95814358c4cd76feacf2f29bebc057fefc"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Exynos7420/$_repository/archive/$_commit.tar.gz
+	$_config
+	Makefile_fix_paths.patch
+	gcc10-extern_YYLOC_global_declaration.patch
+"
+
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool-exynos --pagesize 2048 \
+		--platform 0x50a6 \
+		--subtype  0x217584da \
+		-o "$_outdir/arch/$_carch/boot"/dt.img \
+		$(find "$_outdir/arch/$_carch/boot/dts/" -name *zeroflte_eur_open_*.dtb)
+}
+
+package() {
+	KERNEL_IMAGE_NAME="Image" downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+	install -Dm644 "$_outdir/arch/$_carch/boot"/dt.img \
+		"$pkgdir"/boot/dt.img
+}
+
+sha512sums="1f8917dfaf01865cbc0385579cad1565dcb1ec4445bbeaf3e70d0bd8a6a572a457813c311f54360f54c79b373e621d280982f560cf01091d156c90efcc98067b  linux-samsung-zerofltexx-31cf7c95814358c4cd76feacf2f29bebc057fefc.tar.gz
+8b6064ce3cb8b085f06b8512b71728e01985b8b5154305473655059ff0af73fc391b54448875d0a5c35581b8f2fe6f65925f85632044d4969a14dbf9cde1af3e  config-samsung-zerofltexx.aarch64
+00aac98cfbaa68bd30c41622b12f38106f6595e2d74ee5cdd05add56f03facb4db45deb43b5df997143b54497d621b9fc5bae7207898c70df0672ebb482c4b46  Makefile_fix_paths.patch
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch"
