@@ -1,7 +1,10 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Oliver Smith <ollieparanod@postmarketos.org>
+#
+# Note: cannot upstream to Alpine until:
+# https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10712
 pkgname=osk-sdl
-pkgver=0.61
+pkgver=0.63
 pkgrel=0
 pkgdesc="Onscreen keyboard for unlocking LUKS devices"
 url="https://gitlab.com/postmarketOS/osk-sdl"
@@ -11,32 +14,33 @@ depends="
 	cryptsetup-libs
 	directfb
 	mesa-gl
+	mesa-gles
 	ttf-dejavu
 	"
 makedepends="
 	cryptsetup-dev
 	linux-headers
+	meson
+	scdoc
 	sdl2-dev
 	sdl2_ttf-dev
-	scdoc
 	"
 source="https://gitlab.com/postmarketOS/osk-sdl/-/archive/$pkgver/osk-sdl-$pkgver.tar.gz"
 options="!strip !check" # No tests
 subpackages="$pkgname-doc"
 
 build() {
-	make
+	abuild-meson build
+	meson compile ${JOBS:+-j ${JOBS}} -C build
 }
 
 package() {
-	install -D -m755 bin/osk-sdl \
-		"$pkgdir"/usr/bin/osk-sdl
-	install -D -m755 osk.conf \
-		"$pkgdir"/etc/osk.conf
-	install -Dm644 doc/osk-sdl.1 "$pkgdir"/usr/share/man/man1/osk-sdl.1
+	DESTDIR="$pkgdir" meson install --no-rebuild -C build
 
+	# needed to trigger initfs rebuild:
 	touch osk-sdl
 	install -Dm644 osk-sdl \
 		"$pkgdir"/usr/share/postmarketos-mkinitfs-triggers/osk-sdl
 }
-sha512sums="872f4e370bd111c77531e35813e8e5f431a3a7f9befde428cda7d13c2e131d411162dff5175f889b424aeabcf77bb6ae79bc52d74fa4ba70efc7ef8a77ed4b4b  osk-sdl-0.61.tar.gz"
+
+sha512sums="56c5c0ec85f340324cecf42a1b5c583c0d744ece6cf4d13986d10ff533799df05c2b44a13ccceb98230350df6b7963e0713de75cc9df7227d379845cd8964a77  osk-sdl-0.63.tar.gz"
