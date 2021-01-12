@@ -443,46 +443,50 @@ start_udhcpd() {
 	udhcpd
 }
 
-setup_directfb_tslib() {
-	# Set up directfb and tslib
-	# Note: linux_input module is disabled since it will try to take over
-	# the touchscreen device from tslib (e.g. on the N900)
-	export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input"
-	export SDL_VIDEODRIVER="directfb"
-	# shellcheck disable=SC2154
-	if [ -n "$deviceinfo_dev_touchscreen" ]; then
-		export TSLIB_TSDEVICE="$deviceinfo_dev_touchscreen"
-	fi
-}
-
-setup_kmsdrm() {
-	# Set up SDL and Mesa env to use kmsdrm backend
-	export SDL_VIDEODRIVER="kmsdrm"
-	# needed for librem 5
-	export ETNA_MESA_DEBUG="no_supertile"
-}
-
+# $1: SDL_VIDEODRIVER value (e.g. 'kmsdrm', 'directfb')
 run_osk_sdl() {
-	osk-sdl -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
+	unset ETNA_MESA_DEBUG
+	unset SDL_VIDEODRIVER
+	unset DFBARGS
+	unset TSLIB_TSDEVICE
+	unset OSK_EXTRA_ARGS
+	case "$1" in
+		"kmsdrm")
+			# Set up SDL and Mesa env to use kmsdrm backend
+			export SDL_VIDEODRIVER="kmsdrm"
+			# needed for librem 5
+			export ETNA_MESA_DEBUG="no_supertile"
+			;;
+		"directfb")
+			# Set up directfb and tslib
+			# Note: linux_input module is disabled since it will try to take over
+			# the touchscreen device from tslib (e.g. on the N900)
+			export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input"
+			export SDL_VIDEODRIVER="directfb"
+			# SDL/directfb tries to use gles even though it's not
+			# actually available, so disable it in osk-sdl
+			export OSK_EXTRA_ARGS="--no-gles"
+			# shellcheck disable=SC2154
+			if [ -n "$deviceinfo_dev_touchscreen" ]; then
+				export TSLIB_TSDEVICE="$deviceinfo_dev_touchscreen"
+			fi
+			;;
+	esac
+
+	osk-sdl $OSK_EXTRA_ARGS -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
 }
 
 start_onscreen_keyboard() {
 	# shellcheck disable=SC2154
 	if [ -n "$deviceinfo_mesa_driver" ]; then
-		setup_kmsdrm
+		# try to run osk-sdl with kmsdrm driver, then fallback to
+		# directfb if that fails
+		if ! run_osk_sdl "kmsdrm"; then
+			run_osk_sdl "directfb"
+		fi
 	else
-		setup_directfb_tslib
+		run_osk_sdl "directfb"
 	fi
-
-	if ! run_osk_sdl; then
-		setup_directfb_tslib
-		run_osk_sdl
-	fi
-
-	unset ETNA_MESA_DEBUG
-	unset SDL_VIDEODRIVER
-	unset DFBARGS
-	unset TSLIB_TSDEVICE
 }
 
 start_charging_mode() {

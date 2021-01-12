@@ -231,6 +231,7 @@ get_binaries_extra()
 		BINARIES_EXTRA="
 			$BINARIES_EXTRA
 			/usr/lib/libEGL.so.1
+			/usr/lib/libGLESv2.so.2
 			/usr/lib/libgbm.so.1
 			/usr/lib/libudev.so.1
 			/usr/lib/xorg/modules/dri/${deviceinfo_mesa_driver}_dri.so
