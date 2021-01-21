@@ -1,0 +1,30 @@
+From def850d3b0240d4f305a89bc4f14bde10a75800d Mon Sep 17 00:00:00 2001
+From: Marco Martin <notmart@gmail.com>
+Date: Wed, 27 Jan 2021 13:35:22 +0100
+Subject: [PATCH] Don't crash if the panelview is not ready
+
+createWaitingPanels is not guaranteed to create all of them.
+Those which have a desktop not ready yet will go back to waitingpanels until new turn.
+This scenario sometimes happens during first run scripts or update ones, causing a crash in those cases
+---
+ shell/shellcorona.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/shell/shellcorona.cpp b/shell/shellcorona.cpp
+index 6c2ab0359..fd2f330ee 100644
+--- a/shell/shellcorona.cpp
++++ b/shell/shellcorona.cpp
+@@ -1883,7 +1883,9 @@ Plasma::Containment *ShellCorona::addPanel(const QString &plugin)
+     // immediately create the panel here so that we have access to the panel view
+     createWaitingPanels();
+ 
+-    m_panelViews.value(panel)->setScreenToFollow(wantedScreen);
++    if (m_panelViews.contains(panel)) {
++        m_panelViews.value(panel)->setScreenToFollow(wantedScreen);
++    }
+ 
+     return panel;
+ }
+-- 
+GitLab
+

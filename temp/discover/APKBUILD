@@ -1,0 +1,110 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=discover
+pkgver=5.20.90
+pkgrel=0
+# armhf blocked by qt5-qtdeclarative
+# s390x blocked by flatpak
+arch="all !armhf !s390x !mips64"
+url="https://userbase.kde.org/Discover"
+pkgdesc="KDE Plasma resources management GUI"
+license="LGPL-2.0-or-later AND (GPL-2.0-only OR GPL-3.0-only) AND GFDL-1.2-only"
+depends="kirigami2"
+makedepends="
+	appstream-dev
+	attica-dev
+	extra-cmake-modules
+	flatpak-dev
+	karchive-dev
+	kcmutils-dev
+	kconfig-dev
+	kcoreaddons-dev
+	kcrash-dev
+	kdbusaddons-dev
+	kdeclarative-dev
+	ki18n-dev
+	kidletime-dev
+	kio-dev
+	kitemmodels-dev
+	knewstuff-dev
+	kxmlgui-dev
+	plasma-framework-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	"
+checkdepends="xvfb-run"
+
+case "$pkgver" in
+	*.90*) _rel=unstable;;
+	*) _rel=stable;;
+esac
+source="https://download.kde.org/$_rel/plasma/$pkgver/discover-$pkgver.tar.xz"
+subpackages="$pkgname-lang $pkgname-backend-flatpak:backend_flatpak"
+
+case "$CARCH" in
+	x86|x86_64)
+		makedepends="$makedepends fwupd-dev"
+		subpackages="$subpackages $pkgname-backend-fwupd:backend_fwupd"
+		;;
+	*) ;;
+esac
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_DISABLE_FIND_PACKAGE_Snapd=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	# knsbackendtest and flatpaktest fail to find their required executables
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "(knsbackend|flatpak)test"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}
+
+backend_flatpak() {
+	pkgdesc="Flatpak backend for $pkgname"
+	depends=""
+	install_if="$pkgname flatpak"
+
+	mkdir -p \
+		"$subpkgdir"/usr/lib/qt5/plugins/discover \
+		"$subpkgdir"/usr/share/libdiscover/categories \
+		"$subpkgdir"/usr/lib/qt5/plugins/discover-notifier \
+		"$subpkgdir"/usr/share/applications \
+		"$subpkgdir"/usr/share/metainfo \
+		"$subpkgdir"/usr/share/icons/hicolor/scalable/apps
+
+	mv "$pkgdir"/usr/lib/qt5/plugins/discover/flatpak-backend.so \
+		"$subpkgdir"/usr/lib/qt5/plugins/discover/
+	mv "$pkgdir"/usr/share/libdiscover/categories/flatpak-backend-categories.xml \
+		"$subpkgdir"/usr/share/libdiscover/categories/
+	mv "$pkgdir"/usr/lib/qt5/plugins/discover-notifier/FlatpakNotifier.so \
+		"$subpkgdir"/usr/lib/qt5/plugins/discover-notifier/
+	mv "$pkgdir"/usr/share/applications/org.kde.discover-flatpak.desktop \
+		"$subpkgdir"/usr/share/applications/
+	mv "$pkgdir"/usr/share/metainfo/org.kde.discover.flatpak.appdata.xml \
+		"$subpkgdir"/usr/share/metainfo/
+	mv "$pkgdir"/usr/share/icons/hicolor/scalable/apps/flatpak-discover.svg \
+		"$subpkgdir"/usr/share/icons/hicolor/scalable/apps/
+}
+
+backend_fwupd() {
+	pkgdesc="fwupd backend for $pkgname"
+	depends=""
+	install_if="$pkgname fwupd"
+
+	mkdir -p \
+		"$subpkgdir"/usr/lib/qt5/plugins/discover
+
+	mv "$pkgdir"/usr/lib/qt5/plugins/discover/fwupd-backend.so \
+		"$subpkgdir"/usr/lib/qt5/plugins/discover/
+}
+
+sha512sums="f5cde987e5026eece047a32285421bf1eada4ed9496c514378c16ccd99dcfe768fc5d64caf63bbcad53295d60e21c567fd6712a09006f0adbcb66f809413ac9e  discover-5.20.90.tar.xz"

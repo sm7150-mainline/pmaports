@@ -1,8 +1,7 @@
 # Forked from Alpine to package newer commits
 pkgname=plasma-nano
-pkgver=5.20.80_git20201001
+pkgver=5.20.90
 pkgrel=0
-_commit="6a456033bfa13cc57d28b2a49a8ac6615bc60439"
 pkgdesc="A minimal Plasma shell package intended for embedded devices"
 arch="all !armhf"
 url="https://invent.kde.org/plasma/plasma-nano"
@@ -15,9 +14,12 @@ makedepends="
 	qt5-qtbase-dev
 	qt5-qtdeclarative-dev
 	"
-source="https://invent.kde.org/plasma/plasma-nano/-/archive/$_commit/plasma-nano-$_commit.tar.gz"
+case "$pkgver" in
+	*.90*) _rel=unstable;;
+	*) _rel=stable;;
+esac
+source="https://download.kde.org/$_rel/plasma/$pkgver/plasma-nano-$pkgver.tar.xz"
 options="!check" # No tests
-builddir="$srcdir/$pkgname-$_commit"
 
 build() {
 	cmake -B build \
@@ -33,6 +35,6 @@ check() {
 }
 
 package() {
-	DESTDIR="$pkgdir" cmake --build build --target install
+	DESTDIR="$pkgdir" cmake --install build
 }
-sha512sums="2d16e3409207195303b127e286011f21c1be010f50524f782067740b10f08c8f65dbdc11c6917076031228b3d1d1c14b6926e341c3ee1e6207912fbc194cc3f7  plasma-nano-6a456033bfa13cc57d28b2a49a8ac6615bc60439.tar.gz"
+sha512sums="f49ad8ff9b28a400ab51329c61fb4593198518e30ec42dba201ade800fab391d9989231cf667c960fbaea6b45b6155fb9a4ae3a4a0f4c27b84160682fe19a24f  plasma-nano-5.20.90.tar.xz"

@@ -1,12 +1,12 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qqc2-breeze-style
-pkgver=0_git20201206
+pkgver=5.20.90
 pkgrel=0
-_commit="31187b5254a2c6bd6bb5acb77f0adc25e1afb0b0"
-pkgdesc="Breeze inspired QQC2 Style"
-url="https://invent.kde.org/plasma/qqc2-breeze-style"
+pkgdesc="Breeze inspired QQC2 style"
 # armhf blocked by extra-cmake-modules
 arch="all !armhf"
+url="https://www.plasma-mobile.org/"
 license="LicenseRef-KDE-Accepted-LGPL AND LicenseRef-KFQF-Accepted-GPL"
 depends="kirigami2"
 makedepends="
@@ -21,10 +21,13 @@ makedepends="
 	qt5-qtquickcontrols2-dev
 	qt5-qtx11extras-dev
 	"
-source="https://invent.kde.org/plasma/qqc2-breeze-style/-/archive/$_commit/qqc2-breeze-style-$_commit.tar.gz"
-subpackages="$pkgname-dev"
+
+case "$pkgver" in
+	*.90*) _rel=unstable;;
+	*) _rel=stable;;
+esac
+source="https://download.kde.org/$_rel/plasma/$pkgver/qqc2-breeze-style-$pkgver.tar.xz"
 options="!check" # No tests
-builddir="$srcdir/$pkgname-$_commit"
 
 build() {
 	cmake -B build \
@@ -34,8 +37,13 @@ build() {
 	cmake --build build
 }
 
-package() {
-	DESTDIR="$pkgdir" cmake --build build --target install
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
 }
 
-sha512sums="43a12147425849086508e651f4e9b46c1ba040cc16e371b278cfefe0d28a0e1bc197bffbfdde3c56f528b6cf4c3fae20a97851c957a6a299527105b5217edd3c  qqc2-breeze-style-31187b5254a2c6bd6bb5acb77f0adc25e1afb0b0.tar.gz"
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}
+
+sha512sums="fa27d1f7eab7a784678caeff32aa3f2bf9cfd6ab4132a564c056b7f5ba56460b48dd05490dee60fe3c5d24b4ec5cfcc7da20bb2404d8fbbcc9ae399c629677b5  qqc2-breeze-style-5.20.90.tar.xz"

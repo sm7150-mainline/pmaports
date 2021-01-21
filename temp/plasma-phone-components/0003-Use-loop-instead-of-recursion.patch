@@ -1,0 +1,53 @@
+From 8f2f357022d33b10c0aefe96f28b79e55dc85f7a Mon Sep 17 00:00:00 2001
+From: Alexey Minnekhanov <alexeymin@postmarketos.org>
+Date: Mon, 1 Feb 2021 17:26:32 +0300
+Subject: [PATCH] Use loop instead of recursion
+
+This fixes crash (stack overflow) when pressing
+screenshot button in top panel.
+
+---
+ containments/panel/phonepanel.cpp | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/containments/panel/phonepanel.cpp b/containments/panel/phonepanel.cpp
+index 91c3fe5..c76b181 100644
+--- a/containments/panel/phonepanel.cpp
++++ b/containments/panel/phonepanel.cpp
+@@ -46,20 +46,22 @@ static int readData(int theFile, QByteArray &theDataOut)
+     char    lBuffer[4096];
+     int     lRetryCount = 0;
+     ssize_t lBytesRead = 0;
+-    while (true) {
+-        lBytesRead = QT_READ(theFile, lBuffer, sizeof lBuffer);
++
++    do {
+         // give user 30 sec to click a window, afterwards considered as error
+-        if (lBytesRead == -1 && (errno == EAGAIN) && ++lRetryCount < 30000) {
+-            usleep(1000);
+-        } else {
+-            break;
++        while (true) {
++            lBytesRead = QT_READ(theFile, lBuffer, sizeof lBuffer);
++            if (lBytesRead == -1 && (errno == EAGAIN) && ++lRetryCount < 30000) {
++                usleep(1000);
++            } else {
++                break;
++            }
+         }
+-    }
+ 
+-    if (lBytesRead > 0) {
+-        theDataOut.append(lBuffer, lBytesRead);
+-        lBytesRead = readData(theFile, theDataOut);
+-    }
++        if (lBytesRead > 0) {
++            theDataOut.append(lBuffer, lBytesRead);
++        }
++    } while (lBytesRead > 0);
+     return lBytesRead;
+ }
+ 
+-- 
+2.26.2
+
