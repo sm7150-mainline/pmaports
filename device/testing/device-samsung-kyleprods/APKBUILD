@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-kyleprods
+pkgdesc="Samsung Galaxy S Duos 2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-kyleprods mkbootimg mesa-dri-swrast msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="5f6f28b4e05dafe226f2ed4f538a880665923da6a0dd46db7a2b26e2c4fcf11e7598b4bfae68dbce85c3e2f171038929aec4ac582cd96b68d545aeac3db6ea2a  deviceinfo"
