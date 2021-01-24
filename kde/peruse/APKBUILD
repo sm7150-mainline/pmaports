@@ -1,8 +1,8 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=peruse
-pkgver=0_git20201022
+pkgver=0_git20210124
 pkgrel=0
-_commit="ecf28af788851773fb29cc57fab2922abb6fa670"
+_commit="341c513a59df0aee73a29d035a7a4bc6ae4b102b"
 pkgdesc="A comic book viewer based on Frameworks 5, for use on multiple form factors"
 # armhf blocked by extra-cmake-modules
 arch="all !armhf"
@@ -22,6 +22,7 @@ makedepends="
 	qt5-qtdeclarative-dev
 	"
 source="https://invent.kde.org/graphics/peruse/-/archive/$_commit/peruse-$_commit.tar.gz"
+subpackages="$pkgname-creator"
 options="!check" # No tests
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -34,7 +35,15 @@ build() {
 }
 
 package() {
-	DESTDIR="$pkgdir" cmake --build build --target install
+	DESTDIR="$pkgdir" cmake --install build
 }
 
-sha512sums="f0cfa4c802d757dafe86bdd85d82c2c1b4a837f4a211e7d073fcc20312f89d74e6e5e23a5eb84d13e7740ae663aad82cb208a998f067419eae4b9a58849388bc  peruse-ecf28af788851773fb29cc57fab2922abb6fa670.tar.gz"
+creator() {
+	pkgdesc="Creation tool for comic books"
+	mkdir -p "$subpkgdir"/usr/bin "$subpkgdir"/usr/share/metainfo
+	mv "$pkgdir"/usr/bin/perusecreator "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/share/metainfo/org.kde.perusecreator.appdata.xml \
+		"$subpkgdir"/usr/share/metainfo
+}
+
+sha512sums="b9981cb63e793e0f5053f03a2de798d71d4b350a4243223dbbfc8af27def4b18a1cab1f6fd17eb3b07639af4962864de533df50b2722e2c8a6796295912801b9  peruse-341c513a59df0aee73a29d035a7a4bc6ae4b102b.tar.gz"
