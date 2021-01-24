@@ -1,15 +1,33 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=koko
-pkgver=0_git20200618
+pkgver=0_git20210114
 pkgrel=0
-_commit="9f3a802fd86466f0cd4a4de5c7bf3725fc31f4e7"
+_commit="c9e9b678fe781e988276bf72f31f899ceaecbf1b"
 _geonames_pkgver=2020.06.25
 pkgdesc="Image gallery application for Plasma Mobile"
 url="https://invent.kde.org/plasma-mobile/koko"
 arch="all !armhf" # armhf blocked by qt5-qtdeclarative
 license="LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-3.0-only AND LicenseRef-KDE-Accepted-GPL"
-depends="kirigami2 kdeclarative purpose qt5-qtbase-sqlite"
-makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtlocation-dev ki18n-dev kdeclarative-dev kconfig-dev kio-dev kguiaddons-dev kcoreaddons-dev knotifications-dev exiv2-dev"
+depends="
+	kdeclarative
+	kirigami2
+	purpose
+	qt5-qtbase-sqlite
+	"
+makedepends="
+	exiv2-dev
+	extra-cmake-modules
+	kconfig-dev
+	kcoreaddons-dev
+	kdeclarative-dev
+	kguiaddons-dev
+	ki18n-dev
+	kio-dev
+	knotifications-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtlocation-dev
+	"
 source="https://invent.kde.org/plasma-mobile/koko/-/archive/$_commit/koko-$_commit.tar.gz
 	https://github.com/pmsourcedump/geonames/archive/$_geonames_pkgver/geonames-$_geonames_pkgver.tar.gz
 	"
@@ -44,8 +62,8 @@ check() {
 }
 
 package() {
-	DESTDIR="$pkgdir" cmake --build build --target install
+	DESTDIR="$pkgdir" cmake --install build
 }
 
-sha512sums="234cc3ce863754752b685a0e871b890a072ea24761f721bddeda1d88451c6e99354c03101c5dd9b180ba2ddb9eab08cbf340a0cd08d551d9c67c3864c3b534af  koko-9f3a802fd86466f0cd4a4de5c7bf3725fc31f4e7.tar.gz
+sha512sums="84fd88a32d7eb1373d7455d269fa579fb40adde809960f83e18255bf995bd982b7f824d9bbf7a97a383ac169b1ab28eb2764f44bb0fba0a5c0cfa1748028e98a  koko-c9e9b678fe781e988276bf72f31f899ceaecbf1b.tar.gz
 07485983a5ce0f03f1e12e64c280abe01e81beaa22b2dd43bc1b0e7632298acbfb83f09ef8c01a0915481c8e918a430b97d68f1ed5d43f76506798245345bc14  geonames-2020.06.25.tar.gz"
