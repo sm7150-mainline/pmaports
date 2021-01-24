@@ -1,13 +1,22 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=kpeoplesink
-pkgver=0_git20200618
-pkgrel=2
-_commit="ee59e02f8c7f3b44511a432f7ddc38b9f0b89b62"
+pkgver=0_git20201129
+pkgrel=0
+_commit="9c14f17cefec6e56467b19130febe2eff734d3b7"
 pkgdesc="Expose Sink contacts to KPeople"
 url="https://invent.kde.org/pim/kpeoplesink"
-arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+# armhf blocked by qt5-qtdeclarative
+arch="all !armhf"
 license="LGPL-2.1-or-later"
-makedepends="extra-cmake-modules qt5-qtbase-dev kcoreaddons-dev kpeople-dev kcontacts-dev sink-dev kaccounts-integration-dev"
+makedepends="
+	extra-cmake-modules
+	kaccounts-integration-dev
+	kcontacts-dev
+	kcoreaddons-dev
+	kpeople-dev
+	qt5-qtbase-dev
+	sink-dev
+	"
 source="https://invent.kde.org/pim/kpeoplesink/-/archive/$_commit/kpeoplesink-$_commit.tar.gz"
 options="!check" # Broken tests
 builddir="$srcdir/$pkgname-$_commit"
@@ -36,7 +45,7 @@ check() {
 }
 
 package() {
-	DESTDIR="$pkgdir" cmake --build build --target install
+	DESTDIR="$pkgdir" cmake --install build
 }
 
-sha512sums="4708bd25aad314229b2888ec1ec1079743372ba8b18a0cbf31bc8bd589d5dc1803be78f9d51b487a62d0e8589e0b7a9d5b224cbb599abf3f2376e9f889bd2245  kpeoplesink-ee59e02f8c7f3b44511a432f7ddc38b9f0b89b62.tar.gz"
+sha512sums="3da17501e617637ab0e54e6062afa82dfd87fe3f2e5d9c0b0305d5477aa56c0aedce150f29c01e767f8819ed9d854304d20281dec18513e38ab45bf0d7dd8266  kpeoplesink-9c14f17cefec6e56467b19130febe2eff734d3b7.tar.gz"
