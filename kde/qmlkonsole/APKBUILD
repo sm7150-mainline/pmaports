@@ -1,10 +1,11 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=qmlkonsole
-pkgver=0_git20201001
+pkgver=0_git20210122
 pkgrel=0
-_commit="d34cab3771e1327f7b91a02c4bd49037c770d4e4"
+_commit="48dad8a56d0b44b7c71e63b31652b4ce3ad64db5"
 pkgdesc="Terminal app for Plasma Mobile"
-arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+# armhf blocked by extra-cmake-modules
+arch="all !armhf"
 url="https://invent.kde.org/plasma-mobile/qmlkonsole"
 license="GPL-3.0-or-later"
 depends="
@@ -43,7 +44,7 @@ build() {
 }
 
 package() {
-	DESTDIR="$pkgdir" cmake --build build --target install
+	DESTDIR="$pkgdir" cmake --install build
 }
 
-sha512sums="17905ea6cb85b5361cda68c07930069fd5aa7339e44849c25b14e99148489669c3d49613c829d8e7c12449fa1aa2ee21d3d73e352aa80aed60225954ed57eca3  qmlkonsole-d34cab3771e1327f7b91a02c4bd49037c770d4e4.tar.gz"
+sha512sums="301b2a6f94de067158001872932e031f6ff4a96debee5d97f761a5195186a1951e1eda47653083f35f96dc51e514599d61bbf6f010799d9992c121e997b75603  qmlkonsole-48dad8a56d0b44b7c71e63b31652b4ce3ad64db5.tar.gz"
