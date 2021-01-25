@@ -1,0 +1,52 @@
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kairo
+pkgver=0_git20210121
+pkgrel=0
+_commit="32e992e2379af289f1d617855ca3fae3a02cf70a"
+pkgdesc="Application to help you practice sport exercises with a description and duration"
+url="https://invent.kde.org/utilities/kairo"
+# armhf blocked by extra-cmake-modules
+arch="all !armhf"
+license="GPL-3.0-or-later AND CC0-1.0"
+depends="kirigami2"
+makedepends="
+	extra-cmake-modules
+	kirigami2-dev
+	qt5-qtbase-dev
+	qt5-qtdeclarative-dev
+	qt5-qtmultimedia-dev
+	"
+checkdepends="xvfb-run"
+source="https://invent.kde.org/utilities/kairo/-/archive/$_commit/kairo-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	# qmlplugindump fails for armv7+qemu (pmb#1970). This is purely for
+	# packager knowledge and doesn't affect runtime, so we can disable it.
+	if [ "$CARCH" = "armv7" ]; then
+		sed -i "s/ecm_find_qmlmodule/# ecm_find_qmlmodule/g" CMakeLists.txt
+	fi
+}
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+
+	# circuitreadertest is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "circuitreadertest"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}
+
+sha512sums="24f78d6f0b70e0b3bec5ffd1c13994a8739cd3f801cc7deed42f17c72f4d21ba76c61dca5aa4808baa9c8fdaf9e85246018b7a4207f15a7f7ae2cc6b86acade1  kairo-32e992e2379af289f1d617855ca3fae3a02cf70a.tar.gz"
