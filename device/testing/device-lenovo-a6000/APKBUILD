@@ -1,0 +1,52 @@
+pkgname=device-lenovo-a6000
+pkgdesc="Lenovo A6000"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem:kernel_mainline_modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem() {
+	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
+	depends="linux-firmware-qcom firmware-qcom-msm8916-wcnss firmware-lenovo-a6000-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-lenovo-a6000-modem"
+	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="9aee049ade2747166ad56e73261f4a8a52ca43e27b0de972bbb35024475613461ef14a5a8020438351bf1c78e62181cf47b77b4f6bc36e6990df5d92bbd4445d  deviceinfo"
