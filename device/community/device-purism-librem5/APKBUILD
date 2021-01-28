@@ -3,7 +3,7 @@
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
 pkgver=1.11
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -24,7 +24,6 @@ _confver=33
 builddir=$srcdir/librem5-base-pureos-$_confver
 source="
 	https://source.puri.sm/Librem5/librem5-base/-/archive/pureos/$_confver/librem5-base-pureos-$_confver.tar.gz
-	00-kwin.sh
 	00-mesa.sh
 	70-wifi-pm.rules
 	77-mm-broadmobi-port-types.rules
@@ -38,7 +37,6 @@ source="
 	xorg.conf
 "
 subpackages="
-	$pkgname-plasma
 	$pkgname-phosh
 	$pkgname-pulseaudio
 "
@@ -47,12 +45,6 @@ install="$pkgname.post-install"
 build() {
 	mkimage -A arm64 -C none -O linux -T script -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
 	devicepkg_build $startdir $pkgname
-}
-
-plasma() {
-	pkgdesc="Plasma Mobile support for the Librem 5"
-	install_if="$pkgname kwin"
-	install -D -m644 "$srcdir"/00-kwin.sh "$subpkgdir"/etc/profile.d/00-kwin.sh
 }
 
 phosh() {
@@ -109,8 +101,7 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 sha512sums="e89e75480bda1150e11579faba78058b15824adaaa67e199909583c67d3e519916fed783743f0e510abe3fd571610c7a3f26a9bd2008e85f1eafb114e9ffe652  librem5-base-pureos-33.tar.gz
-685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  00-kwin.sh
-9b4ecf6692db6d291799b2ebcdd7f3ceba52d657c01b40a15f4d819f1f9d2f0576bfcf94b1889da767d1757f3af86f4056160b9b31b1ecab0517acfb958f22a9  00-mesa.sh
+5e0536a53ba5a33af6ddff3a5f5d866c09ae54dd6754e6b17e61fde0b141b3165379a598de562c89568a1de9ae9ae03a4f876c53002b87f09d7b56013345ab27  00-mesa.sh
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
 db7708ea7d34fc877aacdd249403ea5468d652bdf65ffa41f2f0471f3c4dcc9db9af743dfd792f3a21db721ecc040152f7ea8b76912556088a22a99e2bfd370f  deviceinfo
