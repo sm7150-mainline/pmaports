@@ -115,3 +115,14 @@ def test_aports_maintained(args):
             continue
         maintainers = pmb.parse._apkbuild.maintainers(path)
         assert maintainers, f"{path} in community needs at least 1 Maintainer"
+
+
+def test_aports_unmaintained(args):
+    """
+    Ensure that aports in /device/unmaintained have an "Unmaintained:" comment
+    that describes why the aport is unmaintained.
+    """
+    for path in glob.iglob(f"{args.aports}/device/unmaintained/*/APKBUILD"):
+        unmaintained = pmb.parse._apkbuild.unmaintained(path)
+        assert unmaintained, f"{path} should have an Unmaintained: " +\
+            "comment that describes why the package is unmaintained"

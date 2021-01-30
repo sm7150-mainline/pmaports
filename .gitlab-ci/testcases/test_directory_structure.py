@@ -10,6 +10,7 @@ expected_directories = [
     "device/community",
     "device/main",
     "device/testing",
+    "device/unmaintained",
     "kde",
     "maemo",
     "main",

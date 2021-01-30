@@ -16,6 +16,14 @@ def get_devices():
                 "/..")))
     for path in glob.glob(pmaports + "/device/*/device-*/"):
         device = os.path.dirname(path).split("device-", 1)[1]
+
+        # -downstream suffix is used when packaging the downstream kernel for
+        # devices that have a working mainline kernel. Those are usually
+        # unmaintained and therefore might not appear in the wiki. However,
+        # the main device should be documented (remove the -downstream suffix).
+        if device.endswith('-downstream'):
+            device = device[:-len('-downstream')]
+
         ret.append(device)
     return sorted(ret)
 
