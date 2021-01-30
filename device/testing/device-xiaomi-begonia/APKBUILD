@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-begonia
+pkgdesc="Xiaomi Redmi Note 8 Pro"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-begonia mkbootimg mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="1981b3954b96fb7da091e969944961c54735c710cd11f8e4cb368533ef7369370e2d9b70c1d086a19306eca03f8b5e7783d76d88dd6073bc4e069dba9705ccbd  deviceinfo"

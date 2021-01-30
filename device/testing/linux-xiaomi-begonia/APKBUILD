@@ -1,0 +1,45 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/begonia_user_defconfig
+
+pkgname=linux-xiaomi-begonia
+pkgver=4.14.213
+pkgrel=0
+pkgdesc="Xiaomi Redmi Note 8 Pro kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="xiaomi-begonia"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcompat"
+
+# Source
+_repository="begonia"
+_commit="3e00a59d4e6afb88e529e3dd8cc4257f58b71eed"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/AgentFabulous/$_repository/archive/$_commit.tar.gz
+	$_config
+	fix_cmdline.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	REPLACE_GCCH=0 . downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+}
+
+sha512sums="8b261f5331d08445a7d05cccff18f126b745a72a7cecf74850671a45df9562f3b8c4272109052232279876dc994dd590fab87ad12aaffaad187bcf753c2d2815  linux-xiaomi-begonia-3e00a59d4e6afb88e529e3dd8cc4257f58b71eed.tar.gz
+921ef91cd9a71041f4ae42d09d8bce5d4e1f774836940d5a5048091dede519011394038f53ee5de73b6be38c5d5acbc1898f85387ba7b71b80c215c46eba5ece  config-xiaomi-begonia.aarch64
+5c79eebfa777ce5041033191438e79163444ff961b16d1ece58ae064bfeeabab8c186fd819d8b0fc9eede53e2e41410bd9479c122341387d608a1b95a0130610  fix_cmdline.patch"
