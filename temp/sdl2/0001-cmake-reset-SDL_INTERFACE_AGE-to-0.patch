@@ -1,0 +1,28 @@
+From e87ab6c7187cea90f29cd776fb8e1affb42ee15c Mon Sep 17 00:00:00 2001
+From: Clayton Craft <clayton@craftyguy.net>
+Date: Sun, 31 Jan 2021 23:56:18 -0800
+Subject: [PATCH] cmake: reset SDL_INTERFACE_AGE to 0
+
+This indicated 'new functions were added' and so the lib should be
+backwards compatible. Resetting it to 0 will allow installing this in
+place of 2.0.14, without having to rebuild all SDL2 apps against it.
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 847629552..7a7383274 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -54,7 +54,7 @@ include(${SDL2_SOURCE_DIR}/cmake/sdlchecks.cmake)
+ set(SDL_MAJOR_VERSION 2)
+ set(SDL_MINOR_VERSION 0)
+ set(SDL_MICRO_VERSION 15)
+-set(SDL_INTERFACE_AGE 1)
++set(SDL_INTERFACE_AGE 0)
+ set(SDL_BINARY_AGE 15)
+ set(SDL_VERSION "${SDL_MAJOR_VERSION}.${SDL_MINOR_VERSION}.${SDL_MICRO_VERSION}")
+ # the following should match the versions in Xcode project file:
+-- 
+2.30.0
+
