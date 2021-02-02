@@ -5,9 +5,9 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.10.4_git20210102
+pkgver=5.10.12_git20210130
 pkgrel=2
-_tag="orange-pi-5.10-20210102-0145"
+_tag="orange-pi-5.10-20210130-2109"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64"
 _carch="arm64"
@@ -29,7 +29,6 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	config-$_flavor.aarch64
 	0001-dts-add-dontbeevil-pinephone-devkit.patch
 	0002-dts-add-pinetab-dev-old-display-panel.patch
-	0003-media-gc2145-Added-BGGR-bayer-mode.patch
 	0004-dts-pinetab-add-missing-bma223-ohci1.patch
 	0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
 	0006-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
@@ -37,8 +36,7 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	0008-media-ov5640-Implement-autofocus.patch
 	0009-leds-gpio-set-max_brightness-to-1.patch
 	0010-dts-pinephone-Add-pine64-pinephone-to-compat-list.patch
-	0011-dts-pinetab-hardcode-mmc-numbers.patch
-	0012-dts-pinephone-drop-modem-power-node.patch
+	0011-dts-pinephone-drop-modem-power-node.patch
 	"
 subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
@@ -79,11 +77,10 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="0b9971fbbebbfe50e4560292e821c6253443d76cad931666981a38a805f82e64dde8d8ec918fc2d38294a4260cd6952a3ac07c3e3a1a5e9ce066de53db86277e  linux-postmarketos-allwinner-orange-pi-5.10-20210102-0145.tar.gz
+sha512sums="3cbab8dfc280cdbdfb84f028a41c649e43d57841e4cf9dd8c1476f07b733fc3975587ca9930612aa0151c1d543b28636378c363f06b7ed8a2c1ac97efebf7bc9  linux-postmarketos-allwinner-orange-pi-5.10-20210130-2109.tar.gz
 3a8ccd45317f49ad7416b499a4c766bfffecc3449518e2c7be809d3537ece2d0c7d3da6bbdfb85f7494c294563497f84f1f311cbfded056018248cee31c6fed2  config-postmarketos-allwinner.aarch64
 6b96dcdca84f0581d1f6354dfb752ef382b2a70793e881233e71c2af0c58d0eed965be7a494308a639e2e9035e46535f659e0c1721c0e3b8444a2ac981d7dc99  0001-dts-add-dontbeevil-pinephone-devkit.patch
 5cd62667ebe1d5213d5d89423fe2a810c55fa84a238790af5f087b31cee3a3db66bcaba14001c345731bc1212060f74c0629433403be2485a5bbd4f0dd1c4f65  0002-dts-add-pinetab-dev-old-display-panel.patch
-d92db05628de20c57f69edd0558fc56eb5a1c90f6dd3046813dc2b8c7393030f55e4980ae4135f9a03dadfe9ea0d51755d997c0ba8933af7091277a5fa3a611b  0003-media-gc2145-Added-BGGR-bayer-mode.patch
 10eb10fe09258e524b8770961e44bcda55189f86b0f21cf12c831beb94e9b81c66857771bbe75833d56a7bd44907efceb0e1c4022fcaaf8f1d106a83ec8a19eb  0004-dts-pinetab-add-missing-bma223-ohci1.patch
 26bd19eb7849ad59ac73a002edeb5d015630c0f802b4da1ec75a01581aeb406350097b5e37ef5c0981cc503cdbfc4d24d446c193a533f01e3e4b51426c9e192e  0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
 79f244794906b84f2033b04429f9bf187f171291c8f808a65f6d2c3a9b8a029eb0460f281148ff4a43c12be4fac3d78fcc4ddfa4c14e687a3f7fc310a5921048  0006-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
@@ -91,5 +88,4 @@ d92db05628de20c57f69edd0558fc56eb5a1c90f6dd3046813dc2b8c7393030f55e4980ae4135f9a
 510e1cf463485315f99dfc86511fb7271591159c39cf1bbeecbc1056f8861c35603d61946f3488bfbb7a779ce9324c69d230fa159386b7920f866b47ada444a4  0008-media-ov5640-Implement-autofocus.patch
 6dee374e8459279e2e61894ab9146574283dad61605e4547a1258dd09e02646e46712059431b4086aebb95d24ab44c8b5dc21aa9d004f0190f864045a20b336a  0009-leds-gpio-set-max_brightness-to-1.patch
 27c091b4fd306b5f6fbadac5881ecc5465804ea910eb299445f7d4f04d09e05b8cb708bf4ac24f9ae2a77afa287bfbebe691f6d90db189896c6951ff8f30bcf5  0010-dts-pinephone-Add-pine64-pinephone-to-compat-list.patch
-79c5e48445672a8b33c556363dcd07b23271d4a8433287f1263dbd7d113c3c7a42c89708b08413c491622ede05bf9ad0296112f725626a88c44da9f99c251465  0011-dts-pinetab-hardcode-mmc-numbers.patch
-1d0683871027bd13e03e469fc23c3394b3dbfb48115e19b03638f68970ccfa9583b70ab21d76e68973af803d5387f474f4fe58c90e58985f96c6aec8489aa96a  0012-dts-pinephone-drop-modem-power-node.patch"
+1d0683871027bd13e03e469fc23c3394b3dbfb48115e19b03638f68970ccfa9583b70ab21d76e68973af803d5387f474f4fe58c90e58985f96c6aec8489aa96a  0011-dts-pinephone-drop-modem-power-node.patch"
