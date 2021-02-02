@@ -1,0 +1,40 @@
+From 413046fe7050de246cc94584d159830c95f3ba14 Mon Sep 17 00:00:00 2001
+From: Rinigus <rinigus.git@gmail.com>
+Date: Fri, 29 Jan 2021 22:34:29 +0200
+Subject: [PATCH 1/1] replace jsonlint with json.tool
+
+As proposed by Newbyte
+---
+ Makefile.test    | 2 +-
+ tools/check-json | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+ create mode 100755 tools/check-json
+
+diff --git a/Makefile.test b/Makefile.test
+index ef3ba60a..8f244a74 100644
+--- a/Makefile.test
++++ b/Makefile.test
+@@ -4,7 +4,7 @@ all: check test
+ 
+ check:
+ 	python3 -m pyflakes geocoders guides poor routers
+-	find . -type f -name "*.json" -exec jsonlint -q {} \;
++	find . -type f -name "*.json" -print0 | xargs -0 -n 1 tools/check-json
+ 
+ test:
+ 	py.test geocoders guides poor routers
+diff --git a/tools/check-json b/tools/check-json
+new file mode 100755
+index 00000000..de0ee430
+--- /dev/null
++++ b/tools/check-json
+@@ -0,0 +1,6 @@
++#!/bin/sh
++
++set -e
++
++echo Checking "$1"
++python -m json.tool "$1" > /dev/null || (echo Check failed && exit 255)
+-- 
+2.26.2
+
