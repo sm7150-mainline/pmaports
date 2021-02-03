@@ -35,6 +35,16 @@ source="https://invent.kde.org/maui/mauikit/-/archive/v$pkgver/mauikit-v$pkgver.
 subpackages="$pkgname-dev"
 builddir="$srcdir/$pkgname-v$pkgver"
 
+prepare() {
+	default_prepare
+
+	# qmlplugindump fails for armv7+qemu (pmb#1970). This is purely for
+	# packager knowledge and doesn't affect runtime, so we can disable it.
+	if [ "$CARCH" = "armv7" ]; then
+		sed -i "s/ecm_find_qmlmodule/# ecm_find_qmlmodule/g" CMakeLists.txt
+	fi
+}
+
 build() {
 	cmake -B build \
 		-DCMAKE_BUILD_TYPE=None \

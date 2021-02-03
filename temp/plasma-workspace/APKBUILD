@@ -81,6 +81,16 @@ source="https://download.kde.org/$_rel/plasma/$pkgver/plasma-workspace-$pkgver.t
 subpackages="$pkgname-dev $pkgname-libs $pkgname-doc $pkgname-lang"
 replaces="plasma-desktop<5.20"
 
+prepare() {
+	default_prepare
+
+	# qmlplugindump fails for armv7+qemu (pmb#1970). This is purely for
+	# packager knowledge and doesn't affect runtime, so we can disable it.
+	if [ "$CARCH" = "armv7" ]; then
+		sed -i "s/ecm_find_qmlmodule/# ecm_find_qmlmodule/g" CMakeLists.txt
+	fi
+}
+
 build() {
 	cmake -B build \
 		-DCMAKE_BUILD_TYPE=None \

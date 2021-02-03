@@ -41,6 +41,16 @@ options="!check" # Broken
 # Workaround a circular dependency https://gitlab.alpinelinux.org/alpine/aports/-/issues/11785
 install_if="plasma-workspace"
 
+prepare() {
+	default_prepare
+
+	# qmlplugindump fails for armv7+qemu (pmb#1970). This is purely for
+	# packager knowledge and doesn't affect runtime, so we can disable it.
+	if [ "$CARCH" = "armv7" ]; then
+		sed -i "s/ecm_find_qmlmodule/# ecm_find_qmlmodule/g" CMakeLists.txt
+	fi
+}
+
 build() {
 	cmake -B build \
 		-DCMAKE_BUILD_TYPE=None \
