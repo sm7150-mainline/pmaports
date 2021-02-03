@@ -89,7 +89,10 @@ prepare() {
 	# qmlplugindump fails for armv7+qemu (pmb#1970). This is purely for
 	# packager knowledge and doesn't affect runtime, so we can disable it.
 	if [ "$CARCH" = "armv7" ]; then
-		sed -i "s/ecm_find_qmlmodule/# ecm_find_qmlmodule/g" CMakeLists.txt
+		for i in $(find -name CMakeLists.txt); do
+			echo "Disabling ecm_find_qmlmodule in: $i"
+			sed -i "s/ecm_find_qmlmodule/# ecm_find_qmlmodule/g" "$i"
+		done
 	fi
 }
 
