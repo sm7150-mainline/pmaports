@@ -1,6 +1,6 @@
 pkgname=firmware-oppo-find-7a
 pkgver=0.1
-pkgrel=4
+pkgrel=5
 _commit="412fbe0922125a4d5ff884626c3274a15bd36dff"
 _commit_android_image="68f5bc5447b781ecfd7712c32cac96041374a8be"
 _commit_oppo_fw="31144f275f8542c73c624c4920fc72b6b8b2a860"
@@ -31,32 +31,32 @@ build() {
 package() {
 	for _i in $_files1; do
 		install -Dm644 msm8974-common/proprietary/vendor/firmware/"$_i" \
-			"$pkgdir"/lib/firmware/"$_i"
+			"$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 	for _i in $_files2; do
 		install -Dm644 find7/proprietary/vendor/firmware/"$_i" \
-			"$pkgdir"/lib/firmware/"$_i"
+			"$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 
 	cd "$srcdir"/android_device_oppo_msm8974-common-"$_commit_android_image"
 	for _i in $_files3; do
 		install -Dm644 wifi/"$_i" \
-			"$pkgdir"/lib/firmware/wlan/prima/"$_i"
+			"$pkgdir"/lib/firmware/postmarketos/wlan/prima/"$_i"
 	done
 
 	cd "$srcdir"
 	for _i in $_files4; do
-		install -Dm644 "$_i" "$pkgdir"/lib/firmware/"$_i"
+		install -Dm644 "$_i" "$pkgdir"/lib/firmware/postmarketos/"$_i"
 	done
 
 
-	install -Dm644 keymaste.b00 "$pkgdir"/lib/firmware/keymaster/keymaster.b00
-	install -Dm644 keymaste.b01 "$pkgdir"/lib/firmware/keymaster/keymaster.b01
-	install -Dm644 keymaste.b02 "$pkgdir"/lib/firmware/keymaster/keymaster.b02
-	install -Dm644 keymaste.b03 "$pkgdir"/lib/firmware/keymaster/keymaster.b03
-	install -Dm644 keymaste.mdt "$pkgdir"/lib/firmware/keymaster/keymaster.mdt
+	install -Dm644 keymaste.b00 "$pkgdir"/lib/firmware/postmarketos/keymaster/keymaster.b00
+	install -Dm644 keymaste.b01 "$pkgdir"/lib/firmware/postmarketos/keymaster/keymaster.b01
+	install -Dm644 keymaste.b02 "$pkgdir"/lib/firmware/postmarketos/keymaster/keymaster.b02
+	install -Dm644 keymaste.b03 "$pkgdir"/lib/firmware/postmarketos/keymaster/keymaster.b03
+	install -Dm644 keymaste.mdt "$pkgdir"/lib/firmware/postmarketos/keymaster/keymaster.mdt
 
-	cd "$pkgdir"/lib/firmware
+	cd "$pkgdir"/lib/firmware/postmarketos
 	ln -s . qcom
 }
 

@@ -1,7 +1,7 @@
 # Maintainer: ky0ko <ky0ko@disroot.org>
 pkgname=firmware-motorola-def
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for Motorola One Hyper"
 url="https://github.com/goshhhy/motorola-def-firmware"
 arch="aarch64"
@@ -15,7 +15,7 @@ source="https://github.com/goshhhy/motorola-def-firmware/archive/$_commit.tar.gz
 package() {
 	cd "$srcdir/motorola-def-firmware-$_commit/files"
 	for _i in *; do
-		install -Dm644 $_i "$pkgdir"/lib/firmware/$_i
+		install -Dm644 $_i "$pkgdir"/lib/firmware/postmarketos/$_i
 	done
 }
 

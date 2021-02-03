@@ -1,6 +1,6 @@
 pkgname=firmware-asus-z00t
 pkgver=0
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for asus-z00t"
 url="https://github.com/F2F056C4-B868-4F9D-BF2A-45B9CD317E1D/asus-z00t-firmware"
 arch="aarch64"
@@ -20,7 +20,7 @@ package() {
 	cd "$srcdir"
 
 	for part in b00 b01 b02 b03 mdt; do
-		install -Dm644 "$_dir/firmware/image/keymaste.$part" "$pkgdir/lib/firmware/keymaster/keymaster.$part";
+		install -Dm644 "$_dir/firmware/image/keymaste.$part" "$pkgdir/lib/firmware/postmarketos/keymaster/keymaster.$part";
 	done
 
 	# prima
@@ -38,14 +38,14 @@ package() {
 	"
 	for f in $_files; do
 		install -Dm644 "$_dir/etc-firmware/wlan/prima/$f" \
-			"$pkgdir/lib/firmware/wlan/prima/$f"
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$f"
 	done
 	_files="
 		WCNSS_qcom_cfg.ini
 	"
 	for f in $_files; do
 		install -Dm644 "$f" \
-			"$pkgdir/lib/firmware/wlan/prima/$f"
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$f"
 	done
 
 	# qualcomm
@@ -116,7 +116,7 @@ package() {
 	"
 	for f in $_files; do
 		install -Dm644 "$_dir/firmware/image/$f" \
-			"$pkgdir/lib/firmware/$f"
+			"$pkgdir/lib/firmware/postmarketos/$f"
 	done
 }
 sha512sums="f6011a1b0f367eba1e03fa38ef3eba35340492934e9160d37bb1211b05025c39f27e1991a6df32b8a3de4f1c9463bf27846998de46d84e1a2f2c97cda321d4e7  firmware-asus-z00t-d75a9d565250429ed5b06ed6c5d6f50cfadf9cb9.tar.gz

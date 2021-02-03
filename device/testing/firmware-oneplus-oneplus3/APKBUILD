@@ -1,6 +1,6 @@
 pkgname=firmware-oneplus-oneplus3
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for OnePlus 3/3T (metapackage)"
 url="https://gitlab.com/DrGitX/firmware-oneplus3"
 arch="aarch64"
@@ -89,24 +89,24 @@ unpack() {
 package() {
 	cd "$srcdir"
 	for _i in a530_pfp.fw a530_pm4.fw a530v3_gpmu.fw2; do
-		install -Dm644 $_i "$pkgdir/lib/firmware/qcom/$_i"
+		install -Dm644 $_i "$pkgdir/lib/firmware/postmarketos/qcom/$_i"
 	done
 }
 
 _install_fw() {
-	mkdir -p "$subpkgdir/lib/firmware/qcom"
+	mkdir -p "$subpkgdir/lib/firmware/postmarketos/qcom"
 
 	cd "$srcdir/$1"
 
 	for _i in adsp.* modem.* mba.* slpi.*; do
-		install -Dm644 $_i "$subpkgdir/lib/firmware/$_i"
+		install -Dm644 $_i "$subpkgdir/lib/firmware/postmarketos/$_i"
 	done
 
 	for _i in venus.*; do
-		install -Dm644 $_i "$subpkgdir/lib/firmware/qcom/venus-4.2/$_i"
+		install -Dm644 $_i "$subpkgdir/lib/firmware/postmarketos/qcom/venus-4.2/$_i"
 	done
 
-	install -Dm644 "$srcdir/a530_zap$2.elf" "$subpkgdir/lib/firmware/qcom/a530_zap.mdt"
+	install -Dm644 "$srcdir/a530_zap$2.elf" "$subpkgdir/lib/firmware/postmarketos/qcom/a530_zap.mdt"
 
 	install -Dm644 "$srcdir/20-adreno-gpu-firmware.files" \
 		"$pkgdir/etc/postmarketos-mkinitfs/files/20-adreno-gpu-firmware.files"

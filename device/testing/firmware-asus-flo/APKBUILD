@@ -1,6 +1,6 @@
 pkgname=firmware-asus-flo
 pkgver=0
-pkgrel=2
+pkgrel=3
 pkgdesc="Firmware for asus-flo"
 url="https://developers.google.com/android/drivers#flomob30x"
 arch="armv7"
@@ -33,7 +33,7 @@ package() {
 	_files="bcm2079x-b5_firmware.ncd bcm2079x-b5_pre_firmware.ncd"
 	for _i in $_files; do
 		install -Dm644 "vendor/broadcom/flo/proprietary/$_i" \
-			"$pkgdir/lib/firmware/$_i";
+			"$pkgdir/lib/firmware/postmarketos/$_i";
 	done
 
 	# keymaster
@@ -41,7 +41,7 @@ package() {
 		keymaster.mdt"
 	for _i in $_files; do
 		install -Dm644 "vendor/qcom/flo/proprietary/$_i" \
-			"$pkgdir/lib/firmware/keymaster/$_i";
+			"$pkgdir/lib/firmware/postmarketos/keymaster/$_i";
 	done
 
 	# discretix
@@ -49,15 +49,15 @@ package() {
 		dxhdcp2.mdt"
 	for _i in $_files; do
 		install -Dm644 "vendor/qcom/flo/proprietary/$_i" \
-			"$pkgdir/lib/firmware/discretix/$_i";
+			"$pkgdir/lib/firmware/postmarketos/discretix/$_i";
 	done
 
 	# prima
 	install -Dm644 "$pkgname-$_commit_other-WCNSS_qcom_wlan_nv_flo.bin" \
-		"$pkgdir/lib/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin"
+		"$pkgdir/lib/firmware/postmarketos/wlan/prima/WCNSS_qcom_wlan_nv.bin"
 	for _i in WCNSS_qcom_cfg.ini WCNSS_cfg.dat; do
 		install -Dm644 "$pkgname-$_commit_other-$_i" \
-			"$pkgdir/lib/firmware/wlan/prima/$_i";
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i";
 	done
 
 	# qualcomm
@@ -71,7 +71,7 @@ package() {
 		vidc.mdt"
 	for _i in $_files; do
 		install -Dm644 "vendor/qcom/flo/proprietary/$_i" \
-			"$pkgdir/lib/firmware/$_i";
+			"$pkgdir/lib/firmware/postmarketos/$_i";
 	done
 }
 sha512sums="e18fe860185e2efe2b9b0d1ed17e7ba40c687fdf08667db1358fb8c68cc8632f36942ddccee975eecbc9f0e0a9b5b97abddb837dbd07653298609de09fe5bfce  broadcom-flo-mob30x-23c0a6c8.tgz

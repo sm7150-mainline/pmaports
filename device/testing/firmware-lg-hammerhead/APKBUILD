@@ -1,6 +1,6 @@
 pkgname=firmware-lg-hammerhead
 pkgver=1
-pkgrel=2
+pkgrel=3
 _modem_commit="d0565ebb2033bbd267b8be698373f075c9a82cd5"
 pkgdesc="Firmware for LG hammerhead (Nexus 5)"
 subpackages="$pkgname-modem $pkgname-adsp $pkgname-bluetooth"
@@ -32,7 +32,7 @@ modem() {
 
 	cd "$srcdir/hammerhead-modem-$_modem_commit/image"
 	for _i in *; do
-		install -Dm644 $_i "$subpkgdir"/lib/firmware/$_i
+		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
 	done
 }
 
@@ -41,14 +41,14 @@ adsp() {
 
 	cd "$srcdir/qcom/vendor/qcom/hammerhead/proprietary"
 	for _i in adsp.*; do
-		install -Dm644 $_i "$subpkgdir"/lib/firmware/$_i
+		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
 	done
 }
 
 bluetooth() {
 	pkgdesc="LG Nexus 5 Bluetooth firmware"
 
-	install -Dm644 "$srcdir/broadcom/vendor/broadcom/hammerhead/proprietary/bcm4335c0.hcd" "$subpkgdir"/lib/firmware/brcm/BCM4335C0.hcd
+	install -Dm644 "$srcdir/broadcom/vendor/broadcom/hammerhead/proprietary/bcm4335c0.hcd" "$subpkgdir"/lib/firmware/postmarketos/brcm/BCM4335C0.hcd
 }
 
 sha512sums="a63a0fad2c7e5920c8a30213e149c51a745cdb2b34c1b13772737d1da51cd712aa81d3e03de6f3397d0705e59d0130727979f2c1c6f529788e0fbc9bbcde6a8a  hammerhead-modem-d0565ebb2033bbd267b8be698373f075c9a82cd5.tar.gz
