@@ -5,10 +5,10 @@ setenv mmcpart 1
 printenv
 
 # select the correct dtb based on device revision
-dtb_file=imx8mq-librem5.dtb
-if itest.s "x2" == "x$board_rev" ; then
-        dtb_file=imx8mq-librem5-r2.dtb
-elif itest.s "x3" == "x$board_rev" ; then
+# default to "-r2" if board_rev isn't set, since it'll boot on any librem5
+# revision
+dtb_file=imx8mq-librem5-r2.dtb
+if itest.s "x3" == "x$board_rev" ; then
         dtb_file=imx8mq-librem5-r3.dtb
 elif itest.s "x4" == "x$board_rev" ; then
         dtb_file=imx8mq-librem5-r4.dtb
