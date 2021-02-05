@@ -4,7 +4,7 @@
 pkgname=device-pine64-pinetab
 pkgdesc="PINE64 PineTab"
 pkgver=0.7
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -25,19 +25,21 @@ subpackages="
 	$pkgname-weston
 	$pkgname-phosh
 	$pkgname-nonfree-firmware:nonfree_firmware
-"
+	$pkgname-plasma-mobile:plasma_mobile
+	"
 install="$pkgname.post-install"
 source="
+	99-pinetab-keyboard.hwdb
+	deviceinfo
+	kirigami-lowpower.sh
+	rootston.ini
+	sway.conf
+	sysrq.conf
+	uboot-script.cmd
 	ucm/HiFi.conf
 	ucm/PineTab.conf
-	deviceinfo
-	uboot-script.cmd
-	sysrq.conf
-	sway.conf
-	99-pinetab-keyboard.hwdb
 	weston.ini
-	rootston.ini
-"
+	"
 
 prepare() {
 	default_prepare
@@ -136,12 +138,18 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="2cf8d22f6c324633b4e72dea7a6b642e767b9bf50dac801ffc9e57347d272655b7087956afd50c3e65cd87c2f24e0e69c11b648b00bd58d31608d4e98e99e5d9  HiFi.conf
-3bdf9d4c41058680d488d9b4a2ac5fd693ceddc5f319a577480546f8af7d9d64c9d3196e73cb0c00e793697eef4ad075c88c3d274702a5387c15945bc749d844  PineTab.conf
+plasma_mobile() {
+	install_if="$pkgname=$pkgver-r$pkgrel kirigami2"
+	install -Dm644 "$srcdir"/kirigami-lowpower.sh "$subpkgdir"/etc/profile.d/kirigami-lowpower.sh
+}
+
+sha512sums="8d1ef04911f1cfa7eda8185f4f4d807af23105a7c8f23d8c18f02afeccd8ab124de70c2e2760c154a3128fe3793447039fb0abf37aa496f597d27051e275033e  99-pinetab-keyboard.hwdb
 b04bf42ac8d474320576f0187db6b6a082a4c32c69195f64d7b421583d3d763ae8bc8d9e436d2d4140b580ebef8df980224b6822c70e46eb4114a1527eeb192d  deviceinfo
-0e3f69170072f150f449cd9ccd9897728558a98acf2d5b85484ae8104b97f84e77760d7a30eeeccaf37d12cf870b3107ee34cefe55bdb033f3c7ac87d2093d24  uboot-script.cmd
-f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
+6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
+38827d9636c48b133eb333764a6799a6e93454e01ecb0cfde1ecad3ee149606ba59eb1a5e6c8366e3b3891e54bd664a0a5acdd89d38ac3a3551260e9b9a6d3fc  rootston.ini
 9e71c61bfa72b60e749c4dc04f17eb59d25de822765e81e65c937d6be5236d3951a652b69a1ab973abe6add9f34705be5dbaa98bbfa25daf7504dd50b28524c2  sway.conf
-8d1ef04911f1cfa7eda8185f4f4d807af23105a7c8f23d8c18f02afeccd8ab124de70c2e2760c154a3128fe3793447039fb0abf37aa496f597d27051e275033e  99-pinetab-keyboard.hwdb
-6374ef977eab14b71fa88057ebd52ca03035e387e5f41504598a990f24b2e92bccd2db476c545dc541000e08fccdecb6f1cd63e25b5835df706269e0384dacc7  weston.ini
-38827d9636c48b133eb333764a6799a6e93454e01ecb0cfde1ecad3ee149606ba59eb1a5e6c8366e3b3891e54bd664a0a5acdd89d38ac3a3551260e9b9a6d3fc  rootston.ini"
+f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
+0e3f69170072f150f449cd9ccd9897728558a98acf2d5b85484ae8104b97f84e77760d7a30eeeccaf37d12cf870b3107ee34cefe55bdb033f3c7ac87d2093d24  uboot-script.cmd
+2cf8d22f6c324633b4e72dea7a6b642e767b9bf50dac801ffc9e57347d272655b7087956afd50c3e65cd87c2f24e0e69c11b648b00bd58d31608d4e98e99e5d9  HiFi.conf
+3bdf9d4c41058680d488d9b4a2ac5fd693ceddc5f319a577480546f8af7d9d64c9d3196e73cb0c00e793697eef4ad075c88c3d274702a5387c15945bc749d844  PineTab.conf
+6374ef977eab14b71fa88057ebd52ca03035e387e5f41504598a990f24b2e92bccd2db476c545dc541000e08fccdecb6f1cd63e25b5835df706269e0384dacc7  weston.ini"
