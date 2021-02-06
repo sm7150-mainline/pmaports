@@ -1,6 +1,6 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=sxmo-utils
-pkgver=1.2.0
+pkgver=1.3.0
 pkgrel=0
 pkgdesc="Utility scripts, programs, and configs that hold the Sxmo UI environment together"
 url="https://git.sr.ht/~mil/sxmo-utils"
@@ -34,6 +34,7 @@ depends="
 	sfeed
 	sxiv
 	terminus-font
+	font-terminus-nerd
 	tzdata
 	v4l-utils
 	vis
@@ -52,7 +53,8 @@ depends="
 	youtube-dl
 "
 
-options="suid !check" # has no tests
+options="!check" # has no tests
+subpackages="$pkgname-openrc"
 source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-utils/archive/$pkgver.tar.gz"
 install="$pkgname.post-install $pkgname.pre-deinstall"
 
@@ -62,10 +64,7 @@ package() {
 	mkdir -p "$pkgdir/etc/modprobe.d/"
 	printf %b "options snd slots=,snd-aloop" > "$pkgdir/etc/modprobe.d/sxmo.conf"
 
-	make  -C "$builddir" PREFIX=$pkgdir install
-	chmod u+s $pkgdir/usr/bin/sxmo_setpineled
-	chmod u+s $pkgdir/usr/bin/sxmo_setpinebacklight
-	chmod u+s $pkgdir/usr/bin/sxmo_screenlock
+	make  -C "$builddir" DESTDIR=$pkgdir install
 }
 
-sha512sums="bb765a1392492acbd6bb56ec870dcb4adf0decafd719678ba3e937c8bc592233b86f0e2bb8e034b572d6e9a1eeaa283a12731d26344cffb13be6d3e758ee3888  sxmo-utils-1.2.0.tar.gz"
+sha512sums="f2b182c3769b6323dcdb498a0e634840ccbb542782926af54bb3702952cfbaf14210f063bf9b72ccb97358520bfca4d22dd993b39e35f300b43b48b57513020f  sxmo-utils-1.3.0.tar.gz"
