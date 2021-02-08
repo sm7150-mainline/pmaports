@@ -12,22 +12,6 @@ import pmb.parse
 import pmb.parse._apkbuild
 
 
-@pytest.fixture
-def args(request):
-    # Initialize args
-    pmaports = os.path.realpath(f"{os.path.dirname(__file__)}/../..")
-    sys.argv = ["pmbootstrap",
-                "--aports", pmaports,
-                "--log", "$WORK/log_testsuite_pmaports.txt"
-                "chroot"]
-    args = pmb.parse.arguments()
-
-    # Initialize logging
-    pmb.helpers.logging.init(args)
-    request.addfinalizer(args.logfd.close)
-    return args
-
-
 def device_dependency_check(apkbuild, path):
     """ Raise an error if a device package has a dependency that is not allowed
         (e.g. because it should be in a subpackage instead). """

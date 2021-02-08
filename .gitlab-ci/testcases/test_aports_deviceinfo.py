@@ -11,22 +11,6 @@ import add_pmbootstrap_to_import_path
 import pmb.parse
 
 
-@pytest.fixture
-def args(request):
-    # Initialize args
-    pmaports = os.path.realpath(f"{os.path.dirname(__file__)}/../..")
-    sys.argv = ["pmbootstrap",
-                "--aports", pmaports,
-                "--log", "$WORK/log_testsuite_pmaports.txt"
-                "chroot"]
-    args = pmb.parse.arguments()
-
-    # Initialize logging
-    pmb.helpers.logging.init(args)
-    request.addfinalizer(args.logfd.close)
-    return args
-
-
 def deviceinfo_obsolete(info):
     """
     Test for obsolete options used in the deviceinfo file. They must still be

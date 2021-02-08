@@ -17,21 +17,6 @@ import pmb.config
 import pmb.parse
 
 
-@pytest.fixture
-def args(request):
-    # Initialize args
-    sys.argv = ["pmbootstrap",
-                "--aports", os.path.dirname(__file__) + "/../..",
-                "--log", "$WORK/log_testsuite_pmaports.txt"
-                "chroot"]
-    args = pmb.parse.arguments()
-
-    # Initialize logging
-    pmb.helpers.logging.init(args)
-    request.addfinalizer(args.logfd.close)
-    return args
-
-
 def get_categorized_packages(args):
     """
     Parse all aports and categorize them.

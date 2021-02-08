@@ -14,22 +14,6 @@ import pmb.parse.apkindex
 import pmb.helpers.repo
 
 
-@pytest.fixture
-def args(request):
-    # Initialize args
-    pmaports = os.path.realpath(f"{os.path.dirname(__file__)}/../..")
-    sys.argv = ["pmbootstrap",
-                "--aports", pmaports,
-                "--log", "$WORK/log_testsuite_pmaports.txt"
-                "chroot"]
-    args = pmb.parse.arguments()
-
-    # Initialize logging
-    pmb.helpers.logging.init(args)
-    request.addfinalizer(args.logfd.close)
-    return args
-
-
 def parse_source_from_checksums(args, apkbuild_path):
     """
     Read the APKBUILD file and parse source files from the checksums at the
