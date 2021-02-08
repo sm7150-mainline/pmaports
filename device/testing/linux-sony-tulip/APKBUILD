@@ -3,7 +3,7 @@
 
 pkgname=linux-sony-tulip
 pkgver=3.10
-pkgrel=3
+pkgrel=4
 pkgdesc="Sony Xperia M4 Aqua kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -29,6 +29,7 @@ source="
 	$pkgname-$_commit.tar.gz::https://github.com/bartcubbins/$_repository/archive/$_commit.tar.gz
 	$_config
 	gcc10-extern_YYLOC_global_declaration.patch
+	0001-posix_acl-fix-bad-kernel-backport.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 
@@ -48,5 +49,6 @@ package() {
 }
 
 sha512sums="7372b4fdfca2fef3c8ae48c9353a6d7ea658fc8412e2b288ee1097d902f5d9b81a0b76f3fc0e1bc74a015ec34e84c4942608f0e522d628b3deb288f4b177428c  linux-sony-tulip-d8e51bc7dd6bde228f1d9a7ddcf664845c4f07fb.tar.gz
-7ed4290977b393fa5111eaff6c5513a0eb0dd7cf4447d70e26a38e670e45331ccd2fd1b4e56b0598019121ca08116e057304aa36c932a454616e8b0956c095c8  config-sony-tulip.aarch64
-2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch"
+72183314f38428c430ae455779237d1f4702271d0b072e2464e7bd2cc9a768c5c61037251c9b4b3ff411c75151af3287de5b443187f13a4f6b7655ba7947f44e  config-sony-tulip.aarch64
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+62c27cb75bbfd65ead3a5345ab81e356f04da803b45ce14239d95694adc675c4dced89de7582ae2f0e229b176f545cc76a6706c9774d48eabcbb010f83623268  0001-posix_acl-fix-bad-kernel-backport.patch"
