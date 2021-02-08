@@ -1,0 +1,27 @@
+From 440754b27d506f4b2a15c9af6b8d47e21f2b1745 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Mon, 8 Feb 2021 16:18:11 +0100
+Subject: [PATCH] power-manager: close idleness notifications before suspending
+
+Power-manager's idle notifications trigger the notification LED
+on the PinePhone which causes additional power consumption.
+---
+ plugins/power/gsd-power-manager.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/plugins/power/gsd-power-manager.c b/plugins/power/gsd-power-manager.c
+index c93c620f..95cec9c3 100644
+--- a/plugins/power/gsd-power-manager.c
++++ b/plugins/power/gsd-power-manager.c
+@@ -2493,6 +2493,8 @@ on_randr_event (GnomeRRScreen *screen, gpointer user_data)
+ static void
+ handle_suspend_actions (GsdPowerManager *manager)
+ {
++        /* close any existing notification about idleness */
++        notify_close_if_showing (&manager->notification_sleep_warning);
+         backlight_disable (manager);
+         uninhibit_suspend (manager);
+ }
+-- 
+2.30.0
+
