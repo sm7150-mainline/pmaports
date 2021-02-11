@@ -1,13 +1,14 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=postmarketos-ui-sxmo
 pkgver=1.4.1
-pkgrel=1
+pkgrel=2
 pkgdesc="(X11) Simple X Mobile: Mobile environment based on simple & suckless software (best compatibility on pinephone)"
 url="http://sr.ht/~mil/Sxmo"
 arch="noarch !armhf"
 license="MIT"
 depends="sxmo-xdm-config sxmo-xdm-config-openrc sxmo-utils-openrc"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.pre-deinstall"
+subpackages="$pkgname-qt_tweaks"
 _pmb_recommends="
 	firefox-esr
 	megapixels
@@ -18,9 +19,17 @@ _pmb_recommends="
 	netsurf
 	sacc
 	xcalc
-"
+	"
+source="sxmo-qt-mobile-controls.sh"
 options="!check" # has no tests
 
 package() {
 	mkdir -p "$pkgdir"
 }
+
+qt_tweaks() {
+	install_if="$pkgname qt5-qtbase"
+	install -Dm755 -t "$subpkgdir"/etc/profile.d/ \
+		"$srcdir"/sxmo-qt-mobile-controls.sh
+}
+sha512sums="bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  sxmo-qt-mobile-controls.sh"
