@@ -1,0 +1,39 @@
+From 226d336c1c75b7003ab70693cb332a1be19f1802 Mon Sep 17 00:00:00 2001
+From: Timon Baetz <timon.baetz@protonmail.com>
+Date: Wed, 30 Dec 2020 20:51:53 +0000
+Subject: [PATCH] extcon: max8997: Add CHGINS and CHGRM interrupt handling
+
+This allows the MAX8997 charger to set the current limit depending on
+the detected extcon charger type.
+
+Signed-off-by: Timon Baetz <timon.baetz@protonmail.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+---
+ drivers/extcon/extcon-max8997.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/extcon/extcon-max8997.c b/drivers/extcon/extcon-max8997.c
+index 337b0eea4e62..e1408075ef7d 100644
+--- a/drivers/extcon/extcon-max8997.c
++++ b/drivers/extcon/extcon-max8997.c
+@@ -44,6 +44,8 @@ static struct max8997_muic_irq muic_irqs[] = {
+ 	{ MAX8997_MUICIRQ_ChgDetRun,	"muic-CHGDETRUN" },
+ 	{ MAX8997_MUICIRQ_ChgTyp,	"muic-CHGTYP" },
+ 	{ MAX8997_MUICIRQ_OVP,		"muic-OVP" },
++	{ MAX8997_PMICIRQ_CHGINS,	"pmic-CHGINS" },
++	{ MAX8997_PMICIRQ_CHGRM,	"pmic-CHGRM" },
+ };
+ 
+ /* Define supported cable type */
+@@ -538,6 +540,8 @@ static void max8997_muic_irq_work(struct work_struct *work)
+ 	case MAX8997_MUICIRQ_DCDTmr:
+ 	case MAX8997_MUICIRQ_ChgDetRun:
+ 	case MAX8997_MUICIRQ_ChgTyp:
++	case MAX8997_PMICIRQ_CHGINS:
++	case MAX8997_PMICIRQ_CHGRM:
+ 		/* Handle charger cable */
+ 		ret = max8997_muic_chg_handler(info);
+ 		break;
+-- 
+2.25.1
+

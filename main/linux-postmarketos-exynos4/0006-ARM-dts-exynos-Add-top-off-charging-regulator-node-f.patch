@@ -1,0 +1,62 @@
+From 3803f461bd28c1c817281348509399778633e82f Mon Sep 17 00:00:00 2001
+From: Timon Baetz <timon.baetz@protonmail.com>
+Date: Wed, 30 Dec 2020 20:53:11 +0000
+Subject: [PATCH] ARM: dts: exynos: Add top-off charging regulator node for
+ I9100
+
+Value taken from Galaxy S2 Epic 4G Touch SPH-D710 Android vendor
+kernel [0] which always sets 200mA.
+
+Also rearrange regulators based on definition in max8997.h.
+
+[0] https://github.com/krzk/linux-vendor-backup/blob/samsung/galaxy-s2-epic-4g-touch-sph-d710-exynos4210-dump/drivers/power/sec_battery_u1.c#L1525
+
+Signed-off-by: Timon Baetz <timon.baetz@protonmail.com>
+Link: https://lore.kernel.org/r/20201230205139.1812366-8-timon.baetz@protonmail.com
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ arch/arm/boot/dts/exynos4210-i9100.dts | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm/boot/dts/exynos4210-i9100.dts b/arch/arm/boot/dts/exynos4210-i9100.dts
+index 2837ac05d9b4..304a8ee2364c 100644
+--- a/arch/arm/boot/dts/exynos4210-i9100.dts
++++ b/arch/arm/boot/dts/exynos4210-i9100.dts
+@@ -560,6 +560,16 @@ safe2_sreg: ESAFEOUT2 {
+ 				regulator-boot-on;
+ 			};
+ 
++			EN32KHZ_AP {
++				regulator-name = "EN32KHZ_AP";
++				regulator-always-on;
++			};
++
++			EN32KHZ_CP {
++				regulator-name = "EN32KHZ_CP";
++				regulator-always-on;
++			};
++
+ 			charger_reg: CHARGER {
+ 				regulator-name = "CHARGER";
+ 				regulator-min-microamp = <200000>;
+@@ -573,13 +583,10 @@ chargercv_reg: CHARGER_CV {
+ 				regulator-always-on;
+ 			};
+ 
+-			EN32KHZ_AP {
+-				regulator-name = "EN32KHZ_AP";
+-				regulator-always-on;
+-			};
+-
+-			EN32KHZ_CP {
+-				regulator-name = "EN32KHZ_CP";
++			CHARGER_TOPOFF {
++				regulator-name = "CHARGER_TOPOFF";
++				regulator-min-microamp = <200000>;
++				regulator-max-microamp = <200000>;
+ 				regulator-always-on;
+ 			};
+ 		};
+-- 
+2.25.1
+

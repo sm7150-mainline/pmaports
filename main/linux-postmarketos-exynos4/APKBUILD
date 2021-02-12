@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm/configs/exynos_defconfig
 
 pkgname=linux-postmarketos-exynos4
-pkgver=5.9.12
+pkgver=5.10.15
 pkgrel=0
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
@@ -24,7 +24,15 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	$_config
 	0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-	0002-Input-atmel_mxt_ts-fix-lost-interrupts.patch
+	0002-power-supply-max8997-charger-Use-module_platform_dri.patch
+	0003-power-supply-max8997-charger-Fix-platform-data-retri.patch
+	0004-power-supply-max8997-charger-Improve-getting-charger.patch
+	0005-ARM-dts-exynos-Fix-charging-regulator-voltage-and-cu.patch
+	0006-ARM-dts-exynos-Add-top-off-charging-regulator-node-f.patch
+	0007-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
+	0008-power-supply-max8997_charger-Set-CHARGER-current-lim.patch
+	0009-ARM-dts-exynos-Add-charger-supply-for-I9100.patch
+	0010-power-supply-max8997_charger-Switch-to-new-binding.patch
 	initramfs.list
 	init
 "
@@ -63,9 +71,17 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="164a89388a56140140e0b4ba3f39a45f85a73c9862f5104cf591a6d6826cfc2498b4080f862cc592f04853328ba9236f8aa305e4f0f876f6b18eda2e42ea6dcb  linux-5.9.12.tar.xz
-287dccd4028590a94aa6c068975ec94f7fe5fc3184acb4c70ffebb2e39d62ed2e5f1456b78db1120d38046c42b6cbddbe3aac30134812c101ace7c8c3752c148  config-postmarketos-exynos4.armv7
+sha512sums="7b2c38920ebfc9c9aea8cb319949f089a374b6604de4fb01dc6957234970d96830761d784c6f94a5f165f5792dfa9d3a6d8691d18147dc05cc0f03c78efbb61a  linux-5.10.15.tar.xz
+2f844fbe47e544b5a644f9e8ad94019eb4d6989ca7a27cd3406f1f81d3348dfa86c761fefac10376c31e511b84cd2c8f4c17f856f7173d9a08e97658f00ab956  config-postmarketos-exynos4.armv7
 4bb111db4396a1981ad0883737c6594ca93701699846298b940d2ea202c666be0158a0f9ddc5b95b9147fa4cfe62639512ae78e9315f8d975b379ccc4e15da36  0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-fa5cd612690276dd3f37906674a86e0de74208bfc8ab28a689d0ea4cec13987deda75f72c084a7da03699738cd03d5977d597942796aacaac59d399e7369b236  0002-Input-atmel_mxt_ts-fix-lost-interrupts.patch
+4567b6144e3de769050764ede3df81e0abd9ffa45f821f2cfcb60ca1426b1756d1ff9d9dda6254a6f5cf0da4b9819ecc0d57f2dc02ef5d460e7ae0069fbba62d  0002-power-supply-max8997-charger-Use-module_platform_dri.patch
+0cc1fa2ca16979fa2f93e7cb6ef29ca109d249c5f4e934590383cac90138858c299da7f84ec90ec0c91fb60f2cd0db4303023e756854fbbccb89840377bcdb9e  0003-power-supply-max8997-charger-Fix-platform-data-retri.patch
+708a27d1c75f5909a1d5f710e2dbdb39d5bb02c15376a14471c468a6f4330c787153b62fbd93049aea0488f2b8b0f7d643d597da9e28094840c9f6c187ca736b  0004-power-supply-max8997-charger-Improve-getting-charger.patch
+ddee2a51b33b7bd0ba310085324e72342c992d6d047132f7204ff9695cef112d4809bbe734d382b720e8deb90b948b65709bbb407bd1a32876c524fe9f4bae67  0005-ARM-dts-exynos-Fix-charging-regulator-voltage-and-cu.patch
+8eb1452fd2cc302df0ccc5bee33e99d12d6bb851fb48b281026f46b70008e3f515f3287f01684981ff81c7e2c422a9480a40e23f45823812f913cc866c319811  0006-ARM-dts-exynos-Add-top-off-charging-regulator-node-f.patch
+dffe9934281e81b20e158ce9b80c6f1a91c5eaa06eb92ee655ee9430dba8aa066dd70a9fb163007f37556ea696ae0256a58f87408c8b7571d6d20f99c9492db2  0007-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
+ea14ce70ac337b952b0246bb2765c7ca099808f4f46021b4f366e706265f9fab6a1e887e327d6b73d2b9963e4ae1f64a2877500cbc79a6214169486993f60069  0008-power-supply-max8997_charger-Set-CHARGER-current-lim.patch
+b70e8afa3779d471835bbdda4c8ddcf882bce58752993314655596961210235558e87dce3d1f07810ab5bb3d0471e89933a8008d7b97d8ebd05a408ffc947054  0009-ARM-dts-exynos-Add-charger-supply-for-I9100.patch
+11160ac085aa912439a18995e323dfc89dfc61d85f1221af8f0116eed0f5b1fd087fc2828174c8c60f937495c31d72240c2f3c4249c29ceda6acd92f08d235c4  0010-power-supply-max8997_charger-Switch-to-new-binding.patch
 aaff0332b90e1f9f62de1128cace934717336e54ab09de46477369fa808302482d97334e43a85ee8597c1bcab64d3484750103559fea2ce8cd51776156bf7591  initramfs.list
 09f1f214a24300696809727a7b04378887c06ca6f40803ca51a12bf2176a360b2eb8632139d6a0722094e05cb2038bdb04018a1e3d33fc2697674552ade03bee  init"

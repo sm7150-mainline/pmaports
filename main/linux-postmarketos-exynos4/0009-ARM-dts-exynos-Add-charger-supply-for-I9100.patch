@@ -1,0 +1,28 @@
+From 590d39ce7b457815f60899c6f38d3aa4b5665c37 Mon Sep 17 00:00:00 2001
+From: Timon Baetz <timon.baetz@protonmail.com>
+Date: Sun, 24 Jan 2021 18:17:06 +0100
+Subject: [PATCH] ARM: dts: exynos: Add charger supply for I9100
+
+The regulator is used for charging control by max8997_charger driver.
+
+Signed-off-by: Timon Baetz <timon.baetz@protonmail.com>
+---
+ arch/arm/boot/dts/exynos4210-i9100.dts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/boot/dts/exynos4210-i9100.dts b/arch/arm/boot/dts/exynos4210-i9100.dts
+index 304a8ee2364c..dad950daafb4 100644
+--- a/arch/arm/boot/dts/exynos4210-i9100.dts
++++ b/arch/arm/boot/dts/exynos4210-i9100.dts
+@@ -384,6 +384,8 @@ pmic@66 {
+ 		pinctrl-0 = <&max8997_irq>, <&otg_gp>, <&usb_sel>;
+ 		pinctrl-names = "default";
+ 
++		charger-supply = <&charger_reg>;
++
+ 		regulators {
+ 			vadc_reg: LDO1 {
+ 				regulator-name = "VADC_3.3V_C210";
+-- 
+2.25.1
+
