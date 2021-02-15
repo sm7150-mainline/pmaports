@@ -2,12 +2,13 @@
 # Co-Maintainer: Luca Weiss <luca@z3ntu.xyz>
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 # Co-Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+# Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.10.12_git20210130
-pkgrel=4
-_tag="orange-pi-5.10-20210130-2109"
+pkgver=5.11.0_git20210218
+pkgrel=0
+_tag="orange-pi-5.11-20210218-0749"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64"
 _carch="arm64"
@@ -29,16 +30,16 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	config-$_flavor.aarch64
 	0001-dts-add-dontbeevil-pinephone-devkit.patch
 	0002-dts-add-pinetab-dev-old-display-panel.patch
-	0004-dts-pinetab-add-missing-bma223-ohci1.patch
+	0003-dts-pinetab-add-missing-bma223-ohci1.patch
+	0004-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
 	0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
-	0006-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
-	0007-dts-pinephone-remove-bt-firmware-suffix.patch
-	0008-media-ov5640-Implement-autofocus.patch
-	0009-leds-gpio-set-max_brightness-to-1.patch
-	0010-dts-pinephone-Add-pine64-pinephone-to-compat-list.patch
-	0011-dts-pinephone-drop-modem-power-node.patch
-	0012-dts-headphone-jack-detection.patch
-	0013-fix-pogopin-i2c.patch
+	0006-dts-pinephone-remove-bt-firmware-suffix.patch
+	0007-media-ov5640-Implement-autofocus.patch
+	0008-leds-gpio-Set-max-brightness-to-1.patch
+	0009-dts-pinephone-Add-pine64-pinephone-to-compat-list.patch
+	0010-dts-pinephone-drop-modem-power-node.patch
+	0011-dts-pinephone-jack-detection.patch
+	0012-pinephone-fix-pogopin-i2c.patch
 	"
 subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
@@ -79,17 +80,17 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 
-sha512sums="3cbab8dfc280cdbdfb84f028a41c649e43d57841e4cf9dd8c1476f07b733fc3975587ca9930612aa0151c1d543b28636378c363f06b7ed8a2c1ac97efebf7bc9  linux-postmarketos-allwinner-orange-pi-5.10-20210130-2109.tar.gz
+sha512sums="aadf630887b39a27bbe1cd088532f1244f690f5590620317364252e8f2b29d681bc33545cb3070dcf593bee4ee5a94923db8cf7c1056173135c87530603f1c19  linux-postmarketos-allwinner-orange-pi-5.11-20210218-0749.tar.gz
 3a8ccd45317f49ad7416b499a4c766bfffecc3449518e2c7be809d3537ece2d0c7d3da6bbdfb85f7494c294563497f84f1f311cbfded056018248cee31c6fed2  config-postmarketos-allwinner.aarch64
-6b96dcdca84f0581d1f6354dfb752ef382b2a70793e881233e71c2af0c58d0eed965be7a494308a639e2e9035e46535f659e0c1721c0e3b8444a2ac981d7dc99  0001-dts-add-dontbeevil-pinephone-devkit.patch
-5cd62667ebe1d5213d5d89423fe2a810c55fa84a238790af5f087b31cee3a3db66bcaba14001c345731bc1212060f74c0629433403be2485a5bbd4f0dd1c4f65  0002-dts-add-pinetab-dev-old-display-panel.patch
-10eb10fe09258e524b8770961e44bcda55189f86b0f21cf12c831beb94e9b81c66857771bbe75833d56a7bd44907efceb0e1c4022fcaaf8f1d106a83ec8a19eb  0004-dts-pinetab-add-missing-bma223-ohci1.patch
-26bd19eb7849ad59ac73a002edeb5d015630c0f802b4da1ec75a01581aeb406350097b5e37ef5c0981cc503cdbfc4d24d446c193a533f01e3e4b51426c9e192e  0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
-79f244794906b84f2033b04429f9bf187f171291c8f808a65f6d2c3a9b8a029eb0460f281148ff4a43c12be4fac3d78fcc4ddfa4c14e687a3f7fc310a5921048  0006-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
-11e3210958afcd9a04885f364d9ce707845173430581601cc8d08451529f80aab137f1c578ab3453e7249fe38001eb6aafe728ba5e34e39b65c7e47a3ecd9fda  0007-dts-pinephone-remove-bt-firmware-suffix.patch
-510e1cf463485315f99dfc86511fb7271591159c39cf1bbeecbc1056f8861c35603d61946f3488bfbb7a779ce9324c69d230fa159386b7920f866b47ada444a4  0008-media-ov5640-Implement-autofocus.patch
-6dee374e8459279e2e61894ab9146574283dad61605e4547a1258dd09e02646e46712059431b4086aebb95d24ab44c8b5dc21aa9d004f0190f864045a20b336a  0009-leds-gpio-set-max_brightness-to-1.patch
-27c091b4fd306b5f6fbadac5881ecc5465804ea910eb299445f7d4f04d09e05b8cb708bf4ac24f9ae2a77afa287bfbebe691f6d90db189896c6951ff8f30bcf5  0010-dts-pinephone-Add-pine64-pinephone-to-compat-list.patch
-1d0683871027bd13e03e469fc23c3394b3dbfb48115e19b03638f68970ccfa9583b70ab21d76e68973af803d5387f474f4fe58c90e58985f96c6aec8489aa96a  0011-dts-pinephone-drop-modem-power-node.patch
-c93490ebfd7405df2784d78b45bc7ddf985cfa270d0d94c054002f582541f11d28fe216db849cae99d78c3250187d667f305f8a4848d505d0a69a0cbc559be82  0012-dts-headphone-jack-detection.patch
-e64d06272ce1e295d8bd444611216ac33c99ad200bdffa2c3e777e9045a744ec66f7908355c1d4a1a85a94f2c4dbc4c1e6ba0e0054348aef52dc8dd6350be444  0013-fix-pogopin-i2c.patch"
+b174532e356dcb2144c2629c1747dcb0026a40aa8e4deca5bde67344d271e519ff90f6fa287633b1dec857855331e4aa1d1bd5fd0d73044309f98e8d829e2be0  0001-dts-add-dontbeevil-pinephone-devkit.patch
+898e5e6dbdfa5b2f2154818bf006f2ae4d162a246c58dab5c43534e7630a35faf48ba74f6d2493d7500ad956a0e71c0b85ca9d7a51044c21d7d87b6f27b055f5  0002-dts-add-pinetab-dev-old-display-panel.patch
+55f8bc826d7958d8fd16c59663746529be80daacdca9425e5678ee175bf0b93e4c1e0d2b5878ee58b488dde7eb7a05e438ec16c97c4298d3f272957a5caf183d  0003-dts-pinetab-add-missing-bma223-ohci1.patch
+6135bffc2ab948169f6fb27b925ca64a4f2ad8cb58d66123f2bcb1c6e64ac68a92ab419bc1b19eaac64d508de46e4a2de639251f92f78596dece5941ded39e5d  0004-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
+f63ce49ef59fe2650d52e73e5ecbee3c2b2a3b4cb5c95703d19960a1775f7bf25e3f0ffee55201418019b911aa114277c0b04a8b19b8786ae4af4a734ea3d11a  0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
+e8eca7814daf76ebe658bdf988a062c4ed433cee5fde522b8d64492267716a5e7ae91b55877253ccedb44f5365b8a085989410a64371728189e444aee4f54655  0006-dts-pinephone-remove-bt-firmware-suffix.patch
+22058627fd8e8d591d14d22e3ff5a19b8118e78f6bc620044ed68413fdac6cf1adeb77c75f4a2bae509b2294fe62b9c3fd18fb096e758dcd1bef47b515258ab5  0007-media-ov5640-Implement-autofocus.patch
+662641bcb112d0568de3436269969d12a607820ea422554d8b7dfd3c5dbcef7e5ac60d47218a0d8a3c05044792b20ca22240a1007282472eade443670780b99a  0008-leds-gpio-Set-max-brightness-to-1.patch
+95335f5755f8385c824cc8fb55af8b11ab02196ea6f49a80fe1ed964c0287fd6e41b597d50de615308e2cd53e0b0a471d452ea3ff8503caccfc17561c393c7f2  0009-dts-pinephone-Add-pine64-pinephone-to-compat-list.patch
+e9cfb545c216c061da243b0eeb2169ff11e80898270a87f432cec937057d585313109d4ae9487a6641eeb5de1b0be69b7615bfca99fb64ab7227d941e6f129c1  0010-dts-pinephone-drop-modem-power-node.patch
+789ae2e405f00e897c357427c587cb7a4a3d3a68b77b9700fb6f6a67d92314fcf75f2ad8b65c0d046215bb7bd5fcf65e4e8e31748170ed595bef1ba3010dd0bf  0011-dts-pinephone-jack-detection.patch
+611bab79b36ee3a9ff8504fa5c56964a0ff1bcd65eacc692d8d991a9bc300e2b16c6d69f4bcad3a35315e848653c2969a985446c385081f019d3e4e74521f42c  0012-pinephone-fix-pogopin-i2c.patch"
