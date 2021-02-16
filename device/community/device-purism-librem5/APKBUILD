@@ -2,8 +2,9 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.12
+pkgver=1.13
 pkgrel=0
+_confver=35
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -20,7 +21,6 @@ depends="
 	uboot-tools
 "
 makedepends="devicepkg-dev"
-_confver=33
 builddir=$srcdir/librem5-base-pureos-$_confver
 source="
 	https://source.puri.sm/Librem5/librem5-base/-/archive/pureos/$_confver/librem5-base-pureos-$_confver.tar.gz
@@ -29,7 +29,6 @@ source="
 	77-mm-broadmobi-port-types.rules
 	deviceinfo
 	flash_script.lst
-	librem5-base-ucm2.patch
 	librem5-shipmode.initd
 	modprobe.d_rsi.conf
 	modules-load.d_librem5.conf
@@ -100,13 +99,12 @@ package() {
 
 	devicepkg_package $startdir $pkgname
 }
-sha512sums="e89e75480bda1150e11579faba78058b15824adaaa67e199909583c67d3e519916fed783743f0e510abe3fd571610c7a3f26a9bd2008e85f1eafb114e9ffe652  librem5-base-pureos-33.tar.gz
+sha512sums="1c1b5074982f622cdfc22ead07dfdccb2cadf0eaa9700947161d779c7d05e9caa7e4016e4324345d4062e2de66673321cf909314f9ca841ada87cb0cdaec2997  librem5-base-pureos-35.tar.gz
 5e0536a53ba5a33af6ddff3a5f5d866c09ae54dd6754e6b17e61fde0b141b3165379a598de562c89568a1de9ae9ae03a4f876c53002b87f09d7b56013345ab27  00-mesa.sh
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
-db7708ea7d34fc877aacdd249403ea5468d652bdf65ffa41f2f0471f3c4dcc9db9af743dfd792f3a21db721ecc040152f7ea8b76912556088a22a99e2bfd370f  deviceinfo
+73bc79b6ed1db6a8f581d18ae529f3ebfa2bd86f6b24ec1a9e12f8ddd657480eabfe554996636ef68a31477b8bfdfb2378bf8c03f1293196496683c195f78598  deviceinfo
 d033df2b9125622c946af67dad83070473c86937b5825f57ad272c9145b594071dd6913949127803c45af4ea3226526551718d40739f9f1ee4bfe6446e62c856  flash_script.lst
-35e7a1ca1e1924878fcb377d22508d8fbd5fc81398c117259e40c0ba4b86d76b019f352d73e7d201dfb9ceb304fe1e2e3d2f7fc4a3cd06ddd6cd6e2c3f848057  librem5-base-ucm2.patch
 76b06cc1ac82c3fc0e298c9d7d5c9139624b1269bf846fe3bc07b9af877d882362b60ba90028ad3182cb1d6426aacdb560fe060b026778a56e7f038d495eadd4  librem5-shipmode.initd
 9dc018f0de523cbfe5a49cbe831aa30e975a8dd34635197bb52582f072ac356ef2c02223fc794d970380091a69a83a74c3fbe34520190c8536e77f9ea98c7659  modprobe.d_rsi.conf
 a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f6e65a5d1b1a9099936382c99b49a44303f7b6d77a075a471  modules-load.d_librem5.conf
