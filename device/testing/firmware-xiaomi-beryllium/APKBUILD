@@ -1,47 +1,29 @@
 # Maintainer: Venji10 <bennisteinir@gmail.com>
+# Co-Maintainer: Joel Selvaraj <jo@jsfamily.in>
 
 pkgname=firmware-xiaomi-beryllium
-pkgver=0
-pkgrel=0.1
-_commit="c91d13e6ee4c91b5665911816607ddc7bb60f0a4"
-pkgdesc="Firmware files for Xiaomi Poco F1"
-url="https://postmarketos.org"
+pkgver=2
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Poco F1"
+url="https://gitlab.com/sdm845-mainline/firmware-xiaomi-beryllium"
 arch="aarch64"
+depends="soc-qcom-sdm845-nonfree-firmware linux-firmware-qcom linux-firmware-qca linux-firmware-ath10k"
 license="proprietary"
-options="!strip !check !archcheck !spdx"
+options="!strip !check !archcheck"
 
-# Source
-_files="a630_zap.mdt a630_zap.elf a630_zap.b02 a630_zap.b01 a630_zap.b00 a630_sqe.fw a630_gmu.bin "
+_commit="aad74c8d4f6fb5852a20bebdebb2979ee63ed775"
 
-_files_sdm845="sdm845/adsp.mbn sdm845/adspr.jsn sdm845/adspua.jsn sdm845/cdsp.mbn
-	 sdm845/cdspr.jsn sdm845/mba.mbn sdm845/modem.mbn sdm845/modemuw.jsn sdm845/wlanmdsp.mbn"
-
-_files_venus="venus-5.2/venus.b00 venus-5.2/venus.b01 venus-5.2/venus.b02 venus-5.2/venus.b03
-	venus-5.2/venus.b04 venus-5.2/venus.mbn venus-5.2/venus.mdt"
-
-source="$pkgname-$_commit.tar.gz::https://github.com/Venji10/firmware-xiaomi-beryllium/archive/$_commit.tar.gz"
-builddir="$srcdir/firmware-xiaomi-beryllium-$_commit"
+source="$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
+firmware.files"
 
 package() {
-	# /lib/firmware/qcom
-	for _i in $_files; do
-		install -D -m644 "$_i" \
-			"$pkgdir"/lib/firmware/qcom/"$_i"
-	done
-
-	# /lib/firmware/qcom/sdm845
-	for _i in $_files_sdm845; do
-		install -D -m644 "$_i" \
-			"$pkgdir"/lib/firmware/qcom/"$_i"
-	done
-
-	# /lib/firmware/qcom/venus-5.2
-	for _i in $_files_venus; do
-		install -D -m644 "$_i" \
-			"$pkgdir"/lib/firmware/qcom/"$_i"
-	done
-
-
+	cd "$srcdir/$pkgname-$_commit/"
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$pkgdir/$_i"
+	done < "$srcdir/firmware.files"
 }
 
-sha512sums="d48484ce1fed8d40cc8ae9164121a521e60617700a27d557f08ab55c89d2cf88bb2ca7842a5001e30bde0c46051026c90bea02137060048878e41eb641841b6c  firmware-xiaomi-beryllium-c91d13e6ee4c91b5665911816607ddc7bb60f0a4.tar.gz"
+sha512sums="c1534e79deef84b9c4c61048f44c7b8ec3a92e02f879f8c2f841ce035a8960839a7d534e0ea42f47e396c86a8cfd73d5bcee608ee4e0817343fd62afef55b2a0  firmware-xiaomi-beryllium.tar.gz
+178bb3e3c0daf689881cd4ecc91db4ad13b86230b1f12b3283671a58e76a3c6497d4c2eaf4ea5fc9d0a5f5789a69711b188b3e4461a9049a00f0b6fcc24213a6  firmware.files"
