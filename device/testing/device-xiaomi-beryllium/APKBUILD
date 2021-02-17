@@ -1,23 +1,28 @@
 # Maintainer: Venji10 <bennisteinir@gmail.com>
+# Co-Maintainer: Joel Selvaraj <jo@jsfamily.in>
 
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-beryllium
 pkgdesc="Xiaomi Poco F1"
-pkgver=0.1
-pkgrel=1
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg"
+depends="postmarketos-base mkbootimg soc-qcom-sdm845 soc-qcom-sdm845-ucm"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-kernel-downstream:kernel_downstream
-	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-tianma:kernel_tianma
+	$pkgname-phosh
 "
 
-source="deviceinfo"
+source="
+	deviceinfo
+	rootston.ini
+	xiaomi,beryllium.json
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -33,16 +38,20 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-kernel_downstream() {
-	pkgdesc="USB, display (w/o HW acceleration) and touchscreen works (see device page in wiki for details)"
-	depends="linux-xiaomi-beryllium mesa-dri-swrast"
+kernel_tianma() {
+	pkgdesc="Close to mainline; Tianma Display, Novatek Touchscreen, Audio, Wifi and USB works (see device page in wiki for details) (GPU firmware needed)"
+	depends="linux-postmarketos-qcom-sdm845"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-kernel_mainline() {
-	pkgdesc="Close to mainline; USB and display works (see device page in wiki for details) (GPU firmware needed)"
-	depends="linux-xiaomi-beryllium-mainline mesa-dri-freedreno"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/xiaomi,beryllium.json \
+		"$subpkgdir"/usr/share/feedbackd/themes/xiaomi,beryllium.json
 }
 
-sha512sums="108a67ed5eb46dbac5a45fe0420b8b8f6db00ad130a6b5d8e44cbd0914bddab1bf7f1b16e5c06a4fa96dd65760269e45c2fbe5c37a3cdcd091a071e1af143458  deviceinfo"
+sha512sums="3d4587810311a5422577daddfcd41aad4d29e011ffb13d3d3d7cde6e4f8eacd2458470818cca8e196fd7f9a44670cffeddde085cda74688fb4d3a7418114449e  deviceinfo
+e0bbe6210198ec37a0f18fb7dec5dead4ad41693ad5b3c20731e68d4f9d8fdff393dcbd110e87564030f1326e12da8af58c020e9bc14eb9ca2c54224b962df7e  rootston.ini
+db78af5be2a08109962fa2511d6e84efe9a425e1d45c7e0e75bf0be383cfc1c5fca5d79f3d7bd2f146e8a62460c88b214819ad522316c0c2e08783a80d8ceb05  xiaomi,beryllium.json"
