@@ -1,15 +1,23 @@
 # Maintainer: Caleb Connolly (kalube) <caleb@connolly.tech>
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
-pkgver=2
+pkgver=3
 pkgrel=1
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
 options="!check !archcheck !tracedeps"
 depends="mesa-dri-gallium"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="90-feedbackd-pmi8998.rules"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-ucm
+"
+
+_ucm_commit="9e0051807472822bc4090a2d03ab5dacd7787ab8"
+source="
+	alsa-ucm-conf-$_ucm_commit.tar.gz::https://gitlab.com/sdm845-mainline/alsa-ucm-conf/-/archive/$_ucm_commit/alsa-ucm-conf-$_ucm_commit.tar.gz
+	90-feedbackd-pmi8998.rules
+"
 
 package() {
 	mkdir -p "$pkgdir"
@@ -24,6 +32,13 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="
-ea3c7f9664eb9be2ffb6879db044b44cd826747b73c6527d54d79102e58a44e1b32d08d0b1b261329eae43d6a30bc8ef80d89b1d63af1c74ba5dc66ac57911d7  90-feedbackd-pmi8998.rules
-"
+ucm() {
+	provides="alsa-ucm-conf"
+
+	# install audio config files
+	mkdir -p "$subpkgdir"/usr/share/alsa/ucm2
+	cp -r "$srcdir/alsa-ucm-conf-$_ucm_commit"/ucm2 "$subpkgdir"/usr/share/alsa/
+}
+
+sha512sums="3af38c56d2b591c855516be5bf30f71623cb20053191d4324f9896c7d5f17661e93d95e6c682bcd56d0dd4c53374b349c0460c21b6652b737a2d98abe3b954d0  alsa-ucm-conf-9e0051807472822bc4090a2d03ab5dacd7787ab8.tar.gz
+ea3c7f9664eb9be2ffb6879db044b44cd826747b73c6527d54d79102e58a44e1b32d08d0b1b261329eae43d6a30bc8ef80d89b1d63af1c74ba5dc66ac57911d7  90-feedbackd-pmi8998.rules"
