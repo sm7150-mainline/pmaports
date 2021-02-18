@@ -1,11 +1,11 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=linux-purism-librem5
-pkgver=5.9.16
+pkgver=5.11.0
 pkgrel=0
-_purismrel=2
+_purismrel=1
 # <kernel ver>.<purism kernel release>
-_purismver=${pkgver}+librem5.$_purismrel
+_purismver=${pkgver}pureos$_purismrel
 pkgdesc="Purism Librem 5 phone kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -36,6 +36,7 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_purismver.tar.gz::https://source.puri.sm/Librem5/$_repository/-/archive/pureos/$_purismver/$_repository-pureos-$_purismver.tar.gz
 	8f11380ec32912370b8ae9134a0387a6f18862f7.patch
+	0001-Revert-arm64-dts-librem5-Drop-separte-DP-device-tree.patch
 	$_config
 "
 builddir="$srcdir/$_repository-pureos-$_purismver"
@@ -62,6 +63,7 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 
 }
-sha512sums="9f1a05574c9e121ac4bd083a9951af53e454d53a7e5a72d928ca8196134d906cdda16d48a2fd6beaa7451598faf00031e19fe1926960c92e1fbfb3df1f778b94  linux-purism-librem5-5.9.16+librem5.2.tar.gz
+sha512sums="9e50bb6a443c63c1989484e1e7e6428482ee31b378965044828ea2aed604c631f14eedce7f54fc01b48ce1275912a84251484ac373e3385f515e6a54bc508582  linux-purism-librem5-5.11.0pureos1.tar.gz
 9870bff4b187188b519b23264c2634ee4232011fed6d2f66a7b4971db354ac3dffa0e1552bd0dc953c66ec622e18ce8899fdbcfba94f60867fc5004d6da96753  8f11380ec32912370b8ae9134a0387a6f18862f7.patch
-845c7af0aae1c02dfb670b2935ccb39fae9b37212c8d5de4e0b8d12f670a45924150bcf6bcf0021d9219a954fc5ff54d5d6c4a119db3fdf26a15cccdd82b850f  config-purism-librem5.aarch64"
+5baae99010bde62e253fdd56f21ba096c217ba2ab9c367c80b34bc0f445a79a8fb8b5d14682f71ad6061d73c81fc16a608f4be037d792978dbbaf74267844260  0001-Revert-arm64-dts-librem5-Drop-separte-DP-device-tree.patch
+b41dc60afab81f9f7c7f4788bf9554cecd7e5da8f1ada502e2097667769437340112a8b5f77199bc28f627343558386aae08586fcdb977b76c3b677f24eba782  config-purism-librem5.aarch64"
