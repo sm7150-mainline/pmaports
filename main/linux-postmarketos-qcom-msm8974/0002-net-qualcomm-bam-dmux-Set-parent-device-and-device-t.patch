@@ -1,0 +1,43 @@
+From 891503b7546ac4a5f3db5f20d26fe1bd709ae38c Mon Sep 17 00:00:00 2001
+From: Minecrell <minecrell@minecrell.net>
+Date: Mon, 19 Oct 2020 13:21:31 +0200
+Subject: [PATCH 2/6] net: qualcomm: bam-dmux: Set parent device and device
+ type
+
+---
+ drivers/net/ethernet/qualcomm/bam-dmux.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/ethernet/qualcomm/bam-dmux.c b/drivers/net/ethernet/qualcomm/bam-dmux.c
+index 75b3f3932b4f..7bc02b20b643 100644
+--- a/drivers/net/ethernet/qualcomm/bam-dmux.c
++++ b/drivers/net/ethernet/qualcomm/bam-dmux.c
+@@ -451,11 +451,17 @@ static const struct net_device_ops bam_dmux_ops = {
+ 	.ndo_start_xmit	= bam_dmux_netdev_start_xmit,
+ };
+ 
++static const struct device_type wwan_type = {
++	.name = "wwan",
++};
++
+ static void bam_dmux_netdev_setup(struct net_device *dev)
+ {
+ 	dev->netdev_ops = &bam_dmux_ops;
+ 
+ 	dev->type = ARPHRD_RAWIP;
++	SET_NETDEV_DEVTYPE(dev, &wwan_type);
++
+ 	dev->mtu = BAM_DMUX_DEFAULT_MTU;
+ 	dev->max_mtu = BAM_DMUX_MAX_DATA_SIZE;
+ 	dev->needed_headroom = sizeof(struct bam_dmux_hdr);
+@@ -489,6 +495,7 @@ static void bam_dmux_register_netdev_work(struct work_struct *work)
+ 		if (!netdev)
+ 			return; /* -ENOMEM */
+ 
++		SET_NETDEV_DEV(netdev, dmux->dev);
+ 		bndev = netdev_priv(netdev);
+ 		bndev->dmux = dmux;
+ 		bndev->ch = ch;
+-- 
+2.30.1
+

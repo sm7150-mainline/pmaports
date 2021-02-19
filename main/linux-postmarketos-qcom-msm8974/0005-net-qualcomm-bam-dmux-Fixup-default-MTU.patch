@@ -1,0 +1,52 @@
+From 742b7d66ad440a5612c916fac83818915c0ab531 Mon Sep 17 00:00:00 2001
+From: Minecrell <minecrell@minecrell.net>
+Date: Thu, 18 Feb 2021 12:06:16 +0100
+Subject: [PATCH 5/6] net: qualcomm: bam-dmux: Fixup default MTU
+
+> 1500 probably doesn't make sense by default...
+---
+ drivers/net/ethernet/qualcomm/bam-dmux.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/qualcomm/bam-dmux.c b/drivers/net/ethernet/qualcomm/bam-dmux.c
+index 880e0ca14beb..33f4c4cf8557 100644
+--- a/drivers/net/ethernet/qualcomm/bam-dmux.c
++++ b/drivers/net/ethernet/qualcomm/bam-dmux.c
+@@ -8,7 +8,6 @@
+ #include <linux/bitops.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
+-#include <linux/etherdevice.h>
+ #include <linux/if_arp.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+@@ -24,7 +23,6 @@
+ 
+ #define BAM_DMUX_BUFFER_SIZE		SZ_2K
+ #define BAM_DMUX_MAX_DATA_SIZE		(BAM_DMUX_BUFFER_SIZE - sizeof(struct bam_dmux_hdr))
+-#define BAM_DMUX_DEFAULT_MTU		2000
+ #define BAM_DMUX_NUM_SKB		32
+ 
+ #define BAM_DMUX_AUTOSUSPEND_DELAY	1000
+@@ -446,16 +444,15 @@ static void bam_dmux_netdev_setup(struct net_device *dev)
+ 	dev->type = ARPHRD_RAWIP;
+ 	SET_NETDEV_DEVTYPE(dev, &wwan_type);
+ 
+-	dev->mtu = BAM_DMUX_DEFAULT_MTU;
++	dev->mtu = ETH_DATA_LEN;
+ 	dev->max_mtu = BAM_DMUX_MAX_DATA_SIZE;
+ 	dev->needed_headroom = sizeof(struct bam_dmux_hdr);
+ 	dev->needed_tailroom = sizeof(u32); /* word-aligned */
++	dev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
+ 
+ 	/* This perm addr will be used as interface identifier by IPv6 */
+ 	dev->addr_assign_type = NET_ADDR_RANDOM;
+ 	eth_random_addr(dev->perm_addr);
+-
+-	dev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
+ }
+ 
+ static void bam_dmux_register_netdev_work(struct work_struct *work)
+-- 
+2.30.1
+
