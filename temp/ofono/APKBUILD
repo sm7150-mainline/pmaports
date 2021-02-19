@@ -3,7 +3,7 @@
 pkgname=ofono
 pkgver=9999
 _pkgver=1.31
-pkgrel=9
+pkgrel=10
 pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications [$_pkgver]"
 url="https://01.org/ofono"
 arch="armhf armv7 aarch64"
@@ -18,6 +18,7 @@ source="https://www.kernel.org/pub/linux/network/ofono/ofono-$_pkgver.tar.xz
 	fix-TEMP_FAILURE_RETRY.patch
 	skip-broken-test.patch
 	support-smdpkt.patch
+	wda-set-data-format.patch
 	0001-common-create-GList-helper-ofono_call_compare.patch
 	0002-common-atmodem-move-at_util_call_compare_by_status-t.patch
 	0003-common-atmodem-move-at_util_call_compare_by_id-to-dr.patch
@@ -49,7 +50,8 @@ build() {
 		--sbindir=/usr/sbin \
 		--enable-external-ell \
 		--enable-tools \
-		--enable-test
+		--enable-test \
+		--with-dbusconfdir=/usr/share
 	make
 }
 
@@ -64,7 +66,7 @@ package() {
 	install -Dm644 "$srcdir"/udev.rules "$pkgdir"/usr/lib/udev/rules.d/60-ofono-pmos.rules
 	install -Dm755 "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/$pkgname
 	install -Dm755 "$srcdir"/$pkgname-auto-enable.initd "$pkgdir"/etc/init.d/$pkgname-auto-enable
-	install -Dm755 "$srcdir"/ofono-wheel.conf "$pkgdir"/etc/dbus-1/system.d/
+	install -Dm755 "$srcdir"/ofono-wheel.conf -t "$pkgdir"/usr/share/dbus-1/system.d/
 }
 
 scripts() {
@@ -79,6 +81,7 @@ sha512sums="377cda34dcc92d1f339a4b3271de5a14afaf309061c4467e5af18089cd821e65c0d8
 687a2fd592add40122b789073ab9970d6e966752fdecc4077afe1c1bba705fe541dd0e457094f1d9cde747c571b7810b5b1a30835a3f1869bcd810751d5bf76f  fix-TEMP_FAILURE_RETRY.patch
 777ab2e13eebd1ccbe12a304310a83b262a5d934207c6a8d410e75aff380838eed1a52f3c2fe0d80c1e7db7faa9b55bf17e78a1e1acd8cfb95a3c6aef49c5b67  skip-broken-test.patch
 f7f398f77877e78087b691f78ee0f3af5f99d0f15d01d107fbefff16118db4c1e0261c032bd97836a6c30d8b8a4be9d755900c5f9ea48d274a53d9c39c92683b  support-smdpkt.patch
+80a0ea003c4dd3afd8bea7abbfa21b7045b28e46e0a7fcd908a2695999e29657e047eb8d346f81a41ad659e8ce5c4a0f752210594c7e3b7f3c7b04c366d2ddc5  wda-set-data-format.patch
 ad25dcc34bf710287c9a03fdcd61f2f2fd675691f55be30dbe7c8421753aa857906dd23b2d4f7f752fbc62caf2857b00bf5eaa8916e62718d1da7d0abc083ca0  0001-common-create-GList-helper-ofono_call_compare.patch
 7e2f7fb1e661cc9f2180c55c701823050328ee906171148e4ba200e6365f1c40382dab608e78e383e62c9029a6a41d7d7a18b971132df30839f625eb576cb080  0002-common-atmodem-move-at_util_call_compare_by_status-t.patch
 1a55f558c2e3058eee7dae2a60538417ae0fc058f322f4740a0f46a080cc2fda2c8a8cd522d243ab8f0be2ea461ad7dc1c27d2e73bcaac5848d9c592d6386d8a  0003-common-atmodem-move-at_util_call_compare_by_id-to-dr.patch
