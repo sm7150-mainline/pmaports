@@ -1,14 +1,14 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-weston
 pkgver=5
-pkgrel=0
+pkgrel=1
 pkgdesc="(Wayland) Reference compositor (demo, not a phone interface)"
 url="https://postmarketos.org"
 arch="noarch"
 license="GPL-3.0-or-later"
 depends="elogind
-	lightdm
-	lightdm-openrc
+	tinydm
+	tinydm-openrc
 	weston-clients
 	weston
 	weston-shell-desktop
@@ -25,13 +25,10 @@ _pmb_recommends="htop
 	xorg-server-xwayland
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="start_weston.sh weston.ini.default 66-lightdm-autologin.conf"
+source="start_weston.sh weston.ini.default"
 options="!check" # Meta package, no test suite
 
 package() {
-	install -Dm644 "$srcdir"/66-lightdm-autologin.conf \
-		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/66-autologin.conf
-
 	install -Dm755 "$srcdir"/start_weston.sh \
 		"$pkgdir"/usr/bin/start_weston.sh
 
@@ -39,5 +36,4 @@ package() {
 		"$pkgdir"/etc/xdg/weston/weston.ini.default
 }
 sha512sums="33fbf6a3b5558a6d7c3a5993e890e4cee10e868ebc70e8f602d5e07513a77a0bebf7fd343c90a2a72c4f4b30777d3cd7b48c66efb4112032f4421d2806ef3b9b  start_weston.sh
-b712c9d4c846437656781656ec15e9b7e238a9244e0b77bf84b67f6661d44f68718330706f69ccb8b4d7f6182b8f17f273018ca461c0c40e49b9185f6eec168d  weston.ini.default
-6800b81055c854ef69c0084341e31841d4b06d1d894542f1e125d0d70b6606f11218bda0d29dab9a48594b4c2f815a540f91bfba6c2c22c3378040c41fe4bbb1  66-lightdm-autologin.conf"
+b712c9d4c846437656781656ec15e9b7e238a9244e0b77bf84b67f6661d44f68718330706f69ccb8b4d7f6182b8f17f273018ca461c0c40e49b9185f6eec168d  weston.ini.default"
