@@ -1,36 +1,40 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=mapbox-gl-native
-pkgver=1.5.0.3
+pkgver=1.6.0
 pkgrel=0
-_commit="0d63f5661ed15d43fbbf0462d82c85e634a2e8d7"
-_commit_mapbox="974c87bd9cc25b7f0a2fc31adcc51df4db694270"
 pkgdesc="Mapbox GL Native"
-url="https://github.com/rinigus/pkg-mapbox-gl-native"
+url="https://github.com/mapbox/mapbox-gl-native"
 arch="all !armhf"
-license="MIT"
-makedepends="qt5-qtbase-dev icu-dev"
-source="mapbox-gl-native-lib-$_commit.pro::https://raw.githubusercontent.com/rinigus/pkg-mapbox-gl-native/$_commit/mapbox-gl-native-lib.pro
-	$pkgname-$_commit_mapbox.tar.gz::https://github.com/rinigus/mapbox-gl-native/archive/$_commit_mapbox.tar.gz"
+license="BSD-2-Clause"
+makedepends="
+	cmake
+	qt5-qtbase-dev
+	icu-dev
+	"
+source="https://github.com/pmsourcedump/tarballs/raw/master/mapbox-gl-native-vendored-1.6.0.tar.bz2
+	0001-add-support-for-qmapboxgl-installation.patch
+	0002-versioned-libraries.patch
+	"
 options="!check" # No tests
 subpackages="$pkgname-dev"
-builddir="$srcdir/$pkgname-$_commit_mapbox"
-
-prepare() {
-	default_prepare
-
-	mv "$srcdir"/mapbox-gl-native-lib-$_commit.pro \
-		"$builddir"/mapbox-gl-native-lib.pro
-}
 
 build() {
-	qmake-qt5 "CONFIG+=posix" mapbox-gl-native-lib.pro
-	make
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DMBGL_WITH_WERROR=OFF \
+		-DMBGL_WITH_QT=ON \
+		-DMBGL_WITH_QT_LIB_ONLY=ON \
+		-DMBGL_WITH_QT_HEADLESS=OFF
+	cmake --build build
 }
 
 package() {
-	INSTALL_ROOT="$pkgdir" make install
+	DESTDIR="$pkgdir" cmake --install build
 }
 
-sha512sums="e12b3be5d302fffe88f02a9e1a8858a6c4603924fc6faab4b2706bc9b5f792222c4b16da835fe773fadc50192f49e53f92ebf0d71088b1af299acb63fbaf3b09  mapbox-gl-native-lib-0d63f5661ed15d43fbbf0462d82c85e634a2e8d7.pro
-86d50d52a2f3c8c9929e556498de6cf4cd955fd366455f533567e0d2fb35c24e03f597ea3d06821042b1ee8387c1ba23a4e3e0f70046183a84330e351251721a  mapbox-gl-native-974c87bd9cc25b7f0a2fc31adcc51df4db694270.tar.gz"
+sha512sums="c4698c5d36f3f629f18d3b546f9a2aee4209723ccec0c552dbe3e6f44c84462f1a87e862ea012309a04caf85a1d59ba85c18814de79b577a3d1a45a3f9d50909  mapbox-gl-native-vendored-1.6.0.tar.bz2
+8383f99c49b26f66c72080864e05a4216f3f2e03045a2ad3aca1ff9ed9c16f214236ef3fcd71f85ade071da000eca07cec75d4411400d5d5112f1e45d3a2a769  0001-add-support-for-qmapboxgl-installation.patch
+433c0a8bc6fc34cc86184e2c979fb6bd5a88dbbf69ed383eccb38d99dcbb6d67c5f9ccb615a8b347680a48bd74a4d387172fffd9cf12d089f6ffa27420587cf5  0002-versioned-libraries.patch"
