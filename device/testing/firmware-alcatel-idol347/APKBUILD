@@ -1,0 +1,39 @@
+pkgname=firmware-alcatel-idol347
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Alcatel OneTouch Idol 3 (4.7)"
+url="https://github.com/vknecht/"
+subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck"
+_repository="firmware-alcatel-idol347"
+_commit="28317ed89bb9b568191ce2a6a5f4745a4c67b30f"
+source="$pkgname-$_commit.tar.gz::$url/$_repository/archive/$_commit.tar.gz"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+modem() {
+	pkgdesc="Alcatel OneTouch Idol 3 (4.7) modem firmware"
+	install -Dm644 "$srcdir"/"$_repository"-"$_commit"/mba.mbn -t "$subpkgdir/$_fwdir"
+	install -Dm644 "$srcdir"/"$_repository"-"$_commit"/modem.* -t "$subpkgdir/$_fwdir"
+}
+
+venus() {
+	pkgdesc="Alcatel OneTouch Idol 3 (4.7) video firmware"
+	install -Dm644 "$srcdir"/"$_repository"-"$_commit"/venus.* -t "$subpkgdir/$_fwdir"/qcom/venus-1.8
+}
+
+wcnss() {
+	pkgdesc="Alcatel OneTouch Idol 3 (4.7) WiFi/BT firmware"
+	cd "$srcdir"/"$_repository"-"$_commit"
+	install -Dm644 wcnss.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 WCNSS_* -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+sha512sums="2199c08b6e07f1b11579c3acd70a4343e5b6a486b563039383450fc5a74584d3e62df63d5ac32592893460617990d9226b0178e4ebed507569321d027e995872  firmware-alcatel-idol347-28317ed89bb9b568191ce2a6a5f4745a4c67b30f.tar.gz"
