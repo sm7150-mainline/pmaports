@@ -2,7 +2,7 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.13
+pkgver=1.14
 pkgrel=0
 _confver=35
 url="https://postmarketos.org"
@@ -32,12 +32,15 @@ source="
 	librem5-shipmode.initd
 	modprobe.d_rsi.conf
 	modules-load.d_librem5.conf
+	pcscd-librem5-reader.conf
+	pcscd-librem5.initd
 	uboot-script.cmd
 	xorg.conf
 "
 subpackages="
 	$pkgname-phosh
 	$pkgname-pulseaudio
+	$pkgname-smartcard
 "
 install="$pkgname.post-install"
 
@@ -65,6 +68,19 @@ pulseaudio() {
 	install -D -m644 "$builddir"/default/audio/pulse/librem5.pa "$subpkgdir"/etc/pulse/librem5.pa
 	mkdir -p "$subpkgdir"/usr/share/pulseaudio/alsa-mixer
 	cp -r "$builddir"/default/audio/profile-sets "$subpkgdir"/usr/share/pulseaudio/alsa-mixer/
+}
+
+smartcard() {
+	pkgdesc="OpenPGP SmartCard support for the Librem 5"
+	depends="$pkgname ccid gnupg-scdaemon pcsc-lite pcsc-tools"
+	install_if="$pkgname pcsc-tools"
+	install="$install $subpkgname.post-install"
+
+	install -D -m644 "$srcdir"/pcscd-librem5-reader.conf \
+		"$subpkgdir"/etc/reader.conf.d/librem5-ttxs-reader
+
+	install -D -m755 "$srcdir"/pcscd-librem5.initd \
+		"$subpkgdir"/etc/init.d/pcscd-librem5
 }
 
 package() {
@@ -108,5 +124,7 @@ d033df2b9125622c946af67dad83070473c86937b5825f57ad272c9145b594071dd6913949127803
 76b06cc1ac82c3fc0e298c9d7d5c9139624b1269bf846fe3bc07b9af877d882362b60ba90028ad3182cb1d6426aacdb560fe060b026778a56e7f038d495eadd4  librem5-shipmode.initd
 9dc018f0de523cbfe5a49cbe831aa30e975a8dd34635197bb52582f072ac356ef2c02223fc794d970380091a69a83a74c3fbe34520190c8536e77f9ea98c7659  modprobe.d_rsi.conf
 a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f6e65a5d1b1a9099936382c99b49a44303f7b6d77a075a471  modules-load.d_librem5.conf
+8ef4ec7a9e9a4fb801d207e7d94b627aacc9243a93b0ec28e0823a6f44b8102416c040e4ddf499f87bb9dfa960cf6f627b008b79f197f6814b3fd881e18ae8ef  pcscd-librem5-reader.conf
+2618b40eebd3602066ee75ab85cbdbb4cfee498def9879c95a304f05a6eeedf1ab28c5dd9fa5efc8f88c790f49c96458c61d5dfe8a3ca0f96bcc0e244313ab01  pcscd-librem5.initd
 aa06920d47ca3781d76473a8a4efebd243ebb1c1d81e1714ef5ade3fed91e0a7a7113e5fa00c7c77163556745962e57102469517f9ea3ad868bc4033387bf428  uboot-script.cmd
 1cbc65cf2cb8fad4b0332d012a0256a266205b9b64371f5c0dae09dbb7f1e45b254e8c43993b896097e9d7035a72d547d9bce1ab2133addc56a5abdb80b44616  xorg.conf"
