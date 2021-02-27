@@ -295,6 +295,7 @@ get_partition_type() {
 
 resize_root_filesystem() {
 	if [ "$ROOT_PARTITION_RESIZED" = 1 ]; then
+		show_splash /splash-resizefs.ppm.gz
 		partition="$(find_root_partition)"
 		touch /etc/mtab # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=673323
 		type="$(get_partition_type "$partition")"
@@ -309,6 +310,7 @@ resize_root_filesystem() {
 				;;
 			*)	echo "WARNING: Can not resize '$type' filesystem ($partition)." ;;
 		esac
+		show_splash_loading
 	fi
 }
 
