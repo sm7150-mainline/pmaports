@@ -3,23 +3,21 @@
 
 _flavor="postmarketos-qcom-sdm660"
 pkgname=linux-$_flavor
-pkgver=5.6_rc1
-pkgrel=2
-pkgdesc="QCOM group's fork of mainline linux"
-arch="aarch64"  # sdm660 is arm64 only
+pkgver=5.10_rc6
+pkgrel=0
+pkgdesc="Close to mainline linux kernel for Qualcomm Snapdragon 660 SoC"
+arch="aarch64"
 url="https://kernel.org/"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="bison findutils flex installkernel openssl-dev perl"
 
 _repo="linux-postmarketos"
-_commit="8dc3769c8a680bfc1f38221e68d3fd994f490970"
+_commit="5e9195254ef8c6c6f4870aa77057577f0c17d007"
 
 source="
 	$_repo-$_commit.tar.bz2::https://gitlab.com/postmarketOS/$_repo/-/archive/$_commit/$_repo-$_commit.tar.bz2
 	config-$_flavor.aarch64
-	0001-arm64-dts-qcom-Add-sdm630-sdm660-SoC-and-xiaomi-lave.patch
-	linux4.17-gcc10-extern_YYLOC_global_declaration.patch
 "
 
 _carch="arm64"
@@ -48,10 +46,9 @@ package() {
 	make modules_install dtbs_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-sha512sums="b53b17709eea1b8cd8fc9158762f0e2fefad7baa383dbee2ba758e9aed89cf411b2bd65386823821b877ced5f0b525f5ddc67cd048fddf47c9104eea42ab81f0  linux-postmarketos-8dc3769c8a680bfc1f38221e68d3fd994f490970.tar.bz2
-1872304ae2cf9003c7cac98debb7940e94def436330b5da960f82befec9a57dcb2cbfff34bd92b559e3fd37be44da9c4a69c1dbebc8ac402235d0b491e452cb3  config-postmarketos-qcom-sdm660.aarch64
-a5c4036e916716a66277c40d2adfc526401c7abdfe5222e237deb585bd4081cb36023696e794e0531413caf1296b88072f3506086dee99e1388e2874d72880bc  0001-arm64-dts-qcom-Add-sdm630-sdm660-SoC-and-xiaomi-lave.patch
-27827877040007fc1c4c719f7e2e19e5c272d44972415cfc53feba0313d87e4074f8204bdb13cbc5fe21ea61bf595314b68f10c081e7b7bac3c888b60f008acf  linux4.17-gcc10-extern_YYLOC_global_declaration.patch"
+sha512sums="4a55855e60de655a77c43cbd4a08b611a7142235dbf5501007d734426e3d08291b8101b2e3e6e22306af8da52709fa4466c1ede6a0cd7b9d8d02eb250a09f5af  linux-postmarketos-5e9195254ef8c6c6f4870aa77057577f0c17d007.tar.bz2
+8e12dca570e8b12f0fa7349943babc61e9f2827cea61bc9f2f2c0fb2553e2e8a8fcfb623dcd46d9ff9d99f8596c4197a5b321bf43a99197bef30f554244eb4aa  config-postmarketos-qcom-sdm660.aarch64"
