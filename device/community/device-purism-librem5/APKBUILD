@@ -2,9 +2,12 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.14
+pkgver=1.15
 pkgrel=0
-_confver=35
+_confver=36
+_purismrel=1
+# <librem5-base ver>.<purism release>
+_purismver=${_confver}pureos$_purismrel
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -23,7 +26,7 @@ depends="
 makedepends="devicepkg-dev"
 builddir=$srcdir/librem5-base-pureos-$_confver
 source="
-	https://source.puri.sm/Librem5/librem5-base/-/archive/pureos/$_confver/librem5-base-pureos-$_confver.tar.gz
+	https://source.puri.sm/Librem5/librem5-base/-/archive/pureos/$_purismver/librem5-base-pureos-$_purismver.tar.gz
 	00-mesa.sh
 	70-wifi-pm.rules
 	77-mm-broadmobi-port-types.rules
@@ -43,6 +46,8 @@ subpackages="
 	$pkgname-smartcard
 "
 install="$pkgname.post-install"
+
+builddir="$srcdir/librem5-base-pureos-$_purismver"
 
 build() {
 	mkimage -A arm64 -C none -O linux -T script -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
@@ -115,7 +120,7 @@ package() {
 
 	devicepkg_package $startdir $pkgname
 }
-sha512sums="1c1b5074982f622cdfc22ead07dfdccb2cadf0eaa9700947161d779c7d05e9caa7e4016e4324345d4062e2de66673321cf909314f9ca841ada87cb0cdaec2997  librem5-base-pureos-35.tar.gz
+sha512sums="ef2cce6de4e85b14b4a7dee7fe8175d6ca455db38bfe4453b390ac15ad51240dec583837a8428532db4d99a6cfb060b703a3986584bfedd0f2d44444d2a1c1c1  librem5-base-pureos-36pureos1.tar.gz
 5e0536a53ba5a33af6ddff3a5f5d866c09ae54dd6754e6b17e61fde0b141b3165379a598de562c89568a1de9ae9ae03a4f876c53002b87f09d7b56013345ab27  00-mesa.sh
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
