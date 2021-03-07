@@ -2,6 +2,7 @@
 # This file will be in /init_functions.sh inside the initramfs.
 IP=172.16.42.1
 ROOT_PARTITION_UNLOCKED=0
+ROOT_PARTITION_RESIZED=0
 
 # Redirect stdout and stderr to logfile
 setup_log() {
@@ -256,6 +257,7 @@ resize_root_partition() {
 			kpartx -d "$partition"
 			parted -s "$partition_dev" resizepart 2 100%
 			kpartx -afs "$partition_dev"
+			ROOT_PARTITION_RESIZED=1
 		fi
 	fi
 
@@ -269,6 +271,7 @@ resize_root_partition() {
 			echo "Resize root partition ($partition)"
 			parted -s "$partition_dev" resizepart 2 100%
 			partprobe
+			ROOT_PARTITION_RESIZED=1
 		fi
 	fi
 }
@@ -286,12 +289,14 @@ unlock_root_partition() {
 }
 
 resize_root_filesystem() {
-	partition="$(find_root_partition)"
-	touch /etc/mtab # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=673323
-	echo "Check/repair root filesystem ($partition)"
-	e2fsck -y "$partition"
-	echo "Resize root filesystem ($partition)"
-	resize2fs -f "$partition"
+	if [ "$ROOT_PARTITION_RESIZED" = 1 ]; then
+		partition="$(find_root_partition)"
+		touch /etc/mtab # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=673323
+		echo "Check/repair root filesystem ($partition)"
+		e2fsck -y "$partition"
+		echo "Resize root filesystem ($partition)"
+		resize2fs -f "$partition"
+	fi
 }
 
 mount_root_partition() {
