@@ -31,7 +31,7 @@ pkgver=10.2.1_pre1
 [ "$CHOST" != "$CTARGET" ] && _target="-$CTARGET_ARCH" || _target=""
 
 pkgname=gcc-aarch64
-pkgrel=3
+pkgrel=4
 pkgdesc="Stage2 cross-compiler for aarch64"
 url="https://gcc.gnu.org"
 arch="x86_64"
@@ -170,7 +170,7 @@ if $LANG_FORTRAN; then
 	_languages="$_languages,fortran"
 fi
 if $LANG_ADA; then
-	subpackages="$subpackages libgnat::$CTARGET_ARCH gcc-gnat$_target:gnat"
+	subpackages="$subpackages libgnat-static:libgnatstatic:$CTARGET_ARCH libgnat::$CTARGET_ARCH gcc-gnat$_target:gnat"
 	_languages="$_languages,ada"
 	[ "$CBUILD" = "$CTARGET" ] && makedepends_build="$makedepends_build gcc-gnat-bootstrap"
 	[ "$CBUILD" != "$CTARGET" ] && makedepends_build="$makedepends_build gcc-gnat gcc-gnat$_cross"
@@ -395,11 +395,13 @@ package() {
 		done
 	fi
 
-	paxmark -pmrs "$pkgdir"/$_gcclibexec/cc1
-
 	# move ada runtime libs
 	if $LANG_ADA; then
 		for i in $(find "$pkgdir"/$_gcclibdir/adalib/ -type f -maxdepth 1 -name "libgna*.so"); do
+			mv "$i" "$pkgdir"/usr/lib/
+			ln -s ../../../../${i##*/} $i
+		done
+		for i in $(find "$pkgdir"/$_gcclibdir/adalib/ -type f -maxdepth 1 -name "libgna*.a"); do
 			mv "$i" "$pkgdir"/usr/lib/
 			ln -s ../../../../${i##*/} $i
 		done
@@ -487,7 +489,6 @@ gpp() {
 		"$subpkgdir"/usr/${_target:+$CTARGET/}lib \
 
 	mv "$pkgdir/$_gcclibexec/cc1plus" "$subpkgdir/$_gcclibexec/"
-	paxmark -pmrs "$subpkgdir/$_gcclibexec/cc1plus"
 
 	mv "$pkgdir"/usr/${_target:+$CTARGET/}lib/*++* "$subpkgdir"/usr/${_target:+$CTARGET/}lib/
 	mv "$pkgdir"/usr/${_target:+$CTARGET/}include/c++ "$subpkgdir"/usr/${_target:+$CTARGET/}include/
@@ -642,6 +643,14 @@ libgnat() {
 
 	mkdir -p "$subpkgdir"/usr/lib
 	mv "$pkgdir"/usr/lib/libgna*.so "$subpkgdir"/usr/lib/
+}
+
+libgnatstatic() {
+	pkgdesc="GNU Ada static libraries"
+	depends=
+
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/libgna*.a "$subpkgdir"/usr/lib/
 }
 
 gnat() {
