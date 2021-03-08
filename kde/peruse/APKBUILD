@@ -1,7 +1,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=peruse
 pkgver=0_git20210124
-pkgrel=0
+pkgrel=1
 _commit="341c513a59df0aee73a29d035a7a4bc6ae4b102b"
 pkgdesc="A comic book viewer based on Frameworks 5, for use on multiple form factors"
 # armhf blocked by extra-cmake-modules
@@ -10,6 +10,7 @@ url="https://invent.kde.org/graphics/peruse"
 license="LGPL-2.1-or-later AND LicenseRef-KDE-Accepted-LGPL"
 depends="
 	kirigami2
+	okular-common-qml
 	qt5-qtbase-sqlite
 	qt5-qtimageformats
 	qt5-qtquickcontrols
@@ -40,10 +41,9 @@ package() {
 
 creator() {
 	pkgdesc="Creation tool for comic books"
-	mkdir -p "$subpkgdir"/usr/bin "$subpkgdir"/usr/share/metainfo
-	mv "$pkgdir"/usr/bin/perusecreator "$subpkgdir"/usr/bin
-	mv "$pkgdir"/usr/share/metainfo/org.kde.perusecreator.appdata.xml \
-		"$subpkgdir"/usr/share/metainfo
+
+	amove usr/bin/perusecreator
+	amove usr/share/metainfo/org.kde.perusecreator.appdata.xml
 }
 
 sha512sums="b9981cb63e793e0f5053f03a2de798d71d4b350a4243223dbbfc8af27def4b18a1cab1f6fd17eb3b07639af4962864de533df50b2722e2c8a6796295912801b9  peruse-341c513a59df0aee73a29d035a7a4bc6ae4b102b.tar.gz"
