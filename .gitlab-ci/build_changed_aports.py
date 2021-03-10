@@ -15,8 +15,9 @@ import pmb.helpers.pmaports
 
 def build_strict(packages, arch):
     common.run_pmbootstrap(["build_init"])
-    common.run_pmbootstrap(["--details-to-stdout", "build", "--strict",
-                            "--force", "--arch", arch] + list(packages))
+    common.run_pmbootstrap(["--details-to-stdout", "--no-ccache", "build",
+                            "--strict", "--force",
+                            "--arch", arch, ] + list(packages))
 
 
 def verify_checksums(packages, arch):
