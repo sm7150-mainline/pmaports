@@ -151,6 +151,8 @@ build-x86_64:
   extends: .build
 
 build-x86:
+  only:
+    - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
   extends: .build
 
 build-aarch64:
@@ -160,4 +162,6 @@ build-armv7:
   extends: .build
 
 build-armhf:
+  only:
+    - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
   extends: .build
