@@ -1,0 +1,37 @@
+# Maintainer:
+pkgname=audiotube
+pkgver=0_git20210313
+pkgrel=0
+_commit="18f9c0ce29b7110312cb89ce539901eec0766309"
+pkgdesc="Client for YouTube Music"
+url="https://invent.kde.org/jbbgameich/audiotube"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+license="GPL-2.0-or-later"
+depends="kirigami2 qt5-qtmultimedia qt5-qtimageformats py3-ytmusicapi youtube-dl gst-plugins-good"
+makedepends="cmake extra-cmake-modules kirigami2-dev ki18n-dev python3-dev py3-pybind11-dev"
+source="https://invent.kde.org/jbbgameich/audiotube/-/archive/$_commit/audiotube-$_commit.tar.gz"
+builddir="$srcdir/audiotube-$_commit"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		$CMAKE_CROSSOPTS .
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}
+
+sha512sums="f5531cc1c87c40b61e9c28acd295df41431fd21e62c5724380b0264fe47ac6ef7638f3f4f4b05429000837de2f1941b4b910ee5959f624acb2107a81b1a88e35  audiotube-18f9c0ce29b7110312cb89ce539901eec0766309.tar.gz"
