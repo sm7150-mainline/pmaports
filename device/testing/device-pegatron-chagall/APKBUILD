@@ -1,0 +1,50 @@
+# Maintainer: Raffaele Tranquillini <raffaele.tranquillini@gmail.com>
+
+pkgname=device-pegatron-chagall
+pkgdesc="Pegatron Chagall"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-grate mkbootimg mesa-dri-gallium xf86-video-opentegra"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-phosh
+	     $pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	rootston.ini
+	ucm/tegra-hda.conf
+	ucm/tegra-hda_HiFi.conf"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# Alsa use case manager configuration (audio routing)
+	install -D -m644 "$srcdir"/tegra-hda.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/tegra-hda.conf
+	install -D -m644 "$srcdir"/tegra-hda_HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/HiFi.conf
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Pegatron Chagall WiFi and Bluetooth firmware"
+	depends="firmware-pegatron-chagall linux-firmware-brcm"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="fbf38232f272bde3bf563e603dca78a6aa606a889acd52c27f6062df9dac4ab2516e4d684333244eb631cbb2874d2d7ff04553b7b0e5dbdc5e5d6fb88c3b95b1  deviceinfo
+618284cdaccd09e60cb9a99afa337fcad7b3bd33f6422b9eae34175bc4516138d486cbb9f5735cafb325bc16cf362de16aeae7c77d334668c749afcfa557359b  rootston.ini
+5dead806f7568fad5f240957158864faab7a4dbbdae18b2a18110f64caa0254a001fbd5711789718cfde055528af57cebca11bbc4d7f55e12c9853f3d9e8534c  tegra-hda.conf
+17bac2dd664bb10e8a0308500c231c4394d1dfad47235b8e83e5b1187193d1c73c54e415f248f543a1281cfd946a67dc87794b580a6e24c65a6712d37190f833  tegra-hda_HiFi.conf"
