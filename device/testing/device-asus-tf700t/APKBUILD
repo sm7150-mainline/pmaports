@@ -1,0 +1,58 @@
+# Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+
+pkgname=device-asus-tf700t
+pkgdesc="Asus Transformer Infinity TF700T"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-grate mkbootimg mesa-dri-gallium mkbootimg alsa-ucm-conf asus-transformer-blobtools"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-phosh
+	$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	rootston.ini
+	ucm/tegra-hda.conf
+	ucm/tegra-hda-HiFi.conf
+	ucm/TF700T_RT5631.conf
+	ucm/TF700T_RT5631-HiFi.conf"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# Alsa usecase manager config
+	install -D -m644 "$srcdir"/TF700T_RT5631.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/TF700T_RT5631/TF700T_RT5631.conf
+	install -D -m644 "$srcdir"/TF700T_RT5631-HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/TF700T_RT5631/HiFi.conf
+	install -D -m644 "$srcdir"/tegra-hda.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/tegra-hda.conf
+	install -D -m644 "$srcdir"/tegra-hda-HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/HiFi.conf
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
+nonfree_firmware() {
+	pkgdesc="Asus Transformers WiFi & BT firmware"
+	depends="firmware-asus-transformer linux-firmware-brcm linux-firmware-cypress"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="6b6839d5a965a0b10667541115fe762a7cc28818d53bb1102847db4694a7ddca8977c5962f256cc302f69a7144ea952db22b8844f7da5ad07382ffa86f8ff22b  deviceinfo
+c15e0d54e311892556cf9447d8431b6239fcce29bb011bf4931c909b4d59af2f00b87637b0eb67554ccd063f569ad24c868433c551e27354b3b9af604a08f3d8  rootston.ini
+5dead806f7568fad5f240957158864faab7a4dbbdae18b2a18110f64caa0254a001fbd5711789718cfde055528af57cebca11bbc4d7f55e12c9853f3d9e8534c  tegra-hda.conf
+1cdaa43350d69a021d2ff0b8b91ab537032b6861003bea506e429948c615934f6ee56cc4603dd94d4923c8be4a52a63cac110761b51167761c096b6880ce6c0c  tegra-hda-HiFi.conf
+5a692d53097c5791bfa6adf149947ec95e9a8392dc14581a62b20ce086ff40afc1a5988dcaa5083df44cfaea51902a9ec09ee9d623df2e595bf1ef1fb1c1f1e8  TF700T_RT5631.conf
+9dc4bd7f3b5f24323655ef997d80d310bea00fabfd9bb5f1fbe06682b336ed5ad6ead0b81f84ba83eda0a0202ca279e78b792e6c1bc044315ecbe92fb382d51e  TF700T_RT5631-HiFi.conf"
