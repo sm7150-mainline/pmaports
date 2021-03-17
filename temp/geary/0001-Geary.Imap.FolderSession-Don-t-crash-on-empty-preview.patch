@@ -1,0 +1,55 @@
+From: =?utf-8?q?Guido_G=C3=BCnther?= <agx@sigxcpu.org>
+Date: Tue, 23 Feb 2021 19:33:35 +0100
+Subject: Geary.Imap.FolderSession: Don't crash on empty preview
+
+If we didn't set a preview we crash like
+
+    *[wrn] 12:54:59.0908 geary:application-certificate-manager.vala:74: No GCR slot URIs found, GCR certificate pinning unavailable
+    *[wrn] 12:55:10.0501 Geary: [goa_account_1614080076_2] [imap] [GearyImapClientSession(selected:INBOX selected RW, GearyImapClientConnection(0001/imap.example.com:993/up)), Imap.Folder(>INBOX), ro: false, permanent_flags: \Answered \Flagged \* \Seen \Deleted \Draft, accepts_user_flags: true] GearyImapFolderSession: No preview specifiers "body.peek[1]<0.256>" and "body.peek[1.mime]" found
+    *[wrn] 12:55:10.0502 Geary: [goa_account_1614080076_2] [imap] [GearyImapClientSession(selected:INBOX selected RW, GearyImapClientConnection(0001/imap.example.com:993/up)), Imap.Folder(>INBOX), ro: false, permanent_flags: \Answered \Flagged \* \Seen \Deleted \Draft, accepts_user_flags: true] GearyImapFolderSession:  - has body[1.mime]
+    *[wrn] 12:55:10.0502 Geary: [goa_account_1614080076_2] [imap] [GearyImapClientSession(selected:INBOX selected RW, GearyImapClientConnection(0001/imap.example.com:993/up)), Imap.Folder(>INBOX), ro: false, permanent_flags: \Answered \Flagged \* \Seen \Deleted \Draft, accepts_user_flags: true] GearyImapFolderSession:  - has body[header.fields (references)]
+    *[wrn] 12:55:10.0502 Geary: [goa_account_1614080076_2] [imap] [GearyImapClientSession(selected:INBOX selected RW, GearyImapClientConnection(0001/imap.example.com:993/up)), Imap.Folder(>INBOX), ro: false, permanent_flags: \Answered \Flagged \* \Seen \Deleted \Draft, accepts_user_flags: true] GearyImapFolderSession:  - has body[1]<0>
+    ![crt] 12:55:10.0502 GLib:Did not see expected message GLib-GObject-WARNING **: g_object_weak_unref: couldn't find weak ref *
+    ![crt] 12:55:10.0502 geary:geary_email_set_message_preview: assertion 'GEARY_RF_C822_IS_PREVIEW_TEXT (preview)' failed
+
+    (gdb) bt
+    #0  __GI_raise (sig=sig@entry=5) at ../sysdeps/unix/sysv/linux/raise.c:50
+    #1  0x0000ffff919a71d8 in _g_log_abort (breakpoint=1) at ../../../glib/gmessages.c:554
+    #2  g_logvPython Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8:
+     (log_domain=0xffff91f1d908 "geary", log_level=10, format=<optimized out>, args=#3  0x0000ffff919a7440 in g_log (log_domain=<optimized out>, log_level=<optimized out>, format=<optimized out>)
+        at ../../../glib/gmessages.c:1415
+    #4  0x0000ffff91eabaf8 in geary_imap_folder_session_fetched_data_to_email
+        (error=0xffff11aeb2f0, preview_charset_specifier=0xaaaafe108120 [GearyImapFetchBodyDataSpecifier], preview_specifier=0xaaaafe0ec070 [GearyImapFetchBodyDataSpecifier], body_specifier=0x0, header_specifiers_length1=<optimized out>, header_specifiers=0x0, required_fields=927, fetched_data=<optimized out>, uid=0xaaaafe48de90 [GearyImapUID], self=0xaaaafe1059b0 [GearyImapFolderSession])
+        at src/engine/libgeary-engine.a.p/imap/api/imap-folder-session.c:6795
+    #5  __lambda103_ (error=0xffff11aeb360, _data28_=0xaaaafdf2d760) at src/engine/libgeary-engine.a.p/imap/api/imap-folder-session.c:4541
+    #6  ___lambda103__geary_nonblocking_concurrent_concurrent_callback (cancellable=<optimized out>, self=0xaaaafdf2d760, error=0xffff11aeb360) at src/engine/libgeary-engine.a.p/imap/api/imap-folder-session.c:4640
+    #7  0x0000ffff91e412d0 in geary_nonblocking_concurrent_concurrent_operation_execute (self=0xaaaafe48f6d0 [GearyNonblockingConcurrentConcurrentOperation])
+        at src/engine/libgeary-engine.a.p/nonblocking/nonblocking-concurrent.c:672
+    #8  geary_nonblocking_concurrent_on_work_ready (op=0xaaaafe48f6d0 [GearyNonblockingConcurrentConcurrentOperation], self=<optimized out>)
+        at src/engine/libgeary-engine.a.p/nonblocking/nonblocking-concurrent.c:501
+    #9  _geary_nonblocking_concurrent_on_work_ready_gfunc (data=0xaaaafe48f6d0, self=<optimized out>) at src/engine/libgeary-engine.a.p/nonblocking/nonblocking-concurrent.c:296
+    #10 0x0000ffff919ca3c8 in g_thread_pool_thread_proxy (data=<optimized out>) at ../../../glib/gthreadpool.c:354
+    #11 0x0000ffff919c98f4 in g_thread_proxy (data=0xaaaafde2e120) at ../../../glib/gthread.c:820
+    #12 0x0000ffff8b437628 in start_thread (arg=0xffff11aeb520) at pthread_create.c:477
+    #13 0x0000ffff916a801c in thread_start () at ../sysdeps/unix/sysv/linux/aarch64/clone.S:78
+
+Create an empty preview to avoid that.
+
+(cherry picked from commit b57567ff9eb746e71975cf1e2bbd8dcd9d62f0f1)
+---
+ src/engine/imap/api/imap-folder-session.vala | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/engine/imap/api/imap-folder-session.vala b/src/engine/imap/api/imap-folder-session.vala
+index 3b777ee..bf4cd2b 100644
+--- a/src/engine/imap/api/imap-folder-session.vala
++++ b/src/engine/imap/api/imap-folder-session.vala
+@@ -1037,7 +1037,7 @@ private class Geary.Imap.FolderSession : Geary.Imap.SessionObject {
+                 preview_specifier
+             );
+ 
+-            RFC822.PreviewText? preview = null;
++            RFC822.PreviewText preview = new RFC822.PreviewText(new Memory.StringBuffer(""));
+             if (preview_headers != null && preview_headers.size > 0 &&
+                 preview_body != null && preview_body.size > 0) {
+                 preview = new RFC822.PreviewText.with_header(

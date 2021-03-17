@@ -1,8 +1,10 @@
 # Forked from Alpine to apply Purism's mobile patches
 pkgname=geary
-pkgver=9999_git20201210
+pkgver=9999_git20210412
 pkgrel=0
-_commit="dd971251d7fd85c7b73f2e153beef9939354cec7"
+# https://source.puri.sm/Librem5/geary
+# 3.38.2+git20210118+7bb025-0pureos3
+_commit="33d9c90f0846d15dd3f31880ac5b3ffaf0badf61"
 pkgdesc="Geary is an email application built around conversations"
 url="https://wiki.gnome.org/Apps/Geary"
 # libhandy is not available on s390x or mips
@@ -30,6 +32,7 @@ makedepends="
 	libnotify-dev
 	libpeas-dev
 	libsecret-dev
+	libstemmer-dev
 	libunwind-dev
 	libxml2-dev
 	meson
@@ -45,19 +48,28 @@ checkdepends="
 	"
 options="!check" # https://gitlab.gnome.org/GNOME/geary/-/issues/776
 subpackages="$pkgname-lang $pkgname-doc"
-source="https://source.puri.sm/Librem5/geary/-/archive/$_commit/geary-$_commit.tar.gz"
+source="
+	https://source.puri.sm/Librem5/geary/-/archive/$_commit/geary-$_commit.tar.gz
+	0001-Geary.Imap.FolderSession-Don-t-crash-on-empty-preview.patch
+	0002-Bump-version-of-libhandy-to-1.0-in-order-to-fix-issu.patch
+	0003-Removed-hack-workarround-for-libhandy-issue-305.patch
+	0004-Bumped-version-of-libhandy-to-1.0.1.patch
+	0005-web-process-extension-register-GearyWebExtension-JS-in-the.patch
+	purism_patches.series
+	$_commit.series::https://source.puri.sm/Librem5/geary/-/raw/$_commit/debian/patches/series
+	"
 builddir="$srcdir/$pkgname-$_commit"
 
 prepare() {
+	# NOTE: patches are kept in this repo, since they are no longer available in
+	# the tarball from purism's repo. This check will cause an error if the list
+	# of patches in purism's repo is different than the list in this repo. The
+	# list in this repo should be kept in sync when this package is upgrades!
+	if ! diff -q $srcdir/purism_patches.series $srcdir/$_commit.series; then
+		echo "Included patch list does not match patch list from $_commit"
+		exit 1
+	fi
 	default_prepare
-	# The branch of geary is from Purism's fork, which has all adaptive
-	# patches in the /debian dir in this branch for generating a debian
-	# package. There are dozens of patches, so we apply them here manually
-	# (the location is not compatible with what abuild expects for package
-	# patches).
-	# Patches have to be applied in the order they are listed in
-	# debian/pathes/series
-	grep "\.patch$" debian/patches/series |xargs -I {} -t -r -n1 patch -p1 -i debian/patches/{}
 }
 
 build() {
@@ -76,4 +88,11 @@ package() {
 	DESTDIR="$pkgdir" meson install --no-rebuild -C output
 }
 
-sha512sums="f88317a690e8ea54572a3550738ccc1cec6f071e939c5cb857923c213db506ed16f249c980a2fc4a53af389ea5ebf001cfef60700623b7c9cc83f5baa79b3821  geary-dd971251d7fd85c7b73f2e153beef9939354cec7.tar.gz"
+sha512sums="fc5bc6651113c9874c0118dd35e2c2994d13392fa1c50d0ce15495e31fc7c051c4c4dc639fd4a63db55d32c5ddd46c85c8e2c56c76be3c3a1c05453a5c12fdbf  geary-33d9c90f0846d15dd3f31880ac5b3ffaf0badf61.tar.gz
+c5ccfbf647ba145ae590611d94e4ded0ae3b5781372fd189bf40e7ed208ba4f309646b1807598dfab80f49c8a46b204953ac9affe4c5c2e3d70e9f3778a0ec7e  0001-Geary.Imap.FolderSession-Don-t-crash-on-empty-preview.patch
+0db6b44e7a1a64ac96120f956d5e59ef73f9ca8b28a8797b309060e42e063586a8de076b84487729aa20337b8acf9cf0eb4d1ca5cf3bde5b866133ad5d026c40  0002-Bump-version-of-libhandy-to-1.0-in-order-to-fix-issu.patch
+7ff94be3ea24e1685251f1bf4c89363991aa4936ffff95f8d6aef752a7854dc171b513340ecb31a729fa20efa0580107cf268daa134f010fb4eb7cb038f34e79  0003-Removed-hack-workarround-for-libhandy-issue-305.patch
+4d77cf8273635493d7c0ede84eb0013a5cc0fc78c82eb32e97a1b5fcb966fea7641078e1cb10087639b835cf91cfc27fb1290f97ea301d5074e4dbbe5b120558  0004-Bumped-version-of-libhandy-to-1.0.1.patch
+0ae3131b736f1530b0a07493a2bcb36eb41ced2cc60629509872949887ae1770936992c90914004d9c5900e32c88772a007a835bc49f8aaf6a6553ae2daa2ce7  0005-web-process-extension-register-GearyWebExtension-JS-in-the.patch
+a540fba131de46eede657f83cd2d59a932aec094cd5f1861208eab94190fae2ed3320068e9267ece151336a30577b91bd3ae1850338f6f70b9a5e5c535cd53c0  purism_patches.series
+a540fba131de46eede657f83cd2d59a932aec094cd5f1861208eab94190fae2ed3320068e9267ece151336a30577b91bd3ae1850338f6f70b9a5e5c535cd53c0  33d9c90f0846d15dd3f31880ac5b3ffaf0badf61.series"
