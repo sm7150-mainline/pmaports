@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-klte
 pkgdesc="Samsung Galaxy S5"
-pkgver=0.3
-pkgrel=14
+pkgver=0.4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -22,6 +22,7 @@ subpackages="
 source="
 	70-klte-android.rules
 	battery-status
+	bt-module-deps.conf
 	cpufreq.start
 	deviceinfo
 	fstab.android
@@ -75,6 +76,9 @@ kernel_mainline() {
 nonfree_firmware() {
 	pkgdesc="Wifi, GPU firmware"
 	mkdir "$subpkgdir"
+	# This config makes sense only if non-free firmware is installed
+	install -Dm644 "$srcdir"/bt-module-deps.conf \
+		"$subpkgdir"/etc/modprobe.d/bt-module-deps.conf
 }
 
 downstream_firmware() {
@@ -93,6 +97,7 @@ mainline_firmware() {
 
 sha512sums="a68734d3fe30695d5a9302c92327e8ca564a73d06f0de87371800d1bdf4c541c3721af380b8d44cfa0b4cc1dc8a71586aec3f00bb877ee9dc18f41ba34caaeff  70-klte-android.rules
 66db173b9f1075a133efeea8bda94ef08089b7c15acbc1e3aefb9f8510daa7690a0ce2739d20647e096ba69940ac5c4c6699f3b032ec67609ca56f116bb25256  battery-status
+6cef5f8ae1785ac16e6fe84bfc861ac50cdfb94db35d764f44a25c960e123cb82f6e56f45362a5340c62a3d5ac225f2689afd4f6964cb88305a0892ba44214f0  bt-module-deps.conf
 c66e0c57e911b644cf6c340ea19ce0a9399b8e9e6cb0da38f612e0f8b3d0812ad109cd7b7506184e840a653397a64e3e57fdc71ab8b0fc52733bf74365b9c0e7  cpufreq.start
 6a44037e10a8374283726ad920b9405a441f313d0fd4bc8aa8b5c1eb3e61eba513c1ddc6a4587593a7223fd945f5e4958be6fdf77a2e4ffcf264a00666fa9e42  deviceinfo
 35f3b120152ebe709e11cebc9ced03f21f52768d88bd68ed23ed864fe1dd3b63665c8f74575882e217dd8226ae5d260e5ad2045dc4ab2470c89185f19b81c4a7  fstab.android
