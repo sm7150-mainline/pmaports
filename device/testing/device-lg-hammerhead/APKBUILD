@@ -11,6 +11,7 @@ makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="$pkgname-weston $pkgname-phosh $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
+	bt-module-deps.conf
 	deviceinfo
 	rootston.ini
 	weston.ini
@@ -53,9 +54,13 @@ nonfree_firmware() {
 	pkgdesc="WiFi, GPU, Modem and ADSP firmware"
 	depends="linux-firmware-qcom linux-firmware-brcm linux-firmware-cypress firmware-adreno firmware-lg-hammerhead firmware-lg-hammerhead-adsp firmware-lg-hammerhead-modem firmware-lg-hammerhead-bluetooth msm-modem-rpmsg"
 	mkdir "$subpkgdir"
+	# This config makes sense only if non-free firmware is installed
+	install -Dm644 "$srcdir"/bt-module-deps.conf \
+		"$subpkgdir"/etc/modprobe.d/bt-module-deps.conf
 }
 
-sha512sums="a850782da69c99b9d9b5e405ce0e206568015e840597780fb0a4d20fba14cb8f7ce96abf6255796b8613cf46f4a1d48eab4147477fbe3f00cc06f567a82cab94  deviceinfo
+sha512sums="6cef5f8ae1785ac16e6fe84bfc861ac50cdfb94db35d764f44a25c960e123cb82f6e56f45362a5340c62a3d5ac225f2689afd4f6964cb88305a0892ba44214f0  bt-module-deps.conf
+a850782da69c99b9d9b5e405ce0e206568015e840597780fb0a4d20fba14cb8f7ce96abf6255796b8613cf46f4a1d48eab4147477fbe3f00cc06f567a82cab94  deviceinfo
 8ee9e4a5420aa6b00cef04848a94b7e9d7bfd98252ace23b181b757ee44d27d453a2fcd9dbbbe149f17cd8a596f3749d3425d4040167f9e303e5e66dc8cd9560  rootston.ini
 4c22070223f39c419260a6817e5cc2b7881c095deeba031363a5634842dd175dd67eecace980849f0553de79110ef4e43a66143d71433805cd916c37fe7248e9  weston.ini
 0a9da551fa9d48d8a663f6bc74e8a7d6e2d2a6e009bd163fa46cd302e75656ad7ae57402a0bd70614ec253e0f2445b4c6999df07104f4c657ed630305c7f40d4  xorg.conf"
