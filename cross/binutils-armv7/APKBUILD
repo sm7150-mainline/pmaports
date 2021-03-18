@@ -18,10 +18,6 @@ source="https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.xz
 	"
 builddir="$srcdir/binutils-$pkgver"
 
-if [ "$CHOST" = "$CBUILD" ] && [ "$CBUILD" = "$CTARGET" ] && [ "$CTARGET_ARCH" != "riscv64" ]; then
-	subpackages="$subpackages binutils-gold"
-fi
-
 if [ "$CHOST" != "$CTARGET" ]; then
 	pkgname="binutils-$CTARGET_ARCH"
 	subpackages=""
