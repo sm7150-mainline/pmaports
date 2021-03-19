@@ -1,0 +1,103 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR X11)
+// Copyright 2021 Jacek Pruciak <linux@juniorjpdj.pl>
+
+/dts-v1/;
+#include "sun6i-a31s.dtsi"
+#include "sun6i-reference-design-tablet.dtsi"
+//#include <dt-bindings/pwm/pwm.h>
+
+/ {
+	model = "GoClever Orion 70L";
+	compatible = "goclever,gcta741l", "allwinner,sun6i-a31s";
+	
+	panel {
+		compatible = "hannstar,tqtm070cb501";
+		power-supply = <&reg_dc1sw>;
+		//backlight = <&backlight>;
+
+		port {
+			panel_input: endpoint {
+				remote-endpoint = <&tcon0_out_lcd>;
+			};
+		};
+	};
+	
+	// PWM not supported by sun6i at the moment
+	//backlight {
+	//	compatible = "pwm-backlight";
+	//	pwms = <&pwm 0 50000 PWM_POLARITY_INVERTED>;
+	//	brightness-levels = <0 10 20 30 40 50 60 70 80 90 100>;
+	//	default-brightness-level = <8>;
+	//	enable-gpios = <&pio 0 25 GPIO_ACTIVE_HIGH>; /* PA25 */
+	//};
+};
+
+&usb_otg {
+	dr_mode = "otg";
+};
+
+&battery_power_supply {
+	status = "okay";
+};
+
+&lradc {
+	vref-supply = <&reg_aldo3>;
+	status = "okay";
+
+	button-1000 {
+		label = "Home";
+		linux,code = <KEY_HOMEPAGE>;
+		channel = <0>;
+		voltage = <1000000>;
+	};
+};
+
+&i2c2 {
+	status = "okay";
+
+	accelerometer@4c {
+		compatible = "fsl,mma7660";
+		reg = <0x4c>;
+		interrupt-parent = <&pio>;
+		interrupts = <0 9 IRQ_TYPE_LEVEL_HIGH>; /* PA9 */
+
+		mount-matrix =	"0", "1", "0",
+						"1", "0", "0",
+						"0", "0", "1";
+	};
+};
+
+&tcon0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&lcd0_rgb888_pins>;
+	status = "okay";
+};
+
+&tcon0_out {
+	tcon0_out_lcd: endpoint@0 {
+		reg = <0>;
+		remote-endpoint = <&panel_input>;
+	};
+};
+
+&de {
+	status = "okay";
+};
+
+&simplefb_lcd {
+	status = "okay";
+};
+
+&codec {
+	// This still doesn't work
+	allwinner,audio-routing =
+		/* sink, source */
+		"Headphone", "HP",
+		"Speaker", "LINEOUT",
+		"MIC1", "Mic",
+		"MIC2", "Headset Mic",
+		"Mic",	"MBIAS",
+		"Headset Mic", "HBIAS";
+	allwinner,pa-gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
+	status = "okay";
+};
