@@ -1,0 +1,22 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-lenovo-tb8504f
+pkgdesc="Lenovo Tab 4 8"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-lenovo-tb8504f mkbootimg mdss-fb-init-hack mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="fc8382a04a111eb0eb15ceda98e73c9a101f5d19cfd69b7803e719dcfedb3a4c32834d59101f37a42db4389ddad51c47964d5ce5621939788af8230a03482452  deviceinfo"
