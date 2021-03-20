@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm/configs/exynos_defconfig
 
 pkgname=linux-postmarketos-exynos4
-pkgver=5.10.15
+pkgver=5.11.8
 pkgrel=0
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
@@ -12,7 +12,7 @@ _flavor="${pkgname#linux-}"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
-makedepends="bison busybox-static-$arch findutils flex installkernel openssl-dev perl xz"
+makedepends="bison busybox-static-$arch findutils flex gmp-dev installkernel mpc1-dev mpfr-dev openssl-dev perl xz"
 
 # Source
 _config="config-$_flavor.$arch"
@@ -24,9 +24,6 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	$_config
 	0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-	0002-power-supply-max8997-charger-Use-module_platform_dri.patch
-	0003-power-supply-max8997-charger-Fix-platform-data-retri.patch
-	0004-power-supply-max8997-charger-Improve-getting-charger.patch
 	0005-ARM-dts-exynos-Fix-charging-regulator-voltage-and-cu.patch
 	0006-ARM-dts-exynos-Add-top-off-charging-regulator-node-f.patch
 	0007-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
@@ -71,12 +68,9 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="7b2c38920ebfc9c9aea8cb319949f089a374b6604de4fb01dc6957234970d96830761d784c6f94a5f165f5792dfa9d3a6d8691d18147dc05cc0f03c78efbb61a  linux-5.10.15.tar.xz
-2f844fbe47e544b5a644f9e8ad94019eb4d6989ca7a27cd3406f1f81d3348dfa86c761fefac10376c31e511b84cd2c8f4c17f856f7173d9a08e97658f00ab956  config-postmarketos-exynos4.armv7
+sha512sums="2b78607a2cafab6bd49c18cc4f79f26df3694f3984d6d24936dc722e72dca567f86eff3ae87f8560ed9bb363410a6ec7bccc33f3d1c9ab2bc3385be5f6a99da6  linux-5.11.8.tar.xz
+384509349d552bbc1b42ce784080148f6b5e67060156df60c54aa767fbe7167ac030e0d8627281b0dc70ebc02f621edea2ebd2bd999b72f6b4bbd553ff2bacc1  config-postmarketos-exynos4.armv7
 4bb111db4396a1981ad0883737c6594ca93701699846298b940d2ea202c666be0158a0f9ddc5b95b9147fa4cfe62639512ae78e9315f8d975b379ccc4e15da36  0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-4567b6144e3de769050764ede3df81e0abd9ffa45f821f2cfcb60ca1426b1756d1ff9d9dda6254a6f5cf0da4b9819ecc0d57f2dc02ef5d460e7ae0069fbba62d  0002-power-supply-max8997-charger-Use-module_platform_dri.patch
-0cc1fa2ca16979fa2f93e7cb6ef29ca109d249c5f4e934590383cac90138858c299da7f84ec90ec0c91fb60f2cd0db4303023e756854fbbccb89840377bcdb9e  0003-power-supply-max8997-charger-Fix-platform-data-retri.patch
-708a27d1c75f5909a1d5f710e2dbdb39d5bb02c15376a14471c468a6f4330c787153b62fbd93049aea0488f2b8b0f7d643d597da9e28094840c9f6c187ca736b  0004-power-supply-max8997-charger-Improve-getting-charger.patch
 ddee2a51b33b7bd0ba310085324e72342c992d6d047132f7204ff9695cef112d4809bbe734d382b720e8deb90b948b65709bbb407bd1a32876c524fe9f4bae67  0005-ARM-dts-exynos-Fix-charging-regulator-voltage-and-cu.patch
 8eb1452fd2cc302df0ccc5bee33e99d12d6bb851fb48b281026f46b70008e3f515f3287f01684981ff81c7e2c422a9480a40e23f45823812f913cc866c319811  0006-ARM-dts-exynos-Add-top-off-charging-regulator-node-f.patch
 dffe9934281e81b20e158ce9b80c6f1a91c5eaa06eb92ee655ee9430dba8aa066dd70a9fb163007f37556ea696ae0256a58f87408c8b7571d6d20f99c9492db2  0007-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
