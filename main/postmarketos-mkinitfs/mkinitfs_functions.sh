@@ -484,13 +484,16 @@ generate_initramfs_extra()
 
 	# Set up initramfs-extra in temp folder
 	tmpdir_extra=$(mktemp -d /tmp/mkinitfs.XXXXXX)
+	tmpdir_extra_cpio=$(mktemp -d /tmp/mkinitfs-cpio.XXXXXX)
+	tmpdir_extra_cpio_img="$tmpdir_extra_cpio/extra.img"
 	mkdir -p "$tmpdir_extra"
 	copy_files "$(get_binaries_extra)" "$tmpdir_extra"
 	copy_files "$osk_conf" "$tmpdir_extra"
-	create_cpio_image "$tmpdir_extra" "$1.new"
+	create_cpio_image "$tmpdir_extra" "$tmpdir_extra_cpio_img"
 	rm -rf "$tmpdir_extra"
 
 	# Replace old initramfs-extra *after* we are done to make sure
 	# it does not become corrupted if something goes wrong.
-	mv "$1.new" "$1"
+	cp "$tmpdir_extra_cpio_img" "$1"
+	rm -rf "$tmpdir_extra_cpio"
 }
