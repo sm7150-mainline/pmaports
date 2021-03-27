@@ -1,0 +1,27 @@
+# Maintainer: Yassine Oudjana (Tooniis) <y.oudjana@protonmail.com>
+pkgname=firmware-xiaomi-scorpio
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Mi Note 2"
+url="https://gitlab.com/Tooniis/firmware-xiaomi-scorpio"
+arch="aarch64"
+license="proprietary"
+options="!strip !check !archcheck"
+
+_commit="580520e30f5139e6536d3a61fec6390ba3654ded"
+
+source="
+	$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
+	firmware.files
+	"
+
+package() {
+	cd "$srcdir/$pkgname-$_commit/"
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$pkgdir/$_i"
+	done < "$srcdir/firmware.files"
+}
+sha512sums="ce7acba4c417b60730af73091a8ba17c040dce55f46dc4c089e36a35c6a9c2144cad7ee56277fcbd1b23da9a4957ba95355a9e97154897d3c71c82e9ca6253d1  firmware-xiaomi-scorpio.tar.gz
+d6174e6a0364a5639c537895fe2f3a50a9c34568f3376a59dd7b17652943a72f277b953a1c6bdcece60acbb992013732b2ad8b365f2b7628a8e625e0e4ab08d3  firmware.files"
