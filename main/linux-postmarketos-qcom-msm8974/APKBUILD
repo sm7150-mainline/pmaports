@@ -3,9 +3,9 @@ _flavor=postmarketos-qcom-msm8974
 _config="config-$_flavor.$CARCH"
 
 pkgname=linux-$_flavor
-pkgver=5.9.13
-pkgrel=2
-_commit="ad989a3e7324563b3a85e521e052fec2c6b56752"
+pkgver=5.11.10
+pkgrel=0
+_commit="901cb33cc2ea167dbb1de7032815ea65fd49d81f"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8974 devices"
 arch="armv7"
 _carch="arm"
@@ -16,19 +16,15 @@ makedepends="
 	bison
 	findutils
 	flex
+	gmp-dev
 	installkernel
+	mpc1-dev
+	mpfr-dev
 	openssl-dev
 	perl
 	"
 source="https://gitlab.com/postmarketOS/linux-postmarketos/-/archive/$_commit/linux-postmarketos-$_commit.tar.gz
 	config-$_flavor.armv7
-	0001-net-qualcomm-bam-dmux-Switch-to-Raw-IP-mode.patch
-	0002-net-qualcomm-bam-dmux-Set-parent-device-and-device-t.patch
-	0003-net-qualcomm-bam-dmux-Set-netdev-dev_port-to-channel.patch
-	0004-net-qualcomm-bam-dmux-Always-open-close-channel-with.patch
-	0005-net-qualcomm-bam-dmux-Fixup-default-MTU.patch
-	0006-net-qualcomm-bam-dmux-Set-some-additional-flags.patch
-	0007-net-qualcomm-bam-dmux-Use-netif_receive_skb-skb.patch
 	"
 builddir="$srcdir/linux-postmarketos-$_commit"
 
@@ -49,6 +45,7 @@ package() {
 		ARCH="$_carch" \
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
@@ -56,12 +53,5 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="935b1949e659ba83a54430346c7e4a1c32cc51910e2300b89ed54e2d3da890b281cfea51eb12af633c1f6c94c599e95842b81c6db04fbb5b2dbded46d8d0180a  linux-postmarketos-ad989a3e7324563b3a85e521e052fec2c6b56752.tar.gz
-7a39434a698cd990416daa48ef642b8ed62a0814d79fe9796da34f0cfe61d22d4a8b7b6f74ad63be93c5a6918f5c6b435d7ae37bbdb389635dc7c7a0b9351526  config-postmarketos-qcom-msm8974.armv7
-939309f98d4a2e6bc3982704670acb68eaad92c28e9130988f1bd3474ad5dc76dff3f69c2d90a0738c43c60ac279990da0ba61d295eafc78f49d7ab50715ce01  0001-net-qualcomm-bam-dmux-Switch-to-Raw-IP-mode.patch
-e4083319e44400e7ac50daedf201a8a80b2cfc083a4ff32aafb7733b4a155493e277737c449a6a7ff8b72b8516b92b9828dd00ad74e2457238f2d1cd936ec58d  0002-net-qualcomm-bam-dmux-Set-parent-device-and-device-t.patch
-6a0be72e5213d7407b0ec3be9a283c85cc8bb3afe511297b449f2ecd79308b291a9eb8031f9a880702d64a65ce9e5702cf9943b7f97b7f3f099b5da93ba3a35d  0003-net-qualcomm-bam-dmux-Set-netdev-dev_port-to-channel.patch
-df549f886c67701d7dbea4de342d364e93b0af3f574a6e16baefb21105958a61770653cf4b70e35102927b215f1a7b4a31cc6b6a3cf97ce25009437de342331f  0004-net-qualcomm-bam-dmux-Always-open-close-channel-with.patch
-bd6dc6ac91038c60574cd561f02962040d52f9be2b2031de29a6adfa09845bfac8dd7d428fa1625e584ed2691d8f2795683650492981675e593defbe114c199d  0005-net-qualcomm-bam-dmux-Fixup-default-MTU.patch
-0ec9db7bda49aebbb31fb116ef0c4e2ed5957334405404a664b22c639fb0978bdfe66e6981a9e499d6936f3bcdea713a964eb0ebdcc002804cf69dcf7fe2c8d7  0006-net-qualcomm-bam-dmux-Set-some-additional-flags.patch
-fa313af091abc4d5550fbde741935472d06e1f1203e25856fdaf1cee73b45edbece31b2b033cfcd21aaa3e74eca0d45fb3e5484eec2b6f52e6e131ebc949279d  0007-net-qualcomm-bam-dmux-Use-netif_receive_skb-skb.patch"
+sha512sums="27393de29fb1e08867f6572194625453a220cc0fb2d884c73da7f12ebef86912bf96ba1cac881639e44b6b3da9d3cbd44951488b2e019f5b0d597b284588f39f  linux-postmarketos-901cb33cc2ea167dbb1de7032815ea65fd49d81f.tar.gz
+19846a0d7c0e51de89bdfd517acaebc94a1478f0e7e1ff8d7666e7d9cc5a0dc5d7edf09fb413aeb37448aabe80b5457c6c07ece9f825c9507110b1588e7ce5a2  config-postmarketos-qcom-msm8974.armv7"
