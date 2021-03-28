@@ -1,0 +1,49 @@
+# Forked from Alpine to upgrade to current git master, which has
+# Ofono compatibility fixes needed for Plasma Mobile
+
+pkgname=eg25-manager
+pkgver=0.2.1_git20210317
+_commit="ea19b0271cf587c992c315a76b995e42b91f7d74"
+pkgrel=0
+pkgdesc="Daemon for managing the Quectel EG25 modem"
+url="https://gitlab.com/mobian1/devices/eg25-manager"
+arch="all !s390x !mips64"  # no modemmanager
+license="GPL-3.0-or-later"
+makedepends="
+	glib-dev
+	libgpiod-dev
+	libgudev-dev
+	libusb-dev
+	meson
+	modemmanager-dev
+	"
+source="
+	https://gitlab.com/mobian1/devices/eg25-manager/-/archive/$_commit/eg25-manager-$_commit.tar.gz
+	eg25-manager.confd
+	eg25-manager.initd
+	"
+options="!check"  # no tests
+subpackages="$pkgname-openrc"
+builddir="$srcdir/eg25-manager-$_commit"
+
+build() {
+	abuild-meson . output
+
+	# For some reason, the header files don't get generated first by the meson
+	# command below.
+	for i in gdbo-manager.h gdbo-modem.h; do
+		ninja -C output src/libgdbofono/$i
+	done
+
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+	install -Dm755 "$srcdir"/eg25-manager.initd "$pkgdir"/etc/init.d/eg25-manager
+	install -Dm644 "$srcdir"/eg25-manager.confd "$pkgdir"/etc/conf.d/eg25-manager
+}
+
+sha512sums="ed8aaef8e9d296b093a686a2c1df091fa01d6f374ca26e5cd36b0e4045d4d622aba59a4c57276504c92bd73f37ba0ec22bc6dfde4a14cf35e4a4abe747eb9eda  eg25-manager-ea19b0271cf587c992c315a76b995e42b91f7d74.tar.gz
+55936830afad2968a214fb39cfe1a9db50421dc2ff4f67d04f08f6bd2b094c3ab46799cfc7743bbc5032682d98d1216203adf5264353a05134bea58524ac070b  eg25-manager.confd
+0dd866ce18bac37c3832a463205402f5b34a520e1a57cc37658fb37e21a173fbba2cfab223111c68af768be1d3feeb23e41dbaf6d8dc14a2b2c0c088cf3df041  eg25-manager.initd"
