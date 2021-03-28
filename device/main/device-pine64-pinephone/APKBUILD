@@ -4,7 +4,7 @@
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-pine64-pinephone
-pkgver=0.23
+pkgver=0.24
 pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
@@ -13,7 +13,6 @@ arch="aarch64"
 options="!check !archcheck"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-ofono
 	$pkgname-phosh
 	$pkgname-shelli
 	$pkgname-plasma-mobile:plasma_mobile
@@ -47,7 +46,6 @@ source="
 	kirigami-lowpower.sh
 	modemmanager.conf
 	setup-modem.sh
-	setup-modem.sh.ofono
 	eg25-pinephone-1.0.toml
 	eg25-pinephone-1.1.toml
 	eg25-pinephone-1.2.toml
@@ -129,14 +127,6 @@ package() {
 		"$pkgdir"/usr/lib/udev/rules.d/
 }
 
-ofono() {
-	pkgdesc="ofono support"
-	install_if="$pkgname=$pkgver-r$pkgrel ofono"
-	replaces="$pkgname"
-	install -Dm755 "$srcdir"/setup-modem.sh.ofono \
-		"$subpkgdir"/usr/bin/pinephone_setup-modem
-}
-
 nonfree_firmware() {
 	pkgdesc="Wifi, Bluetooth and Autofocus firmware"
 	depends="
@@ -179,7 +169,6 @@ ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd4644
 6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
 3d6e9030125afc1dc3b654d1ce5d124ddd3ef3ad1a4d3e46c8168cf3f8a3762ffd0c75427759740ae26bd5c4f32b6704b7cf7e5806434884560fa704b7e72921  modemmanager.conf
 fa063e2863afc48e627acc1a5b213a81499ba1dd30325f74f118a44e3964aec7e597b1f4bd318b7cf5bf14f27daf88e6ad9fc277ab106cbbe1189fdcc650d5c1  setup-modem.sh
-0c81d758e1bcb56ed2cdaf91124121ebbd4dd7a5e25f02a7685b837faf660949d05f6b07b39a1c6a9ca22a7029cdcf3c6dac8f1038e37c8a34cb7c5702e9df51  setup-modem.sh.ofono
 f9386dfd902028988c9659bd6e001ba46ea87b35f5dce7723dd4cfbe971928c75f6fef9d706201d62cc24cca2d499a39c8c0fed58a3403e2cb848eb1aece0e19  eg25-pinephone-1.0.toml
 cf7d4a611701745762f19746e40d87b6df14a6b24f2d466c4177b7ab5ee87a048bab719a6c66722198020e1aa73d3e12d3715b5588bc33bf207f3e86040dcc44  eg25-pinephone-1.1.toml
 8adeca98002ff8ee850512f72f2e126348cfa817a1aefdd77d103aee76a6b2e6a024deffcbeef1235ee2fcc766003f55b67cedb3eb06ca92a58d5b81f2bf6848  eg25-pinephone-1.2.toml
