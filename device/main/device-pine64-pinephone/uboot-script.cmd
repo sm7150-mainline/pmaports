@@ -28,6 +28,11 @@ echo Resizing FDT
 fdt addr ${fdt_addr_r}
 fdt resize
 
+echo Adding FTD RAM clock
+fdt mknode / memory
+fdt set /memory ram_freq ${ram_freq}
+fdt list /memory
+
 echo Booting kernel
 gpio set 116
 gpio clear 98
