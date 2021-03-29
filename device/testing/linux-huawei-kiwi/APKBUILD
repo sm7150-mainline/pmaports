@@ -3,7 +3,7 @@
 
 pkgname=linux-huawei-kiwi
 pkgver=5.9_rc7
-pkgrel=1
+pkgrel=2
 pkgdesc="Huawei Honor 5X kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -14,7 +14,7 @@ options="!strip !check !tracedeps pmb:cross-native"
 makedepends="bash bc bison devicepkg-dev installkernel flex openssl-dev perl"
 
 _repository="msm8939-mainline-linux"
-_commit="36b820fdeba148f05eb1eaf9cbea94050ce6cbe9"
+_commit="1ea342fe183a9ab87579c6e7c8739c5374eac28c"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz
@@ -39,6 +39,7 @@ package() {
 		ARCH="$_carch" \
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
@@ -46,5 +47,7 @@ package() {
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
-sha512sums="3802f0bc6fab81a6fff0e48800fd2c7ce96ab8ab1b068eb54f2a402e3a4edb77a97d21af39392588a42a48abace19eed5bc3bbaa83598df5eba4df3b43010011  linux-huawei-kiwi-36b820fdeba148f05eb1eaf9cbea94050ce6cbe9.tar.gz
-a0fc476a7af2926a870285d3a68bea361284cd062c7f8bdb15fc2292f949c3ce8c30760056229cbbc294ecd28b25c295420baf850aefde5941477d5a98ec0e34  config-huawei-kiwi.aarch64"
+sha512sums="
+dc87df473760d08f95669b6eba0d8f4a266993f4689cccb6c7a744bb0c90124e08cad65fccdaa22b63349e36660d7483ad1b7cd12c03b15ba8ce0836a1876851  linux-huawei-kiwi-1ea342fe183a9ab87579c6e7c8739c5374eac28c.tar.gz
+95824a4e59b7fab42bbf13dedf4bffcb08a6a36d1e77300ee50bf86eb4dc659924aa6406a18cf63bda80cecedadfff0eeba32a08d193ff9355dc0ff7e4a1e786  config-huawei-kiwi.aarch64
+"
