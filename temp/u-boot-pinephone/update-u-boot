@@ -5,6 +5,8 @@ board=
 device=
 dryrun=
 imagedir=
+default_freq=552
+freq=
 
 get_boot_blockdev() {
 	# Find the blockdevice where /boot is mounted from
@@ -34,6 +36,15 @@ get_defaults() {
 		imagedir="$(realpath $(dirname $0))"
 		[ -f "$imagedir/README.txt" ] || imagedir="/usr/share/u-boot"
 	fi
+
+	if [ -z "$freq" -a -e /proc/device-tree/memory/ram_freq ]; then
+		freq=$(cat /proc/device-tree/memory/ram_freq 2>/dev/null)
+		echo Detected custom clock: $freq MHz
+	elif [ -z "$freq" ]; then
+		echo Using default clock: $default_freq MHz
+	else
+		echo Changing clock: $freq MHz
+	fi
 }
 
 die() {
@@ -45,7 +56,7 @@ usage() {
 	get_defaults
 
 	cat <<EOF
-usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-d|--device <device>]
+usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-d|--device <device>] [-r|--ram-freq <freq>]
 
 options:
 
@@ -59,6 +70,11 @@ options:
                           (current default: ${imagedir:-none})
 
  -n,--dry-run             Print commands but don't execute them
+
+ -r,--ram-freq            RAM clock speed, one of:
+                          * 528 (default for new postmarketOS installations)
+                          * 552 (default before v21.03 / edge 2021-04-05)
+                          * 624
 
 EOF
 }
@@ -90,6 +106,15 @@ while [ $# -gt 0 ]; do
 	-n|--dry-run)
 		dryrun="echo"
 		;;
+	-r|--ram-freq)
+		case "$1" in
+		528) freq="528" ;;
+		552) freq="552" ;;
+		624) freq="624" ;;
+		*) usage; exit 1;;
+		esac
+		shift
+		;;
         --)
                 break
                 ;;
@@ -107,6 +132,22 @@ if [ -z "$board" -o -z "$device" -o -z "$imagedir" -o  ! -e "$imagedir" ]; then
 fi
 
 if [ -z "$dryrun" ]; then
+	if [ ! -z "$freq" ]; then
+		echo "/!\ Disclaimer warning:"
+		echo "Overclocking your device may render it unstable or prevent it to boot"
+		echo "If you're unable to boot your device you'll have to flash an image to a mSD card"
+		echo "then boot on it and update u-boot running this command:"
+		echo "update-u-boot -d /dev/mmcblk2"
+		echo 
+		read -p "Continue? [y/Y] " -n 1 -r
+		echo 
+		if [[ ! $REPLY =~ ^[Yy]$ ]]
+		then
+			exit 0
+		fi
+	else
+		freq=$default_freq
+	fi
 	echo "Updating $board u-boot in $device in 3 seconds..."
 	sleep 3
 fi
@@ -134,7 +175,7 @@ pinebookpro|rockpro64)
 	;;
 pinephone)
 	[ -e "$imagedir/pine64-pinephone/" ] || die "pinephone images not installed, apk add u-boot-pinephone"
-	$dryrun dd if=$imagedir/pine64-pinephone/u-boot-sunxi-with-spl.bin of=$device bs=1024 seek=8 status=none
+	$dryrun dd if=$imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin of=$device bs=1024 seek=8 status=none
 	;;
 esac
 $dryrun sync
