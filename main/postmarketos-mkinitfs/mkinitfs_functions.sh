@@ -19,6 +19,7 @@ deviceinfo_flash_pagesize=""
 deviceinfo_generate_bootimg=""
 deviceinfo_generate_legacy_uboot_initfs=""
 deviceinfo_mesa_driver=""
+deviceinfo_mkinitfs_postprocess=""
 deviceinfo_initfs_compression=""
 deviceinfo_kernel_cmdline=""
 deviceinfo_legacy_uboot_load_address=""
@@ -407,6 +408,9 @@ create_bootimg()
 		${_second} \
 		${_dt} \
 		-o "${outfile/initramfs-/boot.img-}" || exit 1
+	if [ "${deviceinfo_mkinitfs_postprocess}" != "" ]; then
+		sh "${deviceinfo_mkinitfs_postprocess}" "$outfile"
+	fi
 	if [ "${deviceinfo_bootimg_blobpack}" = "true" ] || [ "${deviceinfo_bootimg_blobpack}" = "sign" ]; then
 		echo "==> initramfs: creating blob"
 		_flags=""
