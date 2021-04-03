@@ -1,0 +1,24 @@
+# Maintainer: Luca Weiss <luca@z3ntu.xyz>
+pkgname=mygnuhealth
+pkgver=0_git20210403
+_commit="5c4d774615b27d0e9752550116e463a45932713f"
+pkgrel=0
+pkgdesc="The GNU Health Personal Health Record (PHR)"
+url="https://invent.kde.org/pim/mygnuhealth"
+arch="noarch !armhf !mips !mips64" # blocked by py3-pyside2
+license="GPL-3.0-or-later"
+depends="python3 py3-matplotlib py3-requests py3-tinydb py3-bcrypt py3-pyside2 kirigami2"
+makedepends="py3-setuptools"
+source="https://invent.kde.org/pim/mygnuhealth/-/archive/$_commit/mygnuhealth-$_commit.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="9dbde00af9583e877db36bd2b7797ccd4bfa6b10b42fda1b00c9697cac49fd226eac1d94d0dc283591d8f13c10ff9d26b5ecfcb41c36ad5489b055c2632972f8  mygnuhealth-5c4d774615b27d0e9752550116e463a45932713f.tar.gz"
