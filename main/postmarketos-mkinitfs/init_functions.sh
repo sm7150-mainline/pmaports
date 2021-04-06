@@ -552,11 +552,18 @@ start_charging_mode() {
 		lpcharge=1
 		androidboot.bootchg=true
 	"
+
+	# Support devices using KMS
+	# shellcheck disable=SC2154
+	if [ -n "$deviceinfo_mesa_driver" ]; then
+		export SDL_VIDEODRIVER="kmsdrm"
+	fi
+
 	# shellcheck disable=SC2086
 	grep -Eq "$(echo $chargingmodes | tr ' ' '|')" /proc/cmdline || return
 	setup_directfb_tslib
 	# Get the font from osk-sdl config
-	fontpath=$(awk '/^keyboard-font/{print $3}' /etc/osk.conf)
+	fontpath=$(awk '/^keyboard-font\s=/{print $3}' /etc/osk.conf)
 	# Set up triggerhappy config
 	{
 		echo "KEY_POWER 1 pgrep -x charging-sdl || charging-sdl -pcf $fontpath"
