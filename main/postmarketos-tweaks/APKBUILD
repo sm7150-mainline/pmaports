@@ -1,0 +1,30 @@
+# Maintainer: Martijn Braam <martijn@brixit.nl>
+pkgname=postmarketos-tweaks
+pkgver=0.5.0
+pkgrel=0
+pkgdesc="Tweak tool for phone UIs"
+url="https://gitlab.com/postmarketOS/postmarketos-tweaks"
+arch="noarch"
+license="GPL-3.0-or-later"
+subpackages="$pkgname-phosh:phosh"
+depends="python3 py3-gobject3 py3-yaml gtk+3.0 libhandy1"
+makedepends="py3-setuptools glib-dev libhandy1-dev meson"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketOS/postmarketos-tweaks/-/archive/$pkgver/postmarketos-tweaks-$pkgver.tar.gz"
+options="!check" # There's no testsuite
+
+build() {
+	abuild-meson . output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+
+	amove usr/share/postmarketos-tweaks/phosh.yml
+}
+
+sha512sums="83477103c4b1c66f7f11e40122cdaac476de18e709c8976972ae4240ebb74fa7e83738fa316166f60ddeb98d4ef65dcc1d4fe2bdf50936e8c6cd822ef8821a3b  postmarketos-tweaks-0.5.0.tar.gz"
