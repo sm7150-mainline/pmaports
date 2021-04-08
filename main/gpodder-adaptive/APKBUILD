@@ -14,6 +14,12 @@ subpackages="$pkgname-doc"
 source="https://github.com/tpikonen/gpodder/archive/$_commit.tar.gz"
 builddir="$srcdir/gpodder-$_commit"
 
+# Temporarily disable tests for armv7, as py3-podcastparser and probably others
+# are not yet rebuilt against python 3.9 in Alpine edge (2021-04-09).
+if [ "$CARCH" = "armv7" ]; then
+	options="$options !check"
+fi
+
 check() {
 	make unittest
 }
