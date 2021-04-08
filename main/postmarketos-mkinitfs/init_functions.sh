@@ -288,21 +288,45 @@ unlock_root_partition() {
 	fi
 }
 
+get_partition_type() {
+	partition="$1"
+	blkid "$partition" | sed 's/^.*TYPE="\([a-zA-z0-9_]*\)".*$/\1/'
+}
+
 resize_root_filesystem() {
 	if [ "$ROOT_PARTITION_RESIZED" = 1 ]; then
 		partition="$(find_root_partition)"
 		touch /etc/mtab # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=673323
-		echo "Check/repair root filesystem ($partition)"
-		e2fsck -y "$partition"
-		echo "Resize root filesystem ($partition)"
-		resize2fs -f "$partition"
+		type="$(get_partition_type "$partition")"
+		case "$type" in
+			ext4)
+				echo "Resize 'ext4' root filesystem ($partition)"
+				resize2fs -f "$partition"
+				;;
+			f2fs)
+				echo "Resize 'f2fs' root filesystem ($partition)"
+				resize.f2fs "$partition"
+				;;
+			*)	echo "WARNING: Can not resize '$type' filesystem ($partition)." ;;
+		esac
 	fi
 }
 
 mount_root_partition() {
 	partition="$(find_root_partition)"
 	echo "Mount root partition ($partition) to /sysroot (read-only)"
-	mount -t ext4 -o ro "$partition" /sysroot
+	type="$(get_partition_type "$partition")"
+	case "$type" in
+		ext4)
+			echo "Detected ext4 filesystem"
+			mount -t ext4 -o ro "$partition" /sysroot
+			;;
+		f2fs)
+			echo "Detected f2fs filesystem"
+			mount -t f2fs -o ro "$partition" /sysroot
+			;;
+		*)	echo "WARNING: Detected '$type' filesystem ($partition)." ;;
+	esac
 	if ! [ -e /sysroot/usr ]; then
 		echo "ERROR: unable to mount root partition!"
 		show_splash /splash-mounterror.ppm.gz

@@ -225,6 +225,7 @@ get_binaries_extra()
 		/usr/lib/ts/*
 		/usr/sbin/parted
 		/usr/sbin/resize2fs
+		/usr/sbin/resize.f2fs
 		/usr/sbin/thd
 	"
 
