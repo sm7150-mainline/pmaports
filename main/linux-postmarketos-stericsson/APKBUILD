@@ -2,22 +2,23 @@
 # Kernel config based on: arch/arm/configs/u8500_defconfig
 
 _flavor="postmarketos-stericsson"
+_config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.8
+pkgver=5.13_rc2
 pkgrel=0
+_tag="5.13-rc2"
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
 _carch="arm"
 url="https://github.com/stericsson-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="bison findutils flex installkernel openssl-dev perl"
+makedepends="bison findutils gmp-dev flex installkernel mpc1-dev mpfr-dev openssl-dev perl"
 
-# Source
-_tag=v${pkgver//_/-}-stericsson
 source="
-	$pkgname-$_tag.tar.gz::$url/archive/$_tag.tar.gz
+	$pkgname-$_tag.tar.gz::https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
 	config-$_flavor.armv7
+	bl.patch
 "
 builddir="$srcdir/linux-${_tag#v}"
 
@@ -45,5 +46,8 @@ package() {
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
-sha512sums="a0971727404aaad70f9d1b670db9b0759a7e338fd647366918f145203347c546851b6cb242ef10b76f8060b09da3dbab5b163fddcecb26c8f0f35ea2afad23f0  linux-postmarketos-stericsson-v5.8-stericsson.tar.gz
-55aa7a5d6a7a4b171450ac2bb896c7eccd47f05f75695045420b0e09dc55024466795c77a4e86d657a0b4fd0832e3d75dbf59620fda008f391c1438c2aba00db  config-postmarketos-stericsson.armv7"
+sha512sums="
+eee237da43e08ac6d897510436b52fe042cff6583fd5406f4bc1535bd8a6780cbb0e1dfee9584b88cfa60fbc55a38be4cd5a424587c57168050f6ec6ce96890e  linux-postmarketos-stericsson-5.13-rc2.tar.gz
+a55862ad08db8d9307107a1996c64b59f716870549ca7a9ce38a3ebcbd14b57e1cbb91f830c1f938f8cf3b5b5512a41edf06d9deec5a48fb02a03e8b18cc3873  config-postmarketos-stericsson.armv7
+44ba95ca1278de476489ed505de6ea18140ee1f5f4176ecb0935a336c01e4468b7cb70176474e7fd12c886428dc74219fbcc3883b285276dda44530cd8262c32  bl.patch
+"

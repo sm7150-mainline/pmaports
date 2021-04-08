@@ -1,0 +1,52 @@
+Remove interrupt disablement during backlight setting. It is
+way to dangerous and makes platforms instable by having it
+miss vblank IRQs leading to the graphics derailing.
+
+The code is using ndelay() which is not available on
+platforms such as ARM and will result in 32 * udelay(1)
+which is substantial.
+
+Fixes: 5317f37e48b9 ("backlight: Add Kinetic KTD253 backlight driver")
+Cc: Stephan Gerhold <stephan@gerhold.net>
+Reported-by: newbyte@disroot.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/video/backlight/ktd253-backlight.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/drivers/video/backlight/ktd253-backlight.c b/drivers/video/backlight/ktd253-backlight.c
+index a7df5bcca9da..b79a47c2801f 100644
+--- a/drivers/video/backlight/ktd253-backlight.c
++++ b/drivers/video/backlight/ktd253-backlight.c
+@@ -40,7 +40,6 @@ static int ktd253_backlight_update_status(struct backlight_device *bl)
+ 	int brightness = backlight_get_brightness(bl);
+ 	u16 target_ratio;
+ 	u16 current_ratio = ktd253->ratio;
+-	unsigned long flags;
+ 
+ 	dev_dbg(ktd253->dev, "new brightness/ratio: %d/32\n", brightness);
+ 
+@@ -69,13 +68,9 @@ static int ktd253_backlight_update_status(struct backlight_device *bl)
+ 	}
+ 
+ 	/*
+-	 * WARNING:
+-	 * The loop to set the correct current level is performed
+-	 * with interrupts disabled as it is timing critical.
+ 	 * The maximum number of cycles of the loop is 32
+ 	 * so the time taken will be (T_LOW_NS + T_HIGH_NS + loop_time) * 32,
+ 	 */
+-	local_irq_save(flags);
+ 	while (current_ratio != target_ratio) {
+ 		/*
+ 		 * These GPIO operations absolutely can NOT sleep so no
+@@ -92,7 +87,6 @@ static int ktd253_backlight_update_status(struct backlight_device *bl)
+ 		else
+ 			current_ratio--;
+ 	}
+-	local_irq_restore(flags);
+ 	ktd253->ratio = current_ratio;
+ 
+ 	dev_dbg(ktd253->dev, "new ratio set to %d/32\n", target_ratio);
+-- 
+2.31.1
