@@ -39,4 +39,5 @@ rm -rf "$tmpdir"
 
 generate_initramfs_extra "$outfile_extra"
 
+sync
 exit 0
