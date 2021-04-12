@@ -521,6 +521,8 @@ start_onscreen_keyboard() {
 }
 
 start_charging_mode() {
+	# NOTE: To reenable charging-sdl, revert the whole commit,
+	# including the APKBUILD and mkinitfs changes!
 	# Check cmdline for charging mode
 	chargingmodes="
 		androidboot.mode=charger

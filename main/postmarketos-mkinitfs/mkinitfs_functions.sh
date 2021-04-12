@@ -218,7 +218,6 @@ get_binaries_extra()
 		/sbin/cryptsetup
 		/sbin/dmsetup
 		/sbin/e2fsck
-		/usr/bin/charging-sdl
 		/usr/bin/osk-sdl
 		/usr/lib/libGL.so.1
 		/usr/lib/libts*
@@ -226,7 +225,6 @@ get_binaries_extra()
 		/usr/sbin/parted
 		/usr/sbin/resize2fs
 		/usr/sbin/resize.f2fs
-		/usr/sbin/thd
 	"
 
 	if [ -n "$deviceinfo_mesa_driver" ]; then
