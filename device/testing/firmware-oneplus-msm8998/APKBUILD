@@ -1,0 +1,43 @@
+# Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
+pkgname=firmware-oneplus-msm8998
+pkgver=10.0.1
+pkgrel=0
+_commit="7ff57ed71367b70904f9b43bff873816d70f1cba"
+pkgdesc="Firmware for OnePlus 5/5T"
+url="https://github.com/JamiKettunen/firmware-mainline-oneplus5"
+# Conflicts with ath10k/WCN3990/hw1.0/firmware-5.bin, qca/cr{btfw21.tlv,nv21.bin} & qcom/a530_p{fp,m4}.fw
+replaces="linux-firmware-ath10k linux-firmware-qca linux-firmware-qcom"
+arch="aarch64"
+# soc-qcom-sdm845-nonfree-firmware is also applicable to msm8998
+depends="soc-qcom-sdm845-nonfree-firmware qcom-diag"
+install="$pkgname.post-install"
+license="proprietary"
+options="!check !archcheck !strip !tracedeps"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/JamiKettunen/firmware-mainline-oneplus5/archive/$_commit.tar.gz
+	30-gpu-firmware.files
+	firmware.files
+"
+subpackages="$pkgname-initramfs:firmware_initramfs"
+builddir="$srcdir/firmware-mainline-oneplus5-$_commit"
+
+package() {
+	while IFS="" read -r fw; do
+		install -Dm644 "$fw" "$pkgdir/lib/firmware/$fw"
+	done < "$srcdir"/firmware.files
+}
+
+firmware_initramfs() {
+	pkgdesc="Files to be included in the initramfs to support osk-sdl"
+	depends="$pkgname mesa-egl mesa-gbm"
+	install_if="$pkgname"
+
+	install -Dm644 "$srcdir"/30-gpu-firmware.files \
+		"$subpkgdir"/etc/postmarketos-mkinitfs/files/30-gpu-firmware.files
+}
+
+sha512sums="
+14b8bac7cc899caa4b83ca4787d2e2dcf9db1ef8c46b7427e0afeb68f937e680164153d98b3ecbbd40a450296c7fe0f748946475d29dcaa9b9d25a6b36ace04c  firmware-oneplus-msm8998-7ff57ed71367b70904f9b43bff873816d70f1cba.tar.gz
+974b7bcef52b4ae6d6fa11212ede1ddc9a9944dc3d6b066b0813072d8a9586929db8052670d98277db15cc1e2aa2d731c97c9c3d443f26bd3afab7e885230cba  30-gpu-firmware.files
+4aa7fca56855ea9091257f138bcbf051c3e637d983965d702204d933dc457f77171492c1eb83ce2c6bb0ce2fce83fcbdbf0419e85b83364f33fcc1f1c4ea5e73  firmware.files
+"
