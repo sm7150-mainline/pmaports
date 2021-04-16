@@ -5,14 +5,11 @@ import os
 import stat
 
 expected_directories = [
-    "console",
     "cross",
     "device/community",
     "device/main",
     "device/testing",
     "device/unmaintained",
-    "kde",
-    "maemo",
     "main",
     "modem",
     "non-free",
