@@ -1,0 +1,70 @@
+# Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
+# Stable Linux kernel with patches for MSM8998 devices
+# Kernel config based on: allnoconfig, msm8998.config and pmos.config
+
+_flavor="postmarketos-qcom-msm8998"
+pkgname=linux-$_flavor
+pkgver=5.15.0
+pkgrel=0
+_commit="aa0dfa5d16a9be88cde028a501ee6cb8f5485b05"
+pkgdesc="Mainline Kernel fork for MSM8998 devices"
+arch="aarch64"
+_carch="arm64"
+_config="config-$_flavor.$arch"
+url="https://gitlab.com/msm8998-mainline/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-zram
+	pmb:kconfigcheck-containers
+"
+# (anbox kconfigcheck excluded to use ANDROID_BINDERFS with Waydroid)
+makedepends="
+	bison
+	findutils
+	flex
+	linux-headers
+	openssl-dev
+	perl
+	postmarketos-installkernel
+	xz
+"
+
+# Source
+source="
+	https://gitlab.com/msm8998-mainline/linux/-/archive/$_commit/linux-$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/linux-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-$_flavor"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+fde8066b587b081a78badd041a87b7faab0948b62bd6d34fd291401bcb4f1fb401597a32b6e9ca0d5c0900a2676fc41d5638369bfb5bf1a58d8c5887ef786eb3  linux-aa0dfa5d16a9be88cde028a501ee6cb8f5485b05.tar.gz
+44e6bf9308f0b980925726df61b1f2a74b85fb49f9795e9172e6c229325ab7b78fd62a17f6cb43d7fe5bb32d917a3de6ce2889802abe637826cb7379045f7517  config-postmarketos-qcom-msm8998.aarch64
+"
