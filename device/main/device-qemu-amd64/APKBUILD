@@ -3,7 +3,7 @@
 # Co-Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=device-qemu-amd64
 pkgver=2.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Simulated device in QEMU (x86_64)"
 url="https://postmarketos.org"
 arch="x86_64"
@@ -11,13 +11,17 @@ license="MIT"
 depends="postmarketos-base mesa-dri-gallium"
 makedepends="devicepkg-dev"
 subpackages="
+	$pkgname-kernel-lts:kernel_lts
+	$pkgname-kernel-virt:kernel_virt
+	$pkgname-mce
 	$pkgname-weston
 	$pkgname-xfce4
-	$pkgname-kernel-virt:kernel_virt
-	$pkgname-kernel-lts:kernel_lts
-"
-
-source="deviceinfo weston.ini"
+	"
+source="
+	deviceinfo
+	mce-display-blanking.conf
+	weston.ini
+	"
 options="!check !archcheck"
 
 build() {
@@ -26,6 +30,13 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+mce() {
+	pkgdesc="Prevents screen blanking for UI's using mce (Glacier, Asteroid)"
+	install_if="$pkgname mce"
+	install -Dm644 "$srcdir"/mce-display-blanking.conf \
+		"$subpkgdir"/etc/mce/50display-blanking.conf
 }
 
 weston() {
@@ -53,4 +64,5 @@ kernel_lts() {
 }
 
 sha512sums="994ab3e870f6374aa56d4f4347ce10a39ba66117f6a054ca735b9b038953a00df0e5f073ba87beac458b5ba7e262e0e89d470fec486f62bc899a1f41e517e0cb  deviceinfo
+99d32eed6c5cda59e91516e982c5bd5165ff718133e2411a0dbba04e2057d1dfad49a75e5cc67140d0e0adcbe1383671bd2892335929b782a5b19f5472e635ad  mce-display-blanking.conf
 47b27c7572b8737988488f7eb23b9e68f9a944e22baafe1c78355d2514a2554cf41d99b29fca12238eb13a6f5d53f00ca89b94e534e8461ebab72256dcf0f142  weston.ini"
