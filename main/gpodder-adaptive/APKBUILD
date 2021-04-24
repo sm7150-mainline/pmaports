@@ -1,17 +1,30 @@
 # Maintainer: Johannes Marbach <n0-0ne+gitlab@mailbox.org>
+# Move to Alpine when there's a proper release (#1068)
 pkgname=gpodder-adaptive
-pkgver=3.10.17_git20210220
-_commit=d7bcf105adeddb96e8f16900f4880290080a3c04
-pkgrel=2
+pkgver=3.10.17_git20210307
+_commit=825e21ff17c19d0ec109896e28d3bd5d0f973e64
+pkgrel=0
 pkgdesc="Podcast aggregator"
 url="https://github.com/gpodder/gpodder/tree/adaptive"
 arch="noarch"
 license="GPL-3.0-or-later"
-depends="python3 py3-gobject3 py3-cairo py3-podcastparser py3-mygpoclient py3-requests py3-dbus xdg-utils adwaita-icon-theme"
+depends="
+	adwaita-icon-theme
+	libhandy1
+	py3-cairo
+	py3-dbus
+	py3-gobject3
+	py3-html5lib
+	py3-mygpoclient
+	py3-podcastparser
+	py3-requests
+	python3
+	xdg-utils
+"
 makedepends="py3-setuptools intltool help2man"
 checkdepends="py3-pytest py3-pytest-httpserver py3-pytest-cov py3-minimock desktop-file-utils"
-subpackages="$pkgname-doc"
-source="https://github.com/tpikonen/gpodder/archive/$_commit.tar.gz"
+subpackages="$pkgname-doc $pkgname-lang"
+source="https://github.com/gpodder/gpodder/archive/$_commit.tar.gz"
 builddir="$srcdir/gpodder-$_commit"
 
 # Temporarily disable tests for armv7, as py3-podcastparser and probably others
@@ -28,4 +41,4 @@ package() {
 	make install PREFIX=/usr DESTDIR=$pkgdir
 }
 
-sha512sums="90f0981397338796671c7b5a420ae9f4bc8963b62278f230a8956bb80e3662308a159b8e5181e66a487d7bbd7235ca19ea8e5a89b1943daa052f47342ecc3550  d7bcf105adeddb96e8f16900f4880290080a3c04.tar.gz"
+sha512sums="bf853e707fb721c2ae15417812c58e874397da36f3ed5226e7528af9f548b4ddd25af5b0d03057846f98c9208e51a66b4a03bcab9dd706d4d9747bf8b7eb7732  825e21ff17c19d0ec109896e28d3bd5d0f973e64.tar.gz"
