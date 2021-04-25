@@ -5,7 +5,7 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-pine64-pinephone
 pkgver=0.26
-pkgrel=0
+pkgrel=1
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -42,6 +42,7 @@ source="
 	deviceinfo
 	gpsd_device-hook.sh
 	gpsd_pinephone.initd
+	gsk-renderer-gl.sh
 	hwtest.ini
 	kirigami-lowpower.sh
 	modemmanager.conf
@@ -125,6 +126,10 @@ package() {
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t \
 		"$pkgdir"/usr/lib/udev/rules.d/
+
+	# Prevent artifacts in GTK4 apps (pmaports#1069)
+	install -Dm755 "$srcdir"/gsk-renderer-gl.sh -t \
+		"$pkgdir"/etc/profile.d/
 }
 
 nonfree_firmware() {
@@ -166,6 +171,7 @@ b53cc6f2531854cc9c1e4c334185a20551d64c8675ee8a8eaa03b99d80808fad421a0f6e99e5be21
 018deaf7c42753257bb7abbd4e7977bcb74ad8ef6a9ff1fbae12240ccad262c6982454553f5e0073d98a561d5eb1f2150bf24be36cfbe78ad822886b3972cf5a  deviceinfo
 ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd46444dd3c0a637ec08ce6125b18240fe6bfc13f624a15192e648  gpsd_device-hook.sh
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
+9244687bfea20c78120f7c48388d141eff3e23a421e48504eac1479ec7f51197d9ca72468c9cc33c6e3d3fa32ee3514711545816e607d49870226e4a41a60a85  gsk-renderer-gl.sh
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
 6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
 3d6e9030125afc1dc3b654d1ce5d124ddd3ef3ad1a4d3e46c8168cf3f8a3762ffd0c75427759740ae26bd5c4f32b6704b7cf7e5806434884560fa704b7e72921  modemmanager.conf
