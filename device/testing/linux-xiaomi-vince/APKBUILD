@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm64/configs/vince_defconfig
 
 pkgname=linux-xiaomi-vince
-pkgver=4.9.257
+pkgver=4.9.267
 pkgrel=0
 pkgdesc="Xiaomi Redmi Note 5 Plus kernel fork"
 arch="aarch64"
@@ -12,16 +12,16 @@ _flavor="xiaomi-vince"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="sed gcc-armv7 bash bc bison devicepkg-dev flex openssl-dev perl"
+makedepends="bash bc bison devicepkg-dev flex gcc-armv7 openssl-dev perl sed"
 
 # Source
-_repository="M0Rf30/kernel_xiaomi_vince"
-_commit="ec88236cf3686d5e75659468e4025c265d3d5046"
+_repository="kernel_xiaomi_vince"
+_commit="1168c9c785b4995f08cc1eff89eec5ce286d2258"
 _config="config-$_flavor.$arch"
-source="$pkgname-$_commit.tar.gz::https://github.com/$_repository/archive/$_commit.tar.gz
+source="$pkgname-$_commit.tar.gz::https://github.com/M0Rf30/$_repository/archive/$_commit.tar.gz
 	$_config
 	"
-builddir="$srcdir/kernel_xiaomi_vince-$_commit"
+builddir="$srcdir/$_repository-$_commit"
 _outdir="out"
 
 prepare() {
@@ -38,12 +38,7 @@ build() {
 
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
-	# Modules
-	unset LDFLAGS
-	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
-		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
-sha512sums="aa79ce8ff332c42d4ce16fdee261bab2536dd943a7b6128f51ae98c03d012d884f56dc020f7da8931757c67d3a86a7faf7d229a73b2f9c016c701a425b625728  linux-xiaomi-vince-ec88236cf3686d5e75659468e4025c265d3d5046.tar.gz
-10fc32b2a6bb14e0b5bd19f4a541c48e8271abc17aa26a3c1cd157b1beb52044394e275043509a58bcc6042a997abf24753dbb3d5403f594657ae3fb9249cef7  config-xiaomi-vince.aarch64"
+sha512sums="43544ac76a3f4a325ea4d7760d60e12375ccfaf6e6865f331d785b7482241a2ba5e78334a071e9471b83cbecdc50d5717eeef8baa4bf714674cd8b36c7569e5a  linux-xiaomi-vince-1168c9c785b4995f08cc1eff89eec5ce286d2258.tar.gz
+f34876e294c24790b894c50e27cf0121969ffd8dc77b446177a10c9c1b4961793b5e5c7aa0d7c32b8fec08a967d757e64c5961038f4ef5c4c4aadea86dea41fc  config-xiaomi-vince.aarch64"
