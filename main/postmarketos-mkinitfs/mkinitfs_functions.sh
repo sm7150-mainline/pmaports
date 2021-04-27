@@ -289,7 +289,7 @@ create_cpio_image()
 
 # Required command check with useful error message
 # $1: command (e.g. "mkimage")
-# $2: package (e.g. "uboot-tools")
+# $2: package (e.g. "u-boot-tools")
 # $3: related deviceinfo variable (e.g. "generate_bootimg")
 require_package()
 {
@@ -309,7 +309,7 @@ create_uboot_files()
 	fi
 
 	[ "${deviceinfo_generate_legacy_uboot_initfs}" = "true" ] || return
-	require_package "mkimage" "uboot-tools" "generate_legacy_uboot_initfs"
+	require_package "mkimage" "u-boot-tools" "generate_legacy_uboot_initfs"
 
 	echo "==> initramfs: creating uInitrd"
 	# shellcheck disable=SC2039
