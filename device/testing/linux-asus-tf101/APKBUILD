@@ -2,7 +2,7 @@
 
 pkgname=linux-asus-tf101
 pkgver=3.1.10
-pkgrel=6
+pkgrel=7
 pkgdesc="Asus Eee Pad Transformer kernel fork"
 arch="armv7"
 _carch="arm"
@@ -61,7 +61,7 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
 	# the 'no-pic' flag is necessary to avoid the
-        # error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
+	# error 'Unknown symbol _GLOBAL_OFFSET_TABLE_ (err 0)' when loading the module
 	make ARCH="$_carch" CC="${CC:-gcc}"  CFLAGS_MODULE="-fno-pic" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" modules
 }
@@ -86,4 +86,4 @@ cdddc37d3c173c931631037d7c337e45589420eba956231436b8d3b857b942db7fd33e4800d0bada
 bc8d62c7bf3de7074b5526906716326dede61f7358278b0a88f33e8fa235dc5305e0fbb45e751817db2aec1fca9ea116962527a2d772fe3892e176a07a8635bd  05-Revert-Update-TF101.patch
 dca4c1d1e951e7d023ef65f312d853b61e89ec3c4c5c30f6a75086a4cd822f04cad4341fe1ad00dc7513d1cefc425f2d90da575cf86b3e5dd00971fbc6f0228a  06-Enable-USB-Networking.patch
 59d9c2b365123acd6eca7b78403a893d8d78867db182ddc1fda2c521e85bb86f871fcb32ecc3ae5248a2cbb93a644a9d665085defe07987ece70326323329953  07-Added-Parameters-to-Atmel-TouchScreen-Drivers.patch
-b8904e49216bb0c6197f1aaa31afa5a6e7cece53aba41e6a0936b8cfecbbe6fb6d45872f2fcba18ec824a6e4d703cf41466ca4ef26a23c9aa4784e3affa74221  config-asus-tf101.armv7"
+0d816ccf9ae3395edbce8c871a0f2d6111f05acbeb84f75e31c9137ed0fba553588b8b7ed37da220100d4d223ed76be299351ec82577ac2890a35a256dac65de  config-asus-tf101.armv7"
