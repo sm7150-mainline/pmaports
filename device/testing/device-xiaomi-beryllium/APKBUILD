@@ -4,7 +4,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-beryllium
 pkgdesc="Xiaomi Poco F1"
-pkgver=2
+pkgver=3
 pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
@@ -15,6 +15,7 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-kernel-tianma:kernel_tianma
+	$pkgname-kernel-ebbg:kernel_ebbg
 	$pkgname-phosh
 "
 
@@ -39,7 +40,13 @@ nonfree_firmware() {
 }
 
 kernel_tianma() {
-	pkgdesc="Close to mainline; Tianma Display, Novatek Touchscreen, Audio, Wifi and USB works (see device page in wiki for details) (GPU firmware needed)"
+	pkgdesc="Tianma Panel. To know which panel your device use and the status of the port, Visit the Poco F1 wiki page: https://wiki.postmarketos.org/wiki/Xiaomi_Poco_F1_(xiaomi-beryllium)"
+	depends="linux-postmarketos-qcom-sdm845"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_ebbg() {
+	pkgdesc="EBBG Panel. To know which panel your device use and the status of the port, Visit the Poco F1 wiki page: https://wiki.postmarketos.org/wiki/Xiaomi_Poco_F1_(xiaomi-beryllium)"
 	depends="linux-postmarketos-qcom-sdm845"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
@@ -52,6 +59,8 @@ phosh() {
 		"$subpkgdir"/usr/share/feedbackd/themes/xiaomi,beryllium.json
 }
 
-sha512sums="3d4587810311a5422577daddfcd41aad4d29e011ffb13d3d3d7cde6e4f8eacd2458470818cca8e196fd7f9a44670cffeddde085cda74688fb4d3a7418114449e  deviceinfo
+sha512sums="
+bdd7f2b3405cca7887d12a842baf7d2ee1ee27d315ee71f74cfa17d19618aa1dec3e0a446b09d3e0c4b1904555cbc62e19ba001b61b66f547d30f65688941ea2  deviceinfo
 e0bbe6210198ec37a0f18fb7dec5dead4ad41693ad5b3c20731e68d4f9d8fdff393dcbd110e87564030f1326e12da8af58c020e9bc14eb9ca2c54224b962df7e  rootston.ini
-db78af5be2a08109962fa2511d6e84efe9a425e1d45c7e0e75bf0be383cfc1c5fca5d79f3d7bd2f146e8a62460c88b214819ad522316c0c2e08783a80d8ceb05  xiaomi,beryllium.json"
+db78af5be2a08109962fa2511d6e84efe9a425e1d45c7e0e75bf0be383cfc1c5fca5d79f3d7bd2f146e8a62460c88b214819ad522316c0c2e08783a80d8ceb05  xiaomi,beryllium.json
+"
