@@ -1,13 +1,13 @@
 # Kernel config based on: arch/arm/configs/msm8960_defconfig
 
 pkgname=linux-jolla-sbj
-pkgver=3.4.0
-pkgrel=5
+pkgver=3.4.108
+pkgrel=0
 pkgdesc="Jolla phone kernel fork"
 arch="armv7"
 _carch="arm"
 _flavor="jolla-sbj"
-url="http://releases.sailfishos.org/sources/2.1.0.11/"
+url="http://releases.sailfishos.org/sources/3.1.0.11/"
 license="GPL2"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6"
@@ -22,15 +22,16 @@ if [ "${CC:0:5}" != "gcc6-" ]; then
 fi
 
 # Source
-_hash="2.1.0.11"
+_hash="3.1.0.11"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_hash.tar.bz2::http://releases.sailfishos.org/sources/$_hash/sailfish-$_hash-oss-adaptation-sbj.tar.bz2
 	$_config
+	01_fix-video-argb-setting.patch
 	02_gpu-msm-fix-gcc5-compile.patch
 	duplicate-return-address-definition.patch
 "
-_kver="kernel-adaptation-sbj-3.4.108.20161101.1"
+_kver="kernel-adaptation-sbj-3.4.108.20190506.1"
 _kernelarchive="$srcdir/sailfish-$_hash-oss-adaptation-sbj/kernel-adaptation-sbj/$_kver.tar.bz2"
 builddir="$srcdir/$_kver"
 
@@ -54,8 +55,9 @@ package() {
 }
 
 sha512sums="
-c0ff1641dd6ae4dbf736ddaf543da0cfd51188d36f163a5f519772867a44c19b40ab86043c9ee1598bbf766e05ef8620588dde9ae5ebadce6e03360ebc78e484  linux-jolla-sbj-2.1.0.11.tar.bz2
+b43353cb1f5c0205535153515eed0c10ca652fc1b2f28c12a40e8dbce08e304c49991e8c155800711fb0c07012c820a26fbf4c931b9b015994b67b1dc4615ef6  linux-jolla-sbj-3.1.0.11.tar.bz2
 cd008aafd3ae04dbf3f010e893fa2d47169a2045d1706a2f28d5175011da96ca1280a2c73692bb14f2e7452327d2e83f9fdc251997a51c8df9c3f4ae5eb03b10  config-jolla-sbj.armv7
+e3083c260ed9c4fc0d83f43106700b6173876dbfae072f6e6696ac6785a4dc17771fbcb3e21601e04ed29a11bf0f7a2a09ad549375e0c34cea245c7f2e2bcbbd  01_fix-video-argb-setting.patch
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
 9b15bf1f6cb66f54c785b0af6c9db8a7d63257e6fa3eeb0cbf47284334166aa6a7ff93e1b64ab69206c8047d64641199c0f5fcbc257bbe039263252fff45118e  duplicate-return-address-definition.patch
 "
