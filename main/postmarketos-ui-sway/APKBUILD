@@ -1,36 +1,48 @@
-# Maintainer: Danct12 <danct12@disroot.org>
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-ui-sway
-pkgver=2
-pkgrel=4
+pkgver=3
+pkgrel=0
 pkgdesc="(Wayland) Tiling WM, drop-in replacement for i3wm (DOES NOT RUN WITHOUT HW ACCELERATION!)"
 url="https://postmarketos.org"
-arch="noarch !armhf !x86" # armhf,x86: aports#11807
+arch="noarch"
 license="GPL-3.0-or-later"
+subpackages="$pkgname-logo-key-alt:logo_key_alt"
 depends="
 	dnsmasq
 	elogind
-	lightdm
-	lightdm-openrc
 	networkmanager
 	postmarketos-base-ui
 	sway
+	tinydm
+	tinydm-openrc
 	"
-_pmb_recommends="alacritty
+_pmb_recommends="
 	dmenu
+	foot
 	postmarketos-artwork-wallpapers
 	swayidle
 	swaylock
 	xwayland
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="67-lightdm-autologin.conf postmarketos_background"
+source="
+	etc-sway-config
+	etc-sway-config.d-00-logo-key.conf
+	"
 options="!check" # no testsuite
+replaces="sway"
 
 package() {
-	install -Dm644 "$srcdir"/67-lightdm-autologin.conf \
-		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/67-autologin.conf
-	install -Dm644 "$srcdir"/postmarketos_background \
-		"$pkgdir"/etc/sway/config.d/postmarketos_background
+	install -Dm644 "$srcdir"/etc-sway-config \
+		"$pkgdir"/etc/sway/config
 }
-sha512sums="5cf8c2e04ec1e1f7a330a3c81f82bc8c9eff4af0b61fb1b4f4a3b2f00fd0f149ab4e517ba38b4be97b22b6316c20861977e99548a9ecf0d89d81faf916c4e714  67-lightdm-autologin.conf
-1a70c9a0709d4474317b75ad4929673509a1198e4b95378f8dd02f795b2585ad296b409f06c66d4375c5b6732643f86d04a5220a32de794f464b9375af8487ec  postmarketos_background"
+
+logo_key_alt() {
+	install -Dm644 "$srcdir"/etc-sway-config.d-00-logo-key.conf \
+		"$subpkgdir"/etc/sway/config.d/00-logo-key.conf
+}
+
+sha512sums="
+07d8d0f93e6437b62299baf472242adfb84502420659a6fc3f1bea2e5f64556b409552ee35de1ef1a0806653fdfc504bb222ed3ef488a25fd589f9a4bc734ce9  etc-sway-config
+889f10fb247396a11375057f7e81eae0f0b21ec90cd47964e02ba24fc0f6db8bb7678545e3272149535cf0bb6a2019456cc59d06a9564ce4a1797bb434013b78  etc-sway-config.d-00-logo-key.conf
+"

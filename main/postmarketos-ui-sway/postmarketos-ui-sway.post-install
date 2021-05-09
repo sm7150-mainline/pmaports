@@ -1,6 +1,7 @@
 #!/bin/sh
 
-sed -i "s/username/$(getent passwd 10000 | cut -d: -f1)/g" /usr/share/lightdm/lightdm.conf.d/67-autologin.conf
+rc-update add tinydm default
+tinydm-set-session -s /usr/share/wayland-sessions/sway.desktop
 
-rc-update add lightdm default
 rc-update add networkmanager default
+exit 0
