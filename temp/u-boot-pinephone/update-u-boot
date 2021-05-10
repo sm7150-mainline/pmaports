@@ -38,8 +38,14 @@ get_defaults() {
 	fi
 
 	if [ -z "$freq" -a -e /proc/device-tree/memory/ram_freq ]; then
-		freq=$(cat /proc/device-tree/memory/ram_freq 2>/dev/null)
-		echo Detected custom clock: $freq MHz
+		proc_freq=$(cat /proc/device-tree/memory/ram_freq 2>/dev/null)
+		if [ -n "$proc_freq" ]; then
+			echo "Detected clock: $proc_freq MHz"
+			default_freq="$proc_freq"
+		else
+			echo "WARNING: Failed to read clock from /proc/device-tree/memory/ram_freq"
+			echo "Using default clock: $default_freq MHz"
+		fi
 	elif [ -z "$freq" ]; then
 		echo Using default clock: $default_freq MHz
 	else
@@ -145,11 +151,13 @@ if [ -z "$dryrun" ]; then
 		then
 			exit 0
 		fi
-	else
-		freq=$default_freq
 	fi
 	echo "Updating $board u-boot in $device in 3 seconds..."
 	sleep 3
+fi
+
+if [ -z "$freq" ]; then
+	freq=$default_freq
 fi
 
 (
