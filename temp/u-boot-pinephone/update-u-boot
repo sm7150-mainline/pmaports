@@ -85,6 +85,25 @@ options:
 EOF
 }
 
+validate_checksum() {
+	file="$1"
+	file_sha512="$file.sha512"
+	file_size=$(stat -c%s $file)
+	device="$2"
+	bs="$3"
+	seek="$4"
+
+	checksum0=$(cat $file_sha512 | awk {'print $1'})
+	checksum1=$(dd if=$device bs=1 skip=$(($seek * $bs)) count=$file_size status=none | sha512sum | awk {'print $1'})
+	if [ "$checksum0" != "$checksum1" ]; then
+		echo "File: $checksum0"
+		echo "Part: $checksum1"
+		die "Checksum failed"
+	fi
+	echo "Successful U-Boot image checksum verification on $device :"
+	echo -e "\t$checksum1"
+}
+
 while [ $# -gt 0 ]; do
 	opt="$1"
 	shift
@@ -184,6 +203,7 @@ pinebookpro|rockpro64)
 pinephone)
 	[ -e "$imagedir/pine64-pinephone/" ] || die "pinephone images not installed, apk add u-boot-pinephone"
 	$dryrun dd if=$imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin of=$device bs=1024 seek=8 oflag=direct status=none
+	[ -z "$dryrun" ] && validate_checksum $imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin $device 1024 8
 	;;
 esac
 $dryrun sync
