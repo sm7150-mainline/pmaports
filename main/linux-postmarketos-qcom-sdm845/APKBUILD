@@ -6,7 +6,7 @@
 _flavor="postmarketos-qcom-sdm845"
 pkgname=linux-$_flavor
 pkgver=5.12
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline Kernel fork for SDM845 devices"
 arch="aarch64"
 _carch="arm64"
@@ -34,11 +34,7 @@ prepare() {
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
-		# Workaround wrong LOCALVERSION causing weird errors
-		# if it doesn't match this, having to ensure it's
-		# correct in the kconfig doesn't make sense
-		LOCALVERSION="-$_flavor"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
@@ -57,5 +53,5 @@ package() {
 
 sha512sums="
 befc0ed82a30ee56360951a0983a45d8e09fe616aaf1948794ff8cdd7292bb88045a2a2c16d81251d18c49fb5a38e4cabca5d8caa6981f34b866fac921fb7623  sdm845-linux-b7a1e57f78d690d02aff902114bf2f6ca978ecfe.tar.gz
-b223828ff0ba1610b231acc285db86626cb132a36da31c7a9f3ad4e1b7f113f4be5f58b1dbd1e4453a0d9a35d82d9086649b190fb528f83cc68a6484f636ca0c  config-postmarketos-qcom-sdm845.aarch64
+5bae2fdd558b29854779e503d8fa125d8de03c8da01cbe40207bacde2e5688178bae2840b85b3733a5dab96d256611c594a6abb70274ed7171224080817ef94b  config-postmarketos-qcom-sdm845.aarch64
 "
