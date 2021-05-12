@@ -183,7 +183,7 @@ pinebookpro|rockpro64)
 	;;
 pinephone)
 	[ -e "$imagedir/pine64-pinephone/" ] || die "pinephone images not installed, apk add u-boot-pinephone"
-	$dryrun dd if=$imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin of=$device bs=1024 seek=8 status=none
+	$dryrun dd if=$imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin of=$device bs=1024 seek=8 oflag=direct status=none
 	;;
 esac
 $dryrun sync
