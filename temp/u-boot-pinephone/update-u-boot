@@ -7,6 +7,7 @@ dryrun=
 imagedir=
 default_freq=528
 freq=
+skip_delay=
 
 get_boot_blockdev() {
 	# Find the blockdevice where /boot is mounted from
@@ -62,7 +63,7 @@ usage() {
 	get_defaults
 
 	cat <<EOF
-usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-d|--device <device>] [-r|--ram-freq <freq>]
+usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-d|--device <device>] [-r|--ram-freq <freq>] [-s|--skip-delay]
 
 options:
 
@@ -81,6 +82,8 @@ options:
                           * 528 (default for new postmarketOS installations)
                           * 552 (default before v21.03 / edge 2021-04-05)
                           * 624
+
+ -s,--skip-delay          Skip delay and flash the image immediately 
 
 EOF
 }
@@ -140,6 +143,9 @@ while [ $# -gt 0 ]; do
 		esac
 		shift
 		;;
+	-s|--skip-delay)
+		skip_delay="yes"
+		;;
         --)
                 break
                 ;;
@@ -171,8 +177,12 @@ if [ -z "$dryrun" ]; then
 			exit 0
 		fi
 	fi
-	echo "Updating $board u-boot in $device in 3 seconds..."
-	sleep 3
+	if [ -z "$skip_delay" ]; then
+		echo "Updating $board u-boot in $device in 3 seconds..."
+		sleep 3
+	else
+		echo "Updating $board u-boot in $device"
+	fi
 fi
 
 if [ -z "$freq" ]; then
