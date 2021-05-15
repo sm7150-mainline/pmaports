@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
 pkgver=10
-pkgrel=0
+pkgrel=1
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -9,10 +9,10 @@ depends="
 	alpine-base
 	chrony
 	cryptsetup
+	dbus
 	dnsmasq
 	eudev
 	haveged
-	networkmanager
 	openssh
 	postmarketos-mkinitfs
 	postmarketos-mvcfg
@@ -44,7 +44,6 @@ _source044="
 	etc/sudoers
 	"
 _source644="
-	etc/NetworkManager/conf.d/00-postmarketos.conf
 	etc/chrony/chrony.conf
 	etc/conf.d/swapfile
 	etc/conf.d/syslog
@@ -61,7 +60,6 @@ _source644="
 _source755="
 	etc/init.d/deferred-initcalls
 	etc/init.d/swapfile
-	etc/polkit-1/rules.d/50-org.freedesktop.NetworkManager.rules
 	sbin/swapfile
 	usr/lib/firmwareload.sh
 	"
@@ -129,8 +127,8 @@ tinydm() {
 	amove etc/conf.d/tinydm
 }
 
-sha512sums="e529f5cef1f31481b577f99b8917704f2cfefb963d98bf40a14b017938e55a00134d2033f81d2cb0b8489c5e9b4a92fdc0a788013f1adb4cd46d9580c9988186  rootfs-etc-sudoers
-67a031f309a3232ac1e8abc3fedeaee912c035f9c81b4f709248895905a27ab5844ec92c65e55b79af3894450ba3883549d4004f11efebb47114d41f730e4a5f  rootfs-etc-NetworkManager-conf.d-00-postmarketos.conf
+sha512sums="
+e529f5cef1f31481b577f99b8917704f2cfefb963d98bf40a14b017938e55a00134d2033f81d2cb0b8489c5e9b4a92fdc0a788013f1adb4cd46d9580c9988186  rootfs-etc-sudoers
 e5d049db1d82c510bab9246208b51b8ec2711d008d67792fc10d4c0b65ed4dece7b5ae3c3dd28a8539d177b6849c1f921cb9fef3d2c7bee0355451f7b4757ec6  rootfs-etc-chrony-chrony.conf
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  rootfs-etc-conf.d-swapfile
 e4576c58c35f80bedddb1e89e186f37d31a186d3e9eb046581b8c5d7b7d435e18924539e851d3e67dc0ede80f9d44d16bd9ef52e73350d3f13224edc31d73a34  rootfs-etc-conf.d-syslog
@@ -145,6 +143,6 @@ fe0651904c1f40ffa67d83daca190af199f63247e53642a59a1e1147cd06776fcf20b7b2fcc53737
 75451751862a084415212bf2f90fdb4dac6a75bb063a411e15c9060f8c7f0b0b8c994dd6ba964d00a249eb80f5a0665d9cfdf75923af6de47f9723b10e61e9a7  rootfs-etc-os-release
 5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  rootfs-etc-init.d-deferred-initcalls
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  rootfs-etc-init.d-swapfile
-7b34e861bc4ec57d970d2a7aacca36e3c3742a63ff995af1336f80b666e4a38c1035b35e129322e0d62dc75011bfaf495eb2bcae5392f2bf39f1d7b1400afcce  rootfs-etc-polkit-1-rules.d-50-org.freedesktop.NetworkManager.rules
 3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  rootfs-sbin-swapfile
-38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  rootfs-usr-lib-firmwareload.sh"
+38dc75c0ed32b76dccd3d8e7e8173e8b7d91847cf2b07123f376b95af46b4f89798b24f45302a0726fdc1cf253aecaac140f431735ac5c6511553f790badd0af  rootfs-usr-lib-firmwareload.sh
+"
