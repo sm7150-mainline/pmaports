@@ -3,7 +3,7 @@
 
 pkgname=linux-lg-vee3e
 pkgver=3.4.0
-pkgrel=1
+pkgrel=2
 pkgdesc="LG Optimus L3 II kernel fork"
 arch="armv7"
 _carch="arm"
@@ -25,8 +25,7 @@ source="
 	gcc10-extern_YYLOC_global_declaration.patch
 	static-inline-in-ftrace.h.patch
 	02_gpu-msm-fix-gcc5-compile.patch
-	0001-gpu-msm-debug-messages.patch
-	0002-msm-fb-rgb-mode.patch
+	gpu-imgtype.patch
 	linux3.4-vfs-Fix-proc-tid-fdinfo-fd-file-handling.patch
 "
 builddir="$srcdir/$_repository-$_commit"
@@ -47,13 +46,14 @@ package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 }
 
-sha512sums="b73f5d8a87eaea99489b3ed090ef5219438779a9ba8de4716be9d6a0b8f8e88e56ae493cc9b9efdd1736bc061f174a61576f0b99a9f75e8c613fc09bd01a7d86  linux-lg-vee3e-45d6b0c683f3e0178e91c081133c6ebbea1d30fd.tar.gz
-ef63cf45873c0056f630b534cea605ea692ce9a727946e6aa2ebc79d3d8b70d36786d7991a8b5665480ed900a9942b97a7635b1c32b2a010d66d917eea9752ef  config-lg-vee3e.armv7
+sha512sums="
+b73f5d8a87eaea99489b3ed090ef5219438779a9ba8de4716be9d6a0b8f8e88e56ae493cc9b9efdd1736bc061f174a61576f0b99a9f75e8c613fc09bd01a7d86  linux-lg-vee3e-45d6b0c683f3e0178e91c081133c6ebbea1d30fd.tar.gz
+8502243ac38457f8d27bfe8e5223784a1ab37db33c4f066ca1b15315eb4429cc82a24f7a0222fbbe8a20e92103edee5cb0e0d5632765a1d3c296c7a94edce142  config-lg-vee3e.armv7
 77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
 197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
 2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
 ea1d3b5a234fa565e3c1a792de48f4fc4e6023d281d303c8e319c7ef28edc5739ab0e4dea0139a41f0a5c7d03e27921ccaa214fd0ac5c72245a094ce60128864  static-inline-in-ftrace.h.patch
 7be03a9e78b7ac330a54b1f00509caa0621a95c0c55901878ad757f9dd69cc05ba2c8b5ea987063ae1224f92c4d090d515fa5d369e7755181a4871b0d0f82881  02_gpu-msm-fix-gcc5-compile.patch
-1b9064350cd2bc51e87bdf3f3d9e9b0b52b12f483fcec09b492fd2d7e60574525c0c33e90e554ed706599869d0d4b0380171481c759f178e3efedbc0b8c25e8c  0001-gpu-msm-debug-messages.patch
-98e4052566dd3063813ebded9e5142f72716fdd97d5fa0fdeef196e116869b08047d1907c95b2295513181450261cf0cdc8b01c3c702a09c85c3e27dbd282d32  0002-msm-fb-rgb-mode.patch
-5e81c20b0b30c1ab09bd59f1e1b77fcce945a27de8144c68617ddc5e8f10e1f6fa8b1e4cd5d63e43511d61dace46fb26b14a6227a667b9718d44c8b81dbe6100  linux3.4-vfs-Fix-proc-tid-fdinfo-fd-file-handling.patch"
+1b1c2bc6baca3baccd115473669b28b5cf580f574d82c1b08fabebd89f09dfb94d4ae89e301cca554feaff2af5bffa041e6880e974b4a391b93dcba4f9af7801  gpu-imgtype.patch
+5e81c20b0b30c1ab09bd59f1e1b77fcce945a27de8144c68617ddc5e8f10e1f6fa8b1e4cd5d63e43511d61dace46fb26b14a6227a667b9718d44c8b81dbe6100  linux3.4-vfs-Fix-proc-tid-fdinfo-fd-file-handling.patch
+"
