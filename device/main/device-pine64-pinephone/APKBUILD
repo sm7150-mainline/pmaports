@@ -5,7 +5,7 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-pine64-pinephone
 pkgver=0.28
-pkgrel=1
+pkgrel=2
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -57,6 +57,7 @@ source="
 	ucm/PinePhone.conf
 	ucm/VoiceCall.conf
 	UPower.conf
+	pulse-pinephone.conf
 	"
 # workaround to purge the -elogind subpackage that was previously
 # created/installed
@@ -110,6 +111,10 @@ package() {
 		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/HiFi.conf
 	install -Dm644 "$srcdir"/VoiceCall.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/VoiceCall.conf
+
+	# Pulseaudio config
+	install -Dm644 "$srcdir"/pulse-pinephone.conf \
+		"$pkgdir"/etc/pulse/daemon.conf.d/89-pinephone.conf
 
 	# Modem
 	install -Dm755 "$srcdir"/setup-modem.sh \
@@ -196,4 +201,5 @@ aef9f00f1d327b11640c4dbcb7b6ad5b0bac3118e262af5d7d6a37d87757559856438c0adea834f0
 e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d74533f9ffb9aacc1703da2a06693f85fa04ff97fd7528012  PinePhone.conf
 6e226e8dc39a438629f443a33e1ba7ea5f7f1a08b98ec58b2bf97036e549d3ce9898de708020a632f4fd2f9d6540a621331e4d2c406c1e729d073113aff55ec3  VoiceCall.conf
 ed0e03f7e1c0348c06be9a7922414469245604ce813bbf0c8910ef211cb993bbb0d0d4615c9c961d50712415f85d6b73e0cf02780ac784666aac56e4889341e4  UPower.conf
+9c472065b19141dd4c7555869b955de2e679b36e597f9fa3bdac18d0e9460986b0e2fffe1e04751301305f1b6474c1375803afb7d6212eeae91b4905d0bf8ff8  pulse-pinephone.conf
 "
