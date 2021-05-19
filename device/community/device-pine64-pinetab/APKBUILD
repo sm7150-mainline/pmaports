@@ -4,7 +4,7 @@
 pkgname=device-pine64-pinetab
 pkgdesc="PINE64 PineTab"
 pkgver=0.10
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -40,6 +40,7 @@ source="
 	uboot-script.cmd
 	ucm/HiFi.conf
 	ucm/PineTab.conf
+	pulse-pinetab.conf
 	weston.ini
 	UPower.conf
 	"
@@ -130,6 +131,10 @@ package() {
 	install -D -m644 "$srcdir"/HiFi.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/PineTab/HiFi.conf
 
+	# Pulseaudio config
+	install -Dm644 "$srcdir"/pulse-pinetab.conf \
+		"$pkgdir"/etc/pulse/daemon.conf.d/89-pinetab.conf
+
 	# Fix for the meta key on v1 keyboard dock, probably not needed on newer revisions
 	install -Dm644 "$srcdir"/99-pinetab-keyboard.hwdb \
 		"$pkgdir"/etc/udev/hwdb.d/99-pinetab-keyboard.hwdb
@@ -170,6 +175,7 @@ f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8
 0e3f69170072f150f449cd9ccd9897728558a98acf2d5b85484ae8104b97f84e77760d7a30eeeccaf37d12cf870b3107ee34cefe55bdb033f3c7ac87d2093d24  uboot-script.cmd
 a2fd8037c9a1af000f31c7005436d791525317f818c553d1e2f472b4df76c71d769ecbf67b369a478bea720a6215eaa9fb6a26ba218ac9410513e2345ebe7b4c  HiFi.conf
 3bdf9d4c41058680d488d9b4a2ac5fd693ceddc5f319a577480546f8af7d9d64c9d3196e73cb0c00e793697eef4ad075c88c3d274702a5387c15945bc749d844  PineTab.conf
+9c472065b19141dd4c7555869b955de2e679b36e597f9fa3bdac18d0e9460986b0e2fffe1e04751301305f1b6474c1375803afb7d6212eeae91b4905d0bf8ff8  pulse-pinetab.conf
 6374ef977eab14b71fa88057ebd52ca03035e387e5f41504598a990f24b2e92bccd2db476c545dc541000e08fccdecb6f1cd63e25b5835df706269e0384dacc7  weston.ini
 ed0e03f7e1c0348c06be9a7922414469245604ce813bbf0c8910ef211cb993bbb0d0d4615c9c961d50712415f85d6b73e0cf02780ac784666aac56e4889341e4  UPower.conf
 "
