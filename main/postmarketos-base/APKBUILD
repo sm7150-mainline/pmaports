@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
-pkgver=10
-pkgrel=2
+pkgver=11
+pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -28,6 +28,7 @@ subpackages="
 	$pkgname-elogind
 	$pkgname-tinydm
 	$pkgname-x11
+	$pkgname-pulseaudio
 	"
 options="!check"
 replaces="
@@ -56,6 +57,8 @@ _source644="
 	etc/sleep-inhibitor.conf
 	etc/udev/rules.d/50-firmware.rules
 	etc/os-release
+	etc/pulse/postmarketos.pa
+	etc/pulse/daemon.conf.d/90-postmarketos.conf
 	"
 _source755="
 	etc/init.d/deferred-initcalls
@@ -127,6 +130,12 @@ tinydm() {
 	amove etc/conf.d/tinydm
 }
 
+pulseaudio() {
+	install_if="$pkgname=$pkgver-r$pkgrel pulseaudio"
+	amove etc/pulse/postmarketos.pa
+	amove etc/pulse/daemon.conf.d/90-postmarketos.conf
+}
+
 sha512sums="
 e529f5cef1f31481b577f99b8917704f2cfefb963d98bf40a14b017938e55a00134d2033f81d2cb0b8489c5e9b4a92fdc0a788013f1adb4cd46d9580c9988186  rootfs-etc-sudoers
 e5d049db1d82c510bab9246208b51b8ec2711d008d67792fc10d4c0b65ed4dece7b5ae3c3dd28a8539d177b6849c1f921cb9fef3d2c7bee0355451f7b4757ec6  rootfs-etc-chrony-chrony.conf
@@ -141,6 +150,8 @@ fe0651904c1f40ffa67d83daca190af199f63247e53642a59a1e1147cd06776fcf20b7b2fcc53737
 6b9c7bb73213187eb9ca8a94109b2b816f50c1158c90fec2e92b373864280d67741589e5bfbab8810945f031d2f4b535aad78a72e46e52ea50be5b85324da381  rootfs-etc-sleep-inhibitor.conf
 0b098828080055d3646ea54891cb0e1b578cbc30f5e16f7284f2814c08192f18079a38fb686d192715ae6a3d2cd6625d9e3cf99f234a6f0d94088bb0cb2ce43d  rootfs-etc-udev-rules.d-50-firmware.rules
 75451751862a084415212bf2f90fdb4dac6a75bb063a411e15c9060f8c7f0b0b8c994dd6ba964d00a249eb80f5a0665d9cfdf75923af6de47f9723b10e61e9a7  rootfs-etc-os-release
+315598b67889b1f25f82b8269ed36af4fcee018a4edf2926ba966ab08e0a42e36676896d0a5636001b1eb7f16211dcf518123230049556dec9d03006e003a584  rootfs-etc-pulse-postmarketos.pa
+4afe8c5b70f4ca85f9348eb0df12e3152b76203a1a138daa5777f22b751ea431d3ee4113189d8606078f87a99c230b184bc73d53222e6e00581e46224bf5d39f  rootfs-etc-pulse-daemon.conf.d-90-postmarketos.conf
 5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  rootfs-etc-init.d-deferred-initcalls
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  rootfs-etc-init.d-swapfile
 3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  rootfs-sbin-swapfile
