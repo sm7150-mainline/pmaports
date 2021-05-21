@@ -504,7 +504,8 @@ run_osk_sdl() {
 			;;
 	esac
 
-	osk-sdl $OSK_EXTRA_ARGS -n root -d "$partition" -c /etc/osk.conf -v > /osk-sdl.log 2>&1
+	osk-sdl $OSK_EXTRA_ARGS -n root -d "$partition" -c /etc/osk.conf \
+		-o /boot/osk.conf -v > /osk-sdl.log 2>&1
 }
 
 start_onscreen_keyboard() {
