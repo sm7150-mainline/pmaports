@@ -1,0 +1,54 @@
+From c13c2134b4ef913f71f91128298080b5b1cf316b Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 20:58:40 +0200
+Subject: [PATCH 27/39] base-bearer: improve comments of the
+ load/reload_connection_status() methods
+
+---
+ src/mm-base-bearer.h | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/src/mm-base-bearer.h b/src/mm-base-bearer.h
+index a2a00166..c5a4bda5 100644
+--- a/src/mm-base-bearer.h
++++ b/src/mm-base-bearer.h
+@@ -113,9 +113,15 @@ struct _MMBaseBearerClass {
+                                     GError **error);
+ 
+     /* Monitor connection status:
+-     * NOTE: only CONNECTED or DISCONNECTED should be reported here; this method
++     *
++     * Only CONNECTED or DISCONNECTED should be reported here; this method
+      * is used to poll for connection status once the connection has been
+-     * established */
++     * established.
++     *
++     * This method will return MM_CORE_ERROR_UNSUPPORTED if the polling
++     * is not required (i.e. if we can safely rely on async indications
++     * sent by the modem).
++     */
+     void (* load_connection_status) (MMBaseBearer *bearer,
+                                      GAsyncReadyCallback callback,
+                                      gpointer user_data);
+@@ -125,7 +131,17 @@ struct _MMBaseBearerClass {
+ 
+ #if defined WITH_SYSTEMD_SUSPEND_RESUME
+ 
+-    /* Reload connection status */
++    /* Reload connection status:
++     *
++     * This method should return the exact connection status of the bearer, and
++     * the check must always be performed (if supported). This method should not
++     * return MM_CORE_ERROR_UNSUPPORTED as a way to skip the operation, as in
++     * this case the connection monitoring is required during the quick
++     * suspend/resume synchronization.
++     *
++     * It is up to each protocol/plugin whether providing the same method here
++     * and in load_connection_status() makes sense.
++     */
+     void (* reload_connection_status) (MMBaseBearer *bearer,
+                                        GAsyncReadyCallback callback,
+                                        gpointer user_data);
+-- 
+2.31.1
+

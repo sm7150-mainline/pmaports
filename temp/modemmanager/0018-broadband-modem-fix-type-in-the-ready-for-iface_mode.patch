@@ -1,0 +1,38 @@
+From beaefd7ce80732a90597561eb28d103c4249d471 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 14:26:12 +0200
+Subject: [PATCH 18/39] broadband-modem: fix type in the ready() for
+ iface_modem_3gpp_sync()
+
+When calling an async method ona given type, the convention is to use
+the same type in the corresponding ready() method, so that we can use
+it without additional casts on the finish().
+---
+ src/mm-broadband-modem.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/mm-broadband-modem.c b/src/mm-broadband-modem.c
+index 05d72875..908795cf 100644
+--- a/src/mm-broadband-modem.c
++++ b/src/mm-broadband-modem.c
+@@ -11381,7 +11381,7 @@ iface_modem_time_sync_ready (MMIfaceModemTime *self,
+ }
+ 
+ static void
+-iface_modem_3gpp_sync_ready (MMBroadbandModem *self,
++iface_modem_3gpp_sync_ready (MMIfaceModem3gpp *self,
+                              GAsyncResult     *res,
+                              GTask            *task)
+ {
+@@ -11390,7 +11390,7 @@ iface_modem_3gpp_sync_ready (MMBroadbandModem *self,
+ 
+     ctx = g_task_get_task_data (task);
+ 
+-    if (!mm_iface_modem_3gpp_sync_finish (MM_IFACE_MODEM_3GPP (self), res, &error))
++    if (!mm_iface_modem_3gpp_sync_finish (self, res, &error))
+         mm_obj_warn (self, "3GPP interface synchronization failed: %s", error->message);
+ 
+     /* Go on to next step */
+-- 
+2.31.1
+

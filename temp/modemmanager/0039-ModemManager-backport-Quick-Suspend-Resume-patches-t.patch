@@ -1,0 +1,207 @@
+From f36e79292763a06b2548619858a54562149c9857 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Thu, 27 May 2021 21:25:16 +0200
+Subject: [PATCH 39/39] ModemManager: backport Quick Suspend/Resume patches to
+ MM 1.16.X
+
+---
+ src/kerneldevice/mm-kernel-device.c | 18 ++++++++++++++++++
+ src/kerneldevice/mm-kernel-device.h |  4 ++++
+ src/mm-base-modem.c                 |  4 ++++
+ src/mm-base-modem.h                 | 23 +++++++++++++++++++++++
+ src/mm-bearer-mbim.c                |  1 +
+ src/mm-bearer-mbim.h                |  1 +
+ src/mm-bearer-qmi.c                 |  1 +
+ src/mm-bearer-qmi.h                 |  1 +
+ src/mm-iface-modem.h                |  3 ---
+ 9 files changed, 53 insertions(+), 3 deletions(-)
+
+diff --git a/src/kerneldevice/mm-kernel-device.c b/src/kerneldevice/mm-kernel-device.c
+index 464a3800..08d9d4a1 100644
+--- a/src/kerneldevice/mm-kernel-device.c
++++ b/src/kerneldevice/mm-kernel-device.c
+@@ -26,6 +26,16 @@ static void log_object_iface_init (MMLogObjectInterface *iface);
+ 
+ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (MMKernelDevice, mm_kernel_device, G_TYPE_OBJECT,
+                                   G_IMPLEMENT_INTERFACE (MM_TYPE_LOG_OBJECT, log_object_iface_init))
++enum {
++    PROP_0,
++    PROP_LOWER_DEVICE,
++    PROP_LAST
++};
++
++struct _MMKernelDevicePrivate {
++    MMKernelDevice *lower_device;
++};
++
+ 
+ /*****************************************************************************/
+ 
+@@ -125,6 +135,12 @@ mm_kernel_device_get_physdev_product (MMKernelDevice *self)
+             NULL);
+ }
+ 
++MMKernelDevice *
++mm_kernel_device_peek_lower_device (MMKernelDevice *self)
++{
++    return self->priv->lower_device;
++}
++
+ gint
+ mm_kernel_device_get_interface_class (MMKernelDevice *self)
+ {
+@@ -347,6 +363,8 @@ log_object_build_id (MMLogObject *_self)
+ static void
+ mm_kernel_device_init (MMKernelDevice *self)
+ {
++    /* Initialize private data */
++    self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, MM_TYPE_KERNEL_DEVICE, MMKernelDevicePrivate);
+ }
+ 
+ static void
+diff --git a/src/kerneldevice/mm-kernel-device.h b/src/kerneldevice/mm-kernel-device.h
+index 45b270d5..678b3410 100644
+--- a/src/kerneldevice/mm-kernel-device.h
++++ b/src/kerneldevice/mm-kernel-device.h
+@@ -28,9 +28,11 @@
+ 
+ typedef struct _MMKernelDevice MMKernelDevice;
+ typedef struct _MMKernelDeviceClass MMKernelDeviceClass;
++typedef struct _MMKernelDevicePrivate MMKernelDevicePrivate;
+ 
+ struct _MMKernelDevice {
+     GObject parent;
++    MMKernelDevicePrivate *priv;
+ };
+ 
+ struct _MMKernelDeviceClass {
+@@ -89,6 +91,8 @@ const gchar *mm_kernel_device_get_physdev_subsystem    (MMKernelDevice *self);
+ const gchar *mm_kernel_device_get_physdev_manufacturer (MMKernelDevice *self);
+ const gchar *mm_kernel_device_get_physdev_product      (MMKernelDevice *self);
+ 
++MMKernelDevice *mm_kernel_device_peek_lower_device (MMKernelDevice *self);
++
+ gboolean     mm_kernel_device_cmp (MMKernelDevice *a, MMKernelDevice *b);
+ 
+ /* Standard properties are usually associated to single ports */
+diff --git a/src/mm-base-modem.c b/src/mm-base-modem.c
+index 580103ba..e54add87 100644
+--- a/src/mm-base-modem.c
++++ b/src/mm-base-modem.c
+@@ -115,6 +115,10 @@ struct _MMBaseModemPrivate {
+     /* MBIM ports */
+     GList *mbim;
+ #endif
++
++    /* Additional port links grabbed after having
++     * organized ports */
++    GHashTable *link_ports;
+ };
+ 
+ guint
+diff --git a/src/mm-base-modem.h b/src/mm-base-modem.h
+index d9538251..c52f0e18 100644
+--- a/src/mm-base-modem.h
++++ b/src/mm-base-modem.h
+@@ -63,6 +63,11 @@ typedef struct _MMBaseModemPrivate MMBaseModemPrivate;
+ #define MM_BASE_MODEM_VENDOR_ID      "base-modem-vendor-id"
+ #define MM_BASE_MODEM_PRODUCT_ID     "base-modem-product-id"
+ #define MM_BASE_MODEM_REPROBE        "base-modem-reprobe"
++#define MM_BASE_MODEM_DATA_NET_SUPPORTED "base-modem-data-net-supported"
++#define MM_BASE_MODEM_DATA_TTY_SUPPORTED "base-modem-data-tty-supported"
++
++#define MM_BASE_MODEM_SIGNAL_LINK_PORT_GRABBED  "base-modem-link-port-grabbed"
++#define MM_BASE_MODEM_SIGNAL_LINK_PORT_RELEASED "base-modem-link-port-released"
+ 
+ struct _MMBaseModem {
+     MmGdbusObjectSkeleton parent;
+@@ -132,6 +137,24 @@ gboolean  mm_base_modem_grab_port    (MMBaseModem         *self,
+                                       MMPortSerialAtFlag   at_pflags,
+                                       GError             **error);
+ 
++gboolean  mm_base_modem_grab_link_port    (MMBaseModem         *self,
++                                           MMKernelDevice      *kernel_device,
++                                           GError             **error);
++gboolean  mm_base_modem_release_link_port (MMBaseModem         *self,
++                                           const gchar         *subsystem,
++                                           const gchar         *name,
++                                           GError             **error);
++
++void      mm_base_modem_wait_link_port        (MMBaseModem          *self,
++                                               const gchar          *subsystem,
++                                               const gchar          *name,
++                                               guint                 timeout_ms,
++                                               GAsyncReadyCallback   callback,
++                                               gpointer              user_data);
++MMPort   *mm_base_modem_wait_link_port_finish (MMBaseModem          *self,
++                                               GAsyncResult         *res,
++                                               GError              **error);
++
+ gboolean  mm_base_modem_has_at_port  (MMBaseModem *self);
+ 
+ gboolean  mm_base_modem_organize_ports (MMBaseModem *self,
+diff --git a/src/mm-bearer-mbim.c b/src/mm-bearer-mbim.c
+index f0479ebb..99270474 100644
+--- a/src/mm-bearer-mbim.c
++++ b/src/mm-bearer-mbim.c
+@@ -47,6 +47,7 @@ struct _MMBearerMbimPrivate {
+     guint32 session_id;
+ 
+     MMPort *data;
++    MMPort *link;
+ };
+ 
+ /*****************************************************************************/
+diff --git a/src/mm-bearer-mbim.h b/src/mm-bearer-mbim.h
+index 0d97d8d9..48c1c846 100644
+--- a/src/mm-bearer-mbim.h
++++ b/src/mm-bearer-mbim.h
+@@ -24,6 +24,7 @@
+ 
+ #include "mm-base-bearer.h"
+ #include "mm-broadband-modem-mbim.h"
++#include "mm-kernel-device.h"
+ 
+ #define MM_TYPE_BEARER_MBIM            (mm_bearer_mbim_get_type ())
+ #define MM_BEARER_MBIM(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MM_TYPE_BEARER_MBIM, MMBearerMbim))
+diff --git a/src/mm-bearer-qmi.c b/src/mm-bearer-qmi.c
+index 967594bf..52e155d7 100644
+--- a/src/mm-bearer-qmi.c
++++ b/src/mm-bearer-qmi.c
+@@ -56,6 +56,7 @@ struct _MMBearerQmiPrivate {
+     guint event_report_ipv6_indication_id;
+ 
+     MMPort *data;
++    MMPort *link;
+     guint32 packet_data_handle_ipv4;
+     guint32 packet_data_handle_ipv6;
+ };
+diff --git a/src/mm-bearer-qmi.h b/src/mm-bearer-qmi.h
+index d75773f5..2a3c881c 100644
+--- a/src/mm-bearer-qmi.h
++++ b/src/mm-bearer-qmi.h
+@@ -26,6 +26,7 @@
+ 
+ #include "mm-base-bearer.h"
+ #include "mm-broadband-modem-qmi.h"
++#include "mm-kernel-device.h"
+ 
+ #define MM_TYPE_BEARER_QMI            (mm_bearer_qmi_get_type ())
+ #define MM_BEARER_QMI(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MM_TYPE_BEARER_QMI, MMBearerQmi))
+diff --git a/src/mm-iface-modem.h b/src/mm-iface-modem.h
+index 5ba2167c..110a839b 100644
+--- a/src/mm-iface-modem.h
++++ b/src/mm-iface-modem.h
+@@ -460,9 +460,6 @@ gboolean mm_iface_modem_disable_finish (MMIfaceModem *self,
+                                         GAsyncResult *res,
+                                         GError **error);
+ 
+-/* Shutdown Modem interface */
+-void mm_iface_modem_shutdown (MMIfaceModem *self);
+-
+ /* Helper to return an error when the modem is in failed state and so it
+  * cannot process a given method invocation
+  */
+-- 
+2.31.1
+

@@ -1,0 +1,39 @@
+From d02fad407c451e90fc6cbc0ad99aba86ff303816 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 12:18:42 +0200
+Subject: [PATCH 04/39] base-manager: avoid using the `mm_` prefix for static
+ private methods
+
+---
+ src/mm-base-manager.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/mm-base-manager.c b/src/mm-base-manager.c
+index c900eeaa..5af959fb 100644
+--- a/src/mm-base-manager.c
++++ b/src/mm-base-manager.c
+@@ -677,9 +677,9 @@ gboolean mm_base_modem_sync_finish (MMBaseModem   *self,
+ }
+ 
+ static void
+-mm_base_modem_sync_ready (MMBaseModem  *self,
+-                          GAsyncResult *res,
+-                          gpointer      user_data)
++base_modem_sync_ready (MMBaseModem  *self,
++                       GAsyncResult *res,
++                       gpointer      user_data)
+ {
+     g_autoptr(GError) error = NULL;
+ 
+@@ -709,7 +709,7 @@ mm_base_manager_sync (MMBaseManager *self)
+ 
+         /* We just want to start the synchronization, we don't need the result */
+         if (modem)
+-            mm_base_modem_sync (modem, (GAsyncReadyCallback)mm_base_modem_sync_ready, NULL);
++            mm_base_modem_sync (modem, (GAsyncReadyCallback)base_modem_sync_ready, NULL);
+     }
+ }
+ 
+-- 
+2.31.1
+

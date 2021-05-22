@@ -1,0 +1,35 @@
+From dcea41cebabbcbd91597944fc3ff87c8d9aa5121 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 12:17:40 +0200
+Subject: [PATCH 03/39] base-manager: don't assume a MMDevice always holds a
+ MMModem
+
+There are cases, e.g. during modem object disposal, where this is not
+true.
+---
+ src/mm-base-manager.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/mm-base-manager.c b/src/mm-base-manager.c
+index 5880ffad..c900eeaa 100644
+--- a/src/mm-base-manager.c
++++ b/src/mm-base-manager.c
+@@ -703,9 +703,13 @@ mm_base_manager_sync (MMBaseManager *self)
+     /* Refresh each device */
+     g_hash_table_iter_init (&iter, self->priv->devices);
+     while (g_hash_table_iter_next (&iter, &key, &value)) {
+-        MMBaseModem *modem = mm_device_peek_modem (MM_DEVICE (value));
++        MMBaseModem *modem;
++
++        modem = mm_device_peek_modem (MM_DEVICE (value));
++
+         /* We just want to start the synchronization, we don't need the result */
+-        mm_base_modem_sync (modem, (GAsyncReadyCallback)mm_base_modem_sync_ready, NULL);
++        if (modem)
++            mm_base_modem_sync (modem, (GAsyncReadyCallback)mm_base_modem_sync_ready, NULL);
+     }
+ }
+ 
+-- 
+2.31.1
+

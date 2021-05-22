@@ -1,0 +1,31 @@
+From 14ea67c111b6116071f00c235b23152b21ab2d04 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 22:17:25 +0200
+Subject: [PATCH 34/39] sierra: reuse the same method for load and reload
+
+The load_() method is used for connection monitoring; while the
+reload_() method is used to sync connection status after a
+suspend/resume operation. The same method can be used for both things
+in the Sierra plugin.
+---
+ plugins/sierra/mm-broadband-bearer-sierra.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/plugins/sierra/mm-broadband-bearer-sierra.c b/plugins/sierra/mm-broadband-bearer-sierra.c
+index 2c2ef375..bf95a8eb 100644
+--- a/plugins/sierra/mm-broadband-bearer-sierra.c
++++ b/plugins/sierra/mm-broadband-bearer-sierra.c
+@@ -663,6 +663,10 @@ mm_broadband_bearer_sierra_class_init (MMBroadbandBearerSierraClass *klass)
+ 
+     base_bearer_class->load_connection_status = load_connection_status;
+     base_bearer_class->load_connection_status_finish = load_connection_status_finish;
++#if defined WITH_SYSTEMD_SUSPEND_RESUME
++    base_bearer_class->reload_connection_status = load_connection_status;
++    base_bearer_class->reload_connection_status_finish = load_connection_status_finish;
++#endif
+ 
+     broadband_bearer_class->dial_3gpp = dial_3gpp;
+     broadband_bearer_class->dial_3gpp_finish = dial_3gpp_finish;
+-- 
+2.31.1
+

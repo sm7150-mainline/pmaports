@@ -1,0 +1,166 @@
+# Forked from Alpine to apply quick suspend/resume patches for the PinePhone EG25-G modem
+
+pkgname=modemmanager
+pkgver=9999_git20210528
+_pkgver=1.16.6
+pkgrel=0
+pkgdesc="ModemManager library"
+url="http://www.freedesktop.org/wiki/Software/ModemManager"
+arch="all !mips !mips64 !s390x" # polkit
+license="GPL-2.0-or-later AND LGPL-2.1-or-later"
+depends_dev="libmm-glib"
+makedepends="$depends_dev gobject-introspection-dev gtk-doc vala
+	libgudev-dev polkit-dev libmbim-dev libqmi-dev linux-headers libqrtr-glib-dev gettext-dev glib-dev"
+makedepends="$makedepends automake autoconf autoconf-archive libtool"
+checkdepends="glib-dev"
+options="!check" # https://bugs.freedesktop.org/show_bug.cgi?id=101197
+subpackages="
+	$pkgname-lang
+	$pkgname-doc
+	libmm-glib:libmm
+	$pkgname-dev
+	$pkgname-openrc
+	$pkgname-bash-completion
+	"
+# https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/511/commits 
+# patches are integrated in these patches already
+source="https://www.freedesktop.org/software/ModemManager/ModemManager-$_pkgver.tar.xz
+	0001-base-manager-add-quick-suspend-resume-base.patch
+	0002-base-manager-make-sure-g_autoptr-variables-are-initi.patch
+	0003-base-manager-don-t-assume-a-MMDevice-always-holds-a-.patch
+	0004-base-manager-avoid-using-the-mm_-prefix-for-static-p.patch
+	0005-base-modem-fix-modem_sync-operation-handling.patch
+	0006-base-modem-don-t-fail-if-sync-isn-t-implemented.patch
+	0007-base-modem-make-sync-available-only-if-suspend-resum.patch
+	0008-broadband-modem-ignore-cancellation-during-sync.patch
+	0009-broadband-modem-skip-synchronization-after-resume-if.patch
+	0010-iface-modem-time-synchronize-state-when-resuming.patch
+	0011-broadband-modem-skip-time-interface-sync-if-no-time-.patch
+	0012-iface-modem-time-ignore-cancellation-during-sync.patch
+	0013-iface-modem-3gpp-synchronize-state-when-resuming.patch
+	0014-iface-modem-3gpp-use-g_autoptr-for-the-MMBearerPrope.patch
+	0015-iface-modem-3gpp-fix-double-GError-free-on-registrat.patch
+	0016-iface-modem-3gpp-remove-redundant-log-message.patch
+	0017-iface-modem-3gpp-ignore-cancellation-during-sync.patch
+	0018-broadband-modem-fix-type-in-the-ready-for-iface_mode.patch
+	0019-broadband-modem-skip-3GPP-interface-sync-if-no-3GPP-.patch
+	0020-iface-modem-synchronize-state-when-resuming.patch
+	0021-broadband-modem-fail-synchronization-if-no-modem-exp.patch
+	0022-broadband-modem-fix-state-machine-logic-when-synchro.patch
+	0023-broadband-modem-abort-sync-if-locked-SIM-card-found.patch
+	0024-iface-modem-remove-the-signal-quality-enforced-refre.patch
+	0025-iface-modem-ignore-cancellation-during-sync.patch
+	0026-base-bearer-synchronize-state-when-resuming.patch
+	0027-base-bearer-improve-comments-of-the-load-reload_conn.patch
+	0028-base-bearer-fix-connection-reload-completion.patch
+	0029-base-bearer-propagate-the-new-connection-status-afte.patch
+	0030-iface-modem-bearer-list-sync-all-bearers-one-after-t.patch
+	0031-base-bearer-ignore-cancellation-during-sync.patch
+	0032-broadband-bearer-reuse-the-same-method-for-load-and-.patch
+	0033-novatel-lte-reuse-the-same-method-for-load-and-reloa.patch
+	0034-sierra-reuse-the-same-method-for-load-and-reload.patch
+	0035-cinterion-reuse-the-same-method-for-load-and-reload.patch
+	0036-plugins-ignore-reload_connection_status-where-not-su.patch
+	0037-bearer-qmi-implement-reload_connection_status-for-th.patch
+	0038-bearer-mbim-implement-reload_connection_status.patch
+	0039-ModemManager-backport-Quick-Suspend-Resume-patches-t.patch
+	$pkgname.rules
+	$pkgname.initd"
+builddir="$srcdir"/ModemManager-$_pkgver
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--localstatedir=/var \
+		--with-polkit=permissive \
+		--enable-plugin-qcom-soc \
+		--enable-gtk-doc \
+		--disable-static \
+		--enable-vala=yes \
+		--with-systemd-suspend-resume=yes
+	make
+}
+
+libmm() {
+	cd "$builddir"
+	mkdir -p "$subpkgdir"
+	make DESTDIR="$subpkgdir" -C libmm-glib install
+	# move dev files to modemmnager-dev
+	mv -f "$subpkgdir/usr/include/libmm-glib" "$pkgdir/usr/include/"
+	mv -f "$subpkgdir/usr/share/gir-1.0" "$pkgdir/usr/share/"
+	rmdir "$subpkgdir/usr/include" "$subpkgdir/usr/share"
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	make DESTDIR="$pkgdir" -C libmm-glib uninstall
+	rmdir "$pkgdir"/usr/lib/girepository-1.0 # in libmm-glib
+	rm -rf "$pkgdir"/usr/share/dbus-1/system-services #systemd-service
+	mkdir -p "$pkgdir/usr/share/polkit-1/rules.d"
+	install -m644 -D "$srcdir/$pkgname.rules" \
+		"$pkgdir/usr/share/polkit-1/rules.d/01-org.freedesktop.ModemManager.rules"
+	install -m755 -D "$srcdir/$pkgname.initd" \
+		"$pkgdir/etc/init.d/$pkgname"
+	# post-install message
+	mkdir -p "$pkgdir/usr/share/doc/$pkgname"
+	cat > $pkgdir/usr/share/doc/$pkgname/README.alpine <<EOF
+If your USB modem shows up as a Flash drive when you plug it in:
+
+install 'usb-modeswitch' to automatically switch to USB modem mode whenever you plug it in.
+To control your modem without the root password: add your user account to the 'plugdev' group.
+EOF
+}
+
+check() {
+	make check
+}
+
+sha512sums="
+78a928007732baaa0eaed9d587913774d4fb79049d652474f39176190496012dc4c93fd0bd774ed6f86f845f3b9f345bcccf4c7b2438b83cf5846b2bcdcb39d5  ModemManager-1.16.6.tar.xz
+c76ecd7f8fa679fcd011e7988f40cf1a6931a1c743a0440fc714f70967902f064a7738a15d3b90abf060e4617937beebaff1f454b44cf700c2c45362a489cc6d  0001-base-manager-add-quick-suspend-resume-base.patch
+9a83651fd2a3c83fa79d5fc32794feb367f635a0dae0040b21f3999f1c3069b4bcea9e5003cffa0a95bd721201caea0fd678b62028ee22916618fda87a0804d3  0002-base-manager-make-sure-g_autoptr-variables-are-initi.patch
+296d0484886644da22c29f8781a05eab52100c7c85b0d365e4e18d334127f1bf807b0fad10933a07f62dd7e0be0c15e592d85d95f6c36fd20ae74cb36fc4d57f  0003-base-manager-don-t-assume-a-MMDevice-always-holds-a-.patch
+245e416a4cbd15c5505acf267e91d10fdb26629be5062bcc813b60da286c29bd5fa16e647e70f5afb8b2b6e7fbee8adb7e73d3cb363b848c9327d5650630134f  0004-base-manager-avoid-using-the-mm_-prefix-for-static-p.patch
+c45fe7bdf34a444c05677d2cefe9ad80f61fe2b8f93262942b7032e014c40f8a12f1a6167f14fda8c4b45bb0ef7be2fd427e24c4d4eb73ffc017c506b85b362d  0005-base-modem-fix-modem_sync-operation-handling.patch
+769398e5e575bf7dd62bbb53ddeda500614ea52412002b762dd6aae029ce95596b490c718624ac76bf4ce2fa888278f436125a27fc33de2ee6843dc2de05d7e4  0006-base-modem-don-t-fail-if-sync-isn-t-implemented.patch
+cbaa137435b502594814f8b204372c23768d46a0492e04f0fc175a969764858b57f396cae20984a07c55f0b46c2dc63df4b8dee0c7c7185071d2dc5949c54fca  0007-base-modem-make-sync-available-only-if-suspend-resum.patch
+8f9ac51997f404e6fca5ecc98b4bb9c62247c352344e3a83cf5955b992464fefe3b53dbae3ae3f0b6b3d7635ea1af2ad265b534bd3eb45bdd08a7a40f77d5822  0008-broadband-modem-ignore-cancellation-during-sync.patch
+ee26e717e78d0665175397fe46ab06bf699b7ed9f61f43a24df63faa5c04aed91ac53e08044060eae416a5a91082f2e63a21c5682d56f18fdbe28072f39dad8e  0009-broadband-modem-skip-synchronization-after-resume-if.patch
+022449ca8fc6277e7e15acb2f70703930e5f54cbd54794641b7329681137329909e1e46a2555a5ff6c7c06bfc5b57637a9fc7dd701019b6c7f0efdc210bb247b  0010-iface-modem-time-synchronize-state-when-resuming.patch
+384f3cc68bb8fc99d66b2836aa223218aaa35b126aa58b31be4069d68854dda763964aed504808488e568275c9fce2d58a7ef430c29217a8f70bf90040f21bbe  0011-broadband-modem-skip-time-interface-sync-if-no-time-.patch
+49ed4784ce74d4cc4118fba008820ac6b65ed283e44f2ae20f8f8b4b7d58cb3909ce38190b74712b948dbd0ef48e08a118c0de1630125e410aa26505ec8807a3  0012-iface-modem-time-ignore-cancellation-during-sync.patch
+d0305030e0ce54d7b4990ab3eb54785881c03875d84e643640f1d3ef2e63fe11114a21dfeaa8808e4b879727263289c76bbdc50dd7ed859d7b9f65bdc8af781c  0013-iface-modem-3gpp-synchronize-state-when-resuming.patch
+23564779a45f9be1f96568dd3f25e13d55480a45c6c66b4b8c733946937c985cf47c74db5ba3ee0752ed27f3bd1ecf1ca6f74c131954cd14565c74f27cfcc594  0014-iface-modem-3gpp-use-g_autoptr-for-the-MMBearerPrope.patch
+3dc4b1625f16022d4532d19bc73ab1743bb09f05209e400618871d338f48c940567047cc602d3b83083aeeb13734cebce466f72181e5dc5124dead4944147680  0015-iface-modem-3gpp-fix-double-GError-free-on-registrat.patch
+a9dae9d6fbc851ca022cba2226fc5225cd329c5d0cb537070d9fab7907317e47034fdde69bbeab880deb8fa80ca1fa10cf162599d6c4f33744f0a0953dc64e1c  0016-iface-modem-3gpp-remove-redundant-log-message.patch
+58b4e987aef3ffd28845cb87e3d6055e5d2fe7c6796798c1c78cccb2073f3746c8d1949adaf0a098673b609f79a25d05153565cadfafd830e300131b498db2d8  0017-iface-modem-3gpp-ignore-cancellation-during-sync.patch
+55d056132fa27a3765cb8bc3d516e1178b0f2d47e693f17e061d927d76c38e3e8830ccef2ee4a8ded810ac50d347bd4d7945be67630c564810b856ef8058c081  0018-broadband-modem-fix-type-in-the-ready-for-iface_mode.patch
+b88cdcbe2474d875f45832ac9f24ba0dc1c492263792bfab2ee7a84dd23365a3811c185d47e3ca43710d7c3c976f950cae47455e97666ca809816b1705199255  0019-broadband-modem-skip-3GPP-interface-sync-if-no-3GPP-.patch
+dd99f4788abe63e08ad20f3c1d0f55d88a059a974f491f3de26deb6bc2bbf117a72e169669693b27ada385d8012a6b66daae98ca135e12f30eff04b14a46f635  0020-iface-modem-synchronize-state-when-resuming.patch
+dd8116a3a25422544b20d2639898f8d60e810c3075a4ed9972c1ba67f5918fa309b3df717e908891eb188d624ca494d53d0a2aa4fdca9037b353d531c80daeda  0021-broadband-modem-fail-synchronization-if-no-modem-exp.patch
+3a21ff23bf9a9db604ad68171dda34cf833cafe96e9f57a3390de3f4d4d32f60f417de18d1f64a1dccd23d9a936975177101755cae8980cc93dbc035f1a7ded1  0022-broadband-modem-fix-state-machine-logic-when-synchro.patch
+1aa82664e61cfc85c06849ee8a48ed20b268f5ed60106c0a21f1400726f001ffad35111ffd8593b8d9c08bf6a7b48cca93df5d06c11a88a249a5988204b581c3  0023-broadband-modem-abort-sync-if-locked-SIM-card-found.patch
+f1c1691fbd94550170e23d08809c9d01fc644fa446dc0b482e741671fd0a31c96cb8ddd6ba6c03e29e996f6cb4c39c4a7f3d1ca614cb9435305269ead835d1f7  0024-iface-modem-remove-the-signal-quality-enforced-refre.patch
+5387aa50d35f68db5577d2a8fd8862cfa40d56a9ffb8db22ed469011c765288b578979998ba1906c68e175fa9a1a2706678e9c13a9e11f500a773a06013c6fc7  0025-iface-modem-ignore-cancellation-during-sync.patch
+ac46f072becac22ad5f88942e906b9e0bfa726e452a4b617d80c1d64fb224636218f22ab9dae4e13d875bcf59beec077bc1dc35ae29f9615e4034cf15f08d5f0  0026-base-bearer-synchronize-state-when-resuming.patch
+9c52feb74c273e43eae3218b3ab221cc922536e4f73b5288b46ed59e7ae4be525d84fd510c27486a7735ccff826801d7d2f1a71b45a22a8919c563526495de53  0027-base-bearer-improve-comments-of-the-load-reload_conn.patch
+f2891cf6ea1465bfcc4d4f902864e6fcb5c95ede724d9e55b90ab0d8f6d2b1512258d51345aa7653f30f46464ab1ca1996247ec194087e6c01788f6e606166c6  0028-base-bearer-fix-connection-reload-completion.patch
+c4dfd858352f35f65397e38f2e5f9ca52899323bb9edc824b0c9397c02e2283add22c94468b4e784d14251b54ca96142c5b60c796130b836c3e4f9d6636d5aa9  0029-base-bearer-propagate-the-new-connection-status-afte.patch
+4ab3bd5c6ae742dd0ed993fa540c8450e2458bc89679133e98dae802ead5e923408dca2e31ed63cf6892b443c44ef8d812f70f50fae5a77e8e511bbf535f7fb3  0030-iface-modem-bearer-list-sync-all-bearers-one-after-t.patch
+cfcae1706d9fc0aca3f9d2fd60f05aa8c0985bc2bb94cae991900c97f0a7702cd3d9d0f6f4b39544855d8cbea7c4a29796f9abf6a8bf68506112cf0b0515a80e  0031-base-bearer-ignore-cancellation-during-sync.patch
+84afa04a171064a916ff894854f79f48287a7f738fd7dbfaf00e825050fab30b4f8c56e690a021e3f370f0c332e73fb8696051bdc72fa5ba4d9ed204fc755085  0032-broadband-bearer-reuse-the-same-method-for-load-and-.patch
+1b3c50476350ace754edd65a2748339edfee8ace5b56de3d38d3a6f1bdea9a0864becb03f948e8d1429b6f192b2e5c7d813731a24ac05f1dfb3b174f9725653a  0033-novatel-lte-reuse-the-same-method-for-load-and-reloa.patch
+7a30cf38ff0f735794be282cc548f34a997d88d2d5acdcd077ffc398ff55a807180d5d309cfa6a254a8bb76ae7eb9d3b14fb972a3694dd454b99d635009ad1f3  0034-sierra-reuse-the-same-method-for-load-and-reload.patch
+f4d8d23bb1c9c074db5c0036acae09b2a24587f7822119688f5bc017bcc1ea8570fc630d9b93267048b0f2295e6a8e669843b3d0c860ee6b2c43994e0c9685f4  0035-cinterion-reuse-the-same-method-for-load-and-reload.patch
+689bebdd0a49adcfe1a35550f1424e376b70882ee97af9f622a636ab06ab13332a873320fab2dd52edd563e2ae8796a956e643b0a0aaa2093b65dc13aa90b397  0036-plugins-ignore-reload_connection_status-where-not-su.patch
+bcee3ef714dd2117893176ccf402a21112d02c03e4dd062f6203e02a677ebe3add3141586b69cc2d76ef6a83b69cd53b55c7ede1649ab1ed8f400e45a358f9cb  0037-bearer-qmi-implement-reload_connection_status-for-th.patch
+541baa9a07a2a5a6b6364412f95752a48a5ed398168a94ced1e2bef9f991b0c6cd6194060f39449d6fc4cfda8750cc2d974de6e30aef2ac806db4446a976e894  0038-bearer-mbim-implement-reload_connection_status.patch
+4c411d8ae2aab3a0e84f9761db912500fdc01d5932722b34165d4b480af784fb63bd8268b4b66877c45d5778c28c7b6f4ed49434919dad2492b7e29a201b5a46  0039-ModemManager-backport-Quick-Suspend-Resume-patches-t.patch
+6fab86c27502b29be0c6610d835a3249a4a81993eb986cff2c3ea9393fadd3f693ba4bb0532ae0e50a83d359559511859dd05f7ea2f0cb52839f535a7e49f8a0  modemmanager.rules
+9f74a2473b9cc7be42a467809639f5720ab251d13f29f8bbd4fd9a13edb80c10c5ee50fbe50819bfe67f231805b92f007c3e7403c46ab998dc843e1f9549659b  modemmanager.initd
+"

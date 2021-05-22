@@ -1,0 +1,36 @@
+From 3ab85a1487e67ce8faf833bafc4c5dad430af396 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 14:31:13 +0200
+Subject: [PATCH 11/39] broadband-modem: skip time interface sync if no time
+ support
+
+---
+ src/mm-broadband-modem.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/src/mm-broadband-modem.c b/src/mm-broadband-modem.c
+index 0e4f4740..91e023b8 100644
+--- a/src/mm-broadband-modem.c
++++ b/src/mm-broadband-modem.c
+@@ -11397,10 +11397,14 @@ syncing_step (GTask *task)
+         /*
+          * Synchronize asynchronously the Time interface.
+          */
+-        mm_obj_info (self, "resume synchronization state (%d/%d): time interface sync",
+-                     ctx->step, SYNCING_STEP_LAST);
+-        mm_iface_modem_time_sync (MM_IFACE_MODEM_TIME (self), (GAsyncReadyCallback)iface_modem_time_sync_ready, task);
+-        return;
++        if (self->priv->modem_time_dbus_skeleton) {
++            mm_obj_info (self, "resume synchronization state (%d/%d): time interface sync",
++                         ctx->step, SYNCING_STEP_LAST);
++            mm_iface_modem_time_sync (MM_IFACE_MODEM_TIME (self), (GAsyncReadyCallback)iface_modem_time_sync_ready, task);
++            return;
++        }
++        ctx->step++;
++        /* fall through */
+ 
+     case SYNCING_STEP_LAST:
+         mm_obj_info (self, "resume synchronization state (%d/%d): all done",
+-- 
+2.31.1
+

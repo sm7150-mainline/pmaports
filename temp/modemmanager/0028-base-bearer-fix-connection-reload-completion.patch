@@ -1,0 +1,42 @@
+From ea6ecd7cf973022f0417e083bfe18aeaf9a94f84 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 15:51:51 +0200
+Subject: [PATCH 28/39] base-bearer: fix connection reload completion
+
+If we called the class reload_connection_status() method, we should
+call the class reload_connection_status_finish() as well.
+---
+ src/mm-base-bearer.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/src/mm-base-bearer.c b/src/mm-base-bearer.c
+index 1ce6e49c..71f6684b 100644
+--- a/src/mm-base-bearer.c
++++ b/src/mm-base-bearer.c
+@@ -1422,14 +1422,6 @@ mm_base_bearer_sync_finish (MMBaseBearer  *self,
+     return g_task_propagate_boolean (G_TASK (res), error);
+ }
+ 
+-static gboolean
+-reload_connection_status_finish (MMBaseBearer  *self,
+-                                 GAsyncResult  *res,
+-                                 GError       **error)
+-{
+-    return g_task_propagate_boolean (G_TASK (res), error);
+-}
+-
+ static void
+ reload_connection_status_ready (MMBaseBearer *self,
+                                 GAsyncResult *res,
+@@ -1440,7 +1432,7 @@ reload_connection_status_ready (MMBaseBearer *self,
+ 
+     ctx = g_task_get_task_data (task);
+ 
+-    reload_connection_status_finish (self, res, &error);
++    MM_BASE_BEARER_GET_CLASS (self)->reload_connection_status_finish (self, res, &error);
+     if (error)
+         mm_obj_warn (self, "reloading connection status failed: %s", error->message);
+ 
+-- 
+2.31.1
+

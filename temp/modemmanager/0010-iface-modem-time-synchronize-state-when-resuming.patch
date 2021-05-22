@@ -1,0 +1,196 @@
+From 5b3585829a4752a4b53e725a22858aa759fac472 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Sat, 1 May 2021 15:53:55 +0200
+Subject: [PATCH 10/39] iface-modem-time: synchronize state when resuming
+
+On resume, fetch the current network time as
+the network time may be changed when suspended.
+---
+ src/mm-broadband-modem.c  | 30 ++++++++++++++
+ src/mm-iface-modem-time.c | 84 +++++++++++++++++++++++++++++++++++++++
+ src/mm-iface-modem-time.h | 12 ++++++
+ 3 files changed, 126 insertions(+)
+
+diff --git a/src/mm-broadband-modem.c b/src/mm-broadband-modem.c
+index db6eb8ce..0e4f4740 100644
+--- a/src/mm-broadband-modem.c
++++ b/src/mm-broadband-modem.c
+@@ -11343,6 +11343,7 @@ enable (MMBaseModem *self,
+ 
+ typedef enum {
+     SYNCING_STEP_FIRST,
++    SYNCING_STEP_IFACE_TIME,
+     SYNCING_STEP_LAST,
+ } SyncingStep;
+ 
+@@ -11350,6 +11351,8 @@ typedef struct {
+     SyncingStep step;
+ } SyncingContext;
+ 
++static void syncing_step (GTask *task);
++
+ static gboolean
+ synchronize_finish (MMBaseModem   *self,
+                     GAsyncResult  *res,
+@@ -11358,6 +11361,24 @@ synchronize_finish (MMBaseModem   *self,
+     return g_task_propagate_boolean (G_TASK (res), error);
+ }
+ 
++static void
++iface_modem_time_sync_ready (MMIfaceModemTime *self,
++                             GAsyncResult     *res,
++                             GTask            *task)
++{
++    SyncingContext    *ctx;
++    g_autoptr(GError)  error = NULL;
++
++    ctx = g_task_get_task_data (task);
++
++    if (!mm_iface_modem_time_sync_finish (self, res, &error))
++        mm_obj_warn (self, "time interface synchronization failed: %s", error->message);
++
++    /* Go on to next step */
++    ctx->step++;
++    syncing_step (task);
++}
++
+ static void
+ syncing_step (GTask *task)
+ {
+@@ -11372,6 +11393,15 @@ syncing_step (GTask *task)
+         ctx->step++;
+         /* fall through */
+ 
++    case SYNCING_STEP_IFACE_TIME:
++        /*
++         * Synchronize asynchronously the Time interface.
++         */
++        mm_obj_info (self, "resume synchronization state (%d/%d): time interface sync",
++                     ctx->step, SYNCING_STEP_LAST);
++        mm_iface_modem_time_sync (MM_IFACE_MODEM_TIME (self), (GAsyncReadyCallback)iface_modem_time_sync_ready, task);
++        return;
++
+     case SYNCING_STEP_LAST:
+         mm_obj_info (self, "resume synchronization state (%d/%d): all done",
+                      ctx->step, SYNCING_STEP_LAST);
+diff --git a/src/mm-iface-modem-time.c b/src/mm-iface-modem-time.c
+index 5770e7b7..e262b71d 100644
+--- a/src/mm-iface-modem-time.c
++++ b/src/mm-iface-modem-time.c
+@@ -728,6 +728,90 @@ mm_iface_modem_time_enable (MMIfaceModemTime *self,
+ 
+ /*****************************************************************************/
+ 
++#if defined WITH_SYSTEMD_SUSPEND_RESUME
++
++typedef struct _SyncingContext SyncingContext;
++static void interface_syncing_step (GTask *task);
++
++typedef enum {
++    SYNCING_STEP_FIRST,
++    SYNCING_STEP_REFRESH_NETWORK_TIMEZONE,
++    SYNCING_STEP_LAST
++} SyncingStep;
++
++struct _SyncingContext {
++    SyncingStep step;
++};
++
++gboolean
++mm_iface_modem_time_sync_finish (MMIfaceModemTime  *self,
++                                 GAsyncResult      *res,
++                                 GError           **error)
++{
++    return g_task_propagate_boolean (G_TASK (res), error);
++}
++
++static void
++interface_syncing_step (GTask *task)
++{
++    MMIfaceModemTime *self;
++    SyncingContext   *ctx;
++
++    /* Don't run new steps if we're cancelled */
++    if (g_task_return_error_if_cancelled (task)) {
++        g_object_unref (task);
++        return;
++    }
++
++    self = g_task_get_source_object (task);
++    ctx = g_task_get_task_data (task);
++
++    switch (ctx->step) {
++    case SYNCING_STEP_FIRST:
++        ctx->step++;
++        /* fall through */
++
++    case SYNCING_STEP_REFRESH_NETWORK_TIMEZONE:
++        /* We start it and schedule it to run asynchronously */
++        start_network_timezone (self);
++        ctx->step++;
++        /* fall through */
++
++    case SYNCING_STEP_LAST:
++        /* We are done without errors! */
++        g_task_return_boolean (task, TRUE);
++        g_object_unref (task);
++        return;
++
++    default:
++        break;
++    }
++
++    g_assert_not_reached ();
++}
++
++void
++mm_iface_modem_time_sync (MMIfaceModemTime    *self,
++                          GAsyncReadyCallback  callback,
++                          gpointer             user_data)
++{
++    SyncingContext *ctx;
++    GTask          *task;
++
++    /* Create SyncingContext */
++    ctx = g_new0 (SyncingContext, 1);
++    ctx->step = SYNCING_STEP_FIRST;
++
++    /* Create sync steps task and execute it */
++    task = g_task_new (self, NULL, callback, user_data);
++    g_task_set_task_data (task, ctx, (GDestroyNotify)g_free);
++    interface_syncing_step (task);
++}
++
++#endif
++
++/*****************************************************************************/
++
+ typedef struct _InitializationContext InitializationContext;
+ static void interface_initialization_step (GTask *task);
+ 
+diff --git a/src/mm-iface-modem-time.h b/src/mm-iface-modem-time.h
+index ca0640d6..a3ac7074 100644
+--- a/src/mm-iface-modem-time.h
++++ b/src/mm-iface-modem-time.h
+@@ -125,6 +125,18 @@ gboolean mm_iface_modem_time_disable_finish (MMIfaceModemTime *self,
+ /* Shutdown Time interface */
+ void mm_iface_modem_time_shutdown (MMIfaceModemTime *self);
+ 
++#if defined WITH_SYSTEMD_SUSPEND_RESUME
++
++/* Sync Time interface (async) */
++void     mm_iface_modem_time_sync        (MMIfaceModemTime *self,
++                                          GAsyncReadyCallback callback,
++                                          gpointer user_data);
++gboolean mm_iface_modem_time_sync_finish (MMIfaceModemTime *self,
++                                          GAsyncResult *res,
++                                          GError **error);
++
++#endif
++
+ /* Bind properties for simple GetStatus() */
+ void mm_iface_modem_time_bind_simple_status (MMIfaceModemTime *self,
+                                              MMSimpleStatus *status);
+-- 
+2.31.1
+

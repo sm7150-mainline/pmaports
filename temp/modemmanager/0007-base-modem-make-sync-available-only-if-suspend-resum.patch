@@ -1,0 +1,74 @@
+From 4cf023022a07011120e18239722626efbded9180 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Wed, 26 May 2021 10:36:47 +0200
+Subject: [PATCH 07/39] base-modem: make sync() available only if
+ suspend-resume enabled
+
+---
+ src/mm-base-modem.c | 4 ++++
+ src/mm-base-modem.h | 6 ++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/src/mm-base-modem.c b/src/mm-base-modem.c
+index 28519ad4..580103ba 100644
+--- a/src/mm-base-modem.c
++++ b/src/mm-base-modem.c
+@@ -499,6 +499,8 @@ mm_base_modem_wait_link_port (MMBaseModem         *self,
+ 
+ /******************************************************************************/
+ 
++#if defined WITH_SYSTEMD_SUSPEND_RESUME
++
+ gboolean
+ mm_base_modem_sync_finish (MMBaseModem   *self,
+                            GAsyncResult  *res,
+@@ -543,6 +545,8 @@ mm_base_modem_sync (MMBaseModem         *self,
+                                           task);
+ }
+ 
++#endif /* WITH_SYSTEMD_SUSPEND_RESUME */
++
+ /******************************************************************************/
+ 
+ gboolean
+diff --git a/src/mm-base-modem.h b/src/mm-base-modem.h
+index 75fd99f5..d9538251 100644
+--- a/src/mm-base-modem.h
++++ b/src/mm-base-modem.h
+@@ -102,6 +102,7 @@ struct _MMBaseModemClass {
+                                 GAsyncResult *res,
+                                 GError **error);
+ 
++#if defined WITH_SYSTEMD_SUSPEND_RESUME
+     /* Modem synchronization.
+      * When resuming in quick suspend/resume mode,
+      * this method triggers a synchronization of all modem interfaces */
+@@ -111,6 +112,7 @@ struct _MMBaseModemClass {
+     gboolean (* sync_finish) (MMBaseModem *self,
+                               GAsyncResult *res,
+                               GError **error);
++#endif
+ 
+     /* signals */
+     void (* link_port_grabbed)  (MMBaseModem *self,
+@@ -215,6 +217,8 @@ gboolean mm_base_modem_disable_finish (MMBaseModem *self,
+                                        GAsyncResult *res,
+                                        GError **error);
+ 
++#if defined WITH_SYSTEMD_SUSPEND_RESUME
++
+ void     mm_base_modem_sync           (MMBaseModem *self,
+                                        GAsyncReadyCallback callback,
+                                        gpointer user_data);
+@@ -222,6 +226,8 @@ gboolean mm_base_modem_sync_finish    (MMBaseModem *self,
+                                        GAsyncResult *res,
+                                        GError **error);
+ 
++#endif
++
+ void mm_base_modem_process_sim_event (MMBaseModem *self);
+ 
+ #endif /* MM_BASE_MODEM_H */
+-- 
+2.31.1
+

@@ -1,0 +1,31 @@
+From 5fdf3f0f26579cc9a453401de09ca6ea0292e27c Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 22:14:49 +0200
+Subject: [PATCH 33/39] novatel-lte: reuse the same method for load and reload
+
+The load_() method is used for connection monitoring; while the
+reload_() method is used to sync connection status after a
+suspend/resume operation. The same method can be used for both things
+in the Novatel LTE plugin.
+---
+ plugins/novatel/mm-broadband-bearer-novatel-lte.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/plugins/novatel/mm-broadband-bearer-novatel-lte.c b/plugins/novatel/mm-broadband-bearer-novatel-lte.c
+index ec08f4d7..4419eb23 100644
+--- a/plugins/novatel/mm-broadband-bearer-novatel-lte.c
++++ b/plugins/novatel/mm-broadband-bearer-novatel-lte.c
+@@ -568,6 +568,10 @@ mm_broadband_bearer_novatel_lte_class_init (MMBroadbandBearerNovatelLteClass *kl
+ 
+     base_bearer_class->load_connection_status = load_connection_status;
+     base_bearer_class->load_connection_status_finish = load_connection_status_finish;
++#if defined WITH_SYSTEMD_SUSPEND_RESUME
++    base_bearer_class->reload_connection_status = load_connection_status;
++    base_bearer_class->reload_connection_status_finish = load_connection_status_finish;
++#endif
+ 
+     broadband_bearer_class->connect_3gpp = connect_3gpp;
+     broadband_bearer_class->connect_3gpp_finish = connect_3gpp_finish;
+-- 
+2.31.1
+

@@ -1,0 +1,105 @@
+From d04b388e4dbc9c341fbd7176d1eef2b0dcba49ba Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 21:17:42 +0200
+Subject: [PATCH 29/39] base-bearer: propagate the new connection status after
+ reload
+
+Just triggering a connection status reload won't change the actual
+bearer object state.
+
+We change the signature of the reload_connection_status_finish()
+method so that it returns the actual reloaded bearer connection
+status, and so both the load_ and reload_ methods can be implemented
+with exactly the same method, something that was not possible before.
+
+Once we get the new connection status reloaded, we apply it in the
+bearer object only if it's DISCONNECTED (and it wasn't DISCONNECTED
+before). This should cover the true real case we're interested in, and
+nothing else (i.e. we won't overcomplicate the logic attempting to
+handle disconnected->connected transitions detected in the sync()
+operation).
+---
+ src/mm-base-bearer.c | 29 +++++++++++++++++++++++------
+ src/mm-base-bearer.h |  6 +++---
+ 2 files changed, 26 insertions(+), 9 deletions(-)
+
+diff --git a/src/mm-base-bearer.c b/src/mm-base-bearer.c
+index 71f6684b..69600c17 100644
+--- a/src/mm-base-bearer.c
++++ b/src/mm-base-bearer.c
+@@ -1411,7 +1411,8 @@ typedef enum {
+ } SyncingStep;
+ 
+ struct _SyncingContext {
+-    SyncingStep step;
++    SyncingStep    step;
++    MMBearerStatus status;
+ };
+ 
+ gboolean
+@@ -1427,14 +1428,29 @@ reload_connection_status_ready (MMBaseBearer *self,
+                                 GAsyncResult *res,
+                                 GTask        *task)
+ {
+-    SyncingContext    *ctx;
+-    g_autoptr(GError)  error = NULL;
++    SyncingContext           *ctx;
++    MMBearerConnectionStatus  reloaded_status;
++    g_autoptr(GError)         error = NULL;
+ 
+     ctx = g_task_get_task_data (task);
+ 
+-    MM_BASE_BEARER_GET_CLASS (self)->reload_connection_status_finish (self, res, &error);
+-    if (error)
++    /* The only update we're really interested in is the connected->disconnected
++     * one, because any other would be extremely strange and it's probably not
++     * worth trying to support those; e.g. a disconnected->connected change here
++     * would be impossible to be handled correctly. We'll also ignore intermediate
++     * states (connecting/disconnecting), as we can rely on the reports of the final
++     * state at some point soon.
++     *
++     * So, just handle DISCONNECTED at this point.
++     */
++    reloaded_status = MM_BASE_BEARER_GET_CLASS (self)->reload_connection_status_finish (self, res, &error);
++    if (reloaded_status == MM_BEARER_CONNECTION_STATUS_UNKNOWN)
+         mm_obj_warn (self, "reloading connection status failed: %s", error->message);
++    else if ((ctx->status == MM_BEARER_STATUS_CONNECTED) &&
++             (reloaded_status == MM_BEARER_CONNECTION_STATUS_DISCONNECTED)) {
++        mm_obj_dbg (self, "disconnection detected during status synchronization");
++        mm_base_bearer_report_connection_status (self, reloaded_status);
++    }
+ 
+     /* Go on to the next step */
+     ctx->step++;
+@@ -1501,9 +1517,10 @@ mm_base_bearer_sync (MMBaseBearer        *self,
+     SyncingContext *ctx;
+     GTask          *task;
+ 
+-    /* Create SyncingContext */
++    /* Create SyncingContext and store the original bearer status */
+     ctx = g_new0 (SyncingContext, 1);
+     ctx->step = SYNCING_STEP_FIRST;
++    ctx->status = self->priv->status;
+ 
+     /* Create sync steps task and execute it */
+     task = g_task_new (self, NULL, callback, user_data);
+diff --git a/src/mm-base-bearer.h b/src/mm-base-bearer.h
+index c5a4bda5..16e4bae5 100644
+--- a/src/mm-base-bearer.h
++++ b/src/mm-base-bearer.h
+@@ -145,9 +145,9 @@ struct _MMBaseBearerClass {
+     void (* reload_connection_status) (MMBaseBearer *bearer,
+                                        GAsyncReadyCallback callback,
+                                        gpointer user_data);
+-    gboolean (* reload_connection_status_finish) (MMBaseBearer *bearer,
+-                                                  GAsyncResult *res,
+-                                                  GError **error);
++    MMBearerConnectionStatus (* reload_connection_status_finish) (MMBaseBearer *bearer,
++                                                                  GAsyncResult *res,
++                                                                  GError **error);
+ 
+ #endif
+ 
+-- 
+2.31.1
+

@@ -1,0 +1,32 @@
+From 3ecb20084844dfccad6353abf38505d3c7635fd4 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 14:34:35 +0200
+Subject: [PATCH 21/39] broadband-modem: fail synchronization if no modem
+ exported in DBus
+
+---
+ src/mm-broadband-modem.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/mm-broadband-modem.c b/src/mm-broadband-modem.c
+index b99a38a6..8c5f7acd 100644
+--- a/src/mm-broadband-modem.c
++++ b/src/mm-broadband-modem.c
+@@ -11449,7 +11449,13 @@ syncing_step (GTask *task)
+          * We want to make sure that the SIM is unlocked and not swapped before
+          * synchronizing other interfaces.
+          */
+-        mm_obj_info (self, "resume synchronization state (%d/%d): Modem interface sync",
++        if (!self->priv->modem_dbus_skeleton) {
++            g_task_return_new_error (task, MM_CORE_ERROR, MM_CORE_ERROR_ABORTED,
++                                     "Synchronization aborted: no modem exposed in DBus");
++            g_object_unref (task);
++            return;
++        }
++        mm_obj_info (self, "resume synchronization state (%d/%d): modem interface sync",
+                      ctx->step, SYNCING_STEP_LAST);
+         mm_iface_modem_sync (MM_IFACE_MODEM (self),
+                              (GAsyncReadyCallback)iface_modem_sync_ready,
+-- 
+2.31.1
+

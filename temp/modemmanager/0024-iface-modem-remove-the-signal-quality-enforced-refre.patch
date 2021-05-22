@@ -1,0 +1,129 @@
+From a414efa690d880b2037a084f33e05db4c2208123 Mon Sep 17 00:00:00 2001
+From: Aleksander Morgado <aleksander@aleksander.es>
+Date: Sun, 23 May 2021 15:40:36 +0200
+Subject: [PATCH 24/39] iface-modem: remove the signal quality enforced refresh
+ during sync()
+
+when mm_iface_modem_refresh_signal() is called, we'll restart the
+signal quality refresh logic already, there is no need to request
+an enforced start.
+
+The enforced start was also modifying ctx->enabled unconditionally,
+which is really not ok. This logic would be enabled only when we're
+registered, and that logic is fine, no need to change that.
+---
+ src/mm-iface-modem-3gpp.c |  2 +-
+ src/mm-iface-modem.c      | 29 +++++++----------------------
+ src/mm-iface-modem.h      |  2 +-
+ 3 files changed, 9 insertions(+), 24 deletions(-)
+
+diff --git a/src/mm-iface-modem-3gpp.c b/src/mm-iface-modem-3gpp.c
+index ea1ab7cb..660eec65 100644
+--- a/src/mm-iface-modem-3gpp.c
++++ b/src/mm-iface-modem-3gpp.c
+@@ -314,7 +314,7 @@ run_registration_checks_ready (MMIfaceModem3gpp *self,
+          * from home to roaming or viceversa, both registered states, so there
+          * wouldn't be an explicit refresh triggered from the modem interface as
+          * the modem never got un-registered during the sequence. */
+-        mm_iface_modem_refresh_signal (MM_IFACE_MODEM (ctx->self), FALSE);
++        mm_iface_modem_refresh_signal (MM_IFACE_MODEM (ctx->self));
+         mm_obj_dbg (self, "currently registered in a 3GPP network");
+         g_task_return_boolean (task, TRUE);
+         g_object_unref (task);
+diff --git a/src/mm-iface-modem.c b/src/mm-iface-modem.c
+index f208e92a..85df77bd 100644
+--- a/src/mm-iface-modem.c
++++ b/src/mm-iface-modem.c
+@@ -1587,27 +1587,12 @@ periodic_signal_check_cb (MMIfaceModem *self)
+ }
+ 
+ void
+-mm_iface_modem_refresh_signal (MMIfaceModem *self,
+-                               gboolean      enforce)
++mm_iface_modem_refresh_signal (MMIfaceModem *self)
+ {
+     SignalCheckContext *ctx;
+ 
+     ctx = get_signal_check_context (self);
+ 
+-    /*
+-     * If enforced, poll once explicitly to make sure the signal strength
+-     * and access technologies are updated.
+-     *
+-     * Modems with signal indication support block periodic polling scheduling.
+-     * With enforce == TRUE, the periodic polling logic can run once as
+-     * it override once the periodic polling prohibition.
+-     * When the polling is complete, the periodic polling scheduling
+-     * is blocked again to avoid that modems with signal indication support
+-     * are periodic polled for their signal status.
+-     */
+-    if (enforce)
+-        ctx->enabled = TRUE;
+-
+     /* Don't refresh polling if we're not enabled */
+     if (!ctx->enabled) {
+         mm_obj_dbg (self, "periodic signal check refresh ignored: checks not enabled");
+@@ -1687,7 +1672,7 @@ periodic_signal_check_enable (MMIfaceModem *self)
+     }
+ 
+     /* And refresh, which will trigger the first check at high frequency */
+-    mm_iface_modem_refresh_signal (self, FALSE);
++    mm_iface_modem_refresh_signal (self);
+ }
+ 
+ /*****************************************************************************/
+@@ -2361,7 +2346,7 @@ set_current_capabilities_ready (MMIfaceModem *self,
+         g_dbus_method_invocation_take_error (ctx->invocation, error);
+     else {
+         /* Capabilities updated: explicitly refresh signal and access technology */
+-        mm_iface_modem_refresh_signal (self, FALSE);
++        mm_iface_modem_refresh_signal (self);
+         mm_gdbus_modem_complete_set_current_capabilities (ctx->skeleton, ctx->invocation);
+     }
+ 
+@@ -2851,7 +2836,7 @@ handle_set_current_bands_ready (MMIfaceModem *self,
+         g_dbus_method_invocation_take_error (ctx->invocation, error);
+     else {
+         /* Bands updated: explicitly refresh signal and access technology */
+-        mm_iface_modem_refresh_signal (self, FALSE);
++        mm_iface_modem_refresh_signal (self);
+         mm_gdbus_modem_complete_set_current_bands (ctx->skeleton, ctx->invocation);
+     }
+ 
+@@ -3238,7 +3223,7 @@ handle_set_current_modes_ready (MMIfaceModem *self,
+         g_dbus_method_invocation_take_error (ctx->invocation, error);
+     else {
+         /* Modes updated: explicitly refresh signal and access technology */
+-        mm_iface_modem_refresh_signal (self, FALSE);
++        mm_iface_modem_refresh_signal (self);
+         mm_gdbus_modem_complete_set_current_modes (ctx->skeleton, ctx->invocation);
+     }
+ 
+@@ -4332,9 +4317,9 @@ interface_syncing_step (GTask *task)
+ 
+     case SYNCING_STEP_REFRESH_SIGNAL_STRENGTH:
+         /*
+-         * Start a signal strength and access technologies refresh sequence.
++         * Restart the signal strength and access technologies refresh sequence.
+          */
+-        mm_iface_modem_refresh_signal (self, TRUE);
++        mm_iface_modem_refresh_signal (self);
+         ctx->step++;
+         /* fall through */
+ 
+diff --git a/src/mm-iface-modem.h b/src/mm-iface-modem.h
+index 1cd4bdd1..5ba2167c 100644
+--- a/src/mm-iface-modem.h
++++ b/src/mm-iface-modem.h
+@@ -547,7 +547,7 @@ void mm_iface_modem_update_signal_quality (MMIfaceModem *self,
+                                            guint signal_quality);
+ 
+ /* Allow requesting to refresh signal via polling */
+-void mm_iface_modem_refresh_signal (MMIfaceModem *self, gboolean enforce);
++void mm_iface_modem_refresh_signal (MMIfaceModem *self);
+ 
+ /* Allow setting allowed modes */
+ void     mm_iface_modem_set_current_modes        (MMIfaceModem *self,
+-- 
+2.31.1
+
