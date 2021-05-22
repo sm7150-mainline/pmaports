@@ -5,8 +5,8 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.28
-pkgrel=3
+pkgver=0.29
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -49,9 +49,6 @@ source="
 	kirigami-lowpower.sh
 	modemmanager.conf
 	setup-modem.sh
-	eg25-pinephone-1.0.toml
-	eg25-pinephone-1.1.toml
-	eg25-pinephone-1.2.toml
 	sysrq.conf
 	uboot-script.cmd
 	ucm/HiFi.conf
@@ -124,12 +121,6 @@ package() {
 		"$pkgdir"/usr/lib/udev/rules.d/
 	install -Dm644 "$srcdir"/modemmanager.conf \
 		"$pkgdir"/etc/conf.d/modemmanager
-	install -Dm644 "$srcdir"/eg25-pinephone-1.0.toml \
-		"$pkgdir"/etc/eg25-manager/pine64,pinephone-1.0.toml
-	install -Dm644 "$srcdir"/eg25-pinephone-1.1.toml \
-		"$pkgdir"/etc/eg25-manager/pine64,pinephone-1.1.toml
-	install -Dm644 "$srcdir"/eg25-pinephone-1.2.toml \
-		"$pkgdir"/etc/eg25-manager/pine64,pinephone-1.2.toml
 
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t \
@@ -193,9 +184,6 @@ ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd4644
 6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
 3d6e9030125afc1dc3b654d1ce5d124ddd3ef3ad1a4d3e46c8168cf3f8a3762ffd0c75427759740ae26bd5c4f32b6704b7cf7e5806434884560fa704b7e72921  modemmanager.conf
 fa063e2863afc48e627acc1a5b213a81499ba1dd30325f74f118a44e3964aec7e597b1f4bd318b7cf5bf14f27daf88e6ad9fc277ab106cbbe1189fdcc650d5c1  setup-modem.sh
-f9386dfd902028988c9659bd6e001ba46ea87b35f5dce7723dd4cfbe971928c75f6fef9d706201d62cc24cca2d499a39c8c0fed58a3403e2cb848eb1aece0e19  eg25-pinephone-1.0.toml
-cf7d4a611701745762f19746e40d87b6df14a6b24f2d466c4177b7ab5ee87a048bab719a6c66722198020e1aa73d3e12d3715b5588bc33bf207f3e86040dcc44  eg25-pinephone-1.1.toml
-8adeca98002ff8ee850512f72f2e126348cfa817a1aefdd77d103aee76a6b2e6a024deffcbeef1235ee2fcc766003f55b67cedb3eb06ca92a58d5b81f2bf6848  eg25-pinephone-1.2.toml
 f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
 9d4bcc02c6c501b3a205516c8f276ef4293d88edea61ac725887ec28f9f6788320e9f9edd7f1cf29bbf6122acfad2ef5b3ad5e4b33763fe867bd23d2ac17ed5c  uboot-script.cmd
 f963898fa2ce66bc830e56feeec6ffc9888834e14cc1591d72908ef45ad82532bc3ef5fb32413e07b6722749c9d03e7cf92f06f1fcb859c38b9297cf58e5cedd  HiFi.conf
