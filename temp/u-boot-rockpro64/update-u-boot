@@ -9,17 +9,13 @@ imagedir=
 get_defaults() {
 	if [ -z "$board" -a -e /sys/firmware/devicetree/base/compatible ]; then
 		case "$(cat /sys/firmware/devicetree/base/compatible 2>/dev/null)" in
-		wand,*) board=wand ;;
-		pine64,pinebook-pro*) board=pinebookpro ;;
 		pine64,rockpro64*) board=rockpro64 ;;
 		esac
 	fi
 
 	if [ -z "$device" ]; then
 		case "$board" in
-		wand|cubie|cubie2) device=/dev/mmcblk0p0 ;;
-		mx6cuboxi) device=/dev/mmcblk0 ;;
-		pinebookpro|rockpro64) device=/dev/mmcblk2 ;;
+		rockpro64) device=/dev/mmcblk2 ;;
 		esac
 	fi
 
@@ -42,7 +38,7 @@ usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-
 
 options:
 
- -b,--board <board>       Specify the board type: wand, cubie, cubie2, cuboxi, pinebookpro, rockpro64
+ -b,--board <board>       Specify the board type: rockpro64
                           (current default: ${board:-none})
 
  -d,--device <device>     Specify the device where to install u-boot
@@ -62,10 +58,6 @@ while [ $# -gt 0 ]; do
 	case "$opt" in
 	-b|--board)
 		case "$1" in
-		wand|wandboard) board="wand" ;;
-		cubie|cubieboard) board="cubie" ;;
-		cuboxi|mx6cuboxi) board="mx6cuboxi" ;;
-		pinebookpro) board="pinebookpro" ;;
 		rockpro64) board="rockpro64" ;;
 		*) usage; exit 1;;
 		esac
@@ -106,21 +98,7 @@ fi
 (
 set -e
 case "$board" in
-wand)
-	[ -e "$imagedir/wandboard" ] || die "wandboard images not installed, apk add u-boot-wandboard"
-	$dryrun dd if=$imagedir/wandboard/SPL of=$device bs=1k seek=1 status=none
-	$dryrun dd if=$imagedir/wandboard/u-boot.img of=$device bs=1k seek=69 status=none
-	;;
-cubie|cubie2)
-	[ -e "$imagedir/Cubieboard${board#cubie}" ] || die "Cubieboard images not installed, apk add u-boot-cubieboard"
-	$dryrun dd if=$imagedir/Cubieboard${board#cubie}/u-boot-sunxi-with-spl.bin of=$device bs=1024 seek=8 status=none
-	;;
-mx6cuboxi)
-	[ -e "$imagedir/mx6cuboxi" ] || die "iMX6 Cubox-i images not installed, apk add u-boot-cuboxi"
-	$dryrun dd if=$imagedir/mx6cuboxi/SPL of=$device bs=1k seek=1 status=none
-	$dryrun dd if=$imagedir/mx6cuboxi/u-boot.img of=$device bs=1k seek=69 status=none
-	;;
-pinebookpro|rockpro64)
+rockpro64)
 	[ -e "$imagedir/pine64-rockpro64/" ] || die "rockpro64 images not installed, apk add u-boot-rockpro64"
 	$dryrun dd if=$imagedir/pine64-rockpro64/u-boot-rockchip.bin of=$device bs=1024 seek=32 status=none
 	;;
