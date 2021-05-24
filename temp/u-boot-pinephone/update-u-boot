@@ -21,6 +21,7 @@ get_defaults() {
 		pine64,pinebook-pro*) board=pinebookpro ;;
 		pine64,rockpro64*) board=rockpro64 ;;
 		pine64,pinephone*) board=pinephone ;;
+		pine64,pinetab*) board=pinetab ;;
 		esac
 	fi
 
@@ -29,7 +30,7 @@ get_defaults() {
 		wand|cubie|cubie2) device=/dev/mmcblk0p0 ;;
 		mx6cuboxi) device=/dev/mmcblk0 ;;
 		pinebookpro|rockpro64) device=/dev/mmcblk2 ;;
-		pinephone) device=$(get_boot_blockdev) ;;
+		pinephone|pinetab) device=$(get_boot_blockdev) ;;
 		esac
 	fi
 
@@ -119,6 +120,7 @@ while [ $# -gt 0 ]; do
 		pinebookpro) board="pinebookpro" ;;
 		rockpro64) board="rockpro64" ;;
 		pinephone) board="pinephone" ;;
+		pinetab) board="pinetab" ;;
 		*) usage; exit 1;;
 		esac
 		shift
@@ -210,7 +212,7 @@ pinebookpro|rockpro64)
 	[ -e "$imagedir/pine64-rockpro64/" ] || die "rockpro64 images not installed, apk add u-boot-rockpro64"
 	$dryrun dd if=$imagedir/pine64-rockpro64/u-boot-rockchip.bin of=$device bs=1024 seek=32 status=none
 	;;
-pinephone)
+pinephone|pinetab)
 	[ -e "$imagedir/pine64-pinephone/" ] || die "pinephone images not installed, apk add u-boot-pinephone"
 	$dryrun dd if=$imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin of=$device bs=1024 seek=8 oflag=direct status=none
 	[ -z "$dryrun" ] && validate_checksum $imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin $device 1024 8
