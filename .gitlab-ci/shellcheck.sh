@@ -15,6 +15,7 @@ fi
 
 # Shell: shellcheck
 sh_files="
+	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
 	./main/postmarketos-base/rootfs-usr-lib-firmwareload.sh
 	./main/postmarketos-mkinitfs/init.sh.in
 	./main/postmarketos-mkinitfs/init_functions.sh
@@ -23,7 +24,8 @@ sh_files="
 	./main/postmarketos-mkinitfs/mkinitfs_test.sh
 	./main/postmarketos-mkinitfs-hook-debug-shell/20-debug-shell.sh
 	./main/postmarketos-update-kernel/update-kernel.sh
-	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
+	./main/swclock-offset/swclock-offset-boot.sh
+	./main/swclock-offset/swclock-offset-shutdown.sh
 
 	$(find . -path './main/postmarketos-ui-*/*.sh')
 	$(find . -path './main/postmarketos-ui-*/*.pre-install')
