@@ -4,8 +4,8 @@
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-pine64-pinephone
-pkgver=0.27
-pkgrel=1
+pkgver=0.28
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -16,6 +16,7 @@ subpackages="
 	$pkgname-phosh
 	$pkgname-shelli
 	$pkgname-plasma-mobile:plasma_mobile
+	$pkgname-upower
 	"
 depends="
 	alsa-ucm-conf
@@ -55,6 +56,7 @@ source="
 	ucm/HiFi.conf
 	ucm/PinePhone.conf
 	ucm/VoiceCall.conf
+	UPower.conf
 	"
 # workaround to purge the -elogind subpackage that was previously
 # created/installed
@@ -155,6 +157,15 @@ plasma_mobile() {
 	install -Dm644 "$srcdir"/kirigami-lowpower.sh "$subpkgdir"/etc/profile.d/kirigami-lowpower.sh
 }
 
+upower() {
+	install_if="$pkgname=$pkgver-r$pkgrel upower"
+	mkdir "$subpkgdir"
+
+	# Shutdown when PMIC reports critical battery level
+	install -Dm644 "$srcdir"/UPower.conf -t \
+		"$subpkgdir"/etc/UPower/UPower.conf
+}
+
 shelli() {
 	install_if="$pkgname=$pkgver-r$pkgrel shelli"
 
@@ -184,4 +195,5 @@ f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8
 aef9f00f1d327b11640c4dbcb7b6ad5b0bac3118e262af5d7d6a37d87757559856438c0adea834f03752725876c3f857ed903cdfaaf678459bbcd7633d523ded  HiFi.conf
 e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d74533f9ffb9aacc1703da2a06693f85fa04ff97fd7528012  PinePhone.conf
 6e226e8dc39a438629f443a33e1ba7ea5f7f1a08b98ec58b2bf97036e549d3ce9898de708020a632f4fd2f9d6540a621331e4d2c406c1e729d073113aff55ec3  VoiceCall.conf
+ed0e03f7e1c0348c06be9a7922414469245604ce813bbf0c8910ef211cb993bbb0d0d4615c9c961d50712415f85d6b73e0cf02780ac784666aac56e4889341e4  UPower.conf
 "
