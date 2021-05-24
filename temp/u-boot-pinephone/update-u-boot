@@ -17,9 +17,6 @@ get_boot_blockdev() {
 get_defaults() {
 	if [ -z "$board" -a -e /sys/firmware/devicetree/base/compatible ]; then
 		case "$(cat /sys/firmware/devicetree/base/compatible 2>/dev/null)" in
-		wand,*) board=wand ;;
-		pine64,pinebook-pro*) board=pinebookpro ;;
-		pine64,rockpro64*) board=rockpro64 ;;
 		pine64,pinephone*) board=pinephone ;;
 		pine64,pinetab*) board=pinetab ;;
 		esac
@@ -27,9 +24,6 @@ get_defaults() {
 
 	if [ -z "$device" ]; then
 		case "$board" in
-		wand|cubie|cubie2) device=/dev/mmcblk0p0 ;;
-		mx6cuboxi) device=/dev/mmcblk0 ;;
-		pinebookpro|rockpro64) device=/dev/mmcblk2 ;;
 		pinephone|pinetab) device=$(get_boot_blockdev) ;;
 		esac
 	fi
@@ -68,7 +62,7 @@ usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-
 
 options:
 
- -b,--board <board>       Specify the board type: wand, cubie, cubie2, cuboxi, pinebookpro, rockpro64
+ -b,--board <board>       Specify the board type: pinephone, pinetab
                           (current default: ${board:-none})
 
  -d,--device <device>     Specify the device where to install u-boot
@@ -114,11 +108,6 @@ while [ $# -gt 0 ]; do
 	case "$opt" in
 	-b|--board)
 		case "$1" in
-		wand|wandboard) board="wand" ;;
-		cubie|cubieboard) board="cubie" ;;
-		cuboxi|mx6cuboxi) board="mx6cuboxi" ;;
-		pinebookpro) board="pinebookpro" ;;
-		rockpro64) board="rockpro64" ;;
 		pinephone) board="pinephone" ;;
 		pinetab) board="pinetab" ;;
 		*) usage; exit 1;;
@@ -194,24 +183,6 @@ fi
 (
 set -e
 case "$board" in
-wand)
-	[ -e "$imagedir/wandboard" ] || die "wandboard images not installed, apk add u-boot-wandboard"
-	$dryrun dd if=$imagedir/wandboard/SPL of=$device bs=1k seek=1 status=none
-	$dryrun dd if=$imagedir/wandboard/u-boot.img of=$device bs=1k seek=69 status=none
-	;;
-cubie|cubie2)
-	[ -e "$imagedir/Cubieboard${board#cubie}" ] || die "Cubieboard images not installed, apk add u-boot-cubieboard"
-	$dryrun dd if=$imagedir/Cubieboard${board#cubie}/u-boot-sunxi-with-spl.bin of=$device bs=1024 seek=8 status=none
-	;;
-mx6cuboxi)
-	[ -e "$imagedir/mx6cuboxi" ] || die "iMX6 Cubox-i images not installed, apk add u-boot-cuboxi"
-	$dryrun dd if=$imagedir/mx6cuboxi/SPL of=$device bs=1k seek=1 status=none
-	$dryrun dd if=$imagedir/mx6cuboxi/u-boot.img of=$device bs=1k seek=69 status=none
-	;;
-pinebookpro|rockpro64)
-	[ -e "$imagedir/pine64-rockpro64/" ] || die "rockpro64 images not installed, apk add u-boot-rockpro64"
-	$dryrun dd if=$imagedir/pine64-rockpro64/u-boot-rockchip.bin of=$device bs=1024 seek=32 status=none
-	;;
 pinephone|pinetab)
 	[ -e "$imagedir/pine64-pinephone/" ] || die "pinephone images not installed, apk add u-boot-pinephone"
 	$dryrun dd if=$imagedir/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin of=$device bs=1024 seek=8 oflag=direct status=none
