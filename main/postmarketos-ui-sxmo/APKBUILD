@@ -1,12 +1,17 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=postmarketos-ui-sxmo
 pkgver=1.4.1
-pkgrel=3
+pkgrel=4
 pkgdesc="(X11) Simple X Mobile: Mobile environment based on simple & suckless software (best compatibility on pinephone)"
 url="http://sr.ht/~mil/Sxmo"
 arch="noarch !armhf"
 license="MIT"
-depends="sxmo-xdm-config sxmo-xdm-config-openrc sxmo-utils-openrc"
+depends="
+	networkmanager
+	sxmo-utils-openrc
+	sxmo-xdm-config
+	sxmo-xdm-config-openrc
+	"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.pre-deinstall"
 subpackages="$pkgname-qt_tweaks"
 _pmb_recommends="
@@ -19,7 +24,6 @@ _pmb_recommends="
 	megapixels
 	mobile-config-firefox
 	netsurf
-	networkmanager
 	sacc
 	xcalc
 	"
