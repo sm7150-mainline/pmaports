@@ -1,7 +1,7 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=sxmo-utils
 pkgver=1.4.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Utility scripts, programs, and configs that hold the Sxmo UI environment together"
 url="https://git.sr.ht/~mil/sxmo-utils"
 arch="all"
@@ -30,6 +30,7 @@ depends="
 	inotify-tools
 	mediainfo
 	modemmanager
+	networkmanager
 	mpv
 	ncurses
 	sfeed
@@ -59,7 +60,6 @@ depends="
 options="!check" # has no tests
 subpackages="$pkgname-openrc"
 source="$pkgname-$pkgver.tar.gz::https://git.sr.ht/~mil/sxmo-utils/archive/$pkgver.tar.gz"
-install="$pkgname.post-install $pkgname.pre-deinstall"
 
 package() {
 	mkdir -p "$pkgdir/etc/modules-load.d/"
