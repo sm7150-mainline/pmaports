@@ -1,4 +1,4 @@
-From 27212841ea2b3a4ecf0463bb89c101941afcabf8 Mon Sep 17 00:00:00 2001
+From 27afc3e0e791b6dbf0fb2c1ee5073a646089eb59 Mon Sep 17 00:00:00 2001
 From: Clayton Craft <clayton@craftyguy.net>
 Date: Fri, 5 Mar 2021 18:55:28 -0800
 Subject: [PATCH] bq25890_charger: enter ship mode on power off
@@ -16,7 +16,7 @@ bq25890 is *not* used to power off system.
  1 file changed, 56 insertions(+)
 
 diff --git a/drivers/power/supply/bq25890_charger.c b/drivers/power/supply/bq25890_charger.c
-index c33885e4f48c..7360bc51ef64 100644
+index ef3f152e2ba8..4e31a137bcba 100644
 --- a/drivers/power/supply/bq25890_charger.c
 +++ b/drivers/power/supply/bq25890_charger.c
 @@ -40,6 +40,10 @@ static const char *const bq25890_chip_name[] = {
@@ -30,7 +30,7 @@ index c33885e4f48c..7360bc51ef64 100644
  enum bq25890_fields {
  	F_EN_HIZ, F_EN_ILIM, F_IILIM,				     /* Reg00 */
  	F_BHOT, F_BCOLD, F_VINDPM_OFS,				     /* Reg01 */
-@@ -837,6 +841,43 @@ static int bq25890_power_supply_init(struct bq25890_device *bq)
+@@ -928,6 +932,43 @@ static int bq25890_power_supply_init(struct bq25890_device *bq)
  	return PTR_ERR_OR_ZERO(bq->charger);
  }
  
@@ -74,7 +74,7 @@ index c33885e4f48c..7360bc51ef64 100644
  static void bq25890_usb_work(struct work_struct *data)
  {
  	int ret;
-@@ -1141,6 +1182,17 @@ static int bq25890_probe(struct i2c_client *client,
+@@ -1232,6 +1273,17 @@ static int bq25890_probe(struct i2c_client *client,
  		goto battery_fail;
  	}
  
@@ -92,7 +92,7 @@ index c33885e4f48c..7360bc51ef64 100644
  	return 0;
  
  battery_fail:
-@@ -1164,6 +1216,10 @@ static int bq25890_remove(struct i2c_client *client)
+@@ -1255,6 +1307,10 @@ static int bq25890_remove(struct i2c_client *client)
  	/* reset all registers to default values */
  	bq25890_chip_reset(bq);
  
