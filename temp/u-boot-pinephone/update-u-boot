@@ -161,12 +161,12 @@ if [ -z "$dryrun" ]; then
 		echo "then boot on it and update u-boot running this command:"
 		echo "update-u-boot -d /dev/mmcblk2"
 		echo 
-		read -p "Continue? [y/Y] " -n 1 -r
+		read -p "Continue? (y/n) [n]: " -n 1 -r
 		echo 
-		if [[ ! $REPLY =~ ^[Yy]$ ]]
-		then
-			exit 0
-		fi
+		case "$REPLY" in
+			y|Y) ;;
+			*) exit 1 ;;
+		esac
 	fi
 	if [ -z "$skip_delay" ]; then
 		echo "Updating $board u-boot in $device in 3 seconds..."
