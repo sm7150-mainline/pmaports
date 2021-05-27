@@ -1,7 +1,7 @@
 # U-boot with patches to make the PinePhone boot faster and have control over the ddr clock speed
 pkgname=u-boot-pinephone
 pkgver=2021.01_git20201228
-pkgrel=2
+pkgrel=3
 # Last commit from "crust" branch, as used in "crust-meta":
 # https://gitlab.com/pine64-org/crust-meta/-/blob/8886bcc829179bf77216fade71f0ede9bd014e67/Makefile#L78
 _commit="7492749fec31b1086bc8933bf113a766aea021aa"
@@ -10,6 +10,7 @@ url="https://gitlab.com/pine64-org/u-boot"
 arch="aarch64"
 license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
 	ISC LGPL-2.0-only LGPL-2.1-only X11"
+depends="linux-postmarketos-allwinner>=5.12"
 makedepends="$depends_dev bc dtc python3-dev py3-setuptools swig bison flex openssl-dev arm-trusted-firmware-sun50i crust"
 options="!check"
 source="https://gitlab.com/pine64-org/u-boot/-/archive/$_commit/u-boot-$_commit.tar.gz
