@@ -492,7 +492,9 @@ run_osk_sdl() {
 			# Set up directfb and tslib
 			# Note: linux_input module is disabled since it will try to take over
 			# the touchscreen device from tslib (e.g. on the N900)
-			export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input"
+			# Note: ps2mouse module is disabled because it causes
+			# jerky/inconsistent touch input on some devices
+			export DFBARGS="system=fbdev,no-cursor,disable-module=linux_input,disable-module=ps2mouse"
 			export SDL_VIDEODRIVER="directfb"
 			# SDL/directfb tries to use gles even though it's not
 			# actually available, so disable it in osk-sdl
