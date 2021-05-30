@@ -4,7 +4,7 @@
 pkgname=device-pine64-pinetab
 pkgdesc="PINE64 PineTab"
 pkgver=0.10
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -152,10 +152,10 @@ plasma_mobile() {
 
 upower() {
 	install_if="$pkgname=$pkgver-r$pkgrel upower"
-	mkdir "$subpkgdir"
+	replaces="upower"
 
 	# Shutdown when PMIC reports critical battery level
-	install -Dm644 "$srcdir"/UPower.conf -t \
+	install -Dm644 "$srcdir"/UPower.conf \
 		"$subpkgdir"/etc/UPower/UPower.conf
 }
 
