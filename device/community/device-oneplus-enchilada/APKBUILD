@@ -3,13 +3,13 @@
 
 pkgname=device-oneplus-enchilada
 pkgdesc="OnePlus 6"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg linux-postmarketos-qcom-sdm845 soc-qcom-sdm845"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-sdm845 soc-qcom-sdm845 soc-qcom-sdm845-ucm"
 makedepends="devicepkg-dev"
 source="deviceinfo rootston.ini"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
@@ -23,8 +23,8 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Modem, WiFi and GPU Firmware"
-	depends="firmware-oneplus-sdm845"
+	pkgdesc="Modem, WiFi and GPU Firmware, also needed for osk-sdl"
+	depends="firmware-oneplus-sdm845 firmware-oneplus-sdm845-initramfs"
 	mkdir "$subpkgdir"
 }
 
@@ -34,5 +34,7 @@ phosh() {
 		"$subpkgdir"/etc/phosh/rootston.ini
 }
 
-sha512sums="cfcc13db27379de13ccf3695d3feb47ba934995604b2bd4741d58dc30f96254d1483dd2031d3d6675387b0444d30300397ccd50fbdceea537834bf0ad690b530  deviceinfo
-035f97e328ff9f976b082e66b97f76036cdee9825f3022471c7c5d371291cc4b5bd5c18196cd49f4cd9ad6390abe691b506de3b221e3c122433d5620e3b3c4c9  rootston.ini"
+sha512sums="
+230781496f912701376abb9956e1734633f3108b54f4b287692b65b3f39f525ba742fdc530d369fa3d22babc92b004b3af3489e8c2f862cf7077df1308bc390c  deviceinfo
+035f97e328ff9f976b082e66b97f76036cdee9825f3022471c7c5d371291cc4b5bd5c18196cd49f4cd9ad6390abe691b506de3b221e3c122433d5620e3b3c4c9  rootston.ini
+"
