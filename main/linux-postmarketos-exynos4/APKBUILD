@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm/configs/exynos_defconfig
 
 pkgname=linux-postmarketos-exynos4
-pkgver=5.11.11
+pkgver=5.12.8
 pkgrel=0
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
@@ -24,13 +24,11 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	$_config
 	0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-	0005-ARM-dts-exynos-Fix-charging-regulator-voltage-and-cu.patch
-	0006-ARM-dts-exynos-Add-top-off-charging-regulator-node-f.patch
-	0007-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
-	0008-power-supply-max8997_charger-Set-CHARGER-current-lim.patch
-	0009-ARM-dts-exynos-Add-charger-supply-for-I9100.patch
-	0010-power-supply-max8997_charger-Switch-to-new-binding.patch
-	0011-ARM-dts-exynos-Add-front-camera-support-to-I9100.patch
+	0002-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
+	0003-ARM-dts-exynos-Add-charger-supply-for-I9100.patch
+	0004-power-supply-max8997_charger-Switch-to-new-binding.patch
+	0005-ARM-dts-exynos-Add-front-camera-support-to-I9100.patch
+	0006-ARM-dts-exynos-Disable-unused-camra-input-for-I9100.patch
 	initramfs.list
 	init
 "
@@ -69,15 +67,15 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-sha512sums="cb4f3e3d2cc8b59527f439b704e9fd8dc515424171fe2db720047f56fa987ea1736fd2cce1a20b2fe4ebf33306d6affe79024225bb5e67d617ae37574b316408  linux-5.11.11.tar.xz
-52096bf5a1d887ac3a8748838a739c1379dbced602f663f40c7f8acb43e985fe277670f928064a108ef34e184e9738bf8ef9860de6e609d39a49196b8aae8eb3  config-postmarketos-exynos4.armv7
+sha512sums="
+8a5f1774bee223445ad147d2f83a7b3a2c19ea620d0f3964344bb33d003fec17d36279b522745c03467e361ebd61479a4f7122e5911bb6b817ff52ee55c736d9  linux-5.12.8.tar.xz
+1fe836dc15c7523ddda9e1cbbd157a207954d3a63d6a27cba3b99c385e97b61489b1d923f0f0c7c4e339d26eb8237c6d8ff77faba03c8da2014676fc6990bdf6  config-postmarketos-exynos4.armv7
 4bb111db4396a1981ad0883737c6594ca93701699846298b940d2ea202c666be0158a0f9ddc5b95b9147fa4cfe62639512ae78e9315f8d975b379ccc4e15da36  0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-ddee2a51b33b7bd0ba310085324e72342c992d6d047132f7204ff9695cef112d4809bbe734d382b720e8deb90b948b65709bbb407bd1a32876c524fe9f4bae67  0005-ARM-dts-exynos-Fix-charging-regulator-voltage-and-cu.patch
-8eb1452fd2cc302df0ccc5bee33e99d12d6bb851fb48b281026f46b70008e3f515f3287f01684981ff81c7e2c422a9480a40e23f45823812f913cc866c319811  0006-ARM-dts-exynos-Add-top-off-charging-regulator-node-f.patch
-dffe9934281e81b20e158ce9b80c6f1a91c5eaa06eb92ee655ee9430dba8aa066dd70a9fb163007f37556ea696ae0256a58f87408c8b7571d6d20f99c9492db2  0007-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
-ea14ce70ac337b952b0246bb2765c7ca099808f4f46021b4f366e706265f9fab6a1e887e327d6b73d2b9963e4ae1f64a2877500cbc79a6214169486993f60069  0008-power-supply-max8997_charger-Set-CHARGER-current-lim.patch
-b70e8afa3779d471835bbdda4c8ddcf882bce58752993314655596961210235558e87dce3d1f07810ab5bb3d0471e89933a8008d7b97d8ebd05a408ffc947054  0009-ARM-dts-exynos-Add-charger-supply-for-I9100.patch
-11160ac085aa912439a18995e323dfc89dfc61d85f1221af8f0116eed0f5b1fd087fc2828174c8c60f937495c31d72240c2f3c4249c29ceda6acd92f08d235c4  0010-power-supply-max8997_charger-Switch-to-new-binding.patch
-30b457377bcf750a083b8a8acc3b91c7049c69b7f2e3e0dba9afe00e2c8918b1a9b2314fe553cbd808d827e845bdca10986c731d29082e20d2599d25c1956276  0011-ARM-dts-exynos-Add-front-camera-support-to-I9100.patch
+dffe9934281e81b20e158ce9b80c6f1a91c5eaa06eb92ee655ee9430dba8aa066dd70a9fb163007f37556ea696ae0256a58f87408c8b7571d6d20f99c9492db2  0002-extcon-max8997-Add-CHGINS-and-CHGRM-interrupt-handli.patch
+b70e8afa3779d471835bbdda4c8ddcf882bce58752993314655596961210235558e87dce3d1f07810ab5bb3d0471e89933a8008d7b97d8ebd05a408ffc947054  0003-ARM-dts-exynos-Add-charger-supply-for-I9100.patch
+11160ac085aa912439a18995e323dfc89dfc61d85f1221af8f0116eed0f5b1fd087fc2828174c8c60f937495c31d72240c2f3c4249c29ceda6acd92f08d235c4  0004-power-supply-max8997_charger-Switch-to-new-binding.patch
+30b457377bcf750a083b8a8acc3b91c7049c69b7f2e3e0dba9afe00e2c8918b1a9b2314fe553cbd808d827e845bdca10986c731d29082e20d2599d25c1956276  0005-ARM-dts-exynos-Add-front-camera-support-to-I9100.patch
+96f629a33ef6001e6457331d627c3778232478969d4745b49b29a9e9cf33249508b12170bee5d3b28ec85775dd5e669d933d3d3852c2acd09d0df59266ac6f65  0006-ARM-dts-exynos-Disable-unused-camra-input-for-I9100.patch
 aaff0332b90e1f9f62de1128cace934717336e54ab09de46477369fa808302482d97334e43a85ee8597c1bcab64d3484750103559fea2ce8cd51776156bf7591  initramfs.list
-09f1f214a24300696809727a7b04378887c06ca6f40803ca51a12bf2176a360b2eb8632139d6a0722094e05cb2038bdb04018a1e3d33fc2697674552ade03bee  init"
+09f1f214a24300696809727a7b04378887c06ca6f40803ca51a12bf2176a360b2eb8632139d6a0722094e05cb2038bdb04018a1e3d33fc2697674552ade03bee  init
+"
