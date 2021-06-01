@@ -57,6 +57,14 @@ def test_aports_device(args):
         if "!archcheck" not in apkbuild["options"]:
             raise RuntimeError("!archcheck missing in options= line: " + path)
 
+        if deviceinfo["flash_kernel_on_update"] == "true" \
+                and "postmarketos-update-kernel" not in apkbuild["depends"]:
+            raise RuntimeError(
+                "Deviceinfo indicates this device supports automatic kernel"
+                " flashing on update, but doesn't depend on"
+                " 'postmarketos-update-kernel'. Please add the missing"
+                " dependency.")
+
 
 def test_aports_device_kernel(args):
     """
