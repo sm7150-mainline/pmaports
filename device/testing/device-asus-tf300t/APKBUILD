@@ -1,22 +1,18 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-asus-tf300t
 pkgdesc="Asus Transformer Pad TF300T"
-pkgver=1
-pkgrel=1
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-grate mkbootimg mesa-dri-gallium alsa-ucm-conf asus-transformer-blobtools"
+depends="postmarketos-base linux-postmarketos-grate mesa-dri-gallium mkbootimg alsa-ucm-conf asus-transformer-blobtools"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-phosh
 	$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo
-	rootston.ini
-	ucm/tegra-hda.conf
-	ucm/tegra-hda-HiFi.conf
-	ucm/TF300T_WM8903.conf
-	ucm/TF300T_WM8903-HiFi.conf"
+	rootston.ini"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,16 +20,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	# Alsa usecase manager config
-	install -D -m644 "$srcdir"/TF300T_WM8903.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/TF300T_WM8903/TF300T_WM8903.conf
-	install -D -m644 "$srcdir"/TF300T_WM8903-HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/TF300T_WM8903/HiFi.conf
-	install -D -m644 "$srcdir"/tegra-hda.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/tegra-hda.conf
-	install -D -m644 "$srcdir"/tegra-hda-HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/tegra-hda/HiFi.conf
 }
 
 phosh() {
@@ -48,10 +34,7 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-
-sha512sums="906ef41d8181223381ea5b9ce6868e85e092c6a9141fb2b7bb60f0efa956a945f3a9db44d52d77512b7471744decb9dbcc7ba957cf82e565f8bfb69dabff39ec  deviceinfo
+sha512sums="
+906ef41d8181223381ea5b9ce6868e85e092c6a9141fb2b7bb60f0efa956a945f3a9db44d52d77512b7471744decb9dbcc7ba957cf82e565f8bfb69dabff39ec  deviceinfo
 6ec993e278d2a73c72fb96f001716ded63543d99183847d22d172cd81ac410791c79370ecf391d0c24822c975d91b84dc1db296e1b28dbf66d5c227bff8d4011  rootston.ini
-5dead806f7568fad5f240957158864faab7a4dbbdae18b2a18110f64caa0254a001fbd5711789718cfde055528af57cebca11bbc4d7f55e12c9853f3d9e8534c  tegra-hda.conf
-1cdaa43350d69a021d2ff0b8b91ab537032b6861003bea506e429948c615934f6ee56cc4603dd94d4923c8be4a52a63cac110761b51167761c096b6880ce6c0c  tegra-hda-HiFi.conf
-44914a6a10adc95c9bee99d7f8b36e58da6aa1c71ba0b4f360ff5a8480e8f25b978a64d234f797badd4cda43531b73346831d9d47b3488e613994698a5db21e9  TF300T_WM8903.conf
-3202c7e16e8a48290333456379d4289b1491ff6c5ff4eb7bf50aa36946da6f5315b77db2a0598ed94a8f93e6b503eedfb84739c0d4c5fcb89bddb81d66b3f92d  TF300T_WM8903-HiFi.conf"
+"
