@@ -3,13 +3,20 @@
 
 pkgname=device-oneplus-fajita
 pkgdesc="OnePlus 6T"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg linux-postmarketos-qcom-sdm845 soc-qcom-sdm845 soc-qcom-sdm845-ucm"
+depends="
+	linux-postmarketos-qcom-sdm845
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sdm845
+	soc-qcom-sdm845-ucm
+"
 makedepends="devicepkg-dev"
 source="deviceinfo rootston.ini"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
@@ -35,6 +42,6 @@ phosh() {
 }
 
 sha512sums="
-9b4cdfa1f9a07461b761dc2e655136b68616675b4f8401d2626697b69f3f3a0315cc727848854070bf24ccbd3e98983ea4577e53a39ea3b7130b7263932c5e24  deviceinfo
+54e32ecf256b398b4e077b214b6ca8b838bc0193f9703ce45368257b03c1f3ffb319afdb6f30954f59fe263908298c97e2c185562dcb05b5fb35b3e10e1de52f  deviceinfo
 035f97e328ff9f976b082e66b97f76036cdee9825f3022471c7c5d371291cc4b5bd5c18196cd49f4cd9ad6390abe691b506de3b221e3c122433d5620e3b3c4c9  rootston.ini
 "
