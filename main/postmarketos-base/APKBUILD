@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
 pkgver=11
-pkgrel=1
+pkgrel=2
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -13,6 +13,7 @@ depends="
 	dnsmasq
 	eudev
 	haveged
+	nftables
 	openssh
 	postmarketos-mkinitfs
 	postmarketos-mvcfg
@@ -29,6 +30,7 @@ subpackages="
 	$pkgname-tinydm
 	$pkgname-x11
 	$pkgname-pulseaudio
+	$pkgname-nftables
 	"
 options="!check"
 replaces="
@@ -134,6 +136,12 @@ pulseaudio() {
 	install_if="$pkgname=$pkgver-r$pkgrel pulseaudio"
 	amove etc/pulse/postmarketos.pa
 	amove etc/pulse/daemon.conf.d/90-postmarketos.conf
+}
+
+nftables() {
+	install_if="$pkgname=$pkgver-r$pkgrel nftables"
+	depends="postmarketos-config-nftables"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
