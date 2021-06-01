@@ -3,13 +3,20 @@
 
 pkgname=device-oneplus-enchilada
 pkgdesc="OnePlus 6"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg linux-postmarketos-qcom-sdm845 soc-qcom-sdm845 soc-qcom-sdm845-ucm"
+depends="
+	linux-postmarketos-qcom-sdm845
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sdm845
+	soc-qcom-sdm845-ucm
+"
 makedepends="devicepkg-dev"
 source="deviceinfo rootston.ini"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
@@ -35,6 +42,6 @@ phosh() {
 }
 
 sha512sums="
-230781496f912701376abb9956e1734633f3108b54f4b287692b65b3f39f525ba742fdc530d369fa3d22babc92b004b3af3489e8c2f862cf7077df1308bc390c  deviceinfo
+f1ed55145084a9d9e8c6110079188fd68b5cf8982f904db928eaabe72f538ac0e026d374a19d3588b9b6d4350bb0a238510e0160cb5ebbcc6e6901ba6811e59b  deviceinfo
 035f97e328ff9f976b082e66b97f76036cdee9825f3022471c7c5d371291cc4b5bd5c18196cd49f4cd9ad6390abe691b506de3b221e3c122433d5620e3b3c4c9  rootston.ini
 "
