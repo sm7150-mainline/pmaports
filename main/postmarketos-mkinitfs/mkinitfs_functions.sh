@@ -337,6 +337,8 @@ create_uboot_files()
 create_bootimg()
 {
 	[ "${deviceinfo_generate_bootimg}" = "true" ] || return
+	# shellcheck disable=SC2039
+	bootimg="${outfile/initramfs-/boot.img-}"
 
 	if [ "${deviceinfo_bootimg_pxa}" = "true" ]; then
 		require_package "pxa-mkbootimg" "pxa-mkbootimg" "bootimg_pxa"
@@ -406,7 +408,7 @@ create_bootimg()
 		--pagesize "${deviceinfo_flash_pagesize}" \
 		${_second} \
 		${_dt} \
-		-o "${outfile/initramfs-/boot.img-}" || exit 1
+		-o "$bootimg" || exit 1
 	if [ "${deviceinfo_mkinitfs_postprocess}" != "" ]; then
 		sh "${deviceinfo_mkinitfs_postprocess}" "$outfile"
 	fi
@@ -418,14 +420,14 @@ create_bootimg()
 		fi
 		# shellcheck disable=SC2039
 		blobpack $_flags "${outfile/initramfs-/blob-}" \
-				LNX "${outfile/initramfs-/boot.img-}" || exit 1
+				LNX "$bootimg" || exit 1
 		# shellcheck disable=SC2039
-		mv "${outfile/initramfs-/blob-}" "${outfile/initramfs-/boot.img-}"
+		mv "${outfile/initramfs-/blob-}" "$bootimg"
 	fi
 	if [ "${deviceinfo_bootimg_append_seandroidenforce}" = "true" ]; then
 		echo "==> initramfs: appending 'SEANDROIDENFORCE' to boot.img"
 		# shellcheck disable=SC2039 disable=SC2039
-		echo -n "SEANDROIDENFORCE" >> "${outfile/initramfs-/boot.img-}"
+		echo -n "SEANDROIDENFORCE" >> "$bootimg"
 	fi
 }
 
