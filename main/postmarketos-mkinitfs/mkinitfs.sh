@@ -34,6 +34,7 @@ append_or_copy_dtb
 add_mtk_header
 create_uboot_files
 create_bootimg
+flash_updated_boot_parts
 
 rm -rf "$tmpdir"
 

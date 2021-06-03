@@ -24,6 +24,7 @@ deviceinfo_initfs_compression=""
 deviceinfo_kernel_cmdline=""
 deviceinfo_legacy_uboot_load_address=""
 deviceinfo_modules_initfs=""
+deviceinfo_flash_kernel_on_update=""
 
 # Overwritten by mkinitfs.sh
 tmpdir=""
@@ -429,6 +430,21 @@ create_bootimg()
 		# shellcheck disable=SC2039 disable=SC2039
 		echo -n "SEANDROIDENFORCE" >> "$bootimg"
 	fi
+}
+
+flash_updated_boot_parts()
+{
+	[ "${deviceinfo_flash_kernel_on_update}" = "true" ] || return
+	# If postmarketos-update-kernel is not installed then nop
+	[ -f /sbin/pmos-update-kernel ] || return
+	if [ -f "/in-pmbootstrap" ]; then
+		echo "==> Not flashing boot in chroot"
+		return
+	fi
+
+	echo "==> Flashing boot image"
+	flavor=$(uname -r | sed "s/^[^-]*-//")
+	pmos-update-kernel "$flavor"
 }
 
 # Append the correct device tree to the linux image file or copy the dtb to the boot partition
