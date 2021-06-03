@@ -1,0 +1,37 @@
+
+pkgname=firmware-samsung-gt58lte
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Samsung Galaxy Tab A 8.0 2015 (SM-T355Y)"
+url="http://hello-world-321.github.io/pmos-firmware/"
+subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck"
+source="http://hello-world-321.github.io/pmos-firmware/SM-T355Y.tar.xz"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+modem() {
+	pkgdesc="Samsung Galaxy Tab A 8.0 2015 (SM-T355Y) modem firmware"
+	install -Dm644 "$srcdir"/mba.mbn -t "$subpkgdir/$_fwdir"
+	install -Dm644 "$srcdir"/modem.* -t "$subpkgdir/$_fwdir"
+}
+
+venus() {
+	pkgdesc="Samsung Galaxy Tab A 8.0 2015 (SM-T355Y) video firmware"
+	install -Dm644 "$srcdir"/venus.* -t "$subpkgdir/$_fwdir"/qcom/venus-1.8
+}
+
+wcnss() {
+	pkgdesc="Samsung Galaxy Tab A 8.0 2015 (SM-T355Y) WiFi/BT firmware"
+	cd "$srcdir"
+	install -Dm644 wcnss.* -t "$subpkgdir/$_fwdir"
+	install -Dm644 WCNSS_* -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+sha512sums="c826317e7aec6fc713e91aa398399818b699b8059b52fec0931f1af4952282331977ba677e90f531ca031be7272542f0cb181b1a1e7243da694f8caaecea66f8  SM-T355Y.tar.xz"
