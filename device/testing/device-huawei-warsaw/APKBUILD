@@ -2,13 +2,14 @@
 pkgname=device-huawei-warsaw
 pkgdesc="Huawei P10 Lite"
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-huawei-warsaw mkbootimg mesa-dri-gallium msm-fb-refresher"
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo"
 
 build() {
@@ -17,6 +18,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-huawei-warsaw hisi-wlan"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="1d677f67178d34509af45f620a79657ccbe53d5e9e050686be941a62eed47a7b3850f0c5c63cefa45cfa3fda9e8bb2dcda54c8ce26ae1227da0a646d3e20bdcc  deviceinfo"
