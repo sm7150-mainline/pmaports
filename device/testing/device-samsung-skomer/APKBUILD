@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-skomer
 pkgdesc="Samsung Galaxy Xcover 2"
-pkgver=1
-pkgrel=3
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -12,10 +12,12 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-kwin
+	$pkgname-phosh
 "
 source="
 	deviceinfo
 	kwin.sh
+	rootston.ini
 "
 
 build() {
@@ -37,5 +39,14 @@ kwin() {
 	install -Dm644 "$srcdir"/kwin.sh "$subpkgdir"/etc/profile.d/kwin.sh
 }
 
-sha512sums="215266f1a9cf42c366c12a09406a15ec7dee1e36255ba5fae76be4e2de5024db39272a674be40568db028e14286a17b0df35aac4e9d376971d1258ff95a544f0  deviceinfo
-685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  kwin.sh"
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+			"$subpkgdir"/etc/phosh/rootston.ini
+}
+
+sha512sums="
+215266f1a9cf42c366c12a09406a15ec7dee1e36255ba5fae76be4e2de5024db39272a674be40568db028e14286a17b0df35aac4e9d376971d1258ff95a544f0  deviceinfo
+685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  kwin.sh
+258ed4929ccfeee70777651648ad504038ef4261479e29c43f0a3b4aeccddfde34d0d2b06a2b41e545fbd108aa4aed7c7d32930089bd3540b6ede14d480d8aae  rootston.ini
+"
