@@ -4,9 +4,9 @@
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.13_rc2
+pkgver=5.13_rc4
 pkgrel=0
-_tag="5.13-rc2"
+_tag="5.13-rc4"
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
 _carch="arm"
@@ -19,6 +19,8 @@ source="
 	$pkgname-$_tag.tar.gz::https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
 	config-$_flavor.armv7
 	bl.patch
+	panel.patch
+	regulators.patch
 "
 builddir="$srcdir/linux-${_tag#v}"
 
@@ -47,7 +49,9 @@ package() {
 }
 
 sha512sums="
-eee237da43e08ac6d897510436b52fe042cff6583fd5406f4bc1535bd8a6780cbb0e1dfee9584b88cfa60fbc55a38be4cd5a424587c57168050f6ec6ce96890e  linux-postmarketos-stericsson-5.13-rc2.tar.gz
-a55862ad08db8d9307107a1996c64b59f716870549ca7a9ce38a3ebcbd14b57e1cbb91f830c1f938f8cf3b5b5512a41edf06d9deec5a48fb02a03e8b18cc3873  config-postmarketos-stericsson.armv7
-44ba95ca1278de476489ed505de6ea18140ee1f5f4176ecb0935a336c01e4468b7cb70176474e7fd12c886428dc74219fbcc3883b285276dda44530cd8262c32  bl.patch
+94ee9e59d4a3edcaf229c5ec29623302b50dd62d4ef8bdd91539cf0009f5a5fd13be629dbe78d004b016fec822c9e755898ea708fa33e1c74c54a650f64e030e  linux-postmarketos-stericsson-5.13-rc4.tar.gz
+6758b31eeefbb72cf7bb831467dce96acfd33b547d37a45631a74c8e1a58fc7305a9fba77fddc9cbada6d9b0fccacb2255fc4f8562ee25d88ca02cae71a17036  config-postmarketos-stericsson.armv7
+66ec2d3105540e991bccc8cfb0e4212cb40a31a5a35e8cdc084b8bd7ffa016a86b3b340fd57b077b3c95b5bcb1e80cadaa11e71cd1a54a3e0e595024f3f27346  bl.patch
+1d4d549c5a8c8bda8eec814cd8632626f16d273d775f082028d15db7a330e0c01b2999668b0963eaeb06410de0c14d1d4c3344ac92a228da9392dba33562dcac  panel.patch
+8206d74c52328827502a32644f70fd149a72a78aaf936cd44f474b9153e8caccf73206df76e24004329edebab90e1a4a0e965630f4817aa5dd642d9ee2729295  regulators.patch
 "
