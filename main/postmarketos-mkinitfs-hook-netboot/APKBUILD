@@ -1,0 +1,26 @@
+# Maintainer: Mark <clashclanacc2602@gmail.com>
+pkgname=postmarketos-mkinitfs-hook-netboot
+pkgver=1
+pkgrel=0
+pkgdesc="Netboot postmarketOS using nbd feature"
+url="https://postmarketos.org"
+depends="postmarketos-mkinitfs"
+source="
+	netboot.sh
+	netboot.modules
+	"
+arch="noarch"
+license="GPL-2.0-or-later"
+options="!check" # No tests
+
+package() {
+	install -Dm644 "$srcdir"/netboot.sh \
+		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/netboot.sh
+	install -Dm644 "$srcdir"/netboot.modules \
+		"$pkgdir"/etc/postmarketos-mkinitfs/modules/30-netboot.modules
+}
+
+sha512sums="
+9f302b5fb13966d1e6bd9445fe0cf12a2e4fc7e0db50837f3b772628d46df6bec70da00dec3c4ce6b33075e1f906c02f5b796ac521c609b082d2fe9a523fb6cb  netboot.sh
+3c9c812a6cd25640e6cf4d722cff6c6356d5666ec6009b4c65f89e62211cc406d2cd09e0fdda6b1c1906ee32c3854988ab701cee8811208e3ef666f09e638568  netboot.modules
+"
