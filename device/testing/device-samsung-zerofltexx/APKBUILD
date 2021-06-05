@@ -2,14 +2,21 @@
 pkgname=device-samsung-zerofltexx
 pkgdesc="Samsung Galaxy S6"
 pkgver=0.1
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-samsung-zerofltexx mkbootimg mesa-dri-gallium msm-fb-refresher"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="deviceinfo
+	udev/60-persistent-v4l.rules
+	"
+
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+install="$pkgname.post-install"
+
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -17,6 +24,19 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/60-persistent-v4l.rules \
+		"$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
-sha512sums="a77cb40856b63d0c2646d000a7be2e2afc46d4c8353a495749ff54be7a9ae5b50c2849d1d01e69e793e8b6685d857fce19c674a4bf40c00d2afc19ac6f6e13bb  deviceinfo"
+nonfree_firmware() {
+	pkgdesc="Non-free firmware for the Samsung Galaxy S6"
+	depends="firmware-samsung-zero"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="
+e21acd406c8803bf4672489ffc3d9a8584ee5e7f797ccc43270c94cf1ea23c0ac70ec98d037eeb572fbafcc2eaef46551e3374920aa0b80e8d3809c4075cf4cd  deviceinfo
+b8bf2e3ec166af6acbbfaaa2b57b053473c0b12df007090eecf7a885aee2e3cd5d982819e2ee73e2817e5266b9875dc9240389bca409d5523f3cfa8037fa7870  60-persistent-v4l.rules
+"
