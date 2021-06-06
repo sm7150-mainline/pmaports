@@ -1,14 +1,14 @@
-From 71737365a6af9f736a816efa7ec15783ab82de6b Mon Sep 17 00:00:00 2001
+From 7045385547867b629c80cbcadf68c1586b98c51c Mon Sep 17 00:00:00 2001
 From: Joey Hewitt <joey@joeyhewitt.com>
 Date: Fri, 19 Jul 2019 22:02:07 +0200
 Subject: [PATCH] support smdpkt
 
 ---
- plugins/udevng.c | 65 +++++++++++++++++++++++++++---------------------
- 1 file changed, 36 insertions(+), 29 deletions(-)
+ plugins/udevng.c | 66 +++++++++++++++++++++++++++---------------------
+ 1 file changed, 37 insertions(+), 29 deletions(-)
 
 diff --git a/plugins/udevng.c b/plugins/udevng.c
-index 4a38621b..ba7d72f0 100644
+index 34ac1cc0..0d594998 100644
 --- a/plugins/udevng.c
 +++ b/plugins/udevng.c
 @@ -203,41 +203,46 @@ static gboolean setup_gobi(struct modem_info *modem)
@@ -87,15 +87,16 @@ index 4a38621b..ba7d72f0 100644
  
  
  	ofono_modem_set_string(modem->modem, "Device", qmi);
-@@ -2024,6 +2029,8 @@ static void enumerate_devices(struct udev *context)
+@@ -2074,6 +2079,9 @@ static void enumerate_devices(struct udev *context)
  		return;
  
  	udev_enumerate_add_match_subsystem(enumerate, "tty");
++	udev_enumerate_add_match_subsystem(enumerate, "wwan");
 +	udev_enumerate_add_match_subsystem(enumerate, "smdpkt");
 +	udev_enumerate_add_match_subsystem(enumerate, "rpmsg");
  	udev_enumerate_add_match_subsystem(enumerate, "usb");
  	udev_enumerate_add_match_subsystem(enumerate, "usbmisc");
  	udev_enumerate_add_match_subsystem(enumerate, "net");
 -- 
-2.27.0
+2.31.1
 
