@@ -12,8 +12,8 @@ makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
-	$pkgname-kernel-mainline-i9300:kernel_mainline_i9300
-	$pkgname-kernel-mainline-i9305:kernel_mainline_i9305
+	$pkgname-kernel-mainline-i9300-warning:kernel_mainline_i9300_warning
+	$pkgname-kernel-mainline-i9305-warning:kernel_mainline_i9305_warning
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="
@@ -37,14 +37,18 @@ kernel_downstream() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-kernel_mainline_i9300() {
-	pkgdesc="(SIII) For kernel development only (most features aren't working)"
+kernel_mainline_i9300_warning() {
+	pkgdesc="(SIII) mainline WIP
+		*** WARNING: reported to cause hardware failure:
+		https://postmarketos.org/i9305 ***"
 	depends="linux-postmarketos-exynos4"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-kernel_mainline_i9305() {
-	pkgdesc="(SIII LTE) For kernel development only (most features aren't working)"
+kernel_mainline_i9305_warning() {
+	pkgdesc="(SIII LTE) mainline WIP
+		*** WARNING: reported to cause hardware failure:
+		https://postmarketos.org/i9305 ***"
 	depends="linux-postmarketos-exynos4"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
