@@ -1,0 +1,47 @@
+_flavor=postmarketos-qcom-apq8064
+pkgname=linux-$_flavor
+pkgver=5.10.98
+pkgrel=0
+_commit=217c7ff0a7127d28f024f75fd267752ca4180559
+arch="armv7"
+pkgdesc="Upstream unstable kernel with patches for APQ8064 devices"
+url="https://github.com/apq8064-mainline/linux/tree/qcom-apq8064-next"
+makedepends="bison flex openssl-dev xz perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+options="!strip !check !tracedeps pmb:cross-native"
+source="$pkgname-$pkgver.tar.gz::https://github.com/apq8064-mainline/linux/archive/$_commit.tar.gz
+	config-$_flavor.$arch
+	"
+license="GPL2"
+_abi_release=$pkgver
+_carch="arm"
+
+builddir="$srcdir/linux-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+	make ARCH="$_carch" CC="${CC:-gcc}" olddefconfig
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		CFLAGS_MODULE=-fno-pic
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+
+}
+sha512sums="
+fb936890126b702792c03ec09da633801c25d4b3b9df010dc0171a8fa940137db88bfb19712e49a13b9cf16f9f4a54d0f4eb766a2fec76ff021a51480692200b  linux-postmarketos-qcom-apq8064-5.10.98.tar.gz
+e34250862fb5e5a0fedcd895109ce03aba965fdd2acdb221ca083d2856c67ae8ffec0266d1924abb10315c27c986af425a80db98a5cabb1ab72c34c5abbe211d  config-postmarketos-qcom-apq8064.armv7"
