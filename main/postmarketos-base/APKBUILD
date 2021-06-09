@@ -1,35 +1,21 @@
 pkgname=postmarketos-base
-pkgver=11
-pkgrel=2
+pkgver=12
+pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
 license="GPL-3.0-or-later"
 depends="
 	alpine-base
-	chrony
-	cryptsetup
-	dbus
-	dnsmasq
 	eudev
-	haveged
-	nftables
 	openssh
 	postmarketos-mkinitfs
 	postmarketos-mvcfg
-	shadow
 	sudo
-	util-linux
-	wpa_supplicant
-	wireless-regdb
 	"
 install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-upgrade"
 triggers="$pkgname.trigger=/etc"
 subpackages="
-	$pkgname-elogind
-	$pkgname-tinydm
-	$pkgname-x11
-	$pkgname-pulseaudio
 	$pkgname-nftables
 	"
 options="!check"
@@ -37,9 +23,7 @@ replaces="
 	alpine-base
 	alpine-baselayout
 	busybox-initscripts
-	chrony
 	sudo
-	wpa_supplicant-openrc
 	"
 replaces_priority=100  # leave plenty for alpine
 
@@ -47,20 +31,13 @@ _source044="
 	etc/sudoers
 	"
 _source644="
-	etc/chrony/chrony.conf
 	etc/conf.d/swapfile
 	etc/conf.d/syslog
-	etc/conf.d/tinydm
-	etc/conf.d/wpa_supplicant
-	etc/elogind/logind.conf
 	etc/fstab
 	etc/issue
 	etc/motd
-	etc/sleep-inhibitor.conf
 	etc/udev/rules.d/50-firmware.rules
 	etc/os-release
-	etc/pulse/postmarketos.pa
-	etc/pulse/daemon.conf.d/90-postmarketos.conf
 	"
 _source755="
 	etc/init.d/deferred-initcalls
@@ -102,64 +79,22 @@ package() {
 	postmarketos-mvcfg-package "$pkgdir" "$pkgname"
 }
 
-x11() {
-	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
-	depends="
-		libinput
-		xf86-input-libinput
-		xf86-video-fbdev"
-	mkdir "$subpkgdir"
-}
-
-elogind() {
-	install_if="$pkgname=$pkgver-r$pkgrel elogind"
-	depends="sleep-inhibitor"
-	install="$subpkgname.pre-upgrade $subpkgname.post-install"
-	replaces="
-		elogind
-		sleep-inhibitor
-		"
-
-	amove etc/elogind/logind.conf
-	amove etc/sleep-inhibitor.conf
-
-	postmarketos-mvcfg-package "$subpkgdir" "$subpkgname"
-}
-
-tinydm() {
-	install_if="$pkgname=$pkgver-r$pkgrel tinydm-openrc"
-	replaces="tinydm-openrc"
-	amove etc/conf.d/tinydm
-}
-
-pulseaudio() {
-	install_if="$pkgname=$pkgver-r$pkgrel pulseaudio"
-	amove etc/pulse/postmarketos.pa
-	amove etc/pulse/daemon.conf.d/90-postmarketos.conf
-}
-
 nftables() {
 	install_if="$pkgname=$pkgver-r$pkgrel nftables"
 	depends="postmarketos-config-nftables"
+	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
 e529f5cef1f31481b577f99b8917704f2cfefb963d98bf40a14b017938e55a00134d2033f81d2cb0b8489c5e9b4a92fdc0a788013f1adb4cd46d9580c9988186  rootfs-etc-sudoers
-e5d049db1d82c510bab9246208b51b8ec2711d008d67792fc10d4c0b65ed4dece7b5ae3c3dd28a8539d177b6849c1f921cb9fef3d2c7bee0355451f7b4757ec6  rootfs-etc-chrony-chrony.conf
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  rootfs-etc-conf.d-swapfile
 e4576c58c35f80bedddb1e89e186f37d31a186d3e9eb046581b8c5d7b7d435e18924539e851d3e67dc0ede80f9d44d16bd9ef52e73350d3f13224edc31d73a34  rootfs-etc-conf.d-syslog
-44e4283c6f77de83915977dd3bc2d8e2d96b3ed6cc68d3cc156304359ae649b5a8b0bac843e517ec6faa2066dd43ba85e313899b1eda04862f864fb9eb508aa0  rootfs-etc-conf.d-tinydm
-fe0651904c1f40ffa67d83daca190af199f63247e53642a59a1e1147cd06776fcf20b7b2fcc5373783d50b8bd6ce8d1354c8e5f4d582d319727b9ceefd1e8e16  rootfs-etc-conf.d-wpa_supplicant
-8d2c54fe3ca62c62f8337fb6be28479d0e02ea63f32abae81907f2768631e65c9e17485f8bc0854a013377f729b06dd1873e2b75f86f657ece866d00aecbbdb4  rootfs-etc-elogind-logind.conf
 9b8d0493bb64457fe176fea801e0771d3c5279302c61559824bf81b3d2b66d2c1e076f4aaac65f55389005acb18c27e44bed858c2bdbad37d74199f07c86c354  rootfs-etc-fstab
 45bd0742a64a9d3c4a88e152b97edcf3fa1edca28884f9ea69e7c4c365f1e41ef9056dbe204545de7d4b2ba92e1e5872b2a929c2dcc1dd468e627cc3f090b8e6  rootfs-etc-issue
 01403df3b5a2be0dd70387a3c32cf24a77bc097679fbefca585082a0970b7d756723c33687be3809351b5e31c85947db84861118bfeced8f5f865fe2452555ec  rootfs-etc-motd
-6b9c7bb73213187eb9ca8a94109b2b816f50c1158c90fec2e92b373864280d67741589e5bfbab8810945f031d2f4b535aad78a72e46e52ea50be5b85324da381  rootfs-etc-sleep-inhibitor.conf
 0b098828080055d3646ea54891cb0e1b578cbc30f5e16f7284f2814c08192f18079a38fb686d192715ae6a3d2cd6625d9e3cf99f234a6f0d94088bb0cb2ce43d  rootfs-etc-udev-rules.d-50-firmware.rules
 6723ae5035b959ed8c0c5ee490ce2e1abc9fe89e6c7348533e488b78b2a15593df406d6691f6b854ed71633960257a6aa5c65aa01db189732e26ba8e15ef23b8  rootfs-etc-os-release
-315598b67889b1f25f82b8269ed36af4fcee018a4edf2926ba966ab08e0a42e36676896d0a5636001b1eb7f16211dcf518123230049556dec9d03006e003a584  rootfs-etc-pulse-postmarketos.pa
-4afe8c5b70f4ca85f9348eb0df12e3152b76203a1a138daa5777f22b751ea431d3ee4113189d8606078f87a99c230b184bc73d53222e6e00581e46224bf5d39f  rootfs-etc-pulse-daemon.conf.d-90-postmarketos.conf
 5fd6dd7f9941e975a6ce559924eb252606943276dc09455bbeb05ff718ecd28f20a08eee8e04ca580e5af71d4c944c256ec04f07b07286394f5dfedfa59273e7  rootfs-etc-init.d-deferred-initcalls
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  rootfs-etc-init.d-swapfile
 3ceeee37f558e7c95ad973692b6a437f997e6b46c3d1c2257ddfb1529a5633477373aa123c7f08164e818daae50acb203d151379f27ca11bd458809e6a0d4de7  rootfs-sbin-swapfile
