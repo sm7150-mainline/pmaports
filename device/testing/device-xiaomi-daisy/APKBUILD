@@ -4,15 +4,20 @@
 pkgname=device-xiaomi-daisy
 pkgdesc="Xiaomi Mi A2 Lite"
 pkgver=1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-qcom-msm8953 mkbootimg mesa-dri-gallium"
+depends="postmarketos-base mesa-dri-gallium"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo
+subpackages="
+		$pkgname-nonfree-firmware:nonfree_firmware
+		$pkgname-kernel-downstream:kernel_downstream
+		$pkgname-kernel-mainline:kernel_mainline
+		"
+source="
+	deviceinfo
 	fb.modes
 	pointercal
 	30-gpu-firmware.files
@@ -35,8 +40,20 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-xiaomi-daisy"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Mainline kernel"
+	depends="linux-postmarketos-qcom-msm8953 mkbootimg"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 sha512sums="
-749e63b2d2c2586b77062aeef24dd080e0f405dff5c2380a1bd293a3839f68d0e40dc61c9d4c0bf47025dcacbd16076108d69b997851e2a6d40f7b3e473f7447  deviceinfo
+b62292726824b133c3425e0a2df6d22cba84e281ccf7ada643e97262cca1a3e878b5d9289ef06d84d39b2103212d02e3bdce88f41ff5f26617199fdc66108ed1  deviceinfo
 9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
 4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
 302c0bec754bb79ef561c1a8d4ff34ba52b904c853bce6a15a79ba7b5b7a3d02c1c75bbe86d59be7b608a6dc744dd3e3c638eaa4539c53d20fa55fa5ea397d74  30-gpu-firmware.files
