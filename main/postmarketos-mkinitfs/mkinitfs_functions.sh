@@ -214,29 +214,34 @@ get_osk_config()
 get_binaries_extra()
 {
 	BINARIES_EXTRA="
-		$(find /usr/lib/directfb-* -name '*.so')
 		/lib/libz.so.1
-		/sbin/cryptsetup
 		/sbin/dmsetup
 		/sbin/e2fsck
-		/usr/bin/osk-sdl
-		/usr/lib/libGL.so.1
-		/usr/lib/libts*
-		/usr/lib/ts/*
 		/usr/sbin/parted
 		/usr/sbin/resize2fs
 		/usr/sbin/resize.f2fs
 	"
 
-	if [ -n "$deviceinfo_mesa_driver" ]; then
+	if [ -x /usr/bin/osk-sdl ]; then
 		BINARIES_EXTRA="
 			$BINARIES_EXTRA
-			/usr/lib/libEGL.so.1
-			/usr/lib/libGLESv2.so.2
-			/usr/lib/libgbm.so.1
-			/usr/lib/libudev.so.1
-			/usr/lib/xorg/modules/dri/${deviceinfo_mesa_driver}_dri.so
+			$(find /usr/lib/directfb-* -name '*.so')
+			/usr/bin/osk-sdl
+			/sbin/cryptsetup
+			/usr/lib/libGL.so.1
+			/usr/lib/libts*
+			/usr/lib/ts/*
 		"
+		if [ -n "$deviceinfo_mesa_driver" ]; then
+			BINARIES_EXTRA="
+				$BINARIES_EXTRA
+				/usr/lib/libEGL.so.1
+				/usr/lib/libGLESv2.so.2
+				/usr/lib/libgbm.so.1
+				/usr/lib/libudev.so.1
+				/usr/lib/xorg/modules/dri/${deviceinfo_mesa_driver}_dri.so
+			"
+		fi
 	fi
 
 	tmp1=$(mktemp /tmp/mkinitfs.XXXXXX)
@@ -497,10 +502,13 @@ generate_initramfs_extra()
 {
 	echo "==> initramfs: creating $1"
 
-	osk_conf="$(get_osk_config)"
-	if [ $? -eq 1 ]; then
-		echo "ERROR: Font specified in /etc/osk.conf does not exist!"
-		exit 1
+	osk_conf=""
+	if [ -x /usr/bin/osk-sdl ]; then
+		osk_conf="$(get_osk_config)"
+		if [ $? -eq 1 ]; then
+			echo "ERROR: Font specified in /etc/osk.conf does not exist!"
+			exit 1
+		fi
 	fi
 
 	# Set up initramfs-extra in temp folder
@@ -509,7 +517,7 @@ generate_initramfs_extra()
 	tmpdir_extra_cpio_img="$tmpdir_extra_cpio/extra.img"
 	mkdir -p "$tmpdir_extra"
 	copy_files "$(get_binaries_extra)" "$tmpdir_extra"
-	copy_files "$osk_conf" "$tmpdir_extra"
+	[ -n "$osk_conf" ] && copy_files "$osk_conf" "$tmpdir_extra"
 	create_cpio_image "$tmpdir_extra" "$tmpdir_extra_cpio_img"
 	rm -rf "$tmpdir_extra"
 
