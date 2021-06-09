@@ -1,6 +1,6 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
-pkgver=7
+pkgver=8
 pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (works only with numeric passwords!)"
 url="https://puri.sm"
@@ -42,7 +42,7 @@ _pmb_recommends="calls
 	xwayland
 	"
 _pmb_groups="feedbackd"
-subpackages="$pkgname-qt_tweaks $pkgname-pipewire"
+subpackages="$pkgname-qt_tweaks"
 install="$pkgname.post-install $pkgname.post-upgrade"
 replaces="gnome-settings-daemon"
 source="
@@ -57,7 +57,6 @@ source="
 	osk.sh
 	phosh-qt-mobile-controls.sh
 	phosh-qt-wayland.sh
-	pipewire.desktop
 	"
 options="!check"
 
@@ -89,15 +88,6 @@ qt_tweaks() {
 		"$srcdir"/phosh-qt-mobile-controls.sh \
 		"$srcdir"/phosh-qt-wayland.sh
 }
-
-pipewire() {
-	install_if="$pkgname=$pkgver-r$pkgrel pipewire"
-	replaces="pipewire"
-
-	# Workaround for #963 until .desktop is adjusted in pipewire package
-	install -Dm644 "$srcdir"/pipewire.desktop \
-		-t "$subpkgdir"/etc/xdg/autostart/
-}
 sha512sums="
 77a8aec2a43829422481c17beaf4224d686cc973f80d72be383103a6be0bf5d0689486c50a1dffecf9f2605bd607647e23ab539dc283978792d248625ab327d5  000-gschema.override
 4a60c08c86688f2d92820bc07305fe1bcff54986d29ee5dd84c7902ea5247b73b96f7453d2da9931a19903b2f5825b8a636f92edcf89bc205a7d389defea0b0e  01-phoc-scaling
@@ -110,5 +100,4 @@ e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742e
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
 bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  phosh-qt-mobile-controls.sh
 6e193eca3961a78d47b4656892eae34d019d9317a255a201f5ea61e3300caff04c526a27cd98d0edc072b36e3eaf3a1768f4cd27c5e2be8b19c167d535c820a6  phosh-qt-wayland.sh
-e499c5440e1690447ea0840898b577083be0387264e0b5c65e93ee5b4bdf7a01ad51814be4168d75e167451baebcd4cc37a55920a4240249b268dad8b180f540  pipewire.desktop
 "
