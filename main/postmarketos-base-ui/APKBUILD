@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
-pkgver=2
-pkgrel=1
+pkgver=3
+pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -23,6 +23,7 @@ subpackages="
 	$pkgname-tinydm
 	$pkgname-x11
 	$pkgname-pulseaudio
+	$pkgname-bluez-obexd:_obexd
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 replaces="
@@ -102,6 +103,14 @@ pulseaudio() {
 	amove etc/pulse/postmarketos.pa
 	amove etc/pulse/daemon.conf.d/90-postmarketos.conf
 }
+
+_obexd() {
+	install_if="$pkgname=$pkgver-r$pkgrel bluez-obexd"
+	replaces="bluez-obexd"
+	depends="obex-capabilities"
+	mkdir -p "$subpkgdir"
+}
+
 sha512sums="
 e5d049db1d82c510bab9246208b51b8ec2711d008d67792fc10d4c0b65ed4dece7b5ae3c3dd28a8539d177b6849c1f921cb9fef3d2c7bee0355451f7b4757ec6  rootfs-etc-chrony-chrony.conf
 44e4283c6f77de83915977dd3bc2d8e2d96b3ed6cc68d3cc156304359ae649b5a8b0bac843e517ec6faa2066dd43ba85e313899b1eda04862f864fb9eb508aa0  rootfs-etc-conf.d-tinydm
