@@ -1,0 +1,50 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Dylan Van Assche <me@dylanvanassche.be>
+
+pkgname=device-odroid-hc2
+pkgdesc="ODROID HC2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-odroid-hc2 u-boot-odroid u-boot-tools"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+_commit="42ac93dcfbbb8a08c2bdc02e19f96eb35a81891a"
+source="deviceinfo uboot-script.cmd network-interfaces"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkimage \
+		-A arm \
+		-O linux \
+		-T script \
+		-C none \
+		-a 0 \
+		-e 0 \
+		-n postmarketos \
+		-d "$srcdir"/uboot-script.cmd \
+		"$srcdir"/boot.scr
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+	install -Dm644 "$srcdir"/network-interfaces \
+		"$pkgdir"/etc/network/interfaces
+}
+
+nonfree_firmware() {
+	pkgdesc="U-Boot and Realtek firmware, required for a bootable system"
+	depends="firmware-odroid-hc2 linux-firmware-rtl_nic"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+1d300d7b11661da782ef7a4be0f47ec465a80e1ce3df07c5f7d07c9c5b7e656bb88c14ee179e98d91dbc18f5ba1002c334d9c5eaf48194d04e497b752a87552f  deviceinfo
+83a4bcc34d20c2e5e6f1c3412c291baa90a8137df7925c02d8e46d922d45615cc957d79d37a23982bed7e1cfa92f2be22fa5f11cc59d3706b79ba62a2d550263  uboot-script.cmd
+d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  network-interfaces
+"
