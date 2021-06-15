@@ -1,0 +1,32 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Uclydde <julianbraha@gmail.com>
+
+pkgname=device-lg-us996
+pkgdesc="LG V20"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-lg-us996
+	msm-fb-refresher
+	mesa-dri-swrast
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+8a5a1a70f111d36f66618fd3cb1470655752bc0242e99fd072d27309e41f235f734bfcf0e5a254335b637e23868c5b1a2e2169a244045107593a3f05be7926fe  deviceinfo
+"
