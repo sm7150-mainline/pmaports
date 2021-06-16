@@ -4,7 +4,7 @@ pkgname=upower
 pkgver=9999
 _pkgver=0.99.11
 _distver="UPOWER_${_pkgver//./_}"
-pkgrel=2
+pkgrel=3
 pkgdesc="Power Management Services"
 url="https://upower.freedesktop.org"
 arch="aarch64 armv7"
@@ -18,6 +18,7 @@ source="https://gitlab.freedesktop.org/upower/upower/-/archive/$_distver/upower-
 	0001-Add-torch-support.patch
 	0002-Detect-USB-Type-C-port-controller-and-other-chargers.patch
 	0003-torch-be-more-specific-when-searching-for-an-led-dev.patch
+	0004-daemon-Sync-icon-and-warning-for-non-default-low-level.patch
 	"
 builddir="$srcdir/$pkgname-$_distver"
 
@@ -55,7 +56,10 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="918fdba13df7ba85fd276daae68228554e71df95011b48dc42b006a059cf2996f906ce08e98f6d1da07c8f2a4235bc9622992fa42eaaf05a08f1a3650f4ae4b6  upower-UPOWER_0_99_11.tar.bz2
+sha512sums="
+918fdba13df7ba85fd276daae68228554e71df95011b48dc42b006a059cf2996f906ce08e98f6d1da07c8f2a4235bc9622992fa42eaaf05a08f1a3650f4ae4b6  upower-UPOWER_0_99_11.tar.bz2
 c6c8a557f8ca650e6e2b8b1f64f70744dc610f86f71d88602014b6c241c96821b5662f48ab63da6a2da9e52017b8d9f7a87655f8f640e87b5d17417577079b0b  0001-Add-torch-support.patch
 0673d32e8c3d313e21437e7d431068b4a0c51a4d63acf414fc93430c461ab5acbcc2ae8740d6614ed9487fadb8ae2c685e02fb7ad3623b71a20ccb90c1a0bd28  0002-Detect-USB-Type-C-port-controller-and-other-chargers.patch
-c0c440103f3712106728e02520de66875de36fb7799c57bfef8952d03bae00beaa2c9b6335115050e9d484d013f3bcb88230d7d9a1bc8c0f0305f77a0e8fcfa8  0003-torch-be-more-specific-when-searching-for-an-led-dev.patch"
+c0c440103f3712106728e02520de66875de36fb7799c57bfef8952d03bae00beaa2c9b6335115050e9d484d013f3bcb88230d7d9a1bc8c0f0305f77a0e8fcfa8  0003-torch-be-more-specific-when-searching-for-an-led-dev.patch
+77d8ab65118a3e776522665cdb66b7653eb0f9c6db2c82ddac0bf7ef0b25a262a054f38ccc403da3321209081b09ddfdc053fcf432b2e43a14e965aa60ae5c12  0004-daemon-Sync-icon-and-warning-for-non-default-low-level.patch
+"
