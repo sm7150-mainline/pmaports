@@ -1,10 +1,10 @@
 # Maintainer: Ultracoolguy <myownpersonalaccount@protonmail.com>
-# Kernel config based on: arch/arm64/configs/msm8953_defconfig
+# Kernel config based on: defconfig, msm8953.config, and device configs
 
 _flavor="postmarketos-qcom-msm8953"
 pkgname=linux-$_flavor
-pkgver=5.13_rc4
-pkgrel=0
+pkgver=5.13_rc6
+pkgrel=1
 pkgdesc="Mainline kernel fork for Qualcomm MSM8953 devices"
 arch="aarch64"
 url="https://github.com/msm8953-mainline/linux"
@@ -14,7 +14,7 @@ makedepends="bison findutils flex installkernel openssl-dev perl"
 
 _carch="arm64"
 # Source
-_commit="c9d3de23448127d4aa41419e7c9f9f3e757895cc"
+_commit="fd0f81dcec8023ea37d854c3d6d426ce41efb455"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/msm8953-mainline/linux/archive/$_commit.tar.gz
 	config-$_flavor.$arch
@@ -45,6 +45,6 @@ package() {
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 sha512sums="
-e78989f913ebebfb804f84074eff159468dbb9039bc35ab7199a3a2646ee84d5fdcfff9b7b6db59e658eaf50b2df7badd2cc8eefa94328e199922d9e314fa984  linux-postmarketos-qcom-msm8953-c9d3de23448127d4aa41419e7c9f9f3e757895cc.tar.gz
-a3cd41f442ef389bb74c5df0880255e7de6f3c405373a56d5b061cb7ab8be5314740e87ccbaa0fefdbe65de45301d4185340b6341daea2a0684e0e9068f2fdae  config-postmarketos-qcom-msm8953.aarch64
+7c517fba7dcaf5b993323c37d665c424a2562abdf2a5af78963cc5dbadc7191a6653c0059609ea05ee2880253b067bc270d57130c5a175cd4c833ccfab2a4aaf  linux-postmarketos-qcom-msm8953-fd0f81dcec8023ea37d854c3d6d426ce41efb455.tar.gz
+70633fd2d09249f90b6ea17f90477bb51bed654d8cdb9e34f7661d3a18db4339c17701d15f8749190d4179a4ca5ac15b133057be83f2b4e327f4dfcc87b17593  config-postmarketos-qcom-msm8953.aarch64
 "
