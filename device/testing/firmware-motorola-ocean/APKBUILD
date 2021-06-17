@@ -1,13 +1,13 @@
 pkgname=firmware-motorola-ocean
-pkgver=1
-pkgrel=1
+pkgver=2
+pkgrel=0
 pkgdesc="Firmware for Motorola Moto G7 Power"
 url="https://gitlab.com/Ultracoolguy/firmware-motorola-ocean"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck"
 depends="linux-firmware-qcom"
-_commit="1d0aa3d90c6984bf2f2774e4fbebcfbfaf2b6d69"
+_commit="2374787dcd3c6494b1e7bbdbc8807635aac3ddfc"
 source="https://gitlab.com/Ultracoolguy/firmware-motorola-ocean/-/archive/$_commit/firmware-motorola-ocean-$_commit.tar.gz"
 
 builddir="$srcdir/$pkgname-$_commit"
@@ -15,14 +15,22 @@ builddir="$srcdir/$pkgname-$_commit"
 _fwdir="/lib/firmware/postmarketos"
 
 package() {
+	install -Dm644 "$builddir"/a506_zap.* -t \
+		"$pkgdir/$_fwdir"
+	install -Dm644 "$builddir"/adsp.* -t \
+		"$pkgdir/$_fwdir"
+	install -Dm644 "$builddir"/mba.mbn -t \
+		"$pkgdir/$_fwdir"
+	install -Dm644 "$builddir"/modem.* -t \
+		"$pkgdir/$_fwdir"
+	install -Dm644 "$builddir"/venus.* -t \
+		"$pkgdir/$_fwdir"
 	install -Dm644 "$builddir"/wcnss.* -t \
 		"$pkgdir/$_fwdir"
 	install -Dm644 "$builddir"/wlan/prima/WCNSS_* -t \
 		"$pkgdir/$_fwdir"/wlan/prima
-	install -Dm644 "$builddir"/venus.* -t \
-		"$pkgdir/$_fwdir"
-	install -Dm644 "$builddir"/a506_zap.* -t \
-		"$pkgdir/$_fwdir"
 }
 
-sha512sums="a926564f45a199ecb3f5f86da1ad84d80e2d1b772d7c072f018374ff51956442686fa375c8b3f3fc0745fac59277c7504e2dd653aa86cc141e207fba1ff39c7e  firmware-motorola-ocean-1d0aa3d90c6984bf2f2774e4fbebcfbfaf2b6d69.tar.gz"
+sha512sums="
+b8f6b7665f26855f7a454d7a03ef235be6cbbcd23d70ef1522aa983a7e2a1692093fb83e48f0df4191be9f363a6a9a2fdcd1171316c2625a20489d6c1376401d  firmware-motorola-ocean-2374787dcd3c6494b1e7bbdbc8807635aac3ddfc.tar.gz
+"
