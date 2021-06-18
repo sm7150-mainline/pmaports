@@ -49,7 +49,7 @@ setup_firmware_path() {
 		echo "Kernel does not support setting the firmware image search path. Skipping."
 		return
 	fi
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3037
 	echo -n /lib/firmware/postmarketos >$SYS
 }
 

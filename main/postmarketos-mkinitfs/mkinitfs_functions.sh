@@ -313,12 +313,12 @@ create_uboot_files()
 	require_package "mkimage" "u-boot-tools" "generate_legacy_uboot_initfs"
 
 	echo "==> initramfs: creating uInitrd"
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3060
 	mkimage -A $arch -T ramdisk -C none -n uInitrd -d "$outfile" \
 		"${outfile/initramfs-/uInitrd-}" || exit 1
 
 	echo "==> kernel: creating uImage"
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3060
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
 	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		kernelfile="${kernelfile}-dtb"
@@ -328,7 +328,7 @@ create_uboot_files()
 		deviceinfo_legacy_uboot_load_address="80008000"
 	fi
 
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3060
 	mkimage -A $arch -O linux -T kernel -C none -a "$deviceinfo_legacy_uboot_load_address" \
 		-e "$deviceinfo_legacy_uboot_load_address" \
 		-n postmarketos -d "$kernelfile" "${outfile/initramfs-/uImage-}" || exit 1
@@ -338,7 +338,7 @@ create_uboot_files()
 create_bootimg()
 {
 	[ "${deviceinfo_generate_bootimg}" = "true" ] || return
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3060
 	bootimg="${outfile/initramfs-/boot.img-}"
 
 	if [ "${deviceinfo_bootimg_pxa}" = "true" ]; then
@@ -353,7 +353,7 @@ create_bootimg()
 	_base="${deviceinfo_flash_offset_base}"
 	[ -z "$_base" ] && _base="0x10000000"
 
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3060
 	kernelfile="${outfile/initramfs-/vmlinuz-}"
 	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		kernelfile="${kernelfile}-dtb"
@@ -419,15 +419,15 @@ create_bootimg()
 		if [ "${deviceinfo_bootimg_blobpack}" = "sign" ]; then
 			_flags="-s"
 		fi
-		# shellcheck disable=SC2039
+		# shellcheck disable=SC3060
 		blobpack $_flags "${outfile/initramfs-/blob-}" \
 				LNX "$bootimg" || exit 1
-		# shellcheck disable=SC2039
+		# shellcheck disable=SC3060
 		mv "${outfile/initramfs-/blob-}" "$bootimg"
 	fi
 	if [ "${deviceinfo_bootimg_append_seandroidenforce}" = "true" ]; then
 		echo "==> initramfs: appending 'SEANDROIDENFORCE' to boot.img"
-		# shellcheck disable=SC2039 disable=SC2039
+		# shellcheck disable=SC3037
 		echo -n "SEANDROIDENFORCE" >> "$bootimg"
 	fi
 }
@@ -460,7 +460,7 @@ append_or_copy_dtb()
 		fi
 		dtb="$dtb /usr/share/dtb/$filename.dtb"
 	done
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3060
 	kernel="${outfile/initramfs-/vmlinuz-}"
 	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		echo "==> kernel: appending device-tree ${deviceinfo_dtb}"
@@ -485,7 +485,7 @@ add_mtk_header()
 	rm "$outfile-orig"
 
 	echo "==> kernel: adding Mediatek header"
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3060
 	kernel="${outfile/initramfs-/vmlinuz-}"
 	rm -f "${kernel}-mtk"
 	mtk-mkimage KERNEL "$kernel" "${kernel}-mtk"
