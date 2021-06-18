@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
 pkgver=12
-pkgrel=0
+pkgrel=1
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -17,6 +17,7 @@ install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-upgrade"
 triggers="$pkgname.trigger=/etc"
 subpackages="
 	$pkgname-nftables
+	$pkgname-nofde
 	"
 options="!check"
 replaces="
@@ -83,6 +84,14 @@ nftables() {
 	install_if="$pkgname=$pkgver-r$pkgrel nftables"
 	depends="postmarketos-config-nftables"
 	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+nofde() {
+	# dummy package that satisfies the unlocker dependency for mkinitfs without
+	# installing anything for systems that don't use fde
+	provides="postmarketos-fde-unlocker"
+	provider_priority=1
 	mkdir "$subpkgdir"
 }
 
