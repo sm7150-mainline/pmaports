@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9100
 pkgver=4
-pkgrel=2
+pkgrel=3
 pkgdesc="Samsung Galaxy SII"
 url="https://postmarketos.org"
 arch="armv7"
@@ -14,6 +14,7 @@ subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-front-camera:nonfree_firmware_front_camera
 	$pkgname-weston:weston
 	$pkgname-media-pipeline:media_pipeline
 "
@@ -49,6 +50,13 @@ kernel_mainline() {
 nonfree_firmware() {
 	pkgdesc="Wifi firmware"
 	depends="firmware-samsung-i9100"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_front_camera() {
+	pkgdesc="Front camera firmware"
+	install_if="$pkgname-kernel-mainline"
+	depends="firmware-samsung-s5k5baf"
 	mkdir "$subpkgdir"
 }
 
