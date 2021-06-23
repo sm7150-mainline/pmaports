@@ -1,0 +1,47 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Maxim Karasev <begs@disroot.org>
+pkgname=device-xunlong-orangepi3
+pkgdesc="Xunlong Orange Pi 3"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-allwinner
+	mesa-dri-gallium
+	postmarketos-base
+	u-boot-tools
+	u-boot-sunxi
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="
+	deviceinfo
+	uboot-script.cmd
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
+		-n postmarketos -d "$srcdir"/uboot-script.cmd \
+		"$srcdir"/boot.scr
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+}
+
+nonfree_firmware() {
+	pkgdesc="Wi-Fi and Bluetooth firmware"
+	depends="firmware-xunlong-orangepi3"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+1fb319af5c74b85f4ceac02a51b0645bcee2674f6189e00c0e5ce40837076bd0c412250216f07a5a04c952eedcf1954277e0fa4b13854aee424f23c802799802  deviceinfo
+90dab64c2b3c55756017b63fea18852a22cae6ee43abb71b1c019c00a77e140cc162d7736bba5c8c007d1f6fa32cb8901ec190a3e46aaa85c557e4907d0bb1c7  uboot-script.cmd
+"
