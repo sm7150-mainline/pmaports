@@ -3,7 +3,7 @@
 
 pkgname=linux-samsung-a5y17lte
 pkgver=3.18.14
-pkgrel=9
+pkgrel=10
 pkgdesc="Samsung Galaxy A5 (2017) kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -11,7 +11,7 @@ _flavor="samsung-a5y17lte"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool-exynos gcc6 gcc-aarch64"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev dtbtool-exynos gcc6"
 
 # Source
 _repository="android_kernel_samsung_universal7880"
@@ -35,6 +35,13 @@ source="
 "
 builddir="$srcdir/$_repository-$_commit"
 _qcaclddir="$srcdir/quic-la-platform-vendor-qcom-opensource-wlan-qcacld-2.0-$_qca_commit"
+
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
 
 prepare() {
 	default_prepare
@@ -63,7 +70,7 @@ build_modules() {
 		source "$srcdir"/qcacld-2.0.config
 		# Use GCC-6, because when compiled with GCC-10 it fails to initialize:
 		# "module wlan: overflow in relocation type 261 val ffffffbffc000000"
-		make M=$_qcaclddir WLAN_ROOT=$_qcaclddir modules ARCH="$_carch" CC="gcc6-${CC:-gcc}"
+		make M=$_qcaclddir WLAN_ROOT=$_qcaclddir modules ARCH="$_carch" CC="${CC:-gcc}"
 	)
 }
 
