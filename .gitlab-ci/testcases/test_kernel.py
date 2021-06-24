@@ -15,7 +15,8 @@ def test_aports_kernel(args):
     """
     Various tests performed on the /**/linux-* aports.
     """
-    for path in glob.iglob(args.aports + "**/linux-*/APKBUILD", recursive=True):
+
+    for path in glob.iglob(f"{args.aports}/**/linux-*/APKBUILD", recursive=True):
         apkbuild = pmb.parse.apkbuild(args, path)
 
         if "pmb:cross-native" not in apkbuild["options"]:
