@@ -1,0 +1,35 @@
+# Forked for adding crust compatibility
+pkgname=arm-trusted-firmware-crust
+_pkgver=crust-20210410
+pkgver=20210410
+pkgrel=0
+pkgdesc="ARM Trusted Firmware-A (TF-A) with Crust compatibility"
+url="https://github.com/crust-firmware/arm-trusted-firmware/"
+arch="aarch64"
+license="BSD-3-Clause"
+makedepends="dtc openssl-dev gcc-arm-none-eabi"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/crust-firmware/arm-trusted-firmware/archive/refs/tags/$_pkgver.tar.gz
+"
+options="!check" # No tests
+builddir="$srcdir/$pkgname-$pkgver"
+
+_plats="sun50i_a64 sun50i_h6"
+
+build() {
+	unset LDFLAGS
+	for plat in $_plats; do
+		make PLAT=$plat bl31
+	done
+}
+
+package() {
+	for plat in $_plats; do
+		install -D "$builddir"/build/$plat/release/bl31.bin \
+			"$pkgdir"/usr/share/crust/arm-trusted-firmware/$plat/bl31.bin
+	done
+}
+
+sha512sums="
+ecc69c60d35d5c116647c13067e425b75f46ce5753d0e518396a55dfa6e934ff16ccbc91349bcb6dbd55011e289afc8448e2b3da082e05a0fc757563e4605948  arm-trusted-firmware-crust-20210410.tar.gz
+"
