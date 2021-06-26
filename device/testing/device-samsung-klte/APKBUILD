@@ -1,33 +1,26 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-klte
-pkgdesc="Samsung Galaxy S5"
-pkgver=0.4
-pkgrel=1
+pkgdesc="Samsung Galaxy S5 (G900F)"
+pkgver=0.5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
+	linux-postmarketos-qcom-msm8974
+	mesa-dri-gallium
 	mkbootimg
 	postmarketos-base
-	"
+	swclock-offset
+"
 makedepends="devicepkg-dev"
 subpackages="
-	$pkgname-kernel-downstream:kernel_downstream
-	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-downstream-firmware:downstream_firmware
-	$pkgname-mainline-firmware:mainline_firmware
 "
 source="
-	70-klte-android.rules
-	battery-status
 	bt-module-deps.conf
-	cpufreq.start
 	deviceinfo
-	fstab.android
-	set-brightness
-	NetworkManager-klte.conf
 "
 
 build() {
@@ -38,68 +31,16 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-kernel_downstream() {
-	pkgdesc="Display, touchscreen, Wi-Fi works (see device table for details)"
-	depends="
-		cpufrequtils
-		dropbear
-		linux-samsung-klte
-		msm-fb-refresher
-		"
-	install="$pkgname-kernel-downstream.post-install"
-
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-
-	# Disable v4l udev rules (video4linux), because without the camera
-	#         firmware blobs this makes udev helper hang (#1033)
-	mkdir -p "$subpkgdir"/etc/udev/rules.d
-	ln -s /dev/null "$subpkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
-
-	# NetworkManager configuration - ignore unsupported devices for now and set default dhcp client
-	install -Dm644 "$startdir"/NetworkManager-klte.conf \
-		"$subpkgdir"/etc/NetworkManager/conf.d/10-klte.conf
-
-	# Extras, helper scripts that make life of developer/user easier
-	install -Dm755 "$startdir"/set-brightness "$subpkgdir"/usr/bin/set-brightness
-	install -Dm755 "$startdir"/battery-status "$subpkgdir"/usr/bin/battery-status
-
-	# Power saver
-	install -Dm755 "$startdir"/cpufreq.start "$subpkgdir"/etc/local.d/cpufreq.start
-}
-
-kernel_mainline() {
-	pkgdesc="Close to mainline kernel. Display, touchscreen, Wi-Fi works. Work in progress!"
-	depends="linux-postmarketos-qcom-msm8974 mesa-dri-gallium"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 nonfree_firmware() {
-	pkgdesc="Wifi, GPU firmware"
+	pkgdesc="GPU, Wi-Fi, Bluetooth firmware"
+	depends="firmware-adreno firmware-samsung-klte-bt firmware-samsung-klte-wifi"
 	mkdir "$subpkgdir"
 	# This config makes sense only if non-free firmware is installed
 	install -Dm644 "$srcdir"/bt-module-deps.conf \
 		"$subpkgdir"/etc/modprobe.d/bt-module-deps.conf
 }
 
-downstream_firmware() {
-	pkgdesc="Firmware packages for klte downstream kernel"
-	depends="firmware-samsung-klte"
-	install_if="$pkgname-kernel-downstream $pkgname-nonfree-firmware"
-	mkdir "$subpkgdir"
-}
-
-mainline_firmware() {
-	pkgdesc="Firmware packages for klte mainline kernel"
-	depends="firmware-adreno firmware-samsung-klte"
-	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
-	mkdir "$subpkgdir"
-}
-
-sha512sums="a68734d3fe30695d5a9302c92327e8ca564a73d06f0de87371800d1bdf4c541c3721af380b8d44cfa0b4cc1dc8a71586aec3f00bb877ee9dc18f41ba34caaeff  70-klte-android.rules
-66db173b9f1075a133efeea8bda94ef08089b7c15acbc1e3aefb9f8510daa7690a0ce2739d20647e096ba69940ac5c4c6699f3b032ec67609ca56f116bb25256  battery-status
+sha512sums="
 6cef5f8ae1785ac16e6fe84bfc861ac50cdfb94db35d764f44a25c960e123cb82f6e56f45362a5340c62a3d5ac225f2689afd4f6964cb88305a0892ba44214f0  bt-module-deps.conf
-c66e0c57e911b644cf6c340ea19ce0a9399b8e9e6cb0da38f612e0f8b3d0812ad109cd7b7506184e840a653397a64e3e57fdc71ab8b0fc52733bf74365b9c0e7  cpufreq.start
-6a44037e10a8374283726ad920b9405a441f313d0fd4bc8aa8b5c1eb3e61eba513c1ddc6a4587593a7223fd945f5e4958be6fdf77a2e4ffcf264a00666fa9e42  deviceinfo
-35f3b120152ebe709e11cebc9ced03f21f52768d88bd68ed23ed864fe1dd3b63665c8f74575882e217dd8226ae5d260e5ad2045dc4ab2470c89185f19b81c4a7  fstab.android
-f773a9792407c1ad96b11c6673093c9eeff7d538459b7772c5956760a8cbb4de8912b24c77e8812afe056db26fa3e29af09e2a3851828baa0b9a9986bf80790b  set-brightness
-3753dcd8c25cfbbdd8f087a3168537df1334f0d33f36bc8923ec3d225ceb88121aa8d1670d6c6a2baab3d7067c86a43571695ce22e3b47076f97fcb53d1d7e6f  NetworkManager-klte.conf"
+960a429cce47bf53f578fef6a52066cab2f35649284c925fc18de8c7f31f4215fd315a96b216b6194afcbd94a14c758490d9da3e26f0a47c37811b47450f664e  deviceinfo
+"
