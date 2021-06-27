@@ -1,6 +1,6 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
@@ -40,6 +40,9 @@ _source644="
 	etc/pulse/postmarketos.pa
 	etc/sleep-inhibitor.conf
 	"
+_source755="
+	etc/tinydm.d/env-wayland.d/50-firefox-wayland.sh
+	"
 
 # Avoid filename based checksum conflicts by including the whole path.
 flatpath() {
@@ -48,12 +51,15 @@ flatpath() {
 		echo "rootfs-$i" | sed s./.-.g
 	done
 }
-source="$(flatpath $_source644)"
+source="$(flatpath $_source644 $_source755)"
 
 package() {
 	local i
 	for i in $_source644; do
 		install -Dm644 "$srcdir/$(flatpath "$i")" "$pkgdir/$i"
+	done
+	for i in $_source755; do
+		install -Dm755 "$srcdir/$(flatpath "$i")" "$pkgdir/$i"
 	done
 }
 
@@ -86,6 +92,7 @@ tinydm() {
 	replaces="tinydm-openrc"
 	provides="postmarketos-base-tinydm=$pkgver-r$pkgrel"
 	amove etc/conf.d/tinydm
+	amove etc/tinydm.d/env-wayland.d/50-firefox-wayland.sh
 }
 
 pulseaudio() {
@@ -102,4 +109,5 @@ fe0651904c1f40ffa67d83daca190af199f63247e53642a59a1e1147cd06776fcf20b7b2fcc53737
 4afe8c5b70f4ca85f9348eb0df12e3152b76203a1a138daa5777f22b751ea431d3ee4113189d8606078f87a99c230b184bc73d53222e6e00581e46224bf5d39f  rootfs-etc-pulse-daemon.conf.d-90-postmarketos.conf
 315598b67889b1f25f82b8269ed36af4fcee018a4edf2926ba966ab08e0a42e36676896d0a5636001b1eb7f16211dcf518123230049556dec9d03006e003a584  rootfs-etc-pulse-postmarketos.pa
 6b9c7bb73213187eb9ca8a94109b2b816f50c1158c90fec2e92b373864280d67741589e5bfbab8810945f031d2f4b535aad78a72e46e52ea50be5b85324da381  rootfs-etc-sleep-inhibitor.conf
+d1ddd43489e6016e3ffd716027ed2bae4a2ab5f213118bdbcb96750e267ab7c0367cd0e0e386300aa5550352653144f5caeddd790621fe0879f83ca1995bb65c  rootfs-etc-tinydm.d-env-wayland.d-50-firefox-wayland.sh
 "
