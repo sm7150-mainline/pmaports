@@ -1,0 +1,25 @@
+# Maintainer: Jonas Heinrich <onny@project-insanity.org>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-apple-iphone7
+pkgdesc="Apple iPhone 7"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-apple-iphone7 mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+9952d3ee16b580ea1bbf3faef7de0a284d49694bca3dedb44cf89403ff5753163192500ee0d48c83a46544870f4a5408d662d7fa1598e8e67f388ef1745143e2  deviceinfo
+"
