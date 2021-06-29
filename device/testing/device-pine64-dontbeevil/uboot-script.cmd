@@ -1,4 +1,4 @@
-setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 no_console_suspend earlycon=uart,mmio32,0x01c28000 panic=10 consoleblank=0 loglevel=1 cma=256M PMOS_NO_OUTPUT_REDIRECT
+setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 no_console_suspend earlycon=uart,mmio32,0x01c28000 panic=10 consoleblank=0 loglevel=1 PMOS_NO_OUTPUT_REDIRECT
 
 printenv
 
