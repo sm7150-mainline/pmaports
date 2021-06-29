@@ -7,7 +7,7 @@ else
 fi;
 
 # This is close to the max env size, https://unix.stackexchange.com/questions/530762/max-line-length-for-u-boot-setenv
-setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 earlycon=uart,mmio32,0x01c28000 panic=10 consoleblank=0 loglevel=1 cma=256M fbcon=rotate:1 PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE pmos_boot=/dev/mmcblk${bootdev}p1 pmos_root=/dev/mmcblk${bootdev}p2
+setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 earlycon=uart,mmio32,0x01c28000 panic=10 consoleblank=0 loglevel=1 fbcon=rotate:1 PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE pmos_boot=/dev/mmcblk${bootdev}p1 pmos_root=/dev/mmcblk${bootdev}p2
 
 printenv
 
