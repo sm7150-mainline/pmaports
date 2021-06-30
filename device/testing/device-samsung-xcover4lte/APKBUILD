@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-xcover4lte
+pkgdesc="Samsung Galaxy Xcover 4"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-xcover4lte mkbootimg mesa-dri-gallium msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+79b5e23e53e5a2fcfba3f4399bb30d8db71d890810c5cbe08054f6e6e8f1068ba2ea6e42251a51daf678a416566634b17afc8abac1a1aa23795ffdd7841db6f3  deviceinfo
+"
