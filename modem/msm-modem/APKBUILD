@@ -1,5 +1,5 @@
 pkgname=msm-modem
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc="Common support for Qualcomm MSM modems"
 url="https://postmarketos.org/"
@@ -7,8 +7,13 @@ arch="armhf armv7 aarch64"
 license="GPL-3.0-or-later"
 depends="rmtfs rmtfs-openrc"
 install="$pkgname.post-install"
-subpackages="$pkgname-rpmsg $pkgname-downstream"
-source="msm-modem-downstream.initd udev-rpmsg.rules udev-downstream.rules"
+subpackages="$pkgname-rpmsg $pkgname-downstream $pkgname-uim-selection:uim_selection"
+source="
+	msm-modem-downstream.initd
+	msm-modem-uim-selection.initd
+	udev-rpmsg.rules
+	udev-downstream.rules
+"
 options="!check"
 
 package() {
@@ -22,6 +27,14 @@ rpmsg() {
 	install -Dm644 "$srcdir/udev-rpmsg.rules" "$subpkgdir/usr/lib/udev/rules.d/55-$pkgname.rules"
 }
 
+uim_selection() {
+	pkgdesc="$pkgdesc (UIM selection)"
+	depends="$pkgname libqmi"
+	install="$subpkgname.post-install"
+
+	install -Dm755 "$srcdir/$subpkgname.initd" "$subpkgdir/etc/init.d/$subpkgname"
+}
+
 downstream() {
 	pkgdesc="$pkgdesc (downstream)"
 	depends="$pkgname libqipcrtr4msmipc libsmdpkt_wrapper keepfileopen"
@@ -31,6 +44,9 @@ downstream() {
 	install -Dm644 "$srcdir/udev-downstream.rules" "$subpkgdir/usr/lib/udev/rules.d/55-$pkgname.rules"
 }
 
-sha512sums="3172f8c409f552f13d1da29f14ab6c79072cd6da4acab151a1a0ea1858a416974456852609f14fe29cf97a6a45e60b99d0a57ddcde751da243ee5ac6fa8b672c  msm-modem-downstream.initd
+sha512sums="
+3172f8c409f552f13d1da29f14ab6c79072cd6da4acab151a1a0ea1858a416974456852609f14fe29cf97a6a45e60b99d0a57ddcde751da243ee5ac6fa8b672c  msm-modem-downstream.initd
+a68b3887aa24d88faeb84fa0896e1ebff4a2cbe9e71dd5123a517d6b2aba01576469afdc1817b17b7f010e1d33e50409fab3099993c422c01de94405ef98c176  msm-modem-uim-selection.initd
 11437625988fcf57aa0b70f11496c458d4516de16391c2869ae975362f282d21d3af521a41dea00312797d20d52be5112dbf0041986bfb40f3b9fa5948d2c695  udev-rpmsg.rules
-2a511c2e249d0ec5a52f04ffe1ef3d29cf3c4813143b103e54879ff89176ea45b1a5ffe21cb7dc2f1cdd84c3102ba45ef9926ed37e00b1ae12a36d01de35ea5a  udev-downstream.rules"
+2a511c2e249d0ec5a52f04ffe1ef3d29cf3c4813143b103e54879ff89176ea45b1a5ffe21cb7dc2f1cdd84c3102ba45ef9926ed37e00b1ae12a36d01de35ea5a  udev-downstream.rules
+"
