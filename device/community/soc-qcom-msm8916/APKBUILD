@@ -2,7 +2,7 @@
 pkgname=soc-qcom-msm8916
 pkgdesc="Common package for Qualcomm MSM8916 devices"
 pkgver=10
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64 armv7"
@@ -35,11 +35,13 @@ ucm() {
 }
 
 modem() {
-	depends="msm-modem-rpmsg q6voiced"
+	depends="msm-modem-rpmsg msm-modem-uim-selection q6voiced"
 	install="$subpkgname.post-install"
 
 	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
-sha512sums="e00b637b9f0756f73e1d43189d2dceec22a3b21193f6649de32689d1eea3d6c96ad6c1665fb5c82d6beee6cb341d5b84e36ae04e9b780093700715db9688b54f  soc-qcom-msm8916-66d2d458458b975fa3bf8e657bbd34b2db4b6b77.tar.gz
-3a4a9322839d4b3ef9d79668a37840a9f444954759ae3c512e694051d2f9a2573db42ad6c4c1a5c75eeb861232a27ba1a8cef9b503decd54ead25a96e3dd6f98  q6voiced.conf"
+sha512sums="
+e00b637b9f0756f73e1d43189d2dceec22a3b21193f6649de32689d1eea3d6c96ad6c1665fb5c82d6beee6cb341d5b84e36ae04e9b780093700715db9688b54f  soc-qcom-msm8916-66d2d458458b975fa3bf8e657bbd34b2db4b6b77.tar.gz
+3a4a9322839d4b3ef9d79668a37840a9f444954759ae3c512e694051d2f9a2573db42ad6c4c1a5c75eeb861232a27ba1a8cef9b503decd54ead25a96e3dd6f98  q6voiced.conf
+"
