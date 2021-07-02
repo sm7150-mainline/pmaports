@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-pine64-pinebookpro
 pkgdesc="PINE64 Pinebook Pro"
-pkgver=2
-pkgrel=1
+pkgver=4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -14,6 +14,7 @@ depends="
 	nvme-cli
 	postmarketos-base
 	u-boot-pinebookpro
+	iw
 	"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
@@ -26,6 +27,7 @@ source="
 	nvme-powersave.initd
 	ucm/rockchip,es8316-codec.conf
 	ucm/HiFi
+	wlan-powersave-off.start
 "
 
 build() {
@@ -54,6 +56,8 @@ package() {
 	install -D -m755 "$srcdir"/nvme-powersave.initd \
 		"$pkgdir"/etc/init.d/nvme-powersave
 
+	install -D -m755 "$srcdir"/wlan-powersave-off.start \
+		"$pkgdir"/etc/local.d/wlan-powersave-off.start
 }
 
 nonfree_firmware() {
@@ -61,13 +65,13 @@ nonfree_firmware() {
 	depends="firmware-pine64-pinebookpro"
 	mkdir "$subpkgdir"
 }
-
 sha512sums="
-25c5b71848d5bb956697ecf2be43079a448c8c0a67952e09f5738223d8b024aa4ff0495c396f94aacf0d607168d70a5812be41381e45645f95723c0cdef9515c  deviceinfo
-cdcb1d36440c29d411691990c1170d9665b13b1c551b35825720d23b6ae40311ce91c3b2b7a089deaacd7a33c6febe4f81dc75d71dd4bed887291221d56dc1d2  extlinux.conf
+77a8d2ab9a3f5867cb28acb8b2761230152b8f0be443013968617ee8c046685198e974180bed04d24d7d25203e938906d98d94dccb1a257e3049140a010d6f78  deviceinfo
+244a321cbc885d7cb90cdc2b905b39efdeaa9d77aa33208aa6b699059a955e5c15247e4dfcd762fd34ece98d686c7da5ffa84acb38044446079f13c193955865  extlinux.conf
 d3988fe83c54228d743f4a8c190e9530404a436a7fbc0b004bf20d3986b502d864717d8cc9c76812e599266bf84cb08f9a86e1bfd220875799c5a022aea588ec  10-pinebookpro.hwdb
 bcae155e24a151d3c098833680b83b6004a329962f115480d560ebe19257eab87286b8a4c194e456c067ca54fb53e59a5a16b022cea13c11135b0855145db563  mem_sleep.conf
 2abfa31fa56028339efc6d2b6cb838f310990d7110ac4dd996bc4cfcf90f0a8770e70f28f77f7b6929d110e494bc33731302f16b9717729f991c2732be0731d5  nvme-powersave.initd
 846384cab3e9581a03007cf4f39f8538315e804d1573903dd223d22d5ca0b6f260e348467aead5124689288fb7d2ec22c1e9aba8e89683efdbd33ddfe10de852  rockchip,es8316-codec.conf
 558f08b56425e0ceeea8d4815eeb862a2b801ba1b26b4dc28f4d0ec991ed9dfef14113172a224191eb2de5d0b57a741e4c48f1307bda2a69595944bd58731be1  HiFi
+0fd7580e197e409978c219726af627cabe347404ee826e32892b61f3da1775b0fd81f8ed5e9a0f0bfaad87faa434d7a73ddaebf475ed0ad8fdcef6690cd692d3  wlan-powersave-off.start
 "
