@@ -26,6 +26,8 @@ sh_files="
 	./main/postmarketos-update-kernel/update-kernel.sh
 	./main/swclock-offset/swclock-offset-boot.sh
 	./main/swclock-offset/swclock-offset-shutdown.sh
+	./main/ttyescape/*.sh
+	./main/ttyescape/*.post-install
 
 	$(find . -path './main/postmarketos-ui-*/*.sh')
 	$(find . -path './main/postmarketos-ui-*/*.pre-install')
