@@ -8,7 +8,7 @@ setenv dtb_file "exynos5422-odroidhc1.dtb"
 printenv
 
 echo Setting bootargs
-setenv bootargs init=/init.sh rw console=tty0 console=ttySAC2,115200 panic=10 consoleblank=0 loglevel=9 cma=256M PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE pmos_boot=/dev/mmcblk0p1 pmos_root=/dev/mmcblk0p2
+setenv bootargs init=/init.sh rw console=tty0 console=ttySAC2,115200 panic=10 consoleblank=0 loglevel=9 cma=256M PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE
 
 echo Loading Kernel
 load mmc ${mmcbootdev}:${mmcbootpart} ${kernel_addr_r} ${kernel_image}

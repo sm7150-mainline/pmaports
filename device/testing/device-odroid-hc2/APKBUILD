@@ -3,7 +3,7 @@
 
 pkgname=device-odroid-hc2
 pkgdesc="ODROID HC2"
-pkgver=0.2
+pkgver=0.3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -16,10 +16,10 @@ depends="linux-odroid-hc2
 	 u-boot-tools
 	"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-tools"
 _commit="42ac93dcfbbb8a08c2bdc02e19f96eb35a81891a"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="deviceinfo uboot-script.cmd"
+source="deviceinfo uboot-script.cmd install-rootfs-hdd.sh"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -47,7 +47,16 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
+tools() {
+	pkgdesc="ODROID HC2 tools"
+	depends="rsync e2fsprogs-extra"
+	mkdir "$subpkgdir"
+	install -Dm744 "$srcdir"/install-rootfs-hdd.sh \
+		"$pkgdir"/usr/bin/install-rootfs-hdd
+}
+
 sha512sums="
-90afdace4ad938ed69747d3b51ac1678bc325cb4e7234ac4eeded7b6fa79f10bd88d15ebfc6f20f0a9252c48008288a489cb99751ae6d2cdb12f289b9154a9f3  deviceinfo
-83a4bcc34d20c2e5e6f1c3412c291baa90a8137df7925c02d8e46d922d45615cc957d79d37a23982bed7e1cfa92f2be22fa5f11cc59d3706b79ba62a2d550263  uboot-script.cmd
+d02702884d47c2c6b98f1ec194fc3a11b2c6559d416c112d41ddecfbbd84f0706adfc72e13e9943f130e548d987aa7d151f4f416443d15b7dff2375d4d067144  deviceinfo
+48e76599c21dd0df595ad2f5a9fe9f71962b5c1f631c91ce6f9904fe393ee7bf7c0d71df54f08bdf7fc4ed9176d36abc2f887781159304f862bf996f2157a5bd  uboot-script.cmd
+8273be5a8c5a7b9a27ae91a1581ca2d247d0fb45e24e25e46ba8272955d7fce31c62562c3fae402f6a66918c9c61d838de692cca11eea3cdfde6a91f478f2955  install-rootfs-hdd.sh
 "
