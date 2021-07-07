@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-klte
 pkgdesc="Samsung Galaxy S5 (G900F)"
-pkgver=0.5
+pkgver=1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -33,7 +33,14 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="GPU, Wi-Fi, Bluetooth firmware"
-	depends="firmware-adreno firmware-samsung-klte-bt firmware-samsung-klte-wifi"
+	depends="
+		firmware-adreno
+		firmware-samsung-klte-bt
+		firmware-samsung-klte-wifi
+		firmware-samsung-klte-modem
+		msm-modem-rpmsg
+	"
+
 	mkdir "$subpkgdir"
 	# This config makes sense only if non-free firmware is installed
 	install -Dm644 "$srcdir"/bt-module-deps.conf \
@@ -42,5 +49,5 @@ nonfree_firmware() {
 
 sha512sums="
 6cef5f8ae1785ac16e6fe84bfc861ac50cdfb94db35d764f44a25c960e123cb82f6e56f45362a5340c62a3d5ac225f2689afd4f6964cb88305a0892ba44214f0  bt-module-deps.conf
-960a429cce47bf53f578fef6a52066cab2f35649284c925fc18de8c7f31f4215fd315a96b216b6194afcbd94a14c758490d9da3e26f0a47c37811b47450f664e  deviceinfo
+6296b7a3be89ed90ab4317a087460bbee17ad75b335a8ad900aa25769808c5aba76ba170ac46086f57ec64fab281ac5bf73ccf00cbcfb283dc251da9f59bb746  deviceinfo
 "
