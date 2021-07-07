@@ -3,17 +3,23 @@
 
 pkgname=device-odroid-hc2
 pkgdesc="ODROID HC2"
-pkgver=0.1
-pkgrel=1
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-odroid-hc2 u-boot-odroid u-boot-tools"
+depends="linux-odroid-hc2
+	 networkmanager
+	 postmarketos-base
+	 u-boot-odroid
+	 u-boot-tools
+	"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 _commit="42ac93dcfbbb8a08c2bdc02e19f96eb35a81891a"
-source="deviceinfo uboot-script.cmd network-interfaces"
+install="$pkgname.post-install $pkgname.post-upgrade"
+source="deviceinfo uboot-script.cmd"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -33,8 +39,6 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
-	install -Dm644 "$srcdir"/network-interfaces \
-		"$pkgdir"/etc/network/interfaces
 }
 
 nonfree_firmware() {
@@ -46,5 +50,4 @@ nonfree_firmware() {
 sha512sums="
 90afdace4ad938ed69747d3b51ac1678bc325cb4e7234ac4eeded7b6fa79f10bd88d15ebfc6f20f0a9252c48008288a489cb99751ae6d2cdb12f289b9154a9f3  deviceinfo
 83a4bcc34d20c2e5e6f1c3412c291baa90a8137df7925c02d8e46d922d45615cc957d79d37a23982bed7e1cfa92f2be22fa5f11cc59d3706b79ba62a2d550263  uboot-script.cmd
-d510ca304066840aa5e6c4fc71ded1b7e83012c93837fa39e37bdb873b3636230030d56f7aa50c93fc688f563cb4cb96c02ad333bbc45a400c1ebee1792a9dd4  network-interfaces
 "
