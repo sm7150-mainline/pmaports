@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Timothy Valldeperas <tvall43@gmail.com>
+pkgname=device-pine64-rock64
+pkgver=1
+pkgrel=0
+pkgdesc="PINE64 ROCK64"
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-postmarketos-rockchip u-boot-rock64 mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo
+	extlinux.conf
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/extlinux.conf \
+		"$pkgdir"/boot/extlinux/extlinux.conf
+}
+
+sha512sums="
+ff1e00dbc17d854ff2f8fbd977f11589d4e0d73d205e94b320d5af48eaec8b8a4be20d1a904a91010cfbb78bf47f9765d2138a0cafdd204d78b636f5ff439494  deviceinfo
+0e0f4f44da43f4a64a3e15ec8c796f0d9d71b8ce51b94c7b3b3e850d6c23fc751aa3d22fe8297ee3ceceba9f040fd58e83f67b72f7548e6a49841939fd900d70  extlinux.conf
+"
