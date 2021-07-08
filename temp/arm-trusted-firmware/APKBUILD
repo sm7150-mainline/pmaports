@@ -2,7 +2,7 @@
 pkgname=arm-trusted-firmware
 pkgver=9999
 _pkgver=2.5
-pkgrel=3
+pkgrel=4
 pkgdesc="ARM Trusted Firmware-A (TF-A)"
 url="https://github.com/ARM-software/arm-trusted-firmware"
 arch="aarch64"
@@ -14,7 +14,7 @@ source="https://github.com/ARM-software/arm-trusted-firmware/archive/v$_pkgver/a
 	rk3399-baudrate.patch"
 options="!check" # No tests
 
-_plats="sun50i_a64 sun50i_h6 rk3399"
+_plats="sun50i_a64 sun50i_h6 rk3399 rk3328"
 
 build() {
 	unset LDFLAGS
@@ -26,7 +26,7 @@ build() {
 package() {
 	for plat in $_plats; do
 		case $plat in
-			rk3399)
+			rk3399|rk3328)
 				install -D "$builddir"/build/$plat/release/bl31/bl31.elf \
 					"$pkgdir"/usr/share/$pkgname/$plat/bl31.elf
 					;;
@@ -42,3 +42,4 @@ sha512sums="
 3c99f1d849c3c536e8e2e4838ee48a1a431f0bef35eaf27eb14f9caebde71a577589b10efbbd7db49bed3b9763bed46583d0b26e72f61fcd0d34cc46ff684846  arm-trusted-firmware-v2.5.tar.gz
 86d8c60157145ab05e9b870aad11d2acaf2137ba00bf71419f8a54a4fd2b1906c19bc8bfeccc735344d1dcf11ba81bd9396bfd8854cdb972a72503b632d1e900  rk3399-baudrate.patch
 "
+
