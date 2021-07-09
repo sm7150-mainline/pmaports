@@ -1,8 +1,8 @@
 # U-boot RC built for rk3399, can be upstreamed to alpine soon when 2020.04 is released
 
 pkgname=u-boot-rockpro64
-pkgver=2020.04
-pkgrel=3
+pkgver=2021.07
+pkgrel=0
 pkgdesc="u-boot bootloader for the rk3399"
 url="https://gitlab.com/pine64-org/u-boot"
 arch="aarch64"
@@ -12,7 +12,8 @@ makedepends="$depends_dev bc dtc python3-dev swig bison flex openssl-dev arm-tru
 options="!check"
 source="
 	ftp://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
-	rk3399-power-led.patch
+	0000-rk3399-power-led.patch
+	0001-fix-boot-hang.patch
 	update-u-boot
 	"
 builddir="$srcdir"/u-boot-${pkgver//_/-}
@@ -36,6 +37,9 @@ package() {
 }
 
 
-sha512sums="e04fe54883149123730605b084324ac0d1d72ce6913467bbe587a5a2675bcf7bb393405d9a446dc0c64ba42abc1e862ae5a132e9e51aa7390e2e9fce045af8d8  u-boot-2020.04.tar.bz2
-4495dbaceac1cc42b3506dda81e0920f8eca19e11e0d717637dba6e4623e95cd4c3c94e7fc3aa8f3cbfe5fcaf0c0c109d1699eb7f278a69fa8e209c7cd6e4c02  rk3399-power-led.patch
-8bd5e4236257f3a971f207ff3ae8f97358e6ec4a110fa14e675bf583e1f1ccacbc1e8d2c887ac66eb64369cd0d6c3beab7643d201592bb0ec1c66c8f27a58fc8  update-u-boot"
+sha512sums="
+210b206a4626feb0985580d9448a97b499b09bf9b9313ca847a66624785e9e9b0fae8f2e329acd344f5f75cb722d2093dd0ee394311ddd1fde05e400ee71a24d  u-boot-2021.07.tar.bz2
+4495dbaceac1cc42b3506dda81e0920f8eca19e11e0d717637dba6e4623e95cd4c3c94e7fc3aa8f3cbfe5fcaf0c0c109d1699eb7f278a69fa8e209c7cd6e4c02  0000-rk3399-power-led.patch
+7772b0a2a811b422dab491b6a97d82f6153c49288f92bcf0194c26303810ffb0242a479afcffc079d1262f4cc118726198764b5135b4aad4b69a95346eeef6e9  0001-fix-boot-hang.patch
+8bd5e4236257f3a971f207ff3ae8f97358e6ec4a110fa14e675bf583e1f1ccacbc1e8d2c887ac66eb64369cd0d6c3beab7643d201592bb0ec1c66c8f27a58fc8  update-u-boot
+"
