@@ -1,0 +1,65 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-kobo-clara
+pkgdesc="Kobo Clara HD"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	postmarketos-base
+	u-boot-kobo-clara
+	u-boot-tools
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	uboot-script-downstream.cmd
+	uboot-script-mainline.cmd
+"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-kobo-clara"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	mkimage -A arm -O linux -T script -n postmarketOS \
+		-d "$srcdir"/uboot-script-downstream.cmd "$srcdir/boot-downstream.scr"
+	install -Dm644 "$srcdir/boot-downstream.scr" "$subpkgdir/boot/boot.scr"
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel"
+	depends="linux-kobo-clara-mainline"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	mkimage -A arm -O linux -T script -n postmarketOS \
+		-d "$srcdir/uboot-script-mainline.cmd" "$srcdir/boot-mainline.scr"
+	install -Dm644 "$srcdir/boot-mainline.scr" "$subpkgdir/boot/boot.scr"
+}
+
+nonfree_firmware() {
+	pkgdesc="Kobo Clara HD firmware"
+	depends="firmware-kobo-clara"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+8ff8c8a4a1cd274a060413423dea7767e06f4ab2bf539bcb1a084e2d4cb488115947e553e86e0c4a20287ca156ce167329a2c2c462a66094f1bec6ddccc07276  deviceinfo
+9f95496929f46de69afb6b25b1e3d099668e0f759eb1d36f76d84af14c8bd78cb739c410c58d7a31283782c6ff11999575c8c7ec22c11adec018b3026b290408  uboot-script-downstream.cmd
+5152e007591e07c4772ecbce4e212ae6c1b65264a46234c11c425f91439171a6379727e344a5c9654da368baa61b863660bf781e5e211d813532d29d8c2e7fd9  uboot-script-mainline.cmd
+"

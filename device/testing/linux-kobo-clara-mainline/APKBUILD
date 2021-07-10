@@ -1,0 +1,63 @@
+# Kernel config based on: arch/arm/configs/kobo_defconfig
+
+pkgname=linux-kobo-clara-mainline
+pkgver=5.12.0
+pkgrel=0
+pkgdesc="Kobo Clara HD kernel fork, close to mainline"
+arch="armv7"
+_carch="arm"
+_flavor="kobo-clara-mainline"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-nftables"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	gmp-dev
+	lzop
+	mpc1-dev
+	mpfr-dev
+	openssl-dev
+	perl
+"
+
+# Source
+_repository="linux"
+_commit="4dd67a97287964010bdae4751cb965bf118c14d7"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/akemnade/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	REPLACE_GCCH=0
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$(( pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+	make modules_install dtbs_install \
+		O="$_outdir" \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+}
+
+sha512sums="
+7a2a2f5817eae9e8917b60a92c041912c0073e7f6aa48664a4b399e7d39a8f790d9ab020384bcc12d85d973b1879cadffc0a266885d7584a8a631b680c170acf  linux-kobo-clara-mainline-4dd67a97287964010bdae4751cb965bf118c14d7.tar.gz
+256971be31b2ecf3a4c41c047f7c8eb6e8255a1c275fe1c86e13f96139f454db8d5c1998b7be4aa0f67dcc93e0a5ec2fd7b3526e6e60afab72e44a33be42c8f0  config-kobo-clara-mainline.armv7
+"
