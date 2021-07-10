@@ -2,7 +2,7 @@
 
 pkgname=u-boot-rock64
 pkgver=2021.07
-pkgrel=0
+pkgrel=1
 pkgdesc="u-boot bootloader for the rk3328"
 url="https://gitlab.com/u-boot/u-boot"
 arch="aarch64"
@@ -12,6 +12,7 @@ makedepends="$depends_dev bc dtc python3-dev swig bison flex openssl-dev arm-tru
 options="!check"
 source="
 	ftp://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
+	kernel_comp-defaults.patch
 	update-u-boot
 	"
 builddir="$srcdir"/u-boot-${pkgver//_/-}
@@ -37,5 +38,6 @@ package() {
 
 sha512sums="
 210b206a4626feb0985580d9448a97b499b09bf9b9313ca847a66624785e9e9b0fae8f2e329acd344f5f75cb722d2093dd0ee394311ddd1fde05e400ee71a24d  u-boot-2021.07.tar.bz2
+c4f083120bc3cf60ca5178ddf39b6e5f83ff234ce31afc628112db43c2666e6644583f70f12921bd9021a27056c3fe85e785f0bbf352d4d5247cb562621676d2  kernel_comp-defaults.patch
 5ffa497122f3fd23b0b1c055229d650895fd03ca415ba6fb6df2ba848023d523fc14caaaf13d5409cc4b03e73cb92493eac1d8952738376c46395de827cad509  update-u-boot
 "
