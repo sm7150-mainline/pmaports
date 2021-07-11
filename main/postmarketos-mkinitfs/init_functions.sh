@@ -162,7 +162,13 @@ find_boot_partition() {
 		echo "${x#pmos_boot=}"
 		return
 	done
-	findfs LABEL="pmOS_inst_boot" || findfs LABEL="pmOS_boot"
+
+	# * "pmOS_i_boot" installer boot partition (fits 11 chars for fat32)
+	# * "pmOS_inst_boot" old installer boot partition (backwards compat)
+	# * "pmOS_boot" boot partition after installation
+	findfs LABEL="pmOS_i_boot" \
+		|| findfs LABEL="pmOS_inst_boot" \
+		|| findfs LABEL="pmOS_boot"
 }
 
 # $1: path
