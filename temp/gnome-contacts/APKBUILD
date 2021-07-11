@@ -1,22 +1,28 @@
 # Forked from Alpine to apply Purism's mobile patches
 pkgname=gnome-contacts
-pkgver=9999_git20200619
-pkgrel=2
-_commit="334f9cdb5173358221da9be5b83a796b1c285904"
+pkgver=9999_git20210711
+pkgrel=0
+_commit="2357edb60111f19da83630dc08d009451b3524f5"
 pkgdesc="A contacts manager for GNOME"
 url="https://wiki.gnome.org/Apps/Contacts"
 arch="all !s390x !mips !mips64" # libhandy is missing
 license="GPL-2.0-or-later"
 makedepends="meson vala folks-dev libgee-dev glib-dev gnome-desktop-dev
 	gnome-online-accounts-dev cheese-dev evolution-data-server-dev telepathy-glib-dev
-	libhandy-dev gtk+3.0-dev"
+	libhandy1-dev gtk+3.0-dev"
 checkdepends="appstream-glib desktop-file-utils"
 subpackages="$pkgname-lang $pkgname-doc"
 source="
-	https://source.puri.sm/Librem5/gnome-contacts/-/archive/$_commit/gnome-contacts-$_commit.tar.bz2
-	Dont-use-unsupported-vala-syntax.patch
+	https://source.puri.sm/Librem5/debs/gnome-contacts/-/archive/$_commit/gnome-contacts-$_commit.tar.bz2
 	"
 builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	grep "\.patch$" debian/patches/series \
+		| xargs -I {} -t -r -n1 patch -p1 -i debian/patches/{}
+}
 
 build() {
 	meson \
@@ -37,5 +43,6 @@ package() {
 	DESTDIR="$pkgdir" ninja -C output install
 }
 
-sha512sums="c984391a9fe4fab76da168a521a08b3c2798d152266dfe1af7172dcb74c9fe3a0c41534dc55f41ebfca16ab24d928e12b19fd5b278136c5ab2945d810bd42cb8  gnome-contacts-334f9cdb5173358221da9be5b83a796b1c285904.tar.bz2
-9b01a7ac134b254a4f240d77cb40384c59d47881b6dafaa53092ba8b254e58cb5e23f3e27c077d10c135c2648aff732b5708879485ac79310a49250c3116eba7  Dont-use-unsupported-vala-syntax.patch"
+sha512sums="
+8457b24dd135c986619bdf9ac42c46ba29a5f6b4a511b92c485db9c12ea4250dc42c09ceb1dd30287adc3263ead94c779999d39ed95146a1449d6cd2ae68d262  gnome-contacts-2357edb60111f19da83630dc08d009451b3524f5.tar.bz2
+"
