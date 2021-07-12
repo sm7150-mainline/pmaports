@@ -1,32 +1,26 @@
 pkgname=firmware-samsung-u8500
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware for Samsung Galaxy devices based on ST-Ericsson U8500"
-url="https://pepethekingprawn.gitlab.io/firmware/"
+url="https://github.com/evokelektrique/samsung-u8500"
 arch="armv7"
 license="proprietary"
 options="!check !strip !archcheck"
-_skomer_commit="6d88d78e23aaf27cb662c17766ca813a457c106e"
-source="https://pepethekingprawn.gitlab.io/firmware/GT-I8190.tar.xz
-	nvram_net-skomer-$_skomer_commit.txt::https://raw.githubusercontent.com/flxo/android_vendor_samsung_skomer/$_skomer_commit/proprietary/etc/wifi/nvram_net.txt
-	"
-builddir="$srcdir"
+_commit="32362bbb61aac3e48d5e30d7ae506a31204469c0"
+source="https://github.com/evokelektrique/samsung-u8500/archive/$_commit.tar.gz"
+builddir="$srcdir/samsung-u8500-$_commit/brcm"
 replaces="firmware-samsung-golden"
 
-_fwdir="/lib/firmware/postmarketos"
+_fwdir="/lib/firmware/postmarketos/brcm"
+_files="BCM4330B1.hcd BCM4330B1.samsung,codina.hcd BCM4330B1.samsung,gavini.hcd BCM4330B1.samsung,janice.hcd BCM4334B0.hcd BCM4334B0.samsung,golden.hcd BCM4334B0.samsung,kyle.hcd BCM4334B0.samsung,skomer.hcd brcmfmac4330-sdio.bin brcmfmac4330-sdio.samsung,codina.bin brcmfmac4330-sdio.samsung,codina.txt brcmfmac4330-sdio.samsung,gavini.bin brcmfmac4330-sdio.samsung,gavini.txt brcmfmac4330-sdio.samsung,janice.bin brcmfmac4330-sdio.samsung,janice.txt brcmfmac4334-sdio.bin brcmfmac4334-sdio.samsung,golden.bin brcmfmac4334-sdio.samsung,golden.txt brcmfmac4334-sdio.samsung,kyle.bin brcmfmac4334-sdio.samsung,kyle.txt brcmfmac4334-sdio.samsung,skomer.bin brcmfmac4334-sdio.samsung,skomer.txt"
 
 package() {
-	# WiFi
-	install -Dm644 bcmdhd_sta.bin_b2 \
-		"$pkgdir/$_fwdir"/brcm/brcmfmac4334-sdio.bin
-	install -Dm644 nvram_net.txt_GPIO4 \
-		"$pkgdir/$_fwdir"/brcm/brcmfmac4334-sdio.samsung,golden.txt
-	install -Dm644 nvram_net-skomer-$_skomer_commit.txt \
-		"$pkgdir/$_fwdir"/brcm/brcmfmac4334-sdio.samsung,skomer.txt
-
-	# Bluetooth
-	install -Dm644 bcm4334.hcd "$pkgdir/$_fwdir"/brcm/BCM4334B0.hcd
+	mkdir -p "$pkgdir/$_fwdir"
+	for file in $_files; do
+		install -m644 "$file" "$pkgdir/$_fwdir"
+	done
 }
 
-sha512sums="d9ad7a2d593ecef40252e85fd0d2b65d54aaed911e80c516f211573a8f42d9fc18303d7c2b55dd37e5027ca8bc42289b5dbccb9008ab20f902f30e4394704912  GT-I8190.tar.xz
-02aecf00166d4ae70cf73dae8e73d84bfd82f863a25ef42b88f3d53dab3b5e983054a8becb4b75fddb32a7df2d6fa8ad8d7e0a5651422fe48f762877428ee2d9  nvram_net-skomer-6d88d78e23aaf27cb662c17766ca813a457c106e.txt"
+sha512sums="
+b1aa65ba9f772dbb519892fcc5115cf1526199d36060d02aad83855f3a32f241c720500c6975937aec2a522c917dc09cd68163d0c9daf8bdab537a48baefd914  32362bbb61aac3e48d5e30d7ae506a31204469c0.tar.gz
+"
