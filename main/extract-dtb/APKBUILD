@@ -1,17 +1,26 @@
 # Maintainer: Pablo Castellano <pablo@anche.no>
 pkgname=extract-dtb
-pkgver=1.1
-pkgrel=1
+pkgver=1.2.2
+pkgrel=0
 pkgdesc="Tool to split a kernel image with appended dtbs into separated kernel and dtb files"
 url="https://github.com/PabloCastellano/extract-dtb"
 arch="noarch"
 license="GPL-3.0-or-later"
 depends="python3"
-source="$pkgname-$pkgver.tar.gz::https://github.com/PabloCastellano/extract-dtb/archive/v$pkgver.tar.gz"
+makedepends="py3-setuptools"
+source="$pkgname-$pkgver.tar.gz::https://github.com/PabloCastellano/extract-dtb/archive/$pkgver.tar.gz"
 options="!check"
 
-package() {
-	install -Dm755 extract-dtb.py "$pkgdir"/usr/bin/extract-dtb
+build() {
+	python3 setup.py build
 }
 
-sha512sums="4ded48f9e7b2f810df4504b6fa905dbadcce54fa55f381d05545b30b9eef8938cf334d18137f28b4b3fd791b4ecde2fff4502987635147949efbc91007a82acb  extract-dtb-1.1.tar.gz"
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+	# https://github.com/PabloCastellano/extract-dtb/issues/13
+	rm -v "$pkgdir"/usr/CHANGES.md "$pkgdir"/usr/LICENSE
+}
+
+sha512sums="
+ceef6fe350ee657737e92faf57859da9d643ff9f66be25425759f0bd523669e982583969bf4f30d02c81d2e961bc26d7a581a446ca0957021cc95afdbe9ee63f  extract-dtb-1.2.2.tar.gz
+"
