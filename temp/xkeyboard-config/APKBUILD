@@ -1,14 +1,14 @@
 # Forked from Alpine, so we can extend the keyboard layouts
 pkgname=xkeyboard-config
 pkgver=9999
-_pkgver=2.29
-pkgrel=2
+_pkgver=2.33
+pkgrel=3
 pkgdesc="X keyboard configuration files"
 url="http://www.freedesktop.org/wiki/Software/XKeyboardConfig"
 arch="noarch"
 license="MIT"
 subpackages="$pkgname-doc"
-makedepends="xkbcomp intltool libx11-dev libxslt python3"
+makedepends="meson perl libxslt"
 source="https://www.x.org/archive/individual/data/xkeyboard-config/xkeyboard-config-$_pkgver.tar.bz2
 	0001-RX-51-Symbols-Bind-Escape-to-third-level-Backspace.patch
 	0002-RX-51-Symbols-Bind-function-keys-to-fourth-level-top.patch
@@ -26,29 +26,19 @@ source="https://www.x.org/archive/individual/data/xkeyboard-config/xkeyboard-con
 builddir="$srcdir/$pkgname-$_pkgver"
 
 build() {
-	./configure \
-		--build=$CBUILD \
-		--host=$CHOST \
-		--prefix=/usr \
-		--with-xsltproc \
-		--with-xkb-base=/usr/share/X11/xkb \
-		--with-xkb-rules-symlink=xorg \
-		--enable-compat-rules=yes
-	make
+	abuild-meson . output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
 }
 
 check() {
-	make check
+	meson test --no-rebuild -v -C output
 }
 
 package() {
-	make DESTDIR="$pkgdir" install
-	rm -f "$pkgdir"/usr/share/X11/xkb/compiled
-	install -m755 -d "$pkgdir"/var/lib/xkb
-	mkdir -p "$pkgdir"/usr/lib
-	mv "$pkgdir"/usr/share/pkgconfig "$pkgdir"/usr/lib
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
 }
-sha512sums="202255af097f3063d76341d1b4a7672662dc645f9bcd7afa87bc966a41db4c20fc6b8f4fbe2fcaec99b6bc458eac10129141a866a165857c46282f6705b78670  xkeyboard-config-2.29.tar.bz2
+sha512sums="
+084f79350d5dc7f9ebd5b5333d386459b0ab587f6cec27ee2d8d5c3a56b08993f9fafb9d893307f4d43cfeaf2e225c5295ad6297ae8287c68efc48a82638feb1  xkeyboard-config-2.33.tar.bz2
 6a761968c0101251a256e4a0b9545c953ba82ecf5f20af35a2c487c01dfdb8804caf32eff0b9534854b7adaab5693a937fbb245c2a1001253735a48d90f80824  0001-RX-51-Symbols-Bind-Escape-to-third-level-Backspace.patch
 13950fc4064f55a69adf2f0dc3d9e2f8ec31ad686202486f772745ed9c7a8b502aed6073c5d629eac30a274194f5d29402f64c2f286b4a46807f3bcfab6753ff  0002-RX-51-Symbols-Bind-function-keys-to-fourth-level-top.patch
 db3c4a1f30c2efc3bf5bba7541d6956414f0d09f089d0ad5e35d340fc2c0faf8bdd6eb8c3708db307ad2c9e7ac841de8c4d11ead076d9c65dd5458b292efae19  0003-RX-51-Symbols-Bind-PgUp-PgDown-Home-End-to-third-lev.patch
@@ -60,4 +50,5 @@ d81a992697e69ed460598c0c61fc754d7bfc83e43d56abb8cd1c8075156e41c2ee9fb7ba836a2398
 fe44b3535ec586a58901e63cb47413b574e19e889d1a2d32fd4c53dc6e374d78caa081f4679d374ccee2028c922b2ae547eb22a91f68f70d2faff029ee3b5099  0009-RX-51-Symbols-Bind-Tab-to-third-level-Return.patch
 6241cc409bc4cbe4149d8703ae413c11fc2066c14374cf9fe126066759b4c9a1592ff183d3d14b5ee168be6678a2844cee622a1226ac1ddbc7d9b058143c591b  0010-RX-51-Symbols-Bind-braces-to-fourth-level-N-and-M.patch
 65f92b510db6cb38d3761d4f38368875680b4ded1243c1f54b573d3a44820866892e25dfa3a4e729fe82575144b0d464f11150638b812a0884509fc9c9d5f5d0  0011-RX-51-Symbols-Extend-Swiss-layout.patch
-8dd15fc2877b86265885648b733e12b68be6a7c14aa0ce79cf4649c12ab1445ff3111039651fc4243439ab46352b80a6d1be81c62978c8a22aa4300b8f1b5edd  0012-RX-51-Symbols-Bind-square-brackets.patch"
+8dd15fc2877b86265885648b733e12b68be6a7c14aa0ce79cf4649c12ab1445ff3111039651fc4243439ab46352b80a6d1be81c62978c8a22aa4300b8f1b5edd  0012-RX-51-Symbols-Bind-square-brackets.patch
+"
