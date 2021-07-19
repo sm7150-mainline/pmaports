@@ -1,8 +1,8 @@
 # Forked from Alpine to apply Purism's mobile patches
 pkgname=epiphany
-pkgver=9999_git20201019
+pkgver=9999_git20210316
 pkgrel=0
-_commit="a14d0fd642b71fdafc639df1330c2ee8d3271089"
+_commit="0a1eb831f18688b33139d8cb166045648cdff02a"
 pkgdesc="A simple, clean, beautiful view of the web"
 url="https://wiki.gnome.org/Apps/Web"
 arch="all !s390x !mips !mips64" # libhandy is not available on s390x
@@ -13,9 +13,16 @@ makedepends="meson iso-codes-dev gtk+3.0-dev gsettings-desktop-schemas-dev
 	libsoup-dev libxml2-dev nettle-dev sqlite-dev webkit2gtk-dev gcr-dev itstool"
 checkdepends="appstream-glib desktop-file-utils xvfb-run ibus"
 subpackages="$pkgname-lang $pkgname-doc $pkgname-dbg"
-source="https://source.puri.sm/Librem5/epiphany/-/archive/$_commit/epiphany-$_commit.tar.gz"
+source="https://source.puri.sm/Librem5/debs/epiphany/-/archive/$_commit/epiphany-$_commit.tar.gz"
 options="!check" # Broken
 builddir="$srcdir/$pkgname-$_commit"
+
+prepare() {
+	default_prepare
+
+	grep "\.patch$" debian/patches/series \
+		| xargs -I {} -t -r -n1 patch -p1 -i debian/patches/{}
+}
 
 build() {
 	meson \
@@ -37,4 +44,6 @@ package() {
 	DESTDIR="$pkgdir" ninja -C output install
 }
 
-sha512sums="42081464bd0ab4d3b954de9b0a98e1b69c0adff948a0b1410232cbbd565463b11a38c4ae1f3fd5511f2e9297c151d5aa07fe1c8236848a684686a0714c9a5b3d  epiphany-a14d0fd642b71fdafc639df1330c2ee8d3271089.tar.gz"
+sha512sums="
+0eec142aa6996a0729890b1ca5ec00faa5f5d3ed6a91b867cb52eeb6ca013851f5207f26b8bba062b840dd23ff88119e388cc5b8de3a74cb84b2cef43ebee518  epiphany-0a1eb831f18688b33139d8cb166045648cdff02a.tar.gz
+"
