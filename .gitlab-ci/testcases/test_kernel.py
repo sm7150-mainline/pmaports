@@ -33,3 +33,10 @@ def test_aports_kernel(args):
                                    " not be explicitly specified in makedepends!"
                                    " pmbootstrap installs cross-compiler"
                                    " automatically.")
+
+        # nftables support in kernels used by main and community devices
+        for dir in ["main", "device/main", "device/community"]:
+            if path.startswith(f"{args.aports}/{dir}"):
+                assert pmb.parse.kconfig.check(args,
+                                               aport_name.replace("linux-", ""),
+                                               force_nftables_check=True)
