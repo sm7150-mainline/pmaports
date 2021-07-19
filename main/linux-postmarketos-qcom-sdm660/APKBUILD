@@ -4,12 +4,15 @@
 _flavor="postmarketos-qcom-sdm660"
 pkgname=linux-$_flavor
 pkgver=5.10_rc6
-pkgrel=0
+pkgrel=1
 pkgdesc="Close to mainline linux kernel for Qualcomm Snapdragon 660 SoC"
 arch="aarch64"
 url="https://kernel.org/"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-nftables
+	"
 makedepends="bison findutils flex installkernel openssl-dev perl"
 
 _repo="linux-postmarketos"
@@ -50,5 +53,7 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
-sha512sums="4a55855e60de655a77c43cbd4a08b611a7142235dbf5501007d734426e3d08291b8101b2e3e6e22306af8da52709fa4466c1ede6a0cd7b9d8d02eb250a09f5af  linux-postmarketos-5e9195254ef8c6c6f4870aa77057577f0c17d007.tar.bz2
-8e12dca570e8b12f0fa7349943babc61e9f2827cea61bc9f2f2c0fb2553e2e8a8fcfb623dcd46d9ff9d99f8596c4197a5b321bf43a99197bef30f554244eb4aa  config-postmarketos-qcom-sdm660.aarch64"
+sha512sums="
+4a55855e60de655a77c43cbd4a08b611a7142235dbf5501007d734426e3d08291b8101b2e3e6e22306af8da52709fa4466c1ede6a0cd7b9d8d02eb250a09f5af  linux-postmarketos-5e9195254ef8c6c6f4870aa77057577f0c17d007.tar.bz2
+06746eacbf7fb1b4d4e268d05dd76ddb18646018176b1ec6bc58d089768934613bbdaefb6e4c67dbe0b616c52ad1a28a733b3b744902f08dcf4ec1eb69370981  config-postmarketos-qcom-sdm660.aarch64
+"
