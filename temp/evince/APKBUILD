@@ -1,8 +1,8 @@
 # Forked from Alpine to apply Purism's mobile patches
 pkgname=evince
-pkgver=9999_git20201106
+pkgver=9999_git20210416
 pkgrel=0
-_commit="3516adc7164ad898ca7432364586da2610a930fb"
+_commit="8bb5c846bbb36bac47fbfba0f0e5a29802d133b8"
 pkgdesc="simple document viewer for GTK+"
 url="https://wiki.gnome.org/Apps/Evince"
 arch="all !s390x !mips !mips64" # Limited by adwaita-icon-theme needing librsvg
@@ -10,7 +10,7 @@ license="GPL-2.0-or-later"
 depends="adwaita-icon-theme gsettings-desktop-schemas"
 depends_dev="gtk+3.0-dev poppler-dev libsm-dev libevent-dev libxrandr-dev
 	libx11-dev libxcursor-dev libxcomposite-dev libxi-dev util-linux-dev
-	tiff-dev gobject-introspection-dev libxml2-dev libspectre-dev libhandy-dev"
+	tiff-dev gobject-introspection-dev libxml2-dev libspectre-dev libhandy1-dev"
 makedepends="$depends_dev itstool meson libexecinfo-dev nautilus-dev
 	adwaita-icon-theme-dev gtk-doc yelp-tools appstream-glib-dev
 	libgxps-dev gspell-dev gstreamer-dev libsecret-dev gst-plugins-base-dev"
@@ -23,6 +23,13 @@ builddir="$srcdir/$pkgname-$_commit"
 #     - CVE-2019-11459
 #   3.24.0-r2:
 #     - CVE-2017-1000083
+
+prepare() {
+	default_prepare
+
+	grep "\.patch$" debian/patches/series \
+		| xargs -I {} -t -r -n1 patch -p1 -i debian/patches/{}
+}
 
 build() {
 	meson \
@@ -65,4 +72,6 @@ doc() {
 	fi
 }
 
-sha512sums="8db8182d83f5ef453edb3696bc4a832af971c9a8fee8878abee607659526b211841b269c89765d609e64d5e34f801f7b391a906d0b1f0e2773eed8cd486a295b  evince-3516adc7164ad898ca7432364586da2610a930fb.tar.gz"
+sha512sums="
+4af47ad7498f88838f42946fecbd8ac450935c6071a44c9dcc2769ba9896a0e1410bee7dbc16ce977817862ddb19f7992732abbc6726187f4c987d50b2f0ecf5  evince-8bb5c846bbb36bac47fbfba0f0e5a29802d133b8.tar.gz
+"
