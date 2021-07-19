@@ -5,7 +5,7 @@
 
 _flavor="postmarketos-qcom-sdm845"
 pkgname=linux-$_flavor
-pkgver=5.12.15
+pkgver=5.14.0_rc6
 pkgrel=0
 pkgdesc="Mainline Kernel fork for SDM845 devices"
 arch="aarch64"
@@ -22,7 +22,7 @@ makedepends="bison findutils flex installkernel openssl-dev perl"
 
 _repo="linux"
 _config="config-$_flavor.$arch"
-_commit="8cd3168c87c0c26e481305a0491d651a1ef3b7b2"
+_commit="a620c228c986589ced2cd9369fbce10d219eb0df"
 
 # Source
 source="
@@ -44,7 +44,12 @@ build() {
 
 package() {
 	mkdir -p "$pkgdir"/boot
-	make zinstall modules_install dtbs_install \
+
+	# Avoids requirement that LOCALVERSION=flavor
+	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+		"$pkgdir/boot/vmlinuz-$_flavor"
+
+	make modules_install dtbs_install \
 		ARCH="$_carch" \
 		INSTALL_PATH="$pkgdir"/boot/ \
 		INSTALL_MOD_PATH="$pkgdir" \
@@ -57,6 +62,6 @@ package() {
 }
 
 sha512sums="
-05c45e78fd56fb77a2055f1bd895bf188a27386719af050c41d7eeccd83923776eb07fd372d06bda26bc3bacfd48072bea7a990d2d45a9b1093f18b054a5a9dc  linux-8cd3168c87c0c26e481305a0491d651a1ef3b7b2.tar.gz
-154c0a56185fc24e29d1e41e9b03614b6fcd60ab10e27a381533b0fbdab5ad3a2902f483b4edecc561136334549a985d5173e5033244f46daee49b783c3434f7  config-postmarketos-qcom-sdm845.aarch64
+b5bfa1b9573e6d0c56312056264f86c3b8bd3ba6365c4a4705418136df20477dc6d83b83478d5537a241bf2fdc7e01201d22a8fc05aa526d2b998583f8218e27  linux-a620c228c986589ced2cd9369fbce10d219eb0df.tar.gz
+c2a5c4795171dd795e0ac63ee002459d619e0fc122e63f01c900962ee9a78dce899835c8916f72d2603d94dc98da8e3ed7424235aab557d4d92c016db3e9530d  config-postmarketos-qcom-sdm845.aarch64
 "
