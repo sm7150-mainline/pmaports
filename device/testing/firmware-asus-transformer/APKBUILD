@@ -2,53 +2,64 @@
 # Co-Maintainer: Ion Agorria
 
 pkgname=firmware-asus-transformer
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 pkgdesc="Firmware files for Asus Transformers"
-url="https://github.com/clamor95/linux-firmware"
+url="https://github.com/clamor-s/linux-firmware"
 arch="armv7"
 license="proprietary"
 options="!check !strip !archcheck"
 
 # source
-_commit="eba58efcd0d7c035f5b4b4fc38bf8b9c425f040e"
-source="BCM4329B1_002.002.023.0797.0879.hcd::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/BCM4329B1_002.002.023.0797.0879.hcd
-	BCM4330B1_002.001.003.0967.0970.hcd::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/BCM4330B1_002.001.003.0967.0970.hcd
-	brcmfmac4329-sdio.asus,tf201.txt::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/brcmfmac4329-sdio.asus%2Ctf201.txt
-	brcmfmac4329-sdio.asus,tf300t.txt::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/brcmfmac4329-sdio.asus%2Ctf300t.txt
-	brcmfmac4330-sdio.asus,tf700t.txt::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/brcmfmac4330-sdio.asus%2Ctf700t.txt
-	brcmfmac4330-sdio.bin::https://github.com/clamor95/linux-firmware/raw/$_commit/brcm/brcmfmac4330-sdio.bin
+_commit="e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50"
+_url="https://github.com/clamor-s/linux-firmware"
+source="
+	$pkgname-$_commit-BCM4329B1_002.002.023.0797.0879.hcd::$_url/raw/$_commit/brcm/BCM4329B1_002.002.023.0797.0879.hcd
+	$pkgname-$_commit-BCM4330B1_002.001.003.0967.0970.hcd::$_url/raw/$_commit/brcm/BCM4330B1_002.001.003.0967.0970.hcd
+	$pkgname-$_commit-BCM43341B0.hcd::$_url/raw/$_commit/brcm/BCM43341B0.hcd
+	$pkgname-$_commit-brcmfmac4329-sdio.asus,tf201.txt::$_url/raw/$_commit/brcm/brcmfmac4329-sdio.asus%2Ctf201.txt
+	$pkgname-$_commit-brcmfmac4329-sdio.asus,tf300t.txt::$_url/raw/$_commit/brcm/brcmfmac4329-sdio.asus%2Ctf300t.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.asus,tf700t.txt::$_url/raw/$_commit/brcm/brcmfmac4330-sdio.asus%2Ctf700t.txt
+	$pkgname-$_commit-brcmfmac43340-sdio.asus,tf701t.txt::$_url/raw/$_commit/brcm/brcmfmac43340-sdio.asus%2Ctf701t.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.bin::$_url/raw/$_commit/brcm/brcmfmac4330-sdio.bin
 "
 
 package() {
 	# Bluetooth
-	install -D -m644 "$srcdir"/BCM4329B1_002.002.023.0797.0879.hcd \
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4329B1_002.002.023.0797.0879.hcd \
 		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4329B1.hcd
-	install -D -m644 "$srcdir"/BCM4330B1_002.001.003.0967.0970.hcd \
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4330B1_002.001.003.0967.0970.hcd \
 		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4330B1.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM43341B0.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM43341B0.hcd
 
 	# Wi-Fi
-	install -D -m644 "$srcdir"/brcmfmac4329-sdio.asus,tf201.txt \
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4329-sdio.asus,tf201.txt \
 		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4329-sdio.asus,tf201.txt
-	install -D -m644 "$srcdir"/brcmfmac4329-sdio.asus,tf300t.txt \
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4329-sdio.asus,tf300t.txt \
 		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4329-sdio.asus,tf300t.txt
-	install -D -m644 "$srcdir"/brcmfmac4330-sdio.asus,tf700t.txt \
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.asus,tf700t.txt \
 		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.asus,tf700t.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac43340-sdio.asus,tf701t.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac43340-sdio.asus,tf701t.txt
 
-	install -D -m644 "$srcdir"/brcmfmac4330-sdio.bin \
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.bin \
 		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.bin
 
 	cd "$pkgdir"/lib/firmware/postmarketos/brcm
 	ln -s brcmfmac4329-sdio.asus,tf201.txt brcmfmac4329-sdio.asus,tf101.txt
 	ln -s brcmfmac4329-sdio.asus,tf300t.txt brcmfmac4329-sdio.asus,tf300tg.txt
 	ln -s brcmfmac4329-sdio.asus,tf300t.txt brcmfmac4329-sdio.asus,tf300tl.txt
+	ln -s brcmfmac4330-sdio.asus,tf700t.txt brcmfmac4330-sdio.pegatron,chagall.txt
 }
 
 sha512sums="
-26534cbef298d7594ed6d8a58380ed3b1593a195aaa2c9e5108dce82dbaec4da922f49217342397d405131d827873dca1c78ab2e73c4bae0901b2c77ff56f9b2  BCM4329B1_002.002.023.0797.0879.hcd
-b61cc86466a028e9160d1f2c7a3303fbb3a7dbcb2a6766b0afd9ef1fc9e25410d75f1e315638d0de8306ce23f3561c084542ad1c9e5eb11e9d07a3ba85dfec3d  BCM4330B1_002.001.003.0967.0970.hcd
-4037e1af433a4805b2cb24c770f3b3009fe5fe224de11174ed1075dd3dc527b108e5d20cd9a3527b7b981c32c52e07027b15c53eb9bf8e37e82b66126081b665  brcmfmac4329-sdio.asus,tf201.txt
-655f2bda94ca1c9ff26fba4c2eb69121fed461325dfd14342262240d5833d063839311bd0b8e2efffbab9b19a0852c5ab57b267c97e8a0205f810a2259840159  brcmfmac4329-sdio.asus,tf300t.txt
-907654b7dbeec809c23635374f6a19afca1b125091fec7ae1ec00b90a3758a5023fbc0ad60981975fe55a826b9252887c0d8b4067c4c3d68c07774d31da9f69e  brcmfmac4330-sdio.asus,tf700t.txt
-53225312d886d052832095db8bf7a8f345353bd7e1e5ab1f328bb0d79d5d4d8e1f8f35957c0d1df70a2c594cb66cdc5a925857008a808ba6c0794195d2bbd954  brcmfmac4330-sdio.bin
+26534cbef298d7594ed6d8a58380ed3b1593a195aaa2c9e5108dce82dbaec4da922f49217342397d405131d827873dca1c78ab2e73c4bae0901b2c77ff56f9b2  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-BCM4329B1_002.002.023.0797.0879.hcd
+b61cc86466a028e9160d1f2c7a3303fbb3a7dbcb2a6766b0afd9ef1fc9e25410d75f1e315638d0de8306ce23f3561c084542ad1c9e5eb11e9d07a3ba85dfec3d  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-BCM4330B1_002.001.003.0967.0970.hcd
+dfe24ef807aa2a612313581f14f846ed053ff0dd612104859b3c1ca4060711b7c3f85f8803b7f68d6d088f35fe348a3c95c504502058ee8935fdeeeb837282e4  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-BCM43341B0.hcd
+4037e1af433a4805b2cb24c770f3b3009fe5fe224de11174ed1075dd3dc527b108e5d20cd9a3527b7b981c32c52e07027b15c53eb9bf8e37e82b66126081b665  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-brcmfmac4329-sdio.asus,tf201.txt
+655f2bda94ca1c9ff26fba4c2eb69121fed461325dfd14342262240d5833d063839311bd0b8e2efffbab9b19a0852c5ab57b267c97e8a0205f810a2259840159  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-brcmfmac4329-sdio.asus,tf300t.txt
+42a14c5d671a6e515ee59ebce97ee6d0e35beb7374d3c774639c74e6dcc5d31a31c714e21e1846dbf74d455e8627a67a26eeb414b78f2c0e77d40677c610dcb7  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-brcmfmac4330-sdio.asus,tf700t.txt
+c755ba46da40902566f20fba8bc131e5a7733dcb32be524b754cdb57d8835d62b15848ebc26c3136471400995fd9127e9d67530867847faacfc408fc6be35356  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-brcmfmac43340-sdio.asus,tf701t.txt
+53225312d886d052832095db8bf7a8f345353bd7e1e5ab1f328bb0d79d5d4d8e1f8f35957c0d1df70a2c594cb66cdc5a925857008a808ba6c0794195d2bbd954  firmware-asus-transformer-e1537dc1ba40c9d734e6ee2dddf0d709c40dbb50-brcmfmac4330-sdio.bin
 "
