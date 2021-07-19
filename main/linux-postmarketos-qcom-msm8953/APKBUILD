@@ -4,12 +4,16 @@
 _flavor="postmarketos-qcom-msm8953"
 pkgname=linux-$_flavor
 pkgver=5.13_rc6
-pkgrel=1
+pkgrel=2
 pkgdesc="Mainline kernel fork for Qualcomm MSM8953 devices"
 arch="aarch64"
 url="https://github.com/msm8953-mainline/linux"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-nftables
+	"
 makedepends="bison findutils flex installkernel openssl-dev perl"
 
 _carch="arm64"
@@ -46,5 +50,5 @@ package() {
 }
 sha512sums="
 7c517fba7dcaf5b993323c37d665c424a2562abdf2a5af78963cc5dbadc7191a6653c0059609ea05ee2880253b067bc270d57130c5a175cd4c833ccfab2a4aaf  linux-postmarketos-qcom-msm8953-fd0f81dcec8023ea37d854c3d6d426ce41efb455.tar.gz
-70633fd2d09249f90b6ea17f90477bb51bed654d8cdb9e34f7661d3a18db4339c17701d15f8749190d4179a4ca5ac15b133057be83f2b4e327f4dfcc87b17593  config-postmarketos-qcom-msm8953.aarch64
+1a8c76b7139261759cc3bb6a2d697b91505d6df70dd10ec828d9e20c577727cd6c63a5145bdba7435f4523e56ac53c2eee8f157e067c1a44e04b347b66be17d7  config-postmarketos-qcom-msm8953.aarch64
 "
