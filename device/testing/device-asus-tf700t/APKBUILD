@@ -1,19 +1,33 @@
 # Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+# Co-Maintainer: Maxim Schwalm <maxim.schwalm@gmail.com>
 
 pkgname=device-asus-tf700t
 pkgdesc="Asus Transformer Infinity TF700T"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-grate mesa-dri-gallium mkbootimg alsa-ucm-conf asus-transformer-blobtools"
+depends="
+	alsa-ucm-conf
+	asus-transformer-blobtools
+	libvdpau-tegra
+	linux-postmarketos-grate
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-phosh
-	$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo
-	rootston.ini"
+source="
+	deviceinfo
+	rootston.ini
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+	$pkgname-x11
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,14 +38,20 @@ package() {
 }
 
 phosh() {
-	install_if="$pkgname postmarketos-ui-phosh"
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
 	install -Dm644 "$srcdir"/rootston.ini \
 		"$subpkgdir"/etc/phosh/rootston.ini
 }
 
 nonfree_firmware() {
 	pkgdesc="Asus Transformers WiFi & BT firmware"
-	depends="firmware-asus-transformer linux-firmware-brcm linux-firmware-cypress"
+	depends="firmware-asus-transformer"
+	mkdir "$subpkgdir"
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	depends="xf86-video-opentegra"
 	mkdir "$subpkgdir"
 }
 

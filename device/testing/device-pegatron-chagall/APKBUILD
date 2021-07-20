@@ -3,17 +3,30 @@
 pkgname=device-pegatron-chagall
 pkgdesc="Pegatron Chagall"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-grate mkbootimg alsa-ucm-conf mesa-dri-gallium xf86-video-opentegra"
+depends="
+	alsa-ucm-conf
+	asus-transformer-blobtools
+	libvdpau-tegra
+	linux-postmarketos-grate
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-phosh
-	     $pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo
-	rootston.ini"
+source="
+	deviceinfo
+	rootston.ini
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+	$pkgname-x11
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,14 +37,20 @@ package() {
 }
 
 phosh() {
-	install_if="$pkgname postmarketos-ui-phosh"
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
 	install -Dm644 "$srcdir"/rootston.ini \
 		"$subpkgdir"/etc/phosh/rootston.ini
 }
 
 nonfree_firmware() {
-	pkgdesc="Pegatron Chagall WiFi and Bluetooth firmware"
+	pkgdesc="Pegatron Chagall WiFi & Bluetooth firmware"
 	depends="firmware-asus-transformer"
+	mkdir "$subpkgdir"
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	depends="xf86-video-opentegra"
 	mkdir "$subpkgdir"
 }
 
