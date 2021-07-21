@@ -10,8 +10,8 @@
 # boot failure
 
 pkgname=linux-postmarketos-rockchip
-pkgver=5.13.0
-pkgrel=1
+pkgver=5.13.4
+pkgrel=0
 pkgdesc="Mainline kernel for rockchip devices"
 arch="aarch64"
 _carch="arm64"
@@ -36,9 +36,6 @@ makedepends="
 	rsync
 	gzip
 	xz
-	clang
-	lld
-	llvm11
 	"
 
 # Source
@@ -48,17 +45,8 @@ case $pkgver in
 	*.*)	_kernver=$pkgver;;
 esac
 
-export LLVM=1
-export LLVM_IAS=1
-
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
-	0001-phy-rockchip-typec-Set-extcon-capabilities.patch
-	0002-arm64-dts-rockchip-add-typec-extcon-hack.patch
-	0003-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
-	0004-arm64-rockchip-add-DP-ALT-rockpro64.patch
-	0005-ayufan-drm-rockchip-add-support-for-modeline-32MHz-e.patch
-	0006-rk3399-rp64-pcie-Reimplement-rockchip-PCIe-bus-scan-delay.patch
 	$_config
 "
 builddir="$srcdir/linux-$_kernver"
@@ -71,7 +59,7 @@ prepare() {
 
 build() {
 	unset LDFLAGS
-	make ARCH="$_carch" CC=clang \
+	make ARCH="$_carch" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 
 }
@@ -90,12 +78,6 @@ package() {
 
 
 sha512sums="
-a8edf97e9d38a49f1be2bde1e29ad96274bb2c6f7e8a2bebaa1161dd4df9cabcbaec4ff644c45bee94f86ae47725087d6deed0cd954209cec717621d137db85e  linux-5.13.tar.xz
-10949558a6e3316ea57497f377fd120d6704f3b81725317556e49d10b570a40edb06643b06738116abbe3096be485761d436f1a0d1861bd34fc18ea45068b6b0  0001-phy-rockchip-typec-Set-extcon-capabilities.patch
-b7291eecfddc7ebe9393eea864e0ee28960e8cc2f87dfc42d09426b5619f46ded97c38fb8bf26f4eea1f26bfe21396094505b3efb8676691f8751e2ffabe50ec  0002-arm64-dts-rockchip-add-typec-extcon-hack.patch
-427b81472de2a473344269b2da06ac338af42e68620a281a9cb8543e545e6ed7f719acaf68c688e518b65d2132e0c66676ba5e30376ec980fd6eeaea05c2a8be  0003-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
-206fc67879c883e5ce72e748f4afb7135c21a447a5fa3c59c2863355c24c7134b89768801ddef15fdc38602f6c7978bb63eb8f68871e8dc8440eabef4de0e627  0004-arm64-rockchip-add-DP-ALT-rockpro64.patch
-e2afcf9db5bb033c545fcb938ee5179adc7993368d89312ae484a7fbf1987a0b6566f17c6677f2c6f6a13c7d4bea227592206d55b35209269ff9f4704473b3f7  0005-ayufan-drm-rockchip-add-support-for-modeline-32MHz-e.patch
-e820ddd51fd03106b56a1ce325b1316259a4d0dbf0565b2f3888f64beb44e0b4ef049be08888db4557b5c14945ae3f5ac782896fb84fc2b8c8f130fb7be44bd5  0006-rk3399-rp64-pcie-Reimplement-rockchip-PCIe-bus-scan-delay.patch
+dcd44f0da2420093f6ed8e44df4ed81fb8123fbc25d2dcdddd633feb3fc455ec74ef7a683a9c249e7089981393fcbed10c41aad10d4b0108c964cbd485e359e5  linux-5.13.4.tar.xz
 c13d39dba1e0be41116c1f712aac1ca00fc68616a01afd103428fa2b01c44ad6190abf7f9d3f7fd0ff280e6ac953f2817eaf0c5659c5611f51cb3994df3ffa9b  config-postmarketos-rockchip.aarch64
 "
