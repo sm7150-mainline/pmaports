@@ -8,6 +8,8 @@ waked is notified about the update. So waked can wake the system
 from suspend when an alarm is fired.
 
 Fixes #100
+
+Co-Authored-By: pcworld <0188801@gmail.com>
 ---
  build-aux/flatpak/org.gnome.clocks.json |  1 +
  src/alarm-face.vala                     |  2 +
@@ -87,6 +89,14 @@ index 6103342..f8fa937 100644
      }
  
      private void update_snooze_time (GLib.DateTime start_time) {
+@@ -172,6 +181,7 @@ private class Item : Object, ContentItem {
+     public void snooze () {
+         bell.stop ();
+         state = State.SNOOZING;
++        WakedUtils.update_timer (id, snooze_time);
+     }
+ 
+     public void stop () {
 @@ -221,6 +229,7 @@ private class Item : Object, ContentItem {
              update_alarm_time (); // reschedule for the next repeat
          }
