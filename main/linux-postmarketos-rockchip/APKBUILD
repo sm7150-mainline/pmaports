@@ -11,10 +11,9 @@
 
 pkgname=linux-postmarketos-rockchip
 pkgver=5.13.5
-pkgrel=2
+pkgrel=3
 pkgdesc="Mainline kernel for rockchip devices"
-arch="aarch64"
-_carch="arm64"
+arch="aarch64 armv7"
 _flavor="${pkgname#linux-}"
 url="https://kernel.org"
 license="GPL-2.0-only"
@@ -36,10 +35,18 @@ makedepends="
 	rsync
 	gzip
 	xz
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
 	"
 
+case "$CARCH" in
+	aarch64*) _carch="arm64" ;;
+	arm*) _carch="arm" ;;
+esac
+
 # Source
-_config="config-$_flavor.$arch"
+_config="config-$_flavor.$CARCH"
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.0};;
 	*.*)	_kernver=$pkgver;;
@@ -47,11 +54,13 @@ esac
 
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
-	$_config
 	0001-phy-rockchip-typec-Set-extcon-capabilities.patch
 	0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
 	0004-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
 	0010-usb-typec-add-extcon-to-tcpm.patch
+	0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
+	config-$_flavor.aarch64
+	config-$_flavor.armv7
 "
 builddir="$srcdir/linux-$_kernver"
 
@@ -76,8 +85,14 @@ package() {
 		INSTALL_MOD_STRIP=1 \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs-$_flavor"
-	gzip -v "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
-	mv "$pkgdir"/boot/vmlinuz-postmarketos-rockchip.gz "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
+
+	# not all armv7 devices (google-veyon-jerry) support booting gzipped kernels yet
+	if [ $_carch = arm64 ]; then
+		gzip -v "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
+		mv "$pkgdir"/boot/vmlinuz-postmarketos-rockchip.gz "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
+	else
+		mv "$pkgdir"/boot/vmlinuz-postmarketos-rockchip "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
+	fi
 }
 
 
@@ -88,4 +103,6 @@ sha512sums="
 b7291eecfddc7ebe9393eea864e0ee28960e8cc2f87dfc42d09426b5619f46ded97c38fb8bf26f4eea1f26bfe21396094505b3efb8676691f8751e2ffabe50ec  0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
 427b81472de2a473344269b2da06ac338af42e68620a281a9cb8543e545e6ed7f719acaf68c688e518b65d2132e0c66676ba5e30376ec980fd6eeaea05c2a8be  0004-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
 e5cc0852506ea1e73213672f0c3f9144c08156f6d5e8af841bf3f7bffc0e89028507aac4718353eee20edd9069e3f81665caa5ca25e416f25e7e0da10451b67e  0010-usb-typec-add-extcon-to-tcpm.patch
+000ddb9f10545b1231e2b78049d3fda7aed8e931c0c992f84cfe2783dd964443d137e5695775956c5db0fac30d00795adc34453acfb772155163297cc1227b8c  0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
+5bd27a8baaf6f9c60ab1c991ed39a147945eb3a8ebc5cc4ba5f8dd33e4f806d0e973249faf37ec26d9c023839b4718debfbfee0e71c778c2ed8f519f364664ca  config-postmarketos-rockchip.armv7
 "
