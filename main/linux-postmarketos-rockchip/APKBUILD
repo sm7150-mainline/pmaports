@@ -10,7 +10,7 @@
 # boot failure
 
 pkgname=linux-postmarketos-rockchip
-pkgver=5.13.4
+pkgver=5.13.5
 pkgrel=0
 pkgdesc="Mainline kernel for rockchip devices"
 arch="aarch64"
@@ -48,6 +48,10 @@ esac
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	$_config
+	0001-phy-rockchip-typec-Set-extcon-capabilities.patch
+	0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
+	0004-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
+	0010-usb-typec-add-extcon-to-tcpm.patch
 "
 builddir="$srcdir/linux-$_kernver"
 
@@ -78,6 +82,10 @@ package() {
 
 
 sha512sums="
-dcd44f0da2420093f6ed8e44df4ed81fb8123fbc25d2dcdddd633feb3fc455ec74ef7a683a9c249e7089981393fcbed10c41aad10d4b0108c964cbd485e359e5  linux-5.13.4.tar.xz
-c13d39dba1e0be41116c1f712aac1ca00fc68616a01afd103428fa2b01c44ad6190abf7f9d3f7fd0ff280e6ac953f2817eaf0c5659c5611f51cb3994df3ffa9b  config-postmarketos-rockchip.aarch64
+887a907f5923630224d2bbadd1e60e49856460ee5fde9fd6de770d908bada5c6fe1669f9ed64418695e9101a8e5069854beb23714dc8138cdf9ea7e319b10743  linux-5.13.5.tar.xz
+a9be66305434fa02d3e11f369bb06b9ac28dbfe23fc9927f967c55800ce7ad4e3cf1280fb8b6f2410fda9c7c8d3878e7a5d5625a782a0b7f33dd7c53eefba650  config-postmarketos-rockchip.aarch64
+10949558a6e3316ea57497f377fd120d6704f3b81725317556e49d10b570a40edb06643b06738116abbe3096be485761d436f1a0d1861bd34fc18ea45068b6b0  0001-phy-rockchip-typec-Set-extcon-capabilities.patch
+b7291eecfddc7ebe9393eea864e0ee28960e8cc2f87dfc42d09426b5619f46ded97c38fb8bf26f4eea1f26bfe21396094505b3efb8676691f8751e2ffabe50ec  0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
+427b81472de2a473344269b2da06ac338af42e68620a281a9cb8543e545e6ed7f719acaf68c688e518b65d2132e0c66676ba5e30376ec980fd6eeaea05c2a8be  0004-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
+e5cc0852506ea1e73213672f0c3f9144c08156f6d5e8af841bf3f7bffc0e89028507aac4718353eee20edd9069e3f81665caa5ca25e416f25e7e0da10451b67e  0010-usb-typec-add-extcon-to-tcpm.patch
 "
