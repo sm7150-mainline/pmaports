@@ -2,8 +2,8 @@
 # Kernel config based on: arch/arm/configs/jf_defconfig
 
 pkgname=linux-samsung-jflte
-pkgver=3.4.112
-pkgrel=13
+pkgver=3.4.113
+pkgrel=0
 pkgdesc="Samsung Galaxy S4 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -15,7 +15,7 @@ makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev d
 
 # Source
 _repository="android_kernel_samsung_jf"
-_commit="e8d93e03563e42d7c762d4e9a87d77115102b301"
+_commit="0b7873d52c2331383f37eb908e54940eeac07345"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
@@ -23,7 +23,8 @@ source="
 	03-fix-video-argb-setting.patch
 	gcc7-give-up-on-ilog2-const-optimizations.patch
 	gcc8-fix-put-user.patch
-	kernel-use-the-gnu89-standard-explicitly.patch
+	deduplicate-copy_net_ns.patch
+	nfqnl_ct_put.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 
@@ -42,9 +43,12 @@ package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
 }
 
-sha512sums="7b73724636d9fb2a19e6405b1c6acd9f08020cb2d8c51f209eab2dea90616f15e88e96cdea62931864a6a3f6d4ad1c0b0b9b5cae3e3a690c20f5a9dcb4b33d82  linux-samsung-jflte-e8d93e03563e42d7c762d4e9a87d77115102b301.tar.gz
+sha512sums="
+5301543d6f04c0b70ee8892cbc81e5c81965dd4e81b76282520f9bb7de8cebcb15323d8a58cc5ddaa29c7d7ef0107dcd9022bdbdd05e944516afbc256870513d  linux-samsung-jflte-0b7873d52c2331383f37eb908e54940eeac07345.tar.gz
 b7595ecb480aeb93007bcd941dd131a80884db44fe714c681bdd79ac330df3ae904f8d6f53243f1bdd081949cb5f4b886e051641ea83d737e7b857b4c56dfa00  config-samsung-jflte.armv7
 e3083c260ed9c4fc0d83f43106700b6173876dbfae072f6e6696ac6785a4dc17771fbcb3e21601e04ed29a11bf0f7a2a09ad549375e0c34cea245c7f2e2bcbbd  03-fix-video-argb-setting.patch
 77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
 197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
-ad0182a483791fc88e058838bc331b2f04a75ba291e763767babdb815efadfc3b4fda97e69e2e3f00a426cabea088e35297a92bd287592597d1e309be68ee92c  kernel-use-the-gnu89-standard-explicitly.patch"
+213717aabd91c8b1fe93f113a33e8d859d29e319ae49b9c751bf4abdedc4ee3bc972a55141cf879876009001fedd055b07cae42aeffdc73535f2e99857f3a101  deduplicate-copy_net_ns.patch
+9bc646815e5064fade207b3cc62a7bfdef8edb2e8b9edf9c2110e35517001ead2f5a4725247dfcf734e1ce9f8cfdd1414338cae425ecdc4874cfcf1ead22cd05  nfqnl_ct_put.patch
+"
