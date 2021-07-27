@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-microsoft-surface-rt
 pkgdesc="Microsoft Surface RT"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -19,6 +19,7 @@ subpackages="$pkgname-x11 $pkgname-phosh"
 source="
 	deviceinfo
 	grub.cfg
+	initfs-hook.sh
 	pointercal
 	rootston.ini
 "
@@ -48,9 +49,9 @@ package() {
 	install -Dm644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
 
-	install -Dm644 "$srcdir"/grub.cfg \
+	install -D "$srcdir"/grub.cfg \
 		"$pkgdir"/boot/grub/grub.cfg
-	install -Dm644 "$srcdir"/bootarm.efi \
+	install -D "$srcdir"/bootarm.efi \
 		"$pkgdir"/boot/EFI/Boot/bootarm.efi
 }
 
@@ -69,6 +70,7 @@ phosh() {
 sha512sums="
 37077b3b050285f73a5325e82e669f33813f57eac83aea37cf3b148812a5040b4a86cc10e52b351d4dbf9161ad2481fb856b0150142b4c68af71c88a1f1b43b6  deviceinfo
 33be5b15e4a7b9318f58cec2c4837b3b2fae939aab8d967cfb5e326676fc144dad2a43991fbbb3c8b5f7741897300d6b92befa2e53e84e5ff7ab8e8b2590bbc5  grub.cfg
+0c7640df35d29a5c2e168d1e54b73a90d903e51b16d67ad08c3ccb41972209086844357f82cf6a2b6de977ebfb7e1099da01db71dc0733e90662ba315f0cd1d0  initfs-hook.sh
 34f6eb789d4688985a262c519017e0712a90ca5acf89e6b3f39e33792a7982155261c6b4f0dbf41595b512da9dc7c9002adb69a550e80be349a374d086799916  pointercal
 618284cdaccd09e60cb9a99afa337fcad7b3bd33f6422b9eae34175bc4516138d486cbb9f5735cafb325bc16cf362de16aeae7c77d334668c749afcfa557359b  rootston.ini
 "
