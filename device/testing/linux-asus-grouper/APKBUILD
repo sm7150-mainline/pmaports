@@ -17,42 +17,28 @@ _carch="arm"
 _config="config-$_flavor.armv7"
 source="$pkgname-$pkgver-$_commit.tar.gz::https://github.com/grate-driver/linux/archive/$_commit.tar.gz
 	$_config"
-_ksrcdir="$srcdir/linux-$_commit"
+builddir="$srcdir/linux-$_commit"
 _outdir="out"
 
 prepare() {
 	default_prepare
 
-	mkdir -p "$srcdir"/build
-	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$_ksrcdir" O="$srcdir"/build ARCH="$_carch" \
-		olddefconfig
+	REPLACE_GCCH=0 \
+		. downstreamkernel_prepare
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
-	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-Alpine"
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
-	install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 
-	install -D "$srcdir/build/include/config/kernel.release" \
-		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
-
-	cd "$srcdir"/build
-
-	local _install
-	case "$CARCH" in
-	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
-	*)		_install="modules_install" ;;
-	esac
-
-	make -j1 $_install \
-		ARCH="$_carch" \
+	make modules_install dtbs_install \
+		O="$_outdir" ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
