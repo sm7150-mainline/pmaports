@@ -1,26 +1,24 @@
 # Maintainer: David Heidelberg <david@ixit.cz>
-_flavor=asus-grouper
-_commit="6ab7e328e14f2693ca800ac742f2f5cb3e5e450e"
-_config="config-$_flavor.armv7"
-
 pkgname=linux-asus-grouper
 pkgver=5.14.0_rc3
 pkgrel=0
 arch="armv7"
-pkgdesc="Nexus 7 grouper/tilapia (2012) kernel fork, close to mainline"
+pkgdesc="Linux kernel with experimental patches for Tegra (optimized for size constrained boot.img of Nexus 7 grouper/tilapia (2012))"
 url="https://postmarketos.org"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
 	     devicepkg-dev bison flex openssl-dev xz findutils"
 options="!strip !check !tracedeps pmb:cross-native"
-source="
-	$pkgname-$pkgver-$_commit.tar.gz::https://github.com/grate-driver/linux/archive/$_commit.tar.gz
-	$_config
-"
 license="GPL-2.0-only"
 
+# Source
+_flavor=asus-grouper
+_commit="6ab7e328e14f2693ca800ac742f2f5cb3e5e450e"
 _carch="arm"
-
+_config="config-$_flavor.armv7"
+source="$pkgname-$pkgver-$_commit.tar.gz::https://github.com/grate-driver/linux/archive/$_commit.tar.gz
+	$_config"
 _ksrcdir="$srcdir/linux-$_commit"
+_outdir="out"
 
 prepare() {
 	default_prepare
