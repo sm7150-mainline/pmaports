@@ -447,9 +447,18 @@ flash_updated_boot_parts()
 		return
 	fi
 
-	echo "==> Flashing boot image"
-	flavor=$(uname -r | sed "s/^[^-]*-//")
-	pmos-update-kernel "$flavor"
+	# We assume here that the device only has a single kernel
+	# package installed and that it is also the one being upgraded.
+	FLAVOR="$(basename "$(find /usr/share/kernel/* -type d -print -quit)")"
+
+	if [ -z "$FLAVOR" ]; then
+		echo "==> Couldn't determine flavor, are you running the stock kernel?"
+		return
+	fi
+
+	echo "==> Flashing boot image flavor: $FLAVOR"
+	
+	pmos-update-kernel "$FLAVOR"
 }
 
 # Append the correct device tree to the linux image file or copy the dtb to the boot partition
