@@ -25,6 +25,8 @@ sh_files="
 	./main/swclock-offset/swclock-offset-shutdown.sh
 	./main/ttyescape/*.sh
 	./main/ttyescape/*.post-install
+	./main/msm-firmware-loader/*.sh
+	./main/msm-firmware-loader/*.post-install
 
 	$(find . -path './main/postmarketos-ui-*/*.sh')
 	$(find . -path './main/postmarketos-ui-*/*.pre-install')
