@@ -38,6 +38,12 @@ mount_proc_sys_dev() {
 	mkdir /run
 }
 
+create_device_nodes() {
+	mknod -m 666 /dev/null c 1 3
+	mknod -m 644 /dev/random c 1 8
+	mknod -m 644 /dev/urandom c 1 9
+}
+
 setup_firmware_path() {
 	# Add the postmarketOS-specific path to the firmware search paths.
 	# This should be sufficient on kernel 3.10+, before that we need

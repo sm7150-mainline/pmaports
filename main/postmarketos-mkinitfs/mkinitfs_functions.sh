@@ -266,13 +266,6 @@ copy_files()
 	done
 }
 
-create_device_nodes()
-{
-	mknod -m 666 "$tmpdir/dev/null" c 1 3
-	mknod -m 644 "$tmpdir/dev/random" c 1 8
-	mknod -m 644 "$tmpdir/dev/urandom" c 1 9
-}
-
 replace_init_variables()
 {
 	sed -i "s:@INITRAMFS_EXTRA@:${outfile_extra}:g" "$tmpdir/init"

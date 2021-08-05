@@ -20,7 +20,6 @@ copy_files "$(get_binaries)" "$tmpdir"
 copy_files "/etc/deviceinfo" "$tmpdir"
 copy_files "/etc/postmarketos-mkinitfs/hooks/*.sh" "$tmpdir"
 cp /usr/share/postmarketos-splashes/*.ppm.gz "$tmpdir"
-create_device_nodes
 ln -s "/bin/busybox" "$tmpdir/bin/sh"
 install -Dm755 "/usr/share/postmarketos-mkinitfs/init.sh.in" \
 	"$tmpdir/init"
