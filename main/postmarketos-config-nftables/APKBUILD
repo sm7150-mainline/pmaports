@@ -1,13 +1,18 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-config-nftables
-pkgver=0.3
+pkgver=0.4
 pkgrel=0
 pkgdesc="nftables firewall configuration for postmarketOS"
 url="https://gitlab.com/postmarketos"
 arch="noarch"
 license="MIT"
 depends="nftables-openrc"
-subpackages="$pkgname-openusb:openusb $pkgname-log:log $pkgname-anbox:anbox"
+subpackages="
+	$pkgname-openusb:openusb
+	$pkgname-log:log
+	$pkgname-anbox:anbox
+	$pkgname-networkmanager:networkmanager
+"
 source="
 	rules/00_log_all.nft
 	rules/01_wwan.nft
@@ -17,6 +22,7 @@ source="
 	rules/51_usb_inet.nft
 	rules/60_usb.nft
 	rules/99_drop_log.nft
+	networkmanager.conf
 "
 options="!check" # No tests
 install="$pkgname.post-install"
@@ -50,13 +56,23 @@ anbox() {
 	amove etc/nftables.d/51_anbox.nft
 }
 
+networkmanager() {
+	depends="$pkgname"
+	description="Enables nftables backend in NetworkManager"
+	install_if="$pkgname networkmanager"
+
+	install -Dm644 "$srcdir"/networkmanager.conf \
+	       "$subpkgdir"/etc/NetworkManager/conf.d/nftables.conf
+}
+
 sha512sums="
 166d77bcccc85a3db24af85010d07241cf193bccd79064863fbf9da7be4426364e9f9a9e0668c2c8018ada470d0fda30fe8eba24d24a2d4150af1d78af31b9b7  00_log_all.nft
 10b3ab4d1f98a669e88fb2113a3880c4bf410d68859fe6a3efe8d638e3060af4a829485aed8c8da226c7fb7a53bab1bc90a659cb8fad9ccd226d808dbba94caf  01_wwan.nft
-03ea8b54210e5c5627cfe26d50bc98355951ea81b9aa1a46dc4093b15b47b224ba1b2a95c5add65639478e47ca6e9d6f4ce4053a94622e832dc065f66d1fd6c8  10_dhcp.nft
+d5a7c7fc47924acfafee42d731e6a0109d83af6278053128deecbf3cf40e37447cb649360ee9ebddd2a5ea276888314b63ce7ef828708b5bf7dd1bface7fbc62  10_dhcp.nft
 6b0d0c7c3368dde1ad61d26a0c2e13008f16d5bedaf11fa4a3511b49675505cbbdda8bf8ff158194846b197108f76bdfd66d40a2afb9f4d25c79b02acf5659b7  50_ssh.nft
 8322a8a5a5b1e98e1f44e2091b8b3a06db1e8309ebba5b8b6abe9d6fbb009dffb248af55e631f06f01bbced98b23c205462de73cd354b116dbaa7b6c72746bfd  51_anbox.nft
 bceb1a12a9de044daa3a4ba647b0d69b257881151a912fc350d6a00fdf0c0903b51fb58c56cfc73e9a75f529bac841d41d466e0f210b1f516e124e69cbfd1feb  51_usb_inet.nft
 0e86974602622c03f0b34acd048e3a31157c0226ab4b5ec093a19696af3fc9637ed84cecf0d190941e4bd3afeb0c76a37245fa850abef46778cd1235ad8106df  60_usb.nft
 1532899534d7432a7708620cf1053ab80635fffe038a2352eb890c35fba4247c3b9ab3d0b028da1be765e5feb9b5a5b3a8107f4aa79f790d17930d38535a2288  99_drop_log.nft
+ea738469e68b8a8038f301b0cb901cd305445321ee24c4b4025365b4b95d5c61113a5bb24ab4efaa73eda23c2e06984d3e58395584fcb8887cf1595ea99542da  networkmanager.conf
 "
