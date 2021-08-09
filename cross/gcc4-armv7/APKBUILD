@@ -4,6 +4,7 @@
 
 CTARGET_ARCH=armv7
 CTARGET="$(arch_to_hostspec ${CTARGET_ARCH})"
+LANG_D=false
 LANG_OBJC=false
 LANG_JAVA=false
 LANG_GO=false
@@ -22,7 +23,7 @@ CBUILDROOT="/"
 
 _cross_configure="--disable-bootstrap --with-sysroot=/usr/$CTARGET"
 
-pkgname="gcc4-armv7"
+pkgname=gcc4-armv7
 pkgver=9999
 _pkgver=4.9.2
 pkgrel=2
@@ -32,9 +33,8 @@ arch="x86_64"
 license="GPL LGPL"
 _gccrel=$_pkgver-r$pkgrel
 depends="isl binutils-armv7 mpc1"
-makedepends_build="gcc g++ paxmark bison flex texinfo gawk zip gmp-dev mpfr-dev mpc1-dev zlib-dev"
+makedepends_build="gcc g++ bison flex texinfo gawk zip gmp-dev mpfr-dev mpc1-dev zlib-dev"
 makedepends_host="linux-headers gmp-dev mpfr-dev mpc1-dev isl-dev zlib-dev musl-dev-armv7 binutils-armv7"
-subpackages=""
 options="!strip !tracedeps"
 
 # We only care about C, so we can compile old Linux kernels
