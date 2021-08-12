@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-microsoft-surface-rt
 pkgdesc="Microsoft Surface RT"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -15,7 +15,11 @@ depends="postmarketos-base
 	alsa-ucm-conf
 "
 makedepends="devicepkg-dev grub grub-efi"
-subpackages="$pkgname-x11 $pkgname-phosh"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-x11
+	$pkgname-phosh
+"
 source="
 	deviceinfo
 	grub.cfg
@@ -55,6 +59,12 @@ package() {
 		"$pkgdir"/boot/EFI/Boot/bootarm.efi
 }
 
+nonfree_firmware() {
+	pkgdesc="WiFi firmware"
+	depends="linux-firmware-mrvl"
+	mkdir "$subpkgdir"
+}
+
 x11() {
 	install_if="$pkgname xorg-server"
 	depends="xf86-video-opentegra"
@@ -68,7 +78,7 @@ phosh() {
 }
 
 sha512sums="
-37077b3b050285f73a5325e82e669f33813f57eac83aea37cf3b148812a5040b4a86cc10e52b351d4dbf9161ad2481fb856b0150142b4c68af71c88a1f1b43b6  deviceinfo
+e52ae33a598ce613e0ceb4867de66932b135913e029211e2a6c670eb4049985084be1ddd19b3f32f6a7f21023a3f7f6d5f0cdefbfad25fec7251c1224bc1eb2a  deviceinfo
 33be5b15e4a7b9318f58cec2c4837b3b2fae939aab8d967cfb5e326676fc144dad2a43991fbbb3c8b5f7741897300d6b92befa2e53e84e5ff7ab8e8b2590bbc5  grub.cfg
 0c7640df35d29a5c2e168d1e54b73a90d903e51b16d67ad08c3ccb41972209086844357f82cf6a2b6de977ebfb7e1099da01db71dc0733e90662ba315f0cd1d0  initfs-hook.sh
 34f6eb789d4688985a262c519017e0712a90ca5acf89e6b3f39e33792a7982155261c6b4f0dbf41595b512da9dc7c9002adb69a550e80be349a374d086799916  pointercal
