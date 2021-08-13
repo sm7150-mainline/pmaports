@@ -64,12 +64,18 @@ setup_mdev() {
 	mdev -s
 }
 
+get_uptime_seconds() {
+	# Get the current system uptime in seconds - ignore the two decimal places.
+	awk -F '.' '{print $1}' /proc/uptime
+}
+
 mount_subpartitions() {
 	# Do not create subpartition mappings if pmOS_boot
 	# already exists (e.g. installed on an sdcard)
 	[ -n "$(find_boot_partition)" ] && return
-	attempt_count=0
-	echo "Trying to mount subpartitions for 10 seconds..."
+	attempt_start=$(get_uptime_seconds)
+	wait_seconds=10
+	echo "Trying to mount subpartitions for $wait_seconds seconds..."
 	while [ -z "$(find_boot_partition)" ]; do
 		partitions="$(grep -v "loop\|ram" < /proc/diskstats |\
 			sed 's/\(\s\+[0-9]\+\)\+\s\+//;s/ .*//;s/^/\/dev\//')"
@@ -92,8 +98,7 @@ mount_subpartitions() {
 					;;
 			esac
 		done
-		attempt_count=$(( attempt_count + 1 ));
-		if [ "$attempt_count" -gt "100" ]; then
+		if [ "$(get_uptime_seconds)" -ge $(( attempt_start + wait_seconds )) ]; then
 			echo "ERROR: failed to mount subpartitions!"
 			return;
 		fi
