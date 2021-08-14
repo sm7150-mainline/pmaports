@@ -7,7 +7,7 @@ _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 pkgver=5.13.6_git20210729
-pkgrel=0
+pkgrel=1
 _tag="orange-pi-5.13-20210729-0943"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
@@ -27,8 +27,12 @@ makedepends="
 	rsync
 	xz
 	"
-options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox
-		 pmb:kconfigcheck-nftables"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-zram
+	"
 source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar.gz
 	config-$_flavor.aarch64
 	config-$_flavor.armv7
@@ -93,8 +97,8 @@ dev() {
 
 sha512sums="
 f9596b4ac56462fb72839e04c29fbefd6ec632eeaf12d0a6356bd204fdb27c72c296c6385a18cf4108ff617581182d231f6ec146452a3659f29944de0bbd668f  linux-postmarketos-allwinner-orange-pi-5.13-20210729-0943.tar.gz
-d4ae50782682f11b9f07114c9af7ec9ba296d5ac843cca46d6141d1a6a04e34dccbb294169349e0cc16ce27fdfac2dba650d0f567bbd75434689daa8ee9729df  config-postmarketos-allwinner.aarch64
-8f7e8d2774132d855b5cca4804dfabd68f58f2bc1352b30b2e5ba4d6f7e4301445c3147c4d761840eb8ff4d13cc0076c19ce9b08284156370d3beba83caa619b  config-postmarketos-allwinner.armv7
+5b216a05f749c2265de8eda756e6b0e968ae171a0fcec00d2078db896ba7950085041897bbf2042d8a25ab9beb8d6dab91cd4c10a135be1fec2482d23858b3fd  config-postmarketos-allwinner.aarch64
+4208c06e529346b7d1116b0cf5746d5c0c38810c443d6daa39b817bd8b85380a7a60778f5f4cd5801a1ec6a31a254173be8d46371cecc9f43c40b4a4dc45ee0b  config-postmarketos-allwinner.armv7
 126e0a65e04f22f14eac1281a69000d9d5b107ed8fd1b52f37e812751f55e6c45b0240ceac61c9d95ae7f0543aaf9d96b85a8532baf59283c077b9945e615367  0001-dts-add-dontbeevil-pinephone-devkit.patch
 1dc710f5abacdd5698169d5e985efeca8114986c774c3d65e89812d08ceb3db5ebdc6dd64dd76a262c761f3bfc3ffb6bc237fd5236bd1f89c5975d12e42eda04  0002-dts-add-pinetab-dev-old-display-panel.patch
 96849f40f6defc4ad7646256814bea5ac353c4e0479fd069365ff27456d63da801541ec616f6db736d60f3134384321a9eeb5bfbd555363bf1259c8de63d17fa  0003-dts-pinetab-add-missing-bma223-ohci1.patch
