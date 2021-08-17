@@ -1,10 +1,12 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+# Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-mkinitfs
-pkgver=0.32
+pkgver=1.0.1
 pkgrel=0
 pkgdesc="Tool to generate initramfs images for postmarketOS"
 url="https://postmarketos.org"
 depends="
+	boot-deploy
 	busybox-extras
 	bzip2
 	cryptsetup
@@ -12,50 +14,60 @@ depends="
 	e2fsprogs
 	e2fsprogs-extra
 	f2fs-tools
-	kmod
-	lddtree
 	lz4
 	multipath-tools
 	parted
 	postmarketos-fde-unlocker
 	xz
 	"
+makedepends="go"
 replaces="mkinitfs"
 triggers="$pkgname.trigger=/etc/postmarketos-mkinitfs/hooks:/usr/share/kernel/*:/usr/share/postmarketos-mkinitfs-triggers"
-source="00-default.modules
-	init.sh.in
+source="
+	https://gitlab.com/postmarketOS/postmarketos-mkinitfs/-/archive/$pkgver/postmarketos-mkinitfs-$pkgver.tar.gz
+	00-default.modules
+	init.sh
 	init_functions.sh
-	mkinitfs.sh
-	mkinitfs_functions.sh
-	mkinitfs_test.sh
 	"
-arch="noarch"
+install="$pkgname.post-upgrade"
+arch="all"
 license="GPL-2.0-or-later"
 provides="mkinitfs=0.0.1"
 
+export GOPATH="$srcdir"
+export CGO_ENABLED=0
+
+build() {
+	# "-s -w" build a stripped binary
+	go build -v -ldflags="-s -w"
+}
+
 package() {
-	for file in init.sh.in init_functions.sh mkinitfs_functions.sh; do
-		install -Dm644 "$srcdir/$file" \
-			"$pkgdir/usr/share/postmarketos-mkinitfs/$file"
-	done
+	install -Dm644 "$srcdir/init_functions.sh" \
+		"$pkgdir/usr/share/postmarketos-mkinitfs/init_functions.sh"
+
+	install -Dm755 "$srcdir/init.sh" \
+		"$pkgdir/usr/share/postmarketos-mkinitfs/init.sh"
 
 	install -Dm644 "$srcdir/00-default.modules" \
 		"$pkgdir/etc/postmarketos-mkinitfs/modules/00-default.modules"
 
-	install -Dm755 "$srcdir/mkinitfs.sh" \
+	install -Dm755 postmarketos-mkinitfs \
+		"$pkgdir/sbin/postmarketos-mkinitfs"
+
+	ln -s /sbin/postmarketos-mkinitfs \
 		"$pkgdir/sbin/mkinitfs"
 
 	mkdir -p "$pkgdir/etc/postmarketos-mkinitfs/hooks/"
 }
 
 check() {
-	/bin/busybox sh ./mkinitfs_test.sh
+	go test ./...
 }
+
 sha512sums="
+bd37db8aec3ec5a8f8e71f1c3529e3c497450c6871bad6f28fb078fea5e704e97238de675fcd568b2db7c09e8833ee6fe6295ec607353b680e87347dc2f519a3  postmarketos-mkinitfs-1.0.1.tar.gz
 4717bf24bd13fd4d90f3ab000ab43f7d61529515de224ebc86458ae709ebe0b5065655457e34f5952126bac6ab45143a91cddb09a8ad2d0a55c5cecd564a0135  00-default.modules
-4d718fca3b6a8c2d362003e7d57f9fa29510c05c27b372d21b8278fe76b2096ae098aa9f9a266a029f82956d165fd764e406ddaf36cec2e4f3bd30c6022d07a7  init.sh.in
+40033b421e79999c85bd72e1353fe6745a87fcbf9f6a5b8180e832c7f340da7d4e33d056f557ae95a9924f5d186a6e728f3ed53c0922cdac4c39513fdc3e3a82  init.sh
 563dfbd8e1ff1d3f42cd8f9615144fde83d0e1107fa1d6751eb7e049628cded12c0f1762d4ce498f741802b5f8449ef7cf1959fec22ea975fefeaa8050c171ec  init_functions.sh
-5590087d67cf8cae0e4f2b9a0d3f055a01282ace53abe586a0117a9701287cf60a88230ba5817e77886b9496098139c025c6221c4b7404e36faac7df63adc1ee  mkinitfs.sh
-879223b6b608f3b26993c3536b4e6b37728f774d6e4da891ae87ef26e38603a15b09918b69963c4f65aa4551b721815fd3578a1ec598b7b9d418aa677520d55f  mkinitfs_functions.sh
-c7a3c33daeb12b33ac72207191941c4d634f15c22958273b52af381a70ebaba1d3a9299483f0c447d9e66c560151fe7b9588bb4bbef2c8914f83185984ee4622  mkinitfs_test.sh
 "
