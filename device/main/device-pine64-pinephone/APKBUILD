@@ -6,7 +6,7 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
 pkgver=0.30
-pkgrel=2
+pkgrel=3
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -48,7 +48,6 @@ source="
 	kirigami-lowpower.sh
 	modemmanager.conf
 	setup-modem.sh
-	sysrq.conf
 	uboot-script.cmd
 	ucm/HiFi.conf
 	ucm/PinePhone.conf
@@ -94,12 +93,6 @@ package() {
 		"$pkgdir"/etc/gpsd/device-hook
 	install -D -m644 "$srcdir"/10-pinephone-proximity.rules \
 		"$pkgdir"/usr/lib/udev/rules.d/10-pinephone-proximity.rules
-
-	# Fix "sysrq: HELP..." messages in dmesg while playing audio
-	# (Headphone output interferes with the serial console on the headphone
-	# jack)
-	install -Dm644 "$srcdir"/sysrq.conf \
-		"$pkgdir"/etc/sysctl.d/sysrq.conf
 
 	# Alsa usecase manager config
 	install -Dm644 "$srcdir"/PinePhone.conf \
@@ -178,7 +171,6 @@ ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd4644
 6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
 c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313818e0b943e1f6212bcca0aff9ce37da60b29547b1631f24b  modemmanager.conf
 fa063e2863afc48e627acc1a5b213a81499ba1dd30325f74f118a44e3964aec7e597b1f4bd318b7cf5bf14f27daf88e6ad9fc277ab106cbbe1189fdcc650d5c1  setup-modem.sh
-f4b5509fd6a8b23f3667f5e7262b3a19c607a37cb9eaf7d0e93eb826d45c26ec12df4810879bacb8e4042bb83cc80b2b436224c8d47b6d67361369a724bbf7ee  sysrq.conf
 5fd1dba489e994510264c64823c68e183c685d9bbc725a96e3eb6826c0f7e67cd0334efed926304b6b1e8403af92eccc05370b1360660af77529cefb58e843b5  uboot-script.cmd
 f963898fa2ce66bc830e56feeec6ffc9888834e14cc1591d72908ef45ad82532bc3ef5fb32413e07b6722749c9d03e7cf92f06f1fcb859c38b9297cf58e5cedd  HiFi.conf
 e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d74533f9ffb9aacc1703da2a06693f85fa04ff97fd7528012  PinePhone.conf
