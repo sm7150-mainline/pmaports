@@ -2,13 +2,6 @@
 # shellcheck shell=dash
 set -e
 
-case $1 in
-	--help|-h|'')
-		echo "Usage: pmos-update-kernel [flavor]"
-		exit 1
-		;;
-esac
-
 # Declare used deviceinfo variables to pass shellcheck
 deviceinfo_append_dtb=""
 
@@ -29,14 +22,14 @@ update_android_fastboot() {
 	BOOT_PART_SUFFIX=$(ab_get_slot) # Empty for non-A/B devices
 	BOOT_PARTITION=$(findfs PARTLABEL="boot${BOOT_PART_SUFFIX}")
 	echo "Flashing boot.img to 'boot${BOOT_PART_SUFFIX}'"
-	dd if=/boot/boot.img-"$FLAVOR" of="$BOOT_PARTITION" bs=1M
+	dd if=/boot/boot.img of="$BOOT_PARTITION" bs=1M
 }
 
 update_android_split_kernel_initfs() {
 	KERNEL_PARTITION=$(findfs PARTLABEL="${deviceinfo_flash_heimdall_partition_kernel:?}")
 	INITFS_PARTITION=$(findfs PARTLABEL="${deviceinfo_flash_heimdall_partition_initfs:?}")
 
-	KERNEL="vmlinuz-$FLAVOR"
+	KERNEL="vmlinuz"
 	if [ "${deviceinfo_append_dtb}" = "true" ]; then
 		KERNEL="$KERNEL-dtb"
 	fi
@@ -45,10 +38,9 @@ update_android_split_kernel_initfs() {
 	dd if=/boot/"$KERNEL" of="$KERNEL_PARTITION" bs=1M
 
 	echo "Flashing initramfs..."
-	gunzip -c /boot/initramfs-"$FLAVOR" | lzop | dd of="$INITFS_PARTITION" bs=1M
+	gunzip -c /boot/initramfs | lzop | dd of="$INITFS_PARTITION" bs=1M
 }
 
-FLAVOR=$1
 METHOD=${deviceinfo_flash_method:?}
 case $METHOD in
 	fastboot|heimdall-bootimg)
