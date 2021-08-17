@@ -1,0 +1,20 @@
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=boot-deploy
+pkgver=0.1
+pkgrel=0
+pkgdesc="tool for finalizing and deploying boot-related files"
+url="https://gitlab.com/postmarketos/boot-deploy"
+arch="noarch"
+license="GPL-2.0-or-later"
+source="https://gitlab.com/postmarketOS/boot-deploy/-/archive/$pkgver/boot-deploy-$pkgver.tar.gz"
+options="!check"
+
+package() {
+	install -Dm755 boot-deploy "$pkgdir"/sbin/boot-deploy
+	install -Dm755 boot-deploy-functions.sh \
+		"$pkgdir"/usr/share/boot-deploy/boot-deploy-functions.sh
+}
+
+sha512sums="
+5650abe612eb386d2505b571ffcbd102d896ff27490d60d17c1bd3697a80035351f173054fbb577d06a2528072861c47e939958578acc8624185087049e94e81  boot-deploy-0.1.tar.gz
+"
