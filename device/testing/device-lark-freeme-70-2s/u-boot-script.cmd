@@ -9,11 +9,11 @@ echo Resizing FDT
 fdt addr ${fdt_addr_r}
 fdt resize
 
-echo Loading Kernel: vmlinuz-${kernel-flavor}
-load mmc 0:1 ${kernel_addr_r} vmlinuz-${kernel-flavor}
+echo Loading Kernel: vmlinuz
+load mmc 0:1 ${kernel_addr_r} vmlinuz
 
-echo Loading Initramfs: initramfs-${kernel-flavor}
-load mmc 0:1 ${ramdisk_addr_r} initramfs-${kernel-flavor}
+echo Loading Initramfs: initramfs
+load mmc 0:1 ${ramdisk_addr_r} initramfs
 
 echo Booting kernel
 bootz ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}

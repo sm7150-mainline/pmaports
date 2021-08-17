@@ -17,11 +17,11 @@ echo Loading DTB
 load mmc ${mmc_bootdev}:1 ${fdt_addr_r} ${fdtfile}
 
 echo Loading Initramfs
-load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} initramfs-postmarketos-allwinner
+load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} initramfs
 setenv ramdisk_size ${filesize}
 
 echo Loading Kernel
-load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz-postmarketos-allwinner
+load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz
 
 gpio set 115
 

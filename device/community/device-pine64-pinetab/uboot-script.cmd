@@ -15,10 +15,10 @@ echo Loading DTB
 load mmc ${mmc_bootdev}:1 ${fdt_addr_r} ${pinetabfdt}
 
 echo Loading Initramfs
-load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} uInitrd-postmarketos-allwinner
+load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} uInitrd
 
 echo Loading Kernel
-load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz-postmarketos-allwinner
+load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz
 
 echo Resizing FDT
 fdt addr ${fdt_addr_r}

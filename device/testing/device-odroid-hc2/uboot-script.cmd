@@ -1,8 +1,8 @@
 setenv kernel_addr_r "0x40008000"
 setenv initrd_addr_r "0x42000000"
 setenv fdt_addr_r "0x44000000"
-setenv kernel_image "vmlinuz-odroid-hc2"
-setenv initrd_image "uInitrd-odroid-hc2"
+setenv kernel_image "vmlinuz"
+setenv initrd_image "uInitrd"
 setenv dtb_file "exynos5422-odroidhc1.dtb"
 
 printenv
