@@ -22,7 +22,7 @@ install -D "$builddir/$_outdir/include/config/kernel.release" \
 # zImage (find the right one)
 # shellcheck disable=SC2164
 cd "$builddir/$_outdir/arch/$_carch/boot"
-_target="$pkgdir/boot/vmlinuz-$_flavor"
+_target="$pkgdir/boot/vmlinuz"
 
 if [ -n "$KERNEL_IMAGE_NAME" ]; then
 	if ! [ -e "$KERNEL_IMAGE_NAME" ]; then
