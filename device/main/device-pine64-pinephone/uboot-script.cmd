@@ -17,7 +17,8 @@ echo Loading DTB
 load mmc ${mmc_bootdev}:1 ${fdt_addr_r} ${fdtfile}
 
 echo Loading Initramfs
-load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} uInitrd-postmarketos-allwinner
+load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} initramfs-postmarketos-allwinner
+setenv ramdisk_size ${filesize}
 
 echo Loading Kernel
 load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz-postmarketos-allwinner
@@ -36,4 +37,4 @@ fdt list /memory
 echo Booting kernel
 gpio set 116
 gpio clear 98
-booti ${kernel_addr_r} ${ramdisk_addr_r} ${fdt_addr_r}
+booti ${kernel_addr_r} ${ramdisk_addr_r}:${ramdisk_size} ${fdt_addr_r}
