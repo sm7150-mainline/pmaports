@@ -2,7 +2,7 @@
 # Maintainer: omame <me@omame.tech>
 pkgname=device-samsung-j6primelte
 pkgdesc="Samsung Galaxy J6+"
-pkgver=0.3
+pkgver=0.4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -20,6 +20,7 @@ source="
 	deviceinfo
 	brightness
 "
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -28,6 +29,12 @@ build() {
 package() {
 	devicepkg_package $startdir $pkgname
 	install -Dm755 "$srcdir"/brightness "$pkgdir"/etc/local.d/brightness
+}
+
+nonfree_firmware() {
+	pkgdesc="Proprietary firmware for things such as Wi-Fi"
+	depends="firmware-samsung-j6primelte wcnss-wlan adsp-audio"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
