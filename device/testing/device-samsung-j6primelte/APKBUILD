@@ -1,0 +1,36 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: omame <me@omame.tech>
+pkgname=device-samsung-j6primelte
+pkgdesc="Samsung Galaxy J6+"
+pkgver=0.3
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-samsung-j6primelte
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	brightness
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm755 "$srcdir"/brightness "$pkgdir"/etc/local.d/brightness
+}
+
+sha512sums="
+420369e9a2569615e848d9c84561f28f4416a72ff325d17d55ecd9c7300c94542f8cde842eb300776e1bc5500952b8348816d3e318cbd5c31fbd1215d707815b  deviceinfo
+85582c47239d5f9cd899f3f6ed9df860e3b44a8855e13a7bc37777b22111f0511cd371a344fb52eb77cb5d1b1989661b07ea1ee6916f425643d13e4ca5261894  brightness
+"
