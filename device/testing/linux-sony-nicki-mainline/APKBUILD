@@ -13,7 +13,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=$_mainver.$((_patchlevel-1))
-pkgrel=4
+pkgrel=5
 
 arch="armv7"
 pkgdesc="Sony Xperia M kernel fork, close to mainline"
@@ -83,10 +83,10 @@ package() {
 
 	if [ "$CARCH" == "aarch64" ]; then
 		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image.gz" \
-			"$pkgdir/boot/vmlinuz-$_flavor"
+			"$pkgdir/boot/vmlinuz"
 	else
 		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
-			"$pkgdir/boot/vmlinuz-$_flavor"
+			"$pkgdir/boot/vmlinuz"
 	fi
 
 	install -D "$srcdir/build/include/config/kernel.release" \

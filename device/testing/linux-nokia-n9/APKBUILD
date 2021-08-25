@@ -12,7 +12,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=1
+pkgrel=2
 arch="armhf"
 pkgdesc="Nokia N9 kernel"
 url="https://kernel.org"
@@ -91,7 +91,7 @@ package() {
 	cat zImage dts/omap3-n9.dtb > zImage-dtb
 
 	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+		"$pkgdir/boot/vmlinuz"
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"

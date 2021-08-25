@@ -11,7 +11,7 @@
 
 pkgname=linux-postmarketos-rockchip
 pkgver=5.13.5
-pkgrel=3
+pkgrel=4
 pkgdesc="Mainline kernel for rockchip devices"
 arch="aarch64 armv7"
 _flavor="${pkgname#linux-}"
@@ -88,10 +88,10 @@ package() {
 
 	# not all armv7 devices (google-veyon-jerry) support booting gzipped kernels yet
 	if [ $_carch = arm64 ]; then
-		gzip -v "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
-		mv "$pkgdir"/boot/vmlinuz-postmarketos-rockchip.gz "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
+		gzip -v "$pkgdir"/boot/vmlinuz
+		mv "$pkgdir"/boot/vmlinuz.gz "$pkgdir"/boot/vmlinuz
 	else
-		mv "$pkgdir"/boot/vmlinuz-postmarketos-rockchip "$pkgdir"/boot/vmlinuz-postmarketos-rockchip
+		mv "$pkgdir"/boot/vmlinuz "$pkgdir"/boot/vmlinuz
 	fi
 }
 

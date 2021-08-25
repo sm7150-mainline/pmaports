@@ -20,7 +20,7 @@ case $pkgver in
 	*.*.*)  _kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=8
+pkgrel=9
 arch="armhf"
 pkgdesc="Kernel for LG G Watch"
 url="https://android.googlesource.com/kernel/msm/+/android-msm-dory-3.10-marshmallow-mr1-wear-release"
@@ -64,7 +64,7 @@ build() {
 
 package() {
 	install -Dm644 "$builddir/arch/arm/boot/zImage-dtb" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+		"$pkgdir/boot/vmlinuz"
 
 	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"

@@ -4,7 +4,7 @@
 _flavor="postmarketos-qcom-msm8996"
 pkgname=linux-$_flavor
 pkgver=5.14_rc4
-pkgrel=0
+pkgrel=1
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8996 devices"
 arch="aarch64"
 _carch="arm64"
@@ -35,7 +35,7 @@ build() {
 package() {
 	mkdir -p "$pkgdir"/boot
 	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+		"$pkgdir/boot/vmlinuz"
 
 	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
@@ -47,6 +47,6 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
 }
 sha512sums="
-effd2fa2bbc840cc87330b66d86ca4a044a7394399bfe31f59e3d715ee4b704f4877532661fbdeb77d906a35845acaa1f0b4bd04771cd0ea417a384bf172608f  linux-msm8996-v5.14-rc4-msm8996.tar.gz
+0a92ba0c13e4864fcb47369610e32facea6983e50d52579271d138f29f0a8500816b57ebda2435e39947c2f69a49a9c82e7a2585d4356036a3873fadc871206a  linux-msm8996-v5.14-rc4-msm8996.tar.gz
 7870093b7f14b6b52fb1b1f7a1947cc96a90e63dea10a2f671ea97c5dfc9207ba17aea656ebd0aa982a303c817b34ac2592b8ae5e775b02f6348cbec0a6ec812  config-postmarketos-qcom-msm8996.aarch64
 "

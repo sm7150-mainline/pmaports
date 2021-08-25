@@ -2,7 +2,7 @@
 
 pkgname=linux-ouya-ouya-mainline
 pkgver=5.0
-pkgrel=3
+pkgrel=4
 pkgdesc="Ouya kernel fork, close to mainline"
 arch="armv7"
 _carch="arm"
@@ -45,10 +45,10 @@ package() {
 
 	if [ "$CARCH" == "aarch64" ]; then
 		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image" \
-			"$pkgdir/boot/vmlinuz-$_flavor"
+			"$pkgdir/boot/vmlinuz"
 	else
 		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
-			"$pkgdir/boot/vmlinuz-$_flavor"
+			"$pkgdir/boot/vmlinuz"
 	fi
 
 	install -D "$srcdir/build/include/config/kernel.release" \

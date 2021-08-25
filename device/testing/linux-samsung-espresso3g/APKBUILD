@@ -1,6 +1,6 @@
 pkgname=linux-samsung-espresso3g
 pkgver=5.12_rc1
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy Tab 2 (7.0 inch) mainline kernel"
 arch="armv7"
 _carch="arm"
@@ -30,7 +30,7 @@ build() {
 
 package() {
 	install -Dm644 "$builddir/arch/$_carch/boot/"*zImage \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+		"$pkgdir/boot/vmlinuz"
 
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release

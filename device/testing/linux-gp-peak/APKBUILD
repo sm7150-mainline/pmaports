@@ -2,7 +2,7 @@
 
 pkgname=linux-gp-peak
 pkgver=3.0.21
-pkgrel=7
+pkgrel=8
 pkgdesc="Peak kernel fork"
 arch="armhf"
 _carch="arm"
@@ -52,7 +52,7 @@ package() {
 
 	# zImage (find the right one)
 	cd "$builddir/$_outdir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	_target="$pkgdir/boot/vmlinuz"
 	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
 		[ -e "$_zimg" ] || continue
 		msg "zImage found: $_zimg"

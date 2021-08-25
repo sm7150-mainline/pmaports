@@ -12,7 +12,7 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=5
+pkgrel=6
 
 arch="x86_64"
 pkgdesc="Linux for pmOS supported chipsets (stable)"
@@ -99,10 +99,10 @@ package() {
 
 	if [ "$CARCH" == "aarch64" ]; then
 		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image" \
-			"$pkgdir/boot/vmlinuz-$_flavor"
+			"$pkgdir/boot/vmlinuz"
 	else
 		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
-			"$pkgdir/boot/vmlinuz-$_flavor"
+			"$pkgdir/boot/vmlinuz"
 	fi
 
 	install -D "$srcdir/build/include/config/kernel.release" \

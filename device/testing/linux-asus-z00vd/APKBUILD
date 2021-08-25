@@ -2,7 +2,7 @@
 
 pkgname=linux-asus-z00vd
 pkgver=3.18.41
-pkgrel=5
+pkgrel=6
 pkgdesc="ASUS Zenfone Go kernel fork"
 arch="armv7"
 _carch="arm"
@@ -65,7 +65,7 @@ package() {
 
 	# zImage (find the right one)
 	cd "$_outdir/arch/$_carch/boot"
-	_target="$pkgdir/boot/vmlinuz-$_flavor"
+	_target="$pkgdir/boot/vmlinuz"
 	for _zimg in zImage-dtb Image.gz-dtb *zImage Image; do
 		[ -e "$_zimg" ] || continue
 		msg "zImage found: $_zimg"

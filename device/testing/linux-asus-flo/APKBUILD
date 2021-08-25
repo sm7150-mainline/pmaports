@@ -2,7 +2,7 @@ _flavor=asus-flo
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
 pkgver=4.11.12
-pkgrel=4
+pkgrel=5
 arch="armv7"
 pkgdesc="Upstream stable kernel with patches for Nexus 7 2013 WIFI"
 url="https://git.linaro.org/people/john.stultz/flo.git/log/?h=flo-v4.11"
@@ -74,7 +74,7 @@ package() {
 	cat zImage dts/qcom-apq8064-asus-nexus7-flo.dtb > zImage-dtb
 
 	install -Dm644 "$srcdir/build/arch/arm/boot/zImage-dtb" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+		"$pkgdir/boot/vmlinuz"
 
 	install -D "$srcdir/build/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
