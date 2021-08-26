@@ -1,7 +1,7 @@
 # Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=postmarketos-ui-xfce4
 pkgver=0.3
-pkgrel=8
+pkgrel=9
 pkgdesc="(X11) Lightweight desktop (stylus recommended)"
 url="https://gitlab.com/postmarketOS/xfce4-phone"
 arch="noarch"
@@ -21,6 +21,7 @@ depends="
 _pmb_recommends="
 	faenza-icon-theme
 	gnome-keyring
+	onboard
 	pavucontrol
 	pm-utils
 	postmarketos-artwork-icons
@@ -34,8 +35,12 @@ _pmb_recommends="
 	xfce4-whiskermenu-plugin
 	"
 install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-upgrade"
-source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketOS/xfce4-phone/-/archive/$pkgver/xfce4-phone-$pkgver.tar.gz
-	64-lightdm-autologin.conf"
+source="
+	xfce4-phone-$pkgver.tar.gz::https://gitlab.com/postmarketOS/xfce4-phone/-/archive/$pkgver/xfce4-phone-$pkgver.tar.gz
+	10_onboard.gschema.override
+	64-lightdm-autologin.conf
+	onboard-autostart.desktop
+	"
 options="!check"
 builddir="$srcdir/xfce4-phone-$pkgver"
 
@@ -43,9 +48,19 @@ package() {
 	install -d -m755 "$pkgdir"/etc/skel
 	cp -a "$builddir"/config "$pkgdir"/etc/skel/.config
 
+	install -Dm644 "$srcdir"/10_onboard.gschema.override \
+		"$pkgdir"/usr/share/glib-2.0/schemas/10_onboard.gschema.override
+
 	install -Dm644 "$srcdir"/64-lightdm-autologin.conf \
 		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/64-autologin.conf
+
+	install -Dm644 "$srcdir"/onboard-autostart.desktop \
+		"$pkgdir"/etc/skel/.config/autostart/onboard-autostart.desktop
 }
 
-sha512sums="9adf87cdb531ad0eb4ab0d42dd4d43c88da117fdb8c7583c58ef2fcda52ce658e9234fe0451e5bf7d3768cdabf966c9dc27bda360e53ec44c04856ddfa941ab4  postmarketos-ui-xfce4-0.3.tar.gz
-3841294daffdd3e0da5a7ba155ba8c21e9e5a2f2ba5b3b5ffa3ea6a16486625d3655d03f8c18740fcddfbca673c42a5289ec3b22720cfbbdd56fde8fdc3bf9b0  64-lightdm-autologin.conf"
+sha512sums="
+9adf87cdb531ad0eb4ab0d42dd4d43c88da117fdb8c7583c58ef2fcda52ce658e9234fe0451e5bf7d3768cdabf966c9dc27bda360e53ec44c04856ddfa941ab4  xfce4-phone-0.3.tar.gz
+ffcc518ff58d37de302bd101e57bf983800e45899645d476045d0a74096704333a0b513f45e6a5485fdbd80ac1caebce14a760cab6fcc6d5dde0d766ade8b58b  10_onboard.gschema.override
+3841294daffdd3e0da5a7ba155ba8c21e9e5a2f2ba5b3b5ffa3ea6a16486625d3655d03f8c18740fcddfbca673c42a5289ec3b22720cfbbdd56fde8fdc3bf9b0  64-lightdm-autologin.conf
+0f7947628076fcecb4883df8c4ff9989fb98448bbe8c12558bb47fc0d6dde0001c023c814fa88fe1390d6b058c7449dbecd0538e2289016ab84db0df2e15af6a  onboard-autostart.desktop
+"
