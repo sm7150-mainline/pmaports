@@ -6,6 +6,13 @@ log() {
 
 QMBNCFG_CONFIG="1"
 
+if [ -z "$1" ]
+then
+	DEV="/dev/EG25.AT"
+else
+	DEV="$1"
+fi
+
 # Read current config
 QMBNCFG_ACTUAL_CONFIG=$(echo 'AT+QMBNCFG="AutoSel"' | atinout - $DEV -)
 
