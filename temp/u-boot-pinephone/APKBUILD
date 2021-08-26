@@ -1,7 +1,7 @@
 # U-boot with patches to make the PinePhone boot faster and have control over the ddr clock speed
 pkgname=u-boot-pinephone
 pkgver=2021.07
-pkgrel=0
+pkgrel=1
 pkgdesc="U-Boot bootloader for the PINE64 PinePhone"
 url="https://source.denx.de/u-boot"
 arch="aarch64"
@@ -55,7 +55,7 @@ build() {
 	export BL31="/usr/share/arm-trusted-firmware/sun50i_a64/bl31.bin"
 	export SCP="/usr/share/crust/pinephone/scp.bin"
 	export BUILD_DIR="$builddir"/build
-	
+
 	for freq in $frequencies; do
 		mkdir -p "$BUILD_DIR-$freq"
 		sed -rie "s/^(CONFIG_DRAM_CLK=).*$/CONFIG_DRAM_CLK=$freq/" configs/pinephone_defconfig
@@ -78,7 +78,7 @@ package() {
 
 sha512sums="
 bbfc92bda2d9229787f507d2e3c120a8536788b198b910fb018f851e6990f73de4a57bc9686664f777c1665573c2f9015e1e7bbfcec5773dc957dbb71f2aa56b  u-boot-v2021.07.tar.gz
-4857d5f6e4f591f97b8842cc9fb7d1131d71af63d05f6bd8457f4323886fb2334614a00699a3efc8d1b32d149d130c3cca0205150eedb40e9da60e4508281e36  update-u-boot
+d6e1ca6100fdc0ecd9559d556bb8f6699ff807a180d097808417cdacc07fc22b58f8bf33f1f104fcbb28201bd873e469f251176605bec123870ff49bde50024c  update-u-boot
 05ae2fa9ce48567f91589b6bbf69f0849b37ef11b2cc98c400e3d08fd5d52d02ad4bc30111cbf2e9bfe75a2b2b68606193110019bfc8e2e451c8ab0a2d6153ca  0001-mmc-sunxi-Avoid-ifdefs-in-delay-and-width-setup.patch
 57ff8c7bbd697e183cce079e6d4fb272909aa1d00aa4d6a0fabb2cfd395c1e051be11846aad8aafdf92b4fe98760742e0a1a3d7ecd763e8b8a4e0b656fe53d1e  0002-mmc-sunxi-Fix-warnings-with-CONFIG_PHYS_64BIT.patch
 bb10dabb6b66d38ca406fd8be656be9fc5582e5224e54d2fd4cd33dd7ee20a1c976fa1b5807a3c740534ddc22782330fbd5e4b436917416acc05a63dd3e9d181  0003-mmc-sunxi-Fix-MMC-clock-parent-selection.patch
