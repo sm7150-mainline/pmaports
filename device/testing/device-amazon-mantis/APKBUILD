@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-amazon-mantis
+pkgdesc="Amazon Fire TV Stick 4K"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-amazon-mantis
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+4c9f30789d112cc2136d6719e9849118c183f89ddeb62513458f4737dcda04f9f48be6ba488aa166b877409e8fb563faff776e322456ed8d921c932778926c5b  deviceinfo
+"
