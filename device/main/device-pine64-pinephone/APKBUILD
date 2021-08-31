@@ -5,7 +5,7 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.33
+pkgver=0.34
 pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
@@ -26,7 +26,7 @@ depends="
 	eg25-manager-openrc
 	gpsd
 	iw
-	linux-postmarketos-allwinner
+	linux-postmarketos-allwinner>=5.14
 	mesa-dri-gallium
 	mesa-egl
 	postmarketos-base
@@ -96,7 +96,7 @@ package() {
 
 	# Alsa usecase manager config
 	install -Dm644 "$srcdir"/PinePhone.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/PinePhone.conf
+		"$pkgdir"/usr/share/alsa/ucm2/simple-card/PinePhone.conf
 	install -Dm644 "$srcdir"/HiFi.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/HiFi.conf
 	install -Dm644 "$srcdir"/VoiceCall.conf \
@@ -173,7 +173,7 @@ c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313
 420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
 e9d923b48dbb929d333c178181339a1369be34397df49298cff2aca9b1e4f7f6ddff8391424c378d2bbd7a495021abc3a06af011eb3240a06650195ab18469b2  uboot-script.cmd
 f963898fa2ce66bc830e56feeec6ffc9888834e14cc1591d72908ef45ad82532bc3ef5fb32413e07b6722749c9d03e7cf92f06f1fcb859c38b9297cf58e5cedd  HiFi.conf
-e852b48a687f9b2a0eca444aa3d00a1818aead9f5e5d28e070b51c9d6f8ec648e66f1d88e2bfa94d74533f9ffb9aacc1703da2a06693f85fa04ff97fd7528012  PinePhone.conf
+4b0c51ab169aebe8177c5c43eba41afa90370098a5a54e710d17e97ec1651869a20cb5d780a6132028c864916609e3b4f4a13158835310d0441bdb4915872372  PinePhone.conf
 e093f71c37370927468de35a987150a3db3e1cc1c76c144bf58918a09c688c3da84303b5533241e691a6aa0758589e2a6498b1097974117782e909f0bbc6bf71  VoiceCall.conf
 ed0e03f7e1c0348c06be9a7922414469245604ce813bbf0c8910ef211cb993bbb0d0d4615c9c961d50712415f85d6b73e0cf02780ac784666aac56e4889341e4  UPower.conf
 9c472065b19141dd4c7555869b955de2e679b36e597f9fa3bdac18d0e9460986b0e2fffe1e04751301305f1b6474c1375803afb7d6212eeae91b4905d0bf8ff8  pulse-pinephone.conf
