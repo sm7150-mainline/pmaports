@@ -4,7 +4,8 @@ pkgver=2
 pkgrel=6
 pkgdesc="(X11/Wayland) KDE Desktop Environment (works well with tablets)"
 url="https://www.kde.org"
-arch="noarch !armhf !x86" # x86: missing "plasma"
+# armhf blocked by plasma
+arch="noarch !armhf"
 license="GPL-3.0-or-later"
 depends="
 	dnsmasq
@@ -17,6 +18,7 @@ _pmb_recommends="ark
 	audiocd-kio
 	dolphin
 	ffmpegthumbs
+	firefox
 	gwenview
 	kdialog
 	kfind
@@ -29,7 +31,6 @@ _pmb_recommends="ark
 	print-manager
 	postmarketos-artwork-wallpapers
 	spectacle
-	xwayland
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 options="!check" # No tests for a metapkg
