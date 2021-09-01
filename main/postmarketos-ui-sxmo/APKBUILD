@@ -1,6 +1,6 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=postmarketos-ui-sxmo
-pkgver=1.5.0
+pkgver=1.5.1
 pkgrel=0
 pkgdesc="(X11) Simple X Mobile: Mobile environment based on simple & suckless software (best compatibility on pinephone)"
 url="http://sr.ht/~mil/Sxmo"
@@ -8,13 +8,15 @@ arch="noarch !armhf"
 license="MIT"
 depends="
 	dnsmasq
-	networkmanager-openrc
 	modemmanager-openrc
+	networkmanager-openrc
+	polkit
+	polkit-openrc
 	postmarketos-base-ui
+	sxmo-utils
 	sxmo-utils-openrc
-	sxmo-xdm-config
-	sxmo-xdm-config-openrc
-	polkit polkit-openrc
+	tinydm
+	tinydm-openrc
 	"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.pre-deinstall"
 subpackages="$pkgname-qt_tweaks"
@@ -41,4 +43,6 @@ qt_tweaks() {
 	install -Dm755 -t "$subpkgdir"/etc/profile.d/ \
 		"$srcdir"/sxmo-qt-mobile-controls.sh
 }
-sha512sums="bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  sxmo-qt-mobile-controls.sh"
+sha512sums="
+bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  sxmo-qt-mobile-controls.sh
+"
