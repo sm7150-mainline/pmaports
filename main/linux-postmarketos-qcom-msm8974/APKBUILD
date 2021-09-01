@@ -3,15 +3,21 @@ _flavor=postmarketos-qcom-msm8974
 _config="config-$_flavor.$CARCH"
 
 pkgname=linux-$_flavor
-pkgver=5.13.0
-pkgrel=1
-_commit="f0c6bd2be0298ad026ee510f17dd4e7890c424a0"
+pkgver=5.13.13
+pkgrel=0
+_commit="ffd3f868aa206d16a77e2529bb59915b1a779cd7"
 pkgdesc="Kernel close to mainline with extra patches for Qualcomm MSM8974 devices"
 arch="armv7"
 _carch="arm"
 url="https://kernel.org/"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-anbox pmb:kconfigcheck-containers pmb:kconfigcheck-nftables"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-containers
+	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-zram
+	"
 makedepends="
 	bison
 	findutils
@@ -54,6 +60,6 @@ package() {
 }
 
 sha512sums="
-14d026ef0e22f03284c0b49222001515940f39c4e83aaaa88d10be08594a870abf4e0d8e8ad96c6df107ed3ab0856c42c5c95660de1dd970cc82e82f9b62582f  linux-postmarketos-f0c6bd2be0298ad026ee510f17dd4e7890c424a0.tar.gz
-ba9fa1d9d7dbdc367e103f2c4c55e2b233c189ed37d2397fd4c7106946f6f3705a219071fbd5826cff6612da4dda33384e56baa45879761055b90d6da8f264ec  config-postmarketos-qcom-msm8974.armv7
+bb43be184018552067478257a983ad4a84d0372aa258e4165a14fae418dc62b2adf06c538ce45bffd745973659e5a3e3294c8fb6bd95c6b7e1b8af6af90a1c87  linux-postmarketos-ffd3f868aa206d16a77e2529bb59915b1a779cd7.tar.gz
+8e2182d700b07dfd343859d71ee4f9bba5f1e130704bee0276731565f7cce86ffde04c774d34e982616114f2f48cc22252c20a58babf44f01bd258d6e8b9de44  config-postmarketos-qcom-msm8974.armv7
 "
