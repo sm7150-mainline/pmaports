@@ -5,7 +5,7 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.34
+pkgver=0.35
 pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
@@ -14,7 +14,6 @@ arch="aarch64"
 options="!check !archcheck"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-phosh
 	$pkgname-shelli
 	$pkgname-plasma-mobile:plasma_mobile
 	$pkgname-upower
@@ -127,12 +126,6 @@ nonfree_firmware() {
 		firmware-pine64-rtl8723bt
 		firmware-pine64-ov5640
 		"
-	mkdir "$subpkgdir"
-}
-
-phosh() {
-	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
-	depends="wys-pinephone"
 	mkdir "$subpkgdir"
 }
 
