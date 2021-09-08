@@ -6,7 +6,7 @@
 _flavor="postmarketos-qcom-sdm845"
 pkgname=linux-$_flavor
 pkgver=5.14.0_rc6
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline Kernel fork for SDM845 devices"
 arch="aarch64"
 _carch="arm64"
@@ -45,9 +45,8 @@ build() {
 package() {
 	mkdir -p "$pkgdir"/boot
 
-	# Avoids requirement that LOCALVERSION=flavor
 	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
-		"$pkgdir/boot/vmlinuz-$_flavor"
+		"$pkgdir/boot/vmlinuz"
 
 	make modules_install dtbs_install \
 		ARCH="$_carch" \
