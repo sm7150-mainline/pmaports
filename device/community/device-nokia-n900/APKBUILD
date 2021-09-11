@@ -3,7 +3,7 @@
 # Co-Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=device-nokia-n900
 pkgver=7
-pkgrel=4
+pkgrel=5
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
@@ -15,7 +15,6 @@ subpackages="
 	$pkgname-weston
 	$pkgname-x11
 	$pkgname-i3wm
-	$pkgname-xfce4
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="
@@ -149,12 +148,6 @@ i3wm() {
 		"$subpkgdir"/etc/skel/.config/conky/conky.conf
 	install -D -m440 "$srcdir"/10-noroot-suspend \
 		"$subpkgdir"/etc/sudoers.d/10-noroot-suspend
-}
-
-xfce4() {
-	install_if="$pkgname postmarketos-ui-xfce4"
-	install="$subpkgname.post-install"
-	mkdir "$subpkgdir"
 }
 
 nonfree_firmware() {

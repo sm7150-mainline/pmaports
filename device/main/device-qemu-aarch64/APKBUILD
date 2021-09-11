@@ -3,7 +3,7 @@
 # Co-Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=device-qemu-aarch64
 pkgver=2.3
-pkgrel=1
+pkgrel=2
 pkgdesc="Simulated device in QEMU (aarch64)"
 url="https://postmarketos.org"
 arch="aarch64"
@@ -16,7 +16,6 @@ subpackages="
 	$pkgname-mce
 	$pkgname-sway
 	$pkgname-weston
-	$pkgname-xfce4
 	"
 
 source="
@@ -51,12 +50,6 @@ weston() {
 	install_if="$pkgname=$pkgver-r$pkgrel weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
-}
-
-xfce4() {
-	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-xfce4"
-	install="$subpkgname.post-install"
-	mkdir "$subpkgdir"
 }
 
 kernel_virt() {
