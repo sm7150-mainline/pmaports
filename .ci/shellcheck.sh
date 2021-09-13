@@ -38,7 +38,7 @@ sh_files="
 	$(find . -path './main/devicepkg-dev/*.sh')
 	$(find . -path './main/postmarketos-mvcfg/*.sh')
 
-	$(find . -path '.gitlab-ci/*.sh')
+	$(find . -path '.ci/*.sh')
 "
 for file in $sh_files; do
 	echo "Test with shellcheck: $file"

@@ -5,4 +5,4 @@ export PYTHONUNBUFFERED=1
 JOB_ARCH="${CI_JOB_NAME#build-}"
 
 set -x
-su pmos -c ".gitlab-ci/build_changed_aports.py $JOB_ARCH"
+su pmos -c ".ci/build_changed_aports.py $JOB_ARCH"

@@ -46,7 +46,7 @@ def test_executable_files():
 
 # Make sure files are either:
 #  - in root directory (README.md)
-#  - hidden (.gitlab-ci/, device/.shared-patches/)
+#  - hidden (.ci/, device/.shared-patches/)
 #  - or belong to a package (below a directory with APKBUILD)
 def test_files_belong_to_package():
     # Walk directories and set package_dir when we find an APKBUILD

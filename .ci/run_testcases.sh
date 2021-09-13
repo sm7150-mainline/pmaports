@@ -32,4 +32,4 @@ if ! [ -e $deviceinfo ]; then
 fi
 
 # Run testcases
-pytest -vv -x --tb=native "$pmaports/.gitlab-ci/testcases" "$@"
+pytest -vv -x --tb=native "$pmaports/.ci/testcases" "$@"

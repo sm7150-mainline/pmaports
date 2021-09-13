@@ -162,7 +162,7 @@ def get_changed_packages():
 
         # Skip files:
         # * in the root dir of pmaports (e.g. README.md)
-        # * path with a dot (e.g. .gitlab-ci/, device/.shared-patches/)
+        # * path with a dot (e.g. .ci/, device/.shared-patches/)
         if not dirname or file.startswith(".") or "/." in file:
             continue
 

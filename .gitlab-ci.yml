@@ -3,7 +3,7 @@
 # global settings
 image: alpine:latest
 after_script:
-  - .gitlab-ci/move_logs.sh $CI_PROJECT_DIR
+  - .ci/move_logs.sh $CI_PROJECT_DIR
 stages:
   - lint
   - build
@@ -34,7 +34,7 @@ wiki:
   before_script:
     - apk -q add python3
   script:
-    - .gitlab-ci/check_devices_in_wiki.py --booting
+    - .ci/check_devices_in_wiki.py --booting
 
 # testcases linting
 testcases-linting:
@@ -44,8 +44,8 @@ testcases-linting:
     refs:
       - merge_requests
     changes:
-      - .gitlab-ci/*
-      - .gitlab-ci/*/*
+      - .ci/*
+      - .ci/*/*
   before_script:
     - apk -q add py-flake8
   script:
@@ -59,7 +59,7 @@ shellcheck:
   before_script:
     - apk -q add shellcheck
   script:
-    - .gitlab-ci/shellcheck.sh
+    - .ci/shellcheck.sh
 
 # aports checks (generic)
 aports-static:
@@ -69,8 +69,8 @@ aports-static:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
     - sh ./install_pmbootstrap.sh pytest
   script:
-    - su pmos -c ".gitlab-ci/run_testcases.sh"
-    - su pmos -c ".gitlab-ci/check_changed_aports_versions.py"
+    - su pmos -c ".ci/run_testcases.sh"
+    - su pmos -c ".ci/check_changed_aports_versions.py"
   artifacts:
     when: on_failure
     paths:
@@ -98,7 +98,7 @@ aport-lint:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
     - sh ./install_pmbootstrap.sh
   script:
-    - su pmos -c ".gitlab-ci/apkbuild-linting.py"
+    - su pmos -c ".ci/apkbuild-linting.py"
   only:
     - merge_requests
   allow_failure: true
@@ -139,7 +139,7 @@ mr-settings:
     - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
     - sh ./install_pmbootstrap.sh
   script:
-    - .gitlab-ci/build.sh
+    - .ci/build.sh
     - cp -r /home/pmos/.local/var/pmbootstrap/packages/ packages/ || true
   artifacts:
     expire_in: 1 week
