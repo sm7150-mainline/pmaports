@@ -5,7 +5,7 @@
 _flavor="postmarketos-qcom-msm8939"
 pkgname=linux-$_flavor
 pkgver=5.14_git20210912
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for Qualcomm MSM8939 devices"
 arch="aarch64"
 _carch="arm64"
@@ -15,7 +15,17 @@ options="!strip !check !tracedeps
 	pmb:cross-native
 	pmb:kconfigcheck-nftables
 	"
-makedepends="bash bc bison devicepkg-dev installkernel flex openssl-dev perl"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	installkernel
+	openssl-dev
+	perl
+	"
 provides="linux-huawei-kiwi=$pkgver-r$pkgrel" # for backwards compatibility
 replaces="linux-huawei-kiwi"
 
@@ -54,5 +64,5 @@ package() {
 }
 sha512sums="
 b4ac9b2bd74ab556b7bab8cc91cc4d7c78306fbdc0d09cec59d4a6383f6639e8e69103f5b0cf16790de3cd44042163787940bb1aaf90ab7cd59fce75e7352451  linux-postmarketos-qcom-msm8939-5.14-v1.tar.gz
-b9f6e9843f4f42213b54344285b47f6b40ed61d3125cdb8581682c8ca51f9b53c6bb4d6b8a5089b863e35481eb7731b1b2f13b853454ab291ddd5fd7518715e0  config-postmarketos-qcom-msm8939.aarch64
+fb9b1d78fc751c3314cb758792795c97c63c8efe632c6a28ff0320225f80659e6625140d90b32bb940267b4136c9caf78170a835599cd4839fd42985ee554f98  config-postmarketos-qcom-msm8939.aarch64
 "
