@@ -1,12 +1,18 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-lg-hammerhead
 pkgver=2
-pkgrel=26
+pkgrel=27
 pkgdesc="Google Nexus 5"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
-depends="postmarketos-base linux-postmarketos-qcom-msm8974 mkbootimg mesa-dri-freedreno ofono"
+depends="
+	linux-postmarketos-qcom-msm8974
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	swclock-offset
+"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="$pkgname-weston $pkgname-phosh $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
@@ -52,7 +58,17 @@ weston() {
 
 nonfree_firmware() {
 	pkgdesc="WiFi, GPU, Modem and ADSP firmware"
-	depends="linux-firmware-qcom linux-firmware-brcm linux-firmware-cypress firmware-adreno firmware-lg-hammerhead firmware-lg-hammerhead-adsp firmware-lg-hammerhead-modem firmware-lg-hammerhead-bluetooth msm-modem-rpmsg"
+	depends="
+		firmware-adreno
+		firmware-lg-hammerhead
+		firmware-lg-hammerhead-adsp
+		firmware-lg-hammerhead-modem
+		firmware-lg-hammerhead-bluetooth
+		linux-firmware-brcm
+		linux-firmware-cypress
+		linux-firmware-qcom
+		msm-modem
+	"
 	mkdir "$subpkgdir"
 	# This config makes sense only if non-free firmware is installed
 	install -Dm644 "$srcdir"/bt-module-deps.conf \
