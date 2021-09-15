@@ -4,9 +4,9 @@
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.14_rc2
-pkgrel=2
-_tag="5.14-rc2"
+pkgver=5.15_rc1
+pkgrel=0
+_tag="5.15-rc1"
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
 _carch="arm"
@@ -22,9 +22,7 @@ makedepends="bison findutils gmp-dev flex installkernel mpc1-dev mpfr-dev openss
 source="
 	$pkgname-$_tag.tar.gz::https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
 	config-$_flavor.armv7
-	bl.patch
 	emmc.patch
-	firmware.patch
 	regulators.patch
 "
 builddir="$srcdir/linux-${_tag#v}"
@@ -54,10 +52,8 @@ package() {
 }
 
 sha512sums="
-f12cb96635631a15e806dc1488e69344ec4da62fae10866be070e915f0ba359520b0564f09bc425e588f1d6f484d337b15f1699b492d10e5d4f4908b54c93bbe  linux-postmarketos-stericsson-5.14-rc2.tar.gz
-7167bb4902f0872ceb6966513511e40af7125783f82f6eb3d9807b4ab7cf0ae91d0ae943c4123f9567a76ce2852876a5e38c7350767d6552b1de8d0ce618b0d7  config-postmarketos-stericsson.armv7
-66ec2d3105540e991bccc8cfb0e4212cb40a31a5a35e8cdc084b8bd7ffa016a86b3b340fd57b077b3c95b5bcb1e80cadaa11e71cd1a54a3e0e595024f3f27346  bl.patch
-760afb46cf56a97b9a9a61fabd5c686c7b98bd64864774516099ad57a7c34d146a16d7ce4687b6071c3fd2df307e7f184428924569e0e767f3c80b780720d85b  emmc.patch
-8c12e75094fde3fe50318cc478afdb2ed304ad682172e30b64ac27d536d8ccba2b6a364e62b4028e9c9ea7863e43f36dc6e3d466b29199d260d86a5995d224a1  firmware.patch
+3f7303ed8387b9f0298d32c28ae17a48ccbab2232fb278868c76dbd3d8f2911cb25b725a4e79c77f1c0f7939bd6fde946ddf68ee5ace3cd9d1076470e6238109  linux-postmarketos-stericsson-5.15-rc1.tar.gz
+cdc5c71df0e8db84f78789b7a5f4e84b09e4018ab89e9f0f760832ed75e0aedb8c5f6a1d11b6e3429e66b5d6bd41ef9d02a118c71feac06c953552ee910d591a  config-postmarketos-stericsson.armv7
+d1bd4c1f04e67ab33f03285f8baf1187d4dde29b9c49711c56f31d4708296172295ea1ad153504f2a4e944ad3d80ddc12a7218dc0d79161089ed527fc4404632  emmc.patch
 8206d74c52328827502a32644f70fd149a72a78aaf936cd44f474b9153e8caccf73206df76e24004329edebab90e1a4a0e965630f4817aa5dd642d9ee2729295  regulators.patch
 "
