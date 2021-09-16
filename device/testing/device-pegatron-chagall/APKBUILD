@@ -2,7 +2,7 @@
 
 pkgname=device-pegatron-chagall
 pkgdesc="Pegatron Chagall"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -20,6 +20,7 @@ depends="
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
+	pointercal
 	rootston.ini
 "
 subpackages="
@@ -34,6 +35,10 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	# osk-sdl touchscreen calibration
+	install -Dm644 "$srcdir"/pointercal \
+		"$pkgdir"/etc/pointercal
 }
 
 phosh() {
@@ -56,5 +61,6 @@ x11() {
 
 sha512sums="
 d303d2a4ef5f55f09cf6f4af9449aaf00b3d94299cbf9f23c1a61c34478e64c98094f9a4416013c52f9519b5a775dead697babb3f031f12cc6a1a9e8f2d42474  deviceinfo
+61418c6a0df6c1a4d4bacafb98abcd8897d81fc1ae319cbe451aaebd90a8d231e2ec1812b45d72687f901cc1e2c874f12960b50026becdf42917c8c2d5fbad77  pointercal
 618284cdaccd09e60cb9a99afa337fcad7b3bd33f6422b9eae34175bc4516138d486cbb9f5735cafb325bc16cf362de16aeae7c77d334668c749afcfa557359b  rootston.ini
 "
