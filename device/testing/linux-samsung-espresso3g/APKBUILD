@@ -1,6 +1,6 @@
 pkgname=linux-samsung-espresso3g
-pkgver=5.12_rc1
-pkgrel=2
+pkgver=5.15_rc1
+pkgrel=0
 pkgdesc="Samsung Galaxy Tab 2 (7.0 inch) mainline kernel"
 arch="armv7"
 _carch="arm"
@@ -9,10 +9,11 @@ url="https://kernel.org"
 license="GPL2"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="openssl-dev yaml-dev mpc1-dev mpfr-dev xz findutils bison flex perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
-_commit="cf34a37251a0133a8d4648b8ac8aba38b41fddf7"
+_commit="7f948007463451675a274ec0abaefdd9253ae56b"
 _config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/MightyM17/linux_openpvrsgx/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/openpvrsgx-devgroup/linux_openpvrsgx/archive/$_commit.tar.gz
+	00-add-espresso-dts.patch
 	$_config
 "
 builddir="$srcdir/linux_openpvrsgx-$_commit"
@@ -42,6 +43,7 @@ package() {
 }
 
 sha512sums="
-3f40d79314e36555b350ec395b476a144cf8a8a11cb2b1bd599ee6af2d8627cd12fe2f7fa9cfb4749fe82056b989903dfac6d254448cc90e2b1aeb1ede3947e5  linux-samsung-espresso3g-cf34a37251a0133a8d4648b8ac8aba38b41fddf7.tar.gz
-e786e6f6d4bb406ab1dae31d1dd7a34d9bdf332c2af3eb2a60643e6d35173362d851b093aa66bb1ce354bcc366e63d4aba65ee28cec97480fce994849518e3f3  config-samsung-espresso3g.armv7
+6af57b5b1c91b611eae2a495a014701a53db3f2f99e6f043d7640d788250555e2f5dcbf7ec3deb4ce3124dea809132dd81939be5faa73be2dda48483f341e44b  linux-samsung-espresso3g-7f948007463451675a274ec0abaefdd9253ae56b.tar.gz
+696569663acf0148b546fcd1441697eee5166a36ac9f6e8df8b17881a4ade7d85afd39db4f1b2618b210bf3ca31144eb6e0d12fa90e1db9df9a985ecbd52d144  00-add-espresso-dts.patch
+45d5ef35ccf019fed80860436b544d4b632ef0dacd95540aeedbc2e25d705ea717050e7c41a77f2e6cdca6e839f4f32749054bff6011dc103f1f95152da732cc  config-samsung-espresso3g.armv7
 "
