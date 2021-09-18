@@ -3,8 +3,8 @@
 # Kernel config based on: arch/arm/configs/exynos_defconfig
 
 pkgname=linux-postmarketos-exynos4
-pkgver=5.14
-pkgrel=1
+pkgver=5.14.5
+pkgrel=0
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
 _carch="arm"
@@ -28,8 +28,11 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	$_config
 	0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
+	0001-drivers-drm-Add-backlight-control-support-for-s6e8aa.patch
 	0001-power-supply-max17042_battery-use-VF-SOC-register-fo.patch
 	0001-power_supply-max77693-change-the-supply-type-to-POWE.patch
+	add-reboot-modes-to-midas.patch
+	workaround-metadata-corruption-bug.patch
 	initramfs.list
 	init
 "
@@ -69,11 +72,14 @@ package() {
 }
 
 sha512sums="
-8e4f3ec3d36f774280f75dc7b004a43e09417af58f12e9c9f8348976659d4cfda7ad905f306f43fed66a27922e5c45db22e46bbfa7a0b9f365012380de3b6f64  linux-5.14.tar.xz
-15fbc2cdc569b35e46a9c30ee49a6642f32284a606bb4e94177d0fd25036c799a345de4c9da5fadaef3c402c36748225f63f1a157fccff05c684d7dee667ff7e  config-postmarketos-exynos4.armv7
+8213a77210a1dc58adf60bc6afe7d6a5e2931fd838f30683bb6503286b3d291ee01ae1f60adc426a36a03d857c18a5fb4d156041aed4e1542d3456e9e459bd1f  linux-5.14.5.tar.xz
+445f6a42d598ab8388f1176aa0825d632007886eea9084ee7f79405b29742936b6ecd8b07b3fa6505e691d36b09ccb12e7381bb6b1dbca3fe7c55416b32d2f2a  config-postmarketos-exynos4.armv7
 4bb111db4396a1981ad0883737c6594ca93701699846298b940d2ea202c666be0158a0f9ddc5b95b9147fa4cfe62639512ae78e9315f8d975b379ccc4e15da36  0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
+4d949df3906b4c7e13ae38345f8a25ec438e18b429d96d42486bb95d0cdc65d1fb68a8cd366e4040ff398633015bbd4db72e2327ad936c3a0069361392923fe1  0001-drivers-drm-Add-backlight-control-support-for-s6e8aa.patch
 166fe4dff1cdc451a9a32a5240adb93b534b8c576c5ac8d995401ebbf676385a6d8b5a6a21f556df588dee41cc4e5b8ede9eff3dd4c7835c0ca374882784d42e  0001-power-supply-max17042_battery-use-VF-SOC-register-fo.patch
 e581eb55eb4cdfdac2cbe713a5044077a9b2f15881f0bed03cc89ecb1e38d19a1c9cfbaf53ee184c4a64b10bfe071e289f4fb2230e2420e4f0042f1f301a325c  0001-power_supply-max77693-change-the-supply-type-to-POWE.patch
+4b1e0db3cb1ea369eb6b28356deaf660e3c6e73a043069dbfbe17b5b5237e854f4e400b484b4ca77a2810ecc0edaec80205c28c6793fcdc031d366b25c1b59f6  add-reboot-modes-to-midas.patch
+237f0931adfdafa57f3f194281fd28ed47b3e42636feeb7ffe4d860f2468070d399bf2d8fba075d8eec3047252573009671b45cfafc9b9de273391090f39f3e4  workaround-metadata-corruption-bug.patch
 aaff0332b90e1f9f62de1128cace934717336e54ab09de46477369fa808302482d97334e43a85ee8597c1bcab64d3484750103559fea2ce8cd51776156bf7591  initramfs.list
 09f1f214a24300696809727a7b04378887c06ca6f40803ca51a12bf2176a360b2eb8632139d6a0722094e05cb2038bdb04018a1e3d33fc2697674552ade03bee  init
 "
