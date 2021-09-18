@@ -34,7 +34,16 @@ def test_deviceinfo(args):
     for folder in glob.glob(args.aports + "/device/*/device-*"):
         device = folder[len(args.aports):].split("-", 1)[1]
 
+        f = open(folder[len(args.aports):][1:] + "/deviceinfo")
+        lines = f.read().split("\n")
+        f.close()
+
         try:
+            # variable can not be empty
+            for line in lines:
+                if '=""' in line:
+                    raise RuntimeError("Please remove the empty variable: " + line)
+
             # Successful deviceinfo parsing / obsolete options
             info = pmb.parse.deviceinfo(args, device)
             deviceinfo_obsolete(info)
