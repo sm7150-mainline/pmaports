@@ -1,0 +1,58 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-gt58
+pkgdesc="Samsung Galaxy Tab A 8.0 (2015)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+makedepends="devicepkg-dev dtbtool"
+source="
+	deviceinfo
+	rootston.ini
+"
+subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-kernel-mainline-modem-lte:kernel_mainline_modem_lte
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel (no modem, audio routed directly, for all variants)"
+	depends="linux-postmarketos-qcom-msm8916"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline_modem_lte() {
+	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP, for LTE variant)"
+	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
+	depends="linux-firmware-qcom msm-firmware-loader firmware-samsung-gt58-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
+sha512sums="
+22220a98b127734caeb72d59b7c6d6ff7ade7c5fadc934b2b8db41a989c4ca21c47ab9f7026785841c0496f5420c1c8a336ac605bc2437734deb695c7b1c614d  deviceinfo
+bc620d2031027405f70eea68854744799b460db0d787e2c844556f437120eea0fc857689c6894dd485a5cd3794c7fb5281b901e9e10da1b550c637a852445180  rootston.ini
+"
