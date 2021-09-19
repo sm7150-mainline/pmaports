@@ -1,9 +1,10 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Maintainer: Minecrell <minecrell@minecrell.net>
-pkgname=device-samsung-a5ulte
-pkgdesc="Samsung Galaxy A5 (SM-A500FU)"
-pkgver=4
-pkgrel=1
+# Co-Maintainer: Alexey Min <alexey.min@gmail.com>
+pkgname=device-samsung-a5
+pkgdesc="Samsung Galaxy A5 (2015)"
+pkgver=5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -15,8 +16,12 @@ subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
 "
+
+# Backwards compatibility for old device package names
+_substitutes="device-samsung-a5lte device-samsung-a5ulte"
+replaces="$_substitutes"
+for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -29,28 +34,30 @@ package() {
 kernel_mainline() {
 	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
 	depends="linux-postmarketos-qcom-msm8916"
+	replaces=""
+	for pkg in $_substitutes; do replaces="$replaces $pkg-kernel-mainline"; done
+	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline_modem() {
 	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
 	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
+	replaces=""
+	for pkg in $_substitutes; do replaces="$replaces $pkg-kernel-mainline-modem"; done
+	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
-	depends="linux-firmware-qcom firmware-samsung-a5ulte-venus firmware-samsung-a5ulte-wcnss"
-	mkdir "$subpkgdir"
-}
-
-nonfree_firmware_modem() {
-	pkgdesc="Modem firmware"
-	depends="firmware-samsung-a5ulte-modem"
-	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	depends="linux-firmware-qcom msm-firmware-loader firmware-samsung-a5-wcnss-nv"
+	replaces=""
+	for pkg in $_substitutes; do replaces="$replaces $pkg-nonfree-firmware"; done
+	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-b13a0ed1dfdbe15f66125cc9774ef3eb328e1ab712a15771862a47ac21924bd2f0819e2064b46c5d0e4d5414f4ab36f6f6daf64c1f6f216118a07da6eb2084eb  deviceinfo
+8159d38ec4e9b85ca929de9cd6888475e596b64c73b9c2bedf68e2d21434448fc0d40d6aa3a5aa1d3da767d34557f0691bae7d0802239872fdf5bbb810664dab  deviceinfo
 "
