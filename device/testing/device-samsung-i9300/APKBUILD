@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9300
 pkgdesc="Samsung Galaxy SIII"
-pkgver=1
-pkgrel=4
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -12,8 +12,8 @@ makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
-	$pkgname-kernel-mainline-i9300-warning:kernel_mainline_i9300_warning
-	$pkgname-kernel-mainline-i9305-warning:kernel_mainline_i9305_warning
+	$pkgname-kernel-mainline-i9300:kernel_mainline_i9300
+	$pkgname-kernel-mainline-i9305:kernel_mainline_i9305
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="
@@ -37,18 +37,14 @@ kernel_downstream() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-kernel_mainline_i9300_warning() {
-	pkgdesc="(SIII) mainline WIP
-		*** WARNING: reported to cause hardware failure:
-		https://postmarketos.org/i9305 ***"
+kernel_mainline_i9300() {
+	pkgdesc="(SIII) mainline WIP"
 	depends="linux-postmarketos-exynos4"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-kernel_mainline_i9305_warning() {
-	pkgdesc="(SIII LTE) mainline WIP
-		*** WARNING: reported to cause hardware failure:
-		https://postmarketos.org/i9305 ***"
+kernel_mainline_i9305() {
+	pkgdesc="(SIII LTE) mainline WIP"
 	depends="linux-postmarketos-exynos4"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
@@ -60,6 +56,6 @@ nonfree_firmware() {
 }
 
 sha512sums="
-f97a9bd936dcb7df636fe6be6ed946592fb88b53a3ff6c26ea1e8bf37e3c2a81a7866d7653a69d6730bad5735af03a7e250082419b11b7572a89fc4fc2136a1a  deviceinfo
+2ebd9b1637cd8588074108feebbf8463b8a01d8c66185d4ae3d88688fc9c7e9133a9caf55a561d430dfa4a0b5086497d08cd2fed633bc40454f7f6dc367954e8  deviceinfo
 d70a03210458c771f94db920a8d3162a03fc7727f0fbafef4c1575ebc659c937c082f5c7a4dcdd1572925b973d628c6f4cf895c3b8b2a59af8142824468fe7c4  90-android-touch-dev.rules
 "
