@@ -2,8 +2,8 @@
 # Maintainer: Vincent Knecht <vincent.knecht@mailoo.org>
 pkgname=device-alcatel-idol347
 pkgdesc="Alcatel OneTouch Idol 3 (4.7)"
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -15,7 +15,6 @@ subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
 	$pkgname-phosh
 "
 
@@ -42,14 +41,7 @@ kernel_mainline_modem() {
 
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video firmware"
-	depends="linux-firmware-qcom firmware-alcatel-idol347-venus firmware-alcatel-idol347-wcnss"
-	mkdir "$subpkgdir"
-}
-
-nonfree_firmware_modem() {
-	pkgdesc="Modem firmware"
-	depends="firmware-alcatel-idol347-modem"
-	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	depends="linux-firmware-qcom msm-firmware-loader firmware-alcatel-idol347-wcnss-nv firmware-alcatel-idol347-venus"
 	mkdir "$subpkgdir"
 }
 
