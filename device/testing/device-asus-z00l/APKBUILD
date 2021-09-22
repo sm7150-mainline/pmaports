@@ -2,8 +2,8 @@
 # Maintainer: Antony J.R. <antonyjr@pm.me>
 pkgname=device-asus-z00l
 pkgdesc="ASUS Zenfone 2 Laser (720p)"
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -15,7 +15,6 @@ subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
 "
 
 build() {
@@ -40,14 +39,7 @@ kernel_mainline_modem() {
 
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
-	depends="linux-firmware-qcom firmware-asus-z00l-venus firmware-asus-z00l-wcnss"
-	mkdir "$subpkgdir"
-}
-
-nonfree_firmware_modem() {
-	pkgdesc="Modem firmware"
-	depends="firmware-asus-z00l-modem"
-	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	depends="linux-firmware-qcom msm-firmware-loader firmware-asus-z00l-wcnss-nv firmware-asus-z00l-venus"
 	mkdir "$subpkgdir"
 }
 
