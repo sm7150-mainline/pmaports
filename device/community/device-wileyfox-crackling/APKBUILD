@@ -3,8 +3,8 @@
 # Co-Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname=device-wileyfox-crackling
 pkgdesc="Wileyfox Swift"
-pkgver=3
-pkgrel=4
+pkgver=4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -16,7 +16,6 @@ subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
 "
 
 build() {
@@ -41,14 +40,7 @@ kernel_mainline_modem() {
 
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
-	depends="linux-firmware-qcom firmware-wileyfox-crackling-venus firmware-wileyfox-crackling-wcnss"
-	mkdir "$subpkgdir"
-}
-
-nonfree_firmware_modem() {
-	pkgdesc="Modem firmware"
-	depends="firmware-wileyfox-crackling-modem"
-	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	depends="linux-firmware-qcom msm-firmware-loader firmware-wileyfox-crackling-wcnss-nv firmware-wileyfox-crackling-venus"
 	mkdir "$subpkgdir"
 }
 
