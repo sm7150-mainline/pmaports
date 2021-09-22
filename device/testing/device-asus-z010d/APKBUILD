@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-asus-z010d
 pkgdesc="Asus Zenfone Max ZC550KL"
-pkgver=1
-pkgrel=3
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -14,7 +14,6 @@ subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
 "
 
 build() {
@@ -39,14 +38,7 @@ kernel_mainline_modem() {
 
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
-	depends="linux-firmware-qcom firmware-asus-z010d-venus firmware-asus-z010d-wcnss"
-	mkdir "$subpkgdir"
-}
-
-nonfree_firmware_modem() {
-	pkgdesc="Modem firmware"
-	depends="firmware-asus-z010d-modem"
-	install_if="$pkgname-nonfree-firmware $pkgname-kernel-mainline-modem"
+	depends="linux-firmware-qcom msm-firmware-loader firmware-asus-z010d-wcnss-nv firmware-asus-z010d-venus"
 	mkdir "$subpkgdir"
 }
 
