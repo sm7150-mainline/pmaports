@@ -1,0 +1,62 @@
+From dae39d461569897f3ae0aedde041dfb8cfcc4f96 Mon Sep 17 00:00:00 2001
+From: Henrik Grimler <henrik@grimler.se>
+Date: Mon, 18 Oct 2021 21:43:08 +0200
+Subject: [PATCH 11/16] ARM: exynos: only do SMC_CMD_CPU1BOOT call on Exynos4
+
+On Exynos5 the call is simply ignored by most variants of the
+trustzone firmware.  However, on some devices it instead causes the
+device to hang, so let's avoid the call for the SoCs where it should
+not be needed.
+
+To see that the call is ignored, we can look into sboot/tzsw.  On most
+of the Exynos{4,5} devices the part of sboot/tzsw that seem to handle
+the secure monitor calls is quite easy to recognise, the SMC number is
+compared to known ones, and if equal it branches to the relevant
+function.  In assembly this looks something like:
+
+;-- handle_smc:
+0x00000514      650070e3       cmn r0, 0x65
+0x00000518      0a00000a       beq loc.smc_cmd_reg
+0x0000051c      010070e3       cmn r0, 1
+0x00000520      6c00000a       beq loc.smc_cmd_init
+0x00000524      020070e3       cmn r0, 2
+0x00000528      6b00000a       beq loc.smc_cmd_info
+0x0000052c      030070e3       cmn r0, 3
+0x00000530      6e00000a       beq loc.smc_cmd_sleep
+0x00000534      060070e3       cmn r0, 6
+0x00000538      ae00000a       beq loc.smc_cmd_save_state
+0x0000053c      070070e3       cmn r0, 7
+0x00000540      b400000a       beq loc.smc_cmd_standby
+0x00000544      2b01001a       bne loc.smc_return_minus1
+
+where above example is from exynos5420-arndale-octa.  As can be seen
+the case where r0 is 4 (i.e. SMC_CMD_CPU1BOOT) is not handled.  The
+annotations are taken from github.com/hsnaves/exynos5410-firmware,
+where a large part of the exynos5410 trustzone firmware has been
+reverse-engineered.
+
+Signed-off-by: Henrik Grimler <henrik@grimler.se>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ arch/arm/mach-exynos/firmware.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-exynos/firmware.c b/arch/arm/mach-exynos/firmware.c
+index 2eaf2dbb8e81..2da5b60b59e2 100644
+--- a/arch/arm/mach-exynos/firmware.c
++++ b/arch/arm/mach-exynos/firmware.c
+@@ -60,8 +60,10 @@ static int exynos_cpu_boot(int cpu)
+ 	/*
+ 	 * Exynos3250 doesn't need to send smc command for secondary CPU boot
+ 	 * because Exynos3250 removes WFE in secure mode.
++	 *
++	 * On Exynos5 devices the call is ignored by trustzone firmware.
+ 	 */
+-	if (soc_is_exynos3250())
++	if (!soc_is_exynos4210() && !soc_is_exynos4412())
+ 		return 0;
+ 
+ 	/*
+-- 
+2.34.1
+
