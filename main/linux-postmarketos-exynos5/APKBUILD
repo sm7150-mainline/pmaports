@@ -1,0 +1,72 @@
+# Maintainer: Henrik Grimler <henrik@grimler.se>
+# Kernel config based on: arch/arm/configs/exynos_defconfig
+# and Hardkernel's odroidxu4_defconfig
+
+pkgname=linux-postmarketos-exynos5
+pkgver=5.16.1
+pkgrel=0
+pkgdesc="Mainline kernel fork for Samsung Exynos5 devices"
+arch="armv7"
+_carch="arm"
+_flavor="${pkgname#linux-}"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-nftables
+"
+makedepends="
+	bison
+	findutils
+	flex
+	installkernel
+	openssl-dev
+	perl
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	xz
+"
+
+# Source
+_config="config-$_flavor.$arch"
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.0};;
+	*.*)	_kernver=$pkgver;;
+esac
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${pkgver//_/-}.tar.xz
+	$_config
+"
+builddir="$srcdir/linux-${_kernver//_/-}"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+f47cf92065c7445518452052566251642f701089494c8b5eb7d5b0e147d7177b016957481e0b98050840d79e2b838cfb088aeee1941fd41b75b681972f2fec5d  linux-5.16.1.tar.xz
+0f8a3c7a1aec868f60405e723b44107f66f6518a25fe5e64ace50c9ec4d89b533a7b63775236b81a84017791a569a49a18698f72bb8bf71aacffedafca8f2ecf  config-postmarketos-exynos5.armv7
+"
