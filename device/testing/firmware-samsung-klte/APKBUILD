@@ -1,5 +1,5 @@
 pkgname=firmware-samsung-klte
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc="Samsung Galaxy S5 Firmware"
 url="https://github.com/TheMuppets/proprietary_vendor_samsung"
@@ -9,7 +9,6 @@ options="!check !strip !archcheck !spdx !tracedeps pmb:cross-native"
 subpackages="
 	$pkgname-wifi:wifi
 	$pkgname-bt:bt
-	$pkgname-modem:modem
 "
 _commit="63715ce31aedd827bd1f8bac5e5c42cc47f28f85"
 
@@ -17,7 +16,6 @@ source="
 	$pkgname-$_commit-bcmdhd_sta.bin::https://github.com/TheMuppets/proprietary_vendor_samsung/raw/$_commit/klte-common/proprietary/etc/wifi/bcmdhd_sta.bin
 	$pkgname-$_commit-nvram_net.txt::https://raw.githubusercontent.com/TheMuppets/proprietary_vendor_samsung/$_commit/klte-common/proprietary/etc/wifi/nvram_net.txt
 	$pkgname-$_commit-bcm4350_V0395.0797.hcd::https://github.com/TheMuppets/proprietary_vendor_samsung/raw/$_commit/klte-common/proprietary/vendor/firmware/bcm4350_V0395.0797.hcd
-	modem-firmware-mount.initd
 "
 
 package() {
@@ -41,38 +39,8 @@ bt() {
 		"$subpkgdir/lib/firmware/postmarketos/brcm/BCM4354.hcd"
 }
 
-_fwlist="\
-adsp.b00  adsp.b02  adsp.b04  adsp.b06  adsp.b09 \
-adsp.b11  adsp.b13  adsp.b01  adsp.b03  adsp.b05 \
-adsp.b08  adsp.b10  adsp.b12  adsp.mdt \
-mba.b00   mba.mdt \
-modem.b00  modem.b03  modem.b08  modem.b13  modem.b16 \
-modem.b19  modem.b22  modem.b27  modem.b01  modem.b04 \
-modem.b10  modem.b14  modem.b17  modem.b20  modem.b25 \
-modem.mdt  modem.b02  modem.b05  modem.b11  modem.b15 \
-modem.b18  modem.b21  modem.b26"
-
-modem() {
-	pkgdesc="Samsung Galaxy S5 modem firmware"
-	install="firmware-samsung-klte-modem.post-install"
-	mkdir "$subpkgdir"
-
-	install -Dm755 "$srcdir/modem-firmware-mount.initd" \
-		"$subpkgdir/etc/init.d/modem-firmware-mount"
-
-	# create directories and symlinks needed for service
-	mkdir -p "$subpkgdir/mnt/firmware-modem"
-	mkdir -p "$subpkgdir/lib/firmware/postmarketos"
-	# package relative symlinks to not yet existing files
-	cd "$subpkgdir/lib/firmware/postmarketos"
-	for f in $_fwlist ; do
-		ln -s "../../../mnt/firmware-modem/image/$f" "$f"
-	done
-}
-
 sha512sums="
 e382700c6af5f592ebb10c4eca038289ae09a3de36a3f330b81c2c6322b75a85d1bbe1e3061f4c2d889bf32e9cf92f17e3474c324e166aa89847bd401aa902df  firmware-samsung-klte-63715ce31aedd827bd1f8bac5e5c42cc47f28f85-bcmdhd_sta.bin
 3619fc3b569f34600a6709f7e003843ceeb9a6e6779e5e57e02a3ebdf7d66a949717026c414fe3eefe0f7a0bfa769c179ec10d6cdf2f010b98477ba3e81c8b52  firmware-samsung-klte-63715ce31aedd827bd1f8bac5e5c42cc47f28f85-nvram_net.txt
 8fd93a1d55b230a574406a082c0620d05f4374b4139042814db259b6d158903bbb7b57e3f9f6c838e9b533d0e173340fb0f16e5b0335fc518324961179445020  firmware-samsung-klte-63715ce31aedd827bd1f8bac5e5c42cc47f28f85-bcm4350_V0395.0797.hcd
-07dc208c983a8e5d7aa8b12bb57c719d36e20126b5c3656e41cf606a9c32659108e2e477d4f818643b494f6d138cb6b56536e4b763e355d94a8aa4452924f6fd  modem-firmware-mount.initd
 "
