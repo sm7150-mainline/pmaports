@@ -1,11 +1,15 @@
 pkgname=firmware-fairphone-fp3
-pkgver=20210420.0
+pkgver=20210420.1
 pkgrel=0
 pkgdesc="Firmware for Fairphone 3"
 url="https://gitlab.com/knfr/firmware-fairphone-fp3"
 arch="aarch64"
 license="proprietary"
-subpackages="$pkgname-wcnss"
+subpackages="
+	$pkgname-adsp
+	$pkgname-modem
+	$pkgname-wcnss
+"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
 
 source="$pkgname-$pkgver.tar.gz::$url/-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
@@ -13,6 +17,22 @@ _fwdir="/lib/firmware/postmarketos"
 
 package() {
 	mkdir -p "$pkgdir"
+}
+
+adsp() {
+	pkgdesc="Fairphone 3 firmware for the ADSP"
+
+	install -Dm644 "$builddir"/adsp.* -t \
+		"$subpkgdir/$_fwdir"
+}
+
+modem() {
+	pkgdesc="Fairphone 3 firmware for the modem"
+
+	install -Dm644 "$builddir"/mba.mbn -t \
+		"$subpkgdir/$_fwdir"
+	install -Dm644 "$builddir"/modem.* -t \
+		"$subpkgdir/$_fwdir"
 }
 
 wcnss() {
@@ -26,5 +46,5 @@ wcnss() {
 }
 
 sha512sums="
-bf2aea11343a4c0cd0f7a6d7ac7304674f2eb565ebe78dc1020e7756d9ee13c8fc45ff03e5c4d8f532528c2d613834603dbf01f68944ec8faeb08b3bc7d86470  firmware-fairphone-fp3-20210420.0.tar.gz
+6e077c7098fc27115cb9405ee2c9b140cd7810921afe7fa001bdd0606693c03cfacb5f50dc1fe91a16dde23686b97929c8d1f5e836a0be5b4b762a7de064a88c  firmware-fairphone-fp3-20210420.1.tar.gz
 "
