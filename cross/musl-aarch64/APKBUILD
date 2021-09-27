@@ -8,7 +8,7 @@ fi
 
 pkgname=musl-aarch64
 pkgver=1.2.2
-pkgrel=6
+pkgrel=7
 arch="x86_64"
 subpackages="musl-dev-aarch64:package_dev"
 
@@ -43,8 +43,9 @@ package_dev() {
 	busybox tar -xf $srcdir/musl-dev-$pkgver-r$pkgrel-$_arch-edge.apk
 	rm .PKGINFO .SIGN.*
 
-	# symlink everything from /usr/$_target/usr/* to /usr/$_target/*
-	# so the cross-compiler gcc does not fail to build.
+	# symlink everything from /usr/$_target/usr/*
+	# to /usr/$_target/* so the cross-compiler gcc does not fail
+	# to build.
 	for _dir in include lib; do
 		mkdir -p "$subpkgdir/usr/$_target/$_dir"
 		cd "$subpkgdir/usr/$_target/usr/$_dir"
@@ -56,6 +57,6 @@ package_dev() {
 }
 
 sha512sums="
-f2cca5b11ea899bb96c97aced6374b97560457d7804e54e9411a233d51cb48eaa687bc6492b3f516c6a83c6cccee30eb0d811505c194d8b587bed396b173d176  musl-1.2.2-r6-aarch64-edge.apk
-34bc212a56f3a5a57083b686a3d58b90a2be275f572a49a8bed4ac6f76e3c532dac7cbc31c8924d6cf5d222820a99d4c32c18a694e22334ff56aedcc360d348b  musl-dev-1.2.2-r6-aarch64-edge.apk
+9477f129facfcb46474e72a576714e762d03bc306dc6a64c246d793c9018f57baab7120f689a1f13f331158c6bdf06c82d6e43c19af1660363a9292b953ad48a  musl-1.2.2-r7-aarch64-edge.apk
+23b3fa1f6a2971dfd2444fe0f967b84e880e5862248c0bc5c5f4b56e91dc6dc6c1f849618a331c0fbaf74d1b6b6fbd592a4781db9b247dd4c5adf7c57aae3ffa  musl-dev-1.2.2-r7-aarch64-edge.apk
 "
