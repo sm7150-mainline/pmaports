@@ -53,6 +53,13 @@ def get_wiki_devices_html(path):
     return {"booting": split[0], "not_booting": split[1]}
 
 
+def get_wiki_renamed_devices_html():
+    """:returns: HTML of the page"""
+    # Download wiki page
+    url = "http://wiki.postmarketos.org/wiki/Renamed_Devices"
+    return urllib.request.urlopen(url).read().decode("utf-8")
+
+
 def check_device(device, html, is_booting):
     """:param is_booting: require the device to be in the booting section, not
                           just anywhere in the page (i.e. in the not booting
@@ -66,6 +73,9 @@ def check_device(device, html, is_booting):
                   " merge request, your device should be in the booting"
                   " section already)")
             return False
+        return True
+    if device in html["renamed"]:
+        print(f"WARNING: {device} was renamed in the wiki")
         return True
 
     print(device + ": not in the wiki yet.")
@@ -87,6 +97,7 @@ def main():
 
     # Check all devices
     html = get_wiki_devices_html(args.path)
+    html["renamed"] = get_wiki_renamed_devices_html()
     error = False
     for device in get_devices():
         if not check_device(device, html, args.booting):
