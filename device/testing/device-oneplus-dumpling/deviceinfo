@@ -9,6 +9,7 @@ deviceinfo_year="2017"
 deviceinfo_arch="aarch64"
 
 # Device related
+deviceinfo_gpu_accelerated="true"
 deviceinfo_chassis="handset"
 deviceinfo_keyboard="false"
 deviceinfo_external_storage="false"
@@ -17,7 +18,6 @@ deviceinfo_screen_height="2160"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
-deviceinfo_kernel_cmdline="androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=2048 androidboot.usbconfigfs=true androidboot.usbcontroller=a800000.dwc3 firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7 ramoops.mem_address=0xac000000 ramoops.mem_size=0x200000 ramoops.console_size=0x40000"
 deviceinfo_generate_bootimg="true"
 deviceinfo_bootimg_qcdt="false"
 deviceinfo_bootimg_dtb_second="false"
@@ -28,6 +28,20 @@ deviceinfo_flash_offset_second="0x00f00000"
 deviceinfo_flash_offset_tags="0x00000100"
 deviceinfo_flash_pagesize="4096"
 deviceinfo_flash_sparse="true"
+
+# Downstream kernel options
+deviceinfo_kernel_cmdline_downstream="androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=2048 androidboot.usbconfigfs=true androidboot.usbcontroller=a800000.dwc3 firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7 ramoops.mem_address=0xac000000 ramoops.mem_size=0x200000 ramoops.console_size=0x40000"
+
+# Mainline kernel options
+deviceinfo_dtb_mainline="qcom/msm8998-oneplus-dumpling"
+deviceinfo_append_dtb_mainline="true"
+# We need 'clk_ignore_unused' for now or we don't get graphics
+deviceinfo_kernel_cmdline_mainline="clk_ignore_unused quiet loglevel=5 psi=1"
+deviceinfo_flash_kernel_on_update="true"
+
+# Initramfs
+deviceinfo_modules_initfs_mainline="panel-samsung-s6e3fc1 msm i2c-qup rmi_i2c qcom_fg qcom_spmi_haptics"
+deviceinfo_mesa_driver="msm"
 
 # Required for devices using UFS as storage (instead of e.g. eMMC)
 deviceinfo_rootfs_image_sector_size="4096"
