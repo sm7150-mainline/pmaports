@@ -1,0 +1,32 @@
+# Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
+pkgname=qcom-diag
+pkgver=0_git20210330
+pkgrel=0
+_commit="d06e599d197790c9e84ac41a51bf124a69768c4f"
+pkgdesc="Routing of diagnostics related messages between host and various subsystems"
+url="https://github.com/andersson/diag"
+arch="all"
+license="BSD-3-Clause"
+makedepends="linux-headers musl-dev eudev-dev qrtr-dev"
+subpackages="$pkgname-doc $pkgname-openrc"
+source="
+	diag-$_commit.tar.gz::https://github.com/andersson/diag/archive/$_commit.tar.gz
+	diag-router.initd
+"
+builddir="$srcdir/diag-$_commit"
+options="!check" # No test suite
+
+build() {
+	make prefix=/usr all
+}
+
+package() {
+	make prefix=/usr DESTDIR="$pkgdir" install
+	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+	install -Dm755 "$srcdir"/diag-router.initd "$pkgdir"/etc/init.d/diag-router
+}
+
+sha512sums="
+140a8284406c155faf24d2a46fd185cfd7704915d04ce994cf9f641c26a8c1391160fc213c6d553a978d0d3df27288b03e0694917482e0244a50b4bc7ec6fb46  diag-d06e599d197790c9e84ac41a51bf124a69768c4f.tar.gz
+793411a2b404c51e0a0d734487f60a9a57754ef226e0f6c73a4656c4b96f19859214bf34d81317a05d902ec8b59ad07dbb03378e9542d87b8d3e4d147266e8a5  diag-router.initd
+"
