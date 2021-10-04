@@ -443,19 +443,18 @@ setup_usb_network() {
 	setup_usb_network_configfs
 }
 
-start_udhcpd() {
+start_unudhcpd() {
 	# Only run once
-	[ -e /etc/udhcpd.conf ] && return
+	[ "$(pidof unudhcpd)" ] && return
 
 	# Skip if disabled
 	# shellcheck disable=SC2154
 	if [ "$deviceinfo_disable_dhcpd" = "true" ]; then
 		echo "NOTE: start of dhcpd is disabled (deviceinfo_disable_dhcpd)"
-		touch /etc/udhcpcd.conf
 		return
 	fi
 
-	echo "Starting udhcpd"
+	echo "Starting unudhcpd"
 	# Get usb interface
 	INTERFACE=""
 	ifconfig rndis0 "$IP" 2>/dev/null && INTERFACE=rndis0
@@ -474,21 +473,10 @@ start_udhcpd() {
 	fi
 
 	echo "  Using interface $INTERFACE"
-
-	# Create /etc/udhcpd.conf
-	{
-		echo "start 172.16.42.2"
-		echo "end 172.16.42.2"
-		echo "auto_time 0"
-		echo "decline_time 0"
-		echo "conflict_time 0"
-		echo "lease_file /var/udhcpd.leases"
-		echo "interface $INTERFACE"
-		echo "option subnet 255.255.255.0"
-	} >/etc/udhcpd.conf
-
-	echo "  Start the dhcpcd daemon (forks into background)"
-	udhcpd
+	echo "  Starting the DHCP daemon"
+	(
+		unudhcpd -i "$INTERFACE" -s 172.16.42.1 -c 172.16.42.2
+	) &
 }
 
 # $1: SDL_VIDEODRIVER value (e.g. 'kmsdrm', 'directfb')

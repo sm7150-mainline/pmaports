@@ -32,7 +32,7 @@ done
 # be enabled, when having the debug-shell hook installed for debugging,
 # or get activated after the initramfs is done with an OpenRC service).
 setup_usb_network
-start_udhcpd
+start_unudhcpd
 
 mount_boot_partition /boot
 show_splash_loading
