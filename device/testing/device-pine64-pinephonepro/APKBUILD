@@ -1,0 +1,51 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Martijn Braam <martijn@brixit.nl>
+pkgname=device-pine64-pinephonepro
+pkgdesc="PINE64 PinePhone Pro"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	iw
+	linux-pine64-pinephonepro
+	mesa-dri-gallium
+	postmarketos-base
+	u-boot-pine64-pinephonepro
+	"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="
+	deviceinfo
+	extlinux.conf
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/extlinux.conf \
+		"$pkgdir"/boot/extlinux/extlinux.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi, Bluetooth and video-out firmware"
+	depends="
+		firmware-pine64-pinebookpro
+		linux-firmware-rtlwifi
+		linux-firmware-rtl_bt
+		firmware-pine64-rtl8723bt
+		firmware-pine64-ov5640
+		"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+6497fcecd21343c1c1a4c1ca600a910b7c38efc8b5ab621c3a47a118056eb8ebee380aba44b53f89dba6e747ff2263069f9582e6bb8177904b91332fe8e75d25  deviceinfo
+1332b541497b98c69163ca4d8fc70f028b35bce4905df0774269766f60b74076fd0e74c7eb4624c0c5cbc3756d9965df13c0f5bd6ea84762f18028094bca70a6  extlinux.conf
+"

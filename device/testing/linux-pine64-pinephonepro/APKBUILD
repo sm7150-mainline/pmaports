@@ -1,0 +1,85 @@
+# Maintainer: Martijn Braam <martijn@brixit.nl>
+
+# It's important that CONFIG_ROCKCHIP_CDN_DP is _disabled_ because it causes
+# boot failure
+
+pkgname=linux-pine64-pinephonepro
+pkgver=5.13.0
+pkgrel=0
+pkgdesc="Mainline kernel for the pinephone pro"
+arch="aarch64"
+_flavor="${pkgname#linux-}"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-containers
+	pmb:kconfigcheck-zram
+	"
+makedepends="
+	bison
+	findutils
+	flex
+	gmp-dev
+	gzip
+	installkernel
+	mpc1-dev
+	mpfr-dev
+	openssl-dev
+	perl
+	postmarketos-installkernel
+	rsync
+	xz
+	"
+
+case "$CARCH" in
+	aarch64*) _carch="arm64" ;;
+	arm*) _carch="arm" ;;
+esac
+
+# Source
+_config="config-$_flavor.$CARCH"
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.0};;
+	*.*)	_kernver=$pkgver;;
+esac
+_commit="33cda226d19896e92f30a22bc44b05075b13bb32"
+source="
+	$pkgname-$_commit.tar.gz::https://git.sr.ht/~martijnbraam/linux/archive/$_commit.tar.gz
+	config-$_flavor.aarch64
+	"
+builddir="$srcdir/linux-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))"
+
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs-$_flavor
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+
+sha512sums="
+99fb2d699bc1f8bf4ac02fa3104c1dfdf85092dfba80983d611d1f93e1dfd4bbbb0dbe8452933766ab5ce5d9bc9949075d0db6990eb1aeebc9dff6c51d719c38  linux-pine64-pinephonepro-33cda226d19896e92f30a22bc44b05075b13bb32.tar.gz
+8bcf30131a69c997a54727abd207178ac3a1783e0ab660ab5a94f977738c75ff35ba8abf665e889ae9976b7285923d3cb9251f6d4055b29682423689e64d8d6e  config-pine64-pinephonepro.aarch64
+"
