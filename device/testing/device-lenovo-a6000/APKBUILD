@@ -1,6 +1,6 @@
 pkgname=device-lenovo-a6000
 pkgdesc="Lenovo A6000"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -8,11 +8,12 @@ arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base mkbootimg soc-qcom-msm8916"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="deviceinfo rootston.ini"
 subpackages="
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
 "
 
 build() {
@@ -41,6 +42,13 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
 sha512sums="
 bc19a19e3f386f3c455de39808bb2b398b487a30b405cdfff7e118f7d5dbb528684abd609a50ce90ff4f9f239064fba462bb0bcfe1392bdc56fa8723e7863be0  deviceinfo
+cd1402fcd7133c9364de8bd4e32f0d9e890f35d5d57fe92bd65736e23df1af428f091c9e5275fced111a6887ef562c46c5c19157b84a63955f8a1805b04d9951  rootston.ini
 "
