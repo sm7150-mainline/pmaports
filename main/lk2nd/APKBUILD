@@ -1,7 +1,7 @@
 # Maintainer: Alexey Minnekhanov <alexeymin@postmarketos.org>
 pkgname=lk2nd
 pkgver=0.10.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Secondary little kernel (lk) bootloader for several Qualcomm devices"
 arch="armv7 aarch64"
 url="https://github.com/msm8916-mainline/lk2nd"
@@ -38,9 +38,9 @@ build() {
 	unset PATH
 	export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-	make TOOLCHAIN_PREFIX=arm-none-eabi- msm8916-secondary
-	make TOOLCHAIN_PREFIX=arm-none-eabi- msm8974-secondary
-	make TOOLCHAIN_PREFIX=arm-none-eabi- msm8226-secondary
+	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- msm8916-secondary
+	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- msm8974-secondary
+	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- msm8226-secondary
 }
 
 package() {
