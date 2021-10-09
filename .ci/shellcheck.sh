@@ -17,6 +17,7 @@ fi
 sh_files="
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
 	./main/postmarketos-base/rootfs-usr-lib-firmwareload.sh
+	./main/postmarketos-installkernel/installkernel-pmos
 	./main/postmarketos-mkinitfs/init.sh
 	./main/postmarketos-mkinitfs/init_functions.sh
 	./main/postmarketos-mkinitfs-hook-debug-shell/20-debug-shell.sh
