@@ -1,6 +1,6 @@
 # Maintainer: David Heidelberg <david@ixit.cz>
 pkgname=libvdpau-tegra
-pkgver=0_git20200423
+pkgver=0_git20210517
 pkgrel=0
 pkgdesc="VDPAU backend driver for NVIDIA Tegra 20/30 SoC's"
 url="https://github.com/grate-driver/libvdpau-tegra"
@@ -26,12 +26,14 @@ makedepends="
 	util-macros
 	xorgproto
 	"
-_commit="0e0f8c55e807370421d9b8b805f0a4f029e74268"
+_commit="e005296de3eca35eff67abbbde01711f37950579"
 source="$pkgname-$_commit.tar.gz::https://github.com/grate-driver/libvdpau-tegra/archive/$_commit.tar.gz"
 
 builddir="$srcdir/$pkgname-$_commit"
 
 prepare() {
+	default_prepare
+
 	./autogen.sh \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -50,4 +52,6 @@ package() {
 	make DESTDIR="$pkgdir" install
 }
 
-sha512sums="2e40e5c8a51b9a40e41c39524161530cad612001d8dfda0927351f1f8f34ebb99544df7f85cc8c998676c4fea688be3a01db4ccef1f20b317abba8c13c374799  libvdpau-tegra-0e0f8c55e807370421d9b8b805f0a4f029e74268.tar.gz"
+sha512sums="
+b20ee5ab93ac956d0db7b234fdb35785a6863d7dd97e493dbb83bc63bc70e933a35efa3cfc7a7f9bcdad367d5fee8aa817d72637a27273a1edb9be5d33889f93  libvdpau-tegra-e005296de3eca35eff67abbbde01711f37950579.tar.gz
+"
