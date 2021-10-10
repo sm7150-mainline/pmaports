@@ -2,15 +2,28 @@
 
 pkgname=device-oneplus-cheeseburger
 pkgdesc="OnePlus 5"
-pkgver=0.1
-pkgrel=5
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-oneplus-msm8998 mkbootimg mesa-dri-swrast msm-fb-refresher"
+depends="
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	phoc.ini
+"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -20,6 +33,32 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-oneplus-msm8998 mesa-dri-gallium msm-fb-refresher"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel"
+	# soc-qcom-sdm845 is also applicable to msm8998
+	depends="linux-postmarketos-qcom-msm8998 soc-qcom-sdm845"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, Wi-Fi, Bluetooth etc. (mainline only, also needed for osk-sdl)"
+	depends="firmware-oneplus-msm8998"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
 sha512sums="
-65b911c8142adbfc868cc19f174e66e2d1b3052f7bee4cfd6e49a21ada342c6ec43b00282070eb92ec1cc7575efc3897a4ca9a92fbd463286f5117e6ce2c3ab9  deviceinfo
+c31bdb643167c40bdcd31f188eeba49a736b8e37c83ec959d1be6fa413c73cbf52456eff76525a39a6f71bf3ec3385db8f70925912514d63e4f24fece3361ff2  deviceinfo
+2288f08a44aae5136c0c0c846501c2bd4bcb10f05454b40c6e4490d398385b8a7129216047b5eb7982ca6d62d3aa71f3e18bfb8661d0cd32c8a600685ca0da48  phoc.ini
 "
