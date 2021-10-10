@@ -523,6 +523,9 @@ run_osk_sdl() {
 			;;
 	esac
 
+	# osk-sdl needs evdev for input and doesn't launch without it, so
+	# make sure the module isn't missed
+	modprobe evdev
 	osk-sdl $OSK_EXTRA_ARGS -n root -d "$partition" -c /etc/osk.conf \
 		-o /boot/osk.conf -v > /osk-sdl.log 2>&1
 }
