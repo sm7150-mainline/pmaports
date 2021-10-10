@@ -2,7 +2,7 @@
 
 pkgname=linux-htc-m8
 pkgver=3.4.113
-pkgrel=7
+pkgrel=8
 pkgdesc="HTC One M8 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -46,7 +46,7 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
 	# Generate master DTB (deviceinfo_bootimg_qcdt)
-	dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
+	dtbTool --dt-tag "htc,project-id" -s 2048 -p "scripts/dtc/" -o "arch/arm/boot/dt.img" "arch/arm/boot/"
 }
 
 package() {
