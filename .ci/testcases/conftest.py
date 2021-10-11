@@ -21,5 +21,5 @@ def args(request):
 
     # Initialize logging
     pmb.helpers.logging.init(args)
-    request.addfinalizer(args.logfd.close)
+    request.addfinalizer(pmb.helpers.logging.logfd.close)
     return args
