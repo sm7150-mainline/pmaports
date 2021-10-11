@@ -4,7 +4,7 @@
 
 pkgname=linux-postmarketos-exynos4
 pkgver=5.15_rc2
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
 _carch="arm"
@@ -16,7 +16,19 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-anbox
 	pmb:kconfigcheck-nftables
 	"
-makedepends="bison busybox-static-$arch findutils flex gmp-dev installkernel mpc1-dev mpfr-dev openssl-dev perl xz"
+makedepends="
+	bison
+	busybox-static-armv7
+	findutils
+	flex
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	openssl-dev
+	perl
+	postmarketos-installkernel
+	xz
+"
 
 # Source
 _config="config-$_flavor.$arch"
