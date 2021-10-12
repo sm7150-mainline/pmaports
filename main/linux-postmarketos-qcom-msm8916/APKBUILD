@@ -5,14 +5,28 @@
 _flavor="postmarketos-qcom-msm8916"
 pkgname=linux-$_flavor
 pkgver=5.14
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for Qualcomm MSM8916 devices"
 arch="aarch64 armv7"
 url="https://github.com/msm8916-mainline/linux"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native
-	pmb:kconfigcheck-anbox pmb:kconfigcheck-containers pmb:kconfigcheck-nftables"
-makedepends="bison findutils flex installkernel openssl-dev perl gmp-dev mpc1-dev mpfr-dev"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-containers
+	pmb:kconfigcheck-nftables
+"
+makedepends="
+	bison
+	findutils
+	flex
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	openssl-dev
+	perl
+	postmarketos-installkernel
+"
 
 # Architecture
 case "$CARCH" in
