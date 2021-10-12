@@ -6,7 +6,7 @@ _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
 pkgver=5.15_rc1
-pkgrel=0
+pkgrel=1
 _tag="5.15-rc1"
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
@@ -20,7 +20,17 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-zram
 	pmb:kconfigcheck-nftables
 	"
-makedepends="bison findutils gmp-dev flex installkernel mpc1-dev mpfr-dev openssl-dev perl"
+makedepends="
+	bison
+	findutils
+	gmp-dev
+	flex
+	mpc1-dev
+	mpfr-dev
+	openssl-dev
+	perl
+	postmarketos-installkernel
+"
 
 source="
 	$pkgname-$_tag.tar.gz::https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
