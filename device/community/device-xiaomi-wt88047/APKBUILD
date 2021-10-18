@@ -3,7 +3,7 @@
 pkgname=device-xiaomi-wt88047
 pkgdesc="Xiaomi Redmi 2"
 pkgver=5
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -34,7 +34,7 @@ kernel_mainline() {
 kernel_mainline_modem() {
 	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
 	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
-	replaces="kernel-mainline-modem-wt86047 kernel-mainline-modem-wt88047"
+	replaces="$subpkgname-wt86047 $subpkgname-wt88047"
 	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
@@ -42,8 +42,6 @@ kernel_mainline_modem() {
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
 	depends="linux-firmware-qcom msm-firmware-loader firmware-qcom-msm8916-wcnss firmware-xiaomi-wt88047-wcnss-nv"
-	replaces="nonfree-firmware-modem-wt86047 nonfree-firmware-modem-wt88047"
-	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 	mkdir "$subpkgdir"
 }
 
