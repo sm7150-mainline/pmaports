@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-motorola-osprey
 pkgver=3
-pkgrel=0
+pkgrel=1
 pkgdesc="Motorola Moto G 3rd gen. (2015)"
 url="https://postmarketos.org"
 arch="aarch64"
@@ -39,7 +39,8 @@ kernel_mainline_modem() {
 
 nonfree_firmware() {
 	pkgdesc="GPU/Wi-Fi/Bluetooth/Video(/Modem) firmware"
-	depends="linux-firmware-qcom msm-firmware-loader firmware-motorola-osprey-wcnss-nv firmware-motorola-osprey-venus"
+	# osprey's wcnss-nv + venus firmware seems identical to harpia's :>
+	depends="linux-firmware-qcom msm-firmware-loader firmware-motorola-harpia-wcnss-nv firmware-motorola-harpia-venus"
 	mkdir "$subpkgdir"
 }
 
