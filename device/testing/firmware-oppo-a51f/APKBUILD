@@ -1,10 +1,10 @@
 pkgname=firmware-oppo-a51f
 pkgver=1
-pkgrel=0
+pkgrel=1
 _commit="2064c468592fcd5ac080a7de20039b8c0e6aec83"
 pkgdesc="Firmware files for Oppo A51f"
 url="https://postmarketos.org"
-subpackages="$pkgname-modem $pkgname-venus $pkgname-wcnss $pkgname-wcnss-nv:wcnss_nv"
+subpackages="$pkgname-wcnss-nv:wcnss_nv"
 arch="aarch64"
 license="proprietary"
 source="https://gitlab.com/natsu1978/firmware-oppo-a51f/-/archive/$_commit/firmware-oppo-a51f-$_commit.tar.gz"
@@ -18,31 +18,10 @@ package() {
 	mkdir -p "$pkgdir"
 }
 
-modem() {
-	pkgdesc="Oppo A51f modem firmware"
-	install -Dm644 "$builddir"/modem.* -t "$subpkgdir/$_fwdir"
-	install -Dm644 "$builddir"/mba.* -t "$subpkgdir/$_fwdir"
-
-}
-
-venus() {
-	pkgdesc="Oppo A51f video firmware"
-	install -Dm644 "$builddir"/venus.mdt "$builddir"/venus.b* \
-		-t "$subpkgdir/$_fwdir"/qcom/venus-1.8
-
-}
-
-wcnss() {
-	pkgdesc="Oppo A51f WiFi/BT firmware"
-	provides="firmware-qcom-msm8916-wcnss"
-
-	install -Dm644 "$builddir"/wcnss.* -t "$subpkgdir/$_fwdir"
-
-}
-
 wcnss_nv() {
 	pkgdesc="Oppo A51f WiFi/BT firmware configuration"
 	install -Dm644 "$builddir"/WCNSS_qcom_wlan_nv.bin -t "$subpkgdir/$_fwdir"/wlan/prima
 
 }
+
 sha512sums="e0da84c04df9aa2bfaff24498cf6831f0bc6c15087627056395cd14fc258463df4c076f65393915aa4a73d65b34aa19f9b3283002206436d2153a71fba7fe052  firmware-oppo-a51f-2064c468592fcd5ac080a7de20039b8c0e6aec83.tar.gz"
