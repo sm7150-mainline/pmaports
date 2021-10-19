@@ -1,13 +1,16 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-sony-yuga
 pkgver=2
-pkgrel=0
+pkgrel=1
 pkgdesc="Sony Xperia Z"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 depends="postmarketos-base linux-sony-yuga mkbootimg msm-fb-refresher mesa-dri-swrast"
 makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 source="deviceinfo 90-android-touch-dev.rules"
 options="!check !archcheck"
 
@@ -23,6 +26,12 @@ package() {
 	# Disable v4l (video4linux), because without the camera firmware
 	# blobs this makes dev hang with the kernel this device uses (#1033)
 	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-sony-fusion3"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
