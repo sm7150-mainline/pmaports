@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oppo-a51f
 pkgdesc="OPPO Mirror 5s"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -22,7 +22,10 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Video firmware"
-	depends="linux-firmware-qcom firmware-qcom-msm8916-wcnss firmware-oppo-a51f-wcnss-nv"
+	# msm-firmware-loader not needed because modem is not supported yet
+	depends="firmware-qcom-adreno-a300
+		 firmware-qcom-msm8916-wcnss firmware-oppo-a51f-wcnss-nv
+		 firmware-qcom-msm8916-venus"
 	mkdir "$subpkgdir"
 }
 
