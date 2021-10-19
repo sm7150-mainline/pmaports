@@ -3,7 +3,7 @@
 # Co-Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname=device-lenovo-a6000
 pkgdesc="Lenovo A6000"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -40,8 +40,10 @@ kernel_mainline_modem() {
 }
 
 nonfree_firmware() {
-	pkgdesc="GPU/WiFi/BT/Video(/Modem) firmware"
-	depends="linux-firmware-qcom msm-firmware-loader firmware-qcom-msm8916-wcnss firmware-lenovo-a6000-wcnss-nv"
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="firmware-qcom-adreno-a300 msm-firmware-loader
+		 firmware-qcom-msm8916-wcnss firmware-lenovo-a6000-wcnss-nv
+		 firmware-qcom-msm8916-venus"
 	mkdir "$subpkgdir"
 }
 
