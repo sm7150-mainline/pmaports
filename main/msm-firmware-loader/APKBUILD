@@ -1,8 +1,9 @@
 pkgname=msm-firmware-loader
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Set of init services to automatically load firmware from device partitions"
 url="https://postmarketos.org/"
+subpackages="$pkgname-wcnss"
 arch="armhf armv7 aarch64"
 license="MIT"
 install="$pkgname.post-install"
@@ -31,6 +32,14 @@ package() {
 		"$pkgdir/usr/sbin/msm-firmware-loader-unpack.sh"
 }
 
+wcnss() {
+	pkgdesc="Use WiFi/BT firmware from stock firmware partition using $pkgname"
+	provides="firmware-qcom-msm8916-wcnss"
+	depends="$pkgname"
+
+	# empty package, just some magic
+	mkdir -p "$subpkgdir"
+}
 
 sha512sums="
 ce6d8a072673bcdf6a3b24455d690291c87046802a460742271c2465db3326a09792b7c0c3e07d3e741b75cc34a5e416a64899153a0b920149e70718d0188761  msm-firmware-loader.sh
