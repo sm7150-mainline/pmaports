@@ -8,4 +8,8 @@ table inet filter {
 		iifname "wlan*" udp dport 53 accept comment "Accept DNS over UDP on wlan*"
 
 	}
+
+	chain forward {
+		iifname "wlan*" accept comment "Accept forwarding from wlan*"
+	}
 }
