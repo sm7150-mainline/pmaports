@@ -15,6 +15,12 @@ depend() {
 # All of the logic is placed in the service start method as we want to block
 # other services while the modem isn't ready yet.
 start() {
+	case "$(cat /sys/devices/soc0/machine)" in
+	APQ*)
+		eend 0 'Skipping SIM configuration on APQ SoC.'
+		return 0
+	esac
+
 	# libqmi must be present to use this script.
 	if ! [ -x "$(command -v qmicli)" ]
 	then
