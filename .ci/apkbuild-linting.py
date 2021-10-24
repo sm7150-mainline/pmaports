@@ -19,6 +19,9 @@ if __name__ == "__main__":
             print(f"NOTE: Skipping linting of {apkbuild}")
             continue
         packages.append(os.path.basename(os.path.dirname(apkbuild)))
+    if len(packages) < 1:
+        print("No APKBUILDs to lint")
+        sys.exit(0)
 
     result = common.run_pmbootstrap(["-q", "lint"] + packages, output_return=True)
 
