@@ -3,24 +3,25 @@
 # Co-Maintainer: Alexey Min <alexey.min@gmail.com>
 pkgname=device-samsung-a5
 pkgdesc="Samsung Galaxy A5 (2015)"
-pkgver=6
+pkgver=7
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
+	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 subpackages="
-	$pkgname-kernel-mainline:kernel_mainline
-	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
+_pmb_select="soc-qcom-msm8916-rproc"
 
-# Backwards compatibility for old device package names
+# Backwards compatibility for old device package names + kernel variants
 _substitutes="device-samsung-a5lte device-samsung-a5ulte"
-replaces="$_substitutes"
+replaces="$_substitutes $pkgname-kernel-mainline $pkgname-kernel-mainline-modem"
+for pkg in $_substitutes; do replaces="$replaces $pkg-kernel-mainline $pkg-kernel-mainline-modem"; done
 for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 
 build() {
@@ -29,24 +30,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-}
-
-kernel_mainline() {
-	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
-	depends="linux-postmarketos-qcom-msm8916"
-	replaces=""
-	for pkg in $_substitutes; do replaces="$replaces $pkg-kernel-mainline"; done
-	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline_modem() {
-	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
-	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
-	replaces=""
-	for pkg in $_substitutes; do replaces="$replaces $pkg-kernel-mainline-modem"; done
-	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
@@ -59,5 +42,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-8159d38ec4e9b85ca929de9cd6888475e596b64c73b9c2bedf68e2d21434448fc0d40d6aa3a5aa1d3da767d34557f0691bae7d0802239872fdf5bbb810664dab  deviceinfo
+ee496db47c95cb67b502c5f11d7390b679fbc8fc011eab1f9d7639b5df02c01501cb9963f638adaed93e6626a23e15be6d53b093f2b55f7d19108d06277939f7  deviceinfo
 "

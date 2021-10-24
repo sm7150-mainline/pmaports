@@ -2,24 +2,28 @@
 # Maintainer: Nikita Travkin <nikita@trvn.ru>
 pkgname=device-samsung-gt58
 pkgdesc="Samsung Galaxy Tab A 8.0 (2015)"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
+	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev dtbtool"
 source="
 	deviceinfo
 	rootston.ini
 "
 subpackages="
-	$pkgname-kernel-mainline:kernel_mainline
-	$pkgname-kernel-mainline-modem-lte:kernel_mainline_modem_lte
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
 "
+_pmb_select="soc-qcom-msm8916-rproc"
+
+# Backwards compatibility for old kernel variant subpackages
+replaces="$pkgname-kernel-mainline $pkgname-kernel-mainline-modem-lte"
+for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -27,18 +31,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-}
-
-kernel_mainline() {
-	pkgdesc="Close to mainline kernel (no modem, audio routed directly, for all variants)"
-	depends="linux-postmarketos-qcom-msm8916"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline_modem_lte() {
-	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP, for LTE variant)"
-	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
@@ -54,6 +46,6 @@ phosh() {
 }
 
 sha512sums="
-47b4a546ecdca8b61235290219b6c7d950ce3163cd0de2ded2648f2c4f2151ef1efcfa4c8c25774a69b99d77ae29c4dcb9d59995b9d0e82f380318c5c9d095c0  deviceinfo
+b374fc9b75b0693a27c94116f652410a0b026077beba91527104fd0e3e720ddec0c1e48b54714af810b514571d5f2021f8facf34a9ea8de35b92aa060af64d19  deviceinfo
 bc620d2031027405f70eea68854744799b460db0d787e2c844556f437120eea0fc857689c6894dd485a5cd3794c7fb5281b901e9e10da1b550c637a852445180  rootston.ini
 "

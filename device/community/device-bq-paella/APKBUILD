@@ -3,20 +3,24 @@
 # Co-Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname=device-bq-paella
 pkgdesc="BQ Aquaris X5"
-pkgver=5
+pkgver=6
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
+	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 subpackages="
-	$pkgname-kernel-mainline:kernel_mainline
-	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
+_pmb_select="soc-qcom-msm8916-rproc"
+
+# Backwards compatibility for old kernel variant subpackages
+replaces="$pkgname-kernel-mainline $pkgname-kernel-mainline-modem"
+for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,18 +28,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-}
-
-kernel_mainline() {
-	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
-	depends="linux-postmarketos-qcom-msm8916"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline_modem() {
-	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
-	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
@@ -47,5 +39,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-0d766c480ca6c5b0d91610fd33a1269b6ecf8a30fed4366ea1988bdc6398ee3a5a0551e20976a43913a636dc3e27d2e13a7960ae92cd4f268421654cd1a0aaad  deviceinfo
+9b52a7db71484e614b3f8efc5b4450dcbe93165f8372b22006f4c84f62cd243785f262f29d892feeb6bd59c92df6a649511eb1f58be56a0f6f1384e8a7320392  deviceinfo
 "
