@@ -2,14 +2,19 @@
 # Co-Maintainer: Nikita Travkin <nikita@trvn.ru>
 pkgname=soc-qcom-msm8916
 pkgdesc="Common package for Qualcomm MSM8916 devices"
-pkgver=12
+pkgver=13
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64 armv7"
 options="!check !archcheck !tracedeps pmb:cross-native"
 depends="mesa-dri-gallium $pkgname-ucm swclock-offset"
-subpackages="$pkgname-ucm $pkgname-modem"
+subpackages="
+	$pkgname-ucm
+	$pkgname-rproc-none:rproc_none
+	$pkgname-rproc-no-modem:rproc_no_modem
+	$pkgname-rproc-all:rproc_all
+"
 
 _ucm_commit="d9c15108e4301e0dc0192fa15fddc83f623bca97"
 source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8916-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz
@@ -35,10 +40,34 @@ ucm() {
 	cp -r ucm2 "$subpkgdir"/usr/share/alsa
 }
 
-modem() {
+rproc_none() {
+	pkgdesc="Disable all remote processors (no WiFi/BT/modem, ~90 MiB more RAM)"
+	provides="soc-qcom-msm8916-rproc=$pkgver-r$pkgrel"
+
+	mkdir -p "$subpkgdir"/boot
+	echo none > "$subpkgdir"/boot/lk2nd_rproc_mode
+}
+
+rproc_no_modem() {
+	pkgdesc="Disable only modem (audio bypasses modem, ~80 MiB more RAM)"
+	provides="soc-qcom-msm8916-rproc=$pkgver-r$pkgrel"
+	provider_priority=50
+
+	mkdir -p "$subpkgdir"/boot
+	echo no-modem > "$subpkgdir"/boot/lk2nd_rproc_mode
+}
+
+rproc_all() {
+	pkgdesc="Enable all remote processors (audio goes through modem)"
+	provides="soc-qcom-msm8916-rproc=$pkgver-r$pkgrel"
+	provider_priority=100
+
 	depends="msm-modem msm-modem-uim-selection q6voiced"
 	install="$subpkgname.post-install"
+	replaces="soc-qcom-msm8916-modem"
 
+	mkdir -p "$subpkgdir"/boot
+	echo all > "$subpkgdir"/boot/lk2nd_rproc_mode
 	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
