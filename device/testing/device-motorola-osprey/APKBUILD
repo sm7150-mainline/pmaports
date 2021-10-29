@@ -1,19 +1,19 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-motorola-osprey
-pkgver=4
+pkgver=5
 pkgrel=0
 pkgdesc="Motorola Moto G 3rd gen. (2015)"
 url="https://postmarketos.org"
 arch="aarch64"
 license="MIT"
-depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
+	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 options="!check !archcheck"
+_pmb_select="soc-qcom-msm8916-rproc"
 
 subpackages="
-	$pkgname-kernel-mainline:kernel_mainline
-	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 
@@ -25,18 +25,6 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-kernel_mainline() {
-	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
-	depends="linux-postmarketos-qcom-msm8916"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline_modem() {
-	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
-	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
 	# osprey's wcnss-nv + venus firmware seems identical to harpia's :>
@@ -46,5 +34,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-a1d9efde83357d62bb0fd271485eabeabe8689b92630da2578fd33d75bf15bb5e1c39527d1f1bae1835c54bf02372d0fd8980603f006b02df989bb82c3b0cac1  deviceinfo
+8ab86eb16b1cd27d47ce4198252c16464ce8c8e239a24d076f1f985cd2dfae993e325e0d0e5d410b715966a78103cbec4c026f87272246f1d9cbfa31ea3cb7b1  deviceinfo
 "

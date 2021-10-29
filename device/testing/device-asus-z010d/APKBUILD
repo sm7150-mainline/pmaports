@@ -1,20 +1,20 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-asus-z010d
 pkgdesc="Asus Zenfone Max ZC550KL"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
+	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 subpackages="
-	$pkgname-kernel-mainline:kernel_mainline
-	$pkgname-kernel-mainline-modem:kernel_mainline_modem
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
+_pmb_select="soc-qcom-msm8916-rproc"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,18 +22,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-}
-
-kernel_mainline() {
-	pkgdesc="Close to mainline kernel (no modem, audio routed directly)"
-	depends="linux-postmarketos-qcom-msm8916"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline_modem() {
-	pkgdesc="Close to mainline kernel (non-free modem, audio routed through ADSP)"
-	depends="linux-postmarketos-qcom-msm8916 soc-qcom-msm8916-modem"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
@@ -44,5 +32,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-8c7354434ad0cbc8df6588745f991e07f59104b58771eff9b5eb22135b449f64ae605a8e8f8009de22ea2525ae4f048b5bf76ef4b9fc1ee828f26de35cb28578  deviceinfo
+cb3a455fbe7c48532c07377221c9c083daaa90992ac10acea25517c9259d5c731c6ae6eaf4747001621ef87683506714c95582810bd4a28338aa878e624b092f  deviceinfo
 "
