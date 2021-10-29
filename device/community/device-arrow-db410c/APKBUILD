@@ -2,16 +2,18 @@
 # Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname=device-arrow-db410c
 pkgdesc="Arrow DragonBoard 410c"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
+	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+_pmb_select="soc-qcom-msm8916-rproc"
 
 build() {
 	devicepkg_build $startdir $pkgname
