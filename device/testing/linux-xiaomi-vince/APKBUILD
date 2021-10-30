@@ -3,8 +3,8 @@
 # Kernel config based on: arch/arm64/configs/vince_defconfig
 
 pkgname=linux-xiaomi-vince
-pkgver=4.9.267
-pkgrel=2
+pkgver=4.9.288
+pkgrel=0
 pkgdesc="Xiaomi Redmi Note 5 Plus kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -12,13 +12,13 @@ _flavor="xiaomi-vince"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="bash bc bison devicepkg-dev flex openssl-dev perl sed"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl"
 
 # Source
-_repository="kernel_xiaomi_vince"
-_commit="1168c9c785b4995f08cc1eff89eec5ce286d2258"
+_repository="android_kernel_xiaomi_vince"
+_commit="aca24259284c032c376068047a7bfb881d587061"
 _config="config-$_flavor.$arch"
-source="$pkgname-$_commit.tar.gz::https://github.com/M0Rf30/$_repository/archive/$_commit.tar.gz
+source="$pkgname-$_commit.tar.gz::https://github.com/GhostMaster69-dev/$_repository/archive/$_commit.tar.gz
 	$_config
 	"
 builddir="$srcdir/$_repository-$_commit"
@@ -26,8 +26,7 @@ _outdir="out"
 
 prepare() {
 	default_prepare
-	REPLACE_GCCH=0 \
-		. downstreamkernel_prepare
+	. downstreamkernel_prepare
 }
 
 build() {
@@ -41,6 +40,6 @@ package() {
 }
 
 sha512sums="
-43544ac76a3f4a325ea4d7760d60e12375ccfaf6e6865f331d785b7482241a2ba5e78334a071e9471b83cbecdc50d5717eeef8baa4bf714674cd8b36c7569e5a  linux-xiaomi-vince-1168c9c785b4995f08cc1eff89eec5ce286d2258.tar.gz
-479fb6d64a6bf759cef502d911c2be76fb449417dfcd9bbc0ef76ce9f514b6310110b798e029f715359871afabe403576b99a28646ac5e6cfcfb7cabe052b3cb  config-xiaomi-vince.aarch64
+daad194c49fab1122948a4f7d8276c9ab1193965d073c9b2abf899f98c5d2fa9a3fb773cd474769f384f89c09d539da76e3561786fb396a033bb649f1a4e1269  linux-xiaomi-vince-aca24259284c032c376068047a7bfb881d587061.tar.gz
+79851f352de3ebc5d1c3ec856f28ab4734fd38533127abf7c40b698a60126dd381f9bfbcf7b93742f11a5401b421fd687fb9b5eb41fa96d8e6d7c72bea715bd5  config-xiaomi-vince.aarch64
 "
