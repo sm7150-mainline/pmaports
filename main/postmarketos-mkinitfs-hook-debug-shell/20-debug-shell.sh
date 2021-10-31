@@ -46,6 +46,10 @@ telnetd -b "${IP}:${TELNET_PORT}" -l /telnet_connect.sh
 if [ -d /sys/fs/pstore ]; then
 	mount -t pstore pstore /sys/fs/pstore || true
 fi
+# mount debugfs - very helpful for debugging
+mount -t debugfs none /sys/kernel/debug || true
+# make a symlink like Android recoveries do
+ln -s /sys/kernel/debug /d
 
 echo "---"
 echo "WARNING: debug-shell is active on ${IP}:${TELNET_PORT}."
