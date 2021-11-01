@@ -301,7 +301,7 @@ unlock_root_partition() {
 		done
 		ROOT_PARTITION_UNLOCKED=1
 		# Show again the loading splashscreen
-		show_splash /splash-loading.ppm.gz
+		show_splash_loading
 	fi
 }
 
