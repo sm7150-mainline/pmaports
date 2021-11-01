@@ -1,7 +1,7 @@
-From bbb3d10356bcbf931a63a70610f1e7869eeebd21 Mon Sep 17 00:00:00 2001
+From e7a3da0093b96d89c9d65fe8d5f1dd32f299afa1 Mon Sep 17 00:00:00 2001
 From: Marius Gripsgard <marius@ubports.com>
 Date: Tue, 5 May 2020 16:51:13 +0200
-Subject: [PATCH 24/29] Enable led on boot to notify user of boot status
+Subject: [PATCH 08/10] Enable led on boot to notify user of boot status
 
 ---
  arch/arm/mach-sunxi/Kconfig | 5 +++++
@@ -25,10 +25,10 @@ index b0191d0080..7a46bb4481 100644
  	default "arch/arm/cpu/armv7/sunxi/u-boot-spl.lds" if !ARM64
  
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index 2bc9883092..59f7c2c5f1 100644
+index 400cc938dd..0abfa78880 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
-@@ -666,6 +666,12 @@ void sunxi_board_init(void)
+@@ -679,6 +679,12 @@ void sunxi_board_init(void)
  	lradc_enable();
  #endif
  
@@ -42,12 +42,12 @@ index 2bc9883092..59f7c2c5f1 100644
  	power_failed = sy8106a_set_vout1(CONFIG_SY8106A_VOUT1_VOLT);
  #endif
 diff --git a/configs/pinephone_defconfig b/configs/pinephone_defconfig
-index 64ecef59c9..623265d719 100644
+index 64e13d3132..149772749a 100644
 --- a/configs/pinephone_defconfig
 +++ b/configs/pinephone_defconfig
-@@ -1,6 +1,7 @@
- CONFIG_ARM=y
+@@ -2,6 +2,7 @@ CONFIG_ARM=y
  CONFIG_ARCH_SUNXI=y
+ CONFIG_DEFAULT_DEVICE_TREE="sun50i-a64-pinephone-1.2"
  CONFIG_SPL=y
 +CONFIG_PINEPHONE_LEDS=y
  CONFIG_MACH_SUN50I=y

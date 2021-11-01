@@ -1,7 +1,7 @@
-From 84fbf777e029e28cf0cd182f8bf5e1c41c3b2c93 Mon Sep 17 00:00:00 2001
+From 02794d97426245146aaec889583e3eea11e80c02 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 20 Jun 2021 14:24:29 -0500
-Subject: [PATCH 18/29] sunxi: Support building a SPL as a TOC0 image
+Subject: [PATCH 04/10] sunxi: Support building a SPL as a TOC0 image
 
 Now that mkimage can generate TOC0 images, and the SPL can interpret
 them, hook up the build infrastructure so the user can choose which
@@ -16,10 +16,10 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  create mode 100644 board/sunxi/Kconfig
 
 diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
-index bc8509b72a..4c466325f3 100644
+index 49f94f095c..b0191d0080 100644
 --- a/arch/arm/mach-sunxi/Kconfig
 +++ b/arch/arm/mach-sunxi/Kconfig
-@@ -1088,6 +1088,8 @@ config BLUETOOTH_DT_DEVICE_FIXUP
+@@ -1091,6 +1091,8 @@ config BLUETOOTH_DT_DEVICE_FIXUP
  	  The used address is "bdaddr" if set, and "ethaddr" with the LSB
  	  flipped elsewise.
  
@@ -59,7 +59,7 @@ index 0000000000..c5c0929db5
 +	default "sunxi_egon" if SUNXI_SPL_IMAGE_EGON
 +	default "sunxi_toc0" if SUNXI_SPL_IMAGE_TOC0
 diff --git a/scripts/Makefile.spl b/scripts/Makefile.spl
-index 5be1a9ba1b..7cc78bb318 100644
+index 25a3e7fa52..52ead28487 100644
 --- a/scripts/Makefile.spl
 +++ b/scripts/Makefile.spl
 @@ -414,7 +414,8 @@ endif

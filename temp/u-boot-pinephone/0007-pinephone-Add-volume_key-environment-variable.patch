@@ -1,7 +1,7 @@
-From 0612580e68fa584d415f8080f65da2d4873664fe Mon Sep 17 00:00:00 2001
+From d0af5f5a4fc81e4dcd0b51ad46d8faf01b9ae168 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megous@megous.com>
 Date: Tue, 11 Feb 2020 14:10:05 +0100
-Subject: [PATCH 23/29] pinephone: Add volume_key environment variable
+Subject: [PATCH 07/10] pinephone: Add volume_key environment variable
 
 When the user has a volume key pressed volume_key variable will
 contain either value 'down' or 'up', otherwise it will be empty.
@@ -26,7 +26,7 @@ index d96b7897b6..a096a5c771 100644
  obj-$(CONFIG_CHIP_DIP_SCAN)	+= chip.o
 +obj-$(CONFIG_MACH_SUN50I)	+= lradc.o
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index b97ca578f7..2bc9883092 100644
+index 1a46100e40..400cc938dd 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
 @@ -46,6 +46,7 @@
@@ -37,7 +37,7 @@ index b97ca578f7..2bc9883092 100644
  
  #if defined CONFIG_VIDEO_LCD_PANEL_I2C && !(defined CONFIG_SPL_BUILD)
  /* So that we can use pin names in Kconfig and sunxi_name_to_gpio() */
-@@ -659,6 +660,12 @@ void sunxi_board_init(void)
+@@ -672,6 +673,12 @@ void sunxi_board_init(void)
  {
  	int power_failed = 0;
  
@@ -50,7 +50,7 @@ index b97ca578f7..2bc9883092 100644
  #ifdef CONFIG_SY8106A_POWER
  	power_failed = sy8106a_set_vout1(CONFIG_SY8106A_VOUT1_VOLT);
  #endif
-@@ -933,6 +940,17 @@ int misc_init_r(void)
+@@ -946,6 +953,17 @@ int misc_init_r(void)
  		env_set("fdtfile", str);
  	}
  

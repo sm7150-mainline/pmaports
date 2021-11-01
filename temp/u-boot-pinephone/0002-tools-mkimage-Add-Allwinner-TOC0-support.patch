@@ -1,7 +1,7 @@
-From c63899c0472aa097b01b34084bb39db662b7a982 Mon Sep 17 00:00:00 2001
+From 0db85bb77ddc1dad6b2cb24b105274f6a77e4fc7 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 20 Jun 2021 14:09:29 -0500
-Subject: [PATCH 16/29] tools: mkimage: Add Allwinner TOC0 support
+Subject: [PATCH 02/10] tools: mkimage: Add Allwinner TOC0 support
 
 Most Allwinner sunxi SoCs have separate boot ROMs in non-secure and
 secure mode. The non-secure boot ROM (NBROM) uses the existing
@@ -18,29 +18,16 @@ and H616 SBROMs.
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
- arch/arm/Kconfig      |   1 +
  common/image.c        |   1 +
  include/image.h       |   1 +
  include/sunxi_image.h | 191 ++++++++++++
- tools/Makefile        |   1 +
+ tools/Makefile        |   3 +-
  tools/sunxi_toc0.c    | 710 ++++++++++++++++++++++++++++++++++++++++++
- 6 files changed, 905 insertions(+)
+ 5 files changed, 905 insertions(+), 1 deletion(-)
  create mode 100644 tools/sunxi_toc0.c
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 0448787b8b..97bf21da2e 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -998,6 +998,7 @@ config ARCH_SUNXI
- 	select DM_SCSI if SCSI
- 	select DM_SERIAL
- 	select DM_USB if DISTRO_DEFAULTS
-+	select MKIMAGE_LINK_OPENSSL
- 	select OF_BOARD_SETUP
- 	select OF_CONTROL
- 	select OF_SEPARATE
 diff --git a/common/image.c b/common/image.c
-index 51854aae5d..d354d5d8d3 100644
+index 59c52a1f9a..8f1634c120 100644
 --- a/common/image.c
 +++ b/common/image.c
 @@ -191,6 +191,7 @@ static const table_entry_t uimage_type[] = {
@@ -52,10 +39,10 @@ index 51854aae5d..d354d5d8d3 100644
  };
  
 diff --git a/include/image.h b/include/image.h
-index 459685d4d4..c01cd2982e 100644
+index 73a763a693..7913753c01 100644
 --- a/include/image.h
 +++ b/include/image.h
-@@ -312,6 +312,7 @@ enum {
+@@ -262,6 +262,7 @@ enum {
  	IH_TYPE_IMX8IMAGE,		/* Freescale IMX8Boot Image	*/
  	IH_TYPE_COPRO,			/* Coprocessor Image for remoteproc*/
  	IH_TYPE_SUNXI_EGON,		/* Allwinner eGON Boot Image */
@@ -274,13 +261,15 @@ index 5b2055c0af..bdf80ec0e0 100644
 +
  #endif
 diff --git a/tools/Makefile b/tools/Makefile
-index 8843185703..cb8418466f 100644
+index 4a86321f64..46a4f9c0f1 100644
 --- a/tools/Makefile
 +++ b/tools/Makefile
-@@ -79,6 +79,7 @@ AES_OBJS-$(CONFIG_FIT_CIPHER) := $(addprefix lib/aes/, \
- OPENSSL_OBJS-$(CONFIG_MKIMAGE_LINK_OPENSSL) := \
- 			lib/fdt-libcrypto.o \
- 			mxsimage.o \
+@@ -96,7 +96,8 @@ AES_OBJS-$(CONFIG_TOOLS_LIBCRYPTO) := $(addprefix lib/aes/, \
+ 
+ # Cryptographic helpers that depend on openssl/libcrypto
+ LIBCRYPTO_OBJS-$(CONFIG_TOOLS_LIBCRYPTO) := $(addprefix lib/, \
+-					fdt-libcrypto.o)
++					fdt-libcrypto.o)\
 +			sunxi_toc0.o \
  
  ROCKCHIP_OBS = lib/rc4.o rkcommon.o rkimage.o rksd.o rkspi.o

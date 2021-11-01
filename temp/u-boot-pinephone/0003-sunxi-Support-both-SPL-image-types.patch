@@ -1,7 +1,7 @@
-From 4bb23c0a439a47e34c04ce4c117465e669918f26 Mon Sep 17 00:00:00 2001
+From 67097556d368d16917be3590384d8e988266aa59 Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Sun, 20 Jun 2021 14:23:11 -0500
-Subject: [PATCH 17/29] sunxi: Support both SPL image types
+Subject: [PATCH 03/10] sunxi: Support both SPL image types
 
 SPL uses the image header to detect the boot device and to find the
 offset of U-Boot proper. Since this information is stored differently in
@@ -29,10 +29,10 @@ index 58cdf806d9..157b11e489 100644
  
  #endif
 diff --git a/arch/arm/mach-sunxi/board.c b/arch/arm/mach-sunxi/board.c
-index 9b84132eda..8147f250f8 100644
+index d9b04f75fc..bbed5838c1 100644
 --- a/arch/arm/mach-sunxi/board.c
 +++ b/arch/arm/mach-sunxi/board.c
-@@ -237,10 +237,13 @@ void s_init(void)
+@@ -246,10 +246,13 @@ void s_init(void)
  
  static int sunxi_get_boot_source(void)
  {
@@ -49,7 +49,7 @@ index 9b84132eda..8147f250f8 100644
  }
  
  /* The sunxi internal brom will try to loader external bootloader
-@@ -285,13 +288,18 @@ uint32_t sunxi_get_boot_device(void)
+@@ -294,13 +297,18 @@ uint32_t sunxi_get_boot_device(void)
  	return -1;		/* Never reached */
  }
  
