@@ -1,67 +1,87 @@
-# Forked from Alpine to apply Purism's mobile patches
+# Forked from Alpine to apply adaptability patches
 pkgname=gnome-software
-pkgver=9999_git20191031
-_commit="b915095540fa7ada6778aded0d51a93572762d89"
-pkgrel=2
+pkgver=9999_git20211203
+_pkgver=41.3
+pkgrel=0
 pkgdesc="Software lets you install and update applications and system extensions"
 url="https://wiki.gnome.org/Apps/Software"
-arch="all !s390x !mips !mips64"
+# s390x, mips64 and riscv64 blocked by polkit
+arch="all !s390x !mips64 !riscv64"
 license="GPL-2.0-or-later"
-makedepends="meson appstream-glib-dev gdk-pixbuf-dev libxmlb-dev glib-dev gtk+3.0-dev
+depends="gnome-software-plugin-apk"
+makedepends="meson appstream-dev gdk-pixbuf-dev libxmlb-dev glib-dev gtk+3.0-dev
 	json-glib-dev libsoup-dev gnome-desktop-dev gspell-dev polkit-dev gtk-doc
-	ostree-dev flatpak-dev libgudev-dev gnome-online-accounts-dev libhandy-dev"
-depends="libhandy"
+	ostree-dev flatpak-dev libgudev-dev gnome-online-accounts-dev libhandy1-dev"
 options="!check" # lots of failing tests
-subpackages="$pkgname-lang $pkgname-doc $pkgname-dbg $pkgname-static
-	$pkgname-dev $pkgname-plugin-flatpak:flatpak_plugin"
-source="https://source.puri.sm/Librem5/gnome-software/-/archive/$_commit/gnome-software-$_commit.tar.gz
-	445.patch
-	install-more-headers.patch
-	org.gnome.software.gschema.override
-	"
-builddir="$srcdir/$pkgname-$_commit"
+subpackages="$pkgname-lang $pkgname-doc $pkgname-dbg
+	$pkgname-dev $pkgname-lib $pkgname-plugin-flatpak:flatpak_plugin"
+
+_purism_commit="caaad1eaa5d863ffb9b7853907af8c8342dc2d39"
+_purism_patches="https://source.puri.sm/Librem5/pureos-store/-/raw/$_purism_commit/debian/patches"
+
+source="https://download.gnome.org/sources/gnome-software/${_pkgver%.*}/gnome-software-$_pkgver.tar.xz
+	$_purism_patches/ui/0001-assets-Make-the-up-to-date-picture-fit-phones.patch
+	$_purism_patches/ui/0002-Add-GsInfoWindow.patch
+	$_purism_patches/ui/0003-metered-data-dialog-Make-it-a-GsInfoWindow-and-a-Hdy.patch
+	$_purism_patches/ui/0004-updates-page-Move-Checking-from-the-headerbar-to-an-.patch
+	$_purism_patches/ui/0005-details-page-Make-the-loading-status-fit-phones.patch
+	$_purism_patches/ui/0006-app-details-page-Drop-the-hardcoded-label-width.patch
+	$_purism_patches/ui/0007-data-List-compatible-form-factors.patch
+	$_purism_patches/ui/0009-icon-Ensure-icon-files-exist.patch
+	$_purism_patches/ui/0010-app-Ensure-themed-icons-exist.patch
+	$_purism_patches/ui/0011-app-Be-more-strict-with-icon-scales.patch
+	$_purism_patches/ui/0012-style-Turn-category-tile-padding-into-child-margin.patch
+	$_purism_patches/ui/0013-style-Fix-the-iconless-category-tile-min-width.patch
+	$_purism_patches/ui/0014-moderate-page-Use-a-HdyStatusPage.patch
+	$_purism_patches/ui/0015-progress-button-Ellipsize-the-label.patch
+	$_purism_patches/ui/0016-updates-section-Ellipsize-the-button-label.patch
+	org.gnome.software.gschema.override"
+
+builddir="$srcdir/$pkgname-$_pkgver"
 
 case "$CARCH" in
-	x86*) makedepends="$makedepends fwupd-dev" ;;
-esac
-
-# gnome-software-plugin-apk is only a runtime dependency and unfortunately
-# not available on other arches yet due to LDC.
-case "$CARCH" in
-	x86_64|aarch64) depends="$depends gnome-software-plugin-apk" ;;
+	x86|x86_64|aarch64|armv7) makedepends="$makedepends fwupd-dev" ;;
 esac
 
 build() {
 	case "$CARCH" in
-		x86*) conf="-Dfwupd=true" ;;
+		x86|x86_64|aarch64|armv7) conf="-Dfwupd=true" ;;
 		*) conf="-Dfwupd=false" ;;
 	esac
 
 
-	meson \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--mandir=/usr/share/man \
-		--localstatedir=/var \
-		--buildtype=plain \
+	abuild-meson \
 		-Dvalgrind=false \
 		-Dmalcontent=false \
 		-Dpackagekit=false \
 		-Dexternal_appstream=true \
 		$conf \
 		. output
-	ninja -C output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
 }
 
 check() {
-	ninja -C output test
+	meson test --no-rebuild -v -C output
 }
 
 package() {
-	DESTDIR="$pkgdir" ninja -C output install
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
 	mkdir -p "$pkgdir"/usr/share/glib-2.0/schemas/
 	sed "s|@CARCH@|$CARCH|g" "$srcdir"/org.gnome.software.gschema.override > \
 		"$pkgdir"/usr/share/glib-2.0/schemas/org.gnome.software.gschema.override
+}
+
+dev() {
+	default_dev
+
+	amove usr/lib/gnome-software/libgnomesoftware.so
+}
+
+lib() {
+	pkgdesc="$pkgdesc (shared library)"
+	depends=""
+
+	amove usr/lib/gnome-software/libgnomesoftware.so.*
 }
 
 flatpak_plugin() {
@@ -69,11 +89,26 @@ flatpak_plugin() {
 	install_if="$pkgname=$pkgver-r$pkgrel flatpak"
 	depends=""
 
-	amove usr/lib/gs-plugins-13/libgs_plugin_flatpak.so
+	amove usr/lib/gnome-software/plugins-16/libgs_plugin_flatpak.so
 	amove usr/share/metainfo/org.gnome.Software.Plugin.Flatpak.metainfo.xml
 }
 
-sha512sums="12d276f0a30c744c8ff1ee162b75340181a58516389a4ccb1013017c03c5d75eb193f7f79975c02c5de9506c2585a70eb4f67a93410877dcf24e8fb4cbcd006e  gnome-software-b915095540fa7ada6778aded0d51a93572762d89.tar.gz
-2a8746ac0f948022b10fd29bcaf159d428954061d5ae19db86a09733f69901eda61e109ed4b3d3d484d91c182b2967e4b3bc11ce78774885bb9105a752c55c35  445.patch
-e7de617dbdecaa46fad25d8fe7d7ea5db324aaed73555bbe6814357b4ac3b787269653863679cff4318250dcc7729299b549f41220f441d9033a448af28da9dd  install-more-headers.patch
-711dfa147c587a665c18ff15539984fd38d56580c41ce81ea52a35f875770e6dad1ded6d2cb18af70e6e697ad11f9c94c06916f6bbcfe65900df89a8bf8bd723  org.gnome.software.gschema.override"
+sha512sums="
+7b19ed7e3b6f8662b6351fbb6eddb45f99cdbf9e6912e11b36301cdfd6f62cb3256da031e6640f9ad397384a23530d11488c78a1af60ce130a99838f97f8a0ed  gnome-software-41.3.tar.xz
+ea2d4c6ee37b1fb27773d8908a98e6f6726cd2f72fcc7c41caf243a501896c991346d02ccbc36168c7194d0ba3dfd17660c7af79305a447f521617f0fbefae9e  0001-assets-Make-the-up-to-date-picture-fit-phones.patch
+4e5b205134d7fc8c60af2e9fcfa70552e20300b2e9959d500a82546986d38677515af841272ef64a019ec946940c59eaca3d95d228952d8384682c7410383417  0002-Add-GsInfoWindow.patch
+b67d04f6853762b7d5b26109fdeeec37d07bef40d1e35b46d95ec58e977c1088e256d0e272bc05c764d8673b2766ec82861506415ee11237ee0270a8a0732d97  0003-metered-data-dialog-Make-it-a-GsInfoWindow-and-a-Hdy.patch
+d39337b8cc52d6dce308ff9842222cb163d8b1b4b000e69892937b473478e86beaed0e1c6431d3db4d63eb173c4aa827a0ecc51e7a32764b6071bf24b47f12a6  0004-updates-page-Move-Checking-from-the-headerbar-to-an-.patch
+b60a94afa9b42b5a1dfc32f27ac1ba1de124b14675f4276afc49169a0b591b1439617eda85566bae135361c564ee6f6a45274b4a56324136f569ca532de26310  0005-details-page-Make-the-loading-status-fit-phones.patch
+5cd87a637b6cd004212724adb619a22ea3cceb81fec4ca7db92e37f82155902813c16cf11d19e68735d07e8f52889048861edb1eb9ad956321e252536486af3a  0006-app-details-page-Drop-the-hardcoded-label-width.patch
+838e7fee019f8191de2822e3ef3fd3721041d27ea0f89391ed04bb8cb446a3ea8f29ad3621e71533bd8bc50e22a8c157bcb4ff8e959d55fce9d94622e4efaeed  0007-data-List-compatible-form-factors.patch
+b5b7d608518c72731120f03b603d76d64f87a840404fdae56d593a14a482c7442d8202c8c2fd812167bb601855cffdb51887fcba333705124fe65859368629dd  0009-icon-Ensure-icon-files-exist.patch
+627a0fda5463f8b85b7b357a3d89a4ea37ef18f9e1a367caa3d935f327d8f9cca98d2eaafc386b7d3f6021863cba079e0be546630a999d3811ae1e3621af3d79  0010-app-Ensure-themed-icons-exist.patch
+e6869f3d76da7146bc2310a4e4ef2f8e3680e1f15ec81e102779fc4d775f77c05eb4686cfde2d1eadc1ed51c4c52c90a4b7604e69bf8be32bbc2f40950b15f14  0011-app-Be-more-strict-with-icon-scales.patch
+2b28f978b2e0f095d0b80064634506d646c28db309de70d90dc3dfde4facbf99a575915bfa02832e38a23d4ba118fa67c0820c5f002f76d495117622cb732b24  0012-style-Turn-category-tile-padding-into-child-margin.patch
+9ecebb9ebb7b60cbd8a42f2f255b4f1feb05820c6d5ef87f72bc5904a2b43c4665e3f499db96c6a621d050fcf2b1bebb3fd828a4176b73046fbf4e3bbb186e6c  0013-style-Fix-the-iconless-category-tile-min-width.patch
+51f34fce921faf926c546b23004224bd741f01d8e6040f6cd9749e8210c50f2f515588084168bc2841581736c247214c8aaf15abba9a5567d8d6f61b2c96e51a  0014-moderate-page-Use-a-HdyStatusPage.patch
+16032fbfa3b18a4fff5ff43f2fceb2db20df3c76fc4799030604f7f1be452382ab00e709fd75daa766371fb445a1bb97de064b6d35bdad9755070c28e9f84836  0015-progress-button-Ellipsize-the-label.patch
+fda7c405a9233e6813c8b87bcf7db4f1e6c6ab7a2c3426c6a2eba947572cfcad97e920bd3887a185f768a6a559d6d755b482f63e58fddc4b3f8b11931b287f1a  0016-updates-section-Ellipsize-the-button-label.patch
+711dfa147c587a665c18ff15539984fd38d56580c41ce81ea52a35f875770e6dad1ded6d2cb18af70e6e697ad11f9c94c06916f6bbcfe65900df89a8bf8bd723  org.gnome.software.gschema.override
+"
