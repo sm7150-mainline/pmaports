@@ -18,7 +18,6 @@ deviceinfo_dev_touchscreen="/dev/input/event0"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
-deviceinfo_kernel_cmdline="console=ttyHSL0,115200,n8 androidboot.hardware=bullhead boot_cpus=0-3 maxcpus=4 lpm_levels.sleep_disabled=1 msm_poweroff.download_mode=0 buildvariant=userdebug"
 deviceinfo_generate_bootimg="true"
 deviceinfo_bootimg_qcdt="false"
 deviceinfo_flash_offset_base="0x00000000"
@@ -28,3 +27,11 @@ deviceinfo_flash_offset_second="0x00f00000"
 deviceinfo_flash_offset_tags="0x01e00000"
 deviceinfo_flash_pagesize="4096"
 deviceinfo_flash_sparse=true
+
+# Downstream kernel options
+deviceinfo_kernel_cmdline_downstream="console=ttyHSL0,115200,n8 androidboot.hardware=bullhead boot_cpus=0-3 maxcpus=4 lpm_levels.sleep_disabled=1 msm_poweroff.download_mode=0 buildvariant=userdebug"
+
+# Mainline kernel options
+deviceinfo_append_dtb_mainline="true"
+deviceinfo_dtb_mainline="qcom/msm8992-bullhead-rev-101"
+deviceinfo_kernel_cmdline_mainline="console=tty0 console=ttyMSM0,115200,n8 debug ignore_loglevel PMOS_NO_OUTPUT_REDIRECT earlycon"

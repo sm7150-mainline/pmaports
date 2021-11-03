@@ -1,16 +1,42 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-lg-bullhead
 pkgdesc="Google Nexus 5X"
-pkgver=0.1
-pkgrel=13
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
-options="!check !archcheck"
-depends="postmarketos-base linux-lg-bullhead mkbootimg mesa-dri-swrast msm-fb-refresher"
+depends="
+	mesa-dri-gallium
+	mkbootimg
+	msm-fb-refresher
+	postmarketos-base
+	postmarketos-update-kernel
+"
 makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 source="deviceinfo"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+options="!check !archcheck"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-lg-bullhead"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel (only basic hardware support)"
+	depends="linux-postmarketos-qcom-msm8994"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
 
 nonfree_firmware() {
 	pkgdesc="Proprietary WiFi, Modem, GPU and sensors firmware"
@@ -18,15 +44,10 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-
-build() {
-	devicepkg_build $startdir $pkgname
-}
-
 package() {
 	devicepkg_package $startdir $pkgname
 }
 
 sha512sums="
-e98b8a6f31dd5ba6cad8940771a5e5c7d0ff6e236ba79f52083f012292a6becea1452f7a53d06b7a1ed7ac1bf3187e994aeae1d6315dcdb757af4578c3c41173  deviceinfo
+a70681efe845eb0ca8aaaf935408e283c7a4b95adadff49327fecfc6dcdba8d0ef4cf7ca98c21580c1f3c2c4346366cd86108f0bba08a3bf923d1a02238bc2f9  deviceinfo
 "
