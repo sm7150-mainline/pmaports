@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-bq-frieza
+pkgdesc="BQ Aquarius M10 FHD"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-bq-frieza
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+9f1ef103e8debbd9ee230b37e1b977ccf00b9dd873c158d91cb2bdcf6c97d6e6a9573725cc898d1ef5520f5e12ae40eb9e855906db90174947e5a4859b3a9cc5  deviceinfo
+"
