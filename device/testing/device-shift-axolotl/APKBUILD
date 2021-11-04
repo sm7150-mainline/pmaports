@@ -1,0 +1,33 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Alexander Martinz <amartinz@shiftphones.com>
+
+pkgname=device-shift-axolotl
+pkgdesc="SHIFT6mq"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-shift-axolotl
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sdm845
+	soc-qcom-sdm845-ucm
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+7312a14ef9c99e2452e1161bf0bca03857714eb367aa32d50de5c665ade3dd9e3e488a129b1946ca14f83c56f067f867b7c584497b62800490789982ddebe894  deviceinfo
+"

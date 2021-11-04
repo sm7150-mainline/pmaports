@@ -1,0 +1,85 @@
+From 2be2a0584e713bfd992c485ed6f724adfc91d211 Mon Sep 17 00:00:00 2001
+From: Ander Conselvan de Oliveira <ander.conselvan.de.oliveira@intel.com>
+Date: Tue, 4 Apr 2017 17:52:21 +0100
+Subject: [PATCH 2/2] drm: Pass CRTC ID in userspace vblank events
+
+With the atomic API, it is possible that a single commit affects
+multiple crtcs. If the user requests an event with that commit, one
+event will be sent for each CRTC, but it is not possible to distinguish
+which crtc an event is for in user space. To solve this, the reserved
+field in struct drm_vblank_event is repurposed to include the crtc_id
+which the event is for.
+
+The DRM_CAP_CRTC_IN_VBLANK_EVENT is added to allow userspace to query if
+the crtc field will be set properly.
+
+[daniels: Rebased, using Maarten's forward-port.]
+
+Signed-off-by: Ander Conselvan de Oliveira <ander.conselvan.de.oliveira@intel.com>
+Signed-off-by: Daniel Stone <daniels@collabora.com>
+Cc: Maarten Lankhorst <maarten.lankhorst@intel.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20170404165221.28240-2-daniels@collabora.com
+---
+ drivers/gpu/drm/drm_ioctl.c | 3 +++
+ drivers/gpu/drm/drm_irq.c   | 2 ++
+ include/uapi/drm/drm.h      | 3 ++-
+ 3 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/drm_ioctl.c b/drivers/gpu/drm/drm_ioctl.c
+index 211569b2011c2..6005bd4fa0436 100644
+--- a/drivers/gpu/drm/drm_ioctl.c
++++ b/drivers/gpu/drm/drm_ioctl.c
+@@ -284,6 +284,9 @@ static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_
+ 	case DRM_CAP_ADDFB2_MODIFIERS:
+ 		req->value = dev->mode_config.allow_fb_modifiers;
+ 		break;
++	case DRM_CAP_CRTC_IN_VBLANK_EVENT:
++		req->value = 1;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/gpu/drm/drm_irq.c b/drivers/gpu/drm/drm_irq.c
+index 00c815a7c414f..28536aa0a8755 100644
+--- a/drivers/gpu/drm/drm_irq.c
++++ b/drivers/gpu/drm/drm_irq.c
+@@ -1048,6 +1048,7 @@ void drm_crtc_arm_vblank_event(struct drm_crtc *crtc,
+ 
+ 	e->pipe = pipe;
+ 	e->event.sequence = drm_vblank_count(dev, pipe);
++	e->event.crtc_id = crtc->base.id;
+ 	list_add_tail(&e->base.link, &dev->vblank_event_list);
+ }
+ EXPORT_SYMBOL(drm_crtc_arm_vblank_event);
+@@ -1078,6 +1079,7 @@ void drm_crtc_send_vblank_event(struct drm_crtc *crtc,
+ 		now = get_drm_timestamp();
+ 	}
+ 	e->pipe = pipe;
++	e->event.crtc_id = crtc->base.id;
+ 	send_vblank_event(dev, e, seq, &now);
+ }
+ EXPORT_SYMBOL(drm_crtc_send_vblank_event);
+diff --git a/include/uapi/drm/drm.h b/include/uapi/drm/drm.h
+index b2c52843bc702..42d9f64ce416c 100644
+--- a/include/uapi/drm/drm.h
++++ b/include/uapi/drm/drm.h
+@@ -647,6 +647,7 @@ struct drm_gem_open {
+ #define DRM_CAP_CURSOR_HEIGHT		0x9
+ #define DRM_CAP_ADDFB2_MODIFIERS	0x10
+ #define DRM_CAP_PAGE_FLIP_TARGET	0x11
++#define DRM_CAP_CRTC_IN_VBLANK_EVENT	0x12
+ 
+ /** DRM_IOCTL_GET_CAP ioctl argument type */
+ struct drm_get_cap {
+@@ -851,7 +852,7 @@ struct drm_event_vblank {
+ 	__u32 tv_sec;
+ 	__u32 tv_usec;
+ 	__u32 sequence;
+-	__u32 reserved;
++	__u32 crtc_id; /* 0 on older kernels that do not support this */
+ };
+ 
+ /* typedef area */
+-- 
+2.33.1
+

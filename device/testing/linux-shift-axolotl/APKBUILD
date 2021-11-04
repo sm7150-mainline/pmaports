@@ -1,0 +1,59 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/axolotl_userdebug_defconfig
+
+pkgname=linux-shift-axolotl
+pkgver=4.9.290
+pkgrel=0
+pkgdesc="SHIFT6mq kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="shift-axolotl"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	clang
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+"
+
+# Source
+_repository="android_kernel_shift_sdm845"
+_commit="d781ca181693dd8d213be7bf31fc719459c32638"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/SHIFTPHONES/$_repository/archive/$_commit.tar.gz
+	$_config
+	0001-drm-Return-ENOTSUPP-when-called-for-KMS-cap-with-a-n.patch
+	0002-drm-Pass-CRTC-ID-in-userspace-vblank-events.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="clang" HOSTCC="clang" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+}
+
+sha512sums="
+388d09ed0179c9869cd4313213b89b293348dd5ac2cd5e05e480cad14423c4a57f6077bdfc5bcfeda839701ce4939e58a13e6444e20baf9ea49a84f96a0b34d3  linux-shift-axolotl-d781ca181693dd8d213be7bf31fc719459c32638.tar.gz
+e8f5f24a76270a815b1fcef3a4c5a4e29e16f1e644d9898843827fe415a992f93d07c7ee9e5e08bef5592ac549e942ce249f4dab1d62a6b1bdb348853dc11a98  config-shift-axolotl.aarch64
+a9f923ab95880ee8f8b31002328d81c4beb8c48e1027b416e267ae35cd1487b244d776f97a543d2a9f7b2cb51873e8b93edb725cca664fe5eded7df48791d579  0001-drm-Return-ENOTSUPP-when-called-for-KMS-cap-with-a-n.patch
+dfd96f4aea9a5b6bf4c2c414e0aa2ac3511c3b4691290d68ddc940a2ef4cf0b07e033986694124b9aa797a6742999c3ce7fcb000532d90ef5d182b7c75c4e85c  0002-drm-Pass-CRTC-ID-in-userspace-vblank-events.patch
+"
