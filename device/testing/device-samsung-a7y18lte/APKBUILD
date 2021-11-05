@@ -1,0 +1,32 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-a7y18lte
+pkgdesc="Samsung Galaxy A7 (2018)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="linux-samsung-a7y18lte mesa-dri-gallium mkbootimg postmarketos-base"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Non-free firmware for the Samsung Galaxy A7 (2018)"
+	depends="firmware-samsung-universal7885 firmware-samsung-a7y18lte"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+5d01c7d7dd88e64157aff2114bf7d10c40923b82060ebdf99f9fe7a010fc429cb78deb96c9820cf0ac1c8147509fd273a40620131d986fab2ebd7ef0a9c5ff92  deviceinfo
+04445194a5245d08fcf1b425bff1d8dd6a8fdacafdc151223634299a35f1eb20fbd733979b58bcfd854e16fde02629c28453f840d6c9dc34fc15d4fcc8aa4302  initfs-hook.sh
+"
