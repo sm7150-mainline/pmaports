@@ -1,15 +1,15 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm 5.15.0-rc2 Kernel Configuration
+# Linux/arm 5.15.0 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="armv7-alpine-linux-musleabihf-gcc (Alpine 10.3.1_git20210625) 10.3.1 20210625"
+CONFIG_CC_VERSION_TEXT="armv7-alpine-linux-musleabihf-gcc (Alpine 10.3.1_git20211027) 10.3.1 20211027"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100301
 CONFIG_CLANG_VERSION=0
 CONFIG_AS_IS_GNU=y
-CONFIG_AS_VERSION=23502
+CONFIG_AS_VERSION=23700
 CONFIG_LD_IS_BFD=y
-CONFIG_LD_VERSION=23502
+CONFIG_LD_VERSION=23700
 CONFIG_LLD_VERSION=0
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_INLINE=y
@@ -204,6 +204,7 @@ CONFIG_ELF_CORE=y
 CONFIG_BASE_FULL=y
 CONFIG_FUTEX=y
 CONFIG_FUTEX_PI=y
+CONFIG_HAVE_FUTEX_CMPXCHG=y
 CONFIG_EPOLL=y
 CONFIG_SIGNALFD=y
 CONFIG_TIMERFD=y
@@ -593,28 +594,6 @@ CONFIG_ARCH_SUSPEND_POSSIBLE=y
 CONFIG_ARM_CPU_SUSPEND=y
 CONFIG_ARCH_HIBERNATION_POSSIBLE=y
 # end of Power management options
-
-#
-# Firmware Drivers
-#
-
-#
-# ARM System Control and Management Interface Protocol
-#
-# CONFIG_ARM_SCMI_PROTOCOL is not set
-# end of ARM System Control and Management Interface Protocol
-
-# CONFIG_FW_CFG_SYSFS is not set
-# CONFIG_QCOM_SCM is not set
-# CONFIG_TRUSTED_FOUNDATIONS is not set
-# CONFIG_GOOGLE_FIRMWARE is not set
-CONFIG_HAVE_ARM_SMCCC=y
-
-#
-# Tegra firmware driver
-#
-# end of Tegra firmware driver
-# end of Firmware Drivers
 
 CONFIG_ARM_CRYPTO=y
 CONFIG_CRYPTO_SHA1_ARM=m
@@ -1366,12 +1345,33 @@ CONFIG_GENERIC_ARCH_TOPOLOGY=y
 #
 # CONFIG_BRCMSTB_GISB_ARB is not set
 # CONFIG_MOXTET is not set
-# CONFIG_SIMPLE_PM_BUS is not set
 # CONFIG_VEXPRESS_CONFIG is not set
 # CONFIG_MHI_BUS is not set
 # end of Bus devices
 
 # CONFIG_CONNECTOR is not set
+
+#
+# Firmware Drivers
+#
+
+#
+# ARM System Control and Management Interface Protocol
+#
+# CONFIG_ARM_SCMI_PROTOCOL is not set
+# end of ARM System Control and Management Interface Protocol
+
+# CONFIG_FW_CFG_SYSFS is not set
+# CONFIG_TRUSTED_FOUNDATIONS is not set
+# CONFIG_GOOGLE_FIRMWARE is not set
+CONFIG_HAVE_ARM_SMCCC=y
+
+#
+# Tegra firmware driver
+#
+# end of Tegra firmware driver
+# end of Firmware Drivers
+
 # CONFIG_GNSS is not set
 # CONFIG_MTD is not set
 CONFIG_DTC=y
@@ -3549,7 +3549,7 @@ CONFIG_SND_SOC_SNOW=y
 CONFIG_SND_SOC_ODROID=y
 CONFIG_SND_SOC_ARNDALE=y
 # CONFIG_SND_SOC_SAMSUNG_ARIES_WM8994 is not set
-# CONFIG_SND_SOC_SAMSUNG_MIDAS_WM1811 is not set
+CONFIG_SND_SOC_SAMSUNG_MIDAS_WM1811=m
 # CONFIG_SND_SOC_SOF_TOPLEVEL is not set
 
 #
@@ -5193,7 +5193,6 @@ CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
 # CONFIG_DAX is not set
 CONFIG_NVMEM=y
 CONFIG_NVMEM_SYSFS=y
-# CONFIG_NVMEM_NINTENDO_OTP is not set
 # CONFIG_NVMEM_RMEM is not set
 
 #
@@ -5561,7 +5560,7 @@ CONFIG_CRYPTO_MD5=m
 # CONFIG_CRYPTO_MICHAEL_MIC is not set
 # CONFIG_CRYPTO_RMD160 is not set
 CONFIG_CRYPTO_SHA1=m
-CONFIG_CRYPTO_SHA256=m
+CONFIG_CRYPTO_SHA256=y
 CONFIG_CRYPTO_SHA512=m
 CONFIG_CRYPTO_SHA3=m
 # CONFIG_CRYPTO_SM3 is not set
@@ -5631,7 +5630,7 @@ CONFIG_CRYPTO_ARCH_HAVE_LIB_CHACHA=m
 CONFIG_CRYPTO_LIB_POLY1305_RSIZE=9
 # CONFIG_CRYPTO_LIB_POLY1305 is not set
 # CONFIG_CRYPTO_LIB_CHACHA20POLY1305 is not set
-CONFIG_CRYPTO_LIB_SHA256=m
+CONFIG_CRYPTO_LIB_SHA256=y
 CONFIG_CRYPTO_HW=y
 CONFIG_CRYPTO_DEV_EXYNOS_RNG=y
 CONFIG_CRYPTO_DEV_S5P=y
