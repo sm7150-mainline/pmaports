@@ -1,0 +1,34 @@
+From 7c75fdd8fe77dbc46ec38ec839b35e3e7824d617 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Sun, 31 Oct 2021 23:38:45 +0000
+Subject: [PATCH v2 2/2] ARM: dts: exynos/i9100: Use interrupt for BCM4330 host
+ wakeup
+
+Switch away from using the deprecated 'host-wakeup-gpios' property,
+and use a 'host-wakeup' interrupt instead, as suggested by the binding
+documentation.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ arch/arm/boot/dts/exynos4210-i9100.dts | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/exynos4210-i9100.dts b/arch/arm/boot/dts/exynos4210-i9100.dts
+index 5f5d9b135736..76b1017e05e8 100644
+--- a/arch/arm/boot/dts/exynos4210-i9100.dts
++++ b/arch/arm/boot/dts/exynos4210-i9100.dts
+@@ -829,7 +829,10 @@ bluetooth {
+ 		shutdown-gpios = <&gpl0 4 GPIO_ACTIVE_HIGH>;
+ 		reset-gpios = <&gpl1 0 GPIO_ACTIVE_LOW>;
+ 		device-wakeup-gpios = <&gpx3 1 GPIO_ACTIVE_HIGH>;
+-		host-wakeup-gpios = <&gpx2 6 GPIO_ACTIVE_HIGH>;
++
++		interrupt-parent = <&gpx2>;
++		interrupts = <6 IRQ_TYPE_EDGE_FALLING>;
++		interrupt-names = "host-wakeup";
+ 	};
+ };
+ 
+-- 
+2.33.0
+
