@@ -34,6 +34,11 @@ fdt mknode / memory
 fdt set /memory ram_freq ${ram_freq}
 fdt list /memory
 
+echo Loading user script
+setenv user_scriptaddr 0x50100000
+load mmc ${mmc_bootdev}:1 ${user_scriptaddr} user.scr
+if test $? -eq 0; then source ${user_scriptaddr}; else echo No user script found; fi
+
 echo Booting kernel
 gpio set 116
 gpio clear 98

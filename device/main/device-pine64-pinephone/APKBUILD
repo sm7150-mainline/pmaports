@@ -6,7 +6,7 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
 pkgver=0.35
-pkgrel=2
+pkgrel=3
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -17,6 +17,7 @@ subpackages="
 	$pkgname-shelli
 	$pkgname-plasma-mobile:plasma_mobile
 	$pkgname-upower
+	$pkgname-vccq-mod:vccq_mod
 	"
 depends="
 	alsa-ucm-conf
@@ -32,7 +33,7 @@ depends="
 	u-boot-pinephone>=2021.01_git20201228-r2
 	u-boot-tools
 	"
-makedepends="devicepkg-dev"
+makedepends="devicepkg-dev dtc"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.pre-upgrade"
 source="
 	00_alsa_pinephone_dshare.conf
@@ -48,10 +49,12 @@ source="
 	modemmanager.conf
 	setup-modem.sh
 	uboot-script.cmd
+	uboot-user.cmd
 	ucm/HiFi.conf
 	ucm/PinePhone.conf
 	ucm/VoiceCall.conf
 	UPower.conf
+	pinephone-vccq-mod.dts
 	pulse-pinephone.conf
 	"
 # workaround to purge the -elogind subpackage that was previously
@@ -70,6 +73,24 @@ build() {
 		-n postmarketos \
 		-d "$srcdir"/uboot-script.cmd \
 		"$srcdir"/boot.scr
+	# Build user U-boot script for vccq-mod
+	mkimage \
+		-A arm \
+		-O linux \
+		-T script \
+		-C none \
+		-a 0 \
+		-e 0 \
+		-n postmarketos-user \
+		-d "$srcdir"/uboot-user.cmd \
+		"$srcdir"/user.scr
+	# Build Device Tree Overlay for vccq-mod
+	dtc \
+		-@ \
+		-I dts \
+		-O dtb \
+		-o "$srcdir"/pinephone-vccq-mod.dtbo \
+		"$srcdir"/pinephone-vccq-mod.dts
 }
 
 package() {
@@ -151,6 +172,14 @@ shelli() {
 	install -Dm644 "$srcdir"/00_alsa_pinephone_dshare.conf \
 		"$subpkgdir"/etc/alsa/conf.d/00_alsa_pinephone_dshare.conf
 }
+
+vccq_mod() {
+	pkgdesc="Install only if you have done the Vccq hardware mod https://postmarketos.org/pp-vccq-mod"
+	install -Dm644 "$srcdir"/user.scr \
+		"$subpkgdir"/boot/user.scr
+	install -Dm644 "$srcdir"/pinephone-vccq-mod.dtbo \
+		"$subpkgdir"/boot/pinephone-vccq-mod.dtbo
+}
 sha512sums="
 5736444fd38ab4351d148ae96c479085f469bd1e51a692fb1827f8ac921a584389f7696985e1fba21c2deac88709910531f4ece282f45ff54e590c2b54b84ba3  00_alsa_pinephone_dshare.conf
 b53cc6f2531854cc9c1e4c334185a20551d64c8675ee8a8eaa03b99d80808fad421a0f6e99e5be212a974d88c85f461a71ba59ac59c29f298c82f211e3be1ef4  10-pinephone-proximity.rules
@@ -164,10 +193,12 @@ ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd4644
 6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
 c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313818e0b943e1f6212bcca0aff9ce37da60b29547b1631f24b  modemmanager.conf
 420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
-e9d923b48dbb929d333c178181339a1369be34397df49298cff2aca9b1e4f7f6ddff8391424c378d2bbd7a495021abc3a06af011eb3240a06650195ab18469b2  uboot-script.cmd
+c085a92af68fa3b1e1cd0c407a3782e66e7eeb3321a95ca3decedf46a68e012e272d1aac9aa690812529d6c35c558b198d94775fc6dfafc8b09eef0c56a50e28  uboot-script.cmd
+f28902517bebe16f7ddbdbf9f4c52d5c97319e3b5ba7326ba96ed0e094d3d2a39c87061326893cdc34336bbfd56de084b2f217918ebba7ca6a080088cd0bd409  uboot-user.cmd
 f963898fa2ce66bc830e56feeec6ffc9888834e14cc1591d72908ef45ad82532bc3ef5fb32413e07b6722749c9d03e7cf92f06f1fcb859c38b9297cf58e5cedd  HiFi.conf
 4b0c51ab169aebe8177c5c43eba41afa90370098a5a54e710d17e97ec1651869a20cb5d780a6132028c864916609e3b4f4a13158835310d0441bdb4915872372  PinePhone.conf
 e093f71c37370927468de35a987150a3db3e1cc1c76c144bf58918a09c688c3da84303b5533241e691a6aa0758589e2a6498b1097974117782e909f0bbc6bf71  VoiceCall.conf
 ed0e03f7e1c0348c06be9a7922414469245604ce813bbf0c8910ef211cb993bbb0d0d4615c9c961d50712415f85d6b73e0cf02780ac784666aac56e4889341e4  UPower.conf
+d66ecef1fa5481ff138fe4e12b194903ceacab9d0649e716049f32e56ec6d9be09b97e2ff769ebc5c9fbced542986b9214f47ed14511ad761d80a41b19e02df7  pinephone-vccq-mod.dts
 9c472065b19141dd4c7555869b955de2e679b36e597f9fa3bdac18d0e9460986b0e2fffe1e04751301305f1b6474c1375803afb7d6212eeae91b4905d0bf8ff8  pulse-pinephone.conf
 "
