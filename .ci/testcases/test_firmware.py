@@ -16,6 +16,7 @@ def test_aports_firmware(args):
 
     excluded = [
         "firmware-motorola-potter",  # Depends on soc-qcom-msm8916-ucm
+        "firmware-oneplus-msm8998",  # Depends on soc-qcom-sdm845-nonfree-firmware
         "firmware-oneplus-sdm845",  # Depends on soc-qcom-sdm845-nonfree-firmware
         "firmware-samsung-baffinlite",  # Depends on firmware-aosp-broadcom-wlan
         "firmware-samsung-crespo",  # Depends on firmware-aosp-broadcom-wlan
