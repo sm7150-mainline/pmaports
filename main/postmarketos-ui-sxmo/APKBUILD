@@ -1,39 +1,56 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=postmarketos-ui-sxmo
-pkgver=1.5.1
-pkgrel=2
-pkgdesc="(X11) Simple X Mobile: Mobile environment based on simple & suckless software (best compatibility on pinephone)"
+pkgver=1.6.0
+pkgrel=0
+pkgdesc="Simple Mobile: Core package to build custom SXMO desktops environments"
 url="http://sr.ht/~mil/Sxmo"
 arch="noarch !armhf"
 license="MIT"
 depends="
+	alsa-utils
+	codemadness-frontends
 	dnsmasq
+	dunst
+	ffmpeg
+	font-fira-mono-nerd
+	font-terminus-nerd
+	geoclue
+	inotify-tools
+	light
+	lisgd
+	mediainfo
+	mmsd-tng
+	mmsd-tng-tools
+	mnc
+	modemmanager
 	modemmanager-openrc
+	mpv
+	ncurses
+	networkmanager
 	networkmanager-openrc
+	pn
 	polkit
 	polkit-openrc
 	postmarketos-base-ui
 	sxmo-utils
 	sxmo-utils-openrc
+	terminus-font
 	tinydm
 	tinydm-openrc
+	tzdata
+	v4l-utils
+	vis
+	youtube-dl
 	"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.pre-deinstall"
-subpackages="$pkgname-qt_tweaks $pkgname-bluetooth"
-_pmb_recommends="
-	feh
-	firefox-esr
-	font-noto
-	font-noto-emoji
-	gnome-icon-theme
-	htop
-	megapixels-gtk3
-	mobile-config-firefox
-	xcalc
-	"
 _pmb_groups="
 	seat
 	"
+_pmb_recommends="
+	w3m
+	sfeed
+	"
+subpackages="$pkgname-qt_tweaks $pkgname-bluetooth $pkgname-dwm $pkgname-sway"
 source="
 	sxmo-qt-mobile-controls.sh
 	postmarketos.conf
@@ -64,6 +81,90 @@ bluetooth() {
 		"$subpkgdir"/etc/bluetooth/main.conf
 	install="$subpkgname.post-install $subpkgname.pre-deinstall"
 }
+
+dwm() {
+	pkgdesc="Simple Mobile: Mobile environment based on SXMO and running on dwm"
+	depends="
+		postmarketos-ui-sxmo
+
+		autocutsel
+		conky
+		svkbd
+		sxiv
+		sxmo-dmenu
+		sxmo-dwm
+		sxmo-st
+		unclutter-xfixes
+		xcalib
+		xclip
+		xdotool
+		xdpyinfo
+		xinput
+		xprintidle
+		xprop
+		xrandr
+		xrdb
+		xsel
+		xset
+		xsetroot
+		xwininfo
+	"
+	_pmb_recommends="
+		clickclack
+		feh
+		firefox-esr
+		font-noto
+		font-noto-emoji
+		gnome-icon-theme
+		megapixels-gtk3
+		mobile-config-firefox
+		xcalc
+	"
+	provides="$pkgname-de"
+	provider_priority="0"
+	install="$subpkgname.post-install"
+
+	mkdir -p "$subpkgdir"
+}
+
+sway() {
+	pkgdesc="Simple Mobile: Mobile environment based on SXMO and running on sway"
+	depends="
+		postmarketos-ui-sxmo
+
+		foot
+		grim
+		mako
+		seatd
+		seatd-openrc
+		slurp
+		swaybg
+		swayidle
+		sxmo-bemenu
+		sxmo-sway
+		wayout
+		wl-clipboard
+		wtype
+		wvkbd
+		xwayland
+	"
+	_pmb_recommends="
+		clickclack
+		firefox-esr
+		font-noto
+		font-noto-emoji
+		gnome-icon-theme
+		imv
+		megapixels
+		mobile-config-firefox
+	"
+	provides="$pkgname-de"
+	provider_priority="1"
+	install="$subpkgname.post-install $subpkgname.pre-deinstall"
+
+	mkdir -p "$subpkgdir"
+}
+
 
 sha512sums="
 bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  sxmo-qt-mobile-controls.sh
