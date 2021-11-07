@@ -1,0 +1,41 @@
+# Purism's fork of megapixels, for the Librem 5
+pkgname=megapixels-purism
+pkgver=0.16.0
+pkgrel=0
+_purismrel=3
+# <ver>.<purism kernel release>
+_purismver=${pkgver}-1pureos$_purismrel
+pkgdesc="GTK+3 camera app for mobile devices"
+url="https://source.puri.sm/Librem5/megapixels"
+arch="all"
+license="GPL-3.0-only"
+# Required by postprocess.sh
+# depends="cmd:dcraw_emu cmd:convert cmd:exiftool"
+depends="libraw-tools graphicsmagick exiftool i2c-tools"
+makedepends="glib-dev gtk+3.0-dev tiff-dev meson zbar-dev"
+source="
+	$pkgname-$_purismver.tar.gz::https://source.puri.sm/Librem5/debs/megapixels/-/archive/pureos/$_purismver/megapixels-pureos-$_purismver.tar.gz
+	0001-l5-changes.patch::https://source.puri.sm/Librem5/debs/megapixels/-/raw/pureos/0.16.0-1pureos3/debian/patches/0001-l5-changes.diff
+	https://source.puri.sm/Librem5/debs/megapixels/-/raw/pureos/0.16.0-1pureos3/debian/patches/0002-l5-changes-ab5c75d.patch
+	10_megapixels.sudoers
+"
+options="!check" # There's no testsuite
+builddir="$srcdir/megapixels-pureos-$_purismver"
+provides="megapixels=$pkgver"
+
+build() {
+	abuild-meson . output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+	install -Dm644 "$srcdir"/10_megapixels.sudoers "$pkgdir"/etc/sudoers.d/10_megapixels
+}
+
+sha512sums="
+19e0a940e73a7051afcdb515ca6a503bf5f025292c837dcd74447c38937f192257b395a33339d0c3bb842936b5069450e00cd51a81fd3d183a579ded0d42a0be  megapixels-purism-0.16.0-1pureos3.tar.gz
+633155fa87dc8739b987e7235bf6e1d07b750038336a3451162abc7de2700a1c89dbf41c6da4a1adfe474b35d9ffd02328fee247da8baac50746d933b0622b06  0001-l5-changes.patch
+c27206e8a823aaa8e8b86b6d1acb626ab80193a8bd2efa939a1cf67c5964a5d3cec1cd44f1d9b33dc4195735b23989267ead0050956b78131dda70cfe2bb7036  0002-l5-changes-ab5c75d.patch
+b7d8f25be0ae1f954c49727476952831019bcc443a66c4b39f7421c257aa5c310ad82390746768c3432727a0688a1174565cab5a48997092f79622cedb703cec  10_megapixels.sudoers
+"
