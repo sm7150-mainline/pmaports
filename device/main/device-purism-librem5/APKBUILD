@@ -3,9 +3,9 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.24
+pkgver=1.25
 pkgrel=0
-_confver=38
+_confver=41
 _purismrel=1
 # <librem5-base ver>.<purism release>
 _purismver=${_confver}pureos$_purismrel
@@ -41,7 +41,7 @@ source="
 	uboot-script.cmd
 	xorg.conf
 	0001-librem5-pm.udev-disable-PM-for-broadmobi-modem.patch
-	0002-audio-pulse-librem5.pa-rename-sinks-for-alsa-ucm-con.patch
+	0002-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
 "
 subpackages="
 	$pkgname-phosh
@@ -104,11 +104,16 @@ package() {
 
 	# udev
 	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-pm.udev  \
-		"$pkgdir"/usr/lib/udev/rules.d/librem5-pm.rules
+		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-pm.rules
 	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-modem.udev  \
-		"$pkgdir"/usr/lib/udev/rules.d/librem5-modem.rules
+		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-modem.rules
 	install -D -m644 "$builddir"/default/gpsd/99-gnss.rules  \
-		"$pkgdir"/usr/lib/udev/rules.d/librem5-gnss.rules
+		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-gnss.rules
+	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-storage.udev  \
+		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-storage.rules
+	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-cameras.udev  \
+		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-cameras.rules
+
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t "$pkgdir"/usr/lib/udev/rules.d/
 
@@ -130,11 +135,11 @@ nonfree_firmware() {
 }
 
 sha512sums="
-b9d3314d1bfc98db0ee06117babb2835568296f9a0de0feb07082bf18c97c9cd737cd29ed82f1c6d0577675d527918db2116cedd1de33631ece30f7e94c06c2a  librem5-base-pureos-38pureos1.tar.gz
+239fb3e62ea91106bcfcfdcfd576de1eaed3368d98d0905c38df71ae3c99483fed2756f276e4ff0afeab3f6f0e6cd960aeab7374547f9f28d12f79de9ca575f6  librem5-base-pureos-41pureos1.tar.gz
 2e72d9a084ecd6c96cafbbd8fda461ae8b2ebd14ffda601d9f36d73f08f04088213de17da078293ddd958d4c76d33148c7af6e252eb0709f6934855a55578509  00-mesa.sh
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
-b25884fd20e1db6f53e38c3db371d2a9f091ca1de3b6d8ffe7f263bd87258a970cee5458ae7fb566983565eacf47a1667e2fe031d540d206e1c22256baf9bf55  deviceinfo
+bab0effee35df7317ae7bd93aaf35822d830cc7487170874a5300b76e920f1756f5b69094f172d9b5c6826a5ee6a1db563cd9babd45826a210804623341be0f8  deviceinfo
 2703c7a4e7f32cf102dfed644a8213497828ae1fe9f3bd789663157f79c8c8ddb05672e5c9a0c6883e9dee42afcfe9578e611dd1d9fe6cd8129d8d7738d28ad2  flash_script.lst
 110630f959e3f3a2acc335d755defeb0f49fb40f46cb2423205511f43d1dfdbb91722271fac34a6cbf04a5f0406e6a34ed77e75555acc3f420041d32224027d6  modprobe.d-ship_mode.conf
 3f62c04eb92d850e32d5e1b17534dec753563342ea6c4f9dc2572700d4f6eeb8ae8cd8e8e4f1b0f5c61f21d87bc61c02212f27313986157220003d78e2d69505  modprobe.d_rsi.conf
@@ -144,5 +149,5 @@ a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f
 d2005a327a44aac0b56c113eeac72cdb8859b7fa9e5e799d931ccfd685c81f5ec2d4d1e2cae6ed0257e1309167086c3fced6138e51f482f4ffba0e5ebf6d7d89  uboot-script.cmd
 1cbc65cf2cb8fad4b0332d012a0256a266205b9b64371f5c0dae09dbb7f1e45b254e8c43993b896097e9d7035a72d547d9bce1ab2133addc56a5abdb80b44616  xorg.conf
 f535b43b8defe75e72049e4eee181bfe821f6304a096413bccf6d08c8bb11b947fa1fee305af85616abd778745fadd52ebd610c2d135a4f907915b99ab2c526a  0001-librem5-pm.udev-disable-PM-for-broadmobi-modem.patch
-6420866a32ee6094cfc7da59ab0c4b1d4db940ce7ab9c1d7e92fb3646284d48c60908f001507a543fef47ae3be195c815ab77510e7fb169cd16464478a72d2a8  0002-audio-pulse-librem5.pa-rename-sinks-for-alsa-ucm-con.patch
+2639da6a7169ed9ad2eb09efd1d2462fe330554b9cf1d44f803a33699970d56f12ceddccf97574d245cb8858b26a4857e3dfbadb20862ada962619814ad058b4  0002-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
 "

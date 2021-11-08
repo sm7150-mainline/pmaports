@@ -1,0 +1,28 @@
+From f66139789e57370c6759b805721d31a3af0141cc Mon Sep 17 00:00:00 2001
+From: Clayton Craft <clayton@craftyguy.net>
+Date: Mon, 15 Nov 2021 09:45:06 -0800
+Subject: [PATCH] udev/cameras: use correct path for modprobe on Alpine Linux
+
+---
+ debian/librem5-base-defaults.librem5-cameras.udev | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/debian/librem5-base-defaults.librem5-cameras.udev b/debian/librem5-base-defaults.librem5-cameras.udev
+index 6bdf4c0..c5d4701 100644
+--- a/debian/librem5-base-defaults.librem5-cameras.udev
++++ b/debian/librem5-base-defaults.librem5-cameras.udev
+@@ -2,7 +2,7 @@
+ # Then load the module again as the device is on.
+ # If the removal fails, then the device is already properly initiated,
+ # and had claimed its resources, which now prevent the removal.
+-ACTION=="add", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/usr/sbin/modprobe s5k3l6xx"
+-ACTION=="change", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/usr/sbin/rmmod s5k3l6xx", RUN+="/usr/sbin/modprobe s5k3l6xx"
+-ACTION=="add", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/usr/sbin/modprobe hi846"
+-ACTION=="change", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/usr/sbin/rmmod hi846", RUN+="/usr/sbin/modprobe hi846"
++ACTION=="add", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/sbin/modprobe s5k3l6xx"
++ACTION=="change", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/sbin/rmmod s5k3l6xx", RUN+="/sbin/modprobe s5k3l6xx"
++ACTION=="add", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/sbin/modprobe hi846"
++ACTION=="change", SUBSYSTEM=="rfkill", ENV{RFKILL_NAME}=="camera-hks", ENV{RFKILL_STATE}=="1", RUN+="/sbin/rmmod hi846", RUN+="/sbin/modprobe hi846"
+-- 
+2.33.1
+
