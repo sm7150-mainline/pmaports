@@ -1,13 +1,13 @@
 # Forked from Alpine, so we can build it with Librem 5 phone support
 pkgname=u-boot-librem5
-pkgver=0.9
-pkgrel=1
+pkgver=0.10
+pkgrel=0
 # 'librem5' branch in atf repo
 _atfversion="92c2de12d36b31938ce940d5cac3c30a98665237"
 # 'librem5' branch in uboot repo
-_ubootversion="e9f7caf70a5c4f468ba00392ad0ca0badecea20a"
+_ubootversion="17a6c2261c3d1a21312703fd1a8fff6d996d5260"
 _m4version="a017421c340a69f2392086da93841244f78a03c5"
-_firmwareversion="8.10"
+_firmwareversion="8.12"
 pkgdesc="u-boot bootloader for the Purism Librem5 phone"
 url="http://www.denx.de/wiki/U-Boot/"
 arch="aarch64"
@@ -20,7 +20,6 @@ source="
 	arm-trusted-firmware-${_atfversion}.tar.gz::https://source.puri.sm/Librem5/arm-trusted-firmware/-/archive/${_atfversion}/arm-trusted-firmware-${_atfversion}.tar.gz
 	https://www.nxp.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-${_firmwareversion}.bin
 	update-u-boot
-	0001-board-purism-librem5-Enable-WiFi-SW-kill-switch.patch
 	"
 install="$pkgname.post-upgrade"
 subpackages="$pkgname-devkit"
@@ -100,10 +99,9 @@ devkit() {
 
 
 sha512sums="
-feab35fae6450f24da54998b44b1d834bc33c9597ff8f9a4275e9ec7a1d1f442e133e51635eaabb9b759499728a0f70256d7bd6bc8bbeeb2133992f9c606d607  uboot-imx-e9f7caf70a5c4f468ba00392ad0ca0badecea20a.tar.gz
+f83cc7e37c6de50273e164354c103c0cd5b5de668c1e606c2a3eedd591f692437fbd2947ef33141092393d8fcdd54eb9b2e97341dc018b026aef2e580e232d86  uboot-imx-17a6c2261c3d1a21312703fd1a8fff6d996d5260.tar.gz
 035a4358ddf586c829da7fa2fb0d9d1df913c0c454f2d0e57ff0c6794552e49950fb6373f9aaf72e0e4c78ab411496aabbc60bf66cd76e35053f7a2d77911735  m4-a017421c340a69f2392086da93841244f78a03c5.tar.gz
 cd8c9411ae0e57d2c8c700bf3e8c8d03e7dab955ace249a00911dd8c42b42929e0de3a5885eb9b1d945174abc8cfb177595d83c235e757c70640f451b62547ba  arm-trusted-firmware-92c2de12d36b31938ce940d5cac3c30a98665237.tar.gz
-24d4466b3c2202ceb1c22be2b3db4482eee54d09e167083cc53e82cd9f22ef9ac0cba5a1a3341cacf8ee01adf014eb25f4aa437f35a43ac102dd2f22e935821b  firmware-imx-8.10.bin
+1f968558bf158401ee5afe1c67e67bdd8ca2cb5d07029e78c745e751c665b68fa74128fca8b7161501a6445bbb18e8d463b42d787a61132db5c8778703462668  firmware-imx-8.12.bin
 63b6339d2a06b58f47d0f0b6f9a2c0fe25aa8edd523599b630ee3ea683f24ce31150a012e6ec5313b9c247529d0b8813d0c87cb6d0d2e91321c1cf7864cca475  update-u-boot
-acec9f7fa5fb3f4e84c6f6f74794325d5d18ea4557ab98fd0915ba5e41748e338f94604815b2f6d595119359462b48d2ee285b2e4025282d3118051b601b23a1  0001-board-purism-librem5-Enable-WiFi-SW-kill-switch.patch
 "
