@@ -56,10 +56,8 @@ shellcheck:
   stage: lint
   <<: *only-default
   image: alpine:edge
-  before_script:
-    - apk -q add shellcheck
   script:
-    - .ci/shellcheck.sh
+    - DOWNLOAD_SHELLCHECK=1 .ci/shellcheck.sh
 
 # aports checks (generic)
 aports-static:
