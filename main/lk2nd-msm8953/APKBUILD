@@ -1,0 +1,46 @@
+# Maintainer: Alejandro Tafalla <atafalla@dnyon.com>
+pkgname=lk2nd-msm8953
+pkgver=0.3.0
+pkgrel=0
+pkgdesc="Secondary little kernel (lk) bootloader for msm8953 based devices"
+arch="aarch64"
+url="https://gitlab.com/msm8953-mainline/lk2nd"
+license="MIT AND GPL-2.0-only"
+makedepends="dtc dtc-dev gcc-arm-none-eabi python3 py3-libfdt"
+builddir="$srcdir"/lk2nd-$pkgver
+source="lk2nd-$pkgver.tar.gz::https://github.com/msm8953-mainline/lk2nd/archive/refs/tags/$pkgver.tar.gz"
+options="!check !archcheck !tracedeps !strip pmb:cross-native"
+# This APKBUILD builds bare metal executable; options are very specific!
+# * there are no tests (how do you even test the bootloader?);
+# * binaries are "arch-independent"; aarch64 build also produces armv7 binary,
+#   because ARM CPUs boot in 32-bit mode;
+# * there are no depends for bootloader, it's a kernel and OS in one binary;
+# * stripping of unused sections is done in lk2nd's own ld script.
+
+build() {
+	# This builds baremetal executable; distro-specific compiler flags
+	#   and optimizations can't be set by build system.
+	unset CFLAGS
+	unset CXXFLAGS
+	unset CPPFLAGS
+	unset LDFLAGS
+	unset CROSS_COMPILE
+	unset CC
+	unset CXX
+
+	# ccache and crossdirect "gcc"s are in PATH, get rid of them too,
+	#    redefine PATH to be bare minimum
+	unset PATH
+	export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+	make TOOLCHAIN_PREFIX=arm-none-eabi- msm8953-secondary
+}
+
+package() {
+	# main package is empty
+	install -Dm644 "$builddir"/build-msm8953-secondary/lk2nd.img -t \
+		"$pkgdir"/boot
+}
+sha512sums="
+ee281d11ebf45dbf4e123138b4f810e9da3c77136c106b20ad606c17d33f2ac347271455d883ac9163ab4bc3b0991b76431ffa58672033def55a21e218b38801  lk2nd-0.3.0.tar.gz
+"
