@@ -1,0 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-gtelwifiue
+pkgdesc="Samsung Galaxy Tab E 9.6 (SM-T560NU)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="firmware-qcom-adreno-a300 msm-firmware-loader firmware-samsung-gtelwifiue-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+44a5b05529553d439fd2129fe1e91e180193c55bafd9f1b8cd213c106a4408462a0cf075d18029f44852547a3a42834199d1fd40e68c3f265f54c89c913067e1  deviceinfo
+"
