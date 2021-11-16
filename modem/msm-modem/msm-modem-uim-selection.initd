@@ -64,6 +64,22 @@ start() {
 
 	QMI_CARDS=$($QMICLI_MODEM --uim-get-card-status)
 
+	# Fail if all slots are empty but wait a bit for the sim to appear.
+	count=0
+	while ! printf "%s" "$QMI_CARDS" | grep -Fq "Card state: 'present'"
+	do
+		if [ "$count" -ge "$sim_wait_time" ]
+		then
+			eend 4 "No sim detected after $sim_wait_time seconds."
+			return 4
+		fi
+
+		sleep 1
+		count=$((count+1))
+		QMI_CARDS=$($QMICLI_MODEM --uim-get-card-status)
+	done
+	veinfo "Waited $count seconds for modem to come up"
+
 	# Clear the selected application in case the modem is in a bugged state
 	if ! printf "%s" "$QMI_CARDS" | grep -Fq "Primary GW:   session doesn't exist"
 	then

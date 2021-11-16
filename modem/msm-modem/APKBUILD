@@ -1,5 +1,5 @@
 pkgname=msm-modem
-pkgver=6
+pkgver=7
 pkgrel=0
 pkgdesc="Common support for Qualcomm MSM modems"
 url="https://postmarketos.org/"
@@ -10,6 +10,7 @@ install="$pkgname.post-install"
 subpackages="$pkgname-downstream $pkgname-uim-selection:uim_selection"
 source="
 	msm-modem-downstream.initd
+	msm-modem-uim-selection.confd
 	msm-modem-uim-selection.initd
 	udev-downstream.rules
 "
@@ -24,6 +25,7 @@ uim_selection() {
 	depends="$pkgname libqmi"
 	install="$subpkgname.post-install"
 
+	install -Dm644 "$srcdir/$subpkgname.confd" "$subpkgdir/etc/conf.d/$subpkgname"
 	install -Dm755 "$srcdir/$subpkgname.initd" "$subpkgdir/etc/init.d/$subpkgname"
 }
 
@@ -38,6 +40,7 @@ downstream() {
 
 sha512sums="
 3172f8c409f552f13d1da29f14ab6c79072cd6da4acab151a1a0ea1858a416974456852609f14fe29cf97a6a45e60b99d0a57ddcde751da243ee5ac6fa8b672c  msm-modem-downstream.initd
-177cf671a12a9b1de24d1223043fb9fe6dd15f3675112123f2fa080c074cc7c6e7024ed1542ae824bb036cc51a020b8e3ab146106cecd1315649073fd2118db8  msm-modem-uim-selection.initd
+efbe0d23f2716e10f5ef0006c6eb21672a14e368ecceb74d296039bc539be2b35964af48efa0db69d0f410e7bee19ba0d69ab1ede43b9cfd443acde6997c8017  msm-modem-uim-selection.confd
+9c91febb48409e574695bb04c989b361db9f7678321c6935772c19efae7dd16956bd4b91143b475adf898344225d4095448b95ccb824ced305966ea96b9ae32f  msm-modem-uim-selection.initd
 2a511c2e249d0ec5a52f04ffe1ef3d29cf3c4813143b103e54879ff89176ea45b1a5ffe21cb7dc2f1cdd84c3102ba45ef9926ed37e00b1ae12a36d01de35ea5a  udev-downstream.rules
 "
