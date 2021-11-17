@@ -5,8 +5,8 @@
 
 _flavor="postmarketos-qcom-sdm845"
 pkgname=linux-$_flavor
-pkgver=5.14.0_rc6
-pkgrel=1
+pkgver=5.16.0_rc4
+pkgrel=0
 pkgdesc="Mainline Kernel fork for SDM845 devices"
 arch="aarch64"
 _carch="arm64"
@@ -17,19 +17,20 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-nftables
 	pmb:kconfigcheck-containers
 	pmb:kconfigcheck-zram
-	pmb:kconfigcheck-anbox"
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-iwd"
 makedepends="bison findutils flex installkernel openssl-dev perl"
 
 _repo="linux"
 _config="config-$_flavor.$arch"
-_commit="a620c228c986589ced2cd9369fbce10d219eb0df"
+_tag="sdm845-5.16-rc4"
 
 # Source
 source="
-	$_repo-$_commit.tar.gz::https://gitlab.com/sdm845-mainline/$_repo/-/archive/$_commit/$_repo-$_commit.tar.gz
+	$_repo-$_tag.tar.gz::https://gitlab.com/sdm845-mainline/$_repo/-/archive/$_tag/$_repo-$_tag.tar.gz
 	$_config
 "
-builddir="$srcdir/$_repo-$_commit"
+builddir="$srcdir/$_repo-$_tag"
 
 prepare() {
 	default_prepare
@@ -61,6 +62,6 @@ package() {
 }
 
 sha512sums="
-b5bfa1b9573e6d0c56312056264f86c3b8bd3ba6365c4a4705418136df20477dc6d83b83478d5537a241bf2fdc7e01201d22a8fc05aa526d2b998583f8218e27  linux-a620c228c986589ced2cd9369fbce10d219eb0df.tar.gz
-c2a5c4795171dd795e0ac63ee002459d619e0fc122e63f01c900962ee9a78dce899835c8916f72d2603d94dc98da8e3ed7424235aab557d4d92c016db3e9530d  config-postmarketos-qcom-sdm845.aarch64
+edb6aee8c3813b5a5528f4ee3147bec827ae7813a0b87c187f6d5ae8e70fcf2cea90b055918c281177af8c3703e98b85150043e2342f70536715f2cbff8c83b1  linux-sdm845-5.16-rc4.tar.gz
+528a2906258d9c883803b7dd73827c4eac5ee2a87165aa9c52911658aa9c1952a9be6f40d78d8777c9cfaa6720fc8fe19252de25f3e261543e4fbca9e94b74e1  config-postmarketos-qcom-sdm845.aarch64
 "
