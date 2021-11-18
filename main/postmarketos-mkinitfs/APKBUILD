@@ -2,7 +2,7 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-mkinitfs
 pkgver=1.1.2
-pkgrel=2
+pkgrel=3
 pkgdesc="Tool to generate initramfs images for postmarketOS"
 url="https://postmarketos.org"
 depends="
@@ -28,11 +28,13 @@ source="
 	00-default.modules
 	init.sh
 	init_functions.sh
+	modprobe.files
 	"
 install="$pkgname.post-upgrade"
 arch="all"
 license="GPL-2.0-or-later"
 provides="mkinitfs=0.0.1"
+subpackages="$pkgname-modprobe-lts:modprobe_lts $pkgname-modprobe-edge:modprobe_edge"
 
 export GOPATH="$srcdir"
 export CGO_ENABLED=0
@@ -61,6 +63,18 @@ package() {
 	mkdir -p "$pkgdir/etc/postmarketos-mkinitfs/hooks/"
 }
 
+modprobe_lts() {
+	install_if="$pkgname=$pkgver-r$pkgrel linux-lts"
+	install -Dm644 "$srcdir"/modprobe.files \
+		"$subpkgdir"/etc/postmarketos-mkinitfs/files/30-modprobe.files
+}
+
+modprobe_edge() {
+	install_if="$pkgname=$pkgver-r$pkgrel linux-edge"
+	install -Dm644 "$srcdir"/modprobe.files \
+		"$subpkgdir"/etc/postmarketos-mkinitfs/files/30-modprobe.files
+}
+
 check() {
 	go test ./...
 }
@@ -70,4 +84,5 @@ sha512sums="
 950ac042f19055979cb53b39be93866c88aba0acd5a49cd768522505991e2bd2851735677e777caa6c8973e006318582ddd975214eccc5c35c2c1d649af6d71e  00-default.modules
 40033b421e79999c85bd72e1353fe6745a87fcbf9f6a5b8180e832c7f340da7d4e33d056f557ae95a9924f5d186a6e728f3ed53c0922cdac4c39513fdc3e3a82  init.sh
 ac097c23ea8807aeac9af6ee1ced4fb41f2e108d9ebed61062decec02a2f0cece8bf1d5f45e5d52928ccead09f0b44190f6b1008018b6d845ba1b5d26679d82f  init_functions.sh
+b994eccb639c6d1afe05d0f52fc5f9e30a45a3a8c7240bce258dacadaa9c2ee68802917157c708318e17e0087f921155224a337b03e3b6672fbdfc69f3537919  modprobe.files
 "
