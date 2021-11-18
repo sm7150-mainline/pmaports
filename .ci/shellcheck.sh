@@ -13,21 +13,6 @@ if grep -qr '(CHANGEME!)' *; then
 	exit 1
 fi
 
-# Shellcheck isn't in Alpine anymore, so just download the static binary in CI
-# Related: https://gitlab.alpinelinux.org/alpine/aports/-/issues/10902
-if [ "$DOWNLOAD_SHELLCHECK" = 1 ]; then
-	pkgver="0.7.2"
-	tmpdir="/tmp/shellcheck-$pkgver"
-	url="https://github.com/koalaman/shellcheck/releases/download/v$pkgver/shellcheck-v$pkgver.linux.x86_64.tar.xz"
-	mkdir -p "$tmpdir"
-	if ! [ -e "$tmpdir"/rel.tar.xz ]; then
-		echo "Downloading $url"
-		wget -q -O "$tmpdir"/rel.tar.xz "$url"
-	fi
-	tar -C "$tmpdir" -xf "$tmpdir"/rel.tar.xz
-	export PATH="$tmpdir/shellcheck-v$pkgver/:$PATH"
-fi
-
 # Shell: shellcheck
 sh_files="
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
