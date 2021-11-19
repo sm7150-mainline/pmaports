@@ -15,7 +15,7 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-containers
 	pmb:kconfigcheck-nftables
 	pmb:kconfigcheck-zram"
-makedepends="openssl-dev yaml-dev mpc1-dev mpfr-dev xz findutils bison flex perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev"
+makedepends="openssl-dev yaml-dev mpc1-dev mpfr-dev xz findutils bison flex perl sed bash gmp-dev bc linux-headers elfutils-dev"
 _commit="7f948007463451675a274ec0abaefdd9253ae56b"
 _config="config-$_flavor.$arch"
 source="
@@ -43,7 +43,7 @@ package() {
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 
-	make -j1 modules_install dtbs_install \
+	make modules_install dtbs_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
