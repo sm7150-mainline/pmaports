@@ -11,7 +11,7 @@ arch="armv7"
 options="!check !archcheck"
 depends="postmarketos-base linux-samsung-espresso3g mkbootimg"
 makedepends="devicepkg-dev"
-source="deviceinfo phoc.ini"
+source="deviceinfo rootston.ini"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -30,11 +30,11 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/phosh.ini \
+	install -Dm644 "$srcdir"/rootston.ini \
 			"$subpkgdir"/usr/share/phosh/phoc.ini
 }
 
 sha512sums="
 9fa446ae99b5d22bb211cb455ef78d0567463650e0a85beb9125f4bc56531b74d1690304770afa7886f26852b81f668d36add71fa3f7b840d0650e8b5483257a  deviceinfo
-1754d066d34919e25cf632a0a58b4c0f7a5cea46ea7c3534175cca3c0afaffd7e3128d0191a9db44ef47ab1a4f702f287bbc6160b131d924ebd8c4450e62d39c  phoc.ini
+70bd4dc8c6d7a8fcd2fcf86a9b728a5eb02c4b97a730dc3cd4a6c5dafb2ddcc71082dce89495d23cd1da8404bf2688a4a3f9e7f0f2d328157d275ce4b7f49429  rootston.ini
 "
