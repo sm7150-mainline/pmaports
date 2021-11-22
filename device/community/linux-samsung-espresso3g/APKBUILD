@@ -1,7 +1,7 @@
 # Maintainer: Mighty <mightymb17@gmail.com>
 # Co-Maintainer: Antoni Aloy <aaloytorrens@gmail.com>
 pkgname=linux-samsung-espresso3g
-pkgver=5.15_rc1
+pkgver=5.15.2
 pkgrel=0
 pkgdesc="Samsung Galaxy Tab 2 (7.0 inch) mainline kernel"
 arch="armv7"
@@ -16,10 +16,10 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-nftables
 	pmb:kconfigcheck-zram"
 makedepends="openssl-dev yaml-dev mpc1-dev mpfr-dev xz findutils bison flex perl sed bash gmp-dev bc linux-headers elfutils-dev"
-_commit="7f948007463451675a274ec0abaefdd9253ae56b"
+_commit="6ba3430a6fad45bf35f2634809e4f3a12f85cb89"
 _config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/openpvrsgx-devgroup/linux_openpvrsgx/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/tmlind/linux_openpvrsgx/archive/$_commit.tar.gz
 	00-add-espresso-dts.patch
 	$_config
 "
@@ -50,7 +50,7 @@ package() {
 }
 
 sha512sums="
-6af57b5b1c91b611eae2a495a014701a53db3f2f99e6f043d7640d788250555e2f5dcbf7ec3deb4ce3124dea809132dd81939be5faa73be2dda48483f341e44b  linux-samsung-espresso3g-7f948007463451675a274ec0abaefdd9253ae56b.tar.gz
-34fabb12df19f26ddac5dcd8e2d943314f9ed6658823c172b822cca1d1dc131ab46345dab908c70c2889f0518736d82bc43de51fc64c37c71c64082b0a5ae734  00-add-espresso-dts.patch
-e633f289ee4900a87f3a95fdeada83ae070911e46b5220377bbb0de56f118bfb3c923187f42b33d0069539a75d0e7ed621ed8e4ccf9552bf9785ed8f79cfc8d7  config-samsung-espresso3g.armv7
+c1f1372afc303cabb55210c7c46a694eff3bc0d7871efee7a690488b782b0c2cb48dbccc43b454a7cf96cfea796397f621d338e791172a8d1f62b26b2e1d54cb  linux-samsung-espresso3g-6ba3430a6fad45bf35f2634809e4f3a12f85cb89.tar.gz
+c914516703fdb42f3b33ee3f449222a81c06b3c9a3dd4f9a24ad55a9b32cf0828bf557897157296a9e5edbe92a898cdd42d147b196162750010e1d087f80ab39  00-add-espresso-dts.patch
+4afcca55621a626cfc37fc571af916e794b201417897ba19d5d9394e7b843b14f6095033a4a4b4f9c2e15bce27e687930d5dfed27253e64bf2a4c78ebbe637c8  config-samsung-espresso3g.armv7
 "

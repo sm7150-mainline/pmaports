@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm 5.15.0-rc1 Kernel Configuration
+# Linux/arm 5.15.2 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="armv7-alpine-linux-musleabihf-gcc (Alpine 10.3.1_git20210921) 10.3.1 20210921"
+CONFIG_CC_VERSION_TEXT="armv7-alpine-linux-musleabihf-gcc (Alpine 10.3.1_git20211027) 10.3.1 20211027"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100301
 CONFIG_CLANG_VERSION=0
@@ -208,6 +208,7 @@ CONFIG_ELF_CORE=y
 CONFIG_BASE_FULL=y
 CONFIG_FUTEX=y
 CONFIG_FUTEX_PI=y
+CONFIG_HAVE_FUTEX_CMPXCHG=y
 CONFIG_EPOLL=y
 CONFIG_SIGNALFD=y
 CONFIG_TIMERFD=y
@@ -624,29 +625,6 @@ CONFIG_ARCH_SUSPEND_POSSIBLE=y
 CONFIG_ARM_CPU_SUSPEND=y
 CONFIG_ARCH_HIBERNATION_POSSIBLE=y
 # end of Power management options
-
-#
-# Firmware Drivers
-#
-
-#
-# ARM System Control and Management Interface Protocol
-#
-# CONFIG_ARM_SCMI_PROTOCOL is not set
-# end of ARM System Control and Management Interface Protocol
-
-# CONFIG_ARM_SCPI_PROTOCOL is not set
-# CONFIG_FW_CFG_SYSFS is not set
-# CONFIG_QCOM_SCM is not set
-# CONFIG_TRUSTED_FOUNDATIONS is not set
-# CONFIG_GOOGLE_FIRMWARE is not set
-CONFIG_HAVE_ARM_SMCCC=y
-
-#
-# Tegra firmware driver
-#
-# end of Tegra firmware driver
-# end of Firmware Drivers
 
 CONFIG_ARM_CRYPTO=y
 CONFIG_CRYPTO_SHA1_ARM=m
@@ -1649,7 +1627,6 @@ CONFIG_GENERIC_ARCH_TOPOLOGY=y
 # CONFIG_MOXTET is not set
 CONFIG_OMAP_INTERCONNECT=y
 CONFIG_OMAP_OCP2SCP=y
-CONFIG_SIMPLE_PM_BUS=y
 CONFIG_TI_PWMSS=y
 CONFIG_TI_SYSC=y
 # CONFIG_VEXPRESS_CONFIG is not set
@@ -1657,6 +1634,29 @@ CONFIG_TI_SYSC=y
 # end of Bus devices
 
 CONFIG_CONNECTOR=m
+
+#
+# Firmware Drivers
+#
+
+#
+# ARM System Control and Management Interface Protocol
+#
+# CONFIG_ARM_SCMI_PROTOCOL is not set
+# end of ARM System Control and Management Interface Protocol
+
+# CONFIG_ARM_SCPI_PROTOCOL is not set
+# CONFIG_FW_CFG_SYSFS is not set
+# CONFIG_TRUSTED_FOUNDATIONS is not set
+# CONFIG_GOOGLE_FIRMWARE is not set
+CONFIG_HAVE_ARM_SMCCC=y
+
+#
+# Tegra firmware driver
+#
+# end of Tegra firmware driver
+# end of Firmware Drivers
+
 # CONFIG_GNSS is not set
 CONFIG_MTD=y
 # CONFIG_MTD_TESTS is not set
@@ -2573,7 +2573,7 @@ CONFIG_WLAN_VENDOR_QUANTENNA=y
 #
 CONFIG_INPUT=y
 CONFIG_INPUT_LEDS=m
-CONFIG_INPUT_FF_MEMLESS=m
+CONFIG_INPUT_FF_MEMLESS=y
 # CONFIG_INPUT_SPARSEKMAP is not set
 CONFIG_INPUT_MATRIXKMAP=m
 
@@ -2705,7 +2705,7 @@ CONFIG_INPUT_MISC=y
 # CONFIG_INPUT_MMA8450 is not set
 # CONFIG_INPUT_GPIO_BEEPER is not set
 # CONFIG_INPUT_GPIO_DECODER is not set
-# CONFIG_INPUT_GPIO_VIBRA is not set
+CONFIG_INPUT_GPIO_VIBRA=y
 CONFIG_INPUT_CPCAP_PWRBUTTON=m
 # CONFIG_INPUT_ATI_REMOTE2 is not set
 # CONFIG_INPUT_KEYSPAN_REMOTE is not set
@@ -4411,15 +4411,6 @@ CONFIG_DRM_TI_TPD12S015=m
 # CONFIG_DRM_MCDE is not set
 # CONFIG_DRM_TIDSS is not set
 CONFIG_SGX=y
-# CONFIG_PVRSGX_1_7_862890 is not set
-# CONFIG_PVRSGX_1_9_2188537 is not set
-# CONFIG_PVRSGX_1_9_2253347 is not set
-# CONFIG_PVRSGX_1_10_2359475 is not set
-# CONFIG_PVRSGX_1_13_3341330 is not set
-# CONFIG_PVRSGX_1_14_3699939 is not set
-# CONFIG_PVRSGX_1_14_3759903 is not set
-# CONFIG_PVRSGX_1_14_3841212 is not set
-# CONFIG_PVRSGX_1_15_4564147 is not set
 CONFIG_PVRSGX_1_17_4948957=y
 # CONFIG_SGX_DEBUG is not set
 CONFIG_SGX_DRM=y
@@ -5319,8 +5310,11 @@ CONFIG_USB_ZERO=m
 # CONFIG_USB_AUDIO is not set
 # CONFIG_USB_ETH is not set
 # CONFIG_USB_G_NCM is not set
-# CONFIG_USB_GADGETFS is not set
-# CONFIG_USB_FUNCTIONFS is not set
+CONFIG_USB_GADGETFS=y
+CONFIG_USB_FUNCTIONFS=y
+# CONFIG_USB_FUNCTIONFS_ETH is not set
+# CONFIG_USB_FUNCTIONFS_RNDIS is not set
+CONFIG_USB_FUNCTIONFS_GENERIC=y
 # CONFIG_USB_MASS_STORAGE is not set
 # CONFIG_USB_G_SERIAL is not set
 # CONFIG_USB_MIDI_GADGET is not set
@@ -6464,7 +6458,6 @@ CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
 # CONFIG_DAX is not set
 CONFIG_NVMEM=y
 CONFIG_NVMEM_SYSFS=y
-# CONFIG_NVMEM_NINTENDO_OTP is not set
 # CONFIG_NVMEM_RMEM is not set
 
 #
