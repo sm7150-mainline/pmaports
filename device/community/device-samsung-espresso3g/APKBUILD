@@ -2,7 +2,7 @@
 # Co-Maintainer: Antoni Aloy <aaloytorrens@gmail.com>
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-espresso3g
-pkgdesc="Samsung Galaxy Tab 2 3g (7.0 inch)"
+pkgdesc="Samsung Galaxy Tab 2 (7.0 inch)"
 pkgver=0.2
 pkgrel=0
 url="https://postmarketos.org"
@@ -12,7 +12,7 @@ options="!check !archcheck"
 depends="postmarketos-base linux-samsung-espresso3g mkbootimg"
 makedepends="devicepkg-dev"
 source="deviceinfo rootston.ini"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-nonfree-userland:nonfree_userland"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -23,8 +23,17 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Wifi firmware"
+	pkgdesc="$pkgdesc (WiFi firmware)"
 	depends="firmware-samsung-espresso3g"
+	mkdir "$subpkgdir"
+}
+
+nonfree_userland() {
+	# Patched wlroots is also necessary for accelerated phosh and sway.
+	# See https://gitlab.com/antoni.aloytorrens/p-wlroots and https://gitlab.com/postmarketOS/pmaports/-/merge_requests/2573.
+	# Unfortunately, such workarounds are not accepted in pmOS.
+	pkgdesc="$pkgdesc (GPU userspace libraries)"
+	depends="mesa-pvr-dri-classic sgx-ddk-um sgx-ddk-um-openrc sgx-ddk-um-ti443x"
 	mkdir "$subpkgdir"
 }
 
