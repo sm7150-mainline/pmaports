@@ -3,7 +3,7 @@
 # Co-Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname=device-wileyfox-crackling
 pkgdesc="Wileyfox Swift"
-pkgver=6
+pkgver=7
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -12,7 +12,10 @@ options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	10-crackling-proximity.rules
+	"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
@@ -28,6 +31,9 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -D -m644 "$srcdir"/10-crackling-proximity.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/10-crackling-proximity.rules
 }
 
 nonfree_firmware() {
@@ -39,4 +45,5 @@ nonfree_firmware() {
 
 sha512sums="
 e30325a138f70c3e3aa5e9ebceec6f032f2641c06c00ce5b55b9e3024b7c2d8dc35e75d0dc77d24c61810bcf864e34004d96a22a69808949f01db513fa85d776  deviceinfo
+a845e860cf43e58818bbffda62a9514e9a24527e14c485dd10944587b29dbf5864a1d3ec17d219c342512fac4bd6c25f5f0f4efb8883b8f383a79846759318ee  10-crackling-proximity.rules
 "
