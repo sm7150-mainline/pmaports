@@ -2,7 +2,7 @@
 # Co-Maintainer: Nikita Travkin <nikita@trvn.ru>
 pkgname=soc-qcom-msm8916
 pkgdesc="Common package for Qualcomm MSM8916 devices"
-pkgver=13
+pkgver=14
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -19,11 +19,13 @@ subpackages="
 _ucm_commit="d9c15108e4301e0dc0192fa15fddc83f623bca97"
 source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8916-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz
 	q6voiced.conf
+	90-feedbackd-pm8916.rules
 	"
 
 package() {
-	# parent package is empty
 	mkdir -p "$pkgdir"
+	install -Dm644 "$srcdir"/90-feedbackd-pm8916.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/90-feedbackd-pm8916.rules
 }
 
 # Upstream keeps making breaking changes to UCM in patch releases.
@@ -74,4 +76,5 @@ rproc_all() {
 sha512sums="
 274ef82a949ea51ec1a1628e4793f99d22982d34165cffb8cdfabb3247f3797987652c43ad81d29f49071d184241d873362a17a1694331f402b69a8dbda42aea  soc-qcom-msm8916-d9c15108e4301e0dc0192fa15fddc83f623bca97.tar.gz
 3a4a9322839d4b3ef9d79668a37840a9f444954759ae3c512e694051d2f9a2573db42ad6c4c1a5c75eeb861232a27ba1a8cef9b503decd54ead25a96e3dd6f98  q6voiced.conf
+90fca4a3291a2c84c0b20e41308c4698374ba896e9365ca80dbfd0c0c4f7dc08317f3dd865a3c7f6707c81b02f5bb24136d1172253d2e4fdd50039bbbf02a178  90-feedbackd-pm8916.rules
 "
