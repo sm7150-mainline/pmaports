@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
-pkgver=13
-pkgrel=1
+pkgver=14
+pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (works only with numeric passwords!)"
 url="https://puri.sm"
 arch="noarch !armhf"
@@ -56,7 +56,7 @@ install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	000-gschema.override
 	01-phoc-scaling
-	02-gnome-software-no-first-run
+	02-gnome-software-tweaks
 	03-favorites
 	dconf-profile-postmarketos
 	firefox.desktop
@@ -78,8 +78,8 @@ package() {
 		"$pkgdir"/usr/share/applications/mimeapps.list
 	install -Dm755 "$srcdir"/01-phoc-scaling \
 		"$pkgdir"/etc/dconf/db/postmarketos.d/01-phoc-scaling
-	install -Dm755 "$srcdir"/02-gnome-software-no-first-run \
-		"$pkgdir"/etc/dconf/db/postmarketos.d/02-gnome-software-no-first-run
+	install -Dm755 "$srcdir"/02-gnome-software-tweaks \
+		"$pkgdir"/etc/dconf/db/postmarketos.d/02-gnome-software-tweaks
 	install -Dm755 "$srcdir"/03-favorites \
 		"$pkgdir"/etc/dconf/db/postmarketos.d/03-favorites
 }
@@ -103,7 +103,7 @@ firefox() {
 sha512sums="
 8cb2e7360347ce1f41b8a889640d65e6cc4ef1381c1d91fcb29a89d4930b54ee21b6adfea02396759cffb732ed8741804c0eff2cccb924603b08aa2f9ea17faa  000-gschema.override
 4a60c08c86688f2d92820bc07305fe1bcff54986d29ee5dd84c7902ea5247b73b96f7453d2da9931a19903b2f5825b8a636f92edcf89bc205a7d389defea0b0e  01-phoc-scaling
-834d1c558b6a9ca26345928895a5436919aab13f944410240516953a13f8fdafae995af4b1baeee560a800c405a4d67c44bb92499bf8cacae7a17f6d9893577e  02-gnome-software-no-first-run
+50aa0083fc83f85e8c3e624c7782a5be01187321645c01d20c9f3adf19893375ab7d7b1ec3d51943fd09bcc78df4bbe1a369c951500bc7b766baff01febc1015  02-gnome-software-tweaks
 b9fed11dfd51cb54f9523376c965a952c1785c369a8e747868609dcb14787f260d994cb8a60a033a0ad2aa0991eb985dff158850d0f6ff48410f5ae7b789fc36  03-favorites
 e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742eee51d93dc83859a7ead553f4dcbc8b6fcefa33ae344ba178  dconf-profile-postmarketos
 5a450658f94e5064ff233ec0dd1fcc42334d599b07bcc7cf281f73e593f5188c1a23cec0246f28bfb19c70fe4c29709dd4bdc72a7593b79ccaca9f34af37e3d6  firefox.desktop
