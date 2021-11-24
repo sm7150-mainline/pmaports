@@ -19,10 +19,9 @@ deviceinfo_screen_height="2160"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
-deviceinfo_kernel_cmdline="console=ttyMSM0,115200n8 earlycon=msm_geni_serial,0xA84000 androidboot.console=ttyMSM0 printk.devkmsg=on androidboot.hardware=qcom androidboot.configfs=true loop.max_part=7 msm_rtb.filter=0x237 ehci-hcd.park=3 service_locator.enable=1 androidboot.memcg=1 cgroup.memory=nokmem androidboot.usbcontroller=a600000.dwc3 swiotlb=2048 androidboot.boot_devices=soc/1d84000.ufshc firmware_class.path=/vendor/firmware_mnt/image"
+deviceinfo_kernel_cmdline="PMOS_NO_OUTPUT_REDIRECT console=ttyMSM0,115200n8"
 deviceinfo_generate_bootimg="true"
 deviceinfo_bootimg_qcdt="false"
-deviceinfo_bootimg_mtk_mkimage="false"
 deviceinfo_bootimg_dtb_second="false"
 deviceinfo_flash_offset_base="0x00000000"
 deviceinfo_flash_offset_kernel="0x00008000"
@@ -33,7 +32,10 @@ deviceinfo_flash_pagesize="4096"
 deviceinfo_flash_sparse="true"
 
 # Kernel
-deviceinfo_append_dtb="false"
+deviceinfo_append_dtb="true"
+deviceinfo_dtb="qcom/sdm845-shift-axolotl"
 
 # Required for devices using UFS as storage (instead of e.g. eMMC)
 deviceinfo_rootfs_image_sector_size="4096"
+
+deviceinfo_modules_initfs="focaltech_fts gpi i2c_qcom_geni qcom_smb2 qcom_spmi_fg qcom_spmi_haptics"
