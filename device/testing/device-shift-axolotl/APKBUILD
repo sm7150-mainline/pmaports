@@ -18,7 +18,14 @@ depends="
 	soc-qcom-sdm845-ucm
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	rootston.ini
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -28,6 +35,19 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+nonfree_firmware() {
+	pkgdesc="Modem, GPU and WiFi Firmware, also needed for osk-sdl"
+	depends="firmware-shift-sdm845 firmware-shift-sdm845-initramfs"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
 sha512sums="
-f6815e23c10e58cfc30e24982b7cef50e0f7f208756226e68de5c37808bce7c1144450005b01401fa49c2887e4c1843e78e170c9f3a53477dea6b3def315068b  deviceinfo
+c66a98e6946fad467aa1f70394eda7883c56fae716330afe2d904a9f840c67deb6f7bfa997f89d08b857b4e3fc3e0ce96a474c4844eb58641addd11740b9a908  deviceinfo
+9fef488a655fcbad4fb28c11d7d6cbe385096e766cd99ca59802f1dbc4e3c99dac0ff682549e02fac0b73f7e95db953f3a87c453d1b19b229785e4ffeec515ed  rootston.ini
 "

@@ -21,6 +21,7 @@ def test_aports_firmware(args):
         "firmware-samsung-baffinlite",  # Depends on firmware-aosp-broadcom-wlan
         "firmware-samsung-crespo",  # Depends on firmware-aosp-broadcom-wlan
         "firmware-samsung-maguro",  # Depends on firmware-aosp-broadcom-wlan
+        "firmware-shift-sdm845",  # Depends on soc-qcom-sdm845-nonfree-firmware
         "firmware-xiaomi-beryllium",  # Depends on soc-qcom-sdm845-nonfree-firmware
         "firmware-xiaomi-ferrari",  # Depends on soc-qcom-msm8916
         "firmware-xiaomi-willow",  # Doesn't build, source link is dead (pma#1212)
