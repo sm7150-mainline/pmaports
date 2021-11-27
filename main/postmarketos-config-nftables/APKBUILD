@@ -1,6 +1,6 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-config-nftables
-pkgver=0.8
+pkgver=0.9
 pkgrel=0
 pkgdesc="nftables firewall configuration for postmarketOS"
 url="https://gitlab.com/postmarketos"
@@ -10,7 +10,6 @@ depends="nftables-openrc"
 subpackages="
 	$pkgname-openusb:openusb
 	$pkgname-log:log
-	$pkgname-anbox:anbox
 	$pkgname-docker:docker
 	$pkgname-networkmanager:networkmanager
 	$pkgname-vncserver:vncserver
@@ -20,7 +19,6 @@ source="
 	rules/01_wwan.nft
 	rules/10_dhcp.nft
 	rules/50_ssh.nft
-	rules/51_anbox.nft
 	rules/51_docker.nft
 	rules/51_hotspot.nft
 	rules/51_usb_inet.nft
@@ -54,13 +52,6 @@ log() {
 	amove etc/nftables.d/99_drop_log.nft
 }
 
-anbox() {
-	depends="$pkgname"
-	description="Enables networking for Anbox"
-
-	amove etc/nftables.d/51_anbox.nft
-}
-
 docker() {
 	depends="$pkgname"
 	description="Enables networking for Docker"
@@ -90,7 +81,6 @@ sha512sums="
 10b3ab4d1f98a669e88fb2113a3880c4bf410d68859fe6a3efe8d638e3060af4a829485aed8c8da226c7fb7a53bab1bc90a659cb8fad9ccd226d808dbba94caf  01_wwan.nft
 d5a7c7fc47924acfafee42d731e6a0109d83af6278053128deecbf3cf40e37447cb649360ee9ebddd2a5ea276888314b63ce7ef828708b5bf7dd1bface7fbc62  10_dhcp.nft
 6b0d0c7c3368dde1ad61d26a0c2e13008f16d5bedaf11fa4a3511b49675505cbbdda8bf8ff158194846b197108f76bdfd66d40a2afb9f4d25c79b02acf5659b7  50_ssh.nft
-8322a8a5a5b1e98e1f44e2091b8b3a06db1e8309ebba5b8b6abe9d6fbb009dffb248af55e631f06f01bbced98b23c205462de73cd354b116dbaa7b6c72746bfd  51_anbox.nft
 76ac156ee80f895ab4f574f70f4ee9f960dfd23a3381bbbf7c744bea919b98f69e91e2eaa10425dfeaf5dbe77b745ec1dd82cb94953835873baffd9e5d89e166  51_docker.nft
 1ce70bb71c9008b6c727a2c26d11467be3b5a0cb9815a8bb0790150c7958457b22b110e35ba974973b9579d44bd14219985d85597c954b5fa8cf77bf206c959b  51_hotspot.nft
 bceb1a12a9de044daa3a4ba647b0d69b257881151a912fc350d6a00fdf0c0903b51fb58c56cfc73e9a75f529bac841d41d466e0f210b1f516e124e69cbfd1feb  51_usb_inet.nft
