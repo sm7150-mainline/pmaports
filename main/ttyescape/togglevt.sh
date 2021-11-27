@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Toggle between tty1 and tty2, launching fbkeyboard when on tty2
+# Toggle between tty1 and tty2, launching $KEYBOARD when on tty2
 # THIS SCRIPT MUST BE RUN AS ROOT
 # usage:
 # togglevt.sh <state>
@@ -19,6 +19,7 @@ FONT="${FONT:-/usr/share/consolefonts/ter-128n.psf.gz}"
 # amount of times power must be pressed to trigger
 PRESSCOUNT="${PRESSCOUNT:-3}"
 TMPFILE="${TMPFILE:-/tmp/ttyescape.tmp}"
+KEYBOARD="${KEYBOARD:-buffyboard}"
 
 if [ ! -e /dev/uinput ]; then
 	if ! modprobe -q uinput; then
@@ -31,12 +32,12 @@ switchtty() {
 
 	if [ "$currentvt" = "tty2" ]; then # switch to tty1 with normal UI
 		chvt 1
-		killall fbkeyboard
-	else # Switch to tty2 with fbkeyboard
+		killall "$KEYBOARD"
+	else # Switch to tty2 with $KEYBOARD
 		setfont "$FONT" -C /dev/tty2
 		chvt 2
-		# sometimes fbkeyboard can be running already, we shouldn't start it in that case
-		[ "$(pgrep fbkeyboard)" ] || nohup fbkeyboard -r "$(cat /sys/class/graphics/fbcon/rotate)" &
+		# sometimes they keyboard can be running already, we shouldn't start it in that case
+		[ "$(pgrep "$KEYBOARD")" ] || nohup "$KEYBOARD" -r "$(cat /sys/class/graphics/fbcon/rotate)" &
 	fi
 }
 
