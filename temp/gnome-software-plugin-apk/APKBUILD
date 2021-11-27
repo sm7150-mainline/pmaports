@@ -9,7 +9,7 @@ arch="x86_64 armv7 armhf aarch64 x86 ppc64le" # apk-polkit-rs
 license="GPL-2.0-or-later"
 makedepends="meson gnome-software-dev gnome-software-static apk-polkit-rs-dev"
 options="!check" # no tests
-source="https://github.com/Cogitri/gnome-software-plugin-apk/archive/v$_pkgver/gnome-software-plugin-apk-$_pkgver.tar.gz"
+source="gnome-software-plugin-apk-$_pkgver.tar.gz::https://github.com/Cogitri/gnome-software-plugin-apk/archive/refs/tags/v$_pkgver.tar.gz"
 
 # override builddir, because "$_pkgver" != "$pkgver"
 builddir="$srcdir/$pkgname-$_pkgver"
@@ -30,4 +30,6 @@ package() {
 	DESTDIR="$pkgdir" meson install --no-rebuild -C output
 }
 
-sha512sums="843387b54d846a7262175a9397811f1495870744f72b896e356321467d772f2b3b50dcdba402f528f32323f86d3a26e48a13ac15bb4ad59915d0f8659de94e22  gnome-software-plugin-apk-0.8.1.tar.gz"
+sha512sums="
+843387b54d846a7262175a9397811f1495870744f72b896e356321467d772f2b3b50dcdba402f528f32323f86d3a26e48a13ac15bb4ad59915d0f8659de94e22  gnome-software-plugin-apk-0.8.1.tar.gz
+"
