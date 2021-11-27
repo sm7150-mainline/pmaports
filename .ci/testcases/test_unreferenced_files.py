@@ -63,7 +63,7 @@ def test_aports_unreferenced_files(args):
     Raise an error if an unreferenced file is found
     """
     for apkbuild_path in glob.iglob(args.aports + "/**/APKBUILD", recursive=True):
-        apkbuild = pmb.parse.apkbuild(args, apkbuild_path)
+        apkbuild = pmb.parse.apkbuild(apkbuild_path)
         sources_chk = parse_source_from_checksums(args, apkbuild_path)
 
         # Collect install files from subpackages

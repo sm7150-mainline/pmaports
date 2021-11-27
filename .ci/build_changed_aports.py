@@ -67,8 +67,7 @@ if __name__ == "__main__":
     # (Iterate over copy of packages, because we modify it in this loop)
     for package in packages.copy():
         apkbuild_path = pmb.helpers.pmaports.find(args, package)
-        apkbuild = pmb.parse._apkbuild.apkbuild(args,
-                                                f"{apkbuild_path}/APKBUILD")
+        apkbuild = pmb.parse._apkbuild.apkbuild(f"{apkbuild_path}/APKBUILD")
 
         if not pmb.helpers.pmaports.check_arches(apkbuild["arch"], arch):
             print(f"{package}: not enabled for {arch}, skipping")

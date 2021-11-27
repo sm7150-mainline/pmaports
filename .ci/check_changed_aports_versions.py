@@ -38,7 +38,7 @@ def get_package_version(args, package, revision, check=True):
     with tempfile.TemporaryDirectory() as tempdir:
         with open(tempdir + "/APKBUILD", "w", encoding="utf-8") as handle:
             handle.write(apkbuild_content)
-        parsed = pmb.parse.apkbuild(args, tempdir + "/APKBUILD", False, False)
+        parsed = pmb.parse.apkbuild(tempdir + "/APKBUILD", False, False)
 
     return parsed["pkgver"] + "-r" + parsed["pkgrel"]
 

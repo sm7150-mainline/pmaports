@@ -17,7 +17,7 @@ def test_aports_ui(args):
     """
     for arch in pmb.config.build_device_architectures:
         for path in glob.iglob(args.aports + "/main/postmarketos-ui-*/APKBUILD"):
-            apkbuild = pmb.parse.apkbuild(args, path)
+            apkbuild = pmb.parse.apkbuild(path)
             # Skip if arch isn't enabled
             if not pmb.helpers.package.check_arch(args, apkbuild["pkgname"], arch, False):
                 continue

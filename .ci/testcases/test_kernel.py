@@ -17,7 +17,7 @@ def test_aports_kernel(args):
     """
 
     for path in glob.iglob(f"{args.aports}/**/linux-*/APKBUILD", recursive=True):
-        apkbuild = pmb.parse.apkbuild(args, path)
+        apkbuild = pmb.parse.apkbuild(path)
         aport_name = os.path.basename(os.path.dirname(path))
 
         if "pmb:cross-native" not in apkbuild["options"]:

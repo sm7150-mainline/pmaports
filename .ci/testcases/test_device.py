@@ -37,7 +37,7 @@ def test_aports_device(args):
     Various tests performed on the /device/*/device-* aports.
     """
     for path in glob.iglob(args.aports + "/device/*/device-*/APKBUILD"):
-        apkbuild = pmb.parse.apkbuild(args, path)
+        apkbuild = pmb.parse.apkbuild(path)
 
         # Depends: Require "postmarketos-base"
         if "postmarketos-base" not in apkbuild["depends"]:
@@ -76,7 +76,7 @@ def test_aports_device_kernel(args):
     # Iterate over device aports
     for path in glob.glob(args.aports + "/device/*/device-*/APKBUILD"):
         # Parse apkbuild and kernels from subpackages
-        apkbuild = pmb.parse.apkbuild(args, path)
+        apkbuild = pmb.parse.apkbuild(path)
         device = apkbuild["pkgname"][len("device-"):]
         kernels_subpackages = pmb.parse._apkbuild.kernels(args, device)
 

@@ -30,7 +30,7 @@ def get_categorized_packages(args):
 
     for path in glob.glob(args.aports + "/*/*/APKBUILD"):
         # Parse APKBUILD
-        apkbuild = pmb.parse.apkbuild(args, path)
+        apkbuild = pmb.parse.apkbuild(path)
         url = apkbuild["url"]
         pkgname = apkbuild["pkgname"]
         pkgver = apkbuild["pkgver"]
