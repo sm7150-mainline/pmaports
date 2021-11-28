@@ -1,0 +1,24 @@
+# Maintainer: Timbz <timon.baetz@protonmail.com>
+pkgname=firmware-huawei-sturgeon
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Huawei Watch (huawei-sturgeon)"
+url="https://github.com/timbz/firmware-huawei-sturgeon"
+arch="armv7"
+license="proprietary"
+options="!check !tracedeps pmb:cross-native"
+
+# Source
+_commit="29fc975c771553d0a2a3ff5df2c9089946b1c324"
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	for f in fw_bcmdhd.bin bcm4343s.txt; do
+		install -Dm644 "$f" "$pkgdir/lib/firmware/postmarketos/$f"
+	done
+}
+
+sha512sums="
+bbbba0607da078cd8f648c083f1a8bbdf6e37f98dffa75e1c68de58db4f1de30b51c0cd969295758e64efcfcc2b30e2298e8f4b2d9747eebc69e44f3ee590ba6  firmware-huawei-sturgeon-29fc975c771553d0a2a3ff5df2c9089946b1c324.tar.gz
+"
