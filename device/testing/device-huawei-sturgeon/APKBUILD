@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-huawei-sturgeon
 pkgdesc="Huawei Watch"
-pkgver=0.1
+pkgver=0.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -15,7 +15,11 @@ depends="
 	postmarketos-base
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	networkmanager.conf
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -23,8 +27,17 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/networkmanager.conf \
+		"$pkgdir"/etc/NetworkManager/conf.d/10-sturgeon.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi firmware"
+	depends="firmware-huawei-sturgeon"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
 35ee89b4f810aeb24a51695607ce8402e683c2a99e1ccc2cbf5f96e2d6628c007371d582b8a780f185f66d3f987c5b6d20eb29d575967678e4c40837559903c1  deviceinfo
+a19923f30ac1d328a85ab1162e44442da28dd1ae45529fb73e21d8004594487f61c8f5372e5bbaadfefd27fe27c8a22ce430b81891ac1965e5704bbfec108b82  networkmanager.conf
 "
