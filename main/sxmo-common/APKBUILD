@@ -2,7 +2,7 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=sxmo-common
 pkgver=1.6.0
-pkgrel=5
+pkgrel=6
 pkgdesc="Simple Mobile: Core package to build custom SXMO desktop environments"
 url="http://sr.ht/~mil/Sxmo"
 arch="noarch !armhf"
@@ -48,6 +48,8 @@ subpackages="$pkgname-qt_tweaks $pkgname-bluetooth"
 source="
 	sxmo-qt-mobile-controls.sh
 	postmarketos.conf
+	pipewire.conf
+	pipewire-alsa.conf
 	"
 options="!check" # has no tests
 
@@ -63,17 +65,29 @@ qt_tweaks() {
 }
 
 bluetooth() {
+	# Should configure pipewire for bluetooth headsets according to this
+	# https://wiki.alpinelinux.org/wiki/PipeWire
 	depends="
+		dbus
+		dbus-openrc
+		dbus-x11
 		bluez
 		bluez-openrc
 		pipewire
-		pipewire-media-session
+		wireplumber
 		pipewire-pulse
+		pipewire-spa-bluez
 		"
 	replaces="bluez" # Autoenable controllers
 	mkdir -p "$subpkgdir"/etc/bluetooth
 	install -Dm644 "$srcdir"/postmarketos.conf \
 		"$subpkgdir"/etc/bluetooth/main.conf
+	mkdir -p "$subpkgdir"/etc/modules-load.d
+	install -Dm644 "$srcdir"/pipewire-alsa.conf \
+		"$subpkgdir"/etc/modules-load.d/pipewire-alsa.conf
+	mkdir -p "$subpkgdir"/etc/pipewire
+	install -Dm644 "$srcdir"/pipewire.conf \
+		"$subpkgdir"/etc/pipewire/pipewire.conf
 	install="$subpkgname.post-install $subpkgname.pre-deinstall"
 	provides="postmarketos-ui-sxmo-bluetooth=$pkgver-r$pkgrel"
 }
@@ -82,4 +96,6 @@ bluetooth() {
 sha512sums="
 bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  sxmo-qt-mobile-controls.sh
 cc4e4404b135ce484e0976b243973e39f1137aa9dd5e9297f767b2ea65b719ca82e84cc66cb093950ce330dbf786981ced2e5b0d16350deb5706a08ffccb4606  postmarketos.conf
+ce1fd5011d83a99f981b43e9cba98c7f2daaa2bdfbe19f4512fbb5ea331610dddf29ffb272ebdbe31c5f9d9c68dd5d5494c17fb769e69e2d9cf325c4493b9fa9  pipewire.conf
+1cd9ff64ef0b53281cc73bb64539a2222b38ce92566154587229b78e39e8b2825b0590714c451c6e65cd5a5a31e3272ab38f8fba31afff6e64e7dcff902abfc1  pipewire-alsa.conf
 "
