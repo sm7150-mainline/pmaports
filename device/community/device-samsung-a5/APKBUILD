@@ -3,7 +3,7 @@
 # Co-Maintainer: Alexey Min <alexey.min@gmail.com>
 pkgname=device-samsung-a5
 pkgdesc="Samsung Galaxy A5 (2015)"
-pkgver=7
+pkgver=8
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -12,7 +12,10 @@ options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	20-tm2-touchkey-input.rules
+	deviceinfo
+"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
@@ -30,6 +33,8 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/20-tm2-touchkey-input.rules \
+		"$pkgdir"/lib/udev/rules.d/20-tm2-touchkey-input.rules
 }
 
 nonfree_firmware() {
@@ -42,5 +47,6 @@ nonfree_firmware() {
 }
 
 sha512sums="
+5a91ca375652bc9d2af90db4f446176a4fd43b5c924362219f6bf35e76de818cb4ecce105ee56b4511c3c0882bd055615f409516fade6dfcd30642cc147c1c5a  20-tm2-touchkey-input.rules
 ee496db47c95cb67b502c5f11d7390b679fbc8fc011eab1f9d7639b5df02c01501cb9963f638adaed93e6626a23e15be6d53b093f2b55f7d19108d06277939f7  deviceinfo
 "

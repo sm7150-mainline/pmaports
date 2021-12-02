@@ -2,7 +2,7 @@
 # Maintainer: Minecrell <minecrell@minecrell.net>
 pkgname=device-samsung-serranove
 pkgdesc="Samsung Galaxy S4 Mini Value Edition"
-pkgver=7
+pkgver=8
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,7 +11,11 @@ options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
-source="deviceinfo rootston.ini"
+source="
+	20-tm2-touchkey-input.rules
+	deviceinfo
+	rootston.ini
+"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
@@ -30,6 +34,8 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/20-tm2-touchkey-input.rules \
+		"$pkgdir"/lib/udev/rules.d/20-tm2-touchkey-input.rules
 }
 
 nonfree_firmware() {
@@ -49,6 +55,7 @@ phosh() {
 }
 
 sha512sums="
+5a91ca375652bc9d2af90db4f446176a4fd43b5c924362219f6bf35e76de818cb4ecce105ee56b4511c3c0882bd055615f409516fade6dfcd30642cc147c1c5a  20-tm2-touchkey-input.rules
 d666cf805d292d13d9e15a350b203580f016f455dad16cbc4a94471edb145fd464c5ad92a50077995234a9db1322e605e0294a6c5d7342fa6675b1bfec4eb69e  deviceinfo
 94c866b6583faadc4a96a4d737983ba7838ede52afa5e29e261ef0ad0f2afe29fd3b793c9208ae74c7d48db6b991ad21800b9e457fbba4c69ce9dec2cda268ea  rootston.ini
 "
