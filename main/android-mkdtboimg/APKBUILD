@@ -1,0 +1,35 @@
+# Maintainer: Diana Atsuko Herring <dianya@nyaaa.jp>
+pkgname=android-mkdtboimg
+pkgver=12.0.0
+pkgrel=0
+_tag=android-12.0.0_r16
+pkgdesc="Tool to create dtbo images"
+url="https://android.googlesource.com/platform/system/libufdt/"
+arch="all"
+provides="android-mkdtimg"
+provider_priority=1
+license="Apache-2.0"
+depends="python3"
+source="
+	mkdtboimg.py.b64::https://android.googlesource.com/platform/system/libufdt/+/refs/tags/$_tag/utils/src/mkdtboimg.py?format=TEXT
+	00_change_shebang_line_to_python3.patch
+"
+options="!check" # No tests
+builddir=$srcdir
+
+prepare() {
+	base64 -d mkdtboimg.py.b64 > mkdtboimg.py
+	default_prepare
+}
+
+package() {
+	install -D -m755 "$srcdir/mkdtboimg.py" \
+		"$pkgdir"/usr/bin/mkdtboimg.py
+
+	ln -s /usr/bin/mkdtboimg.py "$pkgdir/usr/bin/mkdtimg"
+}
+
+sha512sums="
+d15c0aeffa48b8c63c675066f1d1c47d52a4561a275d8ff0e30a3ff749c02ee72f52fd8a49788b15ab0c730b7c3e9e7e190d0ebbac30ed09ea0498d523c8c66c  mkdtboimg.py.b64
+71777c8765e92d44b75fb7eaaf4f9cbb33f6dbb72044eb7bfdcde8960a15c0fce2bda74e32feca700ecaa0e72357a15123d06f2a597d5fbe8ebc4b4dceaef314  00_change_shebang_line_to_python3.patch
+"
