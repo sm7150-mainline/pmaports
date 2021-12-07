@@ -2,12 +2,21 @@
 
 rc-update add tinydm default
 rc-update add urfkill default
-rc-update add ofono default
-rc-update add ofono-auto-enable default
 rc-update add iio-sensor-proxy default
 rc-update add bluetooth default
 rc-update add hfd-service default
 rc-update add networkmanager default
+
+rc-update add modemmanager default
+
+# Migrate from the old ofono setup
+if rc-update del ofono default; then
+	rc-update del ofono-auto-enable default
+	rc-service stop ofono
+	rc-service stop ofono-auto-enable
+
+	rc-service start modemmanager
+fi
 
 tinydm-set-session -s /usr/share/wayland-sessions/plasma-mobile.desktop
 
