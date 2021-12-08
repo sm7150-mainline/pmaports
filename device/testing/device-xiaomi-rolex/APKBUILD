@@ -1,0 +1,46 @@
+# Maintainer: Denis Tolstov <tolstov_den@mail.ru>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-rolex
+pkgdesc="Xiaomi Redmi 4A"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-xiaomi-rolex mkbootimg mesa-dri-swrast mdss-fb-init-hack msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="deviceinfo directfbrc fb.modes ucm/90-device-xiaomi-rolex-audio.rules ucm/HiFi ucm/msm8917-sku7-snd-card.conf"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
+	install -Dm644 "$srcdir"/directfbrc "$pkgdir"/etc/directfbrc
+
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware,Audio DSP Firmware"
+	depends="firmware-xiaomi-rolex wcnss-wlan adsp-audio pulseaudio pulseaudio-alsa alsa-plugins-pulse alsa-utils"
+	mkdir "$subpkgdir"
+	# Install UCM files for rolex
+	install -Dm644 "$srcdir"/HiFi \
+		"$subpkgdir"/usr/share/alsa/ucm2/msm8917-sku7-snd-card/HiFi
+	install -Dm644 "$srcdir"/msm8917-sku7-snd-card.conf \
+		"$subpkgdir"/usr/share/alsa/ucm2/msm8917-sku7-snd-card/msm8917-sku7-snd-card.conf
+	install -Dm644 "$srcdir"/90-device-xiaomi-rolex-audio.rules \
+		"$subpkgdir"/etc/udev/rules.d/90-device-xiaomi-rolex-audio.rules
+}
+
+
+sha512sums="05cca120734c3b61d68498f21b7849644c662c66008634670044251bdf7a596b686a8df67ab0d8f228e23882d455a8397a2d709b879bee620a876c6abee9253c  deviceinfo
+3db3ec596e159be926ea2b5b2496c18e9bc7be24a64a232a56c89a0c9ee710aa2efb2b6fa9fc08efa34759e8242e6c629d08a4ce688ec8aa125830717c191515  directfbrc
+024d11176fbd19f98746317b098d0b54236166aa66155cc68ad75a7ce8335999a1a14ed2efc93f9ac4e05fbc787d8bad793efccf813db81aa48fffd1850ec24e  fb.modes
+89be68680649f7a60b7fb7e5b5f593f60b9be4ca8fa76e90e2be02466add9af7d944f6c1fabed15876bdd7348b15bd1c63d754131ffffea4f0f4641d2d9a847c  90-device-xiaomi-rolex-audio.rules
+749e4e1429b457b494157a7c370d9e03af7c8e979fed55863dc22d4ac3602c4cfc3740f2b4b320bcbbe1c078d6df6a456cbf0f5cbc281003f9283b3d9df353c8  HiFi
+e31645c0f2c04da28f4f1a81ca7563c70e971080a1a54b22413d420a8110636433aeb0ad5d265fde57b7bc87dd6b7cf3158c7aa1d8b36d2d1238299877b98b49  msm8917-sku7-snd-card.conf"

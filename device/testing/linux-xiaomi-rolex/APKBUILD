@@ -1,0 +1,59 @@
+# Maintainer: Denis Tolstov <tolstov_den@mail.ru>
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/rolex_defconfig
+
+pkgname=linux-xiaomi-rolex
+pkgver=3.18.140
+pkgrel=0
+pkgdesc="Xiaomi Redmi 4A kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="xiaomi-rolex"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6"
+
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_xiaomi_msm8917"
+_commit="eb7107087f2bb9dc9c50bb81f31676f155272135"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Nick89786/$_repository/archive/$_commit.tar.gz
+	$_config
+	fix-xorg-mdss-update-fb-info.patch
+	99_framebuffer.patch
+	gcc10-extern_YYLOC_global_declaration.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+}
+
+sha512sums="
+ba19a01f48370e77bbe0197c554b91b18513955c1b9683fef353aea0a5d6c6ee2ef9b868d38b81bdac2abdb89c42ec7eb24feae67caec81a17ba95068528bd69  linux-xiaomi-rolex-eb7107087f2bb9dc9c50bb81f31676f155272135.tar.gz
+2fa9c8edbb96f8f90770191b29c991f99c9b23ec6f1dbfe30641810f6f41cd4d82afd4d57978c7a30797cdf0285e9e732624d02ef0e1e9bcbe32114a45962271  config-xiaomi-rolex.aarch64
+a277af28a718f5caf94257005393aa92d62c96110a8ec6368ff62f2e0d871b69c56c4ce00174db637204d53fa63ad3a79b8d6141713dca0878e1f06fe0379caa  fix-xorg-mdss-update-fb-info.patch
+a6f9899ab97af727e4450201a2edc2bf6fc805d981fa967581b98c5e1ee0b9c005feeeb647b40b220a79ed9a318cf9bbf8f953aab941daf6fea4790a372aae21  99_framebuffer.patch
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+"
