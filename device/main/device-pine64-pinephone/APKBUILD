@@ -5,14 +5,15 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.35
-pkgrel=3
+pkgver=0.36
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 subpackages="
+	$pkgname-gnome
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-shelli
 	$pkgname-plasma-mobile:plasma_mobile
@@ -38,6 +39,7 @@ install="$pkgname.post-install $pkgname.post-upgrade $pkgname.pre-upgrade"
 source="
 	00_alsa_pinephone_dshare.conf
 	10-pinephone-proximity.rules
+	50_sleep.gschema.override
 	60-flashlight.rules
 	70-wifi-pm.rules
 	90-modem-eg25.rules
@@ -156,6 +158,12 @@ plasma_mobile() {
 	install -Dm644 "$srcdir"/kirigami-lowpower.sh "$subpkgdir"/etc/profile.d/kirigami-lowpower.sh
 }
 
+gnome() {
+	install_if="$pkgname=$pkgver-r$pkgrel gnome-control-center"
+	install -Dm644 "$srcdir"/50_sleep.gschema.override \
+		"$subpkgdir"/usr/share/glib-2.0/schemas/50_sleep.gschema.override
+}
+
 upower() {
 	install_if="$pkgname=$pkgver-r$pkgrel upower"
 	replaces="upower"
@@ -183,6 +191,7 @@ vccq_mod() {
 sha512sums="
 5736444fd38ab4351d148ae96c479085f469bd1e51a692fb1827f8ac921a584389f7696985e1fba21c2deac88709910531f4ece282f45ff54e590c2b54b84ba3  00_alsa_pinephone_dshare.conf
 b53cc6f2531854cc9c1e4c334185a20551d64c8675ee8a8eaa03b99d80808fad421a0f6e99e5be212a974d88c85f461a71ba59ac59c29f298c82f211e3be1ef4  10-pinephone-proximity.rules
+bac664c504d9a3adc6e3d25f24ac63cf7c449a82374544a5b56c259dc25af580897b9dc992865ac83f854f95d17c439b7deb47bfb9557aabcb2e80c3942e22be  50_sleep.gschema.override
 9170da7ac869254644f2fc8d914102f2c16e917dbeb53e33b96c76936711d0540f55fa5c2526d73d5fe244500bc2728bc9d629e2524cf52c573d11e833aee666  60-flashlight.rules
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 7dc2b7c20b4a2b15f597a6417bd01797643dad84a3683b0dee648e030fb6326e9d020307643fdcdf1bb43fc44af9975697e417003bd359610bae2d8ce614fc00  90-modem-eg25.rules
