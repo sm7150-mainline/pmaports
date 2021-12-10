@@ -4,7 +4,7 @@
 
 pkgname=binutils-aarch64
 pkgver=2.37
-pkgrel=3
+pkgrel=4
 pkgdesc="Tools necessary to build programs for aarch64 targets"
 url="https://www.gnu.org/software/binutils/"
 makedepends="gettext libtool autoconf automake bison texinfo"
@@ -41,6 +41,14 @@ fi
 #     - CVE-2018-20712
 #   2.28-r1:
 #     - CVE-2017-7614
+
+prepare() {
+	default_prepare
+
+	# Remove existing empty man pages to force them to be regenerated.
+	# Workaround for https://gitlab.alpinelinux.org/alpine/aports/-/issues/13034
+	find "$builddir" -name '[a-z]*\.[0-9]*' -empty -delete
+}
 
 build() {
 	_target="$(arch_to_hostspec aarch64)"
