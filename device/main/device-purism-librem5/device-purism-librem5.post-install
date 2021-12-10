@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Enable GPS support
-rc-update add gpsd default
-sed -i 's/DEVICES=\"/DEVICES=\"\/dev\/gnss0/' /etc/conf.d/gpsd
-sed -i 's/GPSD_OPTIONS=\"/GPSD_OPTIONS=\"-s 9600/' /etc/conf.d/gpsd
+sed -i 's|# nmea-socket=/var/run/gps-share.sock|nmea-socket=/var/run/gnss-share.sock|' /etc/geoclue/geoclue.conf
+
+rc-update -q del gpsd
+rc-update -q add gnss-share

@@ -3,7 +3,7 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.25
+pkgver=1.26
 pkgrel=0
 _confver=41
 _purismrel=1
@@ -15,7 +15,7 @@ arch="aarch64"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf
-	gpsd
+	gnss-share
 	iw
 	linux-purism-librem5
 	mesa-dri-gallium
@@ -49,7 +49,7 @@ subpackages="
 	$pkgname-smartcard
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
-install="$pkgname.post-install"
+install="$pkgname.post-install $pkgname.post-upgrade"
 
 builddir="$srcdir/librem5-base-pureos-$_purismver"
 
