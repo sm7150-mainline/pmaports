@@ -1,0 +1,55 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/exynos9820-beyond1lte_defconfig
+
+pkgname=linux-samsung-beyond1lte
+pkgver=4.14.253
+pkgrel=0
+pkgdesc="Samsung Galaxy S10 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-beyond1lte"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+"
+
+# Source
+_repository="android_kernel_samsung_exynos9820"
+_commit="f7194c1d15eded1c2a1a4dc63825b26103435cc0"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Linux4/$_repository/archive/$_commit.tar.gz
+	$_config
+	selinux_include_generated_headers.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	REPLACE_GCCH=0 . downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+}
+
+sha512sums="
+8255fe212429de8cc8c99421ed2b8b369e849885cc8758eae1d280fdb8dbb00a7c99027015b7be37691a045a1b9a0ae787ed2f5a9c0d534af8d09189f555ab5c  linux-samsung-beyond1lte-f7194c1d15eded1c2a1a4dc63825b26103435cc0.tar.gz
+828cb867d05d8d5dcf092a359a30d65c2cce05ce1c651e0fef4f4cf35e15cc56694196fc09fd813c4ba869b3067190459af2635d95edf8accd1ffdfb619eaa41  config-samsung-beyond1lte.aarch64
+6ab9db01d35f7f5cc2c19ebe5f65a7dc479a1c68de587300cdde9a6c759d34610666c72f0f321cd450cf56c13df3b54a774e0f7ebdbf0f8608fbfd66b49d04e7  selinux_include_generated_headers.patch
+"
