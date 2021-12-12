@@ -3,14 +3,21 @@
 pkgname=device-xiaomi-rolex
 pkgdesc="Xiaomi Redmi 4A"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-xiaomi-rolex mkbootimg mesa-dri-swrast mdss-fb-init-hack msm-fb-refresher"
 makedepends="devicepkg-dev"
-source="deviceinfo directfbrc fb.modes ucm/90-device-xiaomi-rolex-audio.rules ucm/HiFi ucm/msm8917-sku7-snd-card.conf"
+source="
+	deviceinfo
+	directfbrc
+	fb.modes
+	ucm/90-device-xiaomi-rolex-audio.rules
+	ucm/HiFi
+	ucm/msm8917-sku7-snd-card.conf
+	"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -29,12 +36,10 @@ nonfree_firmware() {
 	depends="firmware-xiaomi-rolex wcnss-wlan adsp-audio pulseaudio pulseaudio-alsa alsa-plugins-pulse alsa-utils"
 	mkdir "$subpkgdir"
 	# Install UCM files for rolex
-	install -Dm644 "$srcdir"/HiFi \
-		"$subpkgdir"/usr/share/alsa/ucm2/msm8917-sku7-snd-card/HiFi
-	install -Dm644 "$srcdir"/msm8917-sku7-snd-card.conf \
-		"$subpkgdir"/usr/share/alsa/ucm2/msm8917-sku7-snd-card/msm8917-sku7-snd-card.conf
-	install -Dm644 "$srcdir"/90-device-xiaomi-rolex-audio.rules \
-		"$subpkgdir"/etc/udev/rules.d/90-device-xiaomi-rolex-audio.rules
+	install -Dm644 -t "$subpkgdir"/usr/share/alsa/ucm2/conf.d/msm8917-sku7-snd-card \
+		"$srcdir"/HiFi \
+		"$srcdir"/msm8917-sku7-snd-card.conf \
+		"$srcdir"/90-device-xiaomi-rolex-audio.rules
 }
 
 
