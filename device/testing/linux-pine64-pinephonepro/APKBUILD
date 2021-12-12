@@ -4,7 +4,7 @@
 # boot failure
 
 pkgname=linux-pine64-pinephonepro
-pkgver=5.13.0
+pkgver=5.16.0
 pkgrel=0
 pkgdesc="Mainline kernel for the pinephone pro"
 arch="aarch64"
@@ -24,7 +24,7 @@ makedepends="
 	flex
 	gmp-dev
 	gzip
-	installkernel
+	linux-headers
 	mpc1-dev
 	mpfr-dev
 	openssl-dev
@@ -45,12 +45,12 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.0};;
 	*.*)	_kernver=$pkgver;;
 esac
-_commit="33cda226d19896e92f30a22bc44b05075b13bb32"
+_commit="138b2bb2032e6df014efe88e4a4bbdd4ad93b18d"
 source="
-	$pkgname-$_commit.tar.gz::https://git.sr.ht/~martijnbraam/linux/archive/$_commit.tar.gz
+	https://gitlab.com/pine64-org/linux/-/archive/ppp-$pkgver/linux-ppp-$pkgver.tar.gz
 	config-$_flavor.aarch64
 	"
-builddir="$srcdir/linux-$_commit"
+builddir="$srcdir/linux-ppp-$pkgver"
 
 prepare() {
 	default_prepare
@@ -80,6 +80,6 @@ package() {
 
 
 sha512sums="
-99fb2d699bc1f8bf4ac02fa3104c1dfdf85092dfba80983d611d1f93e1dfd4bbbb0dbe8452933766ab5ce5d9bc9949075d0db6990eb1aeebc9dff6c51d719c38  linux-pine64-pinephonepro-33cda226d19896e92f30a22bc44b05075b13bb32.tar.gz
-8bcf30131a69c997a54727abd207178ac3a1783e0ab660ab5a94f977738c75ff35ba8abf665e889ae9976b7285923d3cb9251f6d4055b29682423689e64d8d6e  config-pine64-pinephonepro.aarch64
+cd6aed0cd2ac4494717568a0f2401e604e3982694eba8612ed7735916b67087473127304066165956edd9a26702ebb522a46993977f7138737a7636d0d342f1a  linux-ppp-5.16.0.tar.gz
+1fc43a1bca4cb2a82617568cee24d49acc172ddc8fcc2d652760c368b242e536629b6e0fda5f38b990ee2e5fb029c1592ea5bdd0f89a83bd3484bc8d533d64cc  config-pine64-pinephonepro.aarch64
 "
