@@ -6,7 +6,7 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
 pkgver=0.36
-pkgrel=0
+pkgrel=1
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -21,7 +21,7 @@ subpackages="
 	$pkgname-vccq-mod:vccq_mod
 	"
 depends="
-	alsa-ucm-conf
+	alsa-ucm-conf>=1.2.6.2
 	atinout
 	eg25-manager
 	eg25-manager-openrc
@@ -117,12 +117,11 @@ package() {
 		"$pkgdir"/usr/lib/udev/rules.d/10-pinephone-proximity.rules
 
 	# Alsa usecase manager config
-	install -Dm644 "$srcdir"/PinePhone.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/simple-card/PinePhone.conf
-	install -Dm644 "$srcdir"/HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/HiFi.conf
-	install -Dm644 "$srcdir"/VoiceCall.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/PinePhone/VoiceCall.conf
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
+		"$srcdir"/PinePhone.conf
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/PinePhone \
+		"$srcdir"/HiFi.conf \
+		"$srcdir"/VoiceCall.conf
 
 	# Pulseaudio config
 	install -Dm644 "$srcdir"/pulse-pinephone.conf \
