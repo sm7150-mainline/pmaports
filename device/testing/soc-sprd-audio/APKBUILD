@@ -1,7 +1,7 @@
 # Maintainer: Anri Dellal <anridellal@gmail.com>
 pkgname=soc-sprd-audio
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Audio support for Spreadtrum devices (common files)"
 url="https://postmarketos.org"
 arch="noarch"
@@ -13,7 +13,7 @@ source="
 	90-sprdphone.rules
 	sc8830/sprdphone.conf
 	sc8830/HiFi
-"
+	"
 
 package() {
 	install -Dm644 "$srcdir"/asound.conf "$pkgdir"/etc/asound.conf
@@ -22,10 +22,9 @@ package() {
 
 sc8830() {
 	depends="soc-sprd-audio"
-	install -Dm644 "$srcdir"/sprdphone.conf \
-		"$subpkgdir"/usr/share/alsa/ucm2/sprdphone/sprdphone.conf
-	install -Dm644 "$srcdir"/HiFi \
-		"$subpkgdir"/usr/share/alsa/ucm2/sprdphone/HiFi
+	install -Dm644 -t "$subpkgdir"/usr/share/alsa/ucm2/conf.d/sprdphone \
+		"$srcdir"/sprdphone.conf \
+		"$srcdir"/HiFi
 }
 sha512sums="369df19f9bf7546236b81a33c00b6384e88e979c4711fead3749f8e60f4cd99f37b31baf1f00d05a821cb71ca2f440648e13083653f1a4ec0c178c7c1c415a58  asound.conf
 27479383bbbce14071bc66a3cb0abb61d62e4e044997a4a55e50de22cb27881edb27c46b5263f043ac6e03d34616b34b74127ee529636d0a570462483c378cb5  90-sprdphone.rules
