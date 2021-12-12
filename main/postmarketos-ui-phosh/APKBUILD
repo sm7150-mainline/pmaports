@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
-pkgver=12
-pkgrel=2
+pkgver=13
+pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5 (works only with numeric passwords!)"
 url="https://puri.sm"
 arch="noarch !armhf"
@@ -24,7 +24,8 @@ depends="
 	tinydm-openrc
 	xdg-desktop-portal-gtk
 	"
-_pmb_recommends="calls
+_pmb_recommends="
+	calls
 	chatty
 	eog
 	firefox-esr
@@ -48,13 +49,15 @@ _pmb_recommends="calls
 	xwayland
 	"
 _pmb_groups="feedbackd"
-subpackages="$pkgname-qt_tweaks"
+subpackages="$pkgname-qt_tweaks $pkgname-firefox"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	000-gschema.override
 	01-phoc-scaling
 	02-gnome-software-no-first-run
+	03-favorites
 	dconf-profile-postmarketos
+	firefox.desktop
 	mimeapps.list
 	osk.sh
 	phosh-qt-mobile-controls.sh
@@ -75,6 +78,8 @@ package() {
 		"$pkgdir"/etc/dconf/db/postmarketos.d/01-phoc-scaling
 	install -Dm755 "$srcdir"/02-gnome-software-no-first-run \
 		"$pkgdir"/etc/dconf/db/postmarketos.d/02-gnome-software-no-first-run
+	install -Dm755 "$srcdir"/03-favorites \
+		"$pkgdir"/etc/dconf/db/postmarketos.d/03-favorites
 }
 
 qt_tweaks() {
@@ -84,11 +89,22 @@ qt_tweaks() {
 		"$srcdir"/phosh-qt-mobile-controls.sh \
 		"$srcdir"/phosh-qt-wayland.sh
 }
+
+firefox() {
+	pkgdesc="Helper for phosh to display the icon"
+	# mobile-config-firefox instead of ff or ff-esr, so it works with both
+	install_if="$pkgname=$pkgver-r$pkgrel mobile-config-firefox"
+	install -Dm644 -t "$subpkgdir"/usr/share/applications \
+		"$srcdir"/firefox.desktop
+}
+
 sha512sums="
 8cb2e7360347ce1f41b8a889640d65e6cc4ef1381c1d91fcb29a89d4930b54ee21b6adfea02396759cffb732ed8741804c0eff2cccb924603b08aa2f9ea17faa  000-gschema.override
 4a60c08c86688f2d92820bc07305fe1bcff54986d29ee5dd84c7902ea5247b73b96f7453d2da9931a19903b2f5825b8a636f92edcf89bc205a7d389defea0b0e  01-phoc-scaling
 834d1c558b6a9ca26345928895a5436919aab13f944410240516953a13f8fdafae995af4b1baeee560a800c405a4d67c44bb92499bf8cacae7a17f6d9893577e  02-gnome-software-no-first-run
+b9fed11dfd51cb54f9523376c965a952c1785c369a8e747868609dcb14787f260d994cb8a60a033a0ad2aa0991eb985dff158850d0f6ff48410f5ae7b789fc36  03-favorites
 e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742eee51d93dc83859a7ead553f4dcbc8b6fcefa33ae344ba178  dconf-profile-postmarketos
+5a450658f94e5064ff233ec0dd1fcc42334d599b07bcc7cf281f73e593f5188c1a23cec0246f28bfb19c70fe4c29709dd4bdc72a7593b79ccaca9f34af37e3d6  firefox.desktop
 0a376140da36538fd73cbd8305ff97b54d2b82831bab64a3b7167019f1d005752eda4e81ef7c19fd64fcba3a775c9e87fca1a250b55a522a0ee9728ab712f089  mimeapps.list
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
 bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  phosh-qt-mobile-controls.sh
