@@ -1,12 +1,11 @@
 # Maintainer: Oliver Smith <ollieparaoid@postmarketos.org>
 pkgname=mobile-config-firefox
-pkgver=3.0.0_rc1
+pkgver=3.0.0
 pkgrel=0
 pkgdesc="Firefox tweaks for mobile and privacy"
 url="https://gitlab.com/postmarketOS/mobile-config-firefox"
 source="
 	https://gitlab.com/postmarketOS/mobile-config-firefox/-/archive/$pkgver/mobile-config-firefox-$pkgver.tar.bz2
-	distro_links.html
 "
 arch="noarch"
 license="GPL-3.0-or-later"
@@ -14,19 +13,13 @@ options="!check" # No tests
 replaces="postmarketos-config-firefox"
 provides="postmarketos-config-firefox=$pkgver"
 
-prepare() {
-	default_prepare
-	cp "$srcdir/distro_links.html" "$builddir/src/homepage"
-}
-
 build() {
-	make DISTRO=postmarketOS
+	make
 }
 
 package() {
 	make DESTDIR="$pkgdir" install
 }
 sha512sums="
-1c80b884d802fb573cf1cc52f955087cbc544ca7e308c6acbdba1a2fd0583c331f5ed6518a830a65fa6f8f9ddc4daa6ad067aa6fc3c76bfb669c0df3cb0f93af  mobile-config-firefox-3.0.0_rc1.tar.bz2
-b99713e30add88f532870430a3c9122faf7e932356cdbe1faa571b661088ce00665a5e499f1873688e58c014b741235571b67efa3df2228b5f3e39972d6f35e3  distro_links.html
+b93052c8047bc91cc7a12d4e33f035bf01f5357e0e09a46c4b0984ad750957da621407245859f96513c1623baeed7e2366285c69c85969572605dcd8c3074173  mobile-config-firefox-3.0.0.tar.bz2
 "
