@@ -2,7 +2,7 @@
 pkgname=device-leeco-s2
 pkgdesc="LeEco Le 2"
 pkgver=0.2
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -30,11 +30,9 @@ package() {
 		"$pkgdir"/etc/directfbrc
 
 	# Alsa usecase manager config
-	install -D -m644 "$srcdir"/msm8976-skun-snd-card.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/msm8976-skun-snd-card/msm8976-skun-snd-card.conf
-	install -D -m644 "$srcdir"/HiFi \
-		"$pkgdir"/usr/share/alsa/ucm2/msm8976-skun-snd-card/HiFi
-
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d \
+		"$srcdir"/msm8976-skun-snd-card.conf \
+		"$srcdir"/HiFi
 }
 
 nonfree_firmware() {
