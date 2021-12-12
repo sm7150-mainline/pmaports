@@ -3,7 +3,7 @@
 pkgname=device-pine64-pinebookpro
 pkgdesc="PINE64 Pinebook Pro"
 pkgver=9
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -50,10 +50,9 @@ package() {
 		"$pkgdir"/etc/sysfs.d/mem_sleep.conf
 
 	# Alsa usecase manager config
-	install -D -m644 "$srcdir"/rockchip,es8316-codec.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/simple-card/rockchip,es8316-codec.conf
-	install -D -m644 "$srcdir"/HiFi \
-		"$pkgdir"/usr/share/alsa/ucm2/rockchip_es8316/HiFi
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
+		"$srcdir"/rockchip,es8316-codec.conf \
+		"$srcdir"/HiFi
 
 	install -D -m755 "$srcdir"/nvme-powersave.initd \
 		"$pkgdir"/etc/init.d/nvme-powersave
