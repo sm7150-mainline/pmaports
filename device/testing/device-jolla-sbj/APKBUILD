@@ -2,7 +2,7 @@
 pkgname=device-jolla-sbj
 pkgdesc="Jolla phone"
 pkgver=0.3
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -48,10 +48,9 @@ package() {
 	install -Dm755 "$srcdir"/buttons.conf "$pkgdir"/etc/triggerhappy/triggers.d/buttons.conf
 
 	# Alsa usecase manager config
-	install -D -m644 "$srcdir"/msm8930-sitar.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/msm8930-sitar/msm8930-sitar.conf
-	install -D -m644 "$srcdir"/HiFi.conf \
-		"$pkgdir"/usr/share/alsa/ucm2/msm8930-sitar/HiFi.conf
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/msm8930-sitar \
+		"$srcdir"/msm8930-sitar.conf \
+		"$srcdir"/HiFi.conf
 
 	# Remove v4l rules due to crashes and hangs
 	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
