@@ -2,14 +2,14 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
-pkgver=1
+pkgver=1.1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
-	alsa-ucm-conf
+	alsa-ucm-conf>=1.2.6.2
 	iw
 	linux-pine64-pinephonepro
 	mesa-dri-gallium
@@ -21,6 +21,9 @@ subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	extlinux.conf
+	ucm/HiFi.conf
+	ucm/PinePhonePro.conf
+	ucm/VoiceCall.conf
 	"
 
 build() {
@@ -31,6 +34,11 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/extlinux.conf \
 		"$pkgdir"/boot/extlinux/extlinux.conf
+
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
+		"$srcdir"/PinePhonePro.conf \
+		"$srcdir"/HiFi.conf \
+		"$srcdir"/VoiceCall.conf
 }
 
 nonfree_firmware() {
@@ -48,4 +56,7 @@ nonfree_firmware() {
 sha512sums="
 6497fcecd21343c1c1a4c1ca600a910b7c38efc8b5ab621c3a47a118056eb8ebee380aba44b53f89dba6e747ff2263069f9582e6bb8177904b91332fe8e75d25  deviceinfo
 1332b541497b98c69163ca4d8fc70f028b35bce4905df0774269766f60b74076fd0e74c7eb4624c0c5cbc3756d9965df13c0f5bd6ea84762f18028094bca70a6  extlinux.conf
+ac22c856af81d00aa6a349b68cf9e8645bf38277d9aafd07f1f46f5f932f48d37b9dfdcc8772fff4027f914c9b4c3b4a11c51bd9f2aa1abbc53abd3f54adb818  HiFi.conf
+c57dae885c9a5f366f18b38a3ce3e21627baaf014724537eced9e8d6ac3ca61ade42b9fcf84db350b1e64742760e8cf4fe10639d41052387927238e85c3c4769  PinePhonePro.conf
+e978876bda8874e30df75c80554ccbbc0dd202c852ecae0b5c1a0d845402a630962afc2691c6f7d5f478fb0e4be045af4ef62ad0b1ce77f62fe2f155dc0a9cff  VoiceCall.conf
 "
