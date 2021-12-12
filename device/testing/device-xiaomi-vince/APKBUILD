@@ -3,7 +3,7 @@
 pkgname=device-xiaomi-vince
 pkgdesc="Xiaomi Redmi Note 5 Plus"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -65,10 +65,9 @@ alsa() {
 	# Install triggerhappy evdev rules for vince
 	install -Dm755 "$srcdir"/buttons.conf -t \
 		"$subpkgdir"/etc/triggerhappy/triggers.d
-	install -Dm644 "$srcdir"/msm8953-snd-card-mtp.conf -t \
-		"$subpkgdir"/usr/share/alsa/ucm2/msm8953-snd-car
-	install -Dm644 "$srcdir"/HiFi.conf -t \
-		"$subpkgdir"/usr/share/alsa/ucm/msm8953-snd-car
+	install -Dm644 -t "$subpkgdir"/usr/share/alsa/ucm2/conf.d/msm8953-snd-card \
+		"$srcdir"/msm8953-snd-card-mtp.conf \
+		"$srcdir"/HiFi.conf
 }
 
 sha512sums="
