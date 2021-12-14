@@ -10,6 +10,7 @@ arch="aarch64"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf>=1.2.6.2
+	eg25-manager>=0.4.2
 	iw
 	linux-pine64-pinephonepro
 	mesa-dri-gallium
@@ -18,6 +19,10 @@ depends="
 	"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+install="
+	$pkgname.post-install
+	$pkgname.post-upgrade
+	"
 source="
 	deviceinfo
 	extlinux.conf
