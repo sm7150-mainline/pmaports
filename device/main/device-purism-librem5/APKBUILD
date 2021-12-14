@@ -3,7 +3,7 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.26
+pkgver=1.27
 pkgrel=0
 _confver=41
 _purismrel=1
@@ -119,7 +119,7 @@ package() {
 
 	# install audio config files from upstream Purism
 	mkdir -p "$pkgdir"/usr/share/alsa/ucm2
-	cp -r "$builddir"/default/audio/ucm2 "$pkgdir"/usr/share/alsa/
+	cp -r "$builddir"/default/audio/ucm2/ "$pkgdir"/usr/share/alsa/ucm2/conf.d/
 
 	# enable bq25890_charger ship_mode
 	install -Dm644 "$srcdir"/modprobe.d-ship_mode.conf \
