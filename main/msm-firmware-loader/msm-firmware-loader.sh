@@ -46,7 +46,7 @@ do
 	DEVNAME="$(grep DEVNAME "$part"/uevent | sed 's/DEVNAME=//g')"
 	PARTNAME="$(grep PARTNAME "$part"/uevent | sed 's/PARTNAME=//g')"
 
-	if [ -z "${FW_PARTITIONS##*$PARTNAME*}" ] && [ -n "$PARTNAME" ]
+	if [ -z "${FW_PARTITIONS##*"$PARTNAME"*}" ] && [ -n "$PARTNAME" ]
 	then
 		mkdir "$BASEDIR/mnt/$PARTNAME"
 		mount -o ro,nodev,noexec,nosuid \
