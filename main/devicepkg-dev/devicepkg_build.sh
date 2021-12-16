@@ -38,7 +38,9 @@ generate_splash_screens()
 	       "splash-resizefs"         "Loading...\\nResizing file system during initial boot" "--center" \
 	       "splash-mounterror"       "unable to mount root partition\\nhttps://postmarketos.org/troubleshooting" "--center" \
 	       "splash-debug-shell"      "WARNING\\ndebug-shell is active\\nhttps://postmarketos.org/debug-shell" "--center" \
-	       "splash-charging-error"   "CHARGING MODE\\nerror starting charging-sdl\\nhttps://postmarketos.org/troubleshooting" "--center"
+	       "splash-charging-error"   "CHARGING MODE\\nerror starting charging-sdl\\nhttps://postmarketos.org/troubleshooting" "--center" \
+	       "splash-netboot-waiting"  "Waiting for netboot...\\nhttps://postmarketos.org/netboot" "--center" \
+	       "splash-netboot-error"    "failed to initialize netboot\\nhttps://postmarketos.org/netboot" "--center"
 
 	# Loop through the splash screens definitions
 	while [ $# -gt 2 ]
