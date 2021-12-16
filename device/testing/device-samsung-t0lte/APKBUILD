@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-t0lte
+pkgdesc="Samsung Galaxy Note II LTE"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-exynos4
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+a2a1742e4868fb153b538c2340f3b5e25e31dae761bf07c8713a1b845b3c49a730d82c78636a998789fcbcc947ad819a9919ac9d3dc88b18c7ffb80419d18551  deviceinfo
+"
