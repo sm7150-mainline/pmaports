@@ -2,7 +2,7 @@
 # Co-Maintainer: Antoni Aloy <aaloytorrens@gmail.com>
 pkgname=linux-samsung-espresso3g
 pkgver=5.15.2
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy Tab 2 (7.0 inch) mainline kernel"
 arch="armv7"
 _carch="arm"
@@ -21,6 +21,8 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/tmlind/linux_openpvrsgx/archive/$_commit.tar.gz
 	00-add-espresso-dts.patch
+	02-CVE-2021-39685-USB-gadget-detect-too-big-endpoint-0-requests.patch
+	03-CVE-2021-39685-USB-gadget-zero-allocate-endpoint-0-buffers.patch
 	$_config
 "
 builddir="$srcdir/linux_openpvrsgx-$_commit"
@@ -52,5 +54,7 @@ package() {
 sha512sums="
 c1f1372afc303cabb55210c7c46a694eff3bc0d7871efee7a690488b782b0c2cb48dbccc43b454a7cf96cfea796397f621d338e791172a8d1f62b26b2e1d54cb  linux-samsung-espresso3g-6ba3430a6fad45bf35f2634809e4f3a12f85cb89.tar.gz
 c914516703fdb42f3b33ee3f449222a81c06b3c9a3dd4f9a24ad55a9b32cf0828bf557897157296a9e5edbe92a898cdd42d147b196162750010e1d087f80ab39  00-add-espresso-dts.patch
+c83480686caa35c51bce654104082e51d2569850bbbdcdb8479fb756ffb7907aefce685b2cfa748bbed0da7b585be83a08d194d0ff315a070a5b5a07c8dbc1d2  02-CVE-2021-39685-USB-gadget-detect-too-big-endpoint-0-requests.patch
+7b76e82bca21c9746bb37df2e840b43a0628a8a00b45ee43dd38ce742d7b99e30faf4bd11c99f1a20299b486885cbb9f62502400544a6a7e319292b97331581d  03-CVE-2021-39685-USB-gadget-zero-allocate-endpoint-0-buffers.patch
 4afcca55621a626cfc37fc571af916e794b201417897ba19d5d9394e7b843b14f6095033a4a4b4f9c2e15bce27e687930d5dfed27253e64bf2a4c78ebbe637c8  config-samsung-espresso3g.armv7
 "
