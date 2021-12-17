@@ -7,7 +7,7 @@ _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 pkgver=5.15.3_git20211119
-pkgrel=0
+pkgrel=1
 _tag="orange-pi-5.15-20211119-1429"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
@@ -53,6 +53,8 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 	0014-add-kb151-support.patch
 	0015-add-kb151-fn-layer-support.patch
+	36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=36dfdf11af49d3c009c711fb16f5c6e7a274505d
+	6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=6eea4ace62fa6414432692ee44f0c0a3d541d97a
 	"
 subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
@@ -118,4 +120,6 @@ c61d4f86eddecca99df1ea1323f988e575f9c49130b64a0c50d61028ff96e24aaa3131fb3731e62e
 22af33264090dac027ee054b4345a07f0b2ee077e2ae1620e83960bfeea096169aec710973fdd50531ed4f1db6cfd59b5796cd235316cb3512aee034f741a694  0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 20efcc7169620ee3114e3b1a11c92cacafe87ffd4bf248a6ba3b36916e4b89cf37d3099535e811769de8b735c2730b2eb313f2bb17d4bd7fd7979dc5f7750d06  0014-add-kb151-support.patch
 0c258c09ca8b962495bbfd5981972885ee13952f94316b75cda33c47ddaa8434315e0d7c929ce0ef556a048c622e139965366ce09be14f919e8f93e93ac3ed2b  0015-add-kb151-fn-layer-support.patch
+59d480b6379dcfff94d05b08e28c005d507f640dc0147841e7df4827fce8db01dab1d4d50fb45b2b3fff72cdeb219a8cd87a889078a6372aea4469c861c378b1  36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch
+61f862cda24e7b14e55e9a9ce3a537adfc7a1c77e0670255dc485886e2c19156ddaf49fdd88b629ddde3cf25a83fd603678caebb96e18f59245917d3a2e51bb0  6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch
 "
