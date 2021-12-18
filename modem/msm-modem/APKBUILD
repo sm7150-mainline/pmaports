@@ -1,6 +1,6 @@
 pkgname=msm-modem
 pkgver=7
-pkgrel=0
+pkgrel=1
 pkgdesc="Common support for Qualcomm MSM modems"
 url="https://postmarketos.org/"
 arch="armhf armv7 aarch64"
@@ -22,7 +22,7 @@ package() {
 
 uim_selection() {
 	pkgdesc="$pkgdesc (UIM selection)"
-	depends="$pkgname libqmi"
+	depends="$pkgname libqmi qmi-utils"
 	install="$subpkgname.post-install"
 
 	install -Dm644 "$srcdir/$subpkgname.confd" "$subpkgdir/etc/conf.d/$subpkgname"
