@@ -1,0 +1,107 @@
+From eec2539ec9efc8a4f50c68204c01c113c39f2976 Mon Sep 17 00:00:00 2001
+From: Dongjin Kim <tobetter@gmail.com>
+Date: Wed, 17 Nov 2021 13:17:51 +0900
+Subject: [PATCH 07/16] ODROID-COMMON: phy/realtek: add Wake-on-Lan to Realtek
+ PHY
+
+Wake-On-Lan can set with 'ethtool'
+    $ sudo ethtool -s eth0 wol u
+
+Check if 'Wake-on' is set with 'u'
+    $ sudo ethtool eth0 | grep Wake
+    Supports Wake-on: ug
+    Wake-on: u
+
+In order to wake from remote, run 'wakeonlan' with IP address:
+    $ wakeonlan 00:1e:06:42:45:32
+
+Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+Change-Id: I8ade81ab50d8d886e2908b9cec543e3bf8cc7abd
+---
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  2 ++
+ drivers/net/phy/realtek.c                     | 34 +++++++++++++++++++
+ 2 files changed, 36 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index d89455803bed..98f3913b7ae5 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -753,6 +753,8 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+ 	priv->wolopts = wol->wolopts;
+ 	mutex_unlock(&priv->lock);
+ 
++	phy_ethtool_set_wol(dev->phydev, wol);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index a5671ab896b3..f832992d80fd 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -12,6 +12,7 @@
+ #include <linux/phy.h>
+ #include <linux/module.h>
+ #include <linux/delay.h>
++#include <linux/etherdevice.h>
+ 
+ #define RTL821x_PHYSR				0x11
+ #define RTL821x_PHYSR_DUPLEX			BIT(13)
+@@ -228,7 +229,11 @@ static int rtl8211f_config_intr(struct phy_device *phydev)
+ 
+ 		val = RTL8211F_INER_LINK_STATUS;
+ 		err = phy_write_paged(phydev, 0xa42, RTL821x_INER, val);
++
++		phy_modify_paged(phydev, 0xd40, 0x16, BIT(5), 0);
+ 	} else {
++		phy_modify_paged(phydev, 0xd40, 0x16, 0, BIT(5));
++
+ 		val = 0;
+ 		err = phy_write_paged(phydev, 0xa42, RTL821x_INER, val);
+ 		if (err)
+@@ -329,6 +334,34 @@ static int rtl8211c_config_init(struct phy_device *phydev)
+ 			    CTL1000_ENABLE_MASTER | CTL1000_AS_MASTER);
+ }
+ 
++static int rtl8211f_set_wol(struct phy_device *phydev,
++		struct ethtool_wolinfo *wol)
++{
++	struct net_device *netdev = phydev->attached_dev;
++	const u8 *mac = (const u8 *)netdev->dev_addr;
++
++	if ((wol->wolopts & (WAKE_MAGIC | WAKE_UCAST)) == 0) {
++		disable_irq_wake(phydev->irq);
++		return 0;
++	}
++
++	if ((wol->wolopts & WAKE_UCAST)
++			&& is_valid_ether_addr(mac)) {
++		phy_write_paged(phydev, 0xd8c, 0x10, (mac[1] << 8) | mac[0]);
++		phy_write_paged(phydev, 0xd8c, 0x11, (mac[3] << 8) | mac[2]);
++		phy_write_paged(phydev, 0xd8c, 0x12, (mac[5] << 8) | mac[4]);
++	}
++
++	if (wol->wolopts & WAKE_MAGIC) {
++		phy_write_paged(phydev, 0xd8a, 0x10, 0x1000);
++		phy_write_paged(phydev, 0xd8a, 0x11, 0x9fff);
++	}
++
++	enable_irq_wake(phydev->irq);
++
++	return 0;
++}
++
+ static int rtl8211f_config_init(struct phy_device *phydev)
+ {
+ 	struct rtl821x_priv *priv = phydev->priv;
+@@ -921,6 +954,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		.handle_interrupt = rtl8211f_handle_interrupt,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= rtl821x_resume,
++		.set_wol	= rtl8211f_set_wol,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
+ 	}, {
+-- 
+2.34.1
+

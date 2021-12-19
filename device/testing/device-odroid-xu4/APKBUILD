@@ -1,0 +1,50 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Henrik Grimler <henrik@grimler.se>
+
+pkgname=device-odroid-xu4
+pkgdesc="ODROID XU4"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="linux-postmarketos-exynos5
+	 postmarketos-base
+	 u-boot-odroid
+	 u-boot-tools
+	"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo uboot-script.cmd"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkimage \
+		-A arm \
+		-O linux \
+		-T script \
+		-C none \
+		-a 0 \
+		-e 0 \
+		-n postmarketos \
+		-d "$srcdir"/uboot-script.cmd \
+		"$srcdir"/boot.scr
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+}
+
+nonfree_firmware() {
+	pkgdesc="Early bootloaders and trustzone firmware (required for a bootable system) and Realtek firmware"
+	depends="firmware-odroid-xu4 linux-firmware-rtl_nic"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+1b88d1c643cca0499c4a0b0cc5645a1b2dd539d59dad7a9ba533e03726e031b061f3e43a981e7084b2b3ef6839b2f44864bef98632552721595b9e977ed84cd6  deviceinfo
+d6001fde71fb393ddf74838a7c2a29635a540f9f466ba8dfdea0fd053bbe99ffa491cb05a0b510f58ca31c80d8483387b1d019e905ff09b9f44a1033fcda7705  uboot-script.cmd
+"

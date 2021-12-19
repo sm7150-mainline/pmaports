@@ -1,0 +1,30 @@
+From d2141d45270cf6a01bf891c022680dc5c69894ed Mon Sep 17 00:00:00 2001
+From: Dongjin Kim <tobetter@gmail.com>
+Date: Wed, 17 Nov 2021 03:25:51 +0900
+Subject: [PATCH 06/16] ODROID-COMMON: add '--symbol' to device tree compiler
+
+This change is to create device tree node '__symbol__' to support device
+treey overlay features, *.dtbo won't be applied without this node.
+
+Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+Change-Id: I3b6102c925e871947f16e7c570563011101f5f86
+---
+ scripts/Makefile.lib | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index d1f865b8c0cb..08d2cc9c50e9 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -294,7 +294,7 @@ quiet_cmd_gzip = GZIP    $@
+ # DTC
+ # ---------------------------------------------------------------------------
+ DTC ?= $(objtree)/scripts/dtc/dtc
+-DTC_FLAGS += -Wno-interrupt_provider
++DTC_FLAGS += -Wno-interrupt_provider --symbol
+ 
+ # Disable noisy checks by default
+ ifeq ($(findstring 1,$(KBUILD_EXTRA_WARN)),)
+-- 
+2.34.1
+
