@@ -1,0 +1,46 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-a7
+pkgdesc="Samsung Galaxy A7 (2015)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-msm8939
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8916
+	soc-qcom-msm8916-rproc
+"
+makedepends="devicepkg-dev"
+source="
+	20-tm2-touchkey-input.rules
+	deviceinfo
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+_pmb_select="soc-qcom-msm8916-rproc"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/20-tm2-touchkey-input.rules \
+		"$pkgdir"/lib/udev/rules.d/20-tm2-touchkey-input.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="firmware-qcom-adreno-a420 msm-firmware-loader firmware-samsung-a7-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+5a91ca375652bc9d2af90db4f446176a4fd43b5c924362219f6bf35e76de818cb4ecce105ee56b4511c3c0882bd055615f409516fade6dfcd30642cc147c1c5a  20-tm2-touchkey-input.rules
+bc3787eccf092939b272f77a6c2febde13d963eb595147dff492e1dae2dc12b6f24b9efc4fdca3be90780d3ebfe4e1cec1b2023c8efd37774486fa34c70b10f7  deviceinfo
+"
