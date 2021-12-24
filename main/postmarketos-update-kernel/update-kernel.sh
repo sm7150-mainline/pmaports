@@ -18,10 +18,11 @@ ab_get_slot() {
 	echo "$ab_slot_suffix"
 }
 
+# $1: partition to flash from deviceinfo
 update_android_fastboot() {
 	BOOT_PART_SUFFIX=$(ab_get_slot) # Empty for non-A/B devices
-	BOOT_PARTITION=$(findfs PARTLABEL="boot${BOOT_PART_SUFFIX}")
-	echo "Flashing boot.img to 'boot${BOOT_PART_SUFFIX}'"
+	BOOT_PARTITION=$(findfs PARTLABEL="$1${BOOT_PART_SUFFIX}")
+	echo "Flashing boot.img to '$1${BOOT_PART_SUFFIX}'"
 	dd if=/boot/boot.img of="$BOOT_PARTITION" bs=1M
 }
 
@@ -43,8 +44,11 @@ update_android_split_kernel_initfs() {
 
 METHOD=${deviceinfo_flash_method:?}
 case $METHOD in
-	fastboot|heimdall-bootimg)
-		update_android_fastboot
+	fastboot)
+		update_android_fastboot "${flash_fastboot_partition_kernel:-boot}"
+		;;
+	heimdall-bootimg)
+		update_android_fastboot "${flash_heimdall_partition_kernel:-KERNEL}"
 		;;
 	heimdall-isorec)
 		update_android_split_kernel_initfs
