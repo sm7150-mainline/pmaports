@@ -2,7 +2,7 @@
 
 pkgname=mesa-pvr-dri-classic
 pkgver=20.3.2
-pkgrel=2
+pkgrel=3
 pkgdesc="Mesa DRI OpenGL library with PowerVR patches"
 url="https://github.com/xc-racer99/mesa-pvr/"
 arch="armhf armv7 aarch64"
@@ -48,9 +48,13 @@ makedepends="
 	zstd-dev
 	"
 depends="mesa sgx-ddk-um-soc"
+subpackages="
+	$pkgname-tinydm
+"
 _commit="5bd40a453e1484efea842be9a3f388adb5fac93c"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/freemangordon/mesa/archive/$_commit.tar.gz
+	pvr-wayland.sh
 	"
 options="!check" # we skip tests intentionally
 builddir="$srcdir/mesa-$_commit"
@@ -102,6 +106,13 @@ package() {
 		"$pkgdir/$_dri_driverdir"/swrast.so
 }
 
+tinydm() {
+	install_if="$pkgname tinydm"
+	install -Dm755 "$srcdir"/pvr-wayland.sh \
+		"$subpkgdir"/etc/tinydm.d/env-wayland.d/pvr-wayland.sh
+}
+
 sha512sums="
 d182338e886fb8a1ee2e049beb8420155a2cb08ea9c0499409d82b1d33fdded790821e6c65dcb6ac519ca6c6c26fc1ba39b5decf1798b8e0cd85996d732204d5  mesa-pvr-dri-classic-5bd40a453e1484efea842be9a3f388adb5fac93c.tar.gz
+0cbcf6b55a139822922e0cae1d1e5df72fd9d44a8afc69d94d6235c817485a9f06fc6ba8eb4f56057cc5b823370656564d117734bb17b8ad54a8012c89673acf  pvr-wayland.sh
 "
