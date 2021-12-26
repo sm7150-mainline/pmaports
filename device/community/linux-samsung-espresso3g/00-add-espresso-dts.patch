@@ -1,5 +1,5 @@
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 7e0934180724..cdf76c6cd05c 100644
+index 7e0934180..cdf76c6cd 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
 @@ -880,6 +880,7 @@ dtb-$(CONFIG_ARCH_OMAP4) += \
@@ -12,10 +12,10 @@ index 7e0934180724..cdf76c6cd05c 100644
  	omap4-var-dvk-om44.dtb \
 diff --git a/arch/arm/boot/dts/omap4-samsung-espresso3g.dts b/arch/arm/boot/dts/omap4-samsung-espresso3g.dts
 new file mode 100644
-index 000000000000..6a75c72d8f72
+index 000000000..4dbc096ee
 --- /dev/null
 +++ b/arch/arm/boot/dts/omap4-samsung-espresso3g.dts
-@@ -0,0 +1,584 @@
+@@ -0,0 +1,632 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/dts-v1/;
 +#include "dt-bindings/gpio/gpio.h"
@@ -223,7 +223,7 @@ index 000000000000..6a75c72d8f72
 +		backlight = <&backlight>;
 +
 +		panel-timing {
-+			clock-frequency = <28444445>;
++			clock-frequency = <42666667>;
 +
 +			hback-porch = <210>;
 +			hactive = <1024>;
@@ -237,7 +237,7 @@ index 000000000000..6a75c72d8f72
 +
 +			hsync-active = <0>;
 +			vsync-active = <0>;
-+			de-active = <0>;
++			de-active = <1>;
 +			pixelclk-active = <0>;
 +		};
 +
@@ -254,12 +254,26 @@ index 000000000000..6a75c72d8f72
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&vibrator_default>;
 +	};
++
++	gp2a_shunt: current-sense-shunt {
++		compatible = "current-sense-shunt";
++		io-channels = <&gpadc 4>;
++		shunt-resistor-micro-ohms = <47000000>; /* 47 ohms */
++		#io-channel-cells = <0>;
++		io-channel-ranges;
++	};
 +};
 +
 +&omap4_pmx_wkup {
 +	twl6030_wkup_pins: pinmux_twl6030_wkup_pins {
 +		pinctrl-single,pins = <
 +			OMAP4_IOPAD(0x56, PIN_OUTPUT_PULLUP | MUX_MODE2)	/* fref_clk3_req.sys_drm_msecure */
++		>;
++	};
++
++	prox_irq: pinmux_prox_irq {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x042, WAKEUP_EN | PIN_INPUT_PULLUP | MUX_MODE3)
 +		>;
 +	};
 +};
@@ -421,6 +435,12 @@ index 000000000000..6a75c72d8f72
 +		>;
 +	};
 +
++	wlan_host_wake: pinmux_wlan_host_wake {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x0bc, WAKEUP_EN | PIN_INPUT | MUX_MODE3)
++		>;
++	};
++
 +	touch_pins: pinmux_touch_pins {
 +		pinctrl-single,pins = <
 +			OMAP4_IOPAD(0x06c, PIN_INPUT | MUX_MODE3)
@@ -430,6 +450,12 @@ index 000000000000..6a75c72d8f72
 +	vibrator_default: pinmux_vibrator_default {
 +		pinctrl-single,pins = <
 +			OMAP4_IOPAD(0x05c, PIN_INPUT_PULLDOWN | MUX_MODE3)
++		>;
++	};
++
++	gp2a_irq: pinmux_gp2a_irq {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x052, WAKEUP_EN | PIN_INPUT | MUX_MODE3)
 +		>;
 +	};
 +};
@@ -454,6 +480,11 @@ index 000000000000..6a75c72d8f72
 +		/* SPI = 0, IRQ# = 7, 4 = active high level-sensitive */
 +		interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>; /* IRQ_SYS_1N cascaded to gic */
 +		interrupt-parent = <&gic>;
++
++		twl_power: power {
++			compatible = "ti,twl6030-power";
++			ti,system-power-controller;
++		};
 +	};
 +};
 +
@@ -489,8 +520,8 @@ index 000000000000..6a75c72d8f72
 +	accelerometer@18 {
 +		compatible = "bosch,bma254";
 +		reg = <0x18>;
-+		vdd-supply = <&ldo5>;
-+		vddio-supply = <&vaux2>;
++		vdd-supply = <&vaux2>;
++		vddio-supply = <&ldo5>;
 +		interrupt-parent = <&gpio4>;
 +		interrupts = <25 (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING)> , <26 (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING)>;
 +		mount-matrix =  "-1",  "0",  "0",
@@ -501,11 +532,26 @@ index 000000000000..6a75c72d8f72
 +	magnetometer@2e {
 +		compatible = "yamaha,yas530";
 +		reg = <0x2e>;
-+		vdd-supply = <&ldo5>;
-+		iovdd-supply = <&vaux2>;
++		vdd-supply = <&vaux2>;
++		iovdd-supply = <&ldo5>;
 +		reset-gpios = <&gpio5 29 GPIO_ACTIVE_LOW>;
 +		interrupts = <&gpio6 10 IRQ_TYPE_EDGE_RISING>;
-+        };
++	};
++
++	light-sensor@44 {
++		compatible = "sharp,gp2ap002a00f";
++		reg = <0x44>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <1 IRQ_TYPE_EDGE_FALLING>;
++		vdd-supply = <&vaux2>;
++		vio-supply = <&vaux2>;
++		io-channels = <&gp2a_shunt>;
++		io-channel-names = "alsout";
++		sharp,proximity-far-hysteresis = /bits/ 8 <0x40>;
++		sharp,proximity-close-hysteresis = /bits/ 8 <0x20>;
++		pinctrl-names = "default";
++ 		pinctrl-0 = <&gp2a_irq &prox_irq>;
++	};
 +};
 +
 +&dss {
@@ -581,6 +627,8 @@ index 000000000000..6a75c72d8f72
 +		interrupt-parent = <&gpio3>;
 +		interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
 +		interrupt-names = "host-wake";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wlan_host_wake>;
 +	};
 +};
 +
@@ -602,7 +650,7 @@ index 000000000000..6a75c72d8f72
 +};
 diff --git a/arch/arm/boot/dts/twl6032.dtsi b/arch/arm/boot/dts/twl6032.dtsi
 new file mode 100644
-index 000000000000..f7b371179e44
+index 000000000..f7b371179
 --- /dev/null
 +++ b/arch/arm/boot/dts/twl6032.dtsi
 @@ -0,0 +1,88 @@
