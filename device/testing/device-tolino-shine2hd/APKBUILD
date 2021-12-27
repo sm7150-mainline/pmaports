@@ -1,0 +1,45 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-tolino-shine2hd
+pkgdesc="Tolino Shine 2 HD"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	perl
+	postmarketos-base
+	u-boot-tolino-shine2hd
+	u-boot-tools
+	linux-kobo-clara-mainline
+"
+makedepends="devicepkg-dev"
+install="$pkgname.post-install"
+
+source="
+	deviceinfo
+	extract-waveform.initd
+	extract-waveform.pl
+	uboot-script.cmd
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm755 "$srcdir"/extract-waveform.pl "$pkgdir"/usr/sbin/extract-waveform.pl
+	install -Dm755 "$srcdir"/extract-waveform.initd "$pkgdir"/etc/init.d/extract-waveform
+	mkimage -A arm -O linux -T script -n postmarketOS \
+		-d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
+	install -Dm644 "$srcdir/boot.scr" "$pkgdir/boot/boot.scr"
+}
+
+sha512sums="
+e4888a03a32e4543cb05b6ff1ecc04ad4ab521c11a39207243166e125a6553b373d19b890c09e3787785bc2929ef07d2434a8cc9b2e6def97b2ced96693a53b1  deviceinfo
+c68e4e41d73a1f9d08aeed95743d5a3ae6831d36d0259ba96ceca297479fef01b78c2b569c376c5b24b4ee24ea7d3cb44d6e97730f44d81fd67e9f0586c4911a  extract-waveform.initd
+34475b314e45135c84e4abdc769d3aba9df56e37814c7f689d5e1aca5af060b2e028c01e871c3863534fede0be7c79aaebe0a1ff4f2bfab2ee974489119005cf  extract-waveform.pl
+3b5c33ffa9b81d55451fd4fa0c9ed69149304b88fb85752cead4d34b5467112029cc4883a91e7daa38f8cba55d90a814711b2c55a8d462d115b62f752ce311b7  uboot-script.cmd
+"
