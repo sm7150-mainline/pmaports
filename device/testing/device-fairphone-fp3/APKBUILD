@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-fairphone-fp3
 pkgdesc="Fairphone 3"
-pkgver=0.3
+pkgver=0.4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -17,7 +17,9 @@ makedepends="devicepkg-dev"
 source="deviceinfo"
 subpackages="
 	$pkgname-downstream-firmware:downstream_firmware
+	$pkgname-mainline-firmware:mainline_firmware
 	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 
@@ -32,6 +34,12 @@ package() {
 kernel_downstream() {
 	pkgdesc="Downstream kernel (recommended)"
 	depends="linux-fairphone-fp3"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Mainline kernel"
+	depends="linux-postmarketos-qcom-msm8953"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
@@ -50,6 +58,19 @@ downstream_firmware() {
 	mkdir "$subpkgdir"
 }
 
+mainline_firmware() {
+	pkgdesc="Firmware support packages for mainline kernel"
+	depends="
+		firmware-fairphone-fp3-adreno
+		firmware-fairphone-fp3-adsp
+		firmware-fairphone-fp3-venus
+		firmware-fairphone-fp3-wcnss
+		rmtfs
+		"
+	install_if="$pkgname-kernel-mainline $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="
-5bee43115c36455fc9f1a6be2107420ccaf94b0c0bdef136fad2af5d6e4545965958a13ba1bbcbf3ef027e0da3cb5f16224b543ebd451a4ebc23e3b102322396  deviceinfo
+412f09b87067f4fb4a89e28617ca7084aba1c6d27815fd2cc913c78dec19988412127d340bd542c04bcef3ba106e168b6e75bbdeb00b6ca93106b2cf130bd4f4  deviceinfo
 "
