@@ -1,0 +1,87 @@
+pkgname=firmware-fairphone-fp4
+pkgver=20211213
+pkgrel=0
+pkgdesc="Firmware for Fairphone 4"
+subpackages="
+	$pkgname-adreno
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-venus
+	$pkgname-wlan
+	"
+url="https://github.com/FairBlobs/FP4-firmware"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="8e8b9b90d16022ef7bcb8b1eb7d762f729b5237e"
+source="https://github.com/FairBlobs/FP4-firmware/archive/$_commit/FP4-firmware-$_commit.tar.gz"
+builddir="$srcdir/FP4-firmware-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adreno() {
+	pkgdesc="Fairphone 4 adreno firmware"
+
+	install -Dm644 "$builddir"/a6* -t \
+		"$subpkgdir/lib/firmware/qcom/"
+}
+
+adsp() {
+	pkgdesc="Fairphone 4 adsp firmware"
+
+	install -Dm644 "$builddir"/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/"
+}
+
+cdsp() {
+	pkgdesc="Fairphone 4 cdsp firmware"
+
+	install -Dm644 "$builddir"/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/"
+}
+
+ipa() {
+	pkgdesc="Fairphone 4 ipa firmware"
+
+	cd "$builddir"
+	for i in lagoon_ipa_fws.*; do
+		install -Dm644 $i \
+			"$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/${i/lagoon_/}"
+	done
+}
+
+modem() {
+	pkgdesc="Fairphone 4 modem firmware"
+
+	# cp because of the modem_pr directory
+	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/"
+	cp -r "$builddir"/modem* \
+		"$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/"
+	find "$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/" \
+		-type f -exec chmod 0644 {} \;
+}
+
+venus() {
+	pkgdesc="Fairphone 4 venus firmware"
+
+	install -Dm644 "$builddir"/venus.* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/"
+}
+
+wlan() {
+	pkgdesc="Fairphone 4 wlan firmware"
+
+	install -Dm644 "$builddir"/board-2.bin -t \
+		"$subpkgdir/lib/firmware/ath10k/WCN3990/hw1.0/"
+	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/"
+}
+
+sha512sums="
+4de6ccb9c1607366b64e3118e9c58d98b7d3e7a1b7dacd406bcf3097690997e01971b5eafc62dad97e6a1979cb5328615e8c52b87fd1b6e7b169107d69b9e493  FP4-firmware-8e8b9b90d16022ef7bcb8b1eb7d762f729b5237e.tar.gz
+"
