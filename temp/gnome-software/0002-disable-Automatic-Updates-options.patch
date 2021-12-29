@@ -1,0 +1,38 @@
+From f85b328d0269630e51db33aef23350eb77e3d2b4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pablo=20Correa=20G=C3=B3mez?= <ablocorrea@hotmail.com>
+Date: Mon, 17 Jan 2022 01:40:42 +0100
+Subject: [PATCH 2/2] disable "Automatic Updates" options
+
+Those can be dangerous, as applications are updated live, and
+kernel or mkinitfs could be installed at any time. This includes
+on very low battery or before user shuts-down the phone.
+
+To avoid making this a hard fork of GS, discussion on steps to
+solve this issue in pma#1388
+---
+ src/gs-prefs-dialog.ui | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/gs-prefs-dialog.ui b/src/gs-prefs-dialog.ui
+index 2ccde058..3094b5c1 100644
+--- a/src/gs-prefs-dialog.ui
++++ b/src/gs-prefs-dialog.ui
+@@ -18,6 +18,7 @@
+             <property name="description" translatable="yes">To avoid charges and network caps, software updates are not automatically downloaded on mobile or metered connections.</property>
+             <child>
+               <object class="HdyActionRow">
++                <property name="sensitive">False</property>
+                 <property name="visible">True</property>
+                 <property name="title" translatable="yes">Automatic Updates</property>
+                 <property name="subtitle" translatable="yes">Downloads and installs software updates in the background, when possible.</property>
+@@ -33,6 +34,7 @@
+             </child>
+             <child>
+               <object class="HdyActionRow">
++                <property name="sensitive">False</property>
+                 <property name="visible">True</property>
+                 <property name="title" translatable="yes">Automatic Update Notifications</property>
+                 <property name="subtitle" translatable="yes">Show notifications when updates have been automatically installed.</property>
+-- 
+2.25.1
+
