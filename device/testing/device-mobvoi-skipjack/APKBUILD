@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-mobvoi-skipjack
+pkgdesc="Mobvoi Ticwatch C2"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-mobvoi-skipjack
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	mdss-fb-init-hack
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+8ec2903bf1c6ebd955fd22fdf1883b7bfdef2d9c58d8f68a81c46de2b2554e10f45671f0de0b35165aa53b270fd6938d78040c2a74b9044b5d32c05afef4f9f5  deviceinfo
+"
