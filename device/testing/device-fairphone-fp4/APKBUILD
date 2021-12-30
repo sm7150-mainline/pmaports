@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-fairphone-fp4
 pkgdesc="Fairphone 4"
-pkgver=0.1
+pkgver=0.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -15,6 +15,9 @@ depends="
 "
 makedepends="devicepkg-dev"
 source="deviceinfo"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,6 +27,25 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+nonfree_firmware() {
+	pkgdesc="Firmware for Modem, WiFi, etc."
+	depends="
+		firmware-fairphone-fp4-adreno
+		firmware-fairphone-fp4-adsp
+		firmware-fairphone-fp4-cdsp
+		firmware-fairphone-fp4-ipa
+		firmware-fairphone-fp4-modem
+		firmware-fairphone-fp4-wlan
+		linux-firmware-ath10k
+		msm-modem
+		msm-modem-uim-selection
+		pd-mapper
+		tqftpserv
+		"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="
-cf7388665c429b7046385b2c810d85b7ed380180d38cdc435915beb3347b2f1679d54388ebf856a812f6839fb431b6c9f7e0d576565f283b941ed26da6543d55  deviceinfo
+f6cbf5a753757cd72df609ff9c45172f5d7f8266d9514275fe3d9f56218abb74ee94bc240c97aa728e2a82f4ccf65b1d6ec608eb0c84d5ba6274e631cf6a019a  deviceinfo
 "
