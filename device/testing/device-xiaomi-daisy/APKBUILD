@@ -4,12 +4,12 @@
 pkgname=device-xiaomi-daisy
 pkgdesc="Xiaomi Mi A2 Lite"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mesa-dri-gallium"
+depends="postmarketos-base mesa-dri-gallium mkbootimg"
 makedepends="devicepkg-dev"
 subpackages="
 		$pkgname-nonfree-firmware:nonfree_firmware
@@ -51,7 +51,7 @@ kernel_downstream() {
 
 kernel_mainline() {
 	pkgdesc="Mainline kernel"
-	depends="linux-postmarketos-qcom-msm8953 mkbootimg"
+	depends="linux-postmarketos-qcom-msm8953"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
