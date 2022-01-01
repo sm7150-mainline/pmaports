@@ -1,0 +1,46 @@
+# Maintainer: Danila Tikhonov (JIaxyga) <JIaxyga@protonmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-xiaomi-tissot
+pkgdesc="Xiaomi Mi A1"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916 linux-postmarketos-qcom-msm8953 mesa-dri-gallium"
+makedepends="devicepkg-dev"
+source="deviceinfo rootston.ini"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-modem $pkgname-phosh"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware, also needed for osk-sdl"
+	depends="firmware-xiaomi-tissot"
+	mkdir "$subpkgdir"
+}
+
+modem() {
+	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	install -Dm644 "$srcdir"/rootston.ini -t \
+		"$subpkgdir"/etc/phosh
+}
+
+sha512sums="
+481edad3784202b3761a70a6be2df9f2eca3acb1617ae2af1e825380d346ef499deae2e201e3db0f3f3e82646c781271c782b7a4e0b7ec1ba7fc13e9ada53178  deviceinfo
+035f97e328ff9f976b082e66b97f76036cdee9825f3022471c7c5d371291cc4b5bd5c18196cd49f4cd9ad6390abe691b506de3b221e3c122433d5620e3b3c4c9  rootston.ini
+"
