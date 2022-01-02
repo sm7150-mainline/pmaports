@@ -1,14 +1,14 @@
 # Maintainer: Daniele Debernardi <drebrez@gmail.com>
 
 pkgname=linux-nokia-n900
-pkgver=5.7.19
-pkgrel=1
+pkgver=5.15.12
+pkgrel=0
 pkgdesc="Mainline kernel fork for Nokia N900"
 arch="armv7"
 url="https://kernel.org/"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-nftables"
-makedepends="bison findutils flex openssl-dev perl postmarketos-installkernel"
+makedepends="bison findutils flex openssl-dev perl gmp-dev mpc1-dev mpfr-dev postmarketos-installkernel"
 
 _carch="arm"
 _flavor=nokia-n900
@@ -23,6 +23,10 @@ source="
 	0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
 	0002-ARM-dts-n900-remove-rx51-battery.patch
 	0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
+	0004-ARM-dts-omap3_n900-disable-thermal-for-now.patch
+	0005-ARM-dts-omap3_n900-fix-lp5523-for-multi-color.patch
+	0006-leds-lp55xx-initialise-output-direction-from-dts.patch
+	0007-Revert-ARM-omap3-enable-off-mode-automatically.patch
 "
 if [ "${pkgver%.0}" = "$pkgver" ]; then
 	source="$source
@@ -55,10 +59,14 @@ package() {
 }
 
 sha512sums="
-45bde01593f6147c8c169b9e46b4b56eee998142552ae0ff82f1dd21b1fd54f3b32f6283f6bd77ea717d374672167849e468c157f235d2f12f7d7816e4623bf6  linux-5.7.tar.xz
-734e59bdfc7071e41194db7581104dbe64f8aa32e85489f5896f82fb4e91f2a73f1aaac29e9b4e2866e57e835795ec964db1ab2d48f6e6f6ff66d9ad87bda8ea  config-nokia-n900.armv7
+d25ad40b5bcd6a4c6042fd0fd84e196e7a58024734c3e9a484fd0d5d54a0c1d87db8a3c784eff55e43b6f021709dc685eb0efa18d2aec327e4f88a79f405705a  linux-5.15.tar.xz
+92113a5c8810a78ea95cc5049bb7bc1f85ff426aa5acbdbc5d0b042da44138027d8db0e4f21f467dfc4a2014a706bc99e27ebe844f2c37f0d1cc3982baab0d9f  config-nokia-n900.armv7
 04a39253afd25a7de03dc45ff322161672005406543c44b97d2dc293f202de7de446aee9707a690a290641c55c7bed6e78bbe096ca323dd7d88d3207427c8d31  0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
 c1055c7a4d2e39ce13db3871d948022b62eb7ebeb898777d197169b3e7c04d705ce7f52f28214754e3cefe99d1dd66f339a1a5770bae1ee970d5926067032061  0002-ARM-dts-n900-remove-rx51-battery.patch
 93e82f7041e347b63fc32ce54176ee3fe7e8260cc793810bcf0146a3699567b63a0cb7ce8c531b0484390907a25c51bfbeb15b32dddb2220c2481ec1f86e5eb5  0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
-0f908677886be528213655d3f307bbf6dde53d475f59e6731ba9729b3ea653af5b3da070cedef7f80ed15f7576ea6506c54333d17e427448ac005c243d5beb9a  linux-5.7.19.patch.xz
+ea33adda06e1fb64b763c34f1f598bb00ccfdba5400d0996871138284b4cb8a51e021c7c0ace9d4bc16027530027fb2a443d5013c6f0b22ed3d64f36152c8854  0004-ARM-dts-omap3_n900-disable-thermal-for-now.patch
+95699ddfa06c7eb59c8a55c931322ac25fa93f23886a67155e7b3db31db74be8ff2e72c304747b9a6fe3971005dc0d804daf3d1e3ce5953a9a99ada8cf703a5c  0005-ARM-dts-omap3_n900-fix-lp5523-for-multi-color.patch
+066e05a285f9a93f718461cd29eb6d917ca0e7cfa532660825059142391925ab780201b99e7d1966f90b8ca092ad0722209ae8bbe260ac40fa16a76d761debfe  0006-leds-lp55xx-initialise-output-direction-from-dts.patch
+acf3beef5448da7f3be19b862ac2fef65379d9f1617246baaab296083901174d891526cd9bf781162d4406089969c311701dfded04219bafd3c5c7784bc4c2e6  0007-Revert-ARM-omap3-enable-off-mode-automatically.patch
+0e2dbfa675f00ddcb72369d1aed76470ed37a0968856e00d620bdc4bc7891a1646b4f9dcf864a57c26a5b9ab6afec43c8a62ad5c7e0549aaf0e8bae2852a752b  linux-5.15.12.patch.xz
 "
