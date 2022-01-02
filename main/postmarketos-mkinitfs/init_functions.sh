@@ -325,6 +325,15 @@ resize_root_filesystem() {
 				echo "Resize 'f2fs' root filesystem ($partition)"
 				resize.f2fs "$partition"
 				;;
+			btrfs)
+				echo "Resize 'btrfs' root filesystem ($partition)"
+				modprobe btrfs
+				resize_root_filesystem_tmp_btrfs="$(mktemp -d)"
+				mount -t btrfs "$partition" "$resize_root_filesystem_tmp_btrfs"
+				btrfs filesystem resize max "$resize_root_filesystem_tmp_btrfs"
+				umount "$resize_root_filesystem_tmp_btrfs"
+				unset resize_root_filesystem_tmp_btrfs
+				;;
 			*)	echo "WARNING: Can not resize '$type' filesystem ($partition)." ;;
 		esac
 		show_splash_loading
@@ -343,6 +352,11 @@ mount_root_partition() {
 		f2fs)
 			echo "Detected f2fs filesystem"
 			mount -t f2fs -o ro "$partition" /sysroot
+			;;
+		btrfs)
+			echo "Detected btrfs filesystem"
+			modprobe btrfs
+			mount -t btrfs -o ro "$partition" /sysroot
 			;;
 		*)	echo "WARNING: Detected '$type' filesystem ($partition)." ;;
 	esac
