@@ -1,7 +1,7 @@
 pkgname=firmware-samsung-gtelwifi
 pkgdesc="Firmware for Samsung Galaxy Tab E 9.6"
 pkgver=0
-pkgrel=0
+pkgrel=1
 url="https://github.com/gtelwifi/android_vendor_samsung_gtelwifi"
 subpackages="$pkgname-wifi"
 arch="armv7"
@@ -28,7 +28,7 @@ wifi() {
 	cd "$srcdir"
 
 	install -Dm644 "android_vendor_samsung_gtelwifi-$_commit_blob/proprietary/etc/wifi/bcmdhd_mfg.bin" -t "$subpkgdir"/lib/firmware/postmarketos/bcm4343
-	install -Dm644 "android_device_samsung_gtelwifi-$_commit_config/configs/wifi/nvram_mfg.txt" -t "$subpkgdir"/lib/firmware/postmarketos/bcm4343
+	install -Dm644 "android_device_samsung_gtelwifi-$_commit_config/configs/wifi/nvram_mfg.txt" "$subpkgdir"/lib/firmware/postmarketos/bcm4343/nvram_4343.txt
 }
 
 
