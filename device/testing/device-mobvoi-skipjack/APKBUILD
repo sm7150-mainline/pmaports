@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-mobvoi-skipjack
 pkgdesc="Mobvoi Ticwatch C2"
-pkgver=0.1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -14,6 +14,11 @@ depends="
 	postmarketos-base
 	mdss-fb-init-hack
 "
+subpackages="
+	$pkgname-nonfree-firmware-modem:nonfree_firmware_modem
+	$pkgname-nonfree-firmware-venus:nonfree_firmware_venus
+	$pkgname-nonfree-firmware-wcnss:nonfree_firmware_wcnss
+"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 
@@ -23,6 +28,24 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware_modem() {
+	pkgdesc="Modem firmware"
+	depends="firmware-mobvoi-skipjack-modem"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_venus() {
+	pkgdesc="GPU firmware"
+	depends="firmware-mobvoi-skipjack-venus"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_wcnss() {
+	pkgdesc="WiFi/Bluetooth firmware"
+	depends="firmware-mobvoi-skipjack-wcnss"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
