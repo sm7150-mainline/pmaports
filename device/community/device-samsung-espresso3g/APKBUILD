@@ -3,15 +3,15 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-espresso3g
 pkgdesc="Samsung Galaxy Tab 2 (7.0 inch)"
-pkgver=0.2
-pkgrel=1
+pkgver=3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="postmarketos-base postmarketos-update-kernel linux-samsung-espresso3g mkbootimg"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="deviceinfo xorg.conf"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-nonfree-userland:nonfree_userland"
 
 build() {
@@ -43,6 +43,13 @@ phosh() {
 			"$subpkgdir"/usr/share/phosh/phoc.ini
 }
 
+x11() {
+	install_if="$pkgname xorg-server"
+	install -Dm644 "$srcdir"/xorg.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/99-modesetting.conf
+}
+
 sha512sums="
 41897ea67a1773023269a37aab57dc6a60e6804319ae329ce355cac464809c16699262dca1f4b1895b01e9e20bfc640ce3577ac0703a33ba2201555e4d0f28f9  deviceinfo
+41f0d61da6f5029be51396fdcdc91aa241c47825adc32cc03f81d1c2ada633f1e293a03dd3ed75a7e8c3e2d960aec889ecdb3af7db5f106444c06f4f6c45debd  xorg.conf
 "
