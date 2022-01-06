@@ -6,9 +6,9 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.15.3_git20211119
-pkgrel=1
-_tag="orange-pi-5.15-20211119-1429"
+pkgver=5.15.13_git20220105
+pkgrel=0
+_tag="orange-pi-5.15-20220105-2352"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
 url="https://megous.com/git/linux/"
@@ -53,8 +53,6 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 	0014-add-kb151-support.patch
 	0015-add-kb151-fn-layer-support.patch
-	36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=36dfdf11af49d3c009c711fb16f5c6e7a274505d
-	6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=6eea4ace62fa6414432692ee44f0c0a3d541d97a
 	"
 subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
@@ -102,9 +100,9 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 sha512sums="
-64ffe0fe5900da8591152a73120b2099d63f3d162787ae4208ae212f38943884b041da3ddc58c5bca367f3c329c94f44d068efa98cf3b7050df2e51c5c06a8ab  linux-postmarketos-allwinner-orange-pi-5.15-20211119-1429.tar.gz
-1003268c4b6dab4879698209778424b217256e4c01cc6ec3e735ea38bcd3f85a14f892af9c160addcba64857b338fcc5d4710b5eef318595e564017c2f73285f  config-postmarketos-allwinner.aarch64
-78f5c800d7aefb31c3ce109b8c3c02a7fad2f026a5b03cc286160b232f9ba01d5949b54307ef655c6fb12200af4b5f713f5bee9bf62ed24de20f67e54109cb0c  config-postmarketos-allwinner.armv7
+e7cd36f6c790cc859c204aa9fdd292219352b4a8d6ce4f3bf0506959d512feb059b18a3be046ffb61151b74bd971f00b962bd475dac04266fff1dd3c8d2685a4  linux-postmarketos-allwinner-orange-pi-5.15-20220105-2352.tar.gz
+7a077309d3cdb1cc9488b3456fa7b60c9ddc136f9092e335c76d7410ac8cb64cd3b89cf9a6d171367cddcd991e74b1dd45fd416dda8213160d42aed8229ce10b  config-postmarketos-allwinner.aarch64
+bb4c8b3e56cffcd9af8b5e696b9e469d7e35046bf4f03e5b2a100c9b3267c464dd9f96d71793ae90087c13a1e5f8a8923ed0ac32d8904525a6bc5ad45c9fe46d  config-postmarketos-allwinner.armv7
 126e0a65e04f22f14eac1281a69000d9d5b107ed8fd1b52f37e812751f55e6c45b0240ceac61c9d95ae7f0543aaf9d96b85a8532baf59283c077b9945e615367  0001-dts-add-dontbeevil-pinephone-devkit.patch
 1dc710f5abacdd5698169d5e985efeca8114986c774c3d65e89812d08ceb3db5ebdc6dd64dd76a262c761f3bfc3ffb6bc237fd5236bd1f89c5975d12e42eda04  0002-dts-add-pinetab-dev-old-display-panel.patch
 96849f40f6defc4ad7646256814bea5ac353c4e0479fd069365ff27456d63da801541ec616f6db736d60f3134384321a9eeb5bfbd555363bf1259c8de63d17fa  0003-dts-pinetab-add-missing-bma223-ohci1.patch
@@ -120,6 +118,4 @@ c61d4f86eddecca99df1ea1323f988e575f9c49130b64a0c50d61028ff96e24aaa3131fb3731e62e
 22af33264090dac027ee054b4345a07f0b2ee077e2ae1620e83960bfeea096169aec710973fdd50531ed4f1db6cfd59b5796cd235316cb3512aee034f741a694  0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 20efcc7169620ee3114e3b1a11c92cacafe87ffd4bf248a6ba3b36916e4b89cf37d3099535e811769de8b735c2730b2eb313f2bb17d4bd7fd7979dc5f7750d06  0014-add-kb151-support.patch
 0c258c09ca8b962495bbfd5981972885ee13952f94316b75cda33c47ddaa8434315e0d7c929ce0ef556a048c622e139965366ce09be14f919e8f93e93ac3ed2b  0015-add-kb151-fn-layer-support.patch
-59d480b6379dcfff94d05b08e28c005d507f640dc0147841e7df4827fce8db01dab1d4d50fb45b2b3fff72cdeb219a8cd87a889078a6372aea4469c861c378b1  36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch
-61f862cda24e7b14e55e9a9ce3a537adfc7a1c77e0670255dc485886e2c19156ddaf49fdd88b629ddde3cf25a83fd603678caebb96e18f59245917d3a2e51bb0  6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch
 "
