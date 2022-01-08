@@ -5,7 +5,7 @@
 TELNET_PORT=23
 
 setup_usb_network
-start_udhcpd
+start_unudhcpd
 
 show_splash /splash-debug-shell.ppm.gz
 
