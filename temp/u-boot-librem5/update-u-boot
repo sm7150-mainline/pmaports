@@ -14,12 +14,13 @@ get_defaults() {
 	if [ -z "$board" ] && [ -e /sys/firmware/devicetree/base/compatible ]; then
 		case "$(cat /sys/firmware/devicetree/base/compatible 2>/dev/null)" in
 		purism,librem5r*) board=librem5;;
+		purism,librem5-devkit*) board=librem5-devkit;;
 		esac
 	fi
 
 	if [ -z "$device" ]; then
 		case "$board" in
-		librem5) device=/dev/mmcblk0 ;;
+		librem5*) device=/dev/mmcblk0 ;;
 		esac
 	fi
 
@@ -37,7 +38,7 @@ usage() {
 	get_defaults
 
 	cat <<EOF
-usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-d|--device <device>]
+usage: $0 [-n,--dry-run] [-i,--imagedir <imagedir>] [-b|--board <board-type>] [-d|--device <device>] [-s|--skip-delay]
 
 options:
 
@@ -52,7 +53,28 @@ options:
 
  -n,--dry-run             Print commands but don't execute them
 
+ -s,--skip-delay          Skip delay and flash the image immediately
+
 EOF
+}
+
+validate_checksum() {
+	file="$1"
+	file_sha512="$file.sha512"
+	file_size=$(stat -c%s $file)
+	device="$2"
+	bs="$3"
+	seek="$4"
+
+	checksum0=$(cat $file_sha512 | awk {'print $1'})
+	checksum1=$(dd if=$device bs=1 skip=$(($seek * $bs)) count=$file_size status=none | sha512sum | awk {'print $1'})
+	if [ "$checksum0" != "$checksum1" ]; then
+		echo "File: $checksum0"
+		echo "Part: $checksum1"
+		die "Checksum failed"
+	fi
+	echo "Successful U-Boot image checksum verification on $device :"
+	echo -e "\t$checksum1"
 }
 
 while [ $# -gt 0 ]; do
@@ -77,13 +99,16 @@ while [ $# -gt 0 ]; do
 	-n|--dry-run)
 		dryrun="echo"
 		;;
-        --)
-                break
-                ;;
-        -*)
-                usage
-                exit 1
-                ;;
+	-s|--skip-delay)
+		skip_delay="yes"
+		;;
+	--)
+		break
+		;;
+	-*)
+		usage
+		exit 1
+		;;
         esac
 done
 
@@ -94,8 +119,12 @@ if [ -z "$board" -o -z "$device" -o -z "$imagedir" -o  ! -e "$imagedir" ]; then
 fi
 
 if [ -z "$dryrun" ]; then
-	echo "Updating $board u-boot in $device in 3 seconds..."
-	sleep 3
+	if [ -z "$skip_delay" ]; then
+		echo "Updating $board u-boot in $device in 3 seconds..."
+		sleep 3
+	else
+		echo "Updating $board u-boot in $device"
+	fi
 fi
 
 (
@@ -103,7 +132,13 @@ set -e
 case "$board" in
 librem5)
 	[ -e "$imagedir/librem5" ] || die "librem5 images not installed, apk add u-boot-librem5"
-	$dryrun dd if=$imagedir/librem5/phone-boot.img of=$device bs=1k seek=2 status=none
+	$dryrun dd if=$imagedir/librem5/phone-boot.img of=$device bs=1024 seek=2 oflag=direct status=none
+	[ -z "$dryrun" ] && validate_checksum $imagedir/librem5/phone-boot.img $device 1024 2
+	;;
+librem5-devkit)
+	[ -e "$imagedir/librem5" ] || die "librem5-devkit images not installed, apk add u-boot-librem5-devkit"
+	$dryrun dd if=$imagedir/librem5/devkit-boot.img of=$device bs=1024 seek=2 oflag=direct status=none
+	[ -z "$dryrun" ] && validate_checksum $imagedir/librem5/devkit-boot.img $device 1024 2
 	;;
 esac
 $dryrun sync
