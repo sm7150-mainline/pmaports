@@ -1,0 +1,71 @@
+From 2c7e4a1ac8ec1f908927793e893566aac3dcb9df Mon Sep 17 00:00:00 2001
+From: Merlijn Wajer <merlijn@wizzup.org>
+Date: Sun, 12 Dec 2021 02:23:36 +0100
+Subject: [PATCH] wip: Revert "dma-direct: Fix potential NULL pointer
+ dereference"
+
+This reverts commit f959dcd6ddfd29235030e8026471ac1b022ad2b0.
+
+We will need to find a proper fix for this - but it looks like the
+dma_capable change in include/linux/dma-direct.h makes the ssi code
+always take the DMA path, which causes various problems. I am not 100%
+sure that is case, but I have a hunch that pio was always used on the
+N900 for this. If this is not the case, we'll have figure out what else
+is required to make DMA work again.
+---
+ include/linux/dma-direct.h | 4 ++++
+ kernel/dma/mapping.c       | 9 ---------
+ 2 files changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 18aade195884..6eb8f8ae76da 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -103,6 +103,10 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
+ 
+ 	if (addr == DMA_MAPPING_ERROR)
+ 		return false;
++
++	if (!dev->dma_mask)
++		return false;
++
+ 	if (is_ram && !IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT) &&
+ 	    min(addr, end) < phys_to_dma(dev, PFN_PHYS(min_low_pfn)))
+ 		return false;
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 8349a9f2c345..899e6fbb9f40 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -148,9 +148,6 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
+ 
+-	if (WARN_ON_ONCE(!dev->dma_mask))
+-		return DMA_MAPPING_ERROR;
+-
+ 	if (dma_map_direct(dev, ops) ||
+ 	    arch_dma_map_page_direct(dev, page_to_phys(page) + offset + size))
+ 		addr = dma_direct_map_page(dev, page, offset, size, dir, attrs);
+@@ -185,9 +182,6 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
+ 
+-	if (WARN_ON_ONCE(!dev->dma_mask))
+-		return 0;
+-
+ 	if (dma_map_direct(dev, ops) ||
+ 	    arch_dma_map_sg_direct(dev, sg, nents))
+ 		ents = dma_direct_map_sg(dev, sg, nents, dir, attrs);
+@@ -293,9 +287,6 @@ dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
+ 
+-	if (WARN_ON_ONCE(!dev->dma_mask))
+-		return DMA_MAPPING_ERROR;
+-
+ 	/* Don't allow RAM to be mapped */
+ 	if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
+ 		return DMA_MAPPING_ERROR;
+-- 
+2.34.1
+
