@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="fbp"
+command="/usr/bin/fbp"
+pidfile="/var/run/fbp.pid"
+output_log="/var/log/fbp_stdout.log"
+error_log="/var/log/fbp_stderr.log"
+command_background=true
+
+depend()
+{
+	after consolefont
+	keyword -docker -lxc -openvz -prefix -systemd-nspawn -uml -vserver -xenu
+}
+
+start_pre()
+{
+	# Setup kernel support for user level drivers (input subsystem)
+	if [ ! -e /dev/uinput ]; then
+		if ! modprobe -q uinput; then
+			eerror "The uinput module needs to be loaded by " \
+				"the fbp service or built in."
+		fi
+	fi
+}

@@ -1,0 +1,36 @@
+# Reference: https://postmarketos.org/uipkg
+# Maintainer: Miles Alan <m@milesalan.com>
+pkgname=postmarketos-ui-framebufferphone
+pkgver=1
+pkgrel=0
+pkgdesc="Minimalist framebuffer menu/keyboard UI accessible via touch/volume keys & compatible scripts"
+url="http://sr.ht/~mil/framebufferphone"
+arch="aarch64 x86_64" # Limited by fbp / zig in alpine support
+license="GPL-3.0-or-later"
+depends="
+	postmarketos-base-ui
+	fbp
+"
+_pmb_recommends="
+	f_scripts-f_audio
+	f_scripts-f_files
+	f_scripts-f_game
+	f_scripts-f_maps
+	f_scripts-f_networks
+	f_scripts-f_phone
+	f_scripts-f_rss
+	f_scripts-f_theme
+	f_scripts-f_timer
+	f_scripts-f_web
+	f_scripts-f_youtube
+"
+install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-upgrade"
+source="fbp.init"
+options="!check" # No tests
+
+package() {
+	install -Dm755 "$srcdir"/fbp.init "$pkgdir"/etc/init.d/fbp
+}
+sha512sums="
+e95d2daaa90b8f4cf4ba7da9e7330b59057505857b8688b4d60b7f2ddeec8d59308002ecd17083b1c6096a40dc496b996dba42ef21fff95619fe535280465372  fbp.init
+"
