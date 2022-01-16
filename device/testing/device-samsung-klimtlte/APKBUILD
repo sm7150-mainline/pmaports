@@ -2,22 +2,20 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-klimtlte
 pkgdesc="Samsung Galaxy Tab S 8.4 LTE"
-pkgver=0.1
+pkgver=1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="
-	linux-samsung-klimtlte
-	mesa-dri-gallium
-	mkbootimg
-	postmarketos-base
-	msm-fb-refresher
-"
+depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
 source="deviceinfo"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -27,10 +25,24 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_downstream() {
+	pkgdesc="Display and wifi works (see device table for details)"
+	depends="linux-samsung-klimtlte mesa-dri-gallium msm-fb-refresher"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Mainline WIP (usb networking works but not much else)"
+	depends="linux-postmarketos-exynos5"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
 	pkgdesc="Non-free firmware for the Samsung Galaxy Tab S"
 	depends="firmware-samsung-klimt"
 	mkdir "$subpkgdir"
 }
 
-sha512sums="b3ccb88021887be5f76183e339642e9c3863f17b9c50f068f906a644edd444346ed12f2b539d1ac9ef32d40340ae74b935030173f932018f7a180c96d00966f4  deviceinfo"
+sha512sums="
+cba652c5df290ea3f03651a8cba3c9b7e288f3f2b3a01950c9ee7a0663f8e5da396c05ad3477c08b7a0b0304c7fcc33a671ef65e57d1a5c2132d1258cda6aea4  deviceinfo
+"
