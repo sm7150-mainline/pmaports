@@ -1,7 +1,7 @@
 # Kernel config based on: arch/arm/configs/kobo_defconfig
 
 pkgname=linux-kobo-clara-mainline
-pkgver=5.15.0
+pkgver=5.16.0
 pkgrel=0
 pkgdesc="Kobo Clara HD kernel fork, close to mainline"
 arch="armv7"
@@ -27,7 +27,7 @@ makedepends="
 
 # Source
 _repository="linux"
-_commit="622c5f8420dd53980d9248c58d0a5b74c06cd022"
+_commit="9be9fd52253701860b03e0d31557021943d7e0a0"
 _rtl8189fs_repository="rtl8189ES_linux"
 _rtl8189fs_commit="3129a665f835ce0342f9a85a0ce14a556e656b8c"
 _config="config-$_flavor.$arch"
@@ -52,6 +52,7 @@ build() {
 		KBUILD_BUILD_VERSION="$(( pkgrel + 1 ))-postmarketOS"
 	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$(( pkgrel + 1 ))-postmarketOS" \
+		CONFIG_RTW_SDIO_PM_KEEP_POWER=n \
 		-C "$_rtl8189fs_dir" KSRC="$builddir"
 }
 
@@ -65,7 +66,7 @@ package() {
 }
 
 sha512sums="
-f567b57abee54ba871cb699246b9129bf34149905871654dec2c34cdbfacd72993e596f1b3b638d964f65e253dcea18c3185ccdc39847892b9b5e639ee967ed7  linux-kobo-clara-mainline-622c5f8420dd53980d9248c58d0a5b74c06cd022.tar.gz
+8b171751da8c6b228cfeda9ffa77742fbeb70a588c9d22856e097431571e0b6b6737040c15d0849125bafc0cca600a934b0cf9cee36515d840b5d4c5665771ce  linux-kobo-clara-mainline-9be9fd52253701860b03e0d31557021943d7e0a0.tar.gz
 ef45b210ccd9ebb59552561a40bf37f0ef65c6d23c85ddefa1287c79bbea5fd0be9571e850b8980d8d4198a2076b75d9683c6620582a08b79564bec6639b2857  rtl8189ES_linux-3129a665f835ce0342f9a85a0ce14a556e656b8c.tar.gz
 e60b676f69e77102f21b9b6322f545da24556664f9cb3cb914e5f0e53d4efa817da8830c274c89ebc15fa5aad4e7fe11b91cad4837f56d1d28405dfbc185753a  config-kobo-clara-mainline.armv7
 "
