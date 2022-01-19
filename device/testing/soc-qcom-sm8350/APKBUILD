@@ -1,0 +1,25 @@
+pkgname=soc-qcom-sm8350
+pkgdesc="Common package for Qualcomm sm8350 devices"
+pkgver=5
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !archcheck !tracedeps"
+depends="
+	swclock-offset
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi, and GPU Firmware"
+	depends="pd-mapper pd-mapper-openrc tqftpserv tqftpserv-openrc msm-modem"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
