@@ -1,0 +1,21 @@
+pkgname=firmware-oneplus-lemonade
+pkgver=1
+pkgrel=0
+_commit="558e673e1b7e3adcccc1c94b296c4ee1d38927b9"
+pkgdesc="Firmware files for oneplus lemonade"
+url="https://gitlab.com/Robbbbbb/firmware-oneplus-lemonade"
+arch="aarch64"
+license="proprietary"
+source="$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/firmware-oneplus-lemonade.tar.gz"
+options="!check !strip !archcheck !spdx !tracedeps pmb:cross-native"
+builddir="$srcdir/firmware-oneplus-lemonade-$_commit"
+
+package() {
+	_files="adsp.mbn cdsp.mbn ipa_fws.mbn modem.mbn slpi.mbn"
+	for _i in $_files; do
+		install -Dm644 "$_i" "$pkgdir/lib/firmware/postmarketos/$_i"
+	done
+}
+sha512sums="
+783ff1cd824cc1d72329b2daf3b773c790263c88f2726837ffff0c340998f023f9e3b8f26829fef3a930dff79e7f8ddb53ebe6f23bd4864040c22d0ded98a760  firmware-oneplus-lemonade-558e673e1b7e3adcccc1c94b296c4ee1d38927b9.tar.gz
+"

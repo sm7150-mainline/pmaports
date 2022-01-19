@@ -1,0 +1,56 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-oneplus-lemonade
+pkgdesc="OnePlus 9 & 9 Pro"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm8350
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	soc-qcom-sm8350
+"
+makedepends="
+	devicepkg-dev
+	dtc
+	android-mkdtimg
+"
+source="
+	deviceinfo
+	empty-oneplus-lemonade.dts
+	empty-oneplus-lemonadep.dts
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	dtc -O dtb -o "$srcdir/empty-oneplus-lemonade.dtbo" -b 0 -@ \
+		"$srcdir/empty-oneplus-lemonade.dts"
+	dtc -O dtb -o "$srcdir/empty-oneplus-lemonadep.dtbo" -b 0 -@ \
+		"$srcdir/empty-oneplus-lemonadep.dts"
+	mkdtimg create "$srcdir/dtbo.img" --page_size=4096 \
+		"$srcdir/empty-oneplus-lemonade.dtbo" \
+		"$srcdir/empty-oneplus-lemonadep.dtbo"
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir/dtbo.img" "$pkgdir/boot/dtbo.img"
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi, and GPU Firmware"
+	depends="firmware-oneplus-lemonade"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+bcd014961747e5ce2d09a2c69af5b80067c0b500f788d519594f548a85de61f96d7555a107d65ba3746ba69ecf1f160409f5110a33c1f10c75604a7d50df3a49  deviceinfo
+cf3bde87540de9a94d253ab211ca9d6ca426e062237db3ab6ec5dfcdb35c161fdfc22837ca696dd27ee5a371157186a5e65b8de33dcc69ce49b7a9584fdce51c  empty-oneplus-lemonade.dts
+cd5d0daff0f156c6f8e2b987a84199cf6d6cd4190b4e91f81465230d9a39f8dba6e25b1aa995b9da829ba940fcf25c43f5c32ae0c041f16901e343dabcf332b8  empty-oneplus-lemonadep.dts
+"
