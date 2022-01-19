@@ -2,7 +2,7 @@
 
 pkgname=firmware-odroid-xu4
 pkgver=2020.01
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for ODROID XU4"
 url="https://github.com/hardkernel/u-boot"
 arch="armv7"
@@ -16,7 +16,7 @@ source="xu4-bl1.bin.hardkernel::https://github.com/hardkernel/u-boot/raw/u-boot_
 package() {
 	# Trim bl1.bin.hardkernel to 15360 bytes
 	# See https://forum.odroid.com/viewtopic.php?f=93&t=42724
-	truncate -s15360 "$srcdir"/bl1.bin.hardkernel
+	truncate -s15360 "$srcdir"/xu4-bl1.bin.hardkernel
 
 	# Install firmware
 	install -D -m644 "$srcdir"/xu4-bl1.bin.hardkernel \
