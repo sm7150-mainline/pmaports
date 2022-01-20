@@ -1,14 +1,25 @@
 # U-boot with patches to make the PinePhone boot faster and have control over the ddr clock speed
 pkgname=u-boot-pinephone
 pkgver=2021.10
-pkgrel=0
+pkgrel=1
 pkgdesc="U-Boot bootloader for the PINE64 PinePhone"
 url="https://source.denx.de/u-boot"
 arch="aarch64"
 license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
 	ISC LGPL-2.0-only LGPL-2.1-only X11"
 depends="linux-postmarketos-allwinner>=5.12"
-makedepends="$depends_dev bc dtc python3-dev py3-setuptools swig bison flex openssl-dev arm-trusted-firmware crust"
+makedepends="$depends_dev
+	arm-trusted-firmware
+	bc
+	bison
+	crust
+	dtc
+	flex
+	openssl-dev
+	py3-setuptools
+	python3-dev
+	swig
+	"
 options="!check"
 source="http://source.denx.de/u-boot/u-boot/-/archive/v$pkgver/u-boot-v$pkgver.tar.gz
 	update-u-boot
