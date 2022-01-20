@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-sony-ivy
+pkgdesc="Sony Xperia Z3+"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-sony-ivy mkbootimg mesa-dri-swrast mkbootimg msm-fb-refresher"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	90-android-touch-dev.rules
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
+		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
+}
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-sony-ivy"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+6a94362c20b33810c489057b2c12fdea4fe214739d87311d971facc41ce23fdf9fd5577e07467c6084eb277a06bc8a06c8b927fa014b1408d6bd7e76a8cacf29  deviceinfo
+8b6034c0338ab4c7d648f47983aad6da07e427e7dba47baabf85a1b3ddeeda47c8d7fbcd547a302c9a759b2943ee30d3e82c3b368d8582833a058e4671638a9e  90-android-touch-dev.rules
+"
