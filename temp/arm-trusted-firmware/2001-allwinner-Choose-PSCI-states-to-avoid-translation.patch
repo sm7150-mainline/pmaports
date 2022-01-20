@@ -1,7 +1,7 @@
-From 3029a8f36df1246f781a5d10776b05c5ea7f2867 Mon Sep 17 00:00:00 2001
+From 981a0f37f9c2d8e9cdff5bf34c80c3dd7e1128ae Mon Sep 17 00:00:00 2001
 From: Samuel Holland <samuel@sholland.org>
 Date: Thu, 18 Mar 2021 22:55:15 -0500
-Subject: [PATCH 6/8] allwinner: Choose PSCI states to avoid translation
+Subject: [PATCH] allwinner: Choose PSCI states to avoid translation
 
 By aligning the PSCI and SCPI power states, we can avoid some code to
 translate between the two. This also makes room for a second retention
@@ -15,10 +15,10 @@ Change-Id: I26691085f277a96bd405e3305ab0fe390a92b418
  2 files changed, 7 insertions(+), 17 deletions(-)
 
 diff --git a/plat/allwinner/common/include/platform_def.h b/plat/allwinner/common/include/platform_def.h
-index 56a2ad6f7..d771e92fe 100644
+index 4893368c2..fc9c966ba 100644
 --- a/plat/allwinner/common/include/platform_def.h
 +++ b/plat/allwinner/common/include/platform_def.h
-@@ -56,9 +56,10 @@
+@@ -57,9 +57,10 @@
  #define PLAT_CSS_SCP_COM_SHARED_MEM_BASE \
  	(SUNXI_SRAM_A2_BASE + SUNXI_SRAM_A2_SIZE - 0x200)
  
@@ -33,7 +33,7 @@ index 56a2ad6f7..d771e92fe 100644
  #define PLAT_MAX_PWR_LVL		U(2)
  #define PLAT_NUM_PWR_DOMAINS		(U(1) + \
 diff --git a/plat/allwinner/common/sunxi_scpi_pm.c b/plat/allwinner/common/sunxi_scpi_pm.c
-index eb37daa63..ed1363537 100644
+index 74763ef7e..89c834aa9 100644
 --- a/plat/allwinner/common/sunxi_scpi_pm.c
 +++ b/plat/allwinner/common/sunxi_scpi_pm.c
 @@ -44,17 +44,6 @@
@@ -68,5 +68,5 @@ index eb37daa63..ed1363537 100644
  
  static void sunxi_pwr_domain_on_finish(const psci_power_state_t *target_state)
 -- 
-2.31.1
+2.33.1
 
