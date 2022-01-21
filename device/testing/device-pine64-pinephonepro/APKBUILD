@@ -2,12 +2,13 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
-pkgver=1.3
+pkgver=2.0
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
-options="!check !archcheck"
+# pmb:strict is required for grub
+options="!check !archcheck pmb:strict"
 depends="
 	alsa-ucm-conf>=1.2.6.2
 	eg25-manager>=0.4.2
@@ -20,7 +21,11 @@ depends="
 	fwupd-plugin-modem_manager
 	fwupd-plugin-fastboot
 	"
-makedepends="devicepkg-dev"
+makedepends="
+	devicepkg-dev
+	grub
+	grub-efi
+	"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 install="
 	$pkgname.post-install
@@ -28,7 +33,8 @@ install="
 	"
 source="
 	deviceinfo
-	extlinux.conf
+	grub.cfg
+	grub_early.cfg
 	ucm/HiFi.conf
 	ucm/PinePhonePro.conf
 	ucm/VoiceCall.conf
@@ -36,12 +42,42 @@ source="
 
 build() {
 	devicepkg_build $startdir $pkgname
+
+	grub-mkimage \
+		--config="$srcdir/grub_early.cfg" \
+		--prefix="" \
+		--output="bootaa64.efi" \
+		--format="arm64-efi" \
+		--compression="xz" \
+		\
+		all_video \
+		cat \
+		configfile \
+		disk \
+		echo \
+		efi_gop \
+		fat \
+		gzio \
+		help \
+		iso9660 \
+		linux \
+		ls \
+		normal \
+		part_gpt \
+		part_msdos \
+		search \
+		search_label \
+		test \
+		true
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/extlinux.conf \
-		"$pkgdir"/boot/extlinux/extlinux.conf
+
+	install -Dm644 -t "$pkgdir"/boot/grub \
+		"$srcdir"/grub.cfg
+	install -Dm644 -t "$pkgdir"/boot/EFI/Boot \
+		"$srcdir"/bootaa64.efi
 
 	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
 		"$srcdir"/PinePhonePro.conf \
@@ -62,8 +98,9 @@ nonfree_firmware() {
 }
 
 sha512sums="
-f42c2c13bf8363a2427ad501e922d0e1fb813a750c3df882f4b394a2e40efbacc9b9deb7b25cd253a2e1cd6448ad0541bfe2f6326f179c329b28f518e4915850  deviceinfo
-b116e5286880c2b8774fc065e4312d2c89a06003c85f332519b827b42b4e0630a1c47b69f75d56c5c91469eb810f18c6de21cf52234e59c67478c4c1731d347e  extlinux.conf
+18af46496eba898e7642ffed02d2d8dd4c9652c304eb2730fd042ca9d71da570b9c51446d9055ced1ea47e94a00c2590cdf9115f3a6d7219d457ce2d5eb8fc69  deviceinfo
+e69752fc7f2b8552ba2e1e6da5b6bec0e284c7f14bc09576c862faeb5154a44522535a919ae5aca33a22fd14557e802595a7c96c59b9362c5ac5b991a8eac5fc  grub.cfg
+0f9357d4eea089628fbceb1e3e96d21a3f4329aeb6743158a6f877f967ef274506404eba949d5f01b7e1adea149f9a3aef992a5e8cd4181f93ab00909b1c5ecd  grub_early.cfg
 ac22c856af81d00aa6a349b68cf9e8645bf38277d9aafd07f1f46f5f932f48d37b9dfdcc8772fff4027f914c9b4c3b4a11c51bd9f2aa1abbc53abd3f54adb818  HiFi.conf
 c57dae885c9a5f366f18b38a3ce3e21627baaf014724537eced9e8d6ac3ca61ade42b9fcf84db350b1e64742760e8cf4fe10639d41052387927238e85c3c4769  PinePhonePro.conf
 e978876bda8874e30df75c80554ccbbc0dd202c852ecae0b5c1a0d845402a630962afc2691c6f7d5f478fb0e4be045af4ef62ad0b1ce77f62fe2f155dc0a9cff  VoiceCall.conf
