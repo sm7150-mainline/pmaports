@@ -1,0 +1,66 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/defconfig
+
+_flavor="postmarketos-qcom-sm8250"
+pkgname=linux-$_flavor
+pkgver=5.16.0
+pkgrel=0
+pkgdesc="Mainline kernel fork for SM8250"
+arch="aarch64"
+_carch="arm64"
+url="https://github.com/lujianhua/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	findutils
+	linux-headers
+	xz
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+"
+
+# Source
+_commit="83b825ad552b2758a22d44703e5972c9f71b4ea4"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/linux-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	REPLACE_GCCH=0 \
+		. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+
+	install -Dm644 "$builddir/$_outdir/arch/$_carch/boot/Image.gz" \
+		"$pkgdir/boot/vmlinuz"
+
+	make O="$_outdir" \
+		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb" \
+		modules_install dtbs_install
+}
+
+sha512sums="
+d2ecee4bbad8facbb5fc8e5d721fa5626c4a63410805c2aab29a4e3a3f5ac630aa292c33bc8683bb84e3dcaeff497a2b01489f716c05ebad7a04680f05546e20  linux-postmarketos-qcom-sm8250-83b825ad552b2758a22d44703e5972c9f71b4ea4.tar.gz
+eb8c7b42bc17ab25a81b905a0bd43d60fca9556e3028930e8b611b79bb025c2b4a9c12dbd8524471e368204f6f107bac82dc8e1f6401f12986e5487bd4628513  config-postmarketos-qcom-sm8250.aarch64
+"
