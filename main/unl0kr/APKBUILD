@@ -1,0 +1,80 @@
+# Maintainer: Johannes Marbach <n0-0ne+gitlab@mailbox.org>
+pkgname=unl0kr
+pkgver=0.1.0_git20220128
+pkgrel=0
+_commit=535f442b107999e3aa723ad59eb2fe1f984f428a
+_commit_lvgl=bd19083aedd42b8f60605d2c5773719a6ccc3426
+_commit_lv_drivers=97e500b200ad6e947c0b62940929f30bc8f5ef4e
+_commit_squeek2lvgl=db4222c091a2b5584cb952324f26e97ecc938de8
+pkgdesc="Framebuffer-based disk unlocker for the initramfs based on LVGL"
+url="https://gitlab.com/cherrypicker/unl0kr"
+arch="all"
+license="GPL-3.0-or-later"
+depends="
+	cryptsetup
+	inih
+	libinput-libs
+	libxkbcommon
+	!osk-sdl
+	"
+makedepends="
+	eudev-dev
+	inih-dev
+	libinput-dev
+	libxkbcommon-dev
+	linux-headers
+	meson
+	"
+source="
+	$pkgname-$_commit.tar.gz::https://gitlab.com/cherrypicker/unl0kr/-/archive/$_commit.tar.gz
+	lvgl-$_commit_lvgl.tar.gz::https://github.com/lvgl/lvgl/archive/$_commit_lvgl.tar.gz
+	lv_drivers-$_commit_lv_drivers.tar.gz::https://github.com/lvgl/lv_drivers/archive/$_commit_lv_drivers.tar.gz
+	squeek2lvgl-$_commit_squeek2lvgl.tar.gz::https://gitlab.com/cherrypicker/squeek2lvgl/-/archive/$_commit_squeek2lvgl.tar.gz
+	unl0kr.conf
+	unl0kr.files
+	unlock.sh
+	"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # No tests
+provides="postmarketos-fde-unlocker"
+provider_priority=999
+
+prepare() {
+	default_prepare
+	mkdir -p lvgl lv_drivers squeek2lvgl
+	mv "$srcdir"/lvgl-"$_commit_lvgl"/* lvgl
+	mv "$srcdir"/lv_drivers-"$_commit_lv_drivers"/* lv_drivers
+	mv "$srcdir"/squeek2lvgl-"$_commit_squeek2lvgl"/* squeek2lvgl
+}
+
+build() {
+	abuild-meson build
+	meson compile ${JOBS:+-j ${JOBS}} -C build
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C build
+
+	install -Dm644 "$srcdir"/unl0kr.conf \
+		"$pkgdir"/etc/unl0kr.conf
+
+	install -Dm755 "$srcdir"/unlock.sh \
+		"$pkgdir"/bin/fde-unlock
+
+	touch unl0kr
+	install -Dm644 unl0kr \
+		"$pkgdir"/usr/share/postmarketos-mkinitfs-triggers/unl0kr
+
+	install -Dm644 "$srcdir"/unl0kr.files \
+		"$pkgdir"/etc/postmarketos-mkinitfs/files/30-unl0kr.files
+}
+
+sha512sums="
+27a4a7cc437e5f8168bd988dbc55aeb8ea85cb0dfc2ac6f479427e31904c6a8f21eee50e1e46e994daa55b9d715ff0d263e42880e1766b8db8f66a02c9297d2c  unl0kr-535f442b107999e3aa723ad59eb2fe1f984f428a.tar.gz
+1a7e69ed9428ab1e34f9aa9156b7d921d7db4c819bc4aa45107894032b60eae1e9cc2393fa71807ee294dd1995026211b1061a4ef1b520792e5a00d2f6bc2d19  lvgl-bd19083aedd42b8f60605d2c5773719a6ccc3426.tar.gz
+d30c3e2e075eab4691b48d97fa0158dd4ce70e89e227be24ce7a964268fb490cd47b108d1d72a2318963e65dc09f6614703e40b7809adf473a458c09b01c846a  lv_drivers-97e500b200ad6e947c0b62940929f30bc8f5ef4e.tar.gz
+4253de0df22df1051c17f5edbb275cc9eaed5d9dffdb3c5208f176eea3f7c6f4b563c5e70be97ccaf99729eee9a313f4537fbc7274e5dfc295fdeb83cc3a9d29  squeek2lvgl-db4222c091a2b5584cb952324f26e97ecc938de8.tar.gz
+7155c2f95dcf3716c0f392cf5717e96f1414c383a1f7c2ed30a1f8518dfe0b17c3c0e0e93f6476a342504aa855404099e2f5444eeb099023491c9a9a26fa3d90  unl0kr.conf
+65f598399c2852879029c6d02fdc1066357b9085bad5d9dd60fe3c4cd9736eda179b24fe271eed1e6ef744a7907c9458567fd5753981e41500334f539bcd83fb  unl0kr.files
+5386f434cd4f1fb9e0d561a8689e5e85d6a8b3c562823122c082d4932d2fb0ad4edcd635f14f0c61e5c8b5e53648c9937b042409c21683007700faea8894c750  unlock.sh
+"

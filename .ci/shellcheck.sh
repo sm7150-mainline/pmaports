@@ -27,6 +27,7 @@ sh_files="
 	./main/swclock-offset/swclock-offset-shutdown.sh
 	./main/ttyescape/*.sh
 	./main/ttyescape/*.post-install
+	./main/unl0kr/unlock.sh
 	./main/msm-firmware-loader/*.sh
 	./main/msm-firmware-loader/*.post-install
 
