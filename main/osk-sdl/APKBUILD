@@ -5,7 +5,7 @@
 # https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10712
 pkgname=osk-sdl
 pkgver=0.66
-pkgrel=0
+pkgrel=1
 pkgdesc="Onscreen keyboard for unlocking LUKS devices"
 url="https://gitlab.com/postmarketOS/osk-sdl"
 arch="all"
@@ -25,7 +25,11 @@ makedepends="
 	sdl2-dev
 	sdl2_ttf-dev
 	"
-source="https://gitlab.com/postmarketOS/osk-sdl/-/archive/$pkgver/osk-sdl-$pkgver.tar.gz"
+source="
+	https://gitlab.com/postmarketOS/osk-sdl/-/archive/$pkgver/osk-sdl-$pkgver.tar.gz
+	osk-sdl.files
+	unlock.sh
+	"
 options="!strip !check" # No tests
 subpackages="$pkgname-doc"
 provides="postmarketos-fde-unlocker"
@@ -39,12 +43,20 @@ build() {
 package() {
 	DESTDIR="$pkgdir" meson install --no-rebuild -C build
 
+	install -Dm755 "$srcdir"/unlock.sh \
+		"$pkgdir"/bin/fde-unlock
+
 	# needed to trigger initfs rebuild:
 	touch osk-sdl
 	install -Dm644 osk-sdl \
 		"$pkgdir"/usr/share/postmarketos-mkinitfs-triggers/osk-sdl
+
+	install -Dm644 "$srcdir"/osk-sdl.files \
+		"$pkgdir"/etc/postmarketos-mkinitfs/files/30-osk-sdl.files
 }
 
 sha512sums="
 e4bc5bf6c6faa536a66c48451b88dd9228f2ff2f82e23963607a111df83a48296158b0408b1889c93d3cfe31e48c089f7be68bb5b7c06b01bd43970a824babdb  osk-sdl-0.66.tar.gz
+e1017bc0667756b82527d88f47a77e2f5a44e0769b5ccdea0c6c1f86bd3d0a1df9d9f5bbb224888748cfef5edc3375036a25099eb02c963302f155c3b2e8fefd  osk-sdl.files
+5e2de0da40f3b409cb01c388ab61e8072db30789af6f8a7fec817699dcb928b8aec25288fb1e59403e99769dec032f1b446bcc5f761d9a6504e238fa205281fd  unlock.sh
 "

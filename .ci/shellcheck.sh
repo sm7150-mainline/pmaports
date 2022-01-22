@@ -16,6 +16,7 @@ fi
 # Shell: shellcheck
 sh_files="
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
+	./main/osk-sdl/unlock.sh
 	./main/postmarketos-base/rootfs-usr-lib-firmwareload.sh
 	./main/postmarketos-installkernel/installkernel-pmos
 	./main/postmarketos-mkinitfs/init.sh
