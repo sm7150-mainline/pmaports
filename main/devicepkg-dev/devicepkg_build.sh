@@ -20,49 +20,6 @@ fi
 # shellcheck disable=SC1090,SC1091
 . "$srcdir/deviceinfo"
 
-# Create splash screens
-generate_splash_screens()
-{
-	splash_config=${SPLASH_CONFIG:-/etc/postmarketos/splash.ini}
-	splash_width=${deviceinfo_screen_width:-720}
-	splash_height=${deviceinfo_screen_height:-1280}
-
-	# Overwrite $@ to easily iterate over the splash screens. Format:
-	# $1: splash_name
-	# $2: text
-	# $3: arguments
-	set -- "splash-loading"          "Loading..." "--center" \
-	       "splash-noboot"           "boot partition not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-noinitramfsextra" "initramfs-extra not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-norootfs"         "rootfs not found\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-resizefs"         "Loading...\\nResizing file system during initial boot" "--center" \
-	       "splash-mounterror"       "unable to mount root partition\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-debug-shell"      "WARNING\\ndebug-shell is active\\nhttps://postmarketos.org/debug-shell" "--center" \
-	       "splash-charging-error"   "CHARGING MODE\\nerror starting charging-sdl\\nhttps://postmarketos.org/troubleshooting" "--center" \
-	       "splash-netboot-waiting"  "Waiting for netboot...\\nhttps://postmarketos.org/netboot" "--center" \
-	       "splash-netboot-error"    "failed to initialize netboot\\nhttps://postmarketos.org/netboot" "--center"
-
-	# Loop through the splash screens definitions
-	while [ $# -gt 2 ]
-	do
-		splash_name=$1
-		splash_text=$2
-		splash_args=$3
-
-		# shellcheck disable=SC2154
-		if [ "${deviceinfo_framebuffer_landscape}" = "true" ]; then
-			splash_args="${splash_args} --landscape"
-		fi
-
-		# shellcheck disable=SC2086
-		pmos-make-splash --text="${splash_text}" $splash_args --config "${splash_config}" \
-				"$splash_width" "$splash_height" "$srcdir/${splash_name}.ppm"
-		gzip "$srcdir/${splash_name}.ppm"
-
-		shift 3 # move to the next 3 arguments
-	done
-}
-
 # Convert an input calibration matrix from pixel coordinates to 0-1 coordinates
 # and echo it for libinput.
 # Parameters:
@@ -117,8 +74,6 @@ generate_machine_info()
 		echo "CHASSIS=\"${deviceinfo_chassis}\""
 	} > "$srcdir/machine-info"
 }
-
-generate_splash_screens
 
 generate_machine_info
 
