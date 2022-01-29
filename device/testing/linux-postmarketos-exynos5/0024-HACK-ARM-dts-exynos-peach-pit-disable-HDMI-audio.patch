@@ -1,0 +1,29 @@
+From f474179058e347268e2c60d40cb3595a91742d47 Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Tue, 1 Feb 2022 12:14:02 +0200
+Subject: [PATCH] HACK: ARM: dts: exynos: peach-pit: disable HDMI audio
+
+When enabling Internal Microphone, HDMI codec results in:
+[  730.054945] hdmi-audio-codec hdmi-audio-codec.14.auto: Only one simultaneous stream supported!
+[  730.054961] hdmi-audio-codec hdmi-audio-codec.14.auto: ASoC: error at snd_soc_dai_startup on i2s-hifi: -22
+[  730.054978]  Primary: soc_pcm_open() failed (-22)
+---
+ arch/arm/boot/dts/exynos5420-peach-pit.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+index e76fb104d..7842ab2a3 100644
+--- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
++++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+@@ -94,7 +94,7 @@ cpu {
+ 		};
+ 
+ 		codec {
+-			sound-dai = <&max98090>, <&hdmi>;
++			sound-dai = <&max98090>;
+ 		};
+ 	};
+ 
+-- 
+2.34.1
+

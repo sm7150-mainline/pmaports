@@ -1,0 +1,52 @@
+From b28810a224d700e098ae09c48a7d161a34e8dcb0 Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Sat, 5 Feb 2022 03:34:45 +0200
+Subject: [PATCH 3/3] ARM: dts: exynos: peach-pit: add jack detection
+
+Add GPIOs for headphones and microphone detection.
+
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
+---
+ arch/arm/boot/dts/exynos5420-peach-pit.dts | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+index 42d1ba06d..081300138 100644
+--- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
++++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+@@ -93,6 +93,11 @@ sound {
+ 		samsung,model = "Peach-Pit-I2S-MAX98090";
+ 		samsung,i2s-controller = <&i2s0>;
+ 		samsung,audio-codec = <&max98090>;
++		samsung,hp-det-gpios = <&gpx2 1 GPIO_ACTIVE_HIGH>;
++		samsung,mic-det-gpios = <&gpx1 7 GPIO_ACTIVE_LOW>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&hp_det_gpio &mic_det_gpio>;
+ 
+ 		cpu {
+ 			sound-dai = <&i2s0 0>;
+@@ -835,6 +840,20 @@ ec_irq: ec-irq {
+ 		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
+ 	};
+ 
++	mic_det_gpio: mic-det-gpio {
++		samsung,pins = "gpx1-7";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
++		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
++		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
++	};
++
++	hp_det_gpio: hp-det-gpio {
++		samsung,pins = "gpx2-1";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
++		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
++		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
++	};
++
+ 	tps65090_irq: tps65090-irq {
+ 		samsung,pins = "gpx2-5";
+ 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
+-- 
+2.34.1
+

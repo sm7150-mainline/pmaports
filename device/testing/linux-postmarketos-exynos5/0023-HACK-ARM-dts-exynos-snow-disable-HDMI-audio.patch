@@ -1,0 +1,43 @@
+From 3477f4de2d05c35d9c58c127c5d6271212b6daa7 Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Tue, 1 Feb 2022 12:57:32 +0200
+Subject: [PATCH] HACK: ARM: dts: exynos: snow: disable HDMI audio
+
+When enabling Internal Microphone, HDMI codec results in:
+[  730.054945] hdmi-audio-codec hdmi-audio-codec.14.auto: Only one simultaneous stream supported!
+[  730.054961] hdmi-audio-codec hdmi-audio-codec.14.auto: ASoC: error at snd_soc_dai_startup on i2s-hifi: -22
+[  730.054978]  Primary: soc_pcm_open() failed (-22)
+---
+ arch/arm/boot/dts/exynos5250-snow-rev5.dts | 2 +-
+ arch/arm/boot/dts/exynos5250-snow.dts      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/exynos5250-snow-rev5.dts b/arch/arm/boot/dts/exynos5250-snow-rev5.dts
+index f8ca61df6..33651c0c5 100644
+--- a/arch/arm/boot/dts/exynos5250-snow-rev5.dts
++++ b/arch/arm/boot/dts/exynos5250-snow-rev5.dts
+@@ -27,7 +27,7 @@ cpu {
+ 		};
+ 
+ 		codec {
+-			sound-dai = <&max98090 0>, <&hdmi>;
++			sound-dai = <&max98090 0>;
+ 		};
+ 	};
+ };
+diff --git a/arch/arm/boot/dts/exynos5250-snow.dts b/arch/arm/boot/dts/exynos5250-snow.dts
+index a630bc654..6ed9a0f03 100644
+--- a/arch/arm/boot/dts/exynos5250-snow.dts
++++ b/arch/arm/boot/dts/exynos5250-snow.dts
+@@ -25,7 +25,7 @@ cpu {
+ 		};
+ 
+ 		codec {
+-			sound-dai = <&max98095 0>, <&hdmi>;
++			sound-dai = <&max98095 0>;
+ 		};
+ 	};
+ };
+-- 
+2.34.1
+

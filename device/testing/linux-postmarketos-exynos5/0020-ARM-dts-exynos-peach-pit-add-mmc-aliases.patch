@@ -1,0 +1,31 @@
+From 703e52a60b69d71e2bd6e65276b16cdfbe3833f8 Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Fri, 31 Dec 2021 11:28:32 +0200
+Subject: [PATCH 3/5] ARM: dts: exynos: peach-pit: add mmc aliases
+
+Add aliases for eMMC, SD card and WiFi, so numbers will not be
+changed anymore.
+
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
+---
+ arch/arm/boot/dts/exynos5420-peach-pit.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+index e76fb104d..4aa51746b 100644
+--- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
++++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+@@ -31,6 +31,10 @@ / {
+ 	aliases {
+ 		/* Assign 20 so we don't get confused w/ builtin ones */
+ 		i2c20 = &i2c_tunnel;
++
++		mmc0 = &mmc_0; /* eMMC */
++		mmc1 = &mmc_2; /* uSD */
++		mmc2 = &mmc_1; /* WiFi */
+ 	};
+ 
+ 	backlight: backlight {
+-- 
+2.34.1
+

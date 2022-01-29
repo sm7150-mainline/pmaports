@@ -1,0 +1,52 @@
+From 6306844736f3b737fcfb10cc258e1262bcea56c4 Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Sat, 5 Feb 2022 03:33:17 +0200
+Subject: [PATCH 2/3] ARM: dts: exynos: snow: add jack detection
+
+Add GPIOs for headphones and microphone detection.
+
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
+---
+ arch/arm/boot/dts/exynos5250-snow-common.dtsi | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/arch/arm/boot/dts/exynos5250-snow-common.dtsi b/arch/arm/boot/dts/exynos5250-snow-common.dtsi
+index 3f8fbe414..96a5e1b24 100644
+--- a/arch/arm/boot/dts/exynos5250-snow-common.dtsi
++++ b/arch/arm/boot/dts/exynos5250-snow-common.dtsi
+@@ -178,6 +178,11 @@ charger {
+ 
+ 	sound {
+ 		samsung,i2s-controller = <&i2s0>;
++		samsung,hp-det-gpios = <&gpx2 2 GPIO_ACTIVE_HIGH>;
++		samsung,mic-det-gpios = <&gpx2 0 GPIO_ACTIVE_LOW>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&hp_det_gpio &mic_det_gpio>;
+ 	};
+ 
+ 	usb3_vbus_reg: regulator-usb3 {
+@@ -635,6 +640,20 @@ ec_irq: ec-irq {
+ 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
+ 	};
+ 
++	mic_det_gpio: mic-det-gpio {
++		samsung,pins = "gpx2-0";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
++		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
++		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
++	};
++
++	hp_det_gpio: hp-det-gpio {
++		samsung,pins = "gpx2-2";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
++		samsung,pin-pud = <EXYNOS_PIN_PULL_DOWN>;
++		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
++	};
++
+ 	tps65090_irq: tps65090-irq {
+ 		samsung,pins = "gpx2-6";
+ 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
+-- 
+2.34.1
+

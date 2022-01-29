@@ -4,7 +4,7 @@
 
 pkgname=linux-postmarketos-exynos5
 pkgver=5.16.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for Samsung Exynos5 devices"
 arch="armv7"
 _carch="arm"
@@ -54,6 +54,17 @@ source="
 	0014-ARM-dts-Add-support-for-Samsung-Klimt-WiFi.patch
 	0015-dt-bindings-arm-samsung-document-Klimt-LTE-board-bin.patch
 	0016-ARM-dts-Add-support-for-Samsung-Klimt-LTE.patch
+	0017-ARM-dts-exynos-snow-add-mmc-aliases.patch
+	0018-ARM-dts-exynos-snow-use-num-interpolated-steps-for-b.patch
+	0019-ARM-dts-exynos-snow-add-atmel-mxt-touchpad.patch
+	0020-ARM-dts-exynos-peach-pit-add-mmc-aliases.patch
+	0021-ARM-dts-exynos-peach-pit-use-num-interpolated-steps-.patch
+	0022-ARM-dts-exynos-peach-pit-enable-GPU.patch
+	0023-HACK-ARM-dts-exynos-snow-disable-HDMI-audio.patch
+	0024-HACK-ARM-dts-exynos-peach-pit-disable-HDMI-audio.patch
+	0025-WIP-ASoC-samsung-snow-add-jack-detection-support.patch
+	0026-ARM-dts-exynos-snow-add-jack-detection.patch
+	0027-ARM-dts-exynos-peach-pit-add-jack-detection.patch
 "
 builddir="$srcdir/linux-${_kernver//_/-}"
 
@@ -84,7 +95,7 @@ package() {
 
 sha512sums="
 f47cf92065c7445518452052566251642f701089494c8b5eb7d5b0e147d7177b016957481e0b98050840d79e2b838cfb088aeee1941fd41b75b681972f2fec5d  linux-5.16.1.tar.xz
-0f8a3c7a1aec868f60405e723b44107f66f6518a25fe5e64ace50c9ec4d89b533a7b63775236b81a84017791a569a49a18698f72bb8bf71aacffedafca8f2ecf  config-postmarketos-exynos5.armv7
+f42997c126572ddda012111fdfe4426daf0c8ae22124bdfc28ff604d65aeb04b041c423653e4209c5b8cabf0adced16274318cfa665a736905aaff2b0fb3c626  config-postmarketos-exynos5.armv7
 8818dee159da213314d21affb33873217a9c281b01598776c46bc26fcde790675e157fc5c604ec432f22d2ee780e703e8590f268a57e54fd0f74fe6d4ad6f315  0001-ODROID-COMMON-gpu-drm-Add-Hardkernel-3.2-LCD-driver-.patch
 1e460183a1e34f25ff615f8e1ead274dc224fb2b337924a799fca3807d382870dbcfc3418f0ff203ce6533fe416e56541a0f93a2e4ff6bc072ae2fbb7245de39  0002-ODROID-COMMON-gpu-drm-Add-new-Tiny-DRM-driver-with-I.patch
 7f4771e6fc701223f5e693e694385daede79e854231c94054179520f5f6b0e21d668554082143ae28048e4a6c2cdfc0608db46d9938a02cde1d9d3a9628be60a  0003-ODROID-COMMON-hwmon-pwm-fan-fix-to-add-pwm1_enable-t.patch
@@ -101,4 +112,15 @@ d552e78c7a7c029274766200dba88a9af3b22e60f393e1fcd345a527de26c203222308ecce0b212e
 36a175f5c6775e5b03a521ac8c57b1dafb565de78bbe46d4a77141f362eeb76f5872b6cb380401f2987c6dd480affbc08954ec9b9adfb4ea21ef0d670f3e858f  0014-ARM-dts-Add-support-for-Samsung-Klimt-WiFi.patch
 a0d5bf1292155da056b07a2384885ca11a4602e1ade3f0672c92e537cce6f5bd631ef1e0389418f5259468f637577ed1335293cb70764e5de23ad134a0725752  0015-dt-bindings-arm-samsung-document-Klimt-LTE-board-bin.patch
 70111f8591a1a566473dbb04a4dcfded110789196922d166719604afcfc6c6d5d5fd66d75c1e020be055c86c2c7b3deac59a13f593d37620027fc75bcfaad7af  0016-ARM-dts-Add-support-for-Samsung-Klimt-LTE.patch
+d937ff84674771fde27299fd00612c31dbd4c8410b43501fdf1dea9ce9fc5b029060203752cd0f03292093cca7456ea7f6dc81bcde5c895b79db7d03b278d1a3  0017-ARM-dts-exynos-snow-add-mmc-aliases.patch
+d780bb6a90ca7a473b56f9a45b18318ffa5611b8a81b7e489e20680800bd8b481875bff0a05b2a6c3243bf6efb3ffc0329c248a3cb98ceda0f1f4f9cffbf4ae9  0018-ARM-dts-exynos-snow-use-num-interpolated-steps-for-b.patch
+3bab175626a6a58b7f7254bb4fe0297d39e3891bf50c861fc0a689c00ffa60848a4ffe61df13276904b2fd95d79d5b2b58619d292c26b93daf3a4ea7eb3fab46  0019-ARM-dts-exynos-snow-add-atmel-mxt-touchpad.patch
+b8d81a436984e8ac820a78c24d800485f845a58c6d3d291a89656b78c00ff4f123006adf0dc66c086e6ac7d0e76193f2f59e8f0972aebbc4ae93b676d671b73f  0020-ARM-dts-exynos-peach-pit-add-mmc-aliases.patch
+2a7c222c217ddf468ea3ab39cbd943e80d8e0c806778063dff5c18af9465828b8a3557433344c9b3580089ac4db248c433f1b8aa2d7ef181b6d1e13054baa7bf  0021-ARM-dts-exynos-peach-pit-use-num-interpolated-steps-.patch
+3631ef02553ae0085bc079cc667e89b3fbd30763ea8d0d2c9c8bf5bddc20a841fea3ee55c8023d24a702f84babee209ab67d2e162e9a8f25541133d695fed1e0  0022-ARM-dts-exynos-peach-pit-enable-GPU.patch
+5cbcbec6cde266d9c73dd8f558f4e4fd41b4229cafdddcd139bd24c95b6f14f2adc06f7ff716bcb189ef0f7ea420bdf7298508fb8629feee561f27e24283b405  0023-HACK-ARM-dts-exynos-snow-disable-HDMI-audio.patch
+3641e949e139b62f4c090566562ae1b1013b85add4f0eb960e4f9a2c00053bde80a22f89717103a8a1e59db48fa651eeb787a21bcc8988676b9c83bdb359ba1e  0024-HACK-ARM-dts-exynos-peach-pit-disable-HDMI-audio.patch
+7e4de24b46abd9b54297592090e8e0f3559563ff48dfa764f937b63982ed338596b891e0a4a546fe8fae5e06992ac62f15b394b52a16d58280d341f0b7ddc5d8  0025-WIP-ASoC-samsung-snow-add-jack-detection-support.patch
+cd6eca38325363eb3dae5adb973624288dce5c6e4c90b14203090fdaec1aa0721384f9bfa7eb5051f5efdc988999ed0acfee23b1d11e5cd91d90a5c227ca5c71  0026-ARM-dts-exynos-snow-add-jack-detection.patch
+8dc11bdb132846bbf59ddd5e2a6e02b3910db5b8cfc58dc4715121afd321427d087537d0640e6ecbd70c36bd4977756e17f0b14b83a480d48622e26a35132d0c  0027-ARM-dts-exynos-peach-pit-add-jack-detection.patch
 "

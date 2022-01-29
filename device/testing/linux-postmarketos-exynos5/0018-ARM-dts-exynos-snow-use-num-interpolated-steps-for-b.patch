@@ -1,0 +1,33 @@
+From e48471140e9fb8dd116ba49d2698bf4c0e18f49e Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Fri, 31 Dec 2021 11:20:23 +0200
+Subject: [PATCH 2/5] ARM: dts: exynos: snow: use num-interpolated-steps for
+ backlight
+
+Use num-interpolated-steps in backlight node to get more
+brightness levels.
+
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
+---
+ arch/arm/boot/dts/exynos5250-snow-common.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/exynos5250-snow-common.dtsi b/arch/arm/boot/dts/exynos5250-snow-common.dtsi
+index 7a0896ff0..5c6e74c52 100644
+--- a/arch/arm/boot/dts/exynos5250-snow-common.dtsi
++++ b/arch/arm/boot/dts/exynos5250-snow-common.dtsi
+@@ -201,8 +201,9 @@ xxti {
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm 0 1000000 0>;
+-		brightness-levels = <0 100 500 1000 1500 2000 2500 2800>;
+-		default-brightness-level = <7>;
++		brightness-levels = <1 255>;
++		num-interpolated-steps = <254>;
++		default-brightness-level = <254>;
+ 		enable-gpios = <&gpx3 0 GPIO_ACTIVE_HIGH>;
+ 		power-supply = <&fet1>;
+ 		pinctrl-0 = <&pwm0_out>;
+-- 
+2.34.1
+

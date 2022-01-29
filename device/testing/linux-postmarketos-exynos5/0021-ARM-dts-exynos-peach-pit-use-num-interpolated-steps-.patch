@@ -1,0 +1,33 @@
+From c19c5a90307725f0974c534299f382106fd07a59 Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Fri, 31 Dec 2021 11:29:56 +0200
+Subject: [PATCH 4/5] ARM: dts: exynos: peach-pit: use num-interpolated-steps
+ for backlight
+
+Use num-interpolated-steps in backlight node to get more
+brightness levels.
+
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
+---
+ arch/arm/boot/dts/exynos5420-peach-pit.dts | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+index 4aa51746b..dcbeaf9cb 100644
+--- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
++++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+@@ -40,8 +40,9 @@ aliases {
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm 0 1000000 0>;
+-		brightness-levels = <0 100 500 1000 1500 2000 2500 2800>;
+-		default-brightness-level = <7>;
++		brightness-levels = <1 255>;
++		num-interpolated-steps = <254>;
++		default-brightness-level = <254>;
+ 		power-supply = <&tps65090_fet1>;
+ 		pinctrl-0 = <&pwm0_out>;
+ 		pinctrl-names = "default";
+-- 
+2.34.1
+

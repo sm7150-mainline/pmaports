@@ -1,0 +1,31 @@
+From 122e449a4ed8e447b749e449d1af39801626d657 Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Fri, 31 Dec 2021 11:30:32 +0200
+Subject: [PATCH 5/5] ARM: dts: exynos: peach-pit: enable GPU
+
+Enable GPU for this device.
+
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
+---
+ arch/arm/boot/dts/exynos5420-peach-pit.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+index dcbeaf9cb..25c1a44ab 100644
+--- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
++++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+@@ -194,6 +194,11 @@ &fimd {
+ 	samsung,invert-vclk;
+ };
+ 
++&gpu {
++	status = "okay";
++	mali-supply = <&buck4_reg>;
++};
++
+ &hdmi {
+ 	status = "okay";
+ 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
+-- 
+2.34.1
+
