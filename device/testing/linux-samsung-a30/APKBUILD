@@ -1,0 +1,53 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/pmos-a30_defconfig
+
+pkgname=linux-samsung-a30
+pkgver=4.4.177
+pkgrel=0
+pkgdesc="Samsung Galaxy A30 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-a30"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bash bc bison devicepkg-dev flex openssl-dev perl gcc6"
+
+# Compiler: GCC 6 (doesn't boot when compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="android_kernel_samsung_a30"
+_commit="7fd21f627e6ff52676e13c8fe9a8a31adcf09a72"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Johnnyhandsome69/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+}
+
+sha512sums="
+20a349f0dd358b6cd251e1835d20f556274811ffda97c28441058be15331f89ca6fd34de3c846f057017dee35f81e82a49ad68df68f7f1e340215fadd8ba8eab  linux-samsung-a30-7fd21f627e6ff52676e13c8fe9a8a31adcf09a72.tar.gz
+055aa7acedfa3b21ad69144efc75f445b48b7e31debb27ec10c6ebcd18b7c5979027ca86ff107b88ec447c315ad8ade76836d2349e47ded2bd3587b53e93fd16  config-samsung-a30.aarch64
+"

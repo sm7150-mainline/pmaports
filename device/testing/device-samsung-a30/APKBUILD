@@ -1,0 +1,33 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-a30
+pkgdesc="Samsung Galaxy A30"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="linux-samsung-a30 mesa-dri-gallium mkbootimg postmarketos-base"
+makedepends="devicepkg-dev"
+source="deviceinfo initfs-hook.sh"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Samsung A30 nonfree firmware"
+	depends="firmware-samsung-a30"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="
+c0264e1d0bcd28118baf3ae349d77ec26f3dbe67dfd3f9689cc0c8629fd2696490fa4a2cf8dfa7ab042d932e77bce925893c72a6b162587611e09b612d0bf14f  deviceinfo
+04445194a5245d08fcf1b425bff1d8dd6a8fdacafdc151223634299a35f1eb20fbd733979b58bcfd854e16fde02629c28453f840d6c9dc34fc15d4fcc8aa4302  initfs-hook.sh
+"
