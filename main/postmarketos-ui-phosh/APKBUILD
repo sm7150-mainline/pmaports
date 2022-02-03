@@ -1,7 +1,7 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
-pkgver=16
+pkgver=17
 pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5"
 url="https://puri.sm"
@@ -24,6 +24,7 @@ depends="
 	pulseaudio
 	tinydm
 	tinydm-openrc
+	udiskie
 	xdg-desktop-portal-gtk
 	"
 _pmb_recommends="
@@ -66,6 +67,7 @@ source="
 	osk.sh
 	phosh-qt-mobile-controls.sh
 	phosh-qt-wayland.sh
+	udiskie.desktop
 	"
 options="!check pmb:gpu-accel"
 
@@ -84,6 +86,8 @@ package() {
 		"$pkgdir"/etc/dconf/db/postmarketos.d/02-gnome-software-tweaks
 	install -Dm755 "$srcdir"/03-favorites \
 		"$pkgdir"/etc/dconf/db/postmarketos.d/03-favorites
+	install -Dm644 "$srcdir"/udiskie.desktop \
+		"$pkgdir"/etc/xdg/autostart/udiskie.desktop
 }
 
 qt_tweaks() {
@@ -113,4 +117,5 @@ e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742e
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
 bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  phosh-qt-mobile-controls.sh
 6e193eca3961a78d47b4656892eae34d019d9317a255a201f5ea61e3300caff04c526a27cd98d0edc072b36e3eaf3a1768f4cd27c5e2be8b19c167d535c820a6  phosh-qt-wayland.sh
+53f5c565b4ca8a12f12b63ec84a0194ef530703565d123203d41582a35a54d66afaf3a676df158ae0effe327dcfc1c6496a082ce9dbe803b2547417c3c3fad6e  udiskie.desktop
 "
