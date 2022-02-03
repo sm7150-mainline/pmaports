@@ -1,0 +1,40 @@
+# Unmaintained: Downstream port, only for reference. Use mainline port (samsung-janice)!
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-samsung-janice-downstream
+pkgver=1
+pkgrel=0
+pkgdesc="Samsung Galaxy S Advance"
+url="https://postmarketos.org"
+arch="armhf"
+license="MIT"
+depends="postmarketos-base linux-samsung-janice-downstream mesa-dri-swrast"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+install="$pkgname.post-install"
+source="
+	deviceinfo
+	initfs-hook.sh
+	modules-load.conf
+"
+options="!check !archcheck"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-janice-downstream"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+11601936a942dbdba772f2cd7753a8dd964331c06f9ac4dfdacd29489a25c96b1da5cbf3564a15448eceaedc2ad659c3ff66f312e1810578b00be9685c3c7b32  deviceinfo
+d23b3708f6a7156d9936fb15ad334ce28b5a0b40889a3e9d426d275caf22d436c13e021d0abad0fbd598cd67ea6ea9ad49f0c8853b1932b8ff7c409c142b5754  initfs-hook.sh
+61e8becbf6fa7c1c6c42e481083f5981ae7af33a48cbc53e817d8ac2c6a8e4f67a54b32ae3b8f5f25f7b412165a849dc93a629110dc47b0d16927bf2a12eb7e1  modules-load.conf
+"
