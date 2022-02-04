@@ -1,0 +1,39 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-p4note
+pkgdesc="Samsung Galaxy Note 10.1"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-exynos4
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi and Bluetooth firmware"
+	depends="
+		firmware-samsung-midas-bluetooth
+		firmware-samsung-midas-wifi
+		"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+b2567891b55aaf9a004b597687e22330fd8dc2bc9a84fd638f9a88c05d5f1656a35323adad14ffdc9cec304d043ce97b29396decab25ed801a3fab2eccd9623f  deviceinfo
+"
