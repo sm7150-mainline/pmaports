@@ -1,20 +1,25 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-t0lte
 pkgdesc="Samsung Galaxy Note II LTE"
-pkgver=0.1
-pkgrel=1
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
+	alsa-ucm-conf
 	linux-postmarketos-exynos4
 	mesa-dri-gallium
 	mkbootimg
 	postmarketos-base
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	ucm/Midas.conf
+	ucm/HiFi.conf
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,8 +27,16 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	# Alsa UCM configs
+	install -Dm644 "$srcdir"/Midas.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Midas/Midas.conf
+	install -Dm644 "$srcdir"/HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Midas/HiFi.conf
 }
 
 sha512sums="
 a2a1742e4868fb153b538c2340f3b5e25e31dae761bf07c8713a1b845b3c49a730d82c78636a998789fcbcc947ad819a9919ac9d3dc88b18c7ffb80419d18551  deviceinfo
+caa81e8ab6753c0ca24c22fb6742288765dfbf2469b8b8c35c5789edfcee546ef1c3b14ad6e540c417f434258399300f17d312b58157635eafab134587ef94cc  Midas.conf
+a56ce19331a8997b1cc493b8ab6b16ecfc423254a380e13a9461ec94ec5bc124cb3283256ef8cc014db60937a5e7404c6f7728bc2cc2494a70c612ccb3fd4105  HiFi.conf
 "
