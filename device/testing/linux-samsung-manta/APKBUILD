@@ -2,7 +2,7 @@
 
 pkgname=linux-samsung-manta
 pkgver=3.4.113
-pkgrel=6
+pkgrel=7
 pkgdesc="Google Nexus 10 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -10,25 +10,21 @@ _flavor="samsung-manta"
 url="https://github.com/LineageOS/android_kernel_samsung_manta"
 license="GPL2"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc6"
-
-# Compiler: this kernel was only tested with GCC6. Feel free to make a merge
-# request if you find out that it is booting working with newer GCCs as
-# well. See <https://postmarketos.org/vendorkernel> for instructions.
-if [ "${CC:0:5}" != "gcc6-" ]; then
-	CC="gcc6-$CC"
-	HOSTCC="gcc6-gcc"
-	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
-fi
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev"
 
 # Source
 _repository="android_kernel_samsung_manta"
-_commit="21157195150c268c19303513e4e1327dc01ff89e"
+_commit="2eb797e4d1338dcf963a762491790484a5dd0612"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
+	gcc7-give-up-on-ilog2-const-optimizations.patch
+	gcc8-fix-put-user.patch
+	gcc10-extern_YYLOC_global_declaration.patch
+	01-fix-video-argb-setting.patch
 "
+
 builddir="$srcdir/$_repository-$_commit"
 
 prepare() {
@@ -40,11 +36,26 @@ build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	make ARCH="$_carch" CC="${CC:-gcc}" CFLAGS_MODULE="-fno-pic" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" modules
 }
 
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	# Modules
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
+		modules_install
 }
 
-sha512sums="11f8c197810438082bb103be9f26857e7ec1e1e49a1a8aca3bade12332ed1def62142b58219f4d17d07f0ab076708bef6c709312b784ab1c5339aa2e9db0232f  linux-samsung-manta-21157195150c268c19303513e4e1327dc01ff89e.tar.gz
-903b8cbb7090197b1d203350cb0590e158081719a4b50807c60bc89d25bdfce768adc6097891946be4f5574fc17bb94847f9531a9218d05c32f6ae19457816a1  config-samsung-manta.armv7"
+sha512sums="
+36a60bd023016adf6c1e579293d69e03cca6d0eb1efbb62ee698af72f2d19b3cd2e60941965a56702d325dede99481a1f4e09e6644016005bc27798153d48455  linux-samsung-manta-2eb797e4d1338dcf963a762491790484a5dd0612.tar.gz
+3699b8d1b3ced3cbdfe0bab45da0a22ce6f9cbefb72c9c037207b21ed7f2ca5604a80b16cbbe2e2249ff46775a800bad1fab2502275ff5fca22ad6ae80e6e180  config-samsung-manta.armv7
+77eba606a71eafb36c32e9c5fe5e77f5e4746caac292440d9fb720763d766074a964db1c12bc76fe583c5d1a5c864219c59941f5e53adad182dbc70bf2bc14a7  gcc7-give-up-on-ilog2-const-optimizations.patch
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+8e91e309fe55c5ef4610d3ce3ec3f08b9570275bd6f8029a1c4098abce9edf25cc89d5fc2e9d1a7f336463fb6583852466bac7c08b79c411e0f0f0a9105f4ecc  01-fix-video-argb-setting.patch
+"
