@@ -10,8 +10,8 @@
 # boot failure
 
 pkgname=linux-postmarketos-rockchip
-pkgver=5.14.9
-pkgrel=2
+pkgver=5.16.8
+pkgrel=0
 pkgdesc="Mainline kernel for rockchip devices"
 arch="aarch64 armv7"
 _flavor="${pkgname#linux-}"
@@ -56,12 +56,8 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	0001-phy-rockchip-typec-Set-extcon-capabilities.patch
 	0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
-	0004-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
 	0010-usb-typec-add-extcon-to-tcpm.patch
 	0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
-	0011-stmmac-revert-stmmac-fix.patch
-	36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=36dfdf11af49d3c009c711fb16f5c6e7a274505d
-	6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=6eea4ace62fa6414432692ee44f0c0a3d541d97a
 
 	config-$_flavor.aarch64
 	config-$_flavor.armv7
@@ -101,15 +97,11 @@ package() {
 
 
 sha512sums="
-987ae9ceba83ba12e5e1962118831dbc47eaf26848cfd83b93db58f004dbc3c8d10d62a33cf449abddcfe996023dc705207c43a22aae665461eff9d7365bbc00  linux-5.14.9.tar.xz
+66a0874eed7b2367fc0b69bee8c40a945b9e58d1a820c3e7e741bcb28774c811dea251826b14e2452d9e1fdd7509554ac50229f942c8ba853c308affba94a39a  linux-5.16.8.tar.xz
 10949558a6e3316ea57497f377fd120d6704f3b81725317556e49d10b570a40edb06643b06738116abbe3096be485761d436f1a0d1861bd34fc18ea45068b6b0  0001-phy-rockchip-typec-Set-extcon-capabilities.patch
 b7291eecfddc7ebe9393eea864e0ee28960e8cc2f87dfc42d09426b5619f46ded97c38fb8bf26f4eea1f26bfe21396094505b3efb8676691f8751e2ffabe50ec  0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
-427b81472de2a473344269b2da06ac338af42e68620a281a9cb8543e545e6ed7f719acaf68c688e518b65d2132e0c66676ba5e30376ec980fd6eeaea05c2a8be  0004-arm64-dts-rockchip-setup-USB-type-c-port-as-dual-data-role.patch
 e5cc0852506ea1e73213672f0c3f9144c08156f6d5e8af841bf3f7bffc0e89028507aac4718353eee20edd9069e3f81665caa5ca25e416f25e7e0da10451b67e  0010-usb-typec-add-extcon-to-tcpm.patch
-000ddb9f10545b1231e2b78049d3fda7aed8e931c0c992f84cfe2783dd964443d137e5695775956c5db0fac30d00795adc34453acfb772155163297cc1227b8c  0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
-75a738070a42b03b248fd805f60ac506b3d22c775dc0b0365d7f9c15c28349d0e16dde9af301021d56d720d341075335e63a38be0ade89178346518c7b02de53  0011-stmmac-revert-stmmac-fix.patch
-59d480b6379dcfff94d05b08e28c005d507f640dc0147841e7df4827fce8db01dab1d4d50fb45b2b3fff72cdeb219a8cd87a889078a6372aea4469c861c378b1  36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch
-61f862cda24e7b14e55e9a9ce3a537adfc7a1c77e0670255dc485886e2c19156ddaf49fdd88b629ddde3cf25a83fd603678caebb96e18f59245917d3a2e51bb0  6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch
-c7a10a642996db8e0195aab709ac121266084e685ccf1a8f0c1cfd10e18e09008574b3af0b0dbf3e685c6102b3166caf2c3fb7a69292a9c6fe9beb170e31e2b8  config-postmarketos-rockchip.aarch64
+265b05bc542edb290ec15cd5f50132698a32e80d30ce28ce3ad7e990b7c07df92c4556122505b07a6aa582a919459872d1d874f4ed422d2aff2cdfb51889e720  0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
+5dc0ed5b947ca8153e3b3874cf380208b0736a0e5db25fbeddf4c9cbb8d121d20de130462c99f9f398f4d28a229eac8cf384d9170fff5d56a48e5aec1c1eea9e  config-postmarketos-rockchip.aarch64
 62a05ed0d8f040981454216939b044cc48deb4aa566e952b6bca2881b21e28f7f68e9a5d399ec5a5ec545ac3898757cdf139b1f1554841d73bf8a841ae407e6f  config-postmarketos-rockchip.armv7
 "

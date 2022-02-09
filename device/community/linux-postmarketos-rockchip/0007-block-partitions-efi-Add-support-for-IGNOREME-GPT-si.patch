@@ -1,4 +1,4 @@
-From 0f09019241a0ea6eee0b9b596a70ec8a66b820ce Mon Sep 17 00:00:00 2001
+From 8d9406b97635ee7edad133c48f3de120de331d0e Mon Sep 17 00:00:00 2001
 From: SolidHal <hal@halemmerich.com>
 Date: Fri, 24 Aug 2018 11:04:43 -0500
 Subject: [PATCH] block: partitions: efi: Add support for IGNOREME GPT
@@ -24,15 +24,15 @@ and mountable.
 
 Signed-off-by: SolidHal <hal@halemmerich.com>
 ---
- block/partitions/efi.c | 31 ++++++++++++++++++++++---------
+ block/partitions/efi.c | 33 +++++++++++++++++++++++----------
  block/partitions/efi.h |  3 ++-
- 2 files changed, 24 insertions(+), 10 deletions(-)
+ 2 files changed, 25 insertions(+), 11 deletions(-)
 
 diff --git a/block/partitions/efi.c b/block/partitions/efi.c
-index 39f70d9..aa08380 100644
+index 5e9be13a56a8..8cdfcc48558c 100644
 --- a/block/partitions/efi.c
 +++ b/block/partitions/efi.c
-@@ -344,23 +344,34 @@ static gpt_header *alloc_read_gpt_header(struct parsed_partitions *state,
+@@ -328,23 +328,34 @@ static gpt_header *alloc_read_gpt_header(struct parsed_partitions *state,
   * @lba: logical block address of the GPT header to test
   * @gpt: GPT header ptr, filled on return.
   * @ptes: PTEs ptr, filled on return.
@@ -69,7 +69,7 @@ index 39f70d9..aa08380 100644
  		pr_debug("GUID Partition Table Header signature is wrong:"
  			 "%lld != %lld\n",
  			 (unsigned long long)le64_to_cpu((*gpt)->signature),
-@@ -597,7 +608,7 @@ compare_gpts(gpt_header *pgpt, gpt_header *agpt, u64 lastlba)
+@@ -581,7 +592,7 @@ compare_gpts(gpt_header *pgpt, gpt_header *agpt, u64 lastlba)
  static int find_valid_gpt(struct parsed_partitions *state, gpt_header **gpt,
  			  gpt_entry **ptes)
  {
@@ -78,7 +78,7 @@ index 39f70d9..aa08380 100644
  	gpt_header *pgpt = NULL, *agpt = NULL;
  	gpt_entry *pptes = NULL, *aptes = NULL;
  	legacy_mbr *legacymbr;
-@@ -627,19 +638,20 @@ static int find_valid_gpt(struct parsed_partitions *state, gpt_header **gpt,
+@@ -613,13 +624,13 @@ static int find_valid_gpt(struct parsed_partitions *state, gpt_header **gpt,
  	}
  
  	good_pgpt = is_gpt_valid(state, GPT_PRIMARY_PARTITION_TABLE_LBA,
@@ -94,6 +94,16 @@ index 39f70d9..aa08380 100644
 +	if (!good_agpt && (force_gpt || pgpt_ignored))
 +		good_agpt = is_gpt_valid(state, lastlba, &agpt, &aptes, NULL);
  
+ 	if (!good_agpt && force_gpt && fops->alternative_gpt_sector) {
+ 		sector_t agpt_sector;
+@@ -628,14 +639,15 @@ static int find_valid_gpt(struct parsed_partitions *state, gpt_header **gpt,
+ 		err = fops->alternative_gpt_sector(disk, &agpt_sector);
+ 		if (!err)
+ 			good_agpt = is_gpt_valid(state, agpt_sector,
+-						 &agpt, &aptes);
++						 &agpt, &aptes, NULL);
+ 	}
+ 
          /* The obviously unsuccessful case */
          if (!good_pgpt && !good_agpt)
                  goto fail;
@@ -104,7 +114,7 @@ index 39f70d9..aa08380 100644
  
          /* The good cases */
          if (good_pgpt) {
-@@ -656,7 +668,8 @@ static int find_valid_gpt(struct parsed_partitions *state, gpt_header **gpt,
+@@ -652,7 +664,8 @@ static int find_valid_gpt(struct parsed_partitions *state, gpt_header **gpt,
                  *ptes = aptes;
                  kfree(pgpt);
                  kfree(pptes);
@@ -115,10 +125,10 @@ index 39f70d9..aa08380 100644
          }
  
 diff --git a/block/partitions/efi.h b/block/partitions/efi.h
-index abd0b19..36cddc8 100644
+index 8cc2b88d0aa8..fcf65ebbaa85 100644
 --- a/block/partitions/efi.h
 +++ b/block/partitions/efi.h
-@@ -41,7 +41,8 @@
+@@ -27,7 +27,8 @@
  #define GPT_MBR_PROTECTIVE  1
  #define GPT_MBR_HYBRID      2
  
@@ -129,5 +139,5 @@ index abd0b19..36cddc8 100644
  #define GPT_PRIMARY_PARTITION_TABLE_LBA 1
  
 -- 
-2.11.0
+2.34.1
 
