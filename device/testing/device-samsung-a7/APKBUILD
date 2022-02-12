@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-a7
 pkgdesc="Samsung Galaxy A7 (2015)"
-pkgver=1
-pkgrel=1
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -18,6 +18,7 @@ makedepends="devicepkg-dev"
 source="
 	20-tm2-touchkey-input.rules
 	deviceinfo
+	rootston.ini
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -40,7 +41,14 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/rootston.ini \
+		"$subpkgdir"/etc/phosh/rootston.ini
+}
+
 sha512sums="
 5a91ca375652bc9d2af90db4f446176a4fd43b5c924362219f6bf35e76de818cb4ecce105ee56b4511c3c0882bd055615f409516fade6dfcd30642cc147c1c5a  20-tm2-touchkey-input.rules
 bc3787eccf092939b272f77a6c2febde13d963eb595147dff492e1dae2dc12b6f24b9efc4fdca3be90780d3ebfe4e1cec1b2023c8efd37774486fa34c70b10f7  deviceinfo
+7883533e105de4f951026f99a7c27e90d290d4760253c56e4f7ddb20acc1f6de294cf6ca9a2259a9f4db7dec106926d7c970a2c94107f5ed60efe08525766f44  rootston.ini
 "
