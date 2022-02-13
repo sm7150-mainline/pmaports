@@ -23,7 +23,7 @@ fi
 # Create splash screens
 generate_splash_screens()
 {
-	splash_config="/etc/postmarketos/splash.ini"
+	splash_config=${SPLASH_CONFIG:-/etc/postmarketos/splash.ini}
 	splash_width=${deviceinfo_screen_width:-720}
 	splash_height=${deviceinfo_screen_height:-1280}
 
