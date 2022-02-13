@@ -2,13 +2,14 @@
 # Maintainer: Newbyte <newbyte@disroot.org>
 pkgname=device-samsung-m0
 pkgdesc="Samsung Galaxy S III"
-pkgver=3
-pkgrel=4
+pkgver=4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
+	alsa-ucm-conf
 	linux-postmarketos-exynos4
 	mesa-dri-gallium
 	mkbootimg
@@ -17,7 +18,11 @@ depends="
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo"
+source="
+	deviceinfo
+	ucm/Midas.conf
+	ucm/HiFi.conf
+	"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -25,6 +30,14 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	_midas_audio_dir="$pkgdir/usr/share/alsa/ucm2/conf.d/Midas"
+
+	# Alsa UCM configs
+	install -Dm644 "$srcdir"/Midas.conf \
+		-t "$_midas_audio_dir"
+	install -Dm644 "$srcdir"/HiFi.conf \
+		-t "$_midas_audio_dir"
 }
 
 nonfree_firmware() {
@@ -38,4 +51,6 @@ nonfree_firmware() {
 
 sha512sums="
 d9a655ccbba48f68e44a37149a9078adbd1f40179b592215cc68383ecd3c391262fd5c694e0569316e55964d6f4c7ccc23d15fdaff53a98b873ad28246c6ab28  deviceinfo
+caa81e8ab6753c0ca24c22fb6742288765dfbf2469b8b8c35c5789edfcee546ef1c3b14ad6e540c417f434258399300f17d312b58157635eafab134587ef94cc  Midas.conf
+e6df5f3c4b8203447d9cbec1cf10588d9dc03d3be49e596393de5bd2afb9cc9fab669d1ade2c4ee7e0886fdbaa0e4266a3bddd55a866f3ea98dd82267bc9e856  HiFi.conf
 "
