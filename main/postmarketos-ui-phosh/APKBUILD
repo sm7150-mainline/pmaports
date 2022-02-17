@@ -74,6 +74,8 @@ options="!check pmb:gpu-accel"
 package() {
 	install -Dm644 "$srcdir"/000-gschema.override \
 		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
+	# Alpine sm.puri.OSK0 service packaged in phosh does not hardcode
+	# squeekboard, executes /usr/bin/osk-wayland instead
 	install -Dm755 "$srcdir"/osk.sh \
 		"$pkgdir"/usr/bin/osk-wayland
 	install -Dm755 "$srcdir"/dconf-profile-postmarketos \
