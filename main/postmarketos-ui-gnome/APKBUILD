@@ -1,31 +1,23 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=postmarketos-ui-gnome
-pkgver=1
-pkgrel=9
+pkgver=2
+pkgrel=0
 pkgdesc="(Wayland) Gnome Shell"
 url="https://gnome.org/"
 arch="noarch"
 license="GPL-3.0-or-later"
 depends="
-	dnsmasq
 	gdm
 	gnome
 	kgx
-	polkit-elogind
-	postmarketos-base-ui
+	postmarketos-base-ui-gnome
 	postmarketos-artwork-wallpapers
-	pulseaudio
 	xwayland
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="000-gschema.override"
 options="!check pmb:gpu-accel"
 
 package() {
-	install -Dm644 "$srcdir"/000-gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
+	mkdir -p "$pkgdir"
 }
-sha512sums="
-7802c41a37172ab243892d7ff99ddbc60b6c6e8df1c33dc88f2e97c987203777deedf5d04b0f55642855ec5663fa3b7143c962336c340e1d23da292e167aa5c3  000-gschema.override
-"

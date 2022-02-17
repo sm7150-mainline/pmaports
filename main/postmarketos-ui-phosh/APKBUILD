@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
-pkgver=17
-pkgrel=1
+pkgver=18
+pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5"
 url="https://puri.sm"
 arch="noarch !armhf"
@@ -11,7 +11,6 @@ license="GPL-3.0-or-later"
 depends="
 	!pipewire-pulse
 	bluez
-	dnsmasq
 	gnome-keyring
 	iio-sensor-proxy
 	iio-sensor-proxy-openrc
@@ -19,9 +18,7 @@ depends="
 	modemmanager-openrc
 	networkmanager
 	phosh
-	polkit-elogind
-	postmarketos-base-ui
-	pulseaudio
+	postmarketos-base-ui-gnome
 	tinydm
 	tinydm-openrc
 	udiskie
@@ -57,7 +54,7 @@ _pmb_groups="feedbackd"
 subpackages="$pkgname-qt_tweaks $pkgname-firefox"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
-	000-gschema.override
+	01_postmarketos-ui-phosh.gschema.override
 	01-phoc-scaling
 	dconf-profile-postmarketos
 	firefox.desktop
@@ -70,8 +67,8 @@ source="
 options="!check pmb:gpu-accel"
 
 package() {
-	install -Dm644 "$srcdir"/000-gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
+	install -Dm644 "$srcdir"/01_postmarketos-ui-phosh.gschema.override \
+		-t "$pkgdir"/usr/share/glib-2.0/schemas/
 	# Alpine sm.puri.OSK0 service packaged in phosh does not hardcode
 	# squeekboard, executes /usr/bin/osk-wayland instead
 	install -Dm755 "$srcdir"/osk.sh \
@@ -104,7 +101,7 @@ firefox() {
 }
 
 sha512sums="
-86a2b0e859cf733a35b20525af166a42d9153c36c961e69024669a01c39b6b0311c5372f3671b67967b97e620529371985964adad285c385a36420aa345307a4  000-gschema.override
+9f012a14aa6aecae24bd7b1bace60fda0e7b3c599d5b4f61bf945e4ed130334ea7dc34e6dfc86f8252ec7da4d32d2b1193f0bdef5486a7b48778adc09fedb35d  01_postmarketos-ui-phosh.gschema.override
 6d0ccbecfab1dbf2543dbd938d4b7544e278af9e88c8ab6751494b49aa281369f46d2769a1a1874e9bdad2faf8e8025d2ce97ea6b6302569a95283af5cedf459  01-phoc-scaling
 e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742eee51d93dc83859a7ead553f4dcbc8b6fcefa33ae344ba178  dconf-profile-postmarketos
 5a450658f94e5064ff233ec0dd1fcc42334d599b07bcc7cf281f73e593f5188c1a23cec0246f28bfb19c70fe4c29709dd4bdc72a7593b79ccaca9f34af37e3d6  firefox.desktop
