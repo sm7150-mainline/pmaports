@@ -59,8 +59,6 @@ install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	000-gschema.override
 	01-phoc-scaling
-	02-gnome-software-tweaks
-	03-favorites
 	dconf-profile-postmarketos
 	firefox.desktop
 	mimeapps.list
@@ -82,12 +80,9 @@ package() {
 		"$pkgdir"/etc/dconf/profile/user
 	install -Dm644 "$srcdir"/mimeapps.list \
 		"$pkgdir"/usr/share/applications/mimeapps.list
+	# Only relocatable schemas should be installed under dconf
 	install -Dm755 "$srcdir"/01-phoc-scaling \
 		"$pkgdir"/etc/dconf/db/postmarketos.d/01-phoc-scaling
-	install -Dm755 "$srcdir"/02-gnome-software-tweaks \
-		"$pkgdir"/etc/dconf/db/postmarketos.d/02-gnome-software-tweaks
-	install -Dm755 "$srcdir"/03-favorites \
-		"$pkgdir"/etc/dconf/db/postmarketos.d/03-favorites
 	install -Dm644 "$srcdir"/udiskie.desktop \
 		"$pkgdir"/etc/xdg/autostart/udiskie.desktop
 }
@@ -109,10 +104,8 @@ firefox() {
 }
 
 sha512sums="
-7a93ac101912a892373788404fcb4c13f0e57e4e3b0a42e00412eb05a8e2946ad5b6e4abec2b73c5f851b49d0d61e51bb3451eb9cb30357615810a17d88d65a5  000-gschema.override
+86a2b0e859cf733a35b20525af166a42d9153c36c961e69024669a01c39b6b0311c5372f3671b67967b97e620529371985964adad285c385a36420aa345307a4  000-gschema.override
 6d0ccbecfab1dbf2543dbd938d4b7544e278af9e88c8ab6751494b49aa281369f46d2769a1a1874e9bdad2faf8e8025d2ce97ea6b6302569a95283af5cedf459  01-phoc-scaling
-50aa0083fc83f85e8c3e624c7782a5be01187321645c01d20c9f3adf19893375ab7d7b1ec3d51943fd09bcc78df4bbe1a369c951500bc7b766baff01febc1015  02-gnome-software-tweaks
-b9fed11dfd51cb54f9523376c965a952c1785c369a8e747868609dcb14787f260d994cb8a60a033a0ad2aa0991eb985dff158850d0f6ff48410f5ae7b789fc36  03-favorites
 e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742eee51d93dc83859a7ead553f4dcbc8b6fcefa33ae344ba178  dconf-profile-postmarketos
 5a450658f94e5064ff233ec0dd1fcc42334d599b07bcc7cf281f73e593f5188c1a23cec0246f28bfb19c70fe4c29709dd4bdc72a7593b79ccaca9f34af37e3d6  firefox.desktop
 253560b28bcb3d7908e07a7656bb1f5dab8d709c0a2e789c461d8d99dadb86f95203d6c66741197eaaa4c62eda52997736da618fc63ef1b9dcc79e4eaa635443  mimeapps.list
