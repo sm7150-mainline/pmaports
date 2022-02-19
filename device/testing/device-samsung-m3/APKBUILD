@@ -2,7 +2,7 @@
 pkgname=device-samsung-m3
 pkgdesc="Samsung Galaxy S III LTE"
 pkgver=3
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -28,7 +28,10 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="WiFi and Bluetooth firmware"
-	depends="firmware-samsung-m0-mainline"
+	depends="
+		firmware-samsung-m0-bluetooth
+		firmware-samsung-m0-wifi
+		"
 	mkdir "$subpkgdir"
 }
 
