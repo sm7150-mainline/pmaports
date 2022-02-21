@@ -1,0 +1,51 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-crownlte
+pkgdesc="Samsung Galaxy Note 9"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-samsung-crownlte
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	stylus.conf
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-x11
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi firmware"
+	depends="firmware-samsung-crownlte"
+	mkdir "$subpkgdir"
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	depends="xf86-input-evdev"
+	install -Dm644 "$srcdir"/stylus.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/stylus.conf
+}
+
+sha512sums="
+5f8b2b51f6da0e4763fd6749f4a5b133cfc8ee9f7a3d0fcdec882954c59bfc21eee9a50ac17c332c797e84ae1058d7ecde07a53bf50170f73e698cb62003cb5b  deviceinfo
+29c2f8fbd67f6aa95a34fc465798be71dc360087b4e4fddbcdc9b43a628de384f48c1b9e6a7b3d41c93954baee3b88f08972f0a827d663b0279b06a4b2908bd2  stylus.conf
+"
