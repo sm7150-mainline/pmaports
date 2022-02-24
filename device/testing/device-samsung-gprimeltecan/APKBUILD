@@ -1,0 +1,43 @@
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-samsung-gprimeltecan
+pkgdesc="Samsung Galaxy Grand Prime CAN (G530W)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
+	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+_pmb_select="soc-qcom-msm8916-rproc"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="firmware-qcom-adreno-a300 msm-firmware-loader firmware-samsung-gprimeltecan-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	depends="device-samsung-gprimeltexx-phosh"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+d2f0499365e8a634ce94ed2eb1008a10786372486a62e9cb6f669ffed0b3cc8dcf80b9faf010ecbb07d57073c7e15ff00a7f67d731fa8aab37582dd97abb11d6  deviceinfo
+"
