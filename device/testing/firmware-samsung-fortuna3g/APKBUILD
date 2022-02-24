@@ -1,0 +1,32 @@
+pkgname=firmware-samsung-fortuna3g
+pkgver=1
+pkgrel=0
+_name="Samsung Galaxy Grand Prime 3G (G530H)"
+pkgdesc="Firmware for $_name"
+url="https://postmarketos.org"
+subpackages="$pkgname-wcnss-nv:wcnss_nv"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+source="$pkgname-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/Y8DvfvRf"
+
+_fwdir="/lib/firmware/postmarketos"
+
+unpack() {
+	default_unpack
+	base64 -d $pkgname-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
+}
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+wcnss_nv() {
+	pkgdesc="$_name WiFi/BT firmware configuration"
+	install -Dm644 "$srcdir"/WCNSS_qcom_wlan_nv.bin -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+sha512sums="
+8f46dae0009391871764e3e5cfcb39f565116444ae0882ef3b93cf43418a997a8fb260948d2bb1315ffb33faa82565ec352b1bbee573421363e86325b2bf5a9e  firmware-samsung-fortuna3g-WCNSS_qcom_wlan_nv.bin.base64
+"
