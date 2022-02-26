@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-j5x
+pkgdesc="Samsung Galaxy J5 (2015)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8916"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+ff3a82a37dfbcc31493d5f72cc00a1ee870cda4ea325fce5d10fa74b85d946fb00f2a85d99c7a301f21128e99c23c520e22b33511241a316af1bbaa21b28295b  deviceinfo
+"
