@@ -2,8 +2,8 @@
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 
 pkgname=linux-nokia-n900
-pkgver=5.15.13
-pkgrel=2
+pkgver=5.15.25
+pkgrel=0
 pkgdesc="Mainline kernel fork for Nokia N900"
 arch="armv7"
 url="https://kernel.org/"
@@ -25,15 +25,16 @@ source="
 	0002-ARM-dts-n900-remove-rx51-battery.patch
 	0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
 	0004-ARM-dts-omap3_n900-disable-thermal-for-now.patch
-	0005-ARM-dts-omap3_n900-fix-lp5523-for-multi-color.patch
-	0006-leds-lp55xx-initialise-output-direction-from-dts.patch
+	0005-iio-accel-st-accel-add-lis302dl.patch
+	0006-ARM-dts-N900-use-iio-driver-for-accelerometer.patch
 	0007-Revert-ARM-omap3-enable-off-mode-automatically.patch
 	0008-wl1251-specify-max.-IE-length.patch
 	0009-wip-Revert-dma-direct-Fix-potential-NULL-pointer-der.patch
 "
 if [ "${pkgver%.0}" = "$pkgver" ]; then
-	source="$source
-	linux-$pkgver.patch.xz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz"
+	source="
+	linux-$pkgver.patch.xz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz
+	$source"
 fi
 builddir="$srcdir/linux-$_kernver"
 
@@ -62,16 +63,16 @@ package() {
 }
 
 sha512sums="
+6fb9c2744ec9c0fee7ac6e3e83714c95f4d31ee8e31929f3f816e88dea784ba6496d0c5df069fad92ecd4222667acad361966214697a859cff469e9f86b84f0a  linux-5.15.25.patch.xz
 d25ad40b5bcd6a4c6042fd0fd84e196e7a58024734c3e9a484fd0d5d54a0c1d87db8a3c784eff55e43b6f021709dc685eb0efa18d2aec327e4f88a79f405705a  linux-5.15.tar.xz
-0dd0386f430158e60ee788598686ae5b3df26a9e6d99e21d831ff6180317c5b2697cf49370f7e8432e0750e429dd7e0f72dc45b40cfff5cfbf88fe83665b5db5  config-nokia-n900.armv7
+082de68f15bdbc4f2e0897c3885b0dcb68ee2b9e1afab9567f355630cf7a62fbcc2ff806e4a7c5abfa43c1f0837e77cb59126fc137f32e8b07408d441df0de13  config-nokia-n900.armv7
 04a39253afd25a7de03dc45ff322161672005406543c44b97d2dc293f202de7de446aee9707a690a290641c55c7bed6e78bbe096ca323dd7d88d3207427c8d31  0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
 c1055c7a4d2e39ce13db3871d948022b62eb7ebeb898777d197169b3e7c04d705ce7f52f28214754e3cefe99d1dd66f339a1a5770bae1ee970d5926067032061  0002-ARM-dts-n900-remove-rx51-battery.patch
 93e82f7041e347b63fc32ce54176ee3fe7e8260cc793810bcf0146a3699567b63a0cb7ce8c531b0484390907a25c51bfbeb15b32dddb2220c2481ec1f86e5eb5  0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
 ea33adda06e1fb64b763c34f1f598bb00ccfdba5400d0996871138284b4cb8a51e021c7c0ace9d4bc16027530027fb2a443d5013c6f0b22ed3d64f36152c8854  0004-ARM-dts-omap3_n900-disable-thermal-for-now.patch
-95699ddfa06c7eb59c8a55c931322ac25fa93f23886a67155e7b3db31db74be8ff2e72c304747b9a6fe3971005dc0d804daf3d1e3ce5953a9a99ada8cf703a5c  0005-ARM-dts-omap3_n900-fix-lp5523-for-multi-color.patch
-066e05a285f9a93f718461cd29eb6d917ca0e7cfa532660825059142391925ab780201b99e7d1966f90b8ca092ad0722209ae8bbe260ac40fa16a76d761debfe  0006-leds-lp55xx-initialise-output-direction-from-dts.patch
+fc23b8ee50e387a05d820f07281a9735d3073de07c5a6a13e44da7615b0c9a8030bba80f9e63f567557f69e8d75d6d51330b3ca3a6c719275a5a5ed8223a6d2a  0005-iio-accel-st-accel-add-lis302dl.patch
+302aa8e6677e7ecfae473553806cdf5d47687c4f8e73322d0ace78486f9290ba503069ed6b41250fe38802b6c6091c7c4eac06ab387e011f1316b84ad5e2641d  0006-ARM-dts-N900-use-iio-driver-for-accelerometer.patch
 acf3beef5448da7f3be19b862ac2fef65379d9f1617246baaab296083901174d891526cd9bf781162d4406089969c311701dfded04219bafd3c5c7784bc4c2e6  0007-Revert-ARM-omap3-enable-off-mode-automatically.patch
 acaa153809c390957ee8d80caae440a41d84c78f045268ac226f05019dbdd69959b5cf56b6bac2e2c0300bcdb68649ffb847e7a0a333408bf5b4426fc969afe8  0008-wl1251-specify-max.-IE-length.patch
 f0a02313f168970499faef51207644e69ca65aa380ada055a2f5faceaa8c85f6ea0a161729637205c2bc116e1a0ac62d07c44a83c4419cfec04d4141508f7845  0009-wip-Revert-dma-direct-Fix-potential-NULL-pointer-der.patch
-36f2c500b7391d1d33eaf844c1f9f63ee54ae1a5284739dc438a0758837df088226921c0b3a51a9fc29b193fafef1aa44afbb3379f8fa0f550e040507b5004b4  linux-5.15.13.patch.xz
 "

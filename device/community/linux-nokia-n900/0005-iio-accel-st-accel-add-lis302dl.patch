@@ -1,0 +1,69 @@
+From c594376d8ace517fe54e0d14716c341d071f4423 Mon Sep 17 00:00:00 2001
+From: "Sicelo A. Mhlongo" <absicsz@gmail.com>
+Date: Fri, 25 Feb 2022 19:47:56 +0200
+Subject: [PATCH 1/2] iio: accel: st_accel: add support for lis302dl
+
+---
+ drivers/iio/accel/st_accel.h      | 2 ++
+ drivers/iio/accel/st_accel_core.c | 1 +
+ drivers/iio/accel/st_accel_i2c.c  | 5 +++++
+ 3 files changed, 8 insertions(+)
+
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index 8750dea56fcb..15f4b7944362 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -37,6 +37,7 @@ enum st_accel_type {
+ 	LIS2DE12,
+ 	LIS2HH12,
+ 	ST_ACCEL_MAX,
++	LIS302DL,
+ };
+ 
+ #define H3LIS331DL_ACCEL_DEV_NAME	"h3lis331dl_accel"
+@@ -61,6 +62,7 @@ enum st_accel_type {
+ #define LIS3DE_ACCEL_DEV_NAME		"lis3de"
+ #define LIS2DE12_ACCEL_DEV_NAME		"lis2de12"
+ #define LIS2HH12_ACCEL_DEV_NAME		"lis2hh12"
++#define LIS302DL_ACCEL_DEV_NAME		"lis302dl"
+ 
+ #ifdef CONFIG_IIO_BUFFER
+ int st_accel_allocate_ring(struct iio_dev *indio_dev);
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 31ea19d0ba71..2a353c51c84a 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -444,6 +444,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = LIS331DL_ACCEL_DEV_NAME,
++			[1] = LIS302DL_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_8bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index c0ce78eebad9..086e8af89e18 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -107,6 +107,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lis2hh12",
+ 		.data = LIS2HH12_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis302dl",
++		.data = LIS302DL_ACCEL_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+@@ -142,6 +146,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ LIS3DE_ACCEL_DEV_NAME },
+ 	{ LIS2DE12_ACCEL_DEV_NAME },
+ 	{ LIS2HH12_ACCEL_DEV_NAME },
++	{ LIS302DL_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+-- 
+2.35.1
+
