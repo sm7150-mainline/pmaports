@@ -1,0 +1,32 @@
+pkgname=firmware-samsung-fortunaltezt
+pkgver=1
+pkgrel=0
+_name="Samsung Galaxy Grand Prime (SM-G530Y)"
+pkgdesc="Firmware for $_name"
+url="https://postmarketos.org"
+subpackages="$pkgname-wcnss-nv:wcnss_nv"
+arch="armv7"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+source="$pkgname-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/s25mBaen"
+
+_fwdir="/lib/firmware/postmarketos"
+
+unpack() {
+	default_unpack
+	base64 -d $pkgname-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
+}
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+wcnss_nv() {
+	pkgdesc="$_name WiFi/BT firmware configuration"
+	install -Dm644 "$srcdir"/WCNSS_qcom_wlan_nv.bin -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+sha512sums="
+0a34532a0c5bbf69bb6a81ec850951b47c9e059a3ea2ab269dac1dfe19de49a51f98d018d899db2517e95f0ac737f82ff0c46df9bfd3e990b44b7b03062cba2e  firmware-samsung-fortunaltezt-WCNSS_qcom_wlan_nv.bin.base64
+"

@@ -1,0 +1,51 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-fortunaltezt
+pkgdesc="Samsung Galaxy Grand Prime (SM-G530Y)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	postmarketos-base
+	mkbootimg
+	linux-postmarketos-qcom-msm8916
+	soc-qcom-msm8916
+	soc-qcom-msm8916-rproc
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	phoc.ini
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+_pmb_select="soc-qcom-msm8916-rproc"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="firmware-qcom-adreno-a300 msm-firmware-loader firmware-samsung-fortunaltezt-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+d2a5ff7f9bd85107388aca5c921ee0352b9c4d4725bef0a810f2c736a1715bb619922a2cf24124554dcbe8f57ebf20c6bcbc2d4e46939d37a109cf32169275d7  deviceinfo
+dbc8422fc00c757963dd016f26dd45d8c05c8c46b7e60cd11dd154550e166568cfdcee60678ee3542d27c2f8c373b71a1c3ec33da0260509fe4133ecd06a27bc  phoc.ini
+"
