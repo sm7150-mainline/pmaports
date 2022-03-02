@@ -1,7 +1,7 @@
 # Maintainer: Alexey Minnekhanov <alexeymin@postmarketos.org>
 pkgname=lk2nd
-pkgver=0.10.0
-pkgrel=2
+pkgver=0.11.0
+pkgrel=0
 pkgdesc="Secondary little kernel (lk) bootloader for several Qualcomm devices"
 arch="armv7 aarch64"
 url="https://github.com/msm8916-mainline/lk2nd"
@@ -39,9 +39,9 @@ build() {
 	unset PATH
 	export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- msm8916-secondary
-	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- msm8974-secondary
-	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- msm8226-secondary
+	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8916
+	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8974
+	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8226
 }
 
 package() {
@@ -50,25 +50,25 @@ package() {
 }
 
 msm8916() {
-	install -Dm644 "$builddir"/build-msm8916-secondary/lk2nd.img -t \
+	install -Dm644 "$builddir"/build-lk2nd-msm8916/lk2nd.img -t \
 		"$subpkgdir"/boot
 }
 
 msm8916_appended() {
-	install -Dm644 "$builddir"/build-msm8916-secondary/lk2nd-appended-dtb.img \
+	install -Dm644 "$builddir"/build-lk2nd-msm8916/lk2nd-appended-dtb.img \
 		"$subpkgdir"/boot/lk2nd.img
 }
 
 msm8974() {
-	install -Dm644 "$builddir"/build-msm8974-secondary/lk2nd.img -t \
+	install -Dm644 "$builddir"/build-lk2nd-msm8974/lk2nd.img -t \
 		"$subpkgdir"/boot
 }
 
 msm8226_appended() {
-	install -Dm644 "$builddir"/build-msm8226-secondary/lk2nd-appended-dtb.img \
+	install -Dm644 "$builddir"/build-lk2nd-msm8226/lk2nd-appended-dtb.img \
 		"$subpkgdir"/boot/lk2nd.img
 }
 
 sha512sums="
-d4c880b4cb9563a8b99aefe4bace1efaec13975fa89af2756dbba656363bd9ef83140b22fb28ad29d299eb8fe715c2f6adb829bfc7c3c4894ab6976b85a72123  lk2nd-0.10.0.tar.gz
+0251d6956596dda496d4f4d6c0ce530650016979f81527fef3242087a24855c972e4b6240ef484b1747a7dcc58b1341eb40d9e5141a29df1fd2a4de18698a578  lk2nd-0.11.0.tar.gz
 "
