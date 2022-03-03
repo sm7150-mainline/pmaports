@@ -1,0 +1,32 @@
+pkgname=firmware-samsung-j3ltetw
+pkgver=1
+pkgrel=0
+_name="Samsung Galaxy J3 (2016)"
+pkgdesc="Firmware for $_name"
+url="https://postmarketos.org"
+subpackages="$pkgname-wcnss-nv:wcnss_nv"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+source="$pkgname-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/fRk3jmJE"
+
+_fwdir="/lib/firmware/postmarketos"
+
+unpack() {
+	default_unpack
+	base64 -d $pkgname-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
+}
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+wcnss_nv() {
+	pkgdesc="$_name WiFi/BT firmware configuration"
+	install -Dm644 "$srcdir"/WCNSS_qcom_wlan_nv.bin -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+sha512sums="
+5ef881795fbcd5defc0c3a040638a2d3dc1a4cc850b19f49744ea67dfd2b6bf5000cfc1987840d9a646767cfc4276cd229681c06d60ca00aeb193c2c519e7419  firmware-samsung-j3ltetw-WCNSS_qcom_wlan_nv.bin.base64
+"
