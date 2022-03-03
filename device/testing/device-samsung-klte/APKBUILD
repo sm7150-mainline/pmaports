@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-klte
 pkgdesc="Samsung Galaxy S5 (G900F)"
-pkgver=3
-pkgrel=1
+pkgver=4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -19,7 +19,6 @@ subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="
-	20-tm2-touchkey-input.rules
 	bt-module-deps.conf
 	deviceinfo
 "
@@ -30,8 +29,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir"/20-tm2-touchkey-input.rules \
-		"$pkgdir"/lib/udev/rules.d/20-tm2-touchkey-input.rules
 }
 
 nonfree_firmware() {
@@ -51,7 +48,6 @@ nonfree_firmware() {
 }
 
 sha512sums="
-5a91ca375652bc9d2af90db4f446176a4fd43b5c924362219f6bf35e76de818cb4ecce105ee56b4511c3c0882bd055615f409516fade6dfcd30642cc147c1c5a  20-tm2-touchkey-input.rules
 6cef5f8ae1785ac16e6fe84bfc861ac50cdfb94db35d764f44a25c960e123cb82f6e56f45362a5340c62a3d5ac225f2689afd4f6964cb88305a0892ba44214f0  bt-module-deps.conf
 ddbf2140fdc4b3c50a78a5c946d2bec75debec68a89bfac6e1ad7b112af7c38e916ac056dbe69e266c229e3543427471375d3f5f362dcf35765e86a6bc0f4024  deviceinfo
 "
