@@ -5,7 +5,8 @@
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.16.7
+pkgver=5.17_rc1
+_commit=3205c463457e0bec98ef7d707889e9daefec79ca
 pkgrel=0
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
@@ -35,12 +36,10 @@ case $pkgver in
 	*.*)	_kernver=$pkgver;;
 esac
 source="
-	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
+	https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-nomadik.git/snapshot/linux-nomadik-$_commit.tar.gz
 	config-$_flavor.armv7
-	emmc.patch
-	fix-boot-regression-skomer.patch
 "
-builddir="$srcdir/linux-${_kernver//_/-}"
+builddir="$srcdir/linux-nomadik-$_commit"
 
 prepare() {
 	default_prepare
@@ -67,8 +66,6 @@ package() {
 }
 
 sha512sums="
-db21a01720921ebca5d462b828c661be3edcd0c6f62e20a187aff95b1f8579b119cc7d5443fac14f9372dba41764cf01b50a484eabfad33dcb6b06d2e1268a17  linux-5.16.7.tar.xz
-ccd9280c1398425884998c0c9324284738a5b64f55c78a391aaa78c0e030fed11d6386ee44396cd893c006047ba86f4ce84dc7ef5faf98ecd52cd57b84ca6a07  config-postmarketos-stericsson.armv7
-d1bd4c1f04e67ab33f03285f8baf1187d4dde29b9c49711c56f31d4708296172295ea1ad153504f2a4e944ad3d80ddc12a7218dc0d79161089ed527fc4404632  emmc.patch
-a45735c71cedb53359f9b26a9d1cb6c15b850eb871c21ad5d5414cfe83a0186efaa86dcbff746a9327da1e8e4edba9d439454c7743684a6429167a93f83febf4  fix-boot-regression-skomer.patch
+615cee2040d060eaabfe7fadbcf8590daf54bfe7555d56d183de814c6b13db1eed43fbc283e8cad7bcee79606f695a06c669f16cde0f026444c6073da4830d0a  linux-nomadik-3205c463457e0bec98ef7d707889e9daefec79ca.tar.gz
+8bf5ffb6e5adb64b468ee203a0897f3e0746a4ce548a058f3ff3e09b2aa527cafc213a328c3bf356c73212e0a9025eebac25d39d2cd083b76435c5080318ca70  config-postmarketos-stericsson.armv7
 "
