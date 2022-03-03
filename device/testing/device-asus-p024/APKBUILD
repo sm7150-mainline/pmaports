@@ -1,0 +1,35 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-asus-p024
+pkgdesc="ASUS ZenPad 8.0"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-asus-p024
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	brightness
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm755 "$srcdir"/brightness "$pkgdir"/etc/local.d/brightness.start
+}
+
+sha512sums="
+efedbf63729981da4ed75477be062ce9f2fe77eb0ed1f8586cc8abf093fabad5a1f962c37eee125237e3706a3f9b643b079c843aaba4efbd02b35e26edb54246  deviceinfo
+857eef36b14b009915001d9ada91d2762588ecd5122b9c8e7238244e9e94fbdacc13bab867862b81eb64767efb1ca3e12949e94a364979745ac61a54957b2872  brightness
+"
