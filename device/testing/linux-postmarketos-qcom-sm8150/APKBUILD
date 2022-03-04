@@ -1,12 +1,13 @@
 # Maintainer: Caleb Connolly <caleb@connolly.tech>
 # Co-Maintainer: Uclydde <julianbraha@gmail.com>
+# Co-Maintainer: Alexey Min <alexeymin@postmarketos.org>
 # Stable Linux kernel with patches for SM8150 devices
 # Kernel config based on: arch/arm64/configs/defconfig and sm8150.config
 
 _flavor="postmarketos-qcom-sm8150"
 pkgname=linux-$_flavor
-pkgver=5.12
-pkgrel=4
+pkgver=5.17.0
+pkgrel=0
 pkgdesc="Mainline Kernel fork for SM8150 devices"
 arch="aarch64"
 _carch="arm64"
@@ -27,14 +28,14 @@ makedepends="
 
 _repo="linux"
 _config="config-$_flavor.$arch"
-_commit="76851ee4194b4d85df168064cf380a4437b28b51"
+_tag="v5.17.0-sm8150"
 
 # Source
 source="
-	$_repo-$_commit.tar.gz::https://gitlab.com/sm8150-mainline/$_repo/-/archive/$_commit/$_repo-$_commit.tar.gz
+	$_repo-$_tag.tar.bz2::https://gitlab.com/sm8150-mainline/linux/-/archive/$_tag/linux-$_tag.tar.bz2
 	$_config
 "
-builddir="$srcdir/$_repo-$_commit"
+builddir="$srcdir/$_repo-$_tag"
 
 prepare() {
 	default_prepare
@@ -62,6 +63,6 @@ package() {
 }
 
 sha512sums="
-1fc3ad729a1cb480bc457f10e2b249d17f0fdb72a6c77cc557024d20e28e7db410350e800090b81a8708d952a2b8faddeff9df71e62ee440f62f9fd77a0d195e  linux-76851ee4194b4d85df168064cf380a4437b28b51.tar.gz
-5065c192a18f1e10918011d500ec3a5d62fe19426fc28592036ab38149e04a9a0995624e55f02234f5c4a9cba8b2868a2ae3653e7296172e1a43086ceecf5470  config-postmarketos-qcom-sm8150.aarch64
+0cfcec980668ecdc1646c6398807367525058eb762d0410bb9443632febaa3f1c8d3164d165da20e6638fb625443aab5c37635bc0d347df685ce8e65308b752e  linux-v5.17.0-sm8150.tar.bz2
+71013301cb4432dad555600fddfee1fc86ecfca7fe9569ae35930c54a02a8b4cd70afa0e79fd0e5e9d64956dc888e9873cce1efd1cbb743095f877fd0940aac1  config-postmarketos-qcom-sm8150.aarch64
 "
