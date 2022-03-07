@@ -1,0 +1,43 @@
+# U-boot with patches to make the Samsung S9 boot
+pkgname=u-boot-starqltechn
+pkgver=2022.04_rc4
+pkgrel=0
+pkgdesc="U-Boot bootloader for the Samsung SM-G9600 starqltechn"
+url="https://source.denx.de/u-boot"
+arch="aarch64"
+license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
+	ISC LGPL-2.0-only LGPL-2.1-only X11"
+makedepends="$depends_dev
+	bc
+	bison
+	dtc
+	flex
+	openssl-dev
+	py3-setuptools
+	python3-dev
+	swig
+	"
+options="!archcheck !check !strip"
+ubootver=2022.04-rc4
+source="
+http://source.denx.de/u-boot/u-boot/-/archive/v$ubootver/u-boot-v$ubootver.tar.gz
+0001-arm-init-save-previous-bootloader-data.patch
+0002-board-starqltechn-get-board-usable-add-bootcmd-and-d.patch
+	"
+builddir="$srcdir/u-boot-v$ubootver"
+
+build() {
+	make HOSTCC=gcc ARCH=arm starqltechn_defconfig
+	make
+}
+
+package() {
+	install -D -m644 $builddir/"u-boot.bin" \
+		"$pkgdir/usr/share/u-boot/starqltechn/u-boot.bin"
+}
+
+sha512sums="
+f9865d9aa552c4161deb416379b0221cbf3ba0530e4af4c95db6b7ef96843a9bc59a0fc30b38e9e3fd1403dc6557249930d7476423a1470820f07104f2e7747b  u-boot-v2022.04-rc4.tar.gz
+a6158cf9271f400e758b6c4724c044dea66066ae28c7ecae9c51323b795684238b9f4509b8f590e001568033478e87f0fb5abd7511c1bc65f757d62982fa5763  0001-arm-init-save-previous-bootloader-data.patch
+95d4fa1e7327fba05f0213aa29f27a231fd314a419b055a572ae23a5bb9155eb6149e91bfe90953b7725ab8b876ed4745c6b8082f30c7ecae9c4aaab9930e178  0002-board-starqltechn-get-board-usable-add-bootcmd-and-d.patch
+"
