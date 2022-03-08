@@ -131,14 +131,16 @@ fi
 set -e
 case "$board" in
 librem5)
+	seek=33
 	[ -e "$imagedir/librem5" ] || die "librem5 images not installed, apk add u-boot-librem5"
-	$dryrun dd if=$imagedir/librem5/phone-boot.img of=$device bs=1024 seek=2 oflag=direct status=none
-	[ -z "$dryrun" ] && validate_checksum $imagedir/librem5/phone-boot.img $device 1024 2
+	$dryrun dd if=$imagedir/librem5/phone-boot.img of=$device bs=1024 seek="$seek" oflag=direct status=none
+	[ -z "$dryrun" ] && validate_checksum $imagedir/librem5/phone-boot.img $device 1024 "$seek"
 	;;
 librem5-devkit)
+	seek=33
 	[ -e "$imagedir/librem5" ] || die "librem5-devkit images not installed, apk add u-boot-librem5-devkit"
-	$dryrun dd if=$imagedir/librem5/devkit-boot.img of=$device bs=1024 seek=2 oflag=direct status=none
-	[ -z "$dryrun" ] && validate_checksum $imagedir/librem5/devkit-boot.img $device 1024 2
+	$dryrun dd if=$imagedir/librem5/devkit-boot.img of=$device bs=1024 seek="$seek" oflag=direct status=none
+	[ -z "$dryrun" ] && validate_checksum $imagedir/librem5/devkit-boot.img $device 1024 "$seek"
 	;;
 esac
 $dryrun sync
