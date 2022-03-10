@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Jakko <jahau@rocketmail.com>
 pkgname=postmarketos-ui-mate
-pkgver=3
-pkgrel=2
+pkgver=4
+pkgrel=0
 pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
 url="http://mate-desktop.org/"
 arch="noarch"
@@ -27,6 +27,7 @@ _pmb_recommends="
 	onboard
 	pavucontrol
 	pulseaudio-utils
+	unclutter-xfixes
 	"
 install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.post-upgrade"
 source="
@@ -36,6 +37,7 @@ source="
 	10_onboard.gschema.override
 	61-lightdm-autologin.conf
 	onboard-autostart.desktop
+	unclutter-xfixes.desktop
 	"
 options="!check"
 
@@ -57,6 +59,9 @@ package() {
 
 	install -Dm644 "$srcdir"/onboard-autostart.desktop \
 		"$pkgdir"/etc/skel/.config/autostart/onboard-autostart.desktop
+
+	install -Dm644 "$srcdir"/unclutter-xfixes.desktop \
+		"$pkgdir"/etc/skel/.config/autostart/unclutter-xfixes.desktop
 }
 
 sha512sums="
@@ -66,4 +71,5 @@ edef87a2b88a09d023dd51e8b32e2fc1cc9f5bec4a00b88b4f2adfb844ae2dc72747ef8891fc8a08
 ffcc518ff58d37de302bd101e57bf983800e45899645d476045d0a74096704333a0b513f45e6a5485fdbd80ac1caebce14a760cab6fcc6d5dde0d766ade8b58b  10_onboard.gschema.override
 225c4d1bccad4bdacad34958322015147077158b395b8db095b7afd47e18638044780b381124c3b82bf639af66ea565e1763c54ab9599ec13177c289e0d2a000  61-lightdm-autologin.conf
 d598b806bf749e0fedfdaeb51aa035b3877fedf4adc123ce2e50aef20f3cc6727b520a379aa26e88f9a2fe0f1fb96c4682895bb49c6a9cf4b5a5fd963ea93747  onboard-autostart.desktop
+b626c8b27d9418df15124d6e97f5174c173863536e9c3eebfb11473d764c81e1db40cf4b7cdabe44b67a0e295d920c7a849a3e2e40dd86402de8200242c7b05a  unclutter-xfixes.desktop
 "

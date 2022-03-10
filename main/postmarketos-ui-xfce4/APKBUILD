@@ -2,7 +2,7 @@
 # Maintainer: Jakko <jahau@rocketmail.com>
 pkgname=postmarketos-ui-xfce4
 pkgver=0.5.1
-pkgrel=0
+pkgrel=1
 pkgdesc="(X11) Lightweight desktop (stylus recommended)"
 url="https://gitlab.com/postmarketOS/xfce4-phone"
 arch="noarch"
@@ -30,6 +30,7 @@ _pmb_recommends="
 	postmarketos-artwork-icons
 	postmarketos-artwork-wallpapers
 	pulseaudio-utils
+	unclutter-xfixes
 	xfce4-battery-plugin
 	xfce4-pulseaudio-plugin
 	xfce4-screensaver
@@ -43,6 +44,7 @@ source="
 	64-lightdm-autologin.conf
 	enable-scrollbars.sh
 	onboard-autostart.desktop
+	unclutter-xfixes.desktop
 	xfce4-phone.sh
 	"
 options="!check"
@@ -67,6 +69,9 @@ package() {
 	install -Dm644 "$srcdir"/onboard-autostart.desktop \
 		"$pkgdir"/etc/xdg/xfce4-phone/autostart/onboard-autostart.desktop
 
+	install -Dm644 "$srcdir"/unclutter-xfixes.desktop \
+		"$pkgdir"/etc/xdg/xfce4-phone/autostart/unclutter-xfixes.desktop
+
 	install -Dm644 "$srcdir"/xfce4-phone.sh \
 		"$pkgdir"/etc/profile.d/xfce4-phone.sh
 
@@ -81,5 +86,6 @@ ffcc518ff58d37de302bd101e57bf983800e45899645d476045d0a74096704333a0b513f45e6a548
 3841294daffdd3e0da5a7ba155ba8c21e9e5a2f2ba5b3b5ffa3ea6a16486625d3655d03f8c18740fcddfbca673c42a5289ec3b22720cfbbdd56fde8fdc3bf9b0  64-lightdm-autologin.conf
 262cdcf334cfa56872797c960cb8683b79c7b13b0a8179cd002e598576f0e9fe07057fd0fe724e87a6664db4b91b31a8c0cbf026ab137533b07675f838ae57bb  enable-scrollbars.sh
 ce7921f500b603796572bc02fa123e58d58ed1e9efd4d909de8f73c11a3e0bc0893639ce159f0701578b19db764893d021502d1c98cc24eb692e9d48320ff68c  onboard-autostart.desktop
+b626c8b27d9418df15124d6e97f5174c173863536e9c3eebfb11473d764c81e1db40cf4b7cdabe44b67a0e295d920c7a849a3e2e40dd86402de8200242c7b05a  unclutter-xfixes.desktop
 9ef0891cb1476c693175cf1ef8c64112354c1b2bf80c3cdfff4aabb2b9b9c434ccfa7dbdde3385fb215e94fc6216f3dc898be31b4ce9ad5bdb1c23bbb338d633  xfce4-phone.sh
 "
