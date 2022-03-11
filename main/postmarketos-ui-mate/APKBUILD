@@ -1,7 +1,7 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Jakko <jahau@rocketmail.com>
 pkgname=postmarketos-ui-mate
-pkgver=4
+pkgver=5
 pkgrel=0
 pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
 url="http://mate-desktop.org/"
@@ -33,6 +33,7 @@ install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $p
 source="
 	000-system-background.gschema.override
 	001-screensaver.gschema.override
+	10_caja_single-click.gschema.override
 	10_mate-terminal_colors.gschema.override
 	10_onboard.gschema.override
 	61-lightdm-autologin.conf
@@ -47,6 +48,9 @@ package() {
 
 	install -Dm644 "$srcdir"/001-screensaver.gschema.override \
 		"$pkgdir"/usr/share/glib-2.0/schemas/001-screensaver.gschema.override
+
+	install -Dm644 "$srcdir"/10_caja_single-click.gschema.override \
+		"$pkgdir"/usr/share/glib-2.0/schemas/10_caja_single-click.gschema.override
 
 	install -Dm644 "$srcdir"/10_mate-terminal_colors.gschema.override \
 		"$pkgdir"/usr/share/glib-2.0/schemas/10_mate-terminal_colors.gschema.override
@@ -66,7 +70,8 @@ package() {
 
 sha512sums="
 b4eded3d1aba2086d53507d434da6f2d5aae24fa49c7a8619abb1d81f87898d7a6d813be777a285ce988d78db236bea7507e7868c39fe020e5d23c230dd36242  000-system-background.gschema.override
-68c7614bab2f9beadac6a92508c3d63e05938e2746c7314921d4b0c2fc85e7fdca094c1c7c300710ab778a09b76a85158fc806150bc5bf3fce270f51c1d5d65b  001-screensaver.gschema.override
+fe6a37a1e22fbf29a8b6de3b3e137bc19becd6d80d391ad1a0c7908cb996dd9982c88ef55b84fd258a81263e37d47df5a81566ce7c337886ae4c0d7a83d640aa  001-screensaver.gschema.override
+c69d44f1c69e3880ba822a4b98bc59f4049f7b8e228bec31076b9d3fa510e8e205ecf7e3e4b7b00fb28b39a447a55126aaede7e5e5741350aff2a37172b77659  10_caja_single-click.gschema.override
 edef87a2b88a09d023dd51e8b32e2fc1cc9f5bec4a00b88b4f2adfb844ae2dc72747ef8891fc8a08652ae563fb1b914fba214c28a93e77de76b489a5fb50a96c  10_mate-terminal_colors.gschema.override
 ffcc518ff58d37de302bd101e57bf983800e45899645d476045d0a74096704333a0b513f45e6a5485fdbd80ac1caebce14a760cab6fcc6d5dde0d766ade8b58b  10_onboard.gschema.override
 225c4d1bccad4bdacad34958322015147077158b395b8db095b7afd47e18638044780b381124c3b82bf639af66ea565e1763c54ab9599ec13177c289e0d2a000  61-lightdm-autologin.conf
