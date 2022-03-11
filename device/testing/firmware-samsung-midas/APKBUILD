@@ -1,11 +1,13 @@
 pkgname=firmware-samsung-midas
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc="Samsung Galaxy Midas board firmware (m0, m3, t0lte, ...)"
 _commit="fdd8c44568a148c22fbf008de822ff4e27992da1"
 url="https://github.com/TheMuppets/proprietary_vendor_samsung"
 _armbian_commit="5ff122ef309a1ddabb4bf7f37c8347c43b314a61"
 _armbian_url="https://github.com/armbian/firmware"
+_androguide_commit="d5a8735a6ad1fff3091f100383ac004f411d7528"
+_androguide_url="https://raw.githubusercontent.com/Androguide/android_vendor_samsung"
 arch="armv7"
 license="proprietary"
 replaces="firmware-samsung-m0"
@@ -15,46 +17,35 @@ subpackages="
 	"
 source="
 	$url/raw/$_commit/smdk4412-common/proprietary/bin/bcm4334.hcd
-	$_armbian_url/raw/$_armbian_commit/brcm/brcmfmac4334-sdio.bin
-	$_armbian_url/raw/$_armbian_commit/brcm/brcmfmac4334-sdio.rockchip%2Crk3318-box.txt
-"
+	brcmfmac4334-sdio.samsung,i9300-$_armbian_commit.txt::$_armbian_url/raw/$_armbian_commit/brcm/brcmfmac4334-sdio.rockchip%2Crk3318-box.txt
+	brcmfmac4334-sdio.samsung,i9305-$_androguide_commit.txt::$_androguide_url/$_androguide_commit/smdk4412-common/proprietary/system/etc/wifi/nvram_net.txt
+	"
 options="!check !strip !archcheck !spdx !tracedeps pmb:cross-native"
 
 package() {
-	mkdir -p "$pkgdir"/lib/firmware/postmarketos
+	mkdir -p "$pkgdir"
 }
 
 bluetooth() {
 	depends="$pkgname"
 	replaces="firmware-samsung-m0-mainline"
-	mkdir -p "$subpkgdir"/lib/firmware/brcm
-	install -m644 "$srcdir"/bcm4334.hcd \
+
+	install -Dm644 "$srcdir"/bcm4334.hcd \
 		"$subpkgdir"/lib/firmware/brcm/BCM4334B0.hcd
 }
 
 wifi() {
-	depends="$pkgname"
+	depends="$pkgname linux-firmware-brcm"
 	replaces="firmware-samsung-m0-mainline"
-	mkdir -p "$subpkgdir"/lib/firmware/brcm \
-		"$subpkgdir"/lib/firmware/postmarketos
 
-	install -m644 "$srcdir"/brcmfmac4334-sdio.bin \
-		"$subpkgdir"/lib/firmware/postmarketos/brcmfmac4334-sdio.bin
-	ln -s /lib/firmware/postmarketos/brcmfmac4334-sdio.bin \
-		"$subpkgdir"/lib/firmware/brcm/brcmfmac4334-sdio.samsung,i9300.bin
-	ln -s /lib/firmware/postmarketos/brcmfmac4334-sdio.bin \
-		"$subpkgdir"/lib/firmware/brcm/brcmfmac4334-sdio.samsung,i9305.bin
-
-	install -m644 "$srcdir"/brcmfmac4334-sdio.rockchip%2Crk3318-box.txt \
-		"$subpkgdir"/lib/firmware/postmarketos/brcmfmac4334-sdio.txt
-	ln -s /lib/firmware/postmarketos/brcmfmac4334-sdio.txt \
+	install -Dm644 "$srcdir"/brcmfmac4334-sdio.samsung,i9300-$_armbian_commit.txt \
 		"$subpkgdir"/lib/firmware/brcm/brcmfmac4334-sdio.samsung,i9300.txt
-	ln -s /lib/firmware/postmarketos/brcmfmac4334-sdio.txt \
+	install -Dm644 "$srcdir"/brcmfmac4334-sdio.samsung,i9305-$_androguide_commit.txt \
 		"$subpkgdir"/lib/firmware/brcm/brcmfmac4334-sdio.samsung,i9305.txt
 }
 
 sha512sums="
 cbed1dc60829161c7ac9649dcae67fc45204c1a25e8de320ad3bc4e9d5cae573fb8a4745f91355fa96d2d3d4124a9e707341fc5bd1b22705cb2efb16831e029f  bcm4334.hcd
-528b8087ce2d985c397b1072070bd743114b7176340cd7612ca5d293e2059b1c483522c3adc4f58c4daf738848e95d3541195608f47acc5236032b6a2bfee441  brcmfmac4334-sdio.bin
-d5c83e1dcd67630e186ab484d150ca5c0af12810de62a46ec6e525b50dabf64a75f1231ef8d7c1d102fb76389210fdb952975460179ca767acd0ffdd869907d7  brcmfmac4334-sdio.rockchip%2Crk3318-box.txt
+d5c83e1dcd67630e186ab484d150ca5c0af12810de62a46ec6e525b50dabf64a75f1231ef8d7c1d102fb76389210fdb952975460179ca767acd0ffdd869907d7  brcmfmac4334-sdio.samsung,i9300-5ff122ef309a1ddabb4bf7f37c8347c43b314a61.txt
+146aefcccd23d63e434bd7f7d0ac6d5975ad25e44362da10bc583ab9e38b18c53f6ce18890c9790ee88fbb8f6358085bb615d0595388ca43a322f7c819614049  brcmfmac4334-sdio.samsung,i9305-d5a8735a6ad1fff3091f100383ac004f411d7528.txt
 "
