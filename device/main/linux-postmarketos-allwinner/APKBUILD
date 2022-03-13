@@ -6,9 +6,9 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=5.16.4_git20220131
-pkgrel=2
-_tag="orange-pi-5.16-20220131-0002"
+pkgver=5.17.0_git20220313
+pkgrel=0
+_tag="orange-pi-5.17-20220313-2345"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
 url="https://megous.com/git/linux/"
@@ -43,14 +43,13 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	0003-dts-pinetab-add-missing-bma223-ohci1.patch
 	0004-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
 	0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
-	0006-media-ov5640-Implement-autofocus.patch
-	0007-dts-pinephone-drop-modem-power-node.patch
-	0008-drm-panel-simple-Add-Hannstar-TQTM070CB501.patch
-	0009-ARM-dts-sun6i-Add-GoClever-Orion-70L-tablet.patch
-	0010-drm-panel-simple-Add-Hannstar-HSD070IDW1-A.patch
-	0011-ARM-dts-sun6i-Add-Lark-FreeMe-70.2S-tablet.patch
-	0012-sunxi-mmc-h6-fix.patch
-	0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
+	0006-dts-pinephone-drop-modem-power-node.patch
+	0007-drm-panel-simple-Add-Hannstar-TQTM070CB501.patch
+	0008-ARM-dts-sun6i-Add-GoClever-Orion-70L-tablet.patch
+	0009-drm-panel-simple-Add-Hannstar-HSD070IDW1-A.patch
+	0010-ARM-dts-sun6i-Add-Lark-FreeMe-70.2S-tablet.patch
+	0011-eMMC-workaround.patch
+	0012-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 	"
 subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
@@ -98,20 +97,19 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 sha512sums="
-7ed825eb7311838cd14661192e80149c0a1cd24541eb50808c7261ecb866cf39028c3c7dda0410aeb913670aac63af23d764f98af9e563bf5165cac7f0e51026  linux-postmarketos-allwinner-orange-pi-5.16-20220131-0002.tar.gz
-73d1adb55c51bc96b411db7573da39b2f69f274982037b2eee05022664802bdc44fd5740377114fe0b735e723fe4eda20b3845c0118ac072e0bb7a0e66e5e1c7  config-postmarketos-allwinner.aarch64
+b24b34e9a8ef66d37891c1d21eb71f9de83e0fde167ac08d776ac3e7b6262e9911908b453b598eb2e01658ec141d4d08337e4cc20f77af298e639ef9119edb61  linux-postmarketos-allwinner-orange-pi-5.17-20220313-2345.tar.gz
+c2473cbe6e94004ad7e285e6b8f374f857a0bc0ea8bab4b82a868796c5ad7dc612f2b80b32025803d93a7bd4148429ebb35ce7a238daf990f496331cd5f899af  config-postmarketos-allwinner.aarch64
 18738214275280f45375de9ccff83df7c9f37eb66dfd0834780e6b155d95a7d39c55f00fd66be4dde4a8b85accd285b6ef10285b41f75618ad7f44ddcdd0b9a9  config-postmarketos-allwinner.armv7
-126e0a65e04f22f14eac1281a69000d9d5b107ed8fd1b52f37e812751f55e6c45b0240ceac61c9d95ae7f0543aaf9d96b85a8532baf59283c077b9945e615367  0001-dts-add-dontbeevil-pinephone-devkit.patch
-1dc710f5abacdd5698169d5e985efeca8114986c774c3d65e89812d08ceb3db5ebdc6dd64dd76a262c761f3bfc3ffb6bc237fd5236bd1f89c5975d12e42eda04  0002-dts-add-pinetab-dev-old-display-panel.patch
-96849f40f6defc4ad7646256814bea5ac353c4e0479fd069365ff27456d63da801541ec616f6db736d60f3134384321a9eeb5bfbd555363bf1259c8de63d17fa  0003-dts-pinetab-add-missing-bma223-ohci1.patch
-925bd630f3694d118b24f2f5a838ba105e4ca9ed8dd4294b6632310d8d6b1f421cdd673e2013758f9de7159050aa54e0f76e04edcff65f755842b1c95b6637e7  0004-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
-9bc6c2afadae8d367471f901b86a94be7fa70daf7a4bdde5bc6d4b1458b5ddd0e063a7765d962c68231c8f022d1c660d422124c31a2c899de768985d91d377ea  0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
-5e0566074fcb18b95c8ea079178f5d6716eb1ea325a25176e67f80eff1e5b10f90e282c8059a0a3315606546c61f05bd9ebad06adb67086cd123f0276cccbdc8  0006-media-ov5640-Implement-autofocus.patch
-62809ac84db9d684b02d56dfc543451a1a13f319287466cfe913a847b945584ec60f7f556b1259ad3e26a44259a3fe587eeabeef6333f73a77204c3d3573f2ab  0007-dts-pinephone-drop-modem-power-node.patch
-c61d4f86eddecca99df1ea1323f988e575f9c49130b64a0c50d61028ff96e24aaa3131fb3731e62e9b07db67019104d98933e31457891a5ce1e6010e06232875  0008-drm-panel-simple-Add-Hannstar-TQTM070CB501.patch
-7f57e4ebc0b0cebb624f340c568f22e93116f2753b634d9bc75eea1a1bc013b8f9375e1efd24a20bff79c3725166df210a3a30bb7643a4525e3d40b63b91c536  0009-ARM-dts-sun6i-Add-GoClever-Orion-70L-tablet.patch
-71fad7ecff66a2cb692f3dd3d02301c4b419873f27693de81f50226b8ab93c229299e7dc663fdd07a7e8f03a6541527f3bb449626f865fcfde6a780ef1b91976  0010-drm-panel-simple-Add-Hannstar-HSD070IDW1-A.patch
-902708a5a8dd8a815d3d1793933d307c551e3c10368d1805431b70691ee5d4438b7146c466549f457468e365f94073a35ae3304928af7581e5dc91ba5c8fa682  0011-ARM-dts-sun6i-Add-Lark-FreeMe-70.2S-tablet.patch
-2feeab0a6c3db46e514d45c9708f351c6d7dfb0bf951a5cb6f2dc01b4bdc8d4c46931000758a819a6d7317b16cb1933bb3946e6a78cbf448cc77f57a56c503bf  0012-sunxi-mmc-h6-fix.patch
-22af33264090dac027ee054b4345a07f0b2ee077e2ae1620e83960bfeea096169aec710973fdd50531ed4f1db6cfd59b5796cd235316cb3512aee034f741a694  0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
+244d2c1356f5de77a5d05ba16d10e0d19915f634b3b1b96259857b1a3d57a023027a94622ffb56d5c72aeaeb7a9a220d629d51cfbb24225a7eca0140eb1ba19b  0001-dts-add-dontbeevil-pinephone-devkit.patch
+31e2f5e0f590f017a355469609b5fd97fbc18d54c42a98bd44944a91a8e42eade0963def4704bc04d6cc5316a8adfe97b7854a2053fc33847ee797830218e029  0002-dts-add-pinetab-dev-old-display-panel.patch
+8b7f5b3fccc030d3278725131d1af4c13efbc6ba037f3d734ff8bd1bcd5d2f2a2f024d83b90f0f780e9ddbfbdc20c8f5f1541580c5da3fb3cefb7f391c285aaa  0003-dts-pinetab-add-missing-bma223-ohci1.patch
+f5c8e1acd9f3a25915d22d94e380c1e6cde1d7b056d0d7080ae4e012f0eeccbe5d4fb57847049564c7d8eb791e6622619004af25a8f62646403c171d4ed10c82  0004-arm64-dts-allwinner-Add-bluetooth-node-to-the-PineTa.patch
+f6ec1e0cc5b0a34e5b98535f9ff45dc0b1b6b5ec1f622ef6780cc9fac0db2ada455aae37d731e4ae7d7c51be773e400a8d6215bbcc97f9dd223ae4f2b0c8782e  0005-dts-pinetab-make-audio-routing-consistent-with-pinep.patch
+623a08ef4138b150917edaa76f5d2c1b099acae6dab01bd255f55824d967424537c731cb83fe85597ac46506361b7ed7a68b0d35feb537c25daa6e7e03641b6d  0006-dts-pinephone-drop-modem-power-node.patch
+139c78ffcd66d813f2bd729b7aa81550608f1fc97667dbcd0cb55d00807e69adcbe86e59b637a3dad5336afabbb8e8d7d045955506a4a382d63ddb5caf5f4f01  0007-drm-panel-simple-Add-Hannstar-TQTM070CB501.patch
+e9897068210edd3295fb813390b263ccc146541f4bc89e66fea4a48ce9114ac0ac0b2ef584943fbc590d111cb6748247c3c3f6f2da122ba6b9bd20e9c3ea45f4  0008-ARM-dts-sun6i-Add-GoClever-Orion-70L-tablet.patch
+7d6a1c7c916f817104f40615be410de9015a1356bd77f087ded5259c80a979d8c4e2baf5f35555eb648f6ab5d43c585c67a2f9a5db10156df4eeb6ea8e762147  0009-drm-panel-simple-Add-Hannstar-HSD070IDW1-A.patch
+f1e4658bc699cfb3f0e0eba7833a7e09da266b8817c427de6312c270379d9d8c6cc55d4a270984c5b95cd04cf3be85c36f0d1127abe513698f874b8cde0b1a95  0010-ARM-dts-sun6i-Add-Lark-FreeMe-70.2S-tablet.patch
+6235d08a6a90ca2234cee4d092a4314cb8efdbe7d68fb9c954abe9a6921c93e160db3f680a408210755ed71c429171919320592ea1f6769f74f55b70b7dbf22e  0011-eMMC-workaround.patch
+9ac8d531fe25365c6d1d1bf2903febc573746abde80b54852f31160a98bd31bb8ac29f6a0b7883706ef0bafbd4e0696a0a9f30bede5b211fae98cd93f453e8a3  0012-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 "

@@ -1,4 +1,4 @@
-From 1879de83c95ba0e133b2ed8c945fe1be3b46f8f1 Mon Sep 17 00:00:00 2001
+From 73ec00a74b44f860457e263afef8e983fb6220ed Mon Sep 17 00:00:00 2001
 From: Clayton Craft <clayton@craftyguy.net>
 Date: Wed, 16 Dec 2020 20:16:14 -0800
 Subject: [PATCH] dts: pinephone: drop modem-power node
@@ -11,10 +11,10 @@ Subject: [PATCH] dts: pinephone: drop modem-power node
  4 files changed, 24 insertions(+), 68 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts
-index a21c6d78a0ef..7f0cfdafed15 100644
+index 864f887e1362..23223541dd03 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dts
-@@ -86,28 +86,6 @@ &reg_drivevbus {
+@@ -87,28 +87,6 @@ &reg_drivevbus {
  	status = "okay";
  };
  
@@ -43,7 +43,7 @@ index a21c6d78a0ef..7f0cfdafed15 100644
  &usbphy {
  	usb-role-switch;
  
-@@ -118,6 +96,10 @@ usb0_drd_sw: endpoint {
+@@ -119,6 +97,10 @@ usb0_drd_sw: endpoint {
  	};
  };
  
@@ -55,10 +55,10 @@ index a21c6d78a0ef..7f0cfdafed15 100644
  	enable-gpios = <&pio 2 3 GPIO_ACTIVE_HIGH>; /* PC3 */
  	flash-gpios = <&pio 3 24 GPIO_ACTIVE_HIGH>; /* PD24 */
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts
-index d67f31ef529e..e7b636299d15 100644
+index 053e4add9973..853a8f55348e 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dts
-@@ -114,29 +114,6 @@ &sgm3140 {
+@@ -101,29 +101,6 @@ &sgm3140 {
  	flash-gpios = <&pio 2 3 GPIO_ACTIVE_HIGH>; /* PC3 */
  };
  
@@ -88,19 +88,22 @@ index d67f31ef529e..e7b636299d15 100644
  &usbphy {
  	usb-role-switch;
  
-@@ -146,3 +123,7 @@ usb0_drd_sw: endpoint {
- 		};
+@@ -134,6 +111,10 @@ usb0_drd_sw: endpoint {
  	};
  };
-+
+ 
 +&ring_indicator {
 +	gpios = <&pio 1 2 GPIO_ACTIVE_LOW>; /* PB2 */
 +};
++
+ &hdmi {
+ 	extcon = <&anx7688 0>;
+ };
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts
-index 9b33186c7e7d..44b3d6555ff7 100644
+index ec4927dfe9dc..9ddd042b7799 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dts
-@@ -107,29 +107,6 @@ &sgm3140 {
+@@ -93,29 +93,6 @@ &sgm3140 {
  	flash-gpios = <&pio 2 3 GPIO_ACTIVE_HIGH>; /* PC3 */
  };
  
@@ -130,19 +133,22 @@ index 9b33186c7e7d..44b3d6555ff7 100644
  &usbphy {
  	usb-role-switch;
  
-@@ -139,3 +116,7 @@ usb0_drd_sw: endpoint {
- 		};
+@@ -126,6 +103,10 @@ usb0_drd_sw: endpoint {
  	};
  };
-+
+ 
 +&ring_indicator {
 +	gpios = <&r_pio 0 6 GPIO_ACTIVE_LOW>; /* PL6 */
 +};
++
+ &hdmi {
+ 	extcon = <&anx7688 0>;
+ };
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index d3d4f1a53c8d..3cf2f3e6a41a 100644
+index 4e88bcbcc968..c07e89d4a90b 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-@@ -192,6 +192,17 @@ ec25_codec: ec25-codec {
+@@ -310,6 +310,17 @@ ec25_codec: ec25-codec {
  		sound-name-prefix = "Modem";
  	};
  
@@ -160,7 +166,7 @@ index d3d4f1a53c8d..3cf2f3e6a41a 100644
  	i2c_csi: i2c-csi {
  		compatible = "i2c-gpio";
  		sda-gpios = <&pio 4 13 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>; /* PE13 */
-@@ -264,6 +275,7 @@ reg_usb_5v: usb-5v {
+@@ -382,6 +393,7 @@ reg_usb_5v: usb-5v {
  	reg_vbat_bb: vbat-bb {
  		compatible = "regulator-fixed";
  		regulator-name = "vbat-bb";
@@ -169,5 +175,5 @@ index d3d4f1a53c8d..3cf2f3e6a41a 100644
  		regulator-max-microvolt = <3500000>;
  		gpio = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
 -- 
-2.31.1
+2.35.1
 
