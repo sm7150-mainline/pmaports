@@ -3,8 +3,8 @@
 # Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 
 pkgname=linux-odroid-hc2
-pkgver=5.15.7
-pkgrel=1
+pkgver=5.16.14
+pkgrel=0
 pkgdesc="ODROID XU3/XU4/HC1/HC2/MC1 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -30,15 +30,12 @@ makedepends="
 # Source
 _config="config-$_flavor.$arch"
 _pkgname="linux"
-_commit="77ebfca65d59167038ef5fcc62d2e8d49f47fa49"
 source="
-	$_pkgname-$pkgver.tar.gz::https://github.com/tobetter/linux/archive/$_commit.tar.gz
+	$_pkgname-$pkgver.tar.xz::https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-$pkgver.tar.xz
 	$_config
-	36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=36dfdf11af49d3c009c711fb16f5c6e7a274505d
-	6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=6eea4ace62fa6414432692ee44f0c0a3d541d97a
 "
 subpackages="$pkgname-dev"
-builddir="$srcdir/$_pkgname-$_commit"
+builddir="$srcdir/$_pkgname-$pkgver"
 
 prepare() {
 	default_prepare
@@ -75,8 +72,6 @@ dev() {
 }
 
 sha512sums="
-7a377c6afcb5d62f223c909709ab22644ee4345dafa348cc9293d58bd9251b5c77e4be894a2b6238c2cb3478d6430d0e45dd1de918468a9f038514e47f234197  linux-5.15.7.tar.gz
-bf3e599de30d88ab9c0df3e7a9487bf9aa0b511615208c82a1c7f2fc254839a896637effa3bb49a7081eded25168aa3aa5855feb516b935d33f106995cffbfba  config-odroid-hc2.armv7
-59d480b6379dcfff94d05b08e28c005d507f640dc0147841e7df4827fce8db01dab1d4d50fb45b2b3fff72cdeb219a8cd87a889078a6372aea4469c861c378b1  36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch
-61f862cda24e7b14e55e9a9ce3a537adfc7a1c77e0670255dc485886e2c19156ddaf49fdd88b629ddde3cf25a83fd603678caebb96e18f59245917d3a2e51bb0  6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch
+3daf1b5a01cbab632492e18a8e71aaf2085545f4944ce587bc7c27e86a0a739d0cbffe7890ce9c5bc863b3c5083281bca6ed4df8d3c69d60c6dcc210cd86993e  linux-5.16.14.tar.xz
+22d641b681dffd5348076e8dc095d3a1b402bc496e05156356d0be7a77b8e7a270a66dedc1d6197320806740508589d359ea7335859972f4cadd9ebf1d81212d  config-odroid-hc2.armv7
 "
