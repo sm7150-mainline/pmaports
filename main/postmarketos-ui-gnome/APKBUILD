@@ -1,7 +1,7 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=postmarketos-ui-gnome
-pkgver=2
+pkgver=3
 pkgrel=0
 pkgdesc="(Wayland) Gnome Shell"
 url="https://gnome.org/"
@@ -16,8 +16,14 @@ depends="
 	xwayland
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
+source="firefox-wayland.sh"
 options="!check pmb:gpu-accel"
 
 package() {
-	mkdir -p "$pkgdir"
+	install -Dm755 \
+		"$srcdir"/firefox-wayland.sh \
+		-t "$pkgdir"/etc/profile.d/
 }
+sha512sums="
+0d9ec58be7dc354e181989c7f08e7d4dd93fefd06a99e784b87fe898479dd47a40dfa9689c6a63ebdc04bf87883a270686aec27f7cc34cb21ec0f370a4afe2d8  firefox-wayland.sh
+"
