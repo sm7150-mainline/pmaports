@@ -1,0 +1,52 @@
+# Maintainer: Jenneron <jenneron@protonmail.com>
+# Co-Maintainer: Iourine <iourine@iourine.msk.su>
+pkgname=u-boot-peach-pi
+pkgver=2022.01
+pkgrel=0
+pkgdesc="u-boot for Google Peach Pi chromebook"
+url="https://www.denx.de/wiki/U-Boot/"
+arch="armv7"
+license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
+	ISC LGPL-2.0-only LGPL-2.1-only X11"
+options="!check" # no tests in upstream
+makedepends="$depends_dev bc dtc python3-dev swig bison flex openssl-dev
+	py3-setuptools linux-headers u-boot-tools vboot-utils"
+source="
+	https://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
+	cve-2017-5715.patch
+"
+builddir="$srcdir"/u-boot-${pkgver//_/-}
+
+prepare() {
+	default_prepare
+}
+
+build() {
+	make peach-pi_defconfig
+	make
+
+	mkimage -A arm -O linux -T kernel -C none -e 0x23E00000 -a 0x23E00000 -d u-boot-dtb.bin u-boot-dtb.img
+
+	echo -e "\n" > dummy_config
+	echo -e "\n" > dummy_bootloader
+
+	vbutil_kernel \
+		--pack u-boot-dtb.img.kpart \
+		--keyblock /usr/share/vboot/devkeys/kernel.keyblock \
+		--signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
+		--version 1 \
+		--arch arm \
+		--config dummy_config \
+		--bootloader dummy_bootloader \
+		--vmlinuz u-boot-dtb.img
+}
+
+package() {
+	install -D -m644 "$builddir"/u-boot-dtb.img.kpart \
+		"$pkgdir"/usr/share/u-boot/google-peach-pi/u-boot-dtb.img.kpart
+}
+
+sha512sums="
+d83c62bd8f0f51664d2aca329a3ce1379cfd1dfff439dccd6cfc2cb33cfef89a2b01855c97716f591b5550bfdf99e2f3aef7efa33f2e7834c820648f9eef3825  u-boot-2022.01.tar.bz2
+915a984250e28c7add109f23a33062b66efdb51cd1ba993f789322d6d341cdb30c6f8418cd920e5bb19301a7243699e35ce5662993f41ab2f2575a9fef988515  cve-2017-5715.patch
+"

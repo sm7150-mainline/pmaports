@@ -1,0 +1,34 @@
+From b82eac19457a7910ac2e955b72e90b41dff6079a Mon Sep 17 00:00:00 2001
+From: Anton Bambura <jenneron@protonmail.com>
+Date: Mon, 14 Mar 2022 21:46:55 +0200
+Subject: [PATCH 2/4] ARM: dts: exynos: peach-pi: use num-interpolated-steps
+ for backlight
+
+Use num-interpolated-steps in backlight node to get more
+brightness levels.
+
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
+Tested-by: Valentine Iourine <iourine@iourine.msk.su>
+---
+ arch/arm/boot/dts/exynos5800-peach-pi.dts | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/exynos5800-peach-pi.dts b/arch/arm/boot/dts/exynos5800-peach-pi.dts
+index aa1d14af4..f8adbd9ad 100644
+--- a/arch/arm/boot/dts/exynos5800-peach-pi.dts
++++ b/arch/arm/boot/dts/exynos5800-peach-pi.dts
+@@ -38,8 +38,9 @@ aliases {
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm 0 1000000 0>;
+-		brightness-levels = <0 100 500 1000 1500 2000 2500 2800>;
+-		default-brightness-level = <7>;
++		brightness-levels = <1 255>;
++		num-interpolated-steps = <254>;
++		default-brightness-level = <254>;
+ 		enable-gpios = <&gpx2 2 GPIO_ACTIVE_HIGH>;
+ 		power-supply = <&tps65090_fet1>;
+ 		pinctrl-0 = <&pwm0_out>;
+-- 
+2.25.1
+

@@ -1,0 +1,116 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+# Co-Maintainer: Iourine <iourine@iourine.msk.su>
+pkgname=device-google-peach-pi
+pkgdesc="Samsung Chromebook 2 (13.3 inch)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	mesa-dri-gallium
+	postmarketos-base
+	linux-postmarketos-exynos5
+	u-boot-peach-pi
+"
+makedepends="
+	devicepkg-dev
+	u-boot-tools
+"
+source="
+	deviceinfo
+	i3wm/xorg.conf.d/90-tap-to-click.conf
+	modprobe.d/mali.conf
+	uboot-script.cmd
+	ucm/Peach-Pi-I2S-MA.conf
+	ucm/HiFi.conf
+	mpv/mpv.conf.wayland
+	mpv/mpv.conf.xorg
+	sway/tinydm/10-no-hardware-cursor.sh
+"
+subpackages="
+	$pkgname-i3wm
+	$pkgname-mpv-wayland:mpv_wayland
+	$pkgname-mpv-xorg:mpv_xorg
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-sway
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	mkimage \
+		-A arm \
+		-O linux \
+		-T script \
+		-C none \
+		-a 0 \
+		-e 0 \
+		-n postmarketos \
+		-d "$srcdir"/uboot-script.cmd \
+		"$srcdir"/boot.scr
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# Block panfrost probe as it causes segfault in X11
+	install -Dm644 "$srcdir"/mali.conf \
+		"$pkgdir"/etc/modprobe.d/mali.conf
+
+	# Alsa UCM configs
+	install -Dm644 "$srcdir"/Peach-Pi-I2S-MA.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Peach-Pi-I2S-MA/Peach-Pi-I2S-MA.conf
+	install -Dm644 "$srcdir"/HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Peach-Pi-I2S-MA/HiFi.conf
+
+	# U-Boot script
+	install -Dm644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+}
+
+i3wm() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-i3wm"
+	install -Dm644 "$srcdir"/90-tap-to-click.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/90-tap-to-click.conf
+}
+
+mpv_wayland() {
+	# Looks like wayland libs are installed with some x11 UIs too, so match wlroots here
+	install_if="$pkgname=$pkgver-r$pkgrel mpv wlroots"
+	install -Dm644 "$srcdir"/mpv.conf.wayland \
+		"$subpkgdir"/etc/mpv/mpv.conf
+}
+
+mpv_xorg() {
+	install_if="$pkgname=$pkgver-r$pkgrel mpv xorg-server"
+	install -Dm644 "$srcdir"/mpv.conf.xorg \
+		"$subpkgdir"/etc/mpv/mpv.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-mrvl"
+	mkdir "$subpkgdir"
+}
+
+sway() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-sway"
+	install -Dm755 "$srcdir"/10-no-hardware-cursor.sh \
+		"$subpkgdir"/etc/tinydm.d/env-wayland.d/10-no-hardware-cursor.sh
+}
+
+sha512sums="
+b3384016cfa7359602b0674110c72f6759d350580cf30b111ac927f4df517bbafc4bdd77c9f338cf1aa7c567f8932302b2570cc207644fa2454a0d92d24edb20  deviceinfo
+e53ca475830930ecfc1fd537702e850e2abcb66fbed521cb6c3a2918d762649254bd0244ec93a47b20dfc593ec3afc9bdebdec1759a7bc96dcbe4800f40893da  90-tap-to-click.conf
+c5fdd5a39a41044343d937a1ad31cc6bb893f19a329beb4ce09249064cac066d643c84ffcbfcd794113c228c5a56e28c82812092751546b49ab31142dc8245b1  mali.conf
+56737f856b252f6d657015ba6510c8e7fa71dc7e4897c10dabe6848ef263336789103a32f6d6189764c261af4e739f4444195c87e97075356f1dbd7f8a0de897  uboot-script.cmd
+2ccec36a88003673471fcec7c0e408c24892e43701d88986c6a85a7882ac275565eb3abf566709306ddc16a62b4558ebceffbc289e7c95336ba28262719c6413  Peach-Pi-I2S-MA.conf
+a95701b30c6b7535a60d0db932d018673a72346974cca86b9a1212fa8c66b1ad5fffaa0c6ac5fe5ead2c91a90375d5d24f74fd571300a21c53e4a2c16953c170  HiFi.conf
+8f9dc3c7caeab6c5321dc2bf498f1a03a793f23cb776763316bc356b9d433d7a3337e61154069464dcda200bf390b99f3be8f657a40c6d2f6be3cbc6fb751080  mpv.conf.wayland
+d6bc39df48ba0e985a796426039205335adf1c91b9c150b05a4239339fc78b1748b3a83c699de69e9a5829f29573a323f40788da58ed15b1951de1eab7e31c3d  mpv.conf.xorg
+78e566bf3a597b9b5f73f686feb93ae61d1bed350366428d74c7735f1f82ab390f47ba9deb9d21e8dfcee251dc6178956838ca1b34838bb0a7d740be0e2c8330  10-no-hardware-cursor.sh
+"
