@@ -48,7 +48,7 @@ echo "Rootfs successfully copied!"
 
 # pmOS initfs looks for rootfs by label, rename partitions
 echo "Renaming partitions"
-e2label $MMC_ROOT_PARTITION pmOS_root_old
+e2label $MMC_ROOT_PARTITION old_rootfs
 e2label $HDD_ROOT_PARTITION pmOS_root
 
 echo "Rootfs moved to external HDD, you must reboot NOW!"
