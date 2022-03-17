@@ -3,8 +3,8 @@
 
 pkgname=device-oneplus-enchilada
 pkgdesc="OnePlus 6"
-pkgver=4
-pkgrel=1
+pkgver=5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -18,7 +18,11 @@ depends="
 	soc-qcom-sdm845-ucm
 "
 makedepends="devicepkg-dev"
-source="deviceinfo rootston.ini"
+source="
+	deviceinfo
+	rootston.ini
+	q6voiced.conf
+"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 
 build() {
@@ -31,8 +35,10 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="Modem, WiFi and GPU Firmware, also needed for osk-sdl"
-	depends="firmware-oneplus-sdm845 firmware-oneplus-sdm845-initramfs"
+	depends="firmware-oneplus-sdm845 firmware-oneplus-sdm845-initramfs soc-qcom-sdm845-nonfree-firmware"
 	mkdir "$subpkgdir"
+
+	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
 phosh() {
@@ -44,4 +50,5 @@ phosh() {
 sha512sums="
 009e1cfc0ae2823bb82dbc39a1b9c1199e0e7691f0e95a6423bbfe941e07486297e0aad295f2ea44d43ed51b1440bf8e6a67867d0c1a6aad653399afbd006c1d  deviceinfo
 9fef488a655fcbad4fb28c11d7d6cbe385096e766cd99ca59802f1dbc4e3c99dac0ff682549e02fac0b73f7e95db953f3a87c453d1b19b229785e4ffeec515ed  rootston.ini
+7f599f086dba97ac39ce98798969bc8e9c26dd3b062bb8f95852182df52814b70d49b701e27b43abeb3639b16ba053e416c14cf75e0bf4a9f2fe7c01fb0ac41c  q6voiced.conf
 "
