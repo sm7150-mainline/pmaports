@@ -1,0 +1,95 @@
+diff --git a/arch/arm/boot/dts/exynos4412-midas.dtsi b/arch/arm/boot/dts/exynos4412-midas.dtsi
+index 968c7943653e..73eda2984053 100644
+--- a/arch/arm/boot/dts/exynos4412-midas.dtsi
++++ b/arch/arm/boot/dts/exynos4412-midas.dtsi
+@@ -17,6 +17,7 @@
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/clock/maxim,max77686.h>
+ #include <dt-bindings/pinctrl/samsung.h>
++#include <dt-bindings/leds/common.h>
+ 
+ / {
+ 	compatible = "samsung,midas", "samsung,exynos4412", "samsung,exynos4";
+@@ -24,6 +25,7 @@ / {
+ 	aliases {
+ 		i2c11 = &i2c_max77693;
+ 		i2c12 = &i2c_max77693_fuel;
++		i2c13 = &i2c_an30259a;
+ 	};
+ 
+ 	chosen {
+@@ -170,7 +170,7 @@ i2c_max77693: i2c-gpio-1 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		pmic@66 {
++		max77693_pmic: pmic@66 {
+ 			compatible = "maxim,max77693";
+ 			interrupt-parent = <&gpx1>;
+ 			interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
+@@ -249,6 +251,39 @@ touchkey@20 {
+ 			linux,keycodes = <KEY_BACK KEY_MENU>;
+ 		};
+ 	};
++	
++	i2c_an30259a: i2c-gpio-5 {
++		compatible = "i2c-gpio";
++		gpios = <&gpf2 7 GPIO_ACTIVE_HIGH>, <&gpf2 6 GPIO_ACTIVE_HIGH>;
++		i2c-gpio,delay-us = <2>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		led-controller@30 {
++			compatible = "panasonic,an30259a";
++			reg = <0x30>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				function = LED_FUNCTION_STATUS;
++				color = <LED_COLOR_ID_RED>;
++			};
++
++			led@2 {
++				reg = <2>;
++				function = LED_FUNCTION_STATUS;
++				color = <LED_COLOR_ID_GREEN>;
++			};
++
++			led@3 {
++				reg = <3>;
++				function = LED_FUNCTION_STATUS;
++				color = <LED_COLOR_ID_BLUE>;
++			};
++		};
++	};
+ 
+ 	i2c-mhl {
+ 		compatible = "i2c-gpio";
+diff --git a/arch/arm/boot/dts/exynos4412-n710x.dts b/arch/arm/boot/dts/exynos4412-n710x.dts
+index 9ae05b0d684c..b63d6920aa13 100644
+--- a/arch/arm/boot/dts/exynos4412-n710x.dts
++++ b/arch/arm/boot/dts/exynos4412-n710x.dts
+@@ -138,6 +138,21 @@ &ldo25_reg {
+ 	regulator-max-microvolt = <3000000>;
+ };
+ 
++&max77693_pmic {
++	led {
++		compatible = "maxim,max77693-led";
++		maxim,boost-mode = <LEDS_BOOST_ADAPTIVE>;
++		maxim,boost-mvout = <5000>;
++		camera-flash {
++			label = "white:flash";
++			led-sources = <0>, <1>;
++			led-max-microamp = <140625>;
++			flash-max-microamp = <500000>;
++			flash-max-timeout-us = <500000>;
++		};
++	};
++};
++
+ &s5c73m3 {
+ 	standby-gpios = <&gpm0 6 GPIO_ACTIVE_LOW>;   /* ISP_STANDBY */
+ 	vdda-supply = <&cam_vdda_reg>;
