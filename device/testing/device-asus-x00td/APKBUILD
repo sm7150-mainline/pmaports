@@ -1,14 +1,18 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-asus-x00td
 pkgdesc="Asus ZenFone Max Pro M1"
-pkgver=0.1
+pkgver=0.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-asus-x00td mkbootimg mesa-dri-gallium msm-fb-refresher"
+depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+"
 source="deviceinfo"
 
 build() {
@@ -19,4 +23,18 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-sha512sums="381b37d83afd97610527af7fe78058717d5a48f198c8d006b0f3461f5fc962c8c6de099d57430549d27fe17ce0a5b4848d870211066834bc49d5c468b26446f2  deviceinfo"
+kernel_downstream() {
+	pkgdesc="LineageOS downstream kernel (recommended)"
+	depends="linux-asus-x00td mesa-dri-gallium msm-fb-refresher"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline; for kernel development only (most features aren't working)"
+	depends="linux-postmarketos-qcom-sdm660 mesa-dri-gallium"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+sha512sums="
+c8f1d521e2f307e5b0a1134c59f172db6fb678b9a67d9ec9f76d3be7b18b4bff198a4fec284a61b0da92e7e45f0208c3595a69b6eb1c4c098c38dfcfa66d053b  deviceinfo
+"
