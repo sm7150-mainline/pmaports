@@ -1,26 +1,25 @@
 # Maintainer: Caleb Connolly <caleb@connolly.tech>
 pkgname=ttyescape
-pkgver=0.2
+pkgver=1.0.1
 pkgrel=0
 pkgdesc="Daemon to allow users to escape to a tty"
-url="https://postmarketos.org"
+url="https://gitlab.com/postmarketOS/ttyescape"
 arch="noarch"
 license="GPL-3.0-or-later"
 depends="hkdm buffyboard terminus-font kbd"
 install="$pkgname.post-install"
 subpackages="$pkgname-openrc"
 source="
-	togglevt.sh
-	ttyescape-hkdm.toml
+	https://gitlab.com/postmarketOS/ttyescape/-/archive/$pkgver/ttyescape-$pkgver.tar.gz
 	etc-conf-d-ttyescape.conf
 "
 options="!check"
 
 package() {
-	install -Dm755 "$srcdir"/togglevt.sh \
+	install -Dm755 "$builddir"/togglevt.sh \
 		"$pkgdir"/usr/bin/togglevt.sh
 
-	install -Dm755 "$srcdir"/ttyescape-hkdm.toml \
+	install -Dm755 "$builddir"/ttyescape-hkdm.toml \
 		"$pkgdir"/etc/hkdm/config.d/ttyescape.toml
 
 	install -Dm755 "$srcdir"/etc-conf-d-ttyescape.conf \
@@ -28,7 +27,6 @@ package() {
 }
 
 sha512sums="
-d7447788044b76862688f4fbd722725a787f8fe07ef1d8fde34f01591e680dd782fd4085fd80166a695e0016162d4a8701e749ae4a56a9cf8ae388ab43ef72e1  togglevt.sh
-88034b54b06a962ff353a7a5a272352b56fdb564231a13be85b73d9dfc991d1ec8085014ebfcd5c6eaee67e62341dd2c9c7ace91a2c839702ae3b7f6007433f4  ttyescape-hkdm.toml
+b196cad01d490ac759fc72d58382ffe621b1f33f2ec9794a7937b41bfb9a0f200939d20cd027a2c48d44d095cd8570f332c995ab015d459387d63c7788fd8298  ttyescape-1.0.1.tar.gz
 ac06c2ae2b3b8404d6ed79a046b175abbeb2360033edcaa22c21e1a61c68913e58013e9200ee5b786eee9020a2c78d1bda09c72d87ea0998bf6eeb71da015a2f  etc-conf-d-ttyescape.conf
 "
