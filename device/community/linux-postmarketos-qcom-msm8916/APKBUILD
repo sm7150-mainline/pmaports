@@ -4,8 +4,8 @@
 
 _flavor="postmarketos-qcom-msm8916"
 pkgname=linux-$_flavor
-pkgver=5.15
-pkgrel=1
+pkgver=5.17
+pkgrel=0
 pkgdesc="Mainline kernel fork for Qualcomm MSM8916 devices"
 arch="aarch64 armv7"
 url="https://github.com/msm8916-mainline/linux"
@@ -41,8 +41,6 @@ esac
 _tag=v${pkgver//_/-}-msm8916
 source="
 	$pkgname-$_tag.tar.gz::$url/archive/$_tag.tar.gz
-	36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=36dfdf11af49d3c009c711fb16f5c6e7a274505d
-	6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=6eea4ace62fa6414432692ee44f0c0a3d541d97a
 	config-$_flavor.aarch64
 	config-$_flavor.armv7
 "
@@ -74,9 +72,7 @@ package() {
 }
 
 sha512sums="
-734d958bb9fa64e667e089aec0066a58526ae38fbf6fbd223a7bce746fe3ce7443ffe087f365a44f6892479186f2c0eb33abacd38eb7b0b8d40949602812e441  linux-postmarketos-qcom-msm8916-v5.15-msm8916.tar.gz
-59d480b6379dcfff94d05b08e28c005d507f640dc0147841e7df4827fce8db01dab1d4d50fb45b2b3fff72cdeb219a8cd87a889078a6372aea4469c861c378b1  36dfdf11af49d3c009c711fb16f5c6e7a274505d.patch
-61f862cda24e7b14e55e9a9ce3a537adfc7a1c77e0670255dc485886e2c19156ddaf49fdd88b629ddde3cf25a83fd603678caebb96e18f59245917d3a2e51bb0  6eea4ace62fa6414432692ee44f0c0a3d541d97a.patch
-8468e559679019d7a74483beb5f94f9ac75e43aea24aa39303e513258e30c02dead1681472f60ff6ae812b70c24ebe95e597ba75a85d78595b6bb144cbdfd441  config-postmarketos-qcom-msm8916.aarch64
-712efefdddfeda5d6e1f200a6973fe5c5a13c70db3d6c3070a856de2682dc3c15b23c199b2232dafd70b25eb1429ce86cb021f47a0390b2c295dd4e135c2aa50  config-postmarketos-qcom-msm8916.armv7
+b702f5fe31e017c73e1841b18b36cf56a9dde92c71cee921f37a84024ef290199aba1b02db497b3a4b54f01b6a1636ad27de649454abca7fa1c63ff2f86b0919  linux-postmarketos-qcom-msm8916-v5.17-msm8916.tar.gz
+7d2dfefd615eee49bf83065d5c8ac0e260fd1ee30fcb264a8cf794490444a894005e9517a9674df7635ba65b182b1b8eab1c61a639ef3dbbb9e853a1b9437512  config-postmarketos-qcom-msm8916.aarch64
+384b41020f93fde33fb46251491282147bcde51c14e953653f6fd058131dc5f95c3c2246511941e49aae05ef241b5fffac4dbb455bf534af1caed5d31710108b  config-postmarketos-qcom-msm8916.armv7
 "
