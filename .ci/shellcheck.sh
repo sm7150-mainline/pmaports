@@ -26,7 +26,6 @@ sh_files="
 	./main/postmarketos-update-kernel/update-kernel.sh
 	./main/swclock-offset/swclock-offset-boot.sh
 	./main/swclock-offset/swclock-offset-shutdown.sh
-	./main/ttyescape/*.sh
 	./main/ttyescape/*.post-install
 	./main/unl0kr/unlock.sh
 	./main/msm-firmware-loader/*.sh
