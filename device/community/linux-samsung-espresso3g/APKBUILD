@@ -1,8 +1,8 @@
 # Maintainer: Mighty <mightymb17@gmail.com>
 # Co-Maintainer: Antoni Aloy <aaloytorrens@gmail.com>
 pkgname=linux-samsung-espresso3g
-pkgver=5.15.2
-pkgrel=4
+pkgver=5.17.0
+pkgrel=0
 pkgdesc="Samsung Galaxy Tab 2 (7.0 inch) mainline kernel"
 arch="armv7"
 _carch="arm"
@@ -16,18 +16,20 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-nftables
 	pmb:kconfigcheck-zram"
 makedepends="openssl-dev yaml-dev mpc1-dev mpfr-dev xz findutils bison flex perl sed bash gmp-dev bc linux-headers elfutils-dev"
-_commit="6ba3430a6fad45bf35f2634809e4f3a12f85cb89"
 _config="config-$_flavor.$arch"
+case $pkgver in
+	*.*.0)	_kernver=${pkgver%.0};;
+	*.*.*)	_kernver=$pkgver;;
+	*.*)	_kernver=$pkgver;;
+esac
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/tmlind/linux_openpvrsgx/archive/$_commit.tar.gz
-	00-add-espresso-dts.patch
-	02-CVE-2021-39685-USB-gadget-detect-too-big-endpoint-0-requests.patch
-	03-CVE-2021-39685-USB-gadget-zero-allocate-endpoint-0-buffers.patch
-	04-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
-	05-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	00-Add-espresso-dts.patch
+	01-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
+	02-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
 	$_config
 "
-builddir="$srcdir/linux_openpvrsgx-$_commit"
+builddir="$srcdir/linux-$_kernver"
 
 prepare() {
 	default_prepare
@@ -54,11 +56,9 @@ package() {
 }
 
 sha512sums="
-c1f1372afc303cabb55210c7c46a694eff3bc0d7871efee7a690488b782b0c2cb48dbccc43b454a7cf96cfea796397f621d338e791172a8d1f62b26b2e1d54cb  linux-samsung-espresso3g-6ba3430a6fad45bf35f2634809e4f3a12f85cb89.tar.gz
-01d2e04afba261c42ba3c9e9aea4f8f023d86e58f17e2e17dec2f46347665843678dd56ad8875ab00b69074c3389dd471a47a9f252e2c8002c89dc730691cfd8  00-add-espresso-dts.patch
-c83480686caa35c51bce654104082e51d2569850bbbdcdb8479fb756ffb7907aefce685b2cfa748bbed0da7b585be83a08d194d0ff315a070a5b5a07c8dbc1d2  02-CVE-2021-39685-USB-gadget-detect-too-big-endpoint-0-requests.patch
-7b76e82bca21c9746bb37df2e840b43a0628a8a00b45ee43dd38ce742d7b99e30faf4bd11c99f1a20299b486885cbb9f62502400544a6a7e319292b97331581d  03-CVE-2021-39685-USB-gadget-zero-allocate-endpoint-0-buffers.patch
-a483b1a322f3fe47c7bb6514f34cca69ad1b806487596ffab69078acb6e83e99ed39ffb4d5b4ecd17035d118a75ce5bac6761b9e42d01608f1e6a53d59b27806  04-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
-b3d6114c5c60fc2820856c89ea6f09c369d857ae79a79f0eeb0f83f5401dc2253e11f7dac6869eb1095d3e0b3a68126246762e2f406ffae5b5ef0a60d5563bac  05-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
-7757f169073701eb1f2c7a27401d169bfaf0d133b62823bbc1e5f6cb7fe33a1ebe3901383f6e6e34c140f501f3ed5d77608386c1fc9e908cdc7cbd69d9c339f2  config-samsung-espresso3g.armv7
+89f0a7ca69d20a539d4b612a7028a30a5e98b402e4b6b88516f14237e5da4b626d7929eab8b40fccc90766e8f3bae87e9858a19077ffad20d8204acf18794f5b  linux-5.17.tar.xz
+01d2e04afba261c42ba3c9e9aea4f8f023d86e58f17e2e17dec2f46347665843678dd56ad8875ab00b69074c3389dd471a47a9f252e2c8002c89dc730691cfd8  00-Add-espresso-dts.patch
+a483b1a322f3fe47c7bb6514f34cca69ad1b806487596ffab69078acb6e83e99ed39ffb4d5b4ecd17035d118a75ce5bac6761b9e42d01608f1e6a53d59b27806  01-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
+b3d6114c5c60fc2820856c89ea6f09c369d857ae79a79f0eeb0f83f5401dc2253e11f7dac6869eb1095d3e0b3a68126246762e2f406ffae5b5ef0a60d5563bac  02-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
+3bf676ddaf2201088c223b5f67933041d47b0cb20aefb678af271887107658f334fb6f3a778470a824b1c1a1a256ac68e17bded27c6d661f7b0a92eb15326fa3  config-samsung-espresso3g.armv7
 "
