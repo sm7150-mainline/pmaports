@@ -2,7 +2,7 @@
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 
 pkgname=linux-nokia-n900
-pkgver=5.15.25
+pkgver=5.15.31
 pkgrel=0
 pkgdesc="Mainline kernel fork for Nokia N900"
 arch="armv7"
@@ -15,11 +15,15 @@ _carch="arm"
 _flavor=nokia-n900
 _config="config-$_flavor.armv7"
 case $pkgver in
-	*.*.*)	_kernver=${pkgver%.*};;
-	*.*) _kernver=$pkgver;;
+	*.*.0)	_kernver=${pkgver%.0};;
+	*.*.*)	_kernver=${pkgver%.*}
+		_patch="
+		linux-$pkgver.patch.xz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz";;
+	*.*)	_kernver=$pkgver;;
 esac
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	$_patch
 	$_config
 	0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
 	0002-ARM-dts-n900-remove-rx51-battery.patch
@@ -31,11 +35,6 @@ source="
 	0008-wl1251-specify-max.-IE-length.patch
 	0009-wip-Revert-dma-direct-Fix-potential-NULL-pointer-der.patch
 "
-if [ "${pkgver%.0}" = "$pkgver" ]; then
-	source="
-	linux-$pkgver.patch.xz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz
-	$source"
-fi
 builddir="$srcdir/linux-$_kernver"
 
 prepare() {
@@ -63,9 +62,9 @@ package() {
 }
 
 sha512sums="
-6fb9c2744ec9c0fee7ac6e3e83714c95f4d31ee8e31929f3f816e88dea784ba6496d0c5df069fad92ecd4222667acad361966214697a859cff469e9f86b84f0a  linux-5.15.25.patch.xz
 d25ad40b5bcd6a4c6042fd0fd84e196e7a58024734c3e9a484fd0d5d54a0c1d87db8a3c784eff55e43b6f021709dc685eb0efa18d2aec327e4f88a79f405705a  linux-5.15.tar.xz
-082de68f15bdbc4f2e0897c3885b0dcb68ee2b9e1afab9567f355630cf7a62fbcc2ff806e4a7c5abfa43c1f0837e77cb59126fc137f32e8b07408d441df0de13  config-nokia-n900.armv7
+1dc78db565dda619aa9f1d59bb78cf7ee43e8922f6e055bdd6f8b419556be8838235aa26e29fd1bd38cf12d8fb81e267714bb647921dee2c2aeab9319fbe294d  linux-5.15.31.patch.xz
+465cb8fcc3a5dc043323c0767e4918b68556c1f1b693e0959b486c0e3a72264704d1889137e640e6262b4fd22feeedcfc454b6515876168ff5f0f6ccc30c4a1e  config-nokia-n900.armv7
 04a39253afd25a7de03dc45ff322161672005406543c44b97d2dc293f202de7de446aee9707a690a290641c55c7bed6e78bbe096ca323dd7d88d3207427c8d31  0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
 c1055c7a4d2e39ce13db3871d948022b62eb7ebeb898777d197169b3e7c04d705ce7f52f28214754e3cefe99d1dd66f339a1a5770bae1ee970d5926067032061  0002-ARM-dts-n900-remove-rx51-battery.patch
 93e82f7041e347b63fc32ce54176ee3fe7e8260cc793810bcf0146a3699567b63a0cb7ce8c531b0484390907a25c51bfbeb15b32dddb2220c2481ec1f86e5eb5  0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
