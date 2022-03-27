@@ -1,0 +1,30 @@
+# Unmaintained: Downstream port, only for reference.
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-cepheus-downstream
+pkgdesc="Xiaomi Mi 9"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-xiaomi-cepheus-downstream
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+aa0338d6394054f10bd64b8f1d7d562b56de906292f2fbb9a78782b8e8f2c5f2b53979b609fbd1ab2f65b074ac3ab2661c07fda9eb123e8f7ef56f73aec29a9f  deviceinfo
+"
