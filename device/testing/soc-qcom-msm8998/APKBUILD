@@ -1,0 +1,34 @@
+# Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
+pkgname=soc-qcom-msm8998
+pkgdesc="Common package for Qualcomm MSM8998 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !archcheck !tracedeps"
+depends="soc-qcom-sdm845"
+source="iwd-main.conf"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi and GPU Firmware"
+	depends="
+	soc-qcom-sdm845-nonfree-firmware
+	qcom-diag
+	qcom-diag-openrc
+"
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
+
+	mkdir "$subpkgdir"
+	install -D -m644 "$srcdir"/iwd-main.conf \
+		"$subpkgdir"/etc/iwd/main.conf
+}
+
+sha512sums="
+2e3e2be6947e1fb0335ca53ef1f1929b614e3192385f3a42ddb895729793ce185e8c8ad0f16f851ee025c751045cfaf02712b42e89818e37eae532fb59613375  iwd-main.conf
+"
