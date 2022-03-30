@@ -1,12 +1,11 @@
 # Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
 # Stable Linux kernel with patches for MSM8998 devices
-# Kernel config based on: allnoconfig, msm8998.config and pmos.config
-
+# Kernel config based on: msm8998_defconfig
 _flavor="postmarketos-qcom-msm8998"
 pkgname=linux-$_flavor
-pkgver=5.16.0_rc6
-pkgrel=2
-_commit="01325bd3a73b47a34b97c2757056b1cb9e4fdcc1"
+pkgver=6.0
+pkgrel=0
+_commit="90169e6e9fee29fae14aeac0a905246be5ce6304"
 pkgdesc="Mainline Kernel fork for MSM8998 devices"
 arch="aarch64"
 _carch="arm64"
@@ -15,12 +14,10 @@ url="https://gitlab.com/msm8998-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps
 	pmb:cross-native
-	pmb:kconfigcheck-nftables
-	pmb:kconfigcheck-zram
-	pmb:kconfigcheck-containers
-	pmb:kconfigcheck-waydroid
+	pmb:kconfigcheck-community
 "
 makedepends="
+	bash
 	bison
 	findutils
 	flex
@@ -65,6 +62,6 @@ package() {
 }
 
 sha512sums="
-491be2124f8e843689c451e42cd6aef01c099632f3b53a0a2da0adc46401e66281159f5d356e85ec9a3a1361a05e146151b323409c15465b95b9c666b376ded5  linux-01325bd3a73b47a34b97c2757056b1cb9e4fdcc1.tar.gz
-2cb89982099d17033e76219db1ca63754a9a269e01caaadb4f93a58c5f7685d0017063bcbb1560d7351350d6cf446853ddd1a5fd8d6bb298d8762e178da1d3a1  config-postmarketos-qcom-msm8998.aarch64
+e1d75369d58f823da5fe0cde17314a4ec2dc9dbab57452b7b8af6b97e91797720162e78f9ca7da2cbb533833b38be86743b8bf0084af1b36b5d23c9207a5248e  linux-90169e6e9fee29fae14aeac0a905246be5ce6304.tar.gz
+6d58d993258a69278dc0d19dd4f6d163aba41542fe9c37df6fa7d66fd041f1dbbc4032778e27d3c0118603f458ceb3cf4ec977847657b37afd9ce94aab4b4fb8  config-postmarketos-qcom-msm8998.aarch64
 "
