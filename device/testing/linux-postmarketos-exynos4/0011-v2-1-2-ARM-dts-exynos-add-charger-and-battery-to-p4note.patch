@@ -1,0 +1,82 @@
+From patchwork Thu Feb  3 20:29:47 2022
+Subject: [PATCH v2 1/2] ARM: dts: exynos: add charger and battery to p4note
+Date: Thu,  3 Feb 2022 21:29:47 +0100
+Message-Id: 
+ <d7f7b0f87a18b5cc44ba97390461c15469439829.1643919230.git.martin.juecker@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Precedence: bulk
+List-ID: <linux-samsung-soc.vger.kernel.org>
+X-Mailing-List: linux-samsung-soc@vger.kernel.org
+
+Add device tree entry to support the Summit SMB347 charger which is
+built into the p4note devices, as well as a simple battery node.
+
+Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
+---
+Changes in v2:
+  - squash charger and battery commits
+---
+ arch/arm/boot/dts/exynos4412-p4note.dtsi | 35 ++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/arch/arm/boot/dts/exynos4412-p4note.dtsi b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+index b386a9b8e188..fcd75cceb877 100644
+--- a/arch/arm/boot/dts/exynos4412-p4note.dtsi
++++ b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+@@ -16,6 +16,7 @@
+ #include <dt-bindings/input/linux-event-codes.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/pinctrl/samsung.h>
++#include <dt-bindings/power/summit,smb347-charger.h>
+ 
+ / {
+ 	compatible = "samsung,p4note", "samsung,exynos4412", "samsung,exynos4";
+@@ -114,6 +115,17 @@ wlan_pwrseq: sdhci3-pwrseq {
+ 		clock-names = "ext_clock";
+ 	};
+ 
++	battery_cell: battery-cell {
++		compatible = "simple-battery";
++		device-chemistry = "lithium-ion";
++		constant-charge-current-max-microamp = <2200000>;
++		precharge-current-microamp = <250000>;
++		charge-term-current-microamp = <250000>;
++		constant-charge-voltage-max-microvolt = <4200000>;
++
++		power-supplies = <&power_supply>;
++	};
++
+ 	i2c-gpio-1 {
+ 		compatible = "i2c-gpio";
+ 		sda-gpios = <&gpy2 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+@@ -182,6 +194,29 @@ stmpe_adc {
+ 			};
+ 		};
+ 	};
++
++	i2c-gpio-4 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpm2 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpm2 1 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++
++		i2c-gpio,delay-us = <2>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		power_supply: charger@6 {
++			compatible = "summit,smb347";
++			reg = <0x6>;
++			summit,enable-usb-charging;
++			summit,enable-charge-control = <SMB3XX_CHG_ENABLE_SW>;
++			summit,fast-voltage-threshold-microvolt = <2600000>;
++			summit,chip-temperature-threshold-celsius = <130>;
++			summit,usb-current-limit-microamp = <1800000>;
++
++			monitored-battery = <&battery_cell>;
++		};
++	};
++
+ };
+ 
+ &adc {
