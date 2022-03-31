@@ -1,0 +1,32 @@
+pkgname=firmware-samsung-gprimeltexx
+pkgver=1
+pkgrel=0
+_name="Samsung Galaxy Grand Prime (G530FZ)"
+pkgdesc="Firmware for $_name"
+url="https://postmarketos.org"
+subpackages="$pkgname-wcnss-nv:wcnss_nv"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+source="$pkgname-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/6rPpqqEE"
+
+_fwdir="/lib/firmware/postmarketos"
+
+unpack() {
+	default_unpack
+	base64 -d $pkgname-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
+}
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+wcnss_nv() {
+	pkgdesc="$_name WiFi/BT firmware configuration"
+	install -Dm644 "$srcdir"/WCNSS_qcom_wlan_nv.bin -t "$subpkgdir/$_fwdir"/wlan/prima
+}
+
+sha512sums="
+2c012fdf0abe58c4864f79d6f084ce3857f8f09a9c5d85dd36b1dd3377dcc4745646047a5929e2e70ab755aca3f1506018b7f389fef4ff00d7f396eecd4f908f  firmware-samsung-gprimeltexx-WCNSS_qcom_wlan_nv.bin.base64
+"
