@@ -1,0 +1,28 @@
+pkgname=soc-samsung-exynos4412
+pkgdesc="Common package for Samsung Exynos 4412 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="armv7"
+options="!check !archcheck !tracedeps"
+subpackages="
+	$pkgname-haptics
+"
+source="
+	90-feedbackd-max77693-haptic.rules
+"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+haptics() {
+	# feedbackd haptics udev rules
+	install -Dm644 "$srcdir"/90-feedbackd-max77693-haptic.rules \
+		"$subpkgdir"/usr/lib/udev/rules.d/90-feedbackd-max77693-haptic.rules
+}
+
+sha512sums="
+083bd692bd52f6ea2dc80351b91c24d8856d3ecd68bb2823dd821073c31b0f2d4556a2b5d861bf4b709cb3b1a4dc4d28648834ee2dd09b795ebfa3b30182ae94  90-feedbackd-max77693-haptic.rules
+"
