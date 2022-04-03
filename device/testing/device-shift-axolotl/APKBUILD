@@ -4,7 +4,7 @@
 pkgname=device-shift-axolotl
 pkgdesc="SHIFT6mq"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -20,7 +20,7 @@ depends="
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
-	rootston.ini
+	phoc.ini
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -43,11 +43,11 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname=$pkgver-r$pkgrel phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 bd30bc057e3145118203460914463794b73c1eaf73a8537a87036d316cf42035861788e7047193c1f26e9d7c69686b8c4ffa2b87882eec9ab7dfcc8edbf12394  deviceinfo
-9fef488a655fcbad4fb28c11d7d6cbe385096e766cd99ca59802f1dbc4e3c99dac0ff682549e02fac0b73f7e95db953f3a87c453d1b19b229785e4ffeec515ed  rootston.ini
+65f74d29ab318b23f7ac8923a3661f2c4130049273a8c6be234ed2c8e00810b6a1254b54cf0932e42850a6d48f821dcd038900fbb836feeddfab2759afffae38  phoc.ini
 "

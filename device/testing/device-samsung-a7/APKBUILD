@@ -2,7 +2,7 @@
 pkgname=device-samsung-a7
 pkgdesc="Samsung Galaxy A7 (2015)"
 pkgver=3
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -17,7 +17,7 @@ depends="
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
-	rootston.ini
+	phoc.ini
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -40,11 +40,11 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 bc3787eccf092939b272f77a6c2febde13d963eb595147dff492e1dae2dc12b6f24b9efc4fdca3be90780d3ebfe4e1cec1b2023c8efd37774486fa34c70b10f7  deviceinfo
-7883533e105de4f951026f99a7c27e90d290d4760253c56e4f7ddb20acc1f6de294cf6ca9a2259a9f4db7dec106926d7c970a2c94107f5ed60efe08525766f44  rootston.ini
+7883533e105de4f951026f99a7c27e90d290d4760253c56e4f7ddb20acc1f6de294cf6ca9a2259a9f4db7dec106926d7c970a2c94107f5ed60efe08525766f44  phoc.ini
 "

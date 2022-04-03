@@ -3,7 +3,7 @@
 pkgname=device-alcatel-idol3
 pkgdesc="Alcatel OneTouch Idol 3 (5.5)"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -11,7 +11,7 @@ options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8939
 	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
-source="deviceinfo rootston.ini"
+source="deviceinfo phoc.ini"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
@@ -35,11 +35,11 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-	install -D -m644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -D -m644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 59f4d65c5bb5ef53968bfd1f7d2c0175835badfc15347cedef67b240c6c54baad039beb197d7b6b49cfa379531a00f6a5d3ce615da97c3598e47091b40019c44  deviceinfo
-fbaa0e0ecfc5d6debc345d4a7475687bef4c89c463df382ecb9f5577f3fbf045bbcf1d2cacedf6322b5e81e2ba7503d1bb093ff6d55c209ed79805a49408234c  rootston.ini
+fbaa0e0ecfc5d6debc345d4a7475687bef4c89c463df382ecb9f5577f3fbf045bbcf1d2cacedf6322b5e81e2ba7503d1bb093ff6d55c209ed79805a49408234c  phoc.ini
 "

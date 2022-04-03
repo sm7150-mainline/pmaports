@@ -2,7 +2,7 @@
 pkgname=device-fairphone-fp4
 pkgdesc="Fairphone 4"
 pkgver=0.4
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -17,7 +17,7 @@ makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	gtk.css
-	rootston.ini
+	phoc.ini
 	"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -55,12 +55,12 @@ phosh() {
 	install_if="$pkgname=$pkgver-r$pkgrel phosh"
 	install -Dm644 "$srcdir"/gtk.css \
 		"$subpkgdir"/etc/skel/.config/gtk-3.0/gtk.css
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 d84e25eda52b40a0ca3bcfed79d4f73bfc7b28889d1882a5b78dffe069fdeb54390f0dea800e4ae4aae2011322b410551c204caf4a39fdf42d5faf3869f95556  deviceinfo
 25a93dcbe6dbc6cff24f57cbf5539bc475c5fe0f6bf5e8374c7032b9c38a939bef0aa0cde1707afcc16b1ec2d0859c03c6ee92d80d8048d1c6adc6e25178b85f  gtk.css
-9fef488a655fcbad4fb28c11d7d6cbe385096e766cd99ca59802f1dbc4e3c99dac0ff682549e02fac0b73f7e95db953f3a87c453d1b19b229785e4ffeec515ed  rootston.ini
+65f74d29ab318b23f7ac8923a3661f2c4130049273a8c6be234ed2c8e00810b6a1254b54cf0932e42850a6d48f821dcd038900fbb836feeddfab2759afffae38  phoc.ini
 "

@@ -3,7 +3,7 @@
 pkgname=device-asus-me176c
 pkgdesc="ASUS MeMO Pad 7 (ME176C(X))"
 pkgver=3
-pkgrel=3
+pkgrel=4
 _commit=3155254999ac36c3051a2118c415de25a072c0f6
 url="https://postmarketos.org"
 license="MIT"
@@ -22,7 +22,7 @@ depends="
 makedepends="devicepkg-dev meson eudev-dev"
 source="https://github.com/me176c-dev/linux-me176c/archive/$_commit.tar.gz
 	deviceinfo
-	rootston.ini
+	phoc.ini
 	"
 subpackages="$pkgname-factory $pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 builddir="$srcdir/linux-me176c-$_commit"
@@ -56,12 +56,12 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 75243e3d0bc9a352465683ec8cf8b83566e4131bb7fae0f388267a62bdbf4691c955ed034b30df550f921b771080688123ae8db144b72f786bf1677ef1d83f57  3155254999ac36c3051a2118c415de25a072c0f6.tar.gz
 8dfeb1d928aa3ac94e9015d4b98713ec4d56eab68a7aee8cb7ce6a877b3d015670800bae456190ae57bcb35047738de5559460f2f7b785987f1394b605119ae5  deviceinfo
-a60d1785f0163d4a4eb63ea5e3017631aab7dd6683baad6a74b09809d33888d581ca8b14526c19d18234dcf727d1fdb4ff0489ed4bd5523905d0e4da7d93bc56  rootston.ini
+a60d1785f0163d4a4eb63ea5e3017631aab7dd6683baad6a74b09809d33888d581ca8b14526c19d18234dcf727d1fdb4ff0489ed4bd5523905d0e4da7d93bc56  phoc.ini
 "

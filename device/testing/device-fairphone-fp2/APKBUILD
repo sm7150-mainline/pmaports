@@ -2,7 +2,7 @@
 pkgname=device-fairphone-fp2
 pkgdesc="Fairphone 2"
 pkgver=3
-pkgrel=5
+pkgrel=6
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -16,7 +16,7 @@ makedepends="devicepkg-dev"
 source="deviceinfo
 	FP2.conf
 	hifi
-	rootston.ini
+	phoc.ini
 	30-gpu-firmware.files
 "
 subpackages="
@@ -82,12 +82,12 @@ alsa() {
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="9c069d0f1076498df7d5d8f1a861b9d53c6b49e69575466c269df70130c51a9f45b1f9371f8e5182e11ed2d408af6c6bd3a9a353a3650efc93a47242f12c2bde  deviceinfo
 55360b1ba4ddadea341c9edb13c32ba5f19aabf75ab28602f30cfb79b9df8834f115ef979c70569f23ec1293b1fcd408baf320d87803293ce7106bdc73a26c9f  FP2.conf
 b834461c6866bb0c473dd089dd5da641dd42a00f610aad6503117aa50fe6e200db9ad0a264bb609f12350d59faee1f772907bacd75439f702ea7d52f6f85e2b1  hifi
-aad7cce10db5ec156585893c82932bd42f2c86e4d68208b5f3816ac7f5f80eb6ddf15157666e81de97d30b20897f88e1027545a87fe5c96c37b5e75e3e125ee4  rootston.ini
+aad7cce10db5ec156585893c82932bd42f2c86e4d68208b5f3816ac7f5f80eb6ddf15157666e81de97d30b20897f88e1027545a87fe5c96c37b5e75e3e125ee4  phoc.ini
 bbe6d6f530a9fa1934dd065dd4f6da48450e2115e4656b219d7f3aebc8b6a2775c02a2e5ffb5790950bb8183fca4677fbeaf9d8a267089c9f0d08461fc8ed45d  30-gpu-firmware.files"

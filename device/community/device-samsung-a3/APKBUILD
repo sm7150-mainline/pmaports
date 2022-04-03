@@ -5,7 +5,7 @@
 pkgname=device-samsung-a3
 pkgdesc="Samsung Galaxy A3 (2015)"
 pkgver=10
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -15,7 +15,7 @@ depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
-	rootston.ini
+	phoc.ini
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -51,11 +51,11 @@ phosh() {
 	for pkg in $_substitutes; do replaces="$replaces $pkg-phosh"; done
 	for pkg in $replaces; do provides="$provides $pkg=$pkgver-r$pkgrel"; done
 	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 dac014f2ebc1c461e43917fcfc020675c10ac39e17b83b0e0e2246b159db1f61ce024df21624f2635729f29521b30b4cce29b4451931cb27cf4d0f34b19ec509  deviceinfo
-f3667b914bb955be9e97db31dc7ed4a7c5d0c369be9549d587bb7208e270590c0c3fa36a0dd997d6f8305c5c9afb3b906423af6ca8724e806f995e61226cfc83  rootston.ini
+f3667b914bb955be9e97db31dc7ed4a7c5d0c369be9549d587bb7208e270590c0c3fa36a0dd997d6f8305c5c9afb3b906423af6ca8724e806f995e61226cfc83  phoc.ini
 "

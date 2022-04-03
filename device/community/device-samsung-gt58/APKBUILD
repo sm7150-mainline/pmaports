@@ -3,7 +3,7 @@
 pkgname=device-samsung-gt58
 pkgdesc="Samsung Galaxy Tab A 8.0 (2015)"
 pkgver=3
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -13,7 +13,7 @@ depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 makedepends="devicepkg-dev dtbtool"
 source="
 	deviceinfo
-	rootston.ini
+	phoc.ini
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -41,11 +41,11 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 b374fc9b75b0693a27c94116f652410a0b026077beba91527104fd0e3e720ddec0c1e48b54714af810b514571d5f2021f8facf34a9ea8de35b92aa060af64d19  deviceinfo
-bc620d2031027405f70eea68854744799b460db0d787e2c844556f437120eea0fc857689c6894dd485a5cd3794c7fb5281b901e9e10da1b550c637a852445180  rootston.ini
+bc620d2031027405f70eea68854744799b460db0d787e2c844556f437120eea0fc857689c6894dd485a5cd3794c7fb5281b901e9e10da1b550c637a852445180  phoc.ini
 "

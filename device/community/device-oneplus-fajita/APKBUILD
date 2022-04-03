@@ -4,7 +4,7 @@
 pkgname=device-oneplus-fajita
 pkgdesc="OnePlus 6T"
 pkgver=5
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -18,7 +18,7 @@ depends="
 	soc-qcom-sdm845-ucm
 "
 makedepends="devicepkg-dev"
-source="deviceinfo rootston.ini"
+source="deviceinfo phoc.ini"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 
 build() {
@@ -37,11 +37,11 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname=$pkgver-r$pkgrel phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 cd8b94751890fd8891e5eafbc4f668a068885d184ad9b93366c882cfafa798e4bc77fa548532796a278b5acdf15dbf1110a1a581823567deaa00b90a72796959  deviceinfo
-9fef488a655fcbad4fb28c11d7d6cbe385096e766cd99ca59802f1dbc4e3c99dac0ff682549e02fac0b73f7e95db953f3a87c453d1b19b229785e4ffeec515ed  rootston.ini
+65f74d29ab318b23f7ac8923a3661f2c4130049273a8c6be234ed2c8e00810b6a1254b54cf0932e42850a6d48f821dcd038900fbb836feeddfab2759afffae38  phoc.ini
 "

@@ -3,7 +3,7 @@
 pkgname=device-xiaomi-daisy
 pkgdesc="Xiaomi Mi A2 Lite"
 pkgver=2
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -22,7 +22,7 @@ source="
 	fb.modes
 	pointercal
 	30-gpu-firmware.files
-	rootston.ini
+	phoc.ini
 	"
 
 build() {
@@ -63,8 +63,8 @@ modem() {
 phosh() {
 	install_if="$pkgname=$pkgver-r$pkgrel phosh"
 	mkdir "$subpkgdir"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
@@ -72,5 +72,5 @@ sha512sums="
 9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
 4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
 302c0bec754bb79ef561c1a8d4ff34ba52b904c853bce6a15a79ba7b5b7a3d02c1c75bbe86d59be7b608a6dc744dd3e3c638eaa4539c53d20fa55fa5ea397d74  30-gpu-firmware.files
-035f97e328ff9f976b082e66b97f76036cdee9825f3022471c7c5d371291cc4b5bd5c18196cd49f4cd9ad6390abe691b506de3b221e3c122433d5620e3b3c4c9  rootston.ini
+38409d4ce48db4624539dbfd695d3c6e1596a29fd7c3004a41368b28cba646495d05360420ad728f82c63d6ddeeca71d09944df06ebaca120aedd9cc2b436eb3  phoc.ini
 "

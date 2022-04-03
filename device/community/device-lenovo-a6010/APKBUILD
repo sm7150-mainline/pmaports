@@ -4,7 +4,7 @@
 pkgname=device-lenovo-a6010
 pkgdesc="Lenovo A6010"
 pkgver=5
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,7 +12,7 @@ options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
-source="deviceinfo rootston.ini"
+source="deviceinfo phoc.ini"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
@@ -41,11 +41,11 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
 f5971257def301439b3786dada60333ad34b15b2221a296698cff7a0a8f7c5c6a54547c91bb024a883fe8f4f5f0b2926c044acc24e240ce1caeaf77697caad75  deviceinfo
-cd1402fcd7133c9364de8bd4e32f0d9e890f35d5d57fe92bd65736e23df1af428f091c9e5275fced111a6887ef562c46c5c19157b84a63955f8a1805b04d9951  rootston.ini
+cd1402fcd7133c9364de8bd4e32f0d9e890f35d5d57fe92bd65736e23df1af428f091c9e5275fced111a6887ef562c46c5c19157b84a63955f8a1805b04d9951  phoc.ini
 "

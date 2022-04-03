@@ -4,7 +4,7 @@
 pkgname=device-asus-tf700t
 pkgdesc="Asus Transformer Infinity TF700T"
 pkgver=3
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -22,7 +22,7 @@ makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	pointercal
-	rootston.ini
+	phoc.ini
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -44,8 +44,8 @@ package() {
 
 phosh() {
 	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/rootston.ini \
-		"$subpkgdir"/etc/phosh/rootston.ini
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 nonfree_firmware() {
@@ -63,5 +63,5 @@ x11() {
 sha512sums="
 52a5910f3d404793918710a8c6f03e670fe6310d47e13df7c224329e234afde55a85d4ad52657ed8aed21a544736e388a705cdb725ef62eb7b093a7df9478a96  deviceinfo
 715e4814b7357442ad848626c9210dd1f1c54ed8707fafcfabbf691001ecafd85e28b39eadd32a633887488eb58a34e1d4592d99647ab3133cbaa834b8b7694d  pointercal
-c15e0d54e311892556cf9447d8431b6239fcce29bb011bf4931c909b4d59af2f00b87637b0eb67554ccd063f569ad24c868433c551e27354b3b9af604a08f3d8  rootston.ini
+c15e0d54e311892556cf9447d8431b6239fcce29bb011bf4931c909b4d59af2f00b87637b0eb67554ccd063f569ad24c868433c551e27354b3b9af604a08f3d8  phoc.ini
 "
