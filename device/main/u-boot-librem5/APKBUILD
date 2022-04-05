@@ -35,8 +35,8 @@ source="
 	0001-librem5-enable-console-on-UART4.patch
 	"
 install="$pkgname.post-upgrade"
-# install="$pkgname.post-upgrade $pkgname-devkit.post-upgrade"
-# subpackages="$pkgname-devkit"
+install="$pkgname.post-upgrade $pkgname-devkit.post-upgrade"
+subpackages="$pkgname-devkit"
 
 _atf_builddir="$srcdir/arm-trusted-firmware-$_atf_commit"
 _firmware_builddir="$srcdir/firmware-imx-$_firmwareversion"
@@ -91,12 +91,18 @@ package() {
 
 devkit() {
 	pkgdesc="u-boot bootloader for the Purism Librem5 devkit"
-	install -D -m644 "$builddir"/devkit-boot.img \
-		"$pkgdir/usr/share/u-boot/librem5/devkit-boot.img"
-	install -D -m644 "$builddir"/devkit-boot.img.sha512 \
-		"$pkgdir/usr/share/u-boot/librem5/devkit-boot.img.sha512"
-	install -D -m 755 "$srcdir"/update-u-boot \
-		"$pkgdir"/usr/sbin/update-u-boot
+
+	# NOTE: package is empty since this u-boot doesn't support the devkit yet,
+	# but should in the future.
+
+	mkdir "$subpkgdir"
+
+	# install -D -m644 "$builddir"/devkit-boot.img \
+	# 	"$pkgdir/usr/share/u-boot/librem5/devkit-boot.img"
+	# install -D -m644 "$builddir"/devkit-boot.img.sha512 \
+	# 	"$pkgdir/usr/share/u-boot/librem5/devkit-boot.img.sha512"
+	# install -D -m 755 "$srcdir"/update-u-boot \
+	# 	"$pkgdir"/usr/sbin/update-u-boot
 }
 
 sha512sums="
