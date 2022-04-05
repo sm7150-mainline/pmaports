@@ -1,0 +1,58 @@
+From cfc5fcc03c34a5f9366ebb8cf359c9f3f052f083 Mon Sep 17 00:00:00 2001
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sat, 15 Jan 2022 01:54:57 +0100
+Subject: pwm: ab8500: Get HW ID from reg value
+
+Instead of relying on the platform device ID which is just
+assigned by the order of appearance of nodes in the device tree
+if we're lucky, rely on the reg value which is stable and
+predictable.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/pwm/pwm-ab8500.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
+index ad37bc46f2721..338e046e89ea2 100644
+--- a/drivers/pwm/pwm-ab8500.c
++++ b/drivers/pwm/pwm-ab8500.c
+@@ -11,6 +11,7 @@
+ #include <linux/mfd/abx500.h>
+ #include <linux/mfd/abx500/ab8500.h>
+ #include <linux/module.h>
++#include <linux/property.h>
+ 
+ /*
+  * PWM Out generators
+@@ -93,10 +94,16 @@ static const struct pwm_ops ab8500_pwm_ops = {
+ static int ab8500_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct ab8500_pwm_chip *ab8500;
++	u32 hwid;
+ 	int err;
+ 
+-	if (pdev->id < 1 || pdev->id > 31)
+-		return dev_err_probe(&pdev->dev, EINVAL, "Invalid device id %d\n", pdev->id);
++	err = device_property_read_u32(&pdev->dev, "reg", &hwid);
++	if (err) {
++		dev_err_probe(&pdev->dev, err, "missing reg property\n");
++		return err;
++	}
++	if (hwid < 1 || hwid > 31)
++		return dev_err_probe(&pdev->dev, EINVAL, "Invalid device id %d\n", hwid);
+ 
+ 	/*
+ 	 * Nothing to be done in probe, this is required to get the
+@@ -109,7 +116,7 @@ static int ab8500_pwm_probe(struct platform_device *pdev)
+ 	ab8500->chip.dev = &pdev->dev;
+ 	ab8500->chip.ops = &ab8500_pwm_ops;
+ 	ab8500->chip.npwm = 1;
+-	ab8500->hwid = pdev->id - 1;
++	ab8500->hwid = hwid;
+ 
+ 	err = devm_pwmchip_add(&pdev->dev, &ab8500->chip);
+ 	if (err < 0)
+-- 
+cgit 
+

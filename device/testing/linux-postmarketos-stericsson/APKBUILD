@@ -5,8 +5,7 @@
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.17_rc1
-_commit=3205c463457e0bec98ef7d707889e9daefec79ca
+pkgver=5.18_rc1
 pkgrel=0
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
@@ -36,10 +35,16 @@ case $pkgver in
 	*.*)	_kernver=$pkgver;;
 esac
 source="
-	https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-nomadik.git/snapshot/linux-nomadik-$_commit.tar.gz
+	https://git.kernel.org/torvalds/t/linux-${_kernver//_/-}.tar.gz
 	config-$_flavor.armv7
-"
-builddir="$srcdir/linux-nomadik-$_commit"
+	arm-dts-ux500-add-line-impedance-to-fuel-gauge.patch
+	disable-busy-detect-on-ux500-mmci.patch
+	power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
+	power-supply-ab8500-respect-charge_restart_voltage_uv.patch
+	power-supply-samsung-add-missing-charge-restart-voltages.patch
+	pwm-ab8500-get-hw-id-from-reg-value.patch
+	"
+builddir="$srcdir/linux-${_kernver//_/-}"
 
 prepare() {
 	default_prepare
@@ -66,6 +71,12 @@ package() {
 }
 
 sha512sums="
-615cee2040d060eaabfe7fadbcf8590daf54bfe7555d56d183de814c6b13db1eed43fbc283e8cad7bcee79606f695a06c669f16cde0f026444c6073da4830d0a  linux-nomadik-3205c463457e0bec98ef7d707889e9daefec79ca.tar.gz
-8bf5ffb6e5adb64b468ee203a0897f3e0746a4ce548a058f3ff3e09b2aa527cafc213a328c3bf356c73212e0a9025eebac25d39d2cd083b76435c5080318ca70  config-postmarketos-stericsson.armv7
+8b3c19e9a5ca0bb6c78ab680196688819bf0ee438940c3086f975508e46b2f7bdec4b564e94cc2b50501bcc1a96421aa61cc42f31d482d420203dc3956ab82d1  linux-5.18-rc1.tar.gz
+c50979b7f7bcc8e164e832eedd460f983796e0dc53a850bc94653327cc683f0ca46cd1488fd8bf7ecd2c79f720d056e6118c8f79f650ed55209ae4d8ba3b4d1c  config-postmarketos-stericsson.armv7
+abd32f479cec53b9df092f2c0f434343b1e228be2cf340d26f6f61d4fabbba127f24ec1bd561b5b2fc806cec16eef46e18f6d5c781dd3ef256797acc5409dc62  arm-dts-ux500-add-line-impedance-to-fuel-gauge.patch
+4ea0fd3fa602bab21f0cc2c31462d3ef6958c63394b41061ddf0bc2c8baa8b9c571cb5553a37c43315df84049eb7d6a6dc4f873c6d06d9ea4883c37dce40d7ec  disable-busy-detect-on-ux500-mmci.patch
+56c0e375d9078abf1144bf6df25dab176794a18d5c33f77e76b5dc44fc60f0f40ffe26991f0529ff36deaef0b3b66f8ae880968aa2459f774feb4c7993658bdd  power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
+81c1acf81a250326b6917503ec70572e18b06864248f704c1a691b0f2fd096f9d0a87acd4e05e258583b4c21c990a3f3230a360a7a02f00b6e83e3034902641c  power-supply-ab8500-respect-charge_restart_voltage_uv.patch
+c7793f5f5a87d675acfdad00fa61e65797cf7f938f791e4039d9125be0c506fb35949b02104dda128e3abf4b3c48426aeb5171a9dc4059128dafed238f877f51  power-supply-samsung-add-missing-charge-restart-voltages.patch
+56126fcfee94121cddacf6987d64517c88fb35739285143fd2fb7f8c3c10d3e326d931c5a981d3cbc5a09d7286e41c9013866b36532a410441140b4af80a2808  pwm-ab8500-get-hw-id-from-reg-value.patch
 "

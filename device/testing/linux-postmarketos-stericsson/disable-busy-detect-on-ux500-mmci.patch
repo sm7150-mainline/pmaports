@@ -1,0 +1,46 @@
+From c18fec1957132c08a129ffad4fc1e19630949d12 Mon Sep 17 00:00:00 2001
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sat, 5 Feb 2022 12:08:42 +0100
+Subject: Disable busy detect on Ux500 MMCI
+
+---
+ drivers/mmc/host/mmci.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 45b8608c935cd..d31d0f6602455 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -180,10 +180,10 @@ static struct variant_data variant_ux500 = {
+ 	.f_max			= 100000000,
+ 	.signal_direction	= true,
+ 	.pwrreg_clkgate		= true,
+-	.busy_detect		= true,
+-	.busy_dpsm_flag		= MCI_DPSM_ST_BUSYMODE,
+-	.busy_detect_flag	= MCI_ST_CARDBUSY,
+-	.busy_detect_mask	= MCI_ST_BUSYENDMASK,
++	//.busy_detect		= true,
++	//.busy_dpsm_flag		= MCI_DPSM_ST_BUSYMODE,
++	//.busy_detect_flag	= MCI_ST_CARDBUSY,
++	//.busy_detect_mask	= MCI_ST_BUSYENDMASK,
+ 	.pwrreg_nopower		= true,
+ 	.mmcimask1		= true,
+ 	.irq_pio_mask		= MCI_IRQ_PIO_MASK,
+@@ -215,10 +215,10 @@ static struct variant_data variant_ux500v2 = {
+ 	.f_max			= 100000000,
+ 	.signal_direction	= true,
+ 	.pwrreg_clkgate		= true,
+-	.busy_detect		= true,
+-	.busy_dpsm_flag		= MCI_DPSM_ST_BUSYMODE,
+-	.busy_detect_flag	= MCI_ST_CARDBUSY,
+-	.busy_detect_mask	= MCI_ST_BUSYENDMASK,
++	//.busy_detect		= true,
++	//.busy_dpsm_flag		= MCI_DPSM_ST_BUSYMODE,
++	//.busy_detect_flag	= MCI_ST_CARDBUSY,
++	//.busy_detect_mask	= MCI_ST_BUSYENDMASK,
+ 	.pwrreg_nopower		= true,
+ 	.mmcimask1		= true,
+ 	.irq_pio_mask		= MCI_IRQ_PIO_MASK,
+-- 
+cgit 
+
