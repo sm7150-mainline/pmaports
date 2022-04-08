@@ -1,0 +1,30 @@
+From 9c643517c34e8d9c2d176ace6349fb79ffbc8694 Mon Sep 17 00:00:00 2001
+From: Clayton Craft <clayton@craftyguy.net>
+Date: Mon, 14 Mar 2022 23:49:45 -0700
+Subject: [PATCH] usb hub reset workarounds
+
+---
+ drivers/usb/core/quirks.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
+index d3c14b5ed4a1..1da62e5a744b 100644
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -208,7 +208,12 @@ static const struct usb_device_id usb_quirk_list[] = {
+ 	/* Creative SB Audigy 2 NX */
+ 	{ USB_DEVICE(0x041e, 0x3020), .driver_info = USB_QUIRK_RESET_RESUME },
+ 
+-	/* USB3503 */
++	/* Microchip Hub USB2642 */
++        { USB_DEVICE(0x0424, 0x2640), .driver_info = USB_QUIRK_HUB_SLOW_RESET },
++ 
++        /* Microchip Hub USB3503 */
++        { USB_DEVICE(0x0424, 0x3503), .driver_info = USB_QUIRK_RESET_RESUME },
++
+ 	{ USB_DEVICE(0x0424, 0x3503), .driver_info = USB_QUIRK_RESET_RESUME },
+ 
+ 	/* Microsoft Wireless Laser Mouse 6000 Receiver */
+-- 
+2.35.1
+
