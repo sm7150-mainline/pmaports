@@ -1,0 +1,23 @@
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=firmware-brcm43752
+pkgver=0.3
+pkgrel=0
+_commit="85e60963827ab0ca5229f2e4b166a54614825858"
+pkgdesc="Firmware for the Broadcom brcm43752 Wifi/BT adapter"
+url="https://source.puri.sm/Librem5/firmware-brcm43752-nonfree"
+arch="noarch"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+source="https://source.puri.sm/Librem5/firmware-brcm43752-nonfree/-/archive/$_commit/firmware-brcm43752-nonfree-$_commit.tar.gz"
+builddir="$srcdir/firmware-brcm43752-nonfree-$_commit"
+
+package() {
+
+	for f in brcmfmac43752-sdio.bin brcmfmac43752-sdio.clm_blob brcmfmac43752-sdio.txt BCM4362A2.hcd; do
+		install -Dm644 firmware/brcm/"$f" "$pkgdir/lib/firmware/postmarketos/brcm/$f"
+	done
+}
+
+sha512sums="
+4c4be64e0dd4d31900ebf2329350c4f7354d1d03f143029764f904a2d0a4d520baabbd34cce2ed5f207107bade4d988cd43405a343c8f355d863cf2934c461f1  firmware-brcm43752-nonfree-85e60963827ab0ca5229f2e4b166a54614825858.tar.gz
+"
