@@ -1,0 +1,42 @@
+From 55d3174d3ccb7c9c6ab318a8998822b5928948ca Mon Sep 17 00:00:00 2001
+From: Petr Vorel <petr.vorel@gmail.com>
+Date: Wed, 23 Mar 2022 21:48:40 +0100
+Subject: [PATCH 4/8] arm64: dts: qcom: msm8994-huawei-angler: Add sdhc1
+ definition
+
+Angler does not have SD card, thus sdhc2 kept disabled.
+
+[ cherry-picked from e7773dbc87674aec210432185d9624ed346a46f1 ]
+
+Signed-off-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220323204840.22832-1-petr.vorel@gmail.com
+---
+ arch/arm64/boot/dts/qcom/msm8994-huawei-angler-rev-101.dts | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/msm8994-huawei-angler-rev-101.dts b/arch/arm64/boot/dts/qcom/msm8994-huawei-angler-rev-101.dts
+index 0e3dd48f0dbf..6e43e4339f55 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994-huawei-angler-rev-101.dts
++++ b/arch/arm64/boot/dts/qcom/msm8994-huawei-angler-rev-101.dts
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /* Copyright (c) 2015, Huawei Inc. All rights reserved.
+  * Copyright (c) 2016, The Linux Foundation. All rights reserved.
+- * Copyright (c) 2021, Petr Vorel <petr.vorel@gmail.com>
++ * Copyright (c) 2021-2022, Petr Vorel <petr.vorel@gmail.com>
+  */
+ 
+ /dts-v1/;
+@@ -41,3 +41,8 @@ serial@f991e000 {
+ &tlmm {
+ 	gpio-reserved-ranges = <85 4>;
+ };
++
++&sdhc1 {
++	status = "okay";
++	mmc-hs400-1_8v;
++};
+-- 
+2.35.1
+
