@@ -2,7 +2,7 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=linux-purism-librem5
-pkgver=5.16.18
+pkgver=5.17.2
 pkgrel=0
 _purismrel=1
 # <kernel ver>.<purism kernel release>
@@ -40,7 +40,9 @@ source="
 	0001-bq25890_charger-enter-ship-mode-on-power-off.patch
 	0002-arm64-dts-imx8mq-librem5.dtsi-adjust-the-usdhc-bus-s.patch
 	0003-imx8mq-librem5-r3-Set-the-CPU-voltage-to-1.0V-when-r.patch
-	0004-usb-hub-reset-workarounds.patch
+	0004-usb-quirks-hub_slow_reset-for-usb2642.patch
+	0005-usb-xhci-increase-XHCI_MAX_REXIT_TIMEOUT_MS.patch
+	0006-hack-usb-add-quirk-to-skip-reset_resume-in-hub_activ.patch
 	$_config
 "
 builddir="$srcdir/$_repository-pureos-$_purismver"
@@ -80,10 +82,12 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 sha512sums="
-d59c26eb5e8f4ecaf5fb97f5431e37eae7458bf791c545a4e01b14409487a254ff88a20e9fba90142944224ee23601647df1d3c4f1d9f21ec5852e30bdeb82e6  linux-purism-librem5-5.16.18pureos1.tar.gz
+9de286055c41df840901640ec21b75de0676050dd46bfee72a7d3c3bc7880228e05fcffd62ac4de5953bf276b062e24261375bf09afa9d97ce0e7d857f0eb3d3  linux-purism-librem5-5.17.2pureos1.tar.gz
 0e3caf6275247e31b874b94330dc4f991837a4b62f3c15a1f8ad39a7edd02ae499679bcd7ddc9463bb1c1a5073ea5980fa144a2ece804d72a6b2fc8c76c50766  0001-bq25890_charger-enter-ship-mode-on-power-off.patch
 1dbf2adaf097bcce3ee179cd6b0f10d2ebefdc82191d34fffea8cb336c9dcbc66b717bf97a2e264b8068f178c0254f2b1281a09ae72d4825fd7b4a39916c0461  0002-arm64-dts-imx8mq-librem5.dtsi-adjust-the-usdhc-bus-s.patch
 c52f9e7e17f876697000a0c3b959a0d571ca506ba55ee5158e30ac00e148372097c88951a354190f669137a955405c87042a925c1bbe3cd91df40721650d45d3  0003-imx8mq-librem5-r3-Set-the-CPU-voltage-to-1.0V-when-r.patch
-681f6687e37fe74d9eb74ba85b09b6a165a9b955834e1dcb9a489499ce3e224385b789e1c30e44aad470a51d40326e9f8910cec1795eccdecf4b72865872be36  0004-usb-hub-reset-workarounds.patch
-944406eb210f6f020e440f50c166c347115a0e2439dc824fa66cf134cea7f4a5acc548db15d9f225dc59cadc39b6547e2662610ae36b3b9be0ca1078b165e8e4  config-purism-librem5.aarch64
+e449c1213fa49bbb5cb5c73b9a18f7506ac6e4305ebfc5bb2315a7a6cb5110d0138214dc0168a0078a8f98c2d442e117826b78d98a0ca7247b606c7119e3d6b2  0004-usb-quirks-hub_slow_reset-for-usb2642.patch
+79f12e245d0f3ca962a559a1b3112855284c9315c031bf6e1f51c59309a9f588f4e86b6cbb121856e588e5d48d43f4ad1c5235049afa0d19fb638a0ce27c6896  0005-usb-xhci-increase-XHCI_MAX_REXIT_TIMEOUT_MS.patch
+2f0c69e90c2270e517abccd97cc7ab2bbef0d69f5aae6004944f9a534e3983765a3f2b5b6e8779dc0ce44d2eada00b04f9b38a44e6fa630978d591ea83527155  0006-hack-usb-add-quirk-to-skip-reset_resume-in-hub_activ.patch
+68a5a0e530df543a444ced60ecca6a07ed70824ea23fd89d01240426127a3017b97c06605876196199e9f1d9c035156825fad1ed84cfbf6db8dc8c25fbeb3a20  config-purism-librem5.aarch64
 "

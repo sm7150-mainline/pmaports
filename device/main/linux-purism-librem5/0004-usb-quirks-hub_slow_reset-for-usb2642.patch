@@ -1,0 +1,42 @@
+From 72d4768cac13950e9dfe566d00eaa0484ef90426 Mon Sep 17 00:00:00 2001
+From: Martin Kepplinger <martin.kepplinger@puri.sm>
+Date: Thu, 10 Mar 2022 09:25:38 +0100
+Subject: [PATCH] usb: quirks: hub_slow_reset for usb2642
+
+This reduces the cases where the host controller is dying after
+"reset_resume" during runtime-resume has been being executed.
+
+Usually you'd see
+
+[ 1575.824244] usb 1-1.2: reset high-speed USB device number 4 using xhci-hcd
+[ 1575.904083] usb 1-1.2: device descriptor read/64, error -71
+[ 1576.148256] usb 1-1.2: USB disconnect, device number 4
+(...)
+[ 1653.948112] xhci-hcd xhci-hcd.4.auto: Port resume timed out, port 1-1: 0xfe3
+[ 1664.284277] xhci-hcd xhci-hcd.4.auto: xHCI host not responding to stop endpoint command.
+[ 1664.284485] xhci-hcd xhci-hcd.4.auto: USBSTS:
+[ 1664.292619] xhci-hcd xhci-hcd.4.auto: xHCI host controller not responding, assume dead
+[ 1664.300906] xhci-hcd xhci-hcd.4.auto: HC died; cleaning up
+---
+ drivers/usb/core/quirks.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
+index d3c14b5ed4a1..f77a6399e1c8 100644
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -208,7 +208,10 @@ static const struct usb_device_id usb_quirk_list[] = {
+ 	/* Creative SB Audigy 2 NX */
+ 	{ USB_DEVICE(0x041e, 0x3020), .driver_info = USB_QUIRK_RESET_RESUME },
+ 
+-	/* USB3503 */
++	/* Microchip Hub USB2642 */
++	{ USB_DEVICE(0x0424, 0x2640), .driver_info = USB_QUIRK_HUB_SLOW_RESET },
++
++	/* Microchip Hub USB3503 */
+ 	{ USB_DEVICE(0x0424, 0x3503), .driver_info = USB_QUIRK_RESET_RESUME },
+ 
+ 	/* Microsoft Wireless Laser Mouse 6000 Receiver */
+-- 
+2.35.1
+
