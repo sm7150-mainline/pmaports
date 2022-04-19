@@ -1,0 +1,57 @@
+From 48286245124ed08e57624b1e069cfa2ce4776568 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Sat, 16 Apr 2022 19:37:04 +0200
+Subject: [PATCH 23/26] bluetooth: support ATA
+
+Accept incoming calls if the HF sends 'ATA'.
+The first call in the call list is accepted,
+multiparty calling is not supported (yet).
+---
+ src/modules/bluetooth/backend-native.c | 31 ++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 306de44a7..6f6241479 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -873,6 +873,37 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+ 
+ 	/* AT response will be reported through PA_BLUETOOTH_HOST_OPERATION_{SUCCEED, FAILED} hook */
+ 	return false;
++    } else if (strstr(buf, "ATA")) {
++        pa_hashmap *calls;
++        char *call_key = NULL;
++        call_status_t *call = NULL;
++
++        /* ATA is only possible if ModemManager is availble */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot reject call with ATA");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        } else if (!pa_modemmanager_has_service(discovery->native_backend->modemmanager)) {
++            pa_log_debug("No network service, cannot accept call with ATA");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++            return false;
++        }
++
++	/* Accept call is available */
++        calls = pa_modemmanager_get_calls(discovery->native_backend->modemmanager);
++        call_key = pa_modemmanager_get_active_call_key(discovery->native_backend->modemmanager);
++        if (call_key)
++            call = pa_hashmap_get(calls, call_key);
++
++        if (call && call->status == PA_MODEMMANAGER_CALL_STATE_RINGING && call->is_incoming)
++            pa_modemmanager_accept_call(discovery->native_backend->modemmanager, call_key);
++        else {
++            pa_log_warn("Cannot accept call, call must be incoming and ringing");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
++        }
++
++	/* AT response will be reported through PA_BLUETOOTH_HOST_OPERATION_{SUCCEED, FAILED} hook */
++        return false;
+     }
+ 
+     /* 
+-- 
+2.35.1
+

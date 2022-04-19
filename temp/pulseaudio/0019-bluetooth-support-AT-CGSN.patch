@@ -1,0 +1,33 @@
+From f39e071a558a9b3a301028c7f3506f024d60ceea Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Fri, 15 Apr 2022 07:35:11 +0200
+Subject: [PATCH 19/26] bluetooth: support AT+CGSN
+
+Return the modem's IMEI number when car multimedia systems (HF)
+send an AT+CGSN 3GPP AT command, even though it is not supported by the
+Bluetooth HFP 1.8 spec.
+---
+ src/modules/bluetooth/backend-native.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index cf016a282..fec24a57b 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -811,6 +811,13 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         }
+         rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
+         return false;
++    } else if (strstr(buf, "AT+CGSN") && pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++        if (discovery->native_backend->modemmanager) {
++            rfcomm_write_response(fd, "%s", pa_modemmanager_get_modem_imei(discovery->native_backend->modemmanager));
++            return true;
++        }
++        rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++        return false;
+     }
+ 
+     /* first-time initialize selected codec to CVSD */
+-- 
+2.35.1
+

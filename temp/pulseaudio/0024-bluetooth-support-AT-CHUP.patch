@@ -1,0 +1,72 @@
+From 12610afa56b74e7db44086d81709faedda2b83e9 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Sat, 16 Apr 2022 19:53:38 +0200
+Subject: [PATCH 24/26] bluetooth: support AT+CHUP
+
+Hangup or reject a call when the HF sends 'AT+CHUP'.
+If the call is on going, it is ended. If the call is ringing and
+incoming, it is rejected. The same interface in ModemManager is used for
+this functionality. This AT command is only available if ModemManager is
+present.
+---
+ src/modules/bluetooth/backend-native.c | 37 ++++++++++++++++++++++++--
+ 1 file changed, 35 insertions(+), 2 deletions(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 6f6241479..d502cff78 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -144,7 +144,7 @@ typedef enum pa_bluetooth_ag_to_hf_indicators {
+ /* gateway features we support, which is as little as we can get away with */
+ static uint32_t hfp_features =
+     /* HFP 1.6 requires this */
+-    (1 << HFP_AG_ESTATUS ) | (1 << HFP_AG_CODECS) | (1 << HFP_AG_INDICATORS) | (1 << HFP_AG_EERR);
++    (1 << HFP_AG_ESTATUS ) | (1 << HFP_AG_CODECS) | (1 << HFP_AG_INDICATORS) | (1 << HFP_AG_EERR) | (1 << HFP_AG_REJECT);
+ 
+ #define HSP_AG_PROFILE "/Profile/HSPAGProfile"
+ #define HFP_AG_PROFILE "/Profile/HFPAGProfile"
+@@ -904,7 +904,40 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+ 
+ 	/* AT response will be reported through PA_BLUETOOTH_HOST_OPERATION_{SUCCEED, FAILED} hook */
+         return false;
+-    }
++    } else if (strstr(buf, "AT+CHUP")) {
++        pa_hashmap *calls;
++        char *call_key = NULL;
++        call_status_t *call = NULL;
++
++        /* AT+CHUP is only possible if ModemManager is availble */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot reject call with AT+CHUP");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        } else if (!pa_modemmanager_has_service(discovery->native_backend->modemmanager)) {
++            pa_log_debug("No network service, cannot reject call with ATD+CHUP");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++            return false;
++        }
++
++	/* Hangup/reject call is available */
++        calls = pa_modemmanager_get_calls(discovery->native_backend->modemmanager);
++        call_key = pa_modemmanager_get_active_call_key(discovery->native_backend->modemmanager);
++        if (call_key)
++            call = pa_hashmap_get(calls, call_key);
++
++        if (call && (call->status == PA_MODEMMANAGER_CALL_STATE_ACTIVE
++            || call->status == PA_MODEMMANAGER_CALL_STATE_RINGING
++            || call->status == PA_MODEMMANAGER_CALL_STATE_DIALING))
++            pa_modemmanager_end_call(discovery->native_backend->modemmanager, call_key);
++        else {
++            pa_log_warn("Cannot end call, call must be active, ringing or dialing");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
++        }
++
++	/* AT response will be reported through PA_BLUETOOTH_HOST_OPERATION_{SUCCEED, FAILED} hook */
++        return false;
++    } 
+ 
+     /* 
+      * Out-of-spec Bluetooth HFP 1.8 AT commands.
+-- 
+2.35.1
+

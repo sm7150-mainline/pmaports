@@ -1,0 +1,48 @@
+From 0dc5b589220e830ab18ddbcf90f2cfbe1c4927f7 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Wed, 13 Apr 2022 20:25:47 +0200
+Subject: [PATCH 09/26] bluetooth: support AT+NREC
+
+AT+NREC=0 disables Noise Reduction and Echo Canceling in the AG.
+Bluetooth HFP 1.8 only supports the disable operation, so return
+an CME ERROR extended error code if another value is send by the HF.
+---
+ src/modules/bluetooth/backend-native.c | 7 +++++++
+ src/modules/bluetooth/bluez5-util.h    | 3 ++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 3110c5ef2..394c2a4da 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -652,6 +652,13 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+                 return false;
+ 	}
+         pa_assert_not_reached();
++    } else if (sscanf(buf, "AT+NREC=%d", &val) == 1) {
++        if (val == 0)
++            return true;
++
++        /* Noise Redction and Echo Canceling can only have value '0' (disable) following Bluetooth HFP 1.8 */
++        rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
++	return false;
+     }
+ 
+     /* first-time initialize selected codec to CVSD */
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index 4cc5c2882..fa26a8361 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -214,7 +214,8 @@ struct pa_bluetooth_adapter {
+ /* extended error reporting values, described in Bluetooth HFP 1.8 spec */
+ typedef enum pa_bluetooth_cmee {
+     CMEE_AG_FAILURE = 0,
+-    CMEE_OPERATION_NOT_SUPPORTED = 4,
++    CMEE_OPERATION_NOT_ALLOWED = 3,
++    CMEE_OPERATION_NOT_SUPPORTED = 4
+ } pa_bluetooth_cmee_t;
+ 
+ #ifdef HAVE_BLUEZ_5_OFONO_HEADSET
+-- 
+2.35.1
+

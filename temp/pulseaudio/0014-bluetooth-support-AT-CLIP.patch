@@ -1,0 +1,60 @@
+From 07adf1b246ba1db7b4c5bb9555f1d392b856c049 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Thu, 14 Apr 2022 20:52:36 +0200
+Subject: [PATCH 14/26] bluetooth: support AT+CLIP
+
+Enable or disable Call Line Indication reporting (+CLIP) when
+a call is incoming to display the number that is calling on the HF's
+screen.
+---
+ src/modules/bluetooth/backend-native.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index fcbae5540..1eaa36b4a 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -62,6 +62,7 @@ struct pa_bluetooth_backend {
+   bool cmee_extended_error_reporting_enabled;
+   uint32_t cind_enabled_indicators;
+   pa_bluetooth_cops_t cops_format;
++  bool clip_call_line_reporting_enabled;
+ 
+   PA_LLIST_HEAD(pa_dbus_pending, pending);
+ };
+@@ -751,6 +752,22 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+ 
+         rfcomm_write_response(fd, "+CNUM: ,\"%s\",%d,,4", number, type);
+         return true;
++    } else if (sscanf(buf, "AT+CLIP=%d", &val) == 1) {
++        switch(val) {
++            /* Disable call line reporting */
++            case 0:
++                discovery->native_backend->clip_call_line_reporting_enabled = false;
++                return true;
++            /* Enable call line reporting */
++            case 1:
++                discovery->native_backend->clip_call_line_reporting_enabled = true;
++                return true;
++            default:
++                pa_log_warn("Unknown AT+CLIP value: %d", val);
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
++                return false;
++	}
++        pa_assert_not_reached();
+     }
+ 
+     /* first-time initialize selected codec to CVSD */
+@@ -1553,6 +1570,9 @@ pa_bluetooth_backend *pa_bluetooth_native_backend_new(pa_core *c, pa_bluetooth_d
+     /* CMEE is disabled by default */
+     backend->cmee_extended_error_reporting_enabled = false;
+ 
++    /* CLIP is disabled by default */
++    backend->clip_call_line_reporting_enabled = false;
++
+     return backend;
+ }
+ 
+-- 
+2.35.1
+

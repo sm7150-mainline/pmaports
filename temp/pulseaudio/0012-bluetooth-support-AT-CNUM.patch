@@ -1,0 +1,68 @@
+From 739ca09cc36553703d2b24ba99b64f8641fcf987 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Thu, 14 Apr 2022 20:16:24 +0200
+Subject: [PATCH 12/26] bluetooth: support AT+CNUM
+
+AT+CNUM returns the phone number of the subscriber.
+Supports this AT command when ModemManager is available.
+---
+ src/modules/bluetooth/backend-native.c | 25 +++++++++++++++++++++++++
+ src/modules/bluetooth/bluez5-util.h    |  6 ++++++
+ 2 files changed, 31 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index c0c14acf3..19ca497d5 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -724,6 +724,31 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+             default:
+                 pa_assert_not_reached();
+         }
++    } else if (strstr(buf, "AT+CNUM")) {
++        char *number;
++        unsigned int type;
++
++        /* Return error if ModemManager is unavailable */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot answer AT+CNUM");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        }
++
++        number = pa_modemmanager_get_own_number(discovery->native_backend->modemmanager);
++        if (!number) {
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
++            return false;   
++        }
++
++        /* International numbers start with '+' */
++        if (strncmp("+", number, 1) == 0)
++            type = CLIP_INTERNATIONAL_NUMBER;
++        else
++            type = CLIP_NATIONAL_NUMBER;
++
++        rfcomm_write_response(fd, "+CNUM: ,\"%s\",%d,,4", number, type);
++        return true;
+     }
+ 
+     /* first-time initialize selected codec to CVSD */
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index 9ac9880a8..638a793b7 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -227,6 +227,12 @@ typedef enum pa_bluetooth_cops {
+     COPS_UNKNOWN_FORMAT = 2
+ } pa_bluetooth_cops_t;
+ 
++/* CLIP number formats, described in Bluetooth HFP 1.8 spec */
++typedef enum pa_bluetooth_clip {
++    CLIP_INTERNATIONAL_NUMBER = 145,
++    CLIP_NATIONAL_NUMBER = 129
++} pa_bluetooth_clip_t;
++
+ #ifdef HAVE_BLUEZ_5_OFONO_HEADSET
+ pa_bluetooth_backend *pa_bluetooth_ofono_backend_new(pa_core *c, pa_bluetooth_discovery *y);
+ void pa_bluetooth_ofono_backend_free(pa_bluetooth_backend *b);
+-- 
+2.35.1
+

@@ -1,0 +1,32 @@
+From 5fd316c23c3051be2394c16bf97ee189fc07ce23 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Fri, 15 Apr 2022 07:33:19 +0200
+Subject: [PATCH 18/26] bluetooth: support AT+CGMR
+
+Return the modem revision when HF sends an out-of-spec AT+CGMR
+command. This is a 3GPP standardized command so lets support it.
+---
+ src/modules/bluetooth/backend-native.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 3099b13fc..cf016a282 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -804,6 +804,13 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         }
+         rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
+         return false;
++    } else if (strstr(buf, "AT+CGMR")) {
++        if (discovery->native_backend->modemmanager && pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            rfcomm_write_response(fd, "%s", pa_modemmanager_get_modem_revision(discovery->native_backend->modemmanager));
++            return true;
++        }
++        rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++        return false;
+     }
+ 
+     /* first-time initialize selected codec to CVSD */
+-- 
+2.35.1
+

@@ -1,0 +1,61 @@
+From 81045feccb25b627c2c6cfc105c27b2599573fd2 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Wed, 13 Apr 2022 18:29:08 +0200
+Subject: [PATCH 07/26] bluetooth: Always reply to AT+CIND
+
+Once the stateful negotiation is complete, still reply
+to AT+CIND? and AT+CIND=? since we will report actual data here
+such as cellular service status, roaming, signal, and battery level.
+---
+ src/modules/bluetooth/backend-native.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 1fadb4b14..77792146a 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -686,7 +686,7 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         /* no state change */
+ 
+         return true;
+-    } else if (c->state == 1 && pa_startswith(buf, "AT+CIND=?")) {
++    } else if (c->state >= 1 && pa_startswith(buf, "AT+CIND=?")) {
+         /* UPower backend available, declare support for more indicators */
+         if (discovery->native_backend->upower) {
+             rfcomm_write_response(fd, "+CIND: "
+@@ -700,15 +700,29 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+                          MANDATORY_CALL_INDICATORS ","
+ 			 "(\"service\",(0-1))");
+         }
+-        c->state = 2;
++
++        /*
++         * Only change codec negotiation state when the first AT+CIND=? command is received
++	 * Bluetooth HFP 1.8 specification specifies that this AT command is issued 'at least once'.
++         */
++        if (c->state < 2) 
++            c->state = 2;
+ 
+         return true;
+-    } else if (c->state == 2 && pa_startswith(buf, "AT+CIND?")) {
++    } else if (c->state >= 2 && pa_startswith(buf, "AT+CIND?")) {
+         if (discovery->native_backend->upower)
+             rfcomm_write_response(fd, "+CIND: 0,0,0,0,%u", pa_upower_get_battery_level(discovery->native_backend->upower));
+         else
+             rfcomm_write_response(fd, "+CIND: 0,0,0,0");
+-        c->state = 3;
++
++        /*
++         * Only change codec negotiation state when the first AT+CIND? command is received.
++         * The Bluetooth HFP 1.8 specification does not define how many times this command is issued.
++         * Some HF devices issue this one multiple times breaking the codec negotiation stateful state,
++         * so only update the state once.
++         */
++        if (c->state < 3)
++            c->state = 3;
+ 
+         return true;
+     } else if ((c->state == 2 || c->state == 3) && pa_startswith(buf, "AT+CMER=")) {
+-- 
+2.35.1
+

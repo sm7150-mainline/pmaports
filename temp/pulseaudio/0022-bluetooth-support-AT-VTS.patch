@@ -1,0 +1,71 @@
+From 8d2504c42a1910b4b6bf80a0474f4b5502c4f490 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Sat, 16 Apr 2022 16:37:10 +0200
+Subject: [PATCH 22/26] bluetooth: support AT+VTS
+
+Send DTMF tones to the active call when the HF sends AT+VTS=$character.
+Return an error if more than one character is given or ModemManager is
+unavailable.
+---
+ src/modules/bluetooth/backend-native.c | 32 ++++++++++++++++++++++++++
+ src/modules/bluetooth/bluez5-util.h    |  1 +
+ 2 files changed, 33 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index e12b38d71..306de44a7 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -841,6 +841,38 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+ 
+         rfcomm_write_response(fd, "+CLCC: %d,%d,%d,%d,%d,\"%s\",%d", 1, call->is_incoming, clcc_status, 0, 0, call->number, type);
+         return true;
++    } else if (strstr(buf, "AT+VTS=")) {
++        char *call_key = NULL;
++        char dtmf_char[2]; /* character and '\0' */
++
++        /* AT+VTS is only possible if ModemManager is availble */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot send DTMF tone with AT+VTS");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        } else if (!pa_modemmanager_has_service(discovery->native_backend->modemmanager)) {
++            pa_log_debug("No network service, cannot send DTMF tone with AT+VTS");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++            return false;
++        }
++
++        /* Parse DTMF character, HFP spec allows 1 character. Return an error if parsing failed. */
++        val = sscanf(buf, "AT+VTS=%1s", dtmf_char);
++        if (val != 1) {
++            pa_log_warn("Cannot parse DTMF character from \"%s\"", buf);
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_INVALID_CHARACTERS_TEXT_STRING);
++            return false;
++        }
++        call_key = pa_modemmanager_get_active_call_key(discovery->native_backend->modemmanager);
++        if (call_key)
++            pa_modemmanager_send_dtmf(discovery->native_backend->modemmanager, call_key, dtmf_char);
++        else {
++            pa_log_warn("No active call, cannot send DTMF tone with AT+VTS");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
++        }
++
++	/* AT response will be reported through PA_BLUETOOTH_HOST_OPERATION_{SUCCEED, FAILED} hook */
++	return false;
+     }
+ 
+     /* 
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index 35b3153b8..4802cca69 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -217,6 +217,7 @@ typedef enum pa_bluetooth_cmee {
+     CMEE_NO_CONNECTION_TO_PHONE = 1,
+     CMEE_OPERATION_NOT_ALLOWED = 3,
+     CMEE_OPERATION_NOT_SUPPORTED = 4,
++    CMEE_INVALID_CHARACTERS_TEXT_STRING = 25,
+     CMEE_NO_NETWORK_SERVICE = 30
+ } pa_bluetooth_cmee_t;
+ 
+-- 
+2.35.1
+

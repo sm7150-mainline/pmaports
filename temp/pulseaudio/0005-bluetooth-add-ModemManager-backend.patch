@@ -1,0 +1,1712 @@
+From 67fc83f344dc0a308aad5619621edff3307f54d6 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Thu, 7 Apr 2022 20:30:24 +0200
+Subject: [PATCH 05/26] bluetooth: add ModemManager backend
+
+ModemManager is an alternative to oFono for interacting with
+modems. Add a ModemManager backend to better support Bluetooth HFP 1.6
+with cellular support such as making and rejecting calls, retrieving
+cellular status and in-band ringing.
+---
+ .gitlab-ci.yml                       |    3 +-
+ meson.build                          |    2 +
+ src/modules/bluetooth/bluez5-util.h  |    7 +
+ src/modules/bluetooth/meson.build    |    4 +-
+ src/modules/bluetooth/modemmanager.c | 1498 ++++++++++++++++++++++++++
+ src/modules/bluetooth/modemmanager.h |   98 ++
+ 6 files changed, 1610 insertions(+), 2 deletions(-)
+ create mode 100644 src/modules/bluetooth/modemmanager.c
+ create mode 100644 src/modules/bluetooth/modemmanager.h
+
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index e6b36da87..f2e20dd64 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -19,7 +19,7 @@ variables:
+   # CI runs, for example when adding new packages to FDO_DISTRIBUTION_PACKAGES.
+   # The tag is an arbitrary string that identifies the exact container
+   # contents.
+-  FDO_DISTRIBUTION_TAG: '2021-11-03-00'
++  FDO_DISTRIBUTION_TAG: '2022-04-20-00'
+   FDO_DISTRIBUTION_VERSION: '20.04'
+   FDO_UPSTREAM_REPO: 'pulseaudio/pulseaudio'
+   UBUNTU_IMAGE: "$CI_REGISTRY_IMAGE/ubuntu/$FDO_DISTRIBUTION_VERSION:$FDO_DISTRIBUTION_TAG"
+@@ -81,6 +81,7 @@ build-container:
+       libxml2-utils
+       libxtst-dev
+       m4
++      modemmanager-dev
+       ninja-build
+       pkg-config
+       python3-setuptools
+diff --git a/meson.build b/meson.build
+index 3ae7ac69a..063390c7f 100644
+--- a/meson.build
++++ b/meson.build
+@@ -773,6 +773,8 @@ if get_option('daemon')
+     endif
+   endif
+ 
++  modemmanager_dep = dependency('ModemManager', version : '>= 1.10.0', required : get_option('bluez5-native-headset'))
++
+   jack_dep = dependency('jack', version : '>= 0.117.0', required : get_option('jack'))
+   if jack_dep.found()
+     cdata.set('HAVE_JACK', 1)
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index a24a0b823..f69176425 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -64,6 +64,7 @@ typedef struct pa_bluetooth_adapter pa_bluetooth_adapter;
+ typedef struct pa_bluetooth_discovery pa_bluetooth_discovery;
+ typedef struct pa_bluetooth_backend pa_bluetooth_backend;
+ typedef struct pa_upower_backend pa_upower_backend;
++typedef struct pa_modemmanager_backend pa_modemmanager_backend;
+ 
+ typedef enum pa_bluetooth_hook {
+     PA_BLUETOOTH_HOOK_ADAPTER_UUIDS_CHANGED,            /* Call data: pa_bluetooth_adapter */
+@@ -71,6 +72,12 @@ typedef enum pa_bluetooth_hook {
+     PA_BLUETOOTH_HOOK_DEVICE_UNLINK,                    /* Call data: pa_bluetooth_device */
+     PA_BLUETOOTH_HOOK_DEVICE_BATTERY_LEVEL_CHANGED,     /* Call data: pa_bluetooth_device */
+     PA_BLUETOOTH_HOOK_HOST_BATTERY_LEVEL_CHANGED,       /* Call data: pa_upower_backend */
++    PA_BLUETOOTH_HOOK_HOST_CALLS_CHANGED,               /* Call data: pa_modemmanager_transport */
++    PA_BLUETOOTH_HOOK_HOST_SIGNAL_STRENGTH_CHANGED,     /* Call data: pa_modemmanager_transport */
++    PA_BLUETOOTH_HOOK_HOST_HAS_SERVICE_CHANGED,         /* Call data: pa_modemmanager_transport */
++    PA_BLUETOOTH_HOOK_HOST_IS_ROAMING_CHANGED,          /* Call data: pa_modemmanager_transport */
++    PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED,            /* Call data: pa_modemmanager_transport */
++    PA_BLUETOOTH_HOOK_HOST_OPERATION_SUCCEED,           /* Call data: pa_modemmanager_transport */
+     PA_BLUETOOTH_HOOK_TRANSPORT_STATE_CHANGED,          /* Call data: pa_bluetooth_transport */
+     PA_BLUETOOTH_HOOK_TRANSPORT_SOURCE_VOLUME_CHANGED,  /* Call data: pa_bluetooth_transport */
+     PA_BLUETOOTH_HOOK_TRANSPORT_SINK_VOLUME_CHANGED,    /* Call data: pa_bluetooth_transport */
+diff --git a/src/modules/bluetooth/meson.build b/src/modules/bluetooth/meson.build
+index 0703d5086..fdcc8a521 100644
+--- a/src/modules/bluetooth/meson.build
++++ b/src/modules/bluetooth/meson.build
+@@ -18,6 +18,8 @@ if get_option('bluez5-native-headset')
+   libbluez5_util_sources += [ 'backend-native.c' ]
+   libbluez5_util_sources += [ 'upower.c' ]
+   libbluez5_util_headers += [ 'upower.h' ]
++  libbluez5_util_sources += [ 'modemmanager.c' ]
++  libbluez5_util_headers += [ 'modemmanager.h' ]
+ endif
+ 
+ if get_option('bluez5-ofono-headset')
+@@ -37,7 +39,7 @@ libbluez5_util = shared_library('bluez5-util',
+   c_args : [pa_c_args, server_c_args],
+   link_args : [nodelete_link_args],
+   include_directories : [configinc, topinc],
+-  dependencies : [libpulse_dep, libpulsecommon_dep, libpulsecore_dep, bluez_dep, dbus_dep, sbc_dep, libintl_dep, bluez5_gst_dep, bluez5_gstapp_dep, libm_dep],
++  dependencies : [libpulse_dep, libpulsecommon_dep, libpulsecore_dep, bluez_dep, dbus_dep, sbc_dep, libintl_dep, bluez5_gst_dep, bluez5_gstapp_dep, libm_dep, modemmanager_dep],
+   install : true,
+   install_rpath : privlibdir,
+   install_dir : modlibexecdir,
+diff --git a/src/modules/bluetooth/modemmanager.c b/src/modules/bluetooth/modemmanager.c
+new file mode 100644
+index 000000000..60c3fabec
+--- /dev/null
++++ b/src/modules/bluetooth/modemmanager.c
+@@ -0,0 +1,1498 @@
++/***
++  This file is part of PulseAudio.
++
++  Copyright 2022 Dylan Van Assche <me@dylanvanassche.be>
++
++  PulseAudio is free software; you can redistribute it and/or modify
++  it under the terms of the GNU Lesser General Public License as
++  published by the Free Software Foundation; either version 2.1 of the
++  License, or (at your option) any later version.
++
++  PulseAudio is distributed in the hope that it will be useful, but
++  WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++  General Public License for more details.
++
++  You should have received a copy of the GNU Lesser General Public
++  License along with PulseAudio; if not, see <http://www.gnu.org/licenses/>.
++***/
++#ifdef HAVE_CONFIG_H
++#include <config.h>
++#endif
++
++#include <math.h>
++#include <pulsecore/core-error.h>
++#include <pulsecore/core-util.h>
++#include <pulsecore/dbus-shared.h>
++#include <pulsecore/log.h>
++#include <pulse/timeval.h>
++#include <pulse/rtclock.h>
++#include <pulsecore/strbuf.h>
++
++#include "modemmanager.h"
++
++static pa_dbus_pending* send_and_add_to_pending(pa_modemmanager_backend *backend, DBusMessage *m,
++        DBusPendingCallNotifyFunction func, void *call_data) {
++
++    pa_dbus_pending *p;
++    DBusPendingCall *call;
++
++    pa_assert(backend);
++    pa_assert(m);
++
++    pa_assert_se(dbus_connection_send_with_reply(pa_dbus_connection_get(backend->connection), m, &call, -1));
++
++    p = pa_dbus_pending_new(pa_dbus_connection_get(backend->connection), m, call, backend, call_data);
++    PA_LLIST_PREPEND(pa_dbus_pending, backend->pending, p);
++    dbus_pending_call_set_notify(call, func, p, NULL);
++
++    return p;
++}
++
++static const char *check_variant_property(DBusMessageIter *i) {
++    const char *key;
++
++    pa_assert(i);
++
++    if (dbus_message_iter_get_arg_type(i) != DBUS_TYPE_STRING) {
++        pa_log_error("Property name not a string.");
++        return NULL;
++    }
++
++    dbus_message_iter_get_basic(i, &key);
++
++    if (!dbus_message_iter_next(i)) {
++        pa_log_error("Property value missing");
++        return NULL;
++    }
++
++    if (dbus_message_iter_get_arg_type(i) != DBUS_TYPE_VARIANT) {
++        pa_log_error("Property value not a variant.");
++        return NULL;
++    }
++
++    return key;
++}
++
++static void create_call_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Voice not available");
++            pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                         PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("CreateCall() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++            pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                         PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                 PA_BLUETOOTH_HOOK_HOST_OPERATION_SUCCEED), b);
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static void call_hangup_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Call not available");
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("Hangup() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                 PA_BLUETOOTH_HOOK_HOST_OPERATION_SUCCEED), b);
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static void call_accept_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Call not available");
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("Accept() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_SUCCEED), b);
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static void send_dtmf_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Call not available");
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("SendDtmf() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), b);
++        goto finish;
++    }
++
++    pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                 PA_BLUETOOTH_HOOK_HOST_OPERATION_SUCCEED), b);
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static void parse_state(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    MMModemState state;
++    bool has_service;
++
++    pa_assert(i);
++
++    /*
++     * ModemManager emits the State property as UINT32 or INT32.
++     * Cast to unsigned int if needed.
++     */
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_UINT32
++              || dbus_message_iter_get_arg_type(i) == DBUS_TYPE_INT32);
++
++    if (dbus_message_iter_get_arg_type(i) == DBUS_TYPE_INT32) {
++        int s;
++
++        dbus_message_iter_get_basic(i, &s);
++        state = (unsigned int) s;
++    } else
++        dbus_message_iter_get_basic(i, &state);
++
++    /* All states from REGISTERED and higher indicate that the modem has service */
++    if (state >= MM_MODEM_STATE_REGISTERED)
++        has_service = true;
++    else
++        has_service = false;
++
++    pa_log_debug("Network has service: %s", pa_yes_no(has_service));
++
++    if (b->modem->network_has_service != has_service) {
++        b->modem->network_has_service = has_service;
++        pa_log_debug("AG service status updated: %s", pa_yes_no(b->modem->network_has_service));
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_HAS_SERVICE_CHANGED), b);
++    }
++}
++
++static void parse_registration(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    MMModem3gppRegistrationState registration;
++    bool is_roaming;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_UINT32);
++
++    dbus_message_iter_get_basic(i, &registration);
++
++    /* All states containing ROAMING indicate that the modem is roaming */
++    if (registration == MM_MODEM_3GPP_REGISTRATION_STATE_ROAMING
++       || registration == MM_MODEM_3GPP_REGISTRATION_STATE_ROAMING_CSFB_NOT_PREFERRED
++       || registration == MM_MODEM_3GPP_REGISTRATION_STATE_ROAMING_SMS_ONLY) {
++        is_roaming = true;
++    } else
++        is_roaming = false;
++
++    pa_log_debug("Network is roaming: %s", pa_yes_no(is_roaming));
++
++    if (b->modem->network_is_roaming != is_roaming) {
++        b->modem->network_is_roaming = is_roaming;
++        pa_log_debug("AG roaming status updated: %s", pa_yes_no(b->modem->network_is_roaming));
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_IS_ROAMING_CHANGED), b);
++    }
++}
++
++static void parse_signal_quality(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    unsigned int percentage, signal_strength;
++    DBusMessageIter structIter;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRUCT);
++
++    dbus_message_iter_recurse(i, &structIter);
++
++    if (dbus_message_iter_get_arg_type(&structIter) == DBUS_TYPE_UINT32) {
++        dbus_message_iter_get_basic(&structIter, &percentage);
++        signal_strength = (unsigned int) round(percentage / 20.0);
++
++        pa_log_debug("Network signal strength: %d/100", percentage);
++
++        if (b->modem->network_signal_strength != signal_strength) {
++            b->modem->network_signal_strength = signal_strength;
++            pa_log_debug("AG signal strength updated (%d/5)", b->modem->network_signal_strength);
++            pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                         PA_BLUETOOTH_HOOK_HOST_SIGNAL_STRENGTH_CHANGED), b);
++        }
++    }
++}
++
++static void parse_operator_name(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    char *name;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRING);
++
++    dbus_message_iter_get_basic(i, &name);
++    if (b->modem->network_operator_name)
++        pa_xfree(b->modem->network_operator_name);
++    b->modem->network_operator_name = pa_xstrdup(name);
++
++    pa_log_debug("Network operator name: %s", b->modem->network_operator_name);
++}
++
++static void parse_operator_code(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    char *code;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRING);
++
++    dbus_message_iter_get_basic(i, &code);
++    if (b->modem->network_operator_code)
++        pa_xfree(b->modem->network_operator_code);
++    b->modem->network_operator_code = pa_xstrdup(code);
++
++    pa_log_debug("Network operator code: %s", b->modem->network_operator_code);
++}
++
++static void parse_own_number(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    DBusMessageIter element_i;
++    char *number;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_ARRAY);
++
++    dbus_message_iter_recurse(i, &element_i);
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_STRING) {
++        dbus_message_iter_get_basic(&element_i, &number);
++        if (b->modem->modem_own_number)
++            pa_xfree(b->modem->modem_own_number);
++        b->modem->modem_own_number = pa_xstrdup(number);
++        pa_log_debug("Modem own number: %s", b->modem->modem_own_number);
++
++        /* Bluetooth HFP cannot deal with multiple SIMs and numbers */
++        break;
++
++        dbus_message_iter_next(&element_i);
++    }
++}
++
++static void parse_call_number(pa_modemmanager_backend *b, DBusMessageIter *i, const char *call_object) {
++    char *number;
++    call_status_t *call_state;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRING);
++
++    dbus_message_iter_get_basic(i, &number);
++
++    call_state = pa_hashmap_get(b->calls, call_object);
++    if (!call_state) {
++        return;
++    }
++
++    if (call_state->number)
++        pa_xfree(call_state->number);
++    call_state->number = pa_xstrdup(number);
++
++    pa_log_debug("Call number %s", call_state->number);
++}
++
++static void parse_call_state(pa_modemmanager_backend *b, DBusMessageIter *i, const char *call_object) {
++    MMCallState state;
++    call_status_t *call_state;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_INT32);
++
++    dbus_message_iter_get_basic(i, &state);
++
++    call_state = pa_hashmap_get(b->calls, call_object);
++    if (!call_state) {
++        return;
++    }
++
++    switch(state) {
++        case MM_CALL_STATE_UNKNOWN:
++            pa_log_warn("Call state unknown");
++            call_state->status = PA_MODEMMANAGER_CALL_STATE_INVALID;
++            break;
++        case MM_CALL_STATE_ACTIVE:
++            pa_log_debug("Call active");
++            call_state->status = PA_MODEMMANAGER_CALL_STATE_ACTIVE;
++            break;
++        /* FIXME: implement three-way calling */
++        case MM_CALL_STATE_HELD:
++            pa_log_warn("Three-way calling is not implemented!");
++            call_state->status = PA_MODEMMANAGER_CALL_STATE_INVALID;
++            break;
++        case MM_CALL_STATE_DIALING:
++            pa_log_debug("Call dailing");
++            call_state->status = PA_MODEMMANAGER_CALL_STATE_DIALING;
++            break;
++        case MM_CALL_STATE_RINGING_OUT:
++        case MM_CALL_STATE_RINGING_IN:
++            pa_log_debug("Call ringing");
++            call_state->status = PA_MODEMMANAGER_CALL_STATE_RINGING;
++            break;
++        /* FIXME: implement three-way calling */
++        case MM_CALL_STATE_WAITING:
++            pa_log_warn("Three-way calling is not implemented!");
++            call_state->status = PA_MODEMMANAGER_CALL_STATE_INVALID;
++            return;
++        case MM_CALL_STATE_TERMINATED:
++            pa_log_debug("Call terminated");
++            call_state->status = PA_MODEMMANAGER_CALL_STATE_TERMINATED;
++            break;
++        default:
++            pa_assert_not_reached();
++    }
++}
++
++static void parse_call_direction(pa_modemmanager_backend *b, DBusMessageIter *i, const char *call_object) {
++    MMCallDirection direction;
++    call_status_t *call_state;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_INT32);
++
++    dbus_message_iter_get_basic(i, &direction);
++
++    call_state = pa_hashmap_get(b->calls, call_object);
++    if (!call_state) {
++        return;
++    }
++
++    switch(direction) {
++        case MM_CALL_DIRECTION_UNKNOWN:
++            pa_log_warn("Unknown call direction");
++            return;
++        case MM_CALL_DIRECTION_INCOMING:
++            call_state->is_incoming = true;
++            break;
++        case MM_CALL_DIRECTION_OUTGOING:
++            call_state->is_incoming = false;
++            break;
++        default:
++            pa_assert_not_reached();
++    }
++
++    pa_log_debug("Call direction updated. Is incoming? %s", pa_yes_no(call_state->is_incoming));
++}
++
++static void parse_manufacturer(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    char *manufacturer;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRING);
++
++    dbus_message_iter_get_basic(i, &manufacturer);
++    if (b->modem->modem_manufacturer)
++        pa_xfree(b->modem->modem_manufacturer);
++    b->modem->modem_manufacturer = pa_xstrdup(manufacturer);
++
++    pa_log_debug("Modem manufacturer: %s", b->modem->modem_manufacturer);
++}
++
++static void parse_model(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    char *model;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRING);
++
++    dbus_message_iter_get_basic(i, &model);
++    if (b->modem->modem_model)
++        pa_xfree(b->modem->modem_model);
++    b->modem->modem_model = pa_xstrdup(model);
++
++    pa_log_debug("Modem model: %s", b->modem->modem_model);
++}
++
++static void parse_revision(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    char *revision;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRING);
++
++    dbus_message_iter_get_basic(i, &revision);
++    if (b->modem->modem_revision)
++        pa_xfree(b->modem->modem_revision);
++    b->modem->modem_revision = pa_xstrdup(revision);
++
++    pa_log_debug("Modem revision: %s", b->modem->modem_revision);
++}
++
++static void parse_imei(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    char *imei;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_STRING);
++
++    dbus_message_iter_get_basic(i, &imei);
++    if (b->modem->modem_imei)
++        pa_xfree(b->modem->modem_imei);
++    b->modem->modem_imei = pa_xstrdup(imei);
++
++    pa_log_debug("Modem IMEI: %s", b->modem->modem_imei);
++}
++
++static void get_modem_properties_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++    DBusMessageIter arg_i, element_i;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Modem not available");
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("GetAll() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        goto finish;
++    }
++
++    if (!dbus_message_iter_init(r, &arg_i) || !pa_streq(dbus_message_get_signature(r), "a{sv}")) {
++        pa_log_error("Invalid reply signature for GetAll()");
++        goto finish;
++    }
++
++    dbus_message_iter_recurse(&arg_i, &element_i);
++
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_DICT_ENTRY) {
++        DBusMessageIter dict_i, variant_i;
++        const char *key;
++
++        dbus_message_iter_recurse(&element_i, &dict_i);
++
++        /* Retrieve property name */
++        key = check_variant_property(&dict_i);
++        if (key == NULL) {
++            pa_log_error("Received invalid property!");
++            break;
++        }
++
++        /* Retrieve and parse property value */
++        dbus_message_iter_recurse(&dict_i, &variant_i);
++
++        if(pa_streq(key, MM_MODEM_PROPERTY_OWNNUMBERS))
++            parse_own_number(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_PROPERTY_EQUIPMENTIDENTIFIER))
++            parse_imei(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_PROPERTY_MANUFACTURER))
++            parse_manufacturer(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_PROPERTY_MODEL))
++            parse_model(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_PROPERTY_REVISION))
++            parse_revision(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_PROPERTY_SIGNALQUALITY))
++            parse_signal_quality(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_PROPERTY_STATE))
++            parse_state(b, &variant_i);
++
++        dbus_message_iter_next(&element_i);
++    }
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static void get_modem_3gpp_properties_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++    DBusMessageIter arg_i, element_i;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Modem 3GPP not available");
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("GetAll() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        goto finish;
++    }
++
++    if (!dbus_message_iter_init(r, &arg_i) || !pa_streq(dbus_message_get_signature(r), "a{sv}")) {
++        pa_log_error("Invalid reply signature for GetAll()");
++        goto finish;
++    }
++
++    dbus_message_iter_recurse(&arg_i, &element_i);
++
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_DICT_ENTRY) {
++        DBusMessageIter dict_i, variant_i;
++        const char *key;
++
++        dbus_message_iter_recurse(&element_i, &dict_i);
++
++        /* Retrieve property name */
++        key = check_variant_property(&dict_i);
++        if (key == NULL) {
++            pa_log_error("Received invalid property!");
++            break;
++        }
++
++        /* Retrieve and parse property value */
++        dbus_message_iter_recurse(&dict_i, &variant_i);
++
++        if(pa_streq(key, MM_MODEM_MODEM3GPP_PROPERTY_REGISTRATIONSTATE))
++            parse_registration(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_MODEM3GPP_PROPERTY_OPERATORCODE))
++            parse_operator_code(b, &variant_i);
++        else if(pa_streq(key, MM_MODEM_MODEM3GPP_PROPERTY_OPERATORNAME))
++            parse_operator_name(b, &variant_i);
++
++        dbus_message_iter_next(&element_i);
++    }
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static void get_call_properties_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++    DBusMessageIter arg_i, element_i;
++    char *call_object;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(call_object = p->call_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Call not available");
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("GetAll() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        goto finish;
++    }
++
++    if (!dbus_message_iter_init(r, &arg_i) || !pa_streq(dbus_message_get_signature(r), "a{sv}")) {
++        pa_log_error("Invalid reply signature for GetAll()");
++        goto finish;
++    }
++
++    dbus_message_iter_recurse(&arg_i, &element_i);
++
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_DICT_ENTRY) {
++        DBusMessageIter dict_i, variant_i;
++        const char *key;
++
++        dbus_message_iter_recurse(&element_i, &dict_i);
++
++        /* Retrieve property name */
++        key = check_variant_property(&dict_i);
++        if (key == NULL) {
++            pa_log_error("Received invalid property!");
++            break;
++        }
++
++        /* Retrieve and parse property value */
++        dbus_message_iter_recurse(&dict_i, &variant_i);
++
++        if(pa_streq(key, MM_CALL_PROPERTY_NUMBER))
++            parse_call_number(b, &variant_i, call_object);
++        else if(pa_streq(key, MM_CALL_PROPERTY_STATE))
++            parse_call_state(b, &variant_i, call_object);
++        else if(pa_streq(key, MM_CALL_PROPERTY_DIRECTION))
++            parse_call_direction(b, &variant_i, call_object);
++
++        dbus_message_iter_next(&element_i);
++    }
++
++    /* Notify change for call */
++    pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                 PA_BLUETOOTH_HOOK_HOST_CALLS_CHANGED), b);
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++
++    pa_xfree(call_object);
++}
++
++static void parse_calls(pa_modemmanager_backend *b, DBusMessageIter *i) {
++    const char *mm_call_interface = MM_DBUS_INTERFACE_CALL;
++    const char *call_object;
++    DBusMessageIter element_i;
++    DBusMessage *m;
++
++    pa_assert(i);
++    pa_assert(dbus_message_iter_get_arg_type(i) == DBUS_TYPE_ARRAY);
++
++    /* Iterate over array of dictonaries */
++    dbus_message_iter_recurse(i, &element_i);
++
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_OBJECT_PATH) {
++        dbus_message_iter_get_basic(&element_i, &call_object);
++
++        if (pa_hashmap_put(b->calls, pa_xstrdup(call_object), pa_xnew0(call_status_t, 1)) != 0)
++            pa_log_error("Call %s already exist", call_object);
++
++        /* Retrieve call properties */
++        pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, call_object, DBUS_INTERFACE_PROPERTIES, DBUS_INTERFACE_PROPERTIES_METHOD_GETALL));
++        pa_assert_se(dbus_message_append_args(m, DBUS_TYPE_STRING, &mm_call_interface, DBUS_TYPE_INVALID));
++        send_and_add_to_pending(b, m, get_call_properties_reply, pa_xstrdup(call_object));
++
++        // FIXME: Implement three-way calling. Only the first call is used.
++        return;
++
++        dbus_message_iter_next(&element_i);
++    }
++}
++
++static void get_modem_voice_properties_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++    DBusMessageIter arg_i, element_i;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus Modem Voice not available");
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("GetAll() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        goto finish;
++    }
++
++    if (!dbus_message_iter_init(r, &arg_i) || !pa_streq(dbus_message_get_signature(r), "a{sv}")) {
++        pa_log_error("Invalid reply signature for GetAll()");
++        goto finish;
++    }
++
++    dbus_message_iter_recurse(&arg_i, &element_i);
++
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_DICT_ENTRY) {
++        DBusMessageIter dict_i, variant_i;
++        const char *key;
++
++        dbus_message_iter_recurse(&element_i, &dict_i);
++
++        /* Retrieve property name */
++        key = check_variant_property(&dict_i);
++        if (key == NULL) {
++            pa_log_error("Received invalid property!");
++            break;
++        }
++
++        /* Retrieve and parse property value */
++        dbus_message_iter_recurse(&dict_i, &variant_i);
++
++        if(pa_streq(key, MM_MODEM_VOICE_PROPERTY_CALLS))
++            parse_calls(b, &variant_i);
++
++        dbus_message_iter_next(&element_i);
++    }
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static void parse_interfaces_and_properties(pa_modemmanager_backend *b, DBusMessageIter *dict_i) {
++    DBusMessage *m;
++    DBusMessageIter element_i;
++    const char *path;
++    const char *mm_modem_interface = MM_DBUS_INTERFACE_MODEM;
++    const char *mm_modem_3gpp_interface = MM_DBUS_INTERFACE_MODEM_MODEM3GPP;
++    const char *mm_modem_voice_interface = MM_DBUS_INTERFACE_MODEM_VOICE;
++
++    pa_assert(dbus_message_iter_get_arg_type(dict_i) == DBUS_TYPE_OBJECT_PATH);
++    dbus_message_iter_get_basic(dict_i, &path);
++
++    pa_assert_se(dbus_message_iter_next(dict_i));
++    pa_assert(dbus_message_iter_get_arg_type(dict_i) == DBUS_TYPE_ARRAY);
++
++    dbus_message_iter_recurse(dict_i, &element_i);
++
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_DICT_ENTRY) {
++        DBusMessageIter dict_i;
++        const char *interface;
++
++        dbus_message_iter_recurse(&element_i, &dict_i);
++
++        pa_assert(dbus_message_iter_get_arg_type(&dict_i) == DBUS_TYPE_STRING);
++        dbus_message_iter_get_basic(&dict_i, &interface);
++
++        pa_assert_se(dbus_message_iter_next(&dict_i));
++        pa_assert(dbus_message_iter_get_arg_type(&dict_i) == DBUS_TYPE_ARRAY);
++
++        /* ModemManager Modem inteface */
++        if (pa_streq(interface, MM_DBUS_INTERFACE_MODEM)) {
++            pa_log_debug("Modem Interface %s found", path);
++            b->mm_modem = pa_xstrdup(path);
++
++            /* Retrieve all modem properties */
++            pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, b->mm_modem, DBUS_INTERFACE_PROPERTIES, DBUS_INTERFACE_PROPERTIES_METHOD_GETALL));
++            pa_assert_se(dbus_message_append_args(m,
++                DBUS_TYPE_STRING, &mm_modem_interface,
++                DBUS_TYPE_INVALID));
++            send_and_add_to_pending(b, m, get_modem_properties_reply, NULL);
++        /* ModemManager Modem 3GPP interface */
++	} else if (pa_streq(interface, MM_DBUS_INTERFACE_MODEM_MODEM3GPP)) {
++            pa_log_debug("Modem 3GPP Interface %s found", path);
++            b->mm_modem_3gpp = pa_xstrdup(path);
++
++            /* Retrieve all network properties */
++            pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, b->mm_modem_3gpp, DBUS_INTERFACE_PROPERTIES, DBUS_INTERFACE_PROPERTIES_METHOD_GETALL));
++            pa_assert_se(dbus_message_append_args(m,
++                DBUS_TYPE_STRING, &mm_modem_3gpp_interface,
++                DBUS_TYPE_INVALID));
++            send_and_add_to_pending(b, m, get_modem_3gpp_properties_reply, NULL);
++        /* ModemManager Modem Voice interface */
++	} else if (pa_streq(interface, MM_DBUS_INTERFACE_MODEM_VOICE)) {
++            pa_log_debug("Modem Voice Interface %s found", path);
++            b->mm_modem_voice = pa_xstrdup(path);
++
++            /* Retrieve current call list and properties */
++            pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, b->mm_modem_voice, DBUS_INTERFACE_PROPERTIES, DBUS_INTERFACE_PROPERTIES_METHOD_GETALL));
++            pa_assert_se(dbus_message_append_args(m,
++                DBUS_TYPE_STRING, &mm_modem_voice_interface,
++                DBUS_TYPE_INVALID));
++            send_and_add_to_pending(b, m, get_modem_voice_properties_reply, NULL);
++        } else
++            pa_log_debug("Unknown interface %s found, skipping", interface);
++
++        dbus_message_iter_next(&element_i);
++    }
++
++    return;
++}
++
++static void invalidate_modem_properties(pa_modemmanager_backend *b) {
++    if (b->modem) {
++        if (b->modem->modem_manufacturer) {
++            pa_xfree(b->modem->modem_manufacturer);
++            b->modem->modem_manufacturer = NULL;
++        }
++        if (b->modem->modem_model) {
++            pa_xfree(b->modem->modem_model);
++            b->modem->modem_model = NULL;
++        }
++        if (b->modem->modem_revision) {
++            pa_xfree(b->modem->modem_revision);
++            b->modem->modem_revision = NULL;
++        }
++        if (b->modem->modem_imei) {
++            pa_xfree(b->modem->modem_imei);
++            b->modem->modem_imei = NULL;
++        }
++        if (b->modem->modem_own_number) {
++            pa_xfree(b->modem->modem_own_number);
++            b->modem->modem_own_number = NULL;
++        }
++    }
++}
++
++static void invalidate_modem_3gpp_properties(pa_modemmanager_backend *b) {
++    if (b->modem) {
++        if (b->modem->network_operator_name) {
++            pa_xfree(b->modem->network_operator_name);
++            b->modem->network_operator_name = NULL;
++        }
++        if (b->modem->network_operator_code) {
++            pa_xfree(b->modem->network_operator_code);
++            b->modem->network_operator_code = NULL;
++        }
++        b->modem->network_has_service = false;
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_HAS_SERVICE_CHANGED), b);
++        b->modem->network_is_roaming = false;
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_IS_ROAMING_CHANGED), b);
++        b->modem->network_signal_strength = 0;
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_SIGNAL_STRENGTH_CHANGED), b);
++    }
++}
++
++static void invalidate_modem_voice_properties(pa_modemmanager_backend *b) {
++    call_status_t *c = NULL;
++    void *state = NULL;
++
++    /* Remove all call objects */
++    if (b->calls) {
++        while ((c = pa_hashmap_iterate(b->calls, &state, NULL))) {
++            if (!c)
++                continue;
++
++            if (c->number)
++                pa_xfree(c->number);
++            pa_hashmap_remove_and_free(b->calls, c);
++        }
++
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_CALLS_CHANGED), b);
++    }
++}
++
++static void get_managed_objects_reply(DBusPendingCall *pending, void *userdata) {
++    pa_dbus_pending *p;
++    pa_modemmanager_backend *b;
++    DBusMessage *r;
++    DBusMessageIter arg_i, element_i;
++
++    pa_assert(pending);
++    pa_assert_se(p = userdata);
++    pa_assert_se(b = p->context_data);
++    pa_assert_se(r = dbus_pending_call_steal_reply(pending));
++
++    if (dbus_message_is_error(r, DBUS_ERROR_UNKNOWN_METHOD)) {
++        pa_log_warn("ModemManager D-Bus ObjectManager not available");
++        goto finish;
++    }
++
++    if (dbus_message_get_type(r) == DBUS_MESSAGE_TYPE_ERROR) {
++        pa_log_error("GetManagedObjects() failed: %s: %s", dbus_message_get_error_name(r), pa_dbus_get_error_message(r));
++        goto finish;
++    }
++
++    if (!dbus_message_iter_init(r, &arg_i) || !pa_streq(dbus_message_get_signature(r), "a{oa{sa{sv}}}")) {
++        pa_log_error("Invalid reply signature for GetManagedObjects()");
++        goto finish;
++    }
++
++    dbus_message_iter_recurse(&arg_i, &element_i);
++
++    while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_DICT_ENTRY) {
++        DBusMessageIter dict_i;
++
++        dbus_message_iter_recurse(&element_i, &dict_i);
++        parse_interfaces_and_properties(b, &dict_i);
++        dbus_message_iter_next(&element_i);
++    }
++
++finish:
++    dbus_message_unref(r);
++
++    PA_LLIST_REMOVE(pa_dbus_pending, b->pending, p);
++    pa_dbus_pending_free(p);
++}
++
++static DBusHandlerResult filter_cb(DBusConnection *bus, DBusMessage *m, void *data) {
++    DBusError err;
++    DBusMessage *m2;
++    const char *mm_call_interface = MM_DBUS_INTERFACE_CALL;
++    pa_modemmanager_backend *b = data;
++    const char *path, *interface, *member;
++
++    pa_assert(bus);
++    pa_assert(m);
++    pa_assert(b);
++
++    dbus_error_init(&err);
++
++    path = dbus_message_get_path(m);
++    interface = dbus_message_get_interface(m);
++    member = dbus_message_get_member(m);
++
++    pa_log_debug("dbus: path=%s, interface=%s, member=%s", path, interface, member);
++
++    /* ModemManager D-Bus status change */
++    if (dbus_message_is_signal(m, DBUS_INTERFACE_DBUS, DBUS_INTERFACE_DBUS_SIGNAL_NAMEOWNERCHANGED)) {
++        const char *name, *old_owner, *new_owner;
++
++        if (!dbus_message_get_args(m, &err,
++                                   DBUS_TYPE_STRING, &name,
++                                   DBUS_TYPE_STRING, &old_owner,
++                                   DBUS_TYPE_STRING, &new_owner,
++                                   DBUS_TYPE_INVALID)) {
++            pa_log_error("Failed to parse " DBUS_INTERFACE_DBUS ".NameOwnerChanged: %s", err.message);
++            goto fail;
++        }
++
++        if (pa_streq(name, MM_DBUS_SERVICE)) {
++
++            /* ModemManager disappeared from D-Bus */
++            if (old_owner && *old_owner) {
++                pa_log_debug("ModemManager disappeared from D-Bus");
++                if (b->mm_bus_id)
++                    pa_xfree(b->mm_bus_id);
++                b->mm_bus_id = NULL;
++                if (b->mm_modem)
++                    pa_xfree(b->mm_modem);
++                b->mm_modem = NULL;
++                if (b->mm_modem_3gpp)
++                    pa_xfree(b->mm_modem_3gpp);
++                b->mm_modem_3gpp = NULL;
++                if (b->mm_modem_voice)
++                    pa_xfree(b->mm_modem_voice);
++                b->mm_modem_voice = NULL;
++
++                /* Invalidate all properties since ModemManager is unavailable */
++                invalidate_modem_properties(b);
++                invalidate_modem_3gpp_properties(b);
++                invalidate_modem_voice_properties(b);
++            }
++
++            /* ModemManager appeared on D-Bus, properties are refreshed through the InterfacesAdded signal callback */
++            if (new_owner && *new_owner) {
++                pa_log_debug("ModemManager appeared on D-Bus");
++                b->mm_bus_id = pa_xstrdup(dbus_message_get_sender(m));
++                if (b->modem)
++                    pa_xfree(b->modem);
++                b->modem = pa_xnew0(modem_status_t, 1);
++            }
++        }
++
++        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
++    }
++    /* Modem added, refresh managed objects */
++    else if (dbus_message_is_signal(m, DBUS_INTERFACE_OBJECT_MANAGER, DBUS_INTERFACE_OBJECT_MANAGER_SIGNAL_INTERFACESADDED)) {
++        DBusMessageIter arg_i;
++
++        if (!dbus_message_iter_init(m, &arg_i) || !pa_streq(dbus_message_get_signature(m), "oa{sa{sv}}")) {
++            pa_log_error("Invalid signature found in InterfacesAdded");
++            goto fail;
++        }
++
++        parse_interfaces_and_properties(b, &arg_i);
++    }
++    /* Modem removed, refresh managed objects */
++    else if (dbus_message_is_signal(m, DBUS_INTERFACE_OBJECT_MANAGER, DBUS_INTERFACE_OBJECT_MANAGER_SIGNAL_INTERFACESREMOVED)) {
++        const char *p;
++        DBusMessageIter arg_i;
++        DBusMessageIter element_i;
++
++        if (!dbus_message_iter_init(m, &arg_i) || !pa_streq(dbus_message_get_signature(m), "oas")) {
++            pa_log_error("Invalid signature found in InterfacesRemoved");
++            goto fail;
++        }
++
++        dbus_message_iter_get_basic(&arg_i, &p);
++
++        pa_assert_se(dbus_message_iter_next(&arg_i));
++        pa_assert(dbus_message_iter_get_arg_type(&arg_i) == DBUS_TYPE_ARRAY);
++
++        dbus_message_iter_recurse(&arg_i, &element_i);
++
++        while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_STRING) {
++            const char *iface;
++
++            dbus_message_iter_get_basic(&element_i, &iface);
++
++            /* ModemManager Modem interface removed */
++            if (pa_streq(iface, MM_DBUS_INTERFACE_MODEM)) {
++                if (b->mm_modem) {
++                    pa_xfree(b->mm_modem);
++                    b->mm_modem = NULL;
++                }
++                invalidate_modem_properties(b);
++                pa_log_debug("Modem Interface removed");
++            }
++
++            /* ModemManager Modem 3GPP interface removed */
++            if (pa_streq(iface, MM_DBUS_INTERFACE_MODEM_MODEM3GPP)) {
++                if (b->mm_modem_3gpp) {
++                    pa_xfree(b->mm_modem_3gpp);
++                    b->mm_modem_3gpp = NULL;
++                }
++                invalidate_modem_3gpp_properties(b);
++                pa_log_debug("Modem 3GPP Interface removed");
++            }
++
++            /* ModemManager Modem Voice interface removed */
++            if (pa_streq(iface, MM_DBUS_INTERFACE_MODEM_VOICE)) {
++                if (b->mm_modem_voice) {
++                    pa_xfree(b->mm_modem_voice);
++                    b->mm_modem_voice = NULL;
++                }
++                invalidate_modem_voice_properties(b);
++                pa_log_debug("Modem Voice Interface removed");
++            }
++
++            dbus_message_iter_next(&element_i);
++        }
++
++        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
++    }
++    /* Update properties if updated by ModemManager */
++    else if (dbus_message_is_signal(m, DBUS_INTERFACE_PROPERTIES, DBUS_INTERFACE_PROPERTIES_SIGNAL_PROPERTIESCHANGED)) {
++        DBusMessageIter arg_i, element_i;
++
++        if (!dbus_message_iter_init(m, &arg_i) || !pa_streq(dbus_message_get_signature(m), "sa{sv}as")) {
++            pa_log_error("Invalid signature found in PropertiesChanged");
++            goto fail;
++        }
++
++        /* Skip interface name */
++        pa_assert_se(dbus_message_iter_next(&arg_i));
++        pa_assert(dbus_message_iter_get_arg_type(&arg_i) == DBUS_TYPE_ARRAY);
++
++        dbus_message_iter_recurse(&arg_i, &element_i);
++
++        while (dbus_message_iter_get_arg_type(&element_i) == DBUS_TYPE_DICT_ENTRY) {
++            DBusMessageIter dict_i, variant_i;
++            const char *key;
++
++            dbus_message_iter_recurse(&element_i, &dict_i);
++
++            /* Retrieve property name and parse value */
++            key = check_variant_property(&dict_i);
++            if (key == NULL) {
++                pa_log_error("Received invalid property!");
++                break;
++            }
++            dbus_message_iter_recurse(&dict_i, &variant_i);
++
++            /*
++             * ModemManager Modem interface
++             * See https://www.freedesktop.org/software/ModemManager/api/latest/gdbus-org.freedesktop.ModemManager1.Modem.html
++             */
++            if(b->mm_modem && pa_streq(path, b->mm_modem)) {
++                pa_log_debug("ModemManager Modem property updated: %s", key);
++
++                if(pa_streq(key, MM_MODEM_PROPERTY_OWNNUMBERS))
++                    parse_own_number(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_PROPERTY_EQUIPMENTIDENTIFIER))
++                    parse_imei(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_PROPERTY_MANUFACTURER))
++                    parse_manufacturer(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_PROPERTY_MODEL))
++                    parse_model(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_PROPERTY_REVISION))
++                    parse_revision(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_PROPERTY_SIGNALQUALITY))
++                    parse_signal_quality(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_PROPERTY_STATE))
++                    parse_state(b, &variant_i);
++            }
++
++            /*
++             * ModemManager Modem 3GPP interface
++             * See https://www.freedesktop.org/software/ModemManager/api/latest/gdbus-org.freedesktop.ModemManager1.Modem.Modem3gpp.html
++             */
++            if(b->mm_modem_3gpp && pa_streq(path, b->mm_modem_3gpp)) {
++                pa_log_debug("ModemManager Modem 3GPP property updated: %s", key);
++
++                if(pa_streq(key, MM_MODEM_MODEM3GPP_PROPERTY_REGISTRATIONSTATE))
++                    parse_registration(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_MODEM3GPP_PROPERTY_OPERATORCODE))
++                    parse_operator_code(b, &variant_i);
++                else if(pa_streq(key, MM_MODEM_MODEM3GPP_PROPERTY_OPERATORNAME))
++                    parse_operator_name(b, &variant_i);
++            }
++
++            dbus_message_iter_next(&element_i);
++        }
++    }
++    /* Call started */
++    else if (dbus_message_is_signal(m, MM_DBUS_INTERFACE_MODEM_VOICE, MM_MODEM_VOICE_SIGNAL_CALLADDED)) {
++        DBusMessageIter arg_i;
++        char *call_object;
++
++        if (!dbus_message_iter_init(m, &arg_i) || !pa_streq(dbus_message_get_signature(m), "o")) {
++            pa_log_error("Invalid signature found in CallAdded");
++            goto fail;
++        }
++
++        /* Create call state */
++        dbus_message_iter_get_basic(&arg_i, &call_object);
++        pa_log_debug("Call added: %s", call_object);
++
++        if (pa_hashmap_put(b->calls, pa_xstrdup(call_object), pa_xnew0(call_status_t, 1)) != 0)
++            pa_log_error("Call %s already exist", call_object);
++
++        /* Retrieve call properties */
++        pa_assert_se(m2 = dbus_message_new_method_call(MM_DBUS_SERVICE, call_object, DBUS_INTERFACE_PROPERTIES, DBUS_INTERFACE_PROPERTIES_METHOD_GETALL));
++        pa_assert_se(dbus_message_append_args(m2, DBUS_TYPE_STRING, &mm_call_interface, DBUS_TYPE_INVALID));
++        send_and_add_to_pending(b, m2, get_call_properties_reply, pa_xstrdup(call_object));
++    }
++    /* Call rejected or ended */
++    else if (dbus_message_is_signal(m, MM_DBUS_INTERFACE_MODEM_VOICE, MM_MODEM_VOICE_SIGNAL_CALLDELETED)) {
++        DBusMessageIter arg_i;
++        char *call_object;
++
++        if (!dbus_message_iter_init(m, &arg_i) || !pa_streq(dbus_message_get_signature(m), "o")) {
++            pa_log_error("Invalid signature found in CallDeleted");
++            goto fail;
++        }
++
++        /* Remove call state */
++        dbus_message_iter_get_basic(&arg_i, &call_object);
++        pa_log_debug("Call removed: %s", call_object);
++        pa_hashmap_remove_and_free(b->calls, call_object);
++
++       /* Notify about call deletion */
++       pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                    PA_BLUETOOTH_HOOK_HOST_CALLS_CHANGED), b);
++    }
++    /* Call state updated */
++    else if (dbus_message_is_signal(m, MM_DBUS_INTERFACE_CALL, MM_CALL_SIGNAL_STATECHANGED)) {
++        DBusMessageIter arg_i;
++
++        pa_log_debug("Call %s: state updated", path);
++
++        if (!dbus_message_iter_init(m, &arg_i) || !pa_streq(dbus_message_get_signature(m), "iiu")) {
++            pa_log_error("Invalid signature found in StateChanged");
++            goto fail;
++        }
++
++        /* Skip old call state */
++        pa_assert_se(dbus_message_iter_next(&arg_i));
++
++        /* Parse new call state */
++        pa_assert(dbus_message_iter_get_arg_type(&arg_i) == DBUS_TYPE_INT32);
++        parse_call_state(b, &arg_i, path);
++
++        /* Skip call state change reason */
++        pa_assert_se(dbus_message_iter_next(&arg_i));
++
++        /* Notify change for call */
++        pa_hook_fire(pa_bluetooth_discovery_hook(b->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_CALLS_CHANGED), b);
++    }
++
++fail:
++    dbus_error_free(&err);
++    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
++}
++
++/* Accept an incoming call */
++void pa_modemmanager_accept_call(pa_modemmanager_backend *backend, char *call) {
++    DBusMessage *m;
++    call_status_t *call_state;
++
++    /* Check if call is incoming ringing */
++    call_state = pa_hashmap_get(backend->calls, call);
++    if (!call_state || call_state->status != PA_MODEMMANAGER_CALL_STATE_RINGING || !call_state->is_incoming) {
++    	pa_log_error("Call is not ringing and/or incoming, unable to accept call");
++        pa_hook_fire(pa_bluetooth_discovery_hook(backend->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), backend);
++	return;
++    }
++
++    /* Accept call */
++    pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, call, MM_DBUS_INTERFACE_CALL, MM_CALL_METHOD_ACCEPT));
++    send_and_add_to_pending(backend, m, call_accept_reply, NULL);
++}
++
++/* End a call */
++void pa_modemmanager_end_call(pa_modemmanager_backend *backend, char *call) {
++    DBusMessage *m;
++    call_status_t *call_state;
++
++    /* Check if call is active or incoming ringing */
++    call_state = pa_hashmap_get(backend->calls, call);
++    if (!call_state || (call_state->status != PA_MODEMMANAGER_CALL_STATE_ACTIVE
++       && (call_state->status != PA_MODEMMANAGER_CALL_STATE_RINGING && call_state->is_incoming))) {
++    	pa_log_error("Call is not active or incoming ringing, unable to hangup call");
++        pa_hook_fire(pa_bluetooth_discovery_hook(backend->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), backend);
++	return;
++    }
++
++    /* End call */
++    pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, call, MM_DBUS_INTERFACE_CALL, MM_CALL_METHOD_HANGUP));
++    send_and_add_to_pending(backend, m, call_hangup_reply, NULL);
++}
++
++/* Create a new call by dialing the provided number */
++void pa_modemmanager_start_call(pa_modemmanager_backend *backend, char *number) {
++    DBusMessage *m;
++    DBusMessageIter i, d;
++    char *call_number;
++
++    /* Create call for filtered number */
++    pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, backend->mm_modem, MM_DBUS_INTERFACE_MODEM_VOICE, MM_MODEM_VOICE_METHOD_CREATECALL));
++    dbus_message_iter_init_append(m, &i);
++    dbus_message_iter_open_container(&i, DBUS_TYPE_ARRAY,
++                                     DBUS_DICT_ENTRY_BEGIN_CHAR_AS_STRING
++                                     DBUS_TYPE_STRING_AS_STRING
++                                     DBUS_TYPE_VARIANT_AS_STRING
++                                     DBUS_DICT_ENTRY_END_CHAR_AS_STRING,
++                                     &d);
++    call_number = pa_xstrdup(number);
++    pa_dbus_append_basic_variant_dict_entry(&d, "number", DBUS_TYPE_STRING, &call_number);
++    dbus_message_iter_close_container(&i, &d);
++    send_and_add_to_pending(backend, m, create_call_reply, NULL);
++}
++
++/* Send a DTMF tone to a given call */
++void pa_modemmanager_send_dtmf(pa_modemmanager_backend *backend, char *call, char *character) {
++    DBusMessage *m;
++    char *dtmf_char = pa_xstrdup(character);
++    call_status_t *call_state;
++
++    /* Check if call is active */
++    call_state = pa_hashmap_get(backend->calls, call);
++    if (call_state && (call_state->status != PA_MODEMMANAGER_CALL_STATE_ACTIVE)) {
++    	pa_log_error("Call is not active, unable to send DTMF tone");
++        pa_hook_fire(pa_bluetooth_discovery_hook(backend->discovery,
++                     PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), backend);
++	return;
++    }
++
++    /* Let ModemManager generate DTMF tone */
++    pa_log_debug("Generating DTMF tone: '%s'", dtmf_char);
++    m = dbus_message_new_method_call(MM_DBUS_SERVICE, call, MM_DBUS_INTERFACE_CALL, MM_CALL_METHOD_SENDDTMF);
++    pa_assert_se(dbus_message_append_args(m,
++                DBUS_TYPE_STRING, &dtmf_char,
++                DBUS_TYPE_INVALID));
++    send_and_add_to_pending(backend, m, send_dtmf_reply, NULL);
++}
++
++/* Get network operator name */
++char *pa_modemmanager_get_operator_name(const pa_modemmanager_backend *backend) {
++    return backend->modem->network_operator_name;
++}
++
++/* Get network operator code */
++char *pa_modemmanager_get_operator_code(const pa_modemmanager_backend *backend) {
++    return backend->modem->network_operator_code;
++}
++
++/* Get service status */
++bool pa_modemmanager_has_service(const pa_modemmanager_backend *backend) {
++    return backend->modem->network_has_service;
++}
++
++/* Get roaming status */
++bool pa_modemmanager_is_roaming(const pa_modemmanager_backend *backend) {
++    return backend->modem->network_is_roaming;
++}
++
++/* Get signal strength percentage */
++unsigned int pa_modemmanager_get_signal_strength(const pa_modemmanager_backend *backend) {
++    return backend->modem->network_signal_strength;
++}
++
++/* Get all calls */
++pa_hashmap *pa_modemmanager_get_calls(const pa_modemmanager_backend *backend) {
++    return backend->calls;
++}
++
++/* Get active call */
++char *pa_modemmanager_get_active_call_key(const pa_modemmanager_backend *backend) {
++    pa_hashmap *calls;
++    call_status_t *c;
++    const void *key;
++    void *state = NULL;
++
++    calls = pa_modemmanager_get_calls(backend);
++    while ((c = pa_hashmap_iterate(calls, &state, &key))) {
++        if (key == NULL)
++            break;
++        /* FIXME: support three-way calling */
++        return (char *) key;
++    }
++
++    /* No active calls */
++    return NULL;
++}
++
++/* Get modem model */
++char *pa_modemmanager_get_modem_model(const pa_modemmanager_backend *backend) {
++    return backend->modem->modem_model;
++}
++
++/* Get modem manufacturer */
++char *pa_modemmanager_get_modem_manufacturer(const pa_modemmanager_backend *backend) {
++    return backend->modem->modem_manufacturer;
++}
++
++/* Get modem revision */
++char *pa_modemmanager_get_modem_revision(const pa_modemmanager_backend *backend) {
++    return backend->modem->modem_revision;
++}
++
++/* Get modem IMEI */
++char *pa_modemmanager_get_modem_imei(const pa_modemmanager_backend *backend) {
++    return backend->modem->modem_imei;
++}
++
++/* Get modem's own number */
++char *pa_modemmanager_get_own_number(const pa_modemmanager_backend *backend) {
++    return backend->modem->modem_own_number;
++}
++
++/* Check if modem is present */
++bool pa_modemmanager_has_modem(const pa_modemmanager_backend *backend) {
++    if (!backend->mm_modem)
++        return false;
++
++    if (!backend->mm_modem_3gpp)
++        return false;
++
++    if (!backend->mm_modem_voice)
++        return false;
++
++    if(!backend->modem)
++       return false;
++
++    return true;
++}
++
++pa_modemmanager_backend *pa_modemmanager_backend_new(pa_core *c, pa_bluetooth_discovery *d) {
++    pa_modemmanager_backend *backend;
++    DBusError err;
++    DBusMessage *m;
++
++    pa_log_debug("Native backend enabled ModemManager modem & call status reporting");
++
++    backend = pa_xnew0(pa_modemmanager_backend, 1);
++    backend->core = c;
++    backend->discovery = d;
++    backend->calls = pa_hashmap_new(pa_idxset_string_hash_func, pa_idxset_string_compare_func);
++    backend->modem = pa_xnew0(modem_status_t, 1);
++
++    /* Get DBus connection */
++    dbus_error_init(&err);
++    if (!(backend->connection = pa_dbus_bus_get(c, DBUS_BUS_SYSTEM, &err))) {
++        pa_log("Failed to get D-Bus connection: %s", err.message);
++        dbus_error_free(&err);
++        pa_xfree(backend);
++        return NULL;
++    }
++
++    /* Add filter callback for DBus connection */
++    if (!dbus_connection_add_filter(pa_dbus_connection_get(backend->connection), filter_cb, backend, NULL)) {
++        pa_log_error("Failed to add filter function");
++        pa_dbus_connection_unref(backend->connection);
++        pa_xfree(backend);
++        return NULL;
++    }
++
++    /* Register for call & modem changes from ModemManager */
++    if (pa_dbus_add_matches(pa_dbus_connection_get(backend->connection), &err,
++            "type='signal',sender='" DBUS_SERVICE_DBUS "',interface='" DBUS_INTERFACE_DBUS "',member='" DBUS_INTERFACE_DBUS_SIGNAL_NAMEOWNERCHANGED "',"
++            "arg0='" MM_DBUS_SERVICE "'",
++            "type='signal',sender='" MM_DBUS_SERVICE "',interface='" DBUS_INTERFACE_OBJECT_MANAGER "',member='" DBUS_INTERFACE_OBJECT_MANAGER_SIGNAL_INTERFACESADDED "'",
++            "type='signal',sender='" MM_DBUS_SERVICE "',interface='" DBUS_INTERFACE_OBJECT_MANAGER "',member='" DBUS_INTERFACE_OBJECT_MANAGER_SIGNAL_INTERFACESREMOVED "'",
++            "type='signal',sender='" MM_DBUS_SERVICE "',interface='" DBUS_INTERFACE_PROPERTIES "',member='" DBUS_INTERFACE_PROPERTIES_SIGNAL_PROPERTIESCHANGED "'",
++            "type='signal',sender='" MM_DBUS_SERVICE "',interface='" MM_DBUS_INTERFACE_MODEM_VOICE "',member='" MM_MODEM_VOICE_SIGNAL_CALLADDED "'",
++            "type='signal',sender='" MM_DBUS_SERVICE "',interface='" MM_DBUS_INTERFACE_MODEM_VOICE "',member='" MM_MODEM_VOICE_SIGNAL_CALLDELETED "'",
++            "type='signal',sender='" MM_DBUS_SERVICE "',interface='" MM_DBUS_INTERFACE_CALL "',member='" MM_CALL_SIGNAL_STATECHANGED "'",
++            NULL) < 0) {
++        pa_log("Failed to add ModemManager D-Bus matches: %s", err.message);
++        dbus_connection_remove_filter(pa_dbus_connection_get(backend->connection), filter_cb, backend);
++        pa_dbus_connection_unref(backend->connection);
++        pa_xfree(backend);
++        return NULL;
++    }
++
++    /* Initialize list of modems by requesting it from ModemManager */
++    pa_assert_se(m = dbus_message_new_method_call(MM_DBUS_SERVICE, MM_DBUS_PATH, DBUS_INTERFACE_OBJECT_MANAGER, DBUS_INTERFACE_OBJECT_MANAGER_METHOD_GETMANAGEDOBJECTS));
++    send_and_add_to_pending(backend, m, get_managed_objects_reply, NULL);
++
++    return backend;
++}
++
++void pa_modemmanager_backend_free(pa_modemmanager_backend *backend) {
++    pa_assert(backend);
++
++    pa_dbus_free_pending_list(&backend->pending);
++
++    pa_dbus_connection_unref(backend->connection);
++
++    invalidate_modem_properties(backend);
++    invalidate_modem_3gpp_properties(backend);
++    invalidate_modem_voice_properties(backend);
++
++    pa_xfree(backend);
++}
++
+diff --git a/src/modules/bluetooth/modemmanager.h b/src/modules/bluetooth/modemmanager.h
+new file mode 100644
+index 000000000..9a1d82219
+--- /dev/null
++++ b/src/modules/bluetooth/modemmanager.h
+@@ -0,0 +1,98 @@
++#pragma once
++
++/***
++  This file is part of PulseAudio.
++
++  Copyright 2022 Dylan Van Assche <me@dylanvanassche.be>
++
++  PulseAudio is free software; you can redistribute it and/or modify
++  it under the terms of the GNU Lesser General Public License as
++  published by the Free Software Foundation; either version 2.1 of the
++  License, or (at your option) any later version.
++
++  PulseAudio is distributed in the hope that it will be useful, but
++  WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++  General Public License for more details.
++
++  You should have received a copy of the GNU Lesser General Public
++  License along with PulseAudio; if not, see <http://www.gnu.org/licenses/>.
++***/
++
++#include "bluez5-util.h"
++#include "ModemManager.h"
++
++#define DBUS_INTERFACE_OBJECT_MANAGER "org.freedesktop.DBus.ObjectManager"
++#define DBUS_INTERFACE_OBJECT_MANAGER_METHOD_GETMANAGEDOBJECTS "GetManagedObjects"
++#define DBUS_INTERFACE_OBJECT_MANAGER_SIGNAL_INTERFACESADDED "InterfacesAdded"
++#define DBUS_INTERFACE_OBJECT_MANAGER_SIGNAL_INTERFACESREMOVED "InterfacesRemoved"
++#define DBUS_INTERFACE_DBUS_SIGNAL_NAMEOWNERCHANGED "NameOwnerChanged"
++#define DBUS_INTERFACE_PROPERTIES_METHOD_GETALL "GetAll"
++#define DBUS_INTERFACE_PROPERTIES_SIGNAL_PROPERTIESCHANGED "PropertiesChanged"
++
++#define MAX_NUMBER_LENGTH 30
++
++#define STR_VALUE(x) STR(x)
++#define STR(x) #x
++
++typedef enum pa_modemmanager_call_state {
++    PA_MODEMMANAGER_CALL_STATE_INVALID = 0,
++    PA_MODEMMANAGER_CALL_STATE_ACTIVE = 1,
++    PA_MODEMMANAGER_CALL_STATE_RINGING = 2,
++    PA_MODEMMANAGER_CALL_STATE_DIALING = 3,
++    PA_MODEMMANAGER_CALL_STATE_TERMINATED = 4
++    /* FIXME: implement three-way calling */
++} pa_modemmanager_call_state_t;
++
++typedef struct call_status {
++    bool is_incoming;
++    pa_modemmanager_call_state_t status;
++    char *number;
++} call_status_t;
++
++typedef struct modem_status {
++    char *network_operator_name;
++    char *network_operator_code;
++    unsigned int network_signal_strength;
++    bool network_has_service;
++    bool network_is_roaming;
++    char *modem_own_number;
++    char *modem_manufacturer;
++    char *modem_model;
++    char *modem_revision;
++    char *modem_imei;
++} modem_status_t;
++
++struct pa_modemmanager_backend {
++    pa_core *core;
++    pa_dbus_connection *connection;
++    pa_bluetooth_discovery *discovery;
++    char *mm_bus_id;
++    char *mm_modem;
++    char *mm_modem_3gpp;
++    char *mm_modem_voice;
++    pa_hashmap *calls;
++    modem_status_t *modem;
++
++    PA_LLIST_HEAD(pa_dbus_pending, pending);
++};
++
++pa_modemmanager_backend *pa_modemmanager_backend_new(pa_core *c, pa_bluetooth_discovery *d);
++void pa_modemmanager_backend_free(pa_modemmanager_backend *backend);
++bool pa_modemmanager_has_modem(const pa_modemmanager_backend *backend);
++void pa_modemmanager_accept_call(pa_modemmanager_backend *backend, char *call);
++void pa_modemmanager_end_call(pa_modemmanager_backend *backend, char *call);
++void pa_modemmanager_start_call(pa_modemmanager_backend *backend, char *number);
++void pa_modemmanager_send_dtmf(pa_modemmanager_backend *backend, char *call, char *character);
++pa_hashmap *pa_modemmanager_get_calls(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_active_call_key(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_operator_name(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_operator_code(const pa_modemmanager_backend *backend);
++bool pa_modemmanager_has_service(const pa_modemmanager_backend *backend);
++bool pa_modemmanager_is_roaming(const pa_modemmanager_backend *backend);
++unsigned int pa_modemmanager_get_signal_strength(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_modem_model(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_modem_manufacturer(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_modem_revision(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_modem_imei(const pa_modemmanager_backend *backend);
++char *pa_modemmanager_get_own_number(const pa_modemmanager_backend *backend);
+-- 
+2.35.1
+

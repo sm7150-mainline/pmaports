@@ -1,0 +1,104 @@
+From d2748e1952c282ce82e93daaeb2f25bb10ce46ab Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Sat, 16 Apr 2022 20:29:54 +0200
+Subject: [PATCH 25/26] bluetooth: support ATD$number;
+
+Start a call when HF sends 'ATD$number;'
+This AT command is only available when ModemManager is present.
+Number is filtered for any invalid characters, if an invalid character
+is found, the call is aborted and an error is returned.
+---
+ src/modules/bluetooth/backend-native.c | 57 ++++++++++++++++++++++++++
+ src/modules/bluetooth/bluez5-util.h    |  1 +
+ 2 files changed, 58 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index d502cff78..b6991ae13 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -44,6 +44,9 @@
+ #include "upower.h"
+ #include "modemmanager.h"
+ 
++#define MAX_NUMBER_LENGTH 30
++#define STR_VALUE(x) STR(x)
++#define STR(x) #x
+ #define RING_WAIT_TIME ((pa_usec_t) (3 * PA_USEC_PER_SEC))
+ #define MANDATORY_CALL_INDICATORS \
+         "(\"call\",(0-1))," \
+@@ -935,6 +938,60 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+             rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
+         }
+ 
++	/* AT response will be reported through PA_BLUETOOTH_HOST_OPERATION_{SUCCEED, FAILED} hook */
++        return false;
++    } else if (strstr(buf, "ATD")) {
++        int k, j;
++        char number[MAX_NUMBER_LENGTH];
++        char number_filtered[MAX_NUMBER_LENGTH];
++
++        /* ATD$number; is only possible if ModemManager is availble */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot create call with ATD$number;");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        } else if (!pa_modemmanager_has_service(discovery->native_backend->modemmanager)) {
++            pa_log_debug("No network service, cannot create call with ATD$number;");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++            return false;
++        }
++
++	/* Try to parse number from ATD command */
++        if (sscanf(buf, "ATD%" STR_VALUE(MAX_NUMBER_LENGTH) "s;", number) != 1) {
++            pa_log_debug("Cannot parse ATD$number: \"%s\"", buf);
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
++            return false;
++        }
++
++        /* 
++         * Filter extracted number from invalid characters
++         * Allowed characters: 0-9, *, #, +, A-C
++         */
++        k=0;
++        memset(number_filtered, '\0', sizeof(char) * MAX_NUMBER_LENGTH);
++        for (j=0; j < MAX_NUMBER_LENGTH; j++) {
++            if ((number[j] >= '0' && number[j] <= '9')
++               || (number[j] == '*')
++               || (number[j] == '#')
++               || (number[j] == '+')
++               || (number[j] >= 'A' && number[j] <= 'C')) {
++                number_filtered[k] = number[j];
++                k++;
++            }
++            /* ATD commands ends with ';'. */
++            else if (number[j] == ';')
++                break;
++            /* Send error for invalid characters */
++            else {
++                pa_log_warn("Call creation canceled, invalid character found in dial string: %c", number[j]);
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_INVALID_CHARACTERS_DIAL_STRING);
++                return false;
++            }
++        }
++
++        /* Create call for filtered number */
++        pa_modemmanager_start_call(discovery->native_backend->modemmanager, number_filtered); 
++
+ 	/* AT response will be reported through PA_BLUETOOTH_HOST_OPERATION_{SUCCEED, FAILED} hook */
+         return false;
+     } 
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index 4802cca69..ccbe6ba78 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -218,6 +218,7 @@ typedef enum pa_bluetooth_cmee {
+     CMEE_OPERATION_NOT_ALLOWED = 3,
+     CMEE_OPERATION_NOT_SUPPORTED = 4,
+     CMEE_INVALID_CHARACTERS_TEXT_STRING = 25,
++    CMEE_INVALID_CHARACTERS_DIAL_STRING = 27,
+     CMEE_NO_NETWORK_SERVICE = 30
+ } pa_bluetooth_cmee_t;
+ 
+-- 
+2.35.1
+

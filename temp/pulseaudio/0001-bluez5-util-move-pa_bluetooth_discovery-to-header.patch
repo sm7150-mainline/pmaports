@@ -1,0 +1,110 @@
+From 355c4cc3f70abee505d2aad0a37d453a44ead1c2 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Wed, 6 Apr 2022 08:15:13 +0200
+Subject: [PATCH 01/26] bluez5-util: move pa_bluetooth_discovery to header
+
+---
+ src/modules/bluetooth/bluez5-util.c | 23 -----------------------
+ src/modules/bluetooth/bluez5-util.h | 24 ++++++++++++++++++++++++
+ src/modules/meson.build             |  2 +-
+ 3 files changed, 25 insertions(+), 24 deletions(-)
+
+diff --git a/src/modules/bluetooth/bluez5-util.c b/src/modules/bluetooth/bluez5-util.c
+index 83f2932e9..2f8d6faf1 100644
+--- a/src/modules/bluetooth/bluez5-util.c
++++ b/src/modules/bluetooth/bluez5-util.c
+@@ -31,7 +31,6 @@
+ #include <pulsecore/core.h>
+ #include <pulsecore/core-error.h>
+ #include <pulsecore/core-util.h>
+-#include <pulsecore/dbus-shared.h>
+ #include <pulsecore/log.h>
+ #include <pulsecore/macro.h>
+ #include <pulsecore/refcnt.h>
+@@ -128,28 +127,6 @@ static uint16_t volume_to_a2dp_gain(pa_volume_t volume) {
+     return gain;
+ }
+ 
+-struct pa_bluetooth_discovery {
+-    PA_REFCNT_DECLARE;
+-
+-    pa_core *core;
+-    pa_dbus_connection *connection;
+-    bool filter_added;
+-    bool matches_added;
+-    bool objects_listed;
+-    pa_hook hooks[PA_BLUETOOTH_HOOK_MAX];
+-    pa_hashmap *adapters;
+-    pa_hashmap *devices;
+-    pa_hashmap *transports;
+-    pa_bluetooth_profile_status_t profiles_status[PA_BLUETOOTH_PROFILE_COUNT];
+-
+-    int headset_backend;
+-    pa_bluetooth_backend *ofono_backend, *native_backend;
+-    PA_LLIST_HEAD(pa_dbus_pending, pending);
+-    bool enable_native_hsp_hs;
+-    bool enable_native_hfp_hf;
+-    bool enable_msbc;
+-};
+-
+ static pa_dbus_pending* send_and_add_to_pending(pa_bluetooth_discovery *y, DBusMessage *m,
+                                                                   DBusPendingCallNotifyFunction func, void *call_data) {
+     pa_dbus_pending *p;
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index 86eb6301e..f899d9d0c 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -22,6 +22,7 @@
+ ***/
+ 
+ #include <pulsecore/core.h>
++#include <pulsecore/dbus-shared.h>
+ 
+ #include "a2dp-codec-util.h"
+ 
+@@ -134,6 +135,29 @@ struct pa_bluetooth_transport {
+     void *userdata;
+ };
+ 
++struct pa_bluetooth_discovery {
++    PA_REFCNT_DECLARE;
++
++    pa_core *core;
++    pa_dbus_connection *connection;
++    bool filter_added;
++    bool matches_added;
++    bool objects_listed;
++    pa_hook hooks[PA_BLUETOOTH_HOOK_MAX];
++    pa_hashmap *adapters;
++    pa_hashmap *devices;
++    pa_hashmap *transports;
++    pa_bluetooth_profile_status_t profiles_status[PA_BLUETOOTH_PROFILE_COUNT];
++
++    int headset_backend;
++    pa_bluetooth_backend *ofono_backend, *native_backend;
++    PA_LLIST_HEAD(pa_dbus_pending, pending);
++    bool enable_native_hsp_hs;
++    bool enable_native_hfp_hf;
++    bool enable_msbc;
++};
++
++
+ struct pa_bluetooth_device {
+     pa_bluetooth_discovery *discovery;
+     pa_bluetooth_adapter *adapter;
+diff --git a/src/modules/meson.build b/src/modules/meson.build
+index 1ae172971..08c754948 100644
+--- a/src/modules/meson.build
++++ b/src/modules/meson.build
+@@ -123,7 +123,7 @@ if cdata.has('HAVE_BLUEZ_5')
+   all_modules += [
+     [ 'module-bluetooth-discover', 'bluetooth/module-bluetooth-discover.c' ],
+     [ 'module-bluetooth-policy', 'bluetooth/module-bluetooth-policy.c', [], [], [dbus_dep] ],
+-    [ 'module-bluez5-device', 'bluetooth/module-bluez5-device.c', [], [], [], libbluez5_util ],
++    [ 'module-bluez5-device', 'bluetooth/module-bluez5-device.c', [], [], [dbus_dep], libbluez5_util ],
+     [ 'module-bluez5-discover', 'bluetooth/module-bluez5-discover.c', [], [], [dbus_dep], libbluez5_util ],
+   ]
+ endif
+-- 
+2.35.1
+

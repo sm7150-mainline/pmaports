@@ -1,0 +1,33 @@
+From 6e851563dbe4e90a37b0f8fef1604395acba47b4 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Fri, 15 Apr 2022 07:31:43 +0200
+Subject: [PATCH 17/26] bluetooth: support AT+CGMI
+
+Return the modem manufacturer if ModemManager is available.
+AT+CGMI is an out-of-spec AT command for Bluetooth HFP, but car
+multimedia units use it since it is a standard 3GPP command.
+---
+ src/modules/bluetooth/backend-native.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 2c39a090c..3099b13fc 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -797,6 +797,13 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         }
+         rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
+         return false;
++    } else if (strstr(buf, "AT+CGMI") && pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++        if (discovery->native_backend->modemmanager) {
++            rfcomm_write_response(fd, "%s", pa_modemmanager_get_modem_manufacturer(discovery->native_backend->modemmanager));
++            return true;
++        }
++        rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++        return false;
+     }
+ 
+     /* first-time initialize selected codec to CVSD */
+-- 
+2.35.1
+

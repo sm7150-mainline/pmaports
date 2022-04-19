@@ -1,0 +1,108 @@
+From 320d906f8e64b1713dc09c8e95316c4de515f70f Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Fri, 15 Apr 2022 08:18:48 +0200
+Subject: [PATCH 20/26] bluetooth: support AT+CLCC
+
+Report ongoing calls when the HF sends an AT+CLCC command.
+Currently, only one ongoing call is supported, three-way calling is not
+implemented. Any additional calls are ignored.
+---
+ src/modules/bluetooth/backend-native.c | 61 ++++++++++++++++++++++++++
+ src/modules/bluetooth/bluez5-util.h    |  9 ++++
+ 2 files changed, 70 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index fec24a57b..faefed9bd 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -768,6 +768,67 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+                 return false;
+ 	}
+         pa_assert_not_reached();
++    } else if (strstr(buf, "AT+CLCC")) {
++        pa_hashmap *calls;
++        call_status_t *call;
++        unsigned int type;
++        unsigned int clcc_status;
++
++        /* Return error if ModemManager is unavailable */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot answer AT+CLCC");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        } else if (!pa_modemmanager_has_service(discovery->native_backend->modemmanager)) {
++            pa_log_debug("No network service, cannot answer AT+CLCC");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++            return false;
++        }
++
++        calls = pa_modemmanager_get_calls(discovery->native_backend->modemmanager);
++
++        /* Check if we have any ongoing calls, if not return OK */
++        if (pa_hashmap_isempty(calls))
++            return true;
++
++        /* FIXME: support three-way calling */
++        call = pa_hashmap_first(calls);
++
++        /* Map call status to CLCC status numbers */
++        if (call->status == PA_MODEMMANAGER_CALL_STATE_INVALID) {
++            pa_log_warn("Unable to answer AT+CLCC, call state is unknown");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
++            return false;
++        } else if (call->is_incoming && call->status == PA_MODEMMANAGER_CALL_STATE_RINGING) {
++            clcc_status = CLCC_INCOMING;
++        } else if (!call->is_incoming && call->status == PA_MODEMMANAGER_CALL_STATE_RINGING) {
++            clcc_status = CLCC_ALERTING;
++        } else if (!call->is_incoming && call->status == PA_MODEMMANAGER_CALL_STATE_DIALING) {
++            clcc_status = CLCC_DIALING;
++	} else if (call->status == PA_MODEMMANAGER_CALL_STATE_ACTIVE) {
++            clcc_status = CLCC_ACTIVE;
++	} else if (call->status == PA_MODEMMANAGER_CALL_STATE_TERMINATED) {
++            pa_log_debug("Call terminated already, do not report it.");
++            return true;
++        /* FIXME: support three-way calling */
++        } else {
++            pa_assert_not_reached();
++        }
++
++        /* Check if call has a number, if not drop it since number and type are optional */
++        if (!call->number) {
++            rfcomm_write_response(fd, "+CLCC: %d,%d,%d,%d,%d", 1, call->is_incoming, clcc_status, 0, 0);
++            return true;
++        }
++
++        /* International numbers start with '+' */
++        if (strncmp("+", call->number, 1) == 0)
++            type = CLIP_INTERNATIONAL_NUMBER;
++        else
++            type = CLIP_NATIONAL_NUMBER;
++
++        rfcomm_write_response(fd, "+CLCC: %d,%d,%d,%d,%d,\"%s\",%d", 1, call->is_incoming, clcc_status, 0, 0, call->number, type);
++        return true;
+     }
+ 
+     /* 
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index 638a793b7..fb88f00e2 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -233,6 +233,15 @@ typedef enum pa_bluetooth_clip {
+     CLIP_NATIONAL_NUMBER = 129
+ } pa_bluetooth_clip_t;
+ 
++/* CLCC call states, described in Bluetooth HFP 1.8 spec */
++/* FIXME: support three-way calling */
++typedef enum pa_bluetooth_clcc {
++    CLCC_ACTIVE = 0,
++    CLCC_DIALING = 2,
++    CLCC_ALERTING = 3,
++    CLCC_INCOMING = 4
++} pa_bluetooth_clcc_t;
++
+ #ifdef HAVE_BLUEZ_5_OFONO_HEADSET
+ pa_bluetooth_backend *pa_bluetooth_ofono_backend_new(pa_core *c, pa_bluetooth_discovery *y);
+ void pa_bluetooth_ofono_backend_free(pa_bluetooth_backend *b);
+-- 
+2.35.1
+

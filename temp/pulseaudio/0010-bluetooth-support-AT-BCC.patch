@@ -1,0 +1,33 @@
+From 79d8cf24785fc52a3d0cee48590143fb409201b8 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Thu, 14 Apr 2022 19:15:34 +0200
+Subject: [PATCH 10/26] bluetooth: support AT+BCC
+
+HFs send AT+BCC to (re)start codec negotiations.
+Support this command by (re)setting the codec negotiations state and
+reply OK.
+---
+ src/modules/bluetooth/backend-native.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 394c2a4da..89a174f9a 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -666,7 +666,12 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         c->selected_codec = 1;
+ 
+     /* stateful negotiation */
+-    if (c->state == 0 && sscanf(buf, "AT+BRSF=%d", &val) == 1) {
++    if (strstr(buf, "AT+BCC")) {
++        pa_log_debug("HF asked to start codec negotiations");
++        c->state = 0;
++        return true;
++    }
++    else if (c->state == 0 && sscanf(buf, "AT+BRSF=%d", &val) == 1) {
+         c->capabilities = val;
+         pa_log_info("HFP capabilities returns 0x%x", val);
+         rfcomm_write_response(fd, "+BRSF: %d", hfp_features);
+-- 
+2.35.1
+

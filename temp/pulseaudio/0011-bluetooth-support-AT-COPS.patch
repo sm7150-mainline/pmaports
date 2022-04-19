@@ -1,0 +1,165 @@
+From ccac2886c516aa0ac2e76406b782de0abc700e92 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Thu, 14 Apr 2022 19:47:46 +0200
+Subject: [PATCH 11/26] bluetooth: support AT+COPS
+
+AT+COPS=3,X sets the operator name format and AT+COPS? returns
+the current network operator name. Supports this command when
+ModemManager is available to provide this information.
+---
+ src/modules/bluetooth/backend-native.c | 72 +++++++++++++++++++++++++-
+ src/modules/bluetooth/bluez5-util.h    | 11 +++-
+ 2 files changed, 81 insertions(+), 2 deletions(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 89a174f9a..c0c14acf3 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -40,6 +40,7 @@
+ #include "bluez5-util.h"
+ #include "bt-codec-msbc.h"
+ #include "upower.h"
++#include "modemmanager.h"
+ 
+ #define MANDATORY_CALL_INDICATORS \
+         "(\"call\",(0-1))," \
+@@ -53,12 +54,14 @@ struct pa_bluetooth_backend {
+   pa_hook_slot *adapter_uuids_changed_slot;
+   pa_hook_slot *host_battery_level_changed_slot;
+   pa_upower_backend *upower;
++  pa_modemmanager_backend *modemmanager;
+   bool enable_shared_profiles;
+   bool enable_hsp_hs;
+   bool enable_hfp_hf;
+   bool cmer_indicator_reporting_enabled;
+   bool cmee_extended_error_reporting_enabled;
+   uint32_t cind_enabled_indicators;
++  pa_bluetooth_cops_t cops_format;
+ 
+   PA_LLIST_HEAD(pa_dbus_pending, pending);
+ };
+@@ -624,7 +627,7 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+ {
+     struct pa_bluetooth_discovery *discovery = t->device->discovery;
+     struct hfp_config *c = t->config;
+-    int indicator, mode, val;
++    int indicator, mode, val, val2;
+     char str[5];
+     const char *r;
+     size_t len;
+@@ -659,6 +662,68 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         /* Noise Redction and Echo Canceling can only have value '0' (disable) following Bluetooth HFP 1.8 */
+         rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
+ 	return false;
++    } else if (sscanf(buf, "AT+COPS=%d,%d", &val, &val2) == 2) {
++        /* Return error if ModemManager is unavailable */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot set AT+COPS format");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        }
++
++        /* Only AT+COPS=3,X is allowed by Bluetooth HFP 1.8 */
++        if (val != 3)
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
++
++	/* Set AT+COPS format */
++	if (val2 == 0) {
++           discovery->native_backend->cops_format = COPS_LONG_FORMAT;
++           return true;
++        } else if (val2 == 2) {
++           discovery->native_backend->cops_format = COPS_NUMERIC_FORMAT;
++           return true;
++        } else {
++           discovery->native_backend->cops_format = COPS_UNKNOWN_FORMAT;
++           rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_ALLOWED);
++	   return false;
++	}
++    } else if (strstr(buf, "AT+COPS?")) {
++        /* Return error if ModemManager is unavailable */
++        if (!discovery->native_backend->modemmanager || !pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            pa_log_debug("ModemManager backend unavailable, cannot answer AT+COPS?");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++            return false;
++        } else if (!pa_modemmanager_has_service(discovery->native_backend->modemmanager)) {
++            pa_log_debug("No network service, cannot answer AT+COPS?");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++            return false;
++        }
++
++        switch(discovery->native_backend->cops_format) {
++            case COPS_LONG_FORMAT: {
++                char *operator_name = pa_modemmanager_get_operator_name(discovery->native_backend->modemmanager);
++                if (operator_name) {
++                    rfcomm_write_response(fd, "+COPS: 0,0,\"%s\"", operator_name);
++                    return true;
++                }
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++                return false;
++            }
++	    case COPS_NUMERIC_FORMAT: {
++                char *operator_code = pa_modemmanager_get_operator_code(discovery->native_backend->modemmanager);
++                if (operator_code) {
++                    rfcomm_write_response(fd, "+COPS: 2,0,\"%s\"", operator_code);
++                    return true;
++                }
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_NETWORK_SERVICE);
++                return false;
++            }
++            case COPS_UNKNOWN_FORMAT: {
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
++                return false;
++            }
++            default:
++                pa_assert_not_reached();
++        }
+     }
+ 
+     /* first-time initialize selected codec to CVSD */
+@@ -1441,6 +1506,8 @@ pa_bluetooth_backend *pa_bluetooth_native_backend_new(pa_core *c, pa_bluetooth_d
+ 
+     backend->upower = pa_upower_backend_new(c, y);
+ 
++    backend->modemmanager = pa_modemmanager_backend_new(c, y);
++
+     /* All CIND indicators are enabled by default until overriden by AT+BIA */
+     for (i = 1; i < CIND_INDICATOR_MAX; i++)
+         backend->cind_enabled_indicators |= (1 << i);
+@@ -1473,6 +1540,9 @@ void pa_bluetooth_native_backend_free(pa_bluetooth_backend *backend) {
+ 
+     if (backend->upower)
+         pa_upower_backend_free(backend->upower);
++    
++    if (backend->modemmanager)
++        pa_modemmanager_backend_free(backend->modemmanager);
+ 
+     pa_dbus_connection_unref(backend->connection);
+ 
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index fa26a8361..9ac9880a8 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -214,10 +214,19 @@ struct pa_bluetooth_adapter {
+ /* extended error reporting values, described in Bluetooth HFP 1.8 spec */
+ typedef enum pa_bluetooth_cmee {
+     CMEE_AG_FAILURE = 0,
++    CMEE_NO_CONNECTION_TO_PHONE = 1,
+     CMEE_OPERATION_NOT_ALLOWED = 3,
+-    CMEE_OPERATION_NOT_SUPPORTED = 4
++    CMEE_OPERATION_NOT_SUPPORTED = 4,
++    CMEE_NO_NETWORK_SERVICE = 30
+ } pa_bluetooth_cmee_t;
+ 
++/* AT+COPS format, described in Bluetooth HFP 1.8 spec */
++typedef enum pa_bluetooth_cops {
++    COPS_LONG_FORMAT = 0,
++    COPS_NUMERIC_FORMAT = 1,
++    COPS_UNKNOWN_FORMAT = 2
++} pa_bluetooth_cops_t;
++
+ #ifdef HAVE_BLUEZ_5_OFONO_HEADSET
+ pa_bluetooth_backend *pa_bluetooth_ofono_backend_new(pa_core *c, pa_bluetooth_discovery *y);
+ void pa_bluetooth_ofono_backend_free(pa_bluetooth_backend *b);
+-- 
+2.35.1
+

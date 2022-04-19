@@ -1,0 +1,197 @@
+From ff2d7b76bf4878f47a2df1261219c9d9e14f8c9e Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Wed, 13 Apr 2022 19:56:41 +0200
+Subject: [PATCH 08/26] bluetooth: support AT+CMEE
+
+AT+CMEE is now supported and extended error messages are returned
+when an ERROR occurs. By default, these error codes are disabled,
+the HF must enable them explicitely with AT+CMEE=1 (numeric mode).
+---
+ src/modules/bluetooth/backend-native.c | 71 +++++++++++++++++++++-----
+ src/modules/bluetooth/bluez5-util.h    |  6 +++
+ 2 files changed, 65 insertions(+), 12 deletions(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 77792146a..3110c5ef2 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -57,6 +57,7 @@ struct pa_bluetooth_backend {
+   bool enable_hsp_hs;
+   bool enable_hfp_hf;
+   bool cmer_indicator_reporting_enabled;
++  bool cmee_extended_error_reporting_enabled;
+   uint32_t cind_enabled_indicators;
+ 
+   PA_LLIST_HEAD(pa_dbus_pending, pending);
+@@ -125,7 +126,7 @@ typedef enum pa_bluetooth_ag_to_hf_indicators {
+ /* gateway features we support, which is as little as we can get away with */
+ static uint32_t hfp_features =
+     /* HFP 1.6 requires this */
+-    (1 << HFP_AG_ESTATUS ) | (1 << HFP_AG_CODECS) | (1 << HFP_AG_INDICATORS);
++    (1 << HFP_AG_ESTATUS ) | (1 << HFP_AG_CODECS) | (1 << HFP_AG_INDICATORS) | (1 << HFP_AG_EERR);
+ 
+ #define HSP_AG_PROFILE "/Profile/HSPAGProfile"
+ #define HFP_AG_PROFILE "/Profile/HFPAGProfile"
+@@ -256,6 +257,14 @@ static void rfcomm_write_response(int fd, const char *fmt, ...)
+     va_end(ap);
+ }
+ 
++/* Send Extended Error messages if enabled */
++static void rfcomm_write_error(pa_bluetooth_backend *b, int fd, unsigned int error) {
++    if (b->cmee_extended_error_reporting_enabled)
++        rfcomm_write_response(fd, "+CME ERROR: %d", error);
++    else
++        rfcomm_write_response(fd, "ERROR");
++}
++
+ static int sco_setsockopt_enable_bt_voice(pa_bluetooth_transport *t, int fd) {
+     /* the mSBC codec requires a special transparent eSCO connection */
+     struct bt_voice voice;
+@@ -621,6 +630,30 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+     size_t len;
+     const char *state;
+ 
++    /* Extended error reporting. Described in Bluetooth HFP 1.8 spec. */
++    if (sscanf(buf, "AT+CMEE=%d", &val) == 1) {
++        switch(val) {
++            /* Disable extended error reporting */
++            case 0:
++                discovery->native_backend->cmee_extended_error_reporting_enabled = false;
++                return true;
++            /* Enable extend error reporting in numeric mode */
++            case 1:
++                discovery->native_backend->cmee_extended_error_reporting_enabled = true;
++                return true;
++            /* Enable extend error reporting in verbose mode */
++            case 2:
++                pa_log_warn("Extended Error Reporting verbose mode is unsupported by Bluetooth HFP 1.8");
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_SUPPORTED);
++                return false;
++            default:
++                pa_log_warn("Unknown AT+CMEE value: %d", val);
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
++                return false;
++	}
++        pa_assert_not_reached();
++    }
++
+     /* first-time initialize selected codec to CVSD */
+     if (c->selected_codec == 0)
+         c->selected_codec = 1;
+@@ -655,7 +688,7 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+                 discovery->native_backend->cind_enabled_indicators &= ~(1 << indicator);
+ 	    else {
+                 pa_log_error("Unable to parse indicator of AT+BIA command: %s", buf);
+-                rfcomm_write_response(fd, "ERROR");
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
+ 	        return false;
+             }
+ 
+@@ -741,7 +774,7 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         }
+         else {
+             pa_log_error("Unable to parse AT+CMER command: %s", buf);
+-            rfcomm_write_response(fd, "ERROR");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
+ 	    return false;
+         }
+ 
+@@ -767,7 +800,7 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+             pa_bluetooth_transport_reconfigure(t, pa_bluetooth_get_hf_codec("mSBC"), sco_transport_write, sco_setsockopt_enable_bt_voice);
+         } else {
+             pa_assert_fp(val != 1 && val != 2);
+-            rfcomm_write_response(fd, "ERROR");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
+             return false;
+         }
+ 
+@@ -798,14 +831,14 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+                 pa_log_notice("Battery Level: %d%%", val);
+                 if (val < 0 || val > 100) {
+                     pa_log_error("Battery HF indicator %d out of [0, 100] range", val);
+-                    rfcomm_write_response(fd, "ERROR");
++                    rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
+                     return false;
+                 }
+                 pa_bluetooth_device_report_battery_level(t->device, val, "HFP 1.7 HF indicator");
+                 break;
+             default:
+                 pa_log_error("Unknown HF indicator %u", indicator);
+-                rfcomm_write_response(fd, "ERROR");
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_SUPPORTED);
+                 return false;
+         }
+         return true;
+@@ -819,12 +852,23 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+     if (c->state != 5) {
+         pa_log_error("HFP negotiation failed in state %d with inbound %s\n",
+                      c->state, buf);
+-        rfcomm_write_response(fd, "ERROR");
++        rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
+         return false;
+     }
+ 
+-    /* Unsupported commands return ERROR */
+-    return false
++    /* 
++     * Unsupported commands return ERROR.
++     * Unsupported AT commands from HFP 1.8:
++     *  - AT+BINP
++     *  - AT+BLDN
++     *  - ATD>
++     *  - AT+BVRA
++     *  - AT+BTRH
++     *  - AT+CHLD
++     *  - AT+CCWA
++     */
++    rfcomm_write_error(discovery->native_backend, fd, CMEE_OPERATION_NOT_SUPPORTED);
++    return false;
+ }
+ 
+ static int get_rfcomm_fd (pa_bluetooth_discovery *discovery) {
+@@ -996,12 +1040,13 @@ static void rfcomm_io_callback(pa_mainloop_api *io, pa_io_event *e, int fd, pa_i
+                         break;
+                 }
+             }
+-            if (!do_reply)
+-                rfcomm_write_response(fd, "ERROR");
++            if (!do_reply) {
++                rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
++            }
+         } else if (t->config) { /* t->config is only non-null for hfp profile */
+             do_reply = hfp_rfcomm_handle(fd, t, buf);
+         } else {
+-            rfcomm_write_response(fd, "ERROR");
++            rfcomm_write_error(discovery->native_backend, fd, CMEE_AG_FAILURE);
+             do_reply = false;
+         }
+ 
+@@ -1391,6 +1436,8 @@ pa_bluetooth_backend *pa_bluetooth_native_backend_new(pa_core *c, pa_bluetooth_d
+     /* While all CIND indicators are enabled, event reporting is not enabled by default */
+     backend->cmer_indicator_reporting_enabled = false;
+ 
++    /* CMEE is disabled by default */
++    backend->cmee_extended_error_reporting_enabled = false;
+ 
+     return backend;
+ }
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index f69176425..4cc5c2882 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -211,6 +211,12 @@ struct pa_bluetooth_adapter {
+     bool battery_provider_registered;
+ };
+ 
++/* extended error reporting values, described in Bluetooth HFP 1.8 spec */
++typedef enum pa_bluetooth_cmee {
++    CMEE_AG_FAILURE = 0,
++    CMEE_OPERATION_NOT_SUPPORTED = 4,
++} pa_bluetooth_cmee_t;
++
+ #ifdef HAVE_BLUEZ_5_OFONO_HEADSET
+ pa_bluetooth_backend *pa_bluetooth_ofono_backend_new(pa_core *c, pa_bluetooth_discovery *y);
+ void pa_bluetooth_ofono_backend_free(pa_bluetooth_backend *b);
+-- 
+2.35.1
+

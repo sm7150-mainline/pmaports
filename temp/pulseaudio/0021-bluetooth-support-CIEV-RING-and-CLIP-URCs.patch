@@ -1,0 +1,365 @@
+From 6861de91294c8bed206e8338d1074ebc57683ae4 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Sat, 16 Apr 2022 08:46:13 +0200
+Subject: [PATCH 21/26] bluetooth: support +CIEV, RING, and +CLIP URCs
+
+Report changes of the CIND indicators and calls to the HF with URCs:
+
+- +CIEV: report any change to the CIND indicators such as signal
+  strength, roaming status, service status, etc.
+- RING: play a ringtone on the HF side for incoming calls.
+- +CLIP: enhanced call status reports the subscriber number to the HF
+  for incoming calls.
+---
+ src/modules/bluetooth/backend-native.c | 258 +++++++++++++++++++++++++
+ src/modules/bluetooth/bluez5-util.h    |  12 ++
+ 2 files changed, 270 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index faefed9bd..e12b38d71 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -29,6 +29,8 @@
+ #include <pulsecore/core-util.h>
+ #include <pulsecore/dbus-shared.h>
+ #include <pulsecore/log.h>
++#include <pulse/timeval.h>
++#include <pulse/rtclock.h>
+ 
+ #include <errno.h>
+ #include <sys/types.h>
+@@ -42,6 +44,7 @@
+ #include "upower.h"
+ #include "modemmanager.h"
+ 
++#define RING_WAIT_TIME ((pa_usec_t) (3 * PA_USEC_PER_SEC))
+ #define MANDATORY_CALL_INDICATORS \
+         "(\"call\",(0-1))," \
+         "(\"callsetup\",(0-3))," \
+@@ -49,10 +52,17 @@
+ 
+ struct pa_bluetooth_backend {
+   pa_core *core;
++  pa_time_event *timer_ring_event;
+   pa_dbus_connection *connection;
+   pa_bluetooth_discovery *discovery;
+   pa_hook_slot *adapter_uuids_changed_slot;
+   pa_hook_slot *host_battery_level_changed_slot;
++  pa_hook_slot *host_operation_succeed_slot;
++  pa_hook_slot *host_operation_failed_slot;
++  pa_hook_slot *host_signal_strength_changed_slot;
++  pa_hook_slot *host_has_service_changed_slot;
++  pa_hook_slot *host_is_roaming_changed_slot;
++  pa_hook_slot *host_calls_changed_slot;
+   pa_upower_backend *upower;
+   pa_modemmanager_backend *modemmanager;
+   bool enable_shared_profiles;
+@@ -63,6 +73,8 @@ struct pa_bluetooth_backend {
+   uint32_t cind_enabled_indicators;
+   pa_bluetooth_cops_t cops_format;
+   bool clip_call_line_reporting_enabled;
++  unsigned int cind_call_indicator;
++  unsigned int cind_call_setup_indicator;
+ 
+   PA_LLIST_HEAD(pa_dbus_pending, pending);
+ };
+@@ -1172,6 +1184,206 @@ static pa_hook_result_t host_battery_level_changed_cb(pa_bluetooth_discovery *y,
+     return PA_HOOK_OK;
+ }
+ 
++static pa_hook_result_t host_operation_failed_cb(pa_bluetooth_discovery *y, const pa_modemmanager_backend *m, pa_bluetooth_backend *b) {
++    int rfcomm_fd;
++
++    pa_assert(y);
++    pa_assert(m);
++    pa_assert(b);
++
++    /* Get RFCOMM channel if available */
++    rfcomm_fd = get_rfcomm_fd (y);
++    if (rfcomm_fd < 0)
++        return PA_HOOK_OK;
++
++    /* Notify HF about AG operation failure over RFCOMM */
++    rfcomm_write_error(b, rfcomm_fd, CMEE_AG_FAILURE);
++
++    return PA_HOOK_OK;
++}
++
++static pa_hook_result_t host_operation_succeed_cb(pa_bluetooth_discovery *y, const pa_modemmanager_backend *m, pa_bluetooth_backend *b) {
++    int rfcomm_fd;
++
++    pa_assert(y);
++    pa_assert(m);
++    pa_assert(b);
++
++    /* Get RFCOMM channel if available */
++    rfcomm_fd = get_rfcomm_fd (y);
++    if (rfcomm_fd < 0)
++        return PA_HOOK_OK;
++
++    /* Notify HF about AG operation succeed over RFCOMM */
++    rfcomm_write_response(rfcomm_fd, "OK");
++
++    return PA_HOOK_OK;
++}
++
++static pa_hook_result_t host_signal_strength_changed_cb(pa_bluetooth_discovery *y, const pa_modemmanager_backend *m, pa_bluetooth_backend *b) {
++    int rfcomm_fd;
++
++    pa_assert(y);
++    pa_assert(m);
++    pa_assert(b);
++
++    /* Get RFCOMM channel if available */
++    rfcomm_fd = get_rfcomm_fd (y);
++    if (rfcomm_fd < 0)
++        return PA_HOOK_OK;
++
++    /* Notify HF about AG signal strength change */
++    if (b->cmer_indicator_reporting_enabled && (b->cind_enabled_indicators & (1 << CIND_SIGNAL_STRENGTH_INDICATOR))) {
++        rfcomm_write_response(rfcomm_fd, "+CIEV: %d,%d", CIND_SIGNAL_STRENGTH_INDICATOR, pa_modemmanager_get_signal_strength(m));
++    /* Skip notification if indicator is disabled or event reporting is completely disabled */
++    } else
++        pa_log_debug("Signal strength change indicator disabled, skipping notification");
++
++    return PA_HOOK_OK;
++}
++
++static pa_hook_result_t host_has_service_changed_cb(pa_bluetooth_discovery *y, const pa_modemmanager_backend *m, pa_bluetooth_backend *b) {
++    int rfcomm_fd;
++
++    pa_assert(y);
++    pa_assert(m);
++    pa_assert(b);
++
++    /* Get RFCOMM channel if available */
++    rfcomm_fd = get_rfcomm_fd (y);
++    if (rfcomm_fd < 0)
++        return PA_HOOK_OK;
++
++    /* Notify HF about AG cellular service status change */
++    if (b->cmer_indicator_reporting_enabled && (b->cind_enabled_indicators & (1 << CIND_SERVICE_INDICATOR))) {
++        rfcomm_write_response(rfcomm_fd, "+CIEV: %d,%d", CIND_SERVICE_INDICATOR, pa_modemmanager_has_service(m));
++    /* Skip notification if indicator is disabled or event reporting is completely disabled */
++    } else
++        pa_log_debug("Cellular service status change indicator disabled, skipping notification");
++
++    return PA_HOOK_OK;
++}
++
++static pa_hook_result_t host_is_roaming_changed_cb(pa_bluetooth_discovery *y, const pa_modemmanager_backend *m, pa_bluetooth_backend *b) {
++    int rfcomm_fd;
++
++    pa_assert(y);
++    pa_assert(m);
++    pa_assert(b);
++
++    /* Get RFCOMM channel if available */
++    rfcomm_fd = get_rfcomm_fd (y);
++    if (rfcomm_fd < 0)
++        return PA_HOOK_OK;
++
++    /* Notify HF about AG roaming status change */
++    if (b->cmer_indicator_reporting_enabled && (b->cind_enabled_indicators & (1 << CIND_ROAMING_INDICATOR))) {
++        rfcomm_write_response(rfcomm_fd, "+CIEV: %d,%d", CIND_ROAMING_INDICATOR, pa_modemmanager_is_roaming(m));
++    /* Skip notification if indicator is disabled or event reporting is completely disabled */
++    } else
++        pa_log_debug("Roaming status change indicator disabled, skipping notification");
++
++    return PA_HOOK_OK;
++}
++
++static void timer_ring_cb(pa_mainloop_api *a, pa_time_event *e, const struct timeval *t, void *userdata) {
++    int rfcomm_fd;
++    unsigned int type;
++    pa_bluetooth_discovery *y = userdata;
++    pa_hashmap *calls;
++    call_status_t *call;
++
++    /* Get RFCOMM channel if available */
++    rfcomm_fd = get_rfcomm_fd (y);
++    if (rfcomm_fd < 0)
++        return;
++
++    calls = pa_modemmanager_get_calls(y->native_backend->modemmanager);
++
++    /* Stop ringing if no calls are available */
++    if (pa_hashmap_isempty(calls))
++        return;
++
++    /* FIXME: support three-way calling */
++    call = pa_hashmap_first(calls);
++
++    /* Send RING indicator */
++    rfcomm_write_response(rfcomm_fd, "RING");
++
++    /* If enabled, send +CLIP indications to HF about the caller */
++    if (y->native_backend->clip_call_line_reporting_enabled && call->number) {
++        /* International numbers start with '+' */
++        if (strncmp("+", call->number, 1) == 0)
++            type = CLIP_INTERNATIONAL_NUMBER;
++        else
++            type = CLIP_NATIONAL_NUMBER;
++        rfcomm_write_response(rfcomm_fd, "+CLIP: \"%s\",%d", call->number, type);
++    }
++
++    if (y->native_backend->timer_ring_event)
++        pa_core_rttime_restart(y->native_backend->core, y->native_backend->timer_ring_event, pa_rtclock_now() + RING_WAIT_TIME);
++}
++
++static pa_hook_result_t host_calls_changed_cb(pa_bluetooth_discovery *y, const pa_modemmanager_backend *m, pa_bluetooth_backend *b) {
++    int rfcomm_fd;
++    unsigned int call_indicator;
++    unsigned int call_setup_indicator;
++    pa_hashmap *calls;
++    call_status_t *call;
++
++    pa_assert(y);
++    pa_assert(m);
++    pa_assert(b);
++
++    /* Get RFCOMM channel if available */
++    rfcomm_fd = get_rfcomm_fd (y);
++    if (rfcomm_fd < 0)
++        return PA_HOOK_OK;
++
++    calls = pa_modemmanager_get_calls(m);
++    call = pa_hashmap_isempty(calls)? NULL: pa_hashmap_first(calls);
++
++    /* Notify HF about call indicator state, if changed */
++    if (call && call->status == PA_MODEMMANAGER_CALL_STATE_ACTIVE)
++        call_indicator = CIND_CALL_AT_LEAST_ONE;
++    else
++        call_indicator = CIND_CALL_NONE;
++
++    if (b->cind_call_indicator != call_indicator) {
++        b->cind_call_indicator = call_indicator;
++        rfcomm_write_response(rfcomm_fd, "+CIEV: %d,%d", CIND_CALL_INDICATOR, b->cind_call_indicator);
++    }
++ 
++    /* Notify HF about call setup indicator state, if changed */
++    if (call && call->is_incoming && call->status == PA_MODEMMANAGER_CALL_STATE_RINGING)
++        call_setup_indicator = CIND_CALL_SETUP_INCOMING;
++    else if (call && !call->is_incoming && call->status == PA_MODEMMANAGER_CALL_STATE_DIALING)
++        call_setup_indicator = CIND_CALL_SETUP_OUTGOING_DIALING;
++    else if (call && !call->is_incoming && call->status == PA_MODEMMANAGER_CALL_STATE_RINGING)
++        call_setup_indicator = CIND_CALL_SETUP_OUTGOING_ALERTING;
++    else
++        call_setup_indicator = CIND_CALL_SETUP_NONE;
++ 
++    if (b->cind_call_setup_indicator != call_setup_indicator) {
++        b->cind_call_setup_indicator = call_setup_indicator;
++        rfcomm_write_response(rfcomm_fd, "+CIEV: %d,%d", CIND_CALL_SETUP_INDICATOR, b->cind_call_setup_indicator);
++    }
++
++    /* Start/stop ringing */
++    if (call && call->is_incoming && call->status == PA_MODEMMANAGER_CALL_STATE_RINGING) {
++        if (!b->timer_ring_event) {
++            pa_log_debug("RING indicator started");
++            b->timer_ring_event = pa_core_rttime_new(b->core, pa_rtclock_now(), timer_ring_cb, y);
++        }
++    } else if (b->timer_ring_event) {
++        pa_log_debug("RING indicator stopped");
++        b->core->mainloop->time_free(b->timer_ring_event);
++        b->timer_ring_event = NULL;
++    }
++
++    return PA_HOOK_OK;
++}
++
+ static void rfcomm_io_callback(pa_mainloop_api *io, pa_io_event *e, int fd, pa_io_event_flags_t events, void *userdata) {
+     pa_bluetooth_transport *t = userdata;
+     pa_bluetooth_discovery *discovery = t->device->discovery;
+@@ -1658,6 +1870,30 @@ pa_bluetooth_backend *pa_bluetooth_native_backend_new(pa_core *c, pa_bluetooth_d
+         pa_hook_connect(pa_bluetooth_discovery_hook(y, PA_BLUETOOTH_HOOK_HOST_BATTERY_LEVEL_CHANGED), PA_HOOK_NORMAL,
+                         (pa_hook_cb_t) host_battery_level_changed_cb, backend);
+ 
++    backend->host_operation_failed_slot =
++        pa_hook_connect(pa_bluetooth_discovery_hook(y, PA_BLUETOOTH_HOOK_HOST_OPERATION_FAILED), PA_HOOK_NORMAL,
++                        (pa_hook_cb_t) host_operation_failed_cb, backend);
++
++    backend->host_operation_succeed_slot =
++        pa_hook_connect(pa_bluetooth_discovery_hook(y, PA_BLUETOOTH_HOOK_HOST_OPERATION_SUCCEED), PA_HOOK_NORMAL,
++                        (pa_hook_cb_t) host_operation_succeed_cb, backend);
++
++    backend->host_signal_strength_changed_slot =
++        pa_hook_connect(pa_bluetooth_discovery_hook(y, PA_BLUETOOTH_HOOK_HOST_SIGNAL_STRENGTH_CHANGED), PA_HOOK_NORMAL,
++                        (pa_hook_cb_t) host_signal_strength_changed_cb, backend);
++
++    backend->host_has_service_changed_slot =
++        pa_hook_connect(pa_bluetooth_discovery_hook(y, PA_BLUETOOTH_HOOK_HOST_HAS_SERVICE_CHANGED), PA_HOOK_NORMAL,
++                        (pa_hook_cb_t) host_has_service_changed_cb, backend);
++
++    backend->host_is_roaming_changed_slot =
++        pa_hook_connect(pa_bluetooth_discovery_hook(y, PA_BLUETOOTH_HOOK_HOST_IS_ROAMING_CHANGED), PA_HOOK_NORMAL,
++                        (pa_hook_cb_t) host_is_roaming_changed_cb, backend);
++
++    backend->host_calls_changed_slot =
++        pa_hook_connect(pa_bluetooth_discovery_hook(y, PA_BLUETOOTH_HOOK_HOST_CALLS_CHANGED), PA_HOOK_NORMAL,
++                        (pa_hook_cb_t) host_calls_changed_cb, backend);
++
+     if (!backend->enable_hsp_hs && !backend->enable_hfp_hf)
+         pa_log_warn("Both HSP HS and HFP HF bluetooth profiles disabled in native backend. Native backend will not register for headset connections.");
+ 
+@@ -1684,6 +1920,10 @@ pa_bluetooth_backend *pa_bluetooth_native_backend_new(pa_core *c, pa_bluetooth_d
+     /* CLIP is disabled by default */
+     backend->clip_call_line_reporting_enabled = false;
+ 
++    /* TODO: Initiate CIND call & callsetup indicators at startup */
++    backend->cind_call_indicator = CIND_CALL_NONE;
++    backend->cind_call_setup_indicator = CIND_CALL_SETUP_NONE;
++
+     return backend;
+ }
+ 
+@@ -1698,6 +1938,24 @@ void pa_bluetooth_native_backend_free(pa_bluetooth_backend *backend) {
+     if (backend->host_battery_level_changed_slot)
+         pa_hook_slot_free(backend->host_battery_level_changed_slot);
+ 
++    if (backend->host_operation_failed_slot)
++        pa_hook_slot_free(backend->host_operation_failed_slot);
++
++    if (backend->host_operation_succeed_slot)
++        pa_hook_slot_free(backend->host_operation_succeed_slot);
++
++    if (backend->host_signal_strength_changed_slot)
++        pa_hook_slot_free(backend->host_signal_strength_changed_slot);
++
++    if (backend->host_has_service_changed_slot)
++        pa_hook_slot_free(backend->host_has_service_changed_slot);
++
++    if (backend->host_is_roaming_changed_slot)
++        pa_hook_slot_free(backend->host_is_roaming_changed_slot);
++
++    if (backend->host_calls_changed_slot)
++        pa_hook_slot_free(backend->host_calls_changed_slot);
++
+     if (backend->enable_shared_profiles)
+         native_backend_apply_profile_registration_change(backend, false);
+ 
+diff --git a/src/modules/bluetooth/bluez5-util.h b/src/modules/bluetooth/bluez5-util.h
+index fb88f00e2..35b3153b8 100644
+--- a/src/modules/bluetooth/bluez5-util.h
++++ b/src/modules/bluetooth/bluez5-util.h
+@@ -242,6 +242,18 @@ typedef enum pa_bluetooth_clcc {
+     CLCC_INCOMING = 4
+ } pa_bluetooth_clcc_t;
+ 
++typedef enum pa_bluetooth_cind_call {
++    CIND_CALL_NONE = 0,
++    CIND_CALL_AT_LEAST_ONE = 1,
++} pa_bluetooth_cind_call_t;
++
++typedef enum pa_bluetooth_cind_call_setup {
++    CIND_CALL_SETUP_NONE = 0,
++    CIND_CALL_SETUP_INCOMING = 1,
++    CIND_CALL_SETUP_OUTGOING_DIALING = 2,
++    CIND_CALL_SETUP_OUTGOING_ALERTING = 3
++} pa_bluetooth_cind_call_setup_t;
++
+ #ifdef HAVE_BLUEZ_5_OFONO_HEADSET
+ pa_bluetooth_backend *pa_bluetooth_ofono_backend_new(pa_core *c, pa_bluetooth_discovery *y);
+ void pa_bluetooth_ofono_backend_free(pa_bluetooth_backend *b);
+-- 
+2.35.1
+

@@ -1,0 +1,48 @@
+From d10422fafd9eececfa6755617c41b05f895e5a5b Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Thu, 14 Apr 2022 21:03:37 +0200
+Subject: [PATCH 15/26] bluetooth: support AT+CREG?
+
+AT+CREG? is not officialy supported by the Bluetooth HFP 1.8 spec,
+but some car multimedia systems use it. AT+CREG? reports if the phone
+has network available or not with a +CREG response.
+---
+ src/modules/bluetooth/backend-native.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index 1eaa36b4a..2fa769d07 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -770,6 +770,28 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         pa_assert_not_reached();
+     }
+ 
++    /* 
++     * Out-of-spec Bluetooth HFP 1.8 AT commands.
++     * Some car multimedia systems implement the HFP spec,
++     * but also use out-of-spec AT commands which are normally supported
++     * by any 3GPP compliant modem such as:
++     *   - AT+CREG?: Get service status
++     *   - AT+CGMM: Get modem model
++     *   - AT+CGMI: Get modem manufacturer
++     *   - AT+CGMR: Get modem revision
++     *   - AT+CGSN: Get modem IMEI
++     *
++     * These AT commands are additionally supported if ModemManager is available.
++     */
++    if (strstr(buf, "AT+CREG?")) {
++        if (discovery->native_backend->modemmanager && pa_modemmanager_has_modem(discovery->native_backend->modemmanager)) {
++            rfcomm_write_response(fd, "+CREG: 0,%d", pa_modemmanager_has_service(discovery->native_backend->modemmanager));
++            return true;
++        }
++        rfcomm_write_error(discovery->native_backend, fd, CMEE_NO_CONNECTION_TO_PHONE);
++        return false;
++    }
++
+     /* first-time initialize selected codec to CVSD */
+     if (c->selected_codec == 0)
+         c->selected_codec = 1;
+-- 
+2.35.1
+

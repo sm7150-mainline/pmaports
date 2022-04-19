@@ -1,0 +1,288 @@
+# Forked from Alpine for enhanced Bluetooth HFP support
+
+pkgname=pulseaudio
+pkgver=9999_git20220528
+_pkgver=16.0
+pkgrel=0
+pkgdesc="featureful, general-purpose sound server"
+provider_priority=10
+url="https://www.freedesktop.org/wiki/Software/PulseAudio/"
+arch="all"
+license="LGPL-2.1-or-later"
+options="!check"
+makedepends="
+	meson
+	tdb-dev
+	alsa-lib-dev
+	libasyncns-dev
+	dbus-dev
+	glib-dev
+	gtk+3.0-dev
+	orc-dev
+	orc-compiler
+	libsndfile-dev
+	soxr-dev
+	libx11-dev
+	libxcb-dev
+	libice-dev
+	libsm-dev
+	libxtst-dev
+	avahi-dev
+	sbc-dev
+	fftw-dev
+	jack-dev
+	openssl1.1-compat-dev
+	speexdsp-dev
+	eudev-dev
+	libcap-dev
+	bluez-dev
+	check-dev
+	libtool
+	perl
+	perl-xml-parser
+	m4
+	gstreamer-dev
+	gst-plugins-base-dev
+	modemmanager-dev
+	"
+depends_openrc="alsa-utils-openrc"
+subpackages="
+	$pkgname-dev
+	$pkgname-doc
+	$pkgname-bluez
+	libpulse-mainloop-glib:_libpulse_mainloop_glib
+	$pkgname-alsa
+	$pkgname-utils
+	$pkgname-jack
+	$pkgname-zeroconf
+	$pkgname-openrc
+	$pkgname-bash-completion
+	$pkgname-zsh-completion
+	$pkgname-lang
+	$pkgname-equalizer
+	libpulse:_libpulse
+	"
+install="pulseaudio.post-install"
+builddir="$srcdir/$pkgname-$_pkgver"
+source="https://freedesktop.org/software/pulseaudio/releases/pulseaudio-$_pkgver.tar.xz
+	0001-bluez5-util-move-pa_bluetooth_discovery-to-header.patch
+	0002-bluetooth-add-AT-BIA-support.patch
+	0003-bluetooth-add-UPower-backend.patch
+	0004-bluetooth-hook-up-UPower-backend.patch
+	0005-bluetooth-add-ModemManager-backend.patch
+	0006-bluetooth-only-reply-OK-for-supported-AT-cmds.patch
+	0007-bluetooth-Always-reply-to-AT-CIND.patch
+	0008-bluetooth-support-AT-CMEE.patch
+	0009-bluetooth-support-AT-NREC.patch
+	0010-bluetooth-support-AT-BCC.patch
+	0011-bluetooth-support-AT-COPS.patch
+	0012-bluetooth-support-AT-CNUM.patch
+	0013-bluetooth-support-more-AT-CIND-indicators.patch
+	0014-bluetooth-support-AT-CLIP.patch
+	0015-bluetooth-support-AT-CREG.patch
+	0016-bluetooth-support-AT-CGMM.patch
+	0017-bluetooth-support-AT-CGMI.patch
+	0018-bluetooth-support-AT-CGMR.patch
+	0019-bluetooth-support-AT-CGSN.patch
+	0020-bluetooth-support-AT-CLCC.patch
+	0021-bluetooth-support-CIEV-RING-and-CLIP-URCs.patch
+	0022-bluetooth-support-AT-VTS.patch
+	0023-bluetooth-support-ATA.patch
+	0024-bluetooth-support-AT-CHUP.patch
+	0025-bluetooth-support-ATD-number.patch
+	0026-bluetooth-strip-additional-out-of-spec-r-n-chars.patch
+	link-libintl.patch
+	$pkgname.initd
+	$pkgname.confd
+	"
+
+case "$CARCH" in
+	aarch64|armv7|armhf|x86|ppc64le)
+		options="$options !check" # once-test fails, all others pass
+		;;
+	s390x)
+		options="$options !check" # mix-test fails, all others pass
+		;;
+esac
+
+case "$CARCH" in
+	x86|x86_64|aarch64)
+		makedepends="$makedepends webrtc-audio-processing-dev"
+		_webrtc_aec="disabled"
+		;;
+	* )
+		_webrtc_aec="disabled" # webrtc-audio-processing not available
+		;;
+esac
+
+prepare() {
+	default_prepare
+
+	sed "s|sysconfdir, 'dbus-1'|datadir, 'dbus-1'|" \
+		-i src/daemon/meson.build
+}
+
+build() {
+	abuild-meson \
+		-Dgcov=false \
+		-Dman=true \
+		-Dtests=true \
+		-Dsystem_user=pulse \
+		-Dsystem_group=pulse \
+		-Ddatabase=tdb \
+		-Dalsa=enabled \
+		-Dasyncns=enabled \
+		-Davahi=enabled \
+		-Dbluez5=enabled \
+		-Ddbus=enabled \
+		-Dfftw=enabled \
+		-Dglib=enabled \
+		-Dgsettings=enabled \
+		-Dgtk=enabled \
+		-Dhal-compat=false \
+		-Dipv6=true \
+		-Djack=enabled \
+		-Dlirc=disabled \
+		-Dopenssl=enabled \
+		-Dorc=enabled \
+		-Dsamplerate=disabled \
+		-Dsoxr=enabled \
+		-Dspeex=enabled \
+		-Dsystemd=disabled \
+		-Dudev=enabled \
+		-Dx11=enabled \
+		-Dudevrulesdir=/usr/lib/udev/rules.d \
+		-Dgstreamer=enabled \
+		-Dwebrtc-aec="$_webrtc_aec" \
+		-Ddoxygen=false \
+		-Dstream-restore-clear-old-devices=true \
+		. output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+check() {
+	meson test --no-rebuild -v -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+
+	install -Dm755 "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/$pkgname
+	install -Dm644 "$srcdir"/$pkgname.confd "$pkgdir"/etc/conf.d/$pkgname
+
+	# Assumes that any volume adjustment is intended by the user, who can control
+	# each app's volume. Misbehaving clients can trigger earsplitting volume
+	# jumps. App volumes can diverge wildly and cause apps without their own
+	# volume control to fall below sink volume; a sink-only volume control will
+	# suddenly be unable to make such an app loud enough.
+	sed '/flat-volumes/iflat-volumes = no' -i "$pkgdir"/etc/pulse/daemon.conf
+
+	# Disable cork-request module, can result in e.g. media players unpausing
+	# when there's a Skype call incoming
+	sed 's|/usr/bin/pactl load-module module-x11-cork-request|#&|' \
+		-i "$pkgdir"/usr/bin/start-pulseaudio-x11
+
+	# Required by qpaeq
+	sed '/Load several protocols/aload-module module-dbus-protocol' \
+		-i "$pkgdir"/etc/pulse/default.pa
+}
+
+openrc() {
+	replaces="$pkgname-system" # Backward compatibility
+	default_openrc
+}
+
+_libpulse() {
+	pkgdesc="Pulseaudio libraries"
+	replaces="$pkgname-libs"
+
+	amove usr/lib/pulseaudio/libpulse*
+	amove usr/lib/libpulse.so.0*
+	amove usr/lib/libpulse-simple.so.0*
+	amove etc/pulse/client.conf
+}
+
+_libpulse_mainloop_glib() {
+	pkgdesc="Pulseaudio mainloop-glib library"
+
+	amove usr/lib/libpulse-mainloop-glib.so.*
+}
+
+bluez() {
+	pkgdesc="Pulseaudio Bluetooth support"
+	install_if="$pkgname=$pkgver-r$pkgrel bluez"
+	provider_priority=10  # highest (other provider is pipewire-pulse)
+
+	amove usr/lib/pulseaudio/modules/*bluez*.so
+	amove usr/lib/pulseaudio/modules/*bluetooth*.so
+}
+
+alsa() {
+	pkgdesc="Pulseaudio ALSA support"
+	install_if="$pkgname=$pkgver-r$pkgrel alsa-lib"
+	provider_priority=10  # highest (other provider is pipewire-pulse)
+
+	amove usr/lib/pulseaudio/modules/*alsa*.so
+}
+
+utils() {
+	pkgdesc="Pulseaudio utilities"
+
+	amove usr/bin/pa*
+}
+
+jack() {
+	pkgdesc="Pulseaudio JACK support"
+
+	amove usr/lib/pulseaudio/modules/*jack*.so
+}
+
+zeroconf() {
+	pkgdesc="Pulseaudio Zeroconf support"
+	depends="avahi"
+
+	amove usr/lib/pulseaudio/modules/*avahi*.so
+	amove usr/lib/pulseaudio/modules/*zeroconf*.so
+	amove usr/lib/pulseaudio/modules/*raop*.so
+}
+
+equalizer() {
+	pkgdesc="Equalizer for $pkgname"
+	depends="pulseaudio=$pkgver-r$pkgrel py3-qt5 py3-dbus"
+
+	amove usr/bin/qpaeq
+	amove usr/lib/pulseaudio/modules/module-equalizer-sink.so
+}
+
+sha512sums="
+42d4968c2dc88f5e39a5358d124e399e40a5abdf815eff387087141bc9dddd217012acb35649a8e0e24a44e8a402d90eb193ce2eef186f7d59550f757a6cc26d  pulseaudio-16.0.tar.xz
+c0a5a4854be7f8c5421671b7c5b890d9f097f8d0a1ac20009549786c28a66c9f28ac58863eea12f467ced87cbdb6093ea1a8444b9f1c1abda2aaa7e64c6c640a  0001-bluez5-util-move-pa_bluetooth_discovery-to-header.patch
+c84e4e0591c21348be197fae4b54bdd437a8e39803daa8448fcaf03119a39723214b81b8c32b5a6b166fc4449b78a44c7633bd09a77902903d15b17299a58234  0002-bluetooth-add-AT-BIA-support.patch
+a2ceac55f6cc8097569fec5e7a76f9e6ce3c79dacb27f5f19baed3a808e9be30e3c9a22b84b74e3d774d16f2d45c93e64a1248fc56b6d3cd897f620d46f581f9  0003-bluetooth-add-UPower-backend.patch
+ffe399905f400628c0bcb732c6000ced30a3835884dfd0910bebf4af81ca63e743bb144e845978fda02ec4c81295e87ccf596b55d68e4c59ff827e5b1102a72e  0004-bluetooth-hook-up-UPower-backend.patch
+58f7fc83c3c15e9df3b36cc192113d29fc6020823a36b30b68702373248a93c6e60a174a3c71c693547d33de55a9d20e72cf65f3957cea323b04c222d5d701ff  0005-bluetooth-add-ModemManager-backend.patch
+98c0b80638603899b1639fedcc5edcde721f22cd3e7abed425015c933e65769b295a80b0d6a444fc5144cd1c6851dce41710dd8361fce2bfe5022ed913ad82ba  0006-bluetooth-only-reply-OK-for-supported-AT-cmds.patch
+535b242b76fc494138a16b326708eaa4d410fbc5a779bda1471e25c56440d7e9a4c80b0bccd3ba5e0026f40c09e3b7b84bbb409e51c020deff8c9b0ead74fb71  0007-bluetooth-Always-reply-to-AT-CIND.patch
+cdd7d3d47932c11ff7bd2bd4589b26dd3d92180fd4c156e70f57dcf5b560e05cd37d548a6e5280e47d258804f9dcaa3dd498d9dcdbb2e5c4e87f9f81dc7de73a  0008-bluetooth-support-AT-CMEE.patch
+7b6a99b1d76781c36007b746bf2a47f163efeca843f36d75d4485c688d8f3a7fcafc9c36c1aa2ff02759184e20d387a89beea36ca0da64e23bb29dfc71feb55c  0009-bluetooth-support-AT-NREC.patch
+b2bda75da4a4a5a2511fd3cd9ac8da8b3c59276a6396106e2249dd31053b68797f3f923177e6cd06fd7ae3cb3e2110e8bf8facb269d80a0e637a6f38cd8bb68c  0010-bluetooth-support-AT-BCC.patch
+53bdf256fb2db1d6997204ba9504b584423946e177f8e1a819de0fafea29092a1925a0f7cde253635aa1f83c67e6b91bf3608fe543bc2185cd2ddf4aa5942054  0011-bluetooth-support-AT-COPS.patch
+f3063daac100ef5d1fba792bb900a434be8cd0f9093a9be1ab68d84b8f94f39efc16c59d749f293e9b7556632866688757dc3d6e922096102f4583acb3f3cf5a  0012-bluetooth-support-AT-CNUM.patch
+19880702e533bb46a67f09e8848bc2741a275c20b847dea96a0dba0424639715b0cd3d25a9168916cdc4ae4462b67855a3bb3b1d8384c12292fbacc032c2f0fa  0013-bluetooth-support-more-AT-CIND-indicators.patch
+cd3d67672ff77d7908b01b4a377901d5e008b31b88d0e2c86918263c10a250aaf807cbf54cc3b095b1bf38ee533b3c0f409c5e1e2ced1df045fc64f421e02f78  0014-bluetooth-support-AT-CLIP.patch
+967983f1e589945da4c0139d3d7d7be2c796f4a9ab52b344acd19723170c220dd7e00feafd2ad0a0481940f27c01176ccd54418758acedbc1c686d3426df9812  0015-bluetooth-support-AT-CREG.patch
+61c400797405120cb065dea285e79a0056d716ff5ade3c8ea5a7e9f205c6895c0885f5ddb8c1abeec08ce3cf195b79bf7dc4d20281c5f7d5ee668accddab8cb9  0016-bluetooth-support-AT-CGMM.patch
+42a3739a44bdcc01df0f3fa6fac5efb88f4fcf69686b529f8390d58b4becfd9b948d3ddea80aa5b8d007d96e22b4a87dedb5cbff610f008c317b31c8ae700774  0017-bluetooth-support-AT-CGMI.patch
+6a4cd357126ebe99647bd3f4780ca109f2e823e0653851663d1d000b98e156ac17293058c8b94263371e303233f1c8e56073b523c91588d75989acb45b660ac2  0018-bluetooth-support-AT-CGMR.patch
+b83d00a32c8e28c566e74ab8edd35e107313f31f4ff2ead21d6f9446a79f6ec520e7a737ef79844d46fbcceaad74fdaeb14ad37a865284c259f768156514f858  0019-bluetooth-support-AT-CGSN.patch
+c58265d7c8f201765a254b2b26ff38f89ac2392acfb57024592e01096a997394322e726425fd02c37e21f6ab72638206d891354b2cd950102e7c13d87e026d40  0020-bluetooth-support-AT-CLCC.patch
+c93be49e11055af356a01cc3545f984348dcff052f8777ef0127e2a9cab241fa83682550a5ffd69589d6603f1fb47ad3da248ff055b6c983e50ed817c63d1008  0021-bluetooth-support-CIEV-RING-and-CLIP-URCs.patch
+d0663f8962f916d2149f44fe6d598ddea6df3cee542ee5ba9b418d05397c88a9c16368f9da2f96750e8bfb6a8e747e59fdc10f52fa59d1096ed6e59625c5dabd  0022-bluetooth-support-AT-VTS.patch
+a39cbab500be77e88a7b8dd615ce7e1a2f8d678b19fe823552bb5d1279e2ae06aac3c353e03e10d601c53a5befe731ce00f8163c7b3a1e7b4b0c26a4fdde1730  0023-bluetooth-support-ATA.patch
+9b93fd3dd2859b600d9eed9097f89b2a26220603eccdc61c6edb9b3b7488a97dbc5cee0dd4c40da3d1cbd8849023fd48f30ea1da0668c0bae189337bc8d1db9f  0024-bluetooth-support-AT-CHUP.patch
+3eec77a1b39dbab93a4284de433946b70d6b9f972e62b02f076cb4a45b1f288e32ae05d8d557ed13ef21eded407951f9c0f48c78bdac9d47f318d2c7b288e10c  0025-bluetooth-support-ATD-number.patch
+76b486095b1f2bb5d23837ed8f08d5ac7533e7c9621b2534c85b39a932663ffcf86b7fefaba1f2abc6aa7a95660c658cbcdeef20427b8ebb6e05cf532ee48731  0026-bluetooth-strip-additional-out-of-spec-r-n-chars.patch
+2c31c5bc592e748248215f8f62f85687cfec230b05f65441e6dafa5fa77d4967e97636209b2011a4501ed1337ecd880b264baa175586fc85183a980846cb8146  link-libintl.patch
+34fe54ece5df60ce63a7955cd828a2716670fef71f40960698ae5518fdaf9cd599f4d8f8852e2c88d715600a9ad06a38984415e5eb320071012e5eb6e5c1b8b1  pulseaudio.initd
+75b54581591519d63a3362b155c0f9b0501a60763ab394693a456c44d0216138cf3a40bdd0f7442028663bc045e9ffee286f8f8eaf2ee3bb17379b43615fee0e  pulseaudio.confd
+"

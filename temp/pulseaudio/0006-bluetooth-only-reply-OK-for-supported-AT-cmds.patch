@@ -1,0 +1,40 @@
+From 72b92267a8f906a3ecd10c571407802810e01bcc Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Wed, 13 Apr 2022 18:27:44 +0200
+Subject: [PATCH 06/26] bluetooth: only reply OK for supported AT cmds
+
+PulseAudio should always be honest to Bluetooth devices even when audio is connected.
+---
+ src/modules/bluetooth/backend-native.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index a490d6efd..1fadb4b14 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -2,6 +2,7 @@
+   This file is part of PulseAudio.
+ 
+   Copyright 2014 Wim Taymans <wim.taymans at gmail.com>
++  Copyright 2021-2022 Dylan Van Assche <me at dylanvanassche.be>
+ 
+   PulseAudio is free software; you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+@@ -808,12 +809,8 @@ static bool hfp_rfcomm_handle(int fd, pa_bluetooth_transport *t, const char *buf
+         return false;
+     }
+ 
+-    /*
+-     * once we're fully connected, just reply OK to everything
+-     * it will just be the headset sending the occasional status
+-     * update, but we process only the ones we care about
+-     */
+-    return true;
++    /* Unsupported commands return ERROR */
++    return false
+ }
+ 
+ static int get_rfcomm_fd (pa_bluetooth_discovery *discovery) {
+-- 
+2.35.1
+

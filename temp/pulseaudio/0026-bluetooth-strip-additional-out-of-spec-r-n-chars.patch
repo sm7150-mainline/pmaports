@@ -1,0 +1,60 @@
+From aff9bf69960c3e2ac1d7c35176e9f3b34389f656 Mon Sep 17 00:00:00 2001
+From: Dylan Van Assche <me@dylanvanassche.be>
+Date: Tue, 19 Apr 2022 20:15:09 +0200
+Subject: [PATCH 26/26] bluetooth: strip additional out-of-spec '\r\n' chars
+
+Some HF devices do not comply strictly with the HFP specification
+and send additional '\r\n' sequences besides the expected ones.
+This breaks AT command parsing in PulseAudio.
+
+To work around this problem, strip these characters before processing
+the AT command and responses.
+---
+ src/modules/bluetooth/backend-native.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/src/modules/bluetooth/backend-native.c b/src/modules/bluetooth/backend-native.c
+index b6991ae13..8aa83f025 100644
+--- a/src/modules/bluetooth/backend-native.c
++++ b/src/modules/bluetooth/backend-native.c
+@@ -1556,19 +1556,33 @@ static void rfcomm_io_callback(pa_mainloop_api *io, pa_io_event *e, int fd, pa_i
+     }
+ 
+     if (events & PA_IO_EVENT_INPUT) {
+-        char buf[512];
++        char buf[512], raw_buf[512];
+         ssize_t len;
+         int gain, dummy;
+         bool do_reply = false;
+         int vendor, product, version, features;
+-        int num;
++        int num, i, j;
+ 
+-        len = pa_read(fd, buf, 511, NULL);
++        len = pa_read(fd, raw_buf, 511, NULL);
+         if (len < 0) {
+             pa_log_error("RFCOMM read error: %s", pa_cstrerror(errno));
+             goto fail;
+         }
+-        buf[len] = 0;
++        raw_buf[len] = 0;
++
++        /* 
++         * Filter '\r' and '\n' characters out since some HF devices 
++         * send too much \r\n sequences in their responses
++         */
++        memset(buf, '\0', sizeof(char) * 512);
++        j=0;
++        for (i=0; i<512; i++) {
++            if (raw_buf[i] == '\r' || raw_buf[i] == '\n')
++                continue;
++            buf[j] = raw_buf[i];
++            j++;
++        }
++        buf[j] = 0;
+         pa_log_debug("RFCOMM << %s", buf);
+ 
+         /* There are only four HSP AT commands:
+-- 
+2.35.1
+
