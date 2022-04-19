@@ -121,6 +121,10 @@ def main():
         print("it more easily. Many times one person did a port with basic")
         print("functionality, and then someone else jumped in and")
         print("contributed major new features.")
+        print("")
+        print("NOTE: if you renamed a device in pmaports, rename it in the")
+        print("wiki as well and make sure to add it here:")
+        print("https://postmarketos.org/renamed")
         return 1
     else:
         print("*** Wiki check successful!")
