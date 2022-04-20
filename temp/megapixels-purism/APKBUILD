@@ -1,8 +1,7 @@
 # Purism's fork of megapixels, for the Librem 5
 pkgname=megapixels-purism
-pkgver=0.18.0_git20220131
+pkgver=0.19.0
 pkgrel=0
-_commit=042310be520e021ebf861055af90923164d89136
 pkgdesc="GTK+3 camera app for mobile devices"
 url="https://source.puri.sm/Librem5/megapixels"
 arch="all"
@@ -23,10 +22,10 @@ makedepends="
 	rust
 	tiff-dev meson zbar-dev
 	"
-source="megapixels-purism-$pkgver.tar.gz::https://source.puri.sm/Librem5/millipixels/-/archive/$_commit/millipixels-$_commit.tar.gz"
+source="https://source.puri.sm/Librem5/millipixels/-/archive/v$pkgver/millipixels-v$pkgver.tar.gz"
 options="!check" # There's no testsuite
 provides="megapixels=$pkgver"
-builddir="$srcdir/millipixels-$_commit"
+builddir="$srcdir/millipixels-v$pkgver"
 
 build() {
 	abuild-meson . output
@@ -38,5 +37,5 @@ package() {
 }
 
 sha512sums="
-062607219856bfafddb063a743f643c8f0924a3a1f35af6beb2eee0db626766f680cc2204b3e58bc604bf26bd92b322e3f68227580b97da99b384f919c8450a7  megapixels-purism-0.18.0_git20220131.tar.gz
+0d813e5b7782c5e94cd4a2002a4771bfe21ebf9c09b474102a427f36546f17fc18133f106ab437aa6877825b40af01203b14b8852fdbe8888b7b15ac39d99c51  millipixels-v0.19.0.tar.gz
 "
