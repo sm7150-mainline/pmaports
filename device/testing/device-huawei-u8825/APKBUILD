@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-huawei-u8825
+pkgdesc="Huawei Ascend G330"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-huawei-u8825
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+a855a3cec4dd47c1c24881772018fd14132487306ce5f349fe76d60b59c2eda8a1c3f6509c52ca645f8b661ca199802f8a3c9ddcf010747176b2261ef0bddd48  deviceinfo
+"
