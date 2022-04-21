@@ -2,10 +2,10 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=u-boot-librem5
-pkgver=2022.04_rc1_git20220214
+pkgver=2022.04_git20220420
 pkgrel=0
-# 'upstream/librem5' branch in uboot repo
-_commit="cf03130d32f69fb78f404d64f1262b7f5c9ce4b5"
+# 'upstream/librem5-v3' branch in uboot repo
+_commit="3fdb96e723a3fb0f2a271c5ff24bba7a39478c86"
 # 'librem5' branch in atf repo
 _atf_commit="92c2de12d36b31938ce940d5cac3c30a98665237"
 _firmwareversion="8.12"
@@ -28,7 +28,7 @@ makedepends="
 	"
 options="!check !tracedeps pmb:cross-native"
 source="
-	https://source.puri.sm/Librem5/uboot-imx/-/archive/$_commit/uboot-imx-$_commit.tar.gz
+	https://source.puri.sm/angus.ainslie/uboot-imx/-/archive/$_commit/uboot-imx-$_commit.tar.gz
 	https://source.puri.sm/Librem5/arm-trusted-firmware/-/archive/$_atf_commit/arm-trusted-firmware-$_atf_commit.tar.gz
 	https://www.nxp.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-$_firmwareversion.bin
 	update-u-boot
@@ -106,9 +106,9 @@ devkit() {
 }
 
 sha512sums="
-c4650c686e0ed6cf07d3b41c3e5e99d2cecad6f3bbaffafef5c2e99f1463b58b2e771b2844c76b26f714988e016398d08bd66ece3eef25f2f0a986dd29eabf37  uboot-imx-cf03130d32f69fb78f404d64f1262b7f5c9ce4b5.tar.gz
+5ff4d643fda9da61454badd6743914979d44f8d80bebc675e70fe6c1155ec927f8ff0f30389aeac600b8e4dc19ded1a76219dc10c467ce5cbd244275c81e3c92  uboot-imx-3fdb96e723a3fb0f2a271c5ff24bba7a39478c86.tar.gz
 cd8c9411ae0e57d2c8c700bf3e8c8d03e7dab955ace249a00911dd8c42b42929e0de3a5885eb9b1d945174abc8cfb177595d83c235e757c70640f451b62547ba  arm-trusted-firmware-92c2de12d36b31938ce940d5cac3c30a98665237.tar.gz
 1f968558bf158401ee5afe1c67e67bdd8ca2cb5d07029e78c745e751c665b68fa74128fca8b7161501a6445bbb18e8d463b42d787a61132db5c8778703462668  firmware-imx-8.12.bin
 e46a863001872943301f9712e45797553ce52d8b0c3e63dba7beb1a54b857e8f3a715863b84cd7ab784f039f82d29a2b19b581891d11a84c342b1570e5ccfed3  update-u-boot
-acccd93ca755c619f8ac63987c4d0d149afb808d3c4f4ac923e4793855deae12e68b3e042f48fe1bed59aac47f5080e26ea2737cb9466404fa3e4771b5da2af8  0001-librem5-enable-console-on-UART4.patch
+f5c8a49bda189639386f2367418ab492f10e0e3c0c3f4ca078c461c0cf4427e113a90f49c37f01ef4db0a6e0f55d4f0a6346777e291918866821e659077e374a  0001-librem5-enable-console-on-UART4.patch
 "
