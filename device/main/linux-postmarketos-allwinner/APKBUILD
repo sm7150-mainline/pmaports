@@ -7,7 +7,7 @@ _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 pkgver=5.16.4_git20220131
-pkgrel=2
+pkgrel=3
 _tag="orange-pi-5.16-20220131-0002"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
@@ -51,6 +51,7 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	0011-ARM-dts-sun6i-Add-Lark-FreeMe-70.2S-tablet.patch
 	0012-sunxi-mmc-h6-fix.patch
 	0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
+	cve-2022-0847-dirty-pipe.patch
 	"
 subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
@@ -114,4 +115,5 @@ c61d4f86eddecca99df1ea1323f988e575f9c49130b64a0c50d61028ff96e24aaa3131fb3731e62e
 902708a5a8dd8a815d3d1793933d307c551e3c10368d1805431b70691ee5d4438b7146c466549f457468e365f94073a35ae3304928af7581e5dc91ba5c8fa682  0011-ARM-dts-sun6i-Add-Lark-FreeMe-70.2S-tablet.patch
 2feeab0a6c3db46e514d45c9708f351c6d7dfb0bf951a5cb6f2dc01b4bdc8d4c46931000758a819a6d7317b16cb1933bb3946e6a78cbf448cc77f57a56c503bf  0012-sunxi-mmc-h6-fix.patch
 22af33264090dac027ee054b4345a07f0b2ee077e2ae1620e83960bfeea096169aec710973fdd50531ed4f1db6cfd59b5796cd235316cb3512aee034f741a694  0013-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
+bfba2e4a4ac9639dc1a3aa0d4779748b62c8efaf8a533e30a4431571115d4356e6e54e00d2508928405ce3607e63aba61a9bad7a0f1712b46ff5706589ccbbfa  cve-2022-0847-dirty-pipe.patch
 "
