@@ -45,10 +45,10 @@ update_android_split_kernel_initfs() {
 METHOD=${deviceinfo_flash_method:?}
 case $METHOD in
 	fastboot)
-		update_android_fastboot "${flash_fastboot_partition_kernel:-boot}"
+		update_android_fastboot "${deviceinfo_flash_fastboot_partition_kernel:-boot}"
 		;;
 	heimdall-bootimg)
-		update_android_fastboot "${flash_heimdall_partition_kernel:-KERNEL}"
+		update_android_fastboot "${deviceinfo_flash_heimdall_partition_kernel:-KERNEL}"
 		;;
 	heimdall-isorec)
 		update_android_split_kernel_initfs
