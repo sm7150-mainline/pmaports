@@ -1,0 +1,244 @@
+diff --git a/Documentation/devicetree/bindings/input/twl4030-pwrbutton.txt b/Documentation/devicetree/bindings/input/twl-pwrbutton.txt
+similarity index 64%
+rename from Documentation/devicetree/bindings/input/twl4030-pwrbutton.txt
+rename to Documentation/devicetree/bindings/input/twl-pwrbutton.txt
+index f5021214e..b49e2608f 100644
+--- a/Documentation/devicetree/bindings/input/twl4030-pwrbutton.txt
++++ b/Documentation/devicetree/bindings/input/twl-pwrbutton.txt
+@@ -1,6 +1,6 @@
+-Texas Instruments TWL family (twl4030) pwrbutton module
++Texas Instruments TWL family pwrbutton module
+ 
+-This module is part of the TWL4030. For more details about the whole
++This module is part of a TWL chip. For more details about the whole
+ chip see Documentation/devicetree/bindings/mfd/twl-family.txt.
+ 
+ This module provides a simple power button event via an Interrupt.
+@@ -8,8 +8,9 @@ This module provides a simple power button event via an Interrupt.
+ Required properties:
+ - compatible: should be one of the following
+    - "ti,twl4030-pwrbutton": For controllers compatible with twl4030
++   - "ti,twl6030-pwrbutton": For controllers compatible with twl6030
+ - interrupts: should be one of the following
+-   - <8>: For controllers compatible with twl4030
++   - <8>: For controllers compatible with the twl
+ 
+ Example:
+ 
+diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
+index 9d588cfaa..ac033debf 100644
+--- a/arch/arm/boot/dts/twl6030.dtsi
++++ b/arch/arm/boot/dts/twl6030.dtsi
+@@ -102,4 +102,9 @@ gpadc {
+ 		interrupts = <3>;
+ 		#io-channel-cells = <1>;
+ 	};
++
++	twl_pwrbutton: pwrbutton {
++		compatible = "ti,twl6030-pwrbutton";
++		interrupts = <0>;
++	};
+ };
+diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+index dd5227cf8..61e1075bd 100644
+--- a/drivers/input/misc/Kconfig
++++ b/drivers/input/misc/Kconfig
+@@ -479,15 +479,15 @@ config INPUT_AXP20X_PEK
+ 	  be called axp20x-pek.
+ 
+ 
+-config INPUT_TWL4030_PWRBUTTON
+-	tristate "TWL4030 Power button Driver"
++config INPUT_TWL_PWRBUTTON
++	tristate "TWL Power button Driver"
+ 	depends on TWL4030_CORE
+ 	help
+ 	  Say Y here if you want to enable power key reporting via the
+-	  TWL4030 family of chips.
++	  TWL family of chips.
+ 
+ 	  To compile this driver as a module, choose M here. The module will
+-	  be called twl4030_pwrbutton.
++	  be called twl_pwrbutton
+ 
+ config INPUT_TWL4030_VIBRA
+ 	tristate "Support for TWL4030 Vibrator"
+diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
+index b92c53a6b..03531e525 100644
+--- a/drivers/input/misc/Makefile
++++ b/drivers/input/misc/Makefile
+@@ -77,7 +77,7 @@ obj-$(CONFIG_INPUT_SOC_BUTTON_ARRAY)	+= soc_button_array.o
+ obj-$(CONFIG_INPUT_SPARCSPKR)		+= sparcspkr.o
+ obj-$(CONFIG_INPUT_STPMIC1_ONKEY)  	+= stpmic1_onkey.o
+ obj-$(CONFIG_INPUT_TPS65218_PWRBUTTON)	+= tps65218-pwrbutton.o
+-obj-$(CONFIG_INPUT_TWL4030_PWRBUTTON)	+= twl4030-pwrbutton.o
++obj-$(CONFIG_INPUT_TWL_PWRBUTTON)	+= twl-pwrbutton.o
+ obj-$(CONFIG_INPUT_TWL4030_VIBRA)	+= twl4030-vibra.o
+ obj-$(CONFIG_INPUT_TWL6040_VIBRA)	+= twl6040-vibra.o
+ obj-$(CONFIG_INPUT_UINPUT)		+= uinput.o
+diff --git a/drivers/input/misc/twl4030-pwrbutton.c b/drivers/input/misc/twl-pwrbutton.c
+similarity index 58%
+rename from drivers/input/misc/twl4030-pwrbutton.c
+rename to drivers/input/misc/twl-pwrbutton.c
+index b307cca17..9f6081474 100644
+--- a/drivers/input/misc/twl4030-pwrbutton.c
++++ b/drivers/input/misc/twl-pwrbutton.c
+@@ -31,15 +31,22 @@
+ 
+ #define PWR_PWRON_IRQ (1 << 0)
+ 
+-#define STS_HW_CONDITIONS 0xf
++#define TWL4030_STS_HW_CONDITIONS 0x0f
++#define TWL6030_STS_HW_CONDITIONS 0x21
+ 
+-static irqreturn_t powerbutton_irq(int irq, void *_pwr)
++static irqreturn_t twl_pwrbutton_irq(int irq, void *_pwr)
+ {
+ 	struct input_dev *pwr = _pwr;
+ 	int err;
+ 	u8 value;
+ 
+-	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &value, STS_HW_CONDITIONS);
++	if (twl_class_is_4030())
++		err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &value,
++				TWL4030_STS_HW_CONDITIONS);
++	else
++		err = twl_i2c_read_u8(TWL6030_MODULE_ID0, &value,
++				TWL6030_STS_HW_CONDITIONS);
++
+ 	if (!err)  {
+ 		pm_wakeup_event(pwr->dev.parent, 0);
+ 		input_report_key(pwr, KEY_POWER, value & PWR_PWRON_IRQ);
+@@ -52,7 +59,7 @@ static irqreturn_t powerbutton_irq(int irq, void *_pwr)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int twl4030_pwrbutton_probe(struct platform_device *pdev)
++static int twl_pwrbutton_probe(struct platform_device *pdev)
+ {
+ 	struct input_dev *pwr;
+ 	int irq = platform_get_irq(pdev, 0);
+@@ -64,15 +71,23 @@ static int twl4030_pwrbutton_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	input_set_capability(pwr, EV_KEY, KEY_POWER);
+-	pwr->name = "twl4030_pwrbutton";
+-	pwr->phys = "twl4030_pwrbutton/input0";
++	pwr->evbit[0] = BIT_MASK(EV_KEY);
++	pwr->keybit[BIT_WORD(KEY_POWER)] = BIT_MASK(KEY_POWER);
++	pwr->name = "twl_pwrbutton";
++	pwr->phys = "twl_pwrbutton/input0";
+ 	pwr->dev.parent = &pdev->dev;
+ 
+-	err = devm_request_threaded_irq(&pdev->dev, irq, NULL, powerbutton_irq,
++	if (twl_class_is_6030()) {
++		twl6030_interrupt_unmask(TWL6030_PWRON_INT_MASK,
++			REG_INT_MSK_LINE_A);
++		twl6030_interrupt_unmask(TWL6030_PWRON_INT_MASK,
++			REG_INT_MSK_STS_A);
++	}
++
++	err = devm_request_threaded_irq(&pwr->dev, irq, NULL, twl_pwrbutton_irq,
+ 			IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING |
+ 			IRQF_ONESHOT,
+-			"twl4030_pwrbutton", pwr);
++			"twl_pwrbutton", pwr);
+ 	if (err < 0) {
+ 		dev_err(&pdev->dev, "Can't get IRQ for pwrbutton: %d\n", err);
+ 		return err;
+@@ -84,31 +99,45 @@ static int twl4030_pwrbutton_probe(struct platform_device *pdev)
+ 		return err;
+ 	}
+ 
++	platform_set_drvdata(pdev, pwr);
+ 	device_init_wakeup(&pdev->dev, true);
+ 
+ 	return 0;
+ }
+ 
++static int twl_pwrbutton_remove(struct platform_device *pdev)
++{
++	if (twl_class_is_6030()) {
++		twl6030_interrupt_mask(TWL6030_PWRON_INT_MASK,
++			REG_INT_MSK_LINE_A);
++		twl6030_interrupt_mask(TWL6030_PWRON_INT_MASK,
++			REG_INT_MSK_STS_A);
++	}
++
++	return 0;
++}
++
+ #ifdef CONFIG_OF
+-static const struct of_device_id twl4030_pwrbutton_dt_match_table[] = {
++static const struct of_device_id twl_pwrbutton_dt_match_table[] = {
+        { .compatible = "ti,twl4030-pwrbutton" },
++       { .compatible = "ti,twl6030-pwrbutton" },
+        {},
+ };
+-MODULE_DEVICE_TABLE(of, twl4030_pwrbutton_dt_match_table);
++MODULE_DEVICE_TABLE(of, twl_pwrbutton_dt_match_table);
+ #endif
+ 
+-static struct platform_driver twl4030_pwrbutton_driver = {
+-	.probe		= twl4030_pwrbutton_probe,
++static struct platform_driver twl_pwrbutton_driver = {
++	.probe		= twl_pwrbutton_probe,
++	.remove		= twl_pwrbutton_remove,
+ 	.driver		= {
+-		.name	= "twl4030_pwrbutton",
+-		.of_match_table = of_match_ptr(twl4030_pwrbutton_dt_match_table),
++		.name	= "twl_pwrbutton",
++		.of_match_table = of_match_ptr(twl_pwrbutton_dt_match_table),
+ 	},
+ };
+-module_platform_driver(twl4030_pwrbutton_driver);
++module_platform_driver(twl_pwrbutton_driver);
+ 
+-MODULE_ALIAS("platform:twl4030_pwrbutton");
+-MODULE_DESCRIPTION("Triton2 Power Button");
++MODULE_ALIAS("platform:twl_pwrbutton");
++MODULE_DESCRIPTION("TWL Power Button");
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Peter De Schrijver <peter.de-schrijver@nokia.com>");
+ MODULE_AUTHOR("Felipe Balbi <felipe.balbi@nokia.com>");
+-
+diff --git a/drivers/mfd/twl-core.c b/drivers/mfd/twl-core.c
+index 289b556de..04c0b036e 100644
+--- a/drivers/mfd/twl-core.c
++++ b/drivers/mfd/twl-core.c
+@@ -832,13 +832,20 @@ add_children(struct twl4030_platform_data *pdata, unsigned irq_base,
+ 			return PTR_ERR(child);
+ 	}
+ 
+-	if (IS_ENABLED(CONFIG_INPUT_TWL4030_PWRBUTTON) && twl_class_is_4030()) {
+-		child = add_child(TWL_MODULE_PM_MASTER, "twl4030_pwrbutton",
++	if (IS_ENABLED(CONFIG_INPUT_TWL_PWRBUTTON) && twl_class_is_4030()) {
++		child = add_child(TWL_MODULE_PM_MASTER, "twl_pwrbutton",
+ 				  NULL, 0, true, irq_base + 8 + 0, 0);
+ 		if (IS_ERR(child))
+ 			return PTR_ERR(child);
+ 	}
+ 
++	if (IS_ENABLED(CONFIG_INPUT_TWL_PWRBUTTON) && twl_class_is_6030()) {
++		child = add_child(TWL_MODULE_PM_MASTER, "twl_pwrbutton",
++				  NULL, 0, true, irq_base + 0, 0);
++		if (IS_ERR(child))
++			return PTR_ERR(child);
++	}
++
+ 	if (IS_ENABLED(CONFIG_MFD_TWL4030_AUDIO) && pdata->audio &&
+ 	    twl_class_is_4030()) {
+ 		child = add_child(TWL4030_MODULE_AUDIO_VOICE, "twl4030-audio",
+diff --git a/include/linux/mfd/twl.h b/include/linux/mfd/twl.h
+index 8871cc518..108138c99 100644
+--- a/include/linux/mfd/twl.h
++++ b/include/linux/mfd/twl.h
+@@ -113,6 +113,7 @@ enum twl6030_module_ids {
+ #define REG_INT_MSK_STS_C		0x08
+ 
+ /* MASK INT REG GROUP A */
++#define TWL6030_PWRON_INT_MASK		0x01
+ #define TWL6030_PWR_INT_MASK 		0x07
+ #define TWL6030_RTC_INT_MASK 		0x18
+ #define TWL6030_HOTDIE_INT_MASK 	0x20

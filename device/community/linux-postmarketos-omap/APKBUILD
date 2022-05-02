@@ -1,0 +1,71 @@
+# Maintainer: Mighty <mightymb17@gmail.com>
+# Co-Maintainer: Sicelo <absicsz@gmail.com>
+# Kernel config based on: arch/arm64/configs/omap2plus_defconfig
+
+pkgname=linux-postmarketos-omap
+pkgver=5.19
+pkgrel=0
+pkgdesc="Mainline kernel fork for OMAP devices"
+arch="armv7"
+url="https://kernel.org/"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-nftables"
+makedepends="bash bison findutils flex openssl-dev perl gmp-dev mpc1-dev mpfr-dev postmarketos-installkernel xz"
+
+_carch="arm"
+_flavor="postmarketos-omap"
+_config="config-$_flavor.armv7"
+case $pkgver in
+	*.*.0)	_kernver=${pkgver%.0};;
+	*.*.*)	_kernver=${pkgver%.*}
+		_patch="
+		linux-$pkgver.patch.xz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz";;
+	*.*)	_kernver=$pkgver;;
+esac
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	$_patch
+	$_config
+	0001-Add-TWL6032-dtsi.patch
+	0002-Add-espresso-dts.patch
+	0003-Add-espresso10-dts.patch
+	0004-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
+	0005-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
+"
+builddir="$srcdir/linux-$_kernver"
+replaces="linux-samsung-espresso3g"
+
+prepare() {
+	default_prepare
+	cp -v "$srcdir"/$_config .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+
+sha512sums="
+00313b2f9b82d2dc3fb8294007cf7d7599d254b717ed2de23c81fa7a1bbcbc2798ad286cb94e2f7f5bd54132d1d764facd90d30f79dbcc6616cc7f926adc2623  linux-5.19.tar.xz
+3bf676ddaf2201088c223b5f67933041d47b0cb20aefb678af271887107658f334fb6f3a778470a824b1c1a1a256ac68e17bded27c6d661f7b0a92eb15326fa3  config-postmarketos-omap.armv7
+727ff96d7d4701e93bf43db5d7bd872b4fbf1a8439edb4d84987a8f89e669d65b7a413740172b4a84df711b990d7e30b7880df5b9365496b7894d129cd4ebfa6  0001-Add-TWL6032-dtsi.patch
+0c5be684ebfc94c289becb68d447c61276f2a4a602cb723b1e3c463bb61f0304046c734fe2cde914bbff90e31dc0cabdf8e0d6db1b851089c4505aac102ca5ce  0002-Add-espresso-dts.patch
+3fd4ca3f9f12cc71f00346ec6a2859f9f93ae6aa6f6dc9ba1f0120c5866bb3e0126adda1d1b5ac4091e8b510d63da754ff977b4597b96508c2bcebbd8585e814  0003-Add-espresso10-dts.patch
+a483b1a322f3fe47c7bb6514f34cca69ad1b806487596ffab69078acb6e83e99ed39ffb4d5b4ecd17035d118a75ce5bac6761b9e42d01608f1e6a53d59b27806  0004-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
+b3d6114c5c60fc2820856c89ea6f09c369d857ae79a79f0eeb0f83f5401dc2253e11f7dac6869eb1095d3e0b3a68126246762e2f406ffae5b5ef0a60d5563bac  0005-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
+"
