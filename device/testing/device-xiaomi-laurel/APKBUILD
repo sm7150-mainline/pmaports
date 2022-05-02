@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: mint <they@mint.lgbt>
+pkgname=device-xiaomi-laurel
+pkgdesc="Xiaomi Mi A3"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm6125
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+ed867de931bd75b00c87a4bc89a5d0a9a266e18cc5c4c26eccae88ddff7c106c987420f7b6522e5ff9484b9c716fdf4000003a5074d0baef3084a75272165355  deviceinfo
+"
