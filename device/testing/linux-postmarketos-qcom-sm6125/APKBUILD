@@ -1,0 +1,68 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/defconfig
+# Maintainer: mint <they@mint.lgbt>
+pkgname=linux-postmarketos-qcom-sm6125
+pkgver=5.18_rc4
+pkgrel=0
+pkgdesc="Mainline Kernel fork for SM6125 devices"
+arch="aarch64"
+_carch="arm64"
+_flavor="postmarketos-qcom-sm6125"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+"
+
+# Source
+_repository="linux"
+_commit="ffe21073175927429b89357ce1fede7eb0d27efe"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://gitlab.com/sm6125-mainline/$_repository/-/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+		"$pkgdir/boot/vmlinuz"
+
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot/ \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+
+sha512sums="
+6727b5e32ffbfa89e79be0ca1e2de24c3129fd56d42f50f8db29d5a8d1c001e36e8f9cd5db655a44047c2ae3d3fb08d0d3da6499063bfb0f2a5c69924adeed21  linux-postmarketos-qcom-sm6125-ffe21073175927429b89357ce1fede7eb0d27efe.tar.gz
+a7bfc6a5323410915df0751e4bbbf67f4c39d2a505de5be18036bd95c958382979504d60590c360a2bdf5d190b9a995e05931da263cd45edc09fea56394e3f0d  config-postmarketos-qcom-sm6125.aarch64
+"
