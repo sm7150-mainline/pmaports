@@ -1,0 +1,27 @@
+This is a hack to solve some crashes for GTK4 apps in the pinephone
+by dirty fixing an upstream bug[1]. The real fix will take longer and
+will not be trivial to backport[2]. In the meanwhile, we force a GLES
+context if it is allowed and the shared context is also using GLES,
+to avoid the creation of a GL context with wrong version. Hopefully,
+this should not have additional side-effects for other devices.
+
+[1] https://gitlab.gnome.org/GNOME/gtk/-/issues/4763
+[2] https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4687
+
+diff --git i/gdk/gdkglcontext.c w/gdk/gdkglcontext.c
+index 3869b14da0..57a3661492 100644
+--- i/gdk/gdkglcontext.c
++++ w/gdk/gdkglcontext.c
+@@ -280,6 +280,11 @@ gdk_gl_context_real_realize (GdkGLContext  *context,
+       G_GNUC_UNUSED gint64 start_time = GDK_PROFILER_CURRENT_TIME;
+
+       if (share != NULL)
+-        gdk_gl_context_get_required_version (share, &major, &minor);
++        {
++          gdk_gl_context_get_required_version (share, &major, &minor);
++          if (gdk_gl_context_get_use_es (share) &&
++              gdk_gl_context_is_api_allowed (context, GDK_GL_API_GLES, NULL))
++            gdk_gl_context_set_allowed_apis (context, GDK_GL_API_GLES);
++        }
+       else
+         gdk_gl_context_get_required_version (context, &major, &minor);
