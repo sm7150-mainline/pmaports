@@ -19,6 +19,7 @@ setup_firmware_path
 [ -d /lib/modules ] && modprobe -a ${deviceinfo_modules_initfs} ext4 usb_f_rndis
 
 setup_mdev
+setup_dynamic_partitions "${deviceinfo_super_partitions:=}"
 mount_subpartitions
 setup_framebuffer
 

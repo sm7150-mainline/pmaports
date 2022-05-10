@@ -76,6 +76,26 @@ get_uptime_seconds() {
 	awk -F '.' '{print $1}' /proc/uptime
 }
 
+setup_dynamic_partitions() {
+	command -v make-dynpart-mappings > /dev/null || return
+	attempt_start=$(get_uptime_seconds)
+	wait_seconds=10
+	slot_number=0
+	for super_partition in $1; do
+		# Wait for mdev
+		echo "Waiting for super partition $super_partition..."
+		while [ ! -b "$super_partition" ]; do
+			if [ "$(get_uptime_seconds)" -ge $(( attempt_start + wait_seconds )) ]; then
+				echo "ERROR: Super partition $super_partition failed to show up!"
+				return;
+			fi
+			sleep 0.1
+		done
+		make-dynpart-mappings "$super_partition" "$slot_number"
+		slot_number=$(( slot_number + 1 ))
+	done
+}
+
 mount_subpartitions() {
 	# Do not create subpartition mappings if pmOS_boot
 	# already exists (e.g. installed on an sdcard)
