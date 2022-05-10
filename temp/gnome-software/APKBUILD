@@ -1,8 +1,8 @@
 # Forked from Alpine to apply adaptability patches
 pkgname=gnome-software
 pkgver=9999_git20211203
-_pkgver=41.3
-pkgrel=2
+_pkgver=41.5
+pkgrel=3
 pkgdesc="Software lets you install and update applications and system extensions"
 url="https://wiki.gnome.org/Apps/Software"
 # s390x, mips64 and riscv64 blocked by polkit
@@ -24,7 +24,7 @@ _purism_patches="https://source.puri.sm/Librem5/pureos-store/-/raw/$_purism_comm
 source="https://download.gnome.org/sources/gnome-software/${_pkgver%.*}/gnome-software-$_pkgver.tar.xz
 	0001-gs-external-appstream-utils-use-external-appstream-s.patch
 	0002-gs-external-appstream-utils-hash-url-to-allow-same-b.patch
-	0003-appstream-implement-parsing-media_baseurl.patch
+	0003-lib-cleanup-public-headers-and-mark-gs-test.h-as-pub.patch
 	0001-make-updates-page-default-at-startup.patch
 	0002-disable-Automatic-Updates-options.patch
 	$_purism_patches/ui/0001-assets-Make-the-up-to-date-picture-fit-phones.patch
@@ -101,12 +101,12 @@ flatpak_plugin() {
 }
 
 sha512sums="
-7b19ed7e3b6f8662b6351fbb6eddb45f99cdbf9e6912e11b36301cdfd6f62cb3256da031e6640f9ad397384a23530d11488c78a1af60ce130a99838f97f8a0ed  gnome-software-41.3.tar.xz
-9f08078c9f0df149bc3be65fdcd47e7e1c11023c9fdbfe3fa63bb7f67883cd2ac654e8aa941d1b222b85d600a9cfeed8fb1d0d43091236c8e0e137d4035705a1  0001-gs-external-appstream-utils-use-external-appstream-s.patch
-c4ca14d981da8fc93800178aeb2480c8bcaa524a0db283613047e769d4dd8aa9ee603d86cf1353818454e14e25d68b11858e2658e6ff5d7b3fa57c075800deb2  0002-gs-external-appstream-utils-hash-url-to-allow-same-b.patch
-986cf69e34d61daea61d6555efc2e4805baf07d6a71fdf0c1e35fd38aef64b50924f64b5650d26d1a5c9841d29cffd3bb2cc869f55ba0c1763b929d5e21cb7b9  0003-appstream-implement-parsing-media_baseurl.patch
-388910611f93147ab55ec602035baac6b85cdece9164d2205669ad41adc6a7cdf4d37d7eaf2eee51257bf905ff39eb0a2502679abeb4d95025ab1296ac0adc94  0001-make-updates-page-default-at-startup.patch
-40c3aab58f050f88769e6265926762217324ed7748bee7bc3981a04e785133b71b81603dcc22f79c79ecb75298cdca07511031906c5c1eee5d2f122e3d8dab0c  0002-disable-Automatic-Updates-options.patch
+60701d50dd8e7fa01c05c8ee7823b053d40b0fa145419601ece732827527d4d7ae9af178b5b6622ac4d729d3d430c14981a2fd4b0f086dd6d05a49fd507f2cb6  gnome-software-41.5.tar.xz
+52e4f99a4e1e2e688b1dcb146bcad3f3ba0e804af841d3837de5a7905f90689dc6258e625476a5fa402e8cfb5f7b814f3bdb0cf0dfab5ca8ebbf6193099e9916  0001-gs-external-appstream-utils-use-external-appstream-s.patch
+467e023cc953f1d7caf83a4087f7f6311f64d20da32dafb2a97bd7488bb597e2d407d1166937c1776c0add199508ac45f361d7754687f638e518dbfaa8f80c6e  0002-gs-external-appstream-utils-hash-url-to-allow-same-b.patch
+4f3248916d8d15753dc22580e71a37cbfd42bb81ee0befcc51cbbbc5ce8a6573be9dae8d049c9c10fbdcf6292b83fda0d2175d1f6554e7ee8f08024ce6bdffe9  0003-lib-cleanup-public-headers-and-mark-gs-test.h-as-pub.patch
+b7c873701faba9963eafae0f2a096f783387da47b0ef04ec863dfa693c9415328238780ae2ab4f6c0910ccb1a023d8e94b1010249dec64f19c081e7a686783a3  0001-make-updates-page-default-at-startup.patch
+bc1c1ca45a475be511781b2cebd59a0c8ea540b17ab9faa59bf1b0478f32b96c974db46e07b2cc56b6c13f1b590b339fd01f907a648ae0fe689522d56d89e875  0002-disable-Automatic-Updates-options.patch
 ea2d4c6ee37b1fb27773d8908a98e6f6726cd2f72fcc7c41caf243a501896c991346d02ccbc36168c7194d0ba3dfd17660c7af79305a447f521617f0fbefae9e  0001-assets-Make-the-up-to-date-picture-fit-phones.patch
 4e5b205134d7fc8c60af2e9fcfa70552e20300b2e9959d500a82546986d38677515af841272ef64a019ec946940c59eaca3d95d228952d8384682c7410383417  0002-Add-GsInfoWindow.patch
 b67d04f6853762b7d5b26109fdeeec37d07bef40d1e35b46d95ec58e977c1088e256d0e272bc05c764d8673b2766ec82861506415ee11237ee0270a8a0732d97  0003-metered-data-dialog-Make-it-a-GsInfoWindow-and-a-Hdy.patch
