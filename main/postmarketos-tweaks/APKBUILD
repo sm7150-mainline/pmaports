@@ -1,12 +1,12 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=postmarketos-tweaks
-pkgver=0.11.0
+pkgver=0.12.0
 pkgrel=0
 pkgdesc="Tweak tool for phone UIs"
 url="https://gitlab.com/postmarketOS/postmarketos-tweaks"
 arch="noarch"
 license="GPL-3.0-or-later"
-subpackages="$pkgname-phosh:phosh $pkgname-pinephone:pinephone"
+subpackages="$pkgname-phosh:phosh $pkgname-pinephone:pinephone $pkgname-sxmo-x11:sxmo"
 depends="python3 py3-gobject3 py3-yaml gtk+3.0 libhandy1"
 makedepends="py3-setuptools glib-dev libhandy1-dev meson"
 install="$pkgname.post-install $pkgname.post-upgrade"
@@ -34,6 +34,12 @@ pinephone() {
 	amove usr/share/postmarketos-tweaks/pinephone.yml
 }
 
+sxmo() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-sxmo-de-dwm"
+
+	amove usr/share/postmarketos-tweaks/sxmo-x11.yml
+}
+
 sha512sums="
-a94c5301207504a0d36e214b2ea64918920438bc6c017503c1292c56cf5075ff01fc61e3377231d3e0e4dad73d1c6aa0d1f43ca380cbd99aa98856fc3c3c093b  postmarketos-tweaks-0.11.0.tar.gz
+5ca72c154c00bc96a6d2030d235587c1a07d58623217b2a08b67a57f0581126e92eb869b9fc94a304c69b42dc4f79caaadd896da62c47503b6a1b858119b145d  postmarketos-tweaks-0.12.0.tar.gz
 "
