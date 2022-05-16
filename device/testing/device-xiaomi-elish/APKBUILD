@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-elish
-pkgdesc="Xiaomi Pad 5 Pro"
-pkgver=0.1
+pkgdesc="Xiaomi Mi Pad 5 Pro"
+pkgver=0.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -16,6 +16,10 @@ depends="
 makedepends="devicepkg-dev"
 source="deviceinfo"
 
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
 build() {
 	devicepkg_build $startdir $pkgname
 }
@@ -24,6 +28,14 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, WiFi, etc."
+	depends="
+		firmware-xiaomi-elish-adreno
+		"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="
-dd5c0d3fe6f7ef4eb13d3b5bb1bc6f3cf308753392e2d4e3eed192f532309f671dd639f3bec63444c9ffb509ec7b9c6969baf2c9d5b97e8e8a4d534b4381b0e7  deviceinfo
+94d4e40d06a8d2e7f652e5db45057f67925f505e4c12091ee931820f5578f7c80ece22aa654cc33b3b7e849f902295a4bd2b002b465fa8350895298a764849fa  deviceinfo
 "
