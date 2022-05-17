@@ -5,7 +5,7 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.40
+pkgver=0.41
 pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
@@ -64,6 +64,7 @@ source="
 	ucm/HiFi.conf
 	ucm/PinePhone.conf
 	ucm/VoiceCall.conf
+	ppkb.sh
 	"
 # workaround to purge the -elogind subpackage that was previously
 # created/installed
@@ -144,6 +145,9 @@ package() {
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t \
 		"$pkgdir"/usr/lib/udev/rules.d/
+
+	# Keyboard config
+	install -Dm755 "$srcdir"/ppkb.sh "$pkgdir"/etc/profile.d/ppkb.sh
 }
 
 nonfree_firmware() {
@@ -226,4 +230,5 @@ f28902517bebe16f7ddbdbf9f4c52d5c97319e3b5ba7326ba96ed0e094d3d2a39c87061326893cdc
 f963898fa2ce66bc830e56feeec6ffc9888834e14cc1591d72908ef45ad82532bc3ef5fb32413e07b6722749c9d03e7cf92f06f1fcb859c38b9297cf58e5cedd  HiFi.conf
 4b0c51ab169aebe8177c5c43eba41afa90370098a5a54e710d17e97ec1651869a20cb5d780a6132028c864916609e3b4f4a13158835310d0441bdb4915872372  PinePhone.conf
 e093f71c37370927468de35a987150a3db3e1cc1c76c144bf58918a09c688c3da84303b5533241e691a6aa0758589e2a6498b1097974117782e909f0bbc6bf71  VoiceCall.conf
+43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
 "
