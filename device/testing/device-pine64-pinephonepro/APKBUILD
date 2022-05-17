@@ -2,7 +2,7 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
-pkgver=2.0
+pkgver=2.1
 pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
@@ -37,6 +37,7 @@ source="
 	ucm/HiFi.conf
 	ucm/PinePhonePro.conf
 	ucm/VoiceCall.conf
+	ppkb.sh
 	"
 
 build() {
@@ -82,6 +83,9 @@ package() {
 		"$srcdir"/PinePhonePro.conf \
 		"$srcdir"/HiFi.conf \
 		"$srcdir"/VoiceCall.conf
+
+	# Keyboard config
+	install -Dm755 "$srcdir"/ppkb.sh "$pkgdir"/etc/profile.d/ppkb.sh
 }
 
 nonfree_firmware() {
@@ -103,4 +107,5 @@ e69752fc7f2b8552ba2e1e6da5b6bec0e284c7f14bc09576c862faeb5154a44522535a919ae5aca3
 ac22c856af81d00aa6a349b68cf9e8645bf38277d9aafd07f1f46f5f932f48d37b9dfdcc8772fff4027f914c9b4c3b4a11c51bd9f2aa1abbc53abd3f54adb818  HiFi.conf
 c57dae885c9a5f366f18b38a3ce3e21627baaf014724537eced9e8d6ac3ca61ade42b9fcf84db350b1e64742760e8cf4fe10639d41052387927238e85c3c4769  PinePhonePro.conf
 e978876bda8874e30df75c80554ccbbc0dd202c852ecae0b5c1a0d845402a630962afc2691c6f7d5f478fb0e4be045af4ef62ad0b1ce77f62fe2f155dc0a9cff  VoiceCall.conf
+43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
 "
