@@ -56,7 +56,7 @@ init="/sbin/init"
 setup_bootchart2
 
 # Switch root
-killall telnetd mdev msm-fb-refresher 2>/dev/null
+killall telnetd mdev udevd msm-fb-refresher 2>/dev/null
 umount /proc
 umount /sys
 umount /dev/pts
