@@ -1,7 +1,7 @@
 pkgname=gcc4
 pkgver=9999
 _pkgver=4.9.2
-pkgrel=3
+pkgrel=4
 pkgdesc="Old GCC for old vendor kernels (C compiler only)"
 url="http://gcc.gnu.org"
 arch="all"
@@ -192,6 +192,8 @@ source="http://gcc.gnu.org/pub/gcc/releases/gcc-${_pkgbase:-$_pkgver}/gcc-${_pkg
 	hardenednossp.specs
 	hardenednopie.specs
 	hardenednopiessp.specs
+
+	1001-fix-reload1-compile-error.patch
 	"
 
 # we build out-of-tree
@@ -412,7 +414,8 @@ package() {
 	done
 }
 
-sha512sums="35a1386ae2b8629cd464383fbb3c61e94a07f3691f48b8029b97cc62a60c792ffb870aad2343b2ad8185bf46f77e1e1dd62309ecdadc42f919874c6e2c58b936  gcc-4.9.2.tar.gz
+sha512sums="
+35a1386ae2b8629cd464383fbb3c61e94a07f3691f48b8029b97cc62a60c792ffb870aad2343b2ad8185bf46f77e1e1dd62309ecdadc42f919874c6e2c58b936  gcc-4.9.2.tar.gz
 28f8c6fdbcb19e950b1d0bafb3bcc7a8cba87bc673aa6027cece116599cdee80f0cf5e95a1440544890239f5c754e8a93ab46d9daedd937faef445d7ea33b226  ecj-4.9.jar
 618a8d037ccad15e60182acc9c85ba844cb9b5800a22ece0b814e43541b01b4e390a2847f86debb351f4b05580241747fde87e86a17060744e7bb2b9a3dc5bd4  01_all_gcc49_configure.patch
 21770259c7916e55568027926e4a543eea468b04436cc61c28f749be5a6635c48e68b7924a8eb19a76733a9d2f00921ba06faddaedbf14b1cdad5ab1810cc6c6  02_all_gcc48_config.in.patch
@@ -460,4 +463,6 @@ b37195a126476775e2ef16e0adc9173664c514339fb319f628debd8a4133fa53e022278387c68fc2
 83a0996a48096032bcc674a6d28524f1cd2d81837621ebe4c15b5aedbd551c77ce5576b6307adb673ef0e4ac0431d935ad6a427edca2af5c21b6be9176bfaddb  vanilla.specs
 e4d38905527c500c61c421d782a8ac6ef2b034b15fd81d868486ac330a70922937d3c47e0684e9f3250744569b56a8df199499a4a5c107a6d544dca84458dc12  hardenednossp.specs
 b56f7c308c5aefd0cfc647abd75939508a6640c53fce7c19da7c7d8ef4405d29b0d88800117fc7ff8d0022b035d511fb6d478e745bb2ed12a1b63f9f8cf3e168  hardenednopie.specs
-f5ac7282201006548ed2bd835234af64d6f79f13f0b9a3410f5c794537e0ea91601361ae72180f49870b6b0f9af5f16002c86660feb94df346b9b1d9602e9d3a  hardenednopiessp.specs"
+f5ac7282201006548ed2bd835234af64d6f79f13f0b9a3410f5c794537e0ea91601361ae72180f49870b6b0f9af5f16002c86660feb94df346b9b1d9602e9d3a  hardenednopiessp.specs
+6f3d708269cc3f1d28ad9af8cd1206753b7d4ddde6589c303ce201d34b531f1abb73a14032a7f8e16c5ec3041e0c227b3451c09b1952a58893a64a2765d12a00  1001-fix-reload1-compile-error.patch
+"
