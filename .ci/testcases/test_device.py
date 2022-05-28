@@ -16,16 +16,11 @@ def device_dependency_check(apkbuild, path):
     """ Raise an error if a device package has a dependency that is not allowed
         (e.g. because it should be in a subpackage instead). """
 
-    # asus-me176c: without this, the device will simply run the broken ACPI
-    #              DSDT table, so we might as well update it. See pmaports!699.
-    firmware_ok = {"device-asus-me176c": ["firmware-asus-me176c-acpi"]}
-
-    pkgname = apkbuild["pkgname"]
     for depend in apkbuild["depends"]:
+        if depend == "linux-firmware-none":
+            continue
         if (depend.startswith("firmware-") or
                 depend.startswith("linux-firmware")):
-            if pkgname in firmware_ok and depend in firmware_ok[pkgname]:
-                continue
             raise RuntimeError("Firmware package '" + depend + "' found in"
                                " depends of " + path + ". These go into"
                                " subpackages now, see"
@@ -83,7 +78,7 @@ def test_aports_device_kernel(args):
         # Parse kernels from depends
         kernels_depends = []
         for depend in apkbuild["depends"]:
-            if not depend.startswith("linux-"):
+            if not depend.startswith("linux-") or depend.startswith("linux-firmware-"):
                 continue
             kernels_depends.append(depend)
 
