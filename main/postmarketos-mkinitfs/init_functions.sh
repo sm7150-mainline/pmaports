@@ -213,6 +213,11 @@ find_boot_partition() {
 		|| findfs LABEL="pmOS_boot"
 }
 
+get_partition_type() {
+	partition="$1"
+	blkid "$partition" | sed 's/^.*TYPE="\([a-zA-z0-9_]*\)".*$/\1/'
+}
+
 # $1: path
 # $2: set to "rw" for read-write
 # Mount the boot partition. It gets mounted twice, first at /boot (ro), then at
@@ -233,6 +238,22 @@ mount_boot_partition() {
 		mount_opts="-o ro"
 		echo "Mount boot partition ($partition) to $1 (read-only)"
 	fi
+
+	type="$(get_partition_type "$partition")"
+	case "$type" in
+		ext*)
+			echo "Detected ext filesystem"
+			modprobe ext4
+			# ext2 might be handled by the ext2 or ext4 kernel module
+			# so let mount detect that automatically by omitting -t
+			;;
+		vfat)
+			echo "Detected vfat filesystem"
+			modprobe vfat
+			mount_opts="-t vfat $mount_opts"
+			;;
+		*)	echo "WARNING: Detected unsupported '$type' filesystem ($partition)." ;;
+	esac
 
 	# shellcheck disable=SC2086
 	mount $mount_opts "$partition" "$1"
@@ -338,11 +359,6 @@ unlock_root_partition() {
 	fi
 }
 
-get_partition_type() {
-	partition="$1"
-	blkid "$partition" | sed 's/^.*TYPE="\([a-zA-z0-9_]*\)".*$/\1/'
-}
-
 resize_root_filesystem() {
 	if [ "$ROOT_PARTITION_RESIZED" = 1 ]; then
 		show_splash /splash-resizefs.ppm.gz
@@ -352,10 +368,12 @@ resize_root_filesystem() {
 		case "$type" in
 			ext4)
 				echo "Resize 'ext4' root filesystem ($partition)"
+				modprobe ext4
 				resize2fs -f "$partition"
 				;;
 			f2fs)
 				echo "Resize 'f2fs' root filesystem ($partition)"
+				modprobe f2fs
 				resize.f2fs "$partition"
 				;;
 			btrfs)
@@ -380,10 +398,12 @@ mount_root_partition() {
 	case "$type" in
 		ext4)
 			echo "Detected ext4 filesystem"
+			modprobe ext4
 			mount -t ext4 -o ro "$partition" /sysroot
 			;;
 		f2fs)
 			echo "Detected f2fs filesystem"
+			modprobe f2fs
 			mount -t f2fs -o ro "$partition" /sysroot
 			;;
 		btrfs)
@@ -391,7 +411,7 @@ mount_root_partition() {
 			modprobe btrfs
 			mount -t btrfs -o ro "$partition" /sysroot
 			;;
-		*)	echo "WARNING: Detected '$type' filesystem ($partition)." ;;
+		*)	echo "WARNING: Detected unsupported '$type' filesystem ($partition)." ;;
 	esac
 	if ! [ -e /sysroot/usr ]; then
 		echo "ERROR: unable to mount root partition!"
