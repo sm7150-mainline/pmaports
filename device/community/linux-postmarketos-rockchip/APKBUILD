@@ -10,8 +10,8 @@
 # boot failure
 
 pkgname=linux-postmarketos-rockchip
-pkgver=5.16.8
-pkgrel=1
+pkgver=5.18
+pkgrel=0
 pkgdesc="Mainline kernel for rockchip devices"
 arch="aarch64 armv7"
 _flavor="${pkgname#linux-}"
@@ -54,9 +54,6 @@ esac
 
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
-	0001-phy-rockchip-typec-Set-extcon-capabilities.patch
-	0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
-	0010-usb-typec-add-extcon-to-tcpm.patch
 	0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
 
 	config-$_flavor.aarch64
@@ -97,11 +94,8 @@ package() {
 
 
 sha512sums="
-66a0874eed7b2367fc0b69bee8c40a945b9e58d1a820c3e7e741bcb28774c811dea251826b14e2452d9e1fdd7509554ac50229f942c8ba853c308affba94a39a  linux-5.16.8.tar.xz
-10949558a6e3316ea57497f377fd120d6704f3b81725317556e49d10b570a40edb06643b06738116abbe3096be485761d436f1a0d1861bd34fc18ea45068b6b0  0001-phy-rockchip-typec-Set-extcon-capabilities.patch
-b7291eecfddc7ebe9393eea864e0ee28960e8cc2f87dfc42d09426b5619f46ded97c38fb8bf26f4eea1f26bfe21396094505b3efb8676691f8751e2ffabe50ec  0003-arm64-dts-rockchip-add-typec-extcon-hack.patch
-e5cc0852506ea1e73213672f0c3f9144c08156f6d5e8af841bf3f7bffc0e89028507aac4718353eee20edd9069e3f81665caa5ca25e416f25e7e0da10451b67e  0010-usb-typec-add-extcon-to-tcpm.patch
+dbbc9d1395898a498fa4947fceda1781344fa5d360240f753810daa4fa88e519833e2186c4e582a8f1836e6413e9e85f6563c7770523b704e8702d67622f98b5  linux-5.18.tar.xz
 265b05bc542edb290ec15cd5f50132698a32e80d30ce28ce3ad7e990b7c07df92c4556122505b07a6aa582a919459872d1d874f4ed422d2aff2cdfb51889e720  0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
-5dc0ed5b947ca8153e3b3874cf380208b0736a0e5db25fbeddf4c9cbb8d121d20de130462c99f9f398f4d28a229eac8cf384d9170fff5d56a48e5aec1c1eea9e  config-postmarketos-rockchip.aarch64
-381064728710b2e74fbf623e7ce2ab84251ec656030e8c96c5f7630afd9e6786f725791ef5b4493eb6c821a0b87126e391a94b0ffc6999c4580f870b9cdfa1c8  config-postmarketos-rockchip.armv7
+db5b9b59d9a880d11c2d7f1c0283c4acfd741dacb9d07f8a850a4b38a40af7371531d71805c5b028fab7a3a659e824f4ee47d6b64f12a9fbd6a723220452c3f3  config-postmarketos-rockchip.aarch64
+c3144d302ae68ee9d6ef3cc77951808c61ff59ce0fcaef1a4829f11ccdb680e5a78b32697918700e9b6e1c25ccdd19002b096aed3b649197d31eed7cd2239ac4  config-postmarketos-rockchip.armv7
 "
