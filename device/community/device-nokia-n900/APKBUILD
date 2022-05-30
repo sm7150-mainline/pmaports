@@ -1,10 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Maintainer: Sicelo <absicsz@gmail.com>
-# Co-Maintainer: Martijn Braam <martijn@brixit.nl>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
 pkgver=8
-pkgrel=3
+pkgrel=4
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
@@ -13,7 +12,6 @@ depends="postmarketos-base linux-nokia-n900 u-boot-tools kbd kbd-bkeymaps ofono 
 makedepends="devicepkg-dev u-boot-tools kbd kbd-bkeymaps"
 install="$pkgname.post-install"
 subpackages="
-	$pkgname-weston
 	$pkgname-x11
 	$pkgname-i3wm
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -34,7 +32,6 @@ source="
 	pointercal
 	asound.state.speakers
 	asound.state.headset
-	weston.ini
 	i3wm/scripts/battery-bq27200
 	i3wm/scripts/ofono
 	i3wm/scripts/calendar
@@ -114,12 +111,6 @@ package() {
 		"$pkgdir"/usr/share/bkeymaps/se/rx51_se.bmap.gz
 }
 
-weston() {
-	install_if="$pkgname weston"
-	install -Dm644 "$srcdir"/weston.ini \
-		"$subpkgdir"/etc/xdg/weston/weston.ini
-}
-
 x11() {
 	install_if="$pkgname xorg-server"
 	install -D -m644 "$srcdir"/40-xkb.conf \
@@ -173,7 +164,6 @@ dc585e11bf4e06e36c5c62bcc024eaacecc30437d9da5257df14be05e247a2f2bc208874be3058ed
 143c21f0b18a016d37cb44178e9daea09f128a90769b48353c03c3f245cb9b1f7e773b9ccee084973fc78ddd7a18c2642e54888a85bda7c7daecddc9a8c62eff  pointercal
 67acc17a33bc75113300393b4a5bba15319014032407e774d079abf310368e75f4f697dbb4856ba2d2d8ea184b056bb33561f42918de3ee91ab6a77df89a133c  asound.state.speakers
 5b87071834313a389f83d29f86f6e3ea108d0921f17dc918be7a46de7e74c73a4418044ef600a0fbf72c8fad22b7730dcd5bfe3d6d01d76bf01556f8540f0b32  asound.state.headset
-7f48d1a044f8c02f7b1d11487ec1f83978d9b0ea12529156e7418f82be556d9baee32b70c4d911174e388bb4941dc19519e93e7551d00ffcd825c848665ff096  weston.ini
 2ae4771eda9b151de3b47dc4e3081eb86b92fc04c4be4b4fbb98c28016762d24008e935bbba8f95ea0732019f615ee43f5d93dacb21bdc3471e505a07a684e26  battery-bq27200
 82038d38f94cb975a8d38914afca49b64957446bef7490ab684efa1df47ede2ea1c769045789bb9fded673345eea01911fbbf85fdb54c28685cad8022bfaafac  ofono
 d9ef88c714e9fce8822f63b7a9d7fc3e1ed472c8c876b44ba524d44efea322839f13ddd2fa652420608427ecf7279bfaac302c9b67667f32796ca21da332164d  calendar
