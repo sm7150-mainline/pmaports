@@ -2,7 +2,7 @@
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 
 pkgname=linux-nokia-n900
-pkgver=5.15.31
+pkgver=5.18.1
 pkgrel=0
 pkgdesc="Mainline kernel fork for Nokia N900"
 arch="armv7"
@@ -26,14 +26,12 @@ source="
 	$_patch
 	$_config
 	0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
-	0002-ARM-dts-n900-remove-rx51-battery.patch
-	0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
+	0002-power-supply-bq27xxx-expose-battery-data-when-CI.patch
+	0003-wip-Revert-dma-direct-Fix-potential-NULL-pointer-der.patch
 	0004-ARM-dts-omap3_n900-disable-thermal-for-now.patch
 	0005-iio-accel-st-accel-add-lis302dl.patch
 	0006-ARM-dts-N900-use-iio-driver-for-accelerometer.patch
 	0007-Revert-ARM-omap3-enable-off-mode-automatically.patch
-	0008-wl1251-specify-max.-IE-length.patch
-	0009-wip-Revert-dma-direct-Fix-potential-NULL-pointer-der.patch
 "
 builddir="$srcdir/linux-$_kernver"
 
@@ -62,16 +60,14 @@ package() {
 }
 
 sha512sums="
-d25ad40b5bcd6a4c6042fd0fd84e196e7a58024734c3e9a484fd0d5d54a0c1d87db8a3c784eff55e43b6f021709dc685eb0efa18d2aec327e4f88a79f405705a  linux-5.15.tar.xz
-1dc78db565dda619aa9f1d59bb78cf7ee43e8922f6e055bdd6f8b419556be8838235aa26e29fd1bd38cf12d8fb81e267714bb647921dee2c2aeab9319fbe294d  linux-5.15.31.patch.xz
-465cb8fcc3a5dc043323c0767e4918b68556c1f1b693e0959b486c0e3a72264704d1889137e640e6262b4fd22feeedcfc454b6515876168ff5f0f6ccc30c4a1e  config-nokia-n900.armv7
+dbbc9d1395898a498fa4947fceda1781344fa5d360240f753810daa4fa88e519833e2186c4e582a8f1836e6413e9e85f6563c7770523b704e8702d67622f98b5  linux-5.18.tar.xz
+d8f105b34b4a0f933cddc631f8f54ca2e50f055365c864f33c389972df03cb2cdf415eb47a2b2fbc0d43af6679fe21e3bb459d79d02103a2db8782146473910e  linux-5.18.1.patch.xz
+461e48aa7e26cc41de349da303df3751cf6a3d7c8aa0897a946b39ccab2240696e07a5671649d4d5c994051e649138a708011048a44e236d15e8fcb42f2a6179  config-nokia-n900.armv7
 04a39253afd25a7de03dc45ff322161672005406543c44b97d2dc293f202de7de446aee9707a690a290641c55c7bed6e78bbe096ca323dd7d88d3207427c8d31  0001-ARM-dts-n900-increase-charge-current-limit-to-950mA.patch
-c1055c7a4d2e39ce13db3871d948022b62eb7ebeb898777d197169b3e7c04d705ce7f52f28214754e3cefe99d1dd66f339a1a5770bae1ee970d5926067032061  0002-ARM-dts-n900-remove-rx51-battery.patch
-93e82f7041e347b63fc32ce54176ee3fe7e8260cc793810bcf0146a3699567b63a0cb7ce8c531b0484390907a25c51bfbeb15b32dddb2220c2481ec1f86e5eb5  0003-power-supply-bq27xxx_battery-ignore-inaccurate-flag.patch
+3cc2036ba264bd855358361aacb309ad1cf1660cb82a0978523508d1b3fe513676c58f6efc5bb64f7601b77392c19d2c609b6d83541db7e418c1737cff3973e8  0002-power-supply-bq27xxx-expose-battery-data-when-CI.patch
+991237276bee4ff7bca24cf3a26afe3f12a2a604452793ad905a605890f761ac98374b5509cfbcab33c7b7ccf3da5cc286e70afe27b8e201387f403bf5025ae9  0003-wip-Revert-dma-direct-Fix-potential-NULL-pointer-der.patch
 ea33adda06e1fb64b763c34f1f598bb00ccfdba5400d0996871138284b4cb8a51e021c7c0ace9d4bc16027530027fb2a443d5013c6f0b22ed3d64f36152c8854  0004-ARM-dts-omap3_n900-disable-thermal-for-now.patch
-fc23b8ee50e387a05d820f07281a9735d3073de07c5a6a13e44da7615b0c9a8030bba80f9e63f567557f69e8d75d6d51330b3ca3a6c719275a5a5ed8223a6d2a  0005-iio-accel-st-accel-add-lis302dl.patch
+d5a78e68c10a51f4354a420475db2d10e0be92632df9588c9136dba5b0e5e0c8757f0d8e1bd4fdf99cbbf2f93c54d20eacee1c3a668070037afeac1fded1531a  0005-iio-accel-st-accel-add-lis302dl.patch
 302aa8e6677e7ecfae473553806cdf5d47687c4f8e73322d0ace78486f9290ba503069ed6b41250fe38802b6c6091c7c4eac06ab387e011f1316b84ad5e2641d  0006-ARM-dts-N900-use-iio-driver-for-accelerometer.patch
 acf3beef5448da7f3be19b862ac2fef65379d9f1617246baaab296083901174d891526cd9bf781162d4406089969c311701dfded04219bafd3c5c7784bc4c2e6  0007-Revert-ARM-omap3-enable-off-mode-automatically.patch
-acaa153809c390957ee8d80caae440a41d84c78f045268ac226f05019dbdd69959b5cf56b6bac2e2c0300bcdb68649ffb847e7a0a333408bf5b4426fc969afe8  0008-wl1251-specify-max.-IE-length.patch
-f0a02313f168970499faef51207644e69ca65aa380ada055a2f5faceaa8c85f6ea0a161729637205c2bc116e1a0ac62d07c44a83c4419cfec04d4141508f7845  0009-wip-Revert-dma-direct-Fix-potential-NULL-pointer-der.patch
 "
