@@ -2,7 +2,7 @@
 # Maintainer: Timothy Valldeperas <tvall43@gmail.com>
 pkgname=device-google-veyron-jerry
 pkgdesc="Google Veyron Jerry Chromebook"
-pkgver=0.3
+pkgver=0.4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -10,6 +10,7 @@ arch="armv7"
 options="!check !archcheck"
 depends="postmarketos-base linux-postmarketos-rockchip mesa-dri-gallium"
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
 	extlinux.conf
@@ -23,7 +24,12 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/extlinux.conf \
 		"$pkgdir"/boot/extlinux/extlinux.conf
+}
 
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-mrvl"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
