@@ -1,0 +1,59 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/bonito_defconfig
+
+pkgname=linux-google-sargo
+pkgver=4.9.292
+pkgrel=0
+pkgdesc="Google Pixel 3a kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="google-sargo"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	android-mkdtboimg
+	bash
+	bc
+	bison
+	dtc
+	devicepkg-dev
+	flex
+	lz4
+	openssl-dev
+	perl
+"
+
+# Source
+_repository="android_kernel_google_msm-4.9"
+_commit="b72846a92eb2df2fe5c73dc1159292286f022258"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+export MKDTIMG="mkdtimg"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	KERNEL_IMAGE_NAME="Image.lz4-dtb" downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+}
+
+sha512sums="
+cdba93be679f6b084432ec6069d809390fce60667ca1a9dc3eccf916959e687f4898e1e07c263582c900aa3e1cb5a517a4e28dd0bf4f9f1328fbf6b3e06d5048  linux-google-sargo-b72846a92eb2df2fe5c73dc1159292286f022258.tar.gz
+8d7f41c8b157f454024b115d693d7c7a0b864233390c78b1562784c8720b37973ca563689c2aca32ede7d8f85c3f38f9da6921a80d8185bc64bff7ffbd7da5d6  config-google-sargo.aarch64
+"

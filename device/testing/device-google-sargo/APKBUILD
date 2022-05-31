@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-google-sargo
+pkgdesc="Google Pixel 3a"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-google-sargo
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	make-dynpart-mappings
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+ca8b0ae5d6a698a7f2af7f5724cbe6603e5191542720c5bca606482d1114459b9a3709b6165ab8cc62cf6fe29c0cb74dfb782067cd3d9e67d149b38b839736be  deviceinfo
+"
