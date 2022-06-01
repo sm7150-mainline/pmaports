@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+
+description="Initialize sd8x wlan driver"
+
+depend()
+{
+	need udev
+	before wpa_supplicant
+}
+
+start()
+{
+	ebegin "Enabling wlan driver"
+	echo 1 > /sys/devices/platform/sd8x-rfkill/pwr_ctrl
+}

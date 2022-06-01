@@ -1,0 +1,33 @@
+pkgname=firmware-samsung-xcover3lte
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Samsung Galaxy Xcover 3"
+url="https://postmarketos.org"
+arch="aarch64"
+license="proprietary"
+options="!strip !check !archcheck !spdx pmb:cross-native !tracedeps"
+install="$pkgname.post-install"
+_repo="android_vendor_samsung_xcover3lte"
+_commit="6e324b43b32dc607327d89148dd5d83a14429ee6"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/xcover3/$_repo/archive/$_commit.tar.gz
+	sd8x-wlan.initd
+"
+_files="sd8777_uapsta.bin WlanCalData_ext.conf txpwrlimit_cfg.bin bt_cal_data.conf"
+builddir="$srcdir/$_repo-$_commit"
+
+package() {
+	cd proprietary/etc/firmware/mrvl/
+
+	for _i in $_files; do
+		install -Dm644 "$_i" \
+			-t "$pkgdir/lib/firmware/postmarketos/mrvl"
+	done
+
+	install -Dm755 "$srcdir"/sd8x-wlan.initd "$pkgdir"/etc/init.d/sd8x-wlan
+}
+
+sha512sums="
+c396170f11e13498bff588336761852d67571862b45e6d2795066c41a2ea992aec108990269eeaad727fb43bbcd8613a3dd44e92212d9f4a18e058389814e974  firmware-samsung-xcover3lte-6e324b43b32dc607327d89148dd5d83a14429ee6.tar.gz
+043de79f6040ab093950e848f773ec60697abff83bc6bfb68fb6a3001bc06b393a83ea99b63dba0f660b3004ac05faa5eb87d43fd12c2d45d7ecdcc44a91d8fc  sd8x-wlan.initd
+"
