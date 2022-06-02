@@ -1,0 +1,92 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Nicholas Frillman <nicholas.frillman@gmail.com>
+# Co-Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-veyron-minnie
+pkgdesc="ASUS Chromebook Flip C100"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+# pmb:strict: avoid grub-related install error during build with pmbootstrap
+options="!check !archcheck pmb:strict"
+depends="
+	alsa-ucm-conf-google-veyron
+	linux-postmarketos-rockchip
+	u-boot-veyron-minnie
+	mesa-dri-gallium
+	postmarketos-base
+"
+subpackages="
+	$pkgname-i3wm
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+makedepends="devicepkg-dev grub grub-efi"
+source="
+	deviceinfo
+	i3wm/xorg.conf.d/90-tap-to-click.conf
+	grub.cfg
+	phoc.ini
+	pointercal
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	grub-mkimage \
+		--prefix="/grub" \
+		--output="bootarm.efi" \
+		--format="arm-efi" \
+		--compression="xz" \
+		\
+		all_video \
+		disk \
+		efi_gop \
+		fat \
+		gzio \
+		iso9660 \
+		linux \
+		normal \
+		part_gpt \
+		part_msdos
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -D "$srcdir"/grub.cfg \
+		"$pkgdir"/boot/grub/grub.cfg
+	install -D "$srcdir"/bootarm.efi \
+		"$pkgdir"/boot/EFI/Boot/bootarm.efi
+
+	install -Dm644 "$srcdir"/pointercal \
+		"$pkgdir"/etc/pointercal
+}
+
+# The only way to right click on this device
+i3wm() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-i3wm"
+	install -Dm644 "$srcdir"/90-tap-to-click.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/90-tap-to-click.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="firmware-google-veyron-brcm"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+486b8a80aaa53905ce326ffc35eb98906c135c6d843888597d480a48713e83a5541c821859197ba722fed65fb372a6bb563c9e01191256111b75d06f31af5e3f  deviceinfo
+e53ca475830930ecfc1fd537702e850e2abcb66fbed521cb6c3a2918d762649254bd0244ec93a47b20dfc593ec3afc9bdebdec1759a7bc96dcbe4800f40893da  90-tap-to-click.conf
+12111792627ec074b0c0300d79d903dcf48b17556407e8d3f9aa50a99b6f31767b754ff9f5ff7da0ce1020d49ba8a648f66f559ed71ce505d8c99d472ab0427e  grub.cfg
+bd63cfc97d37e81dd9559dad60f330c10dc280afd20081495c6302960fcacf32954e3edab53294fcd5278e86c53c47a95b345a8d9e18807d88fe4313d519d259  phoc.ini
+754eb3c09aadf552aaea3ade7cddf737769f800ddeafbf0665b61141397a58bea4595652ec3d7d1803863257cd163114a330f040a3f2352051b2215f7efa46a6  pointercal
+"
