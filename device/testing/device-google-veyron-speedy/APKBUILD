@@ -1,0 +1,86 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-veyron-speedy
+pkgdesc="ASUS Chromebook C201"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+# pmb:strict: avoid grub-related install error during build with pmbootstrap
+options="!check !archcheck pmb:strict"
+depends="
+	alsa-ucm-conf-google-veyron
+	linux-postmarketos-rockchip
+	u-boot-veyron-speedy
+	mesa-dri-gallium
+	postmarketos-base
+"
+subpackages="
+	$pkgname-i3wm
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+makedepends="devicepkg-dev grub grub-efi"
+source="
+	deviceinfo
+	i3wm/xorg.conf.d/90-tap-to-click.conf
+	grub.cfg
+	phoc.ini
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	grub-mkimage \
+		--prefix="/grub" \
+		--output="bootarm.efi" \
+		--format="arm-efi" \
+		--compression="xz" \
+		\
+		all_video \
+		disk \
+		efi_gop \
+		fat \
+		gzio \
+		iso9660 \
+		linux \
+		normal \
+		part_gpt \
+		part_msdos
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -D "$srcdir"/grub.cfg \
+		"$pkgdir"/boot/grub/grub.cfg
+	install -D "$srcdir"/bootarm.efi \
+		"$pkgdir"/boot/EFI/Boot/bootarm.efi
+}
+
+# The only way to right click on this device
+i3wm() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-i3wm"
+	install -Dm644 "$srcdir"/90-tap-to-click.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/90-tap-to-click.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="firmware-google-veyron-brcm"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+b6c70318a7df5ac9a39ba05deccfcac56b82532d4b8f2cb73dfbffa7143caec40b01d9f289b869ed5f1bf54dd69d34700aebdd97a09f5c4468999d886d808f46  deviceinfo
+e53ca475830930ecfc1fd537702e850e2abcb66fbed521cb6c3a2918d762649254bd0244ec93a47b20dfc593ec3afc9bdebdec1759a7bc96dcbe4800f40893da  90-tap-to-click.conf
+0e3cbcd1a61209c60d3df594deea70c71aa41ba5af9e971e55f44b3a1a557bff37970442c881e8f4ea45240a1ed71845b8031373ba0c213c493ad1d9a2ccf1c8  grub.cfg
+bd63cfc97d37e81dd9559dad60f330c10dc280afd20081495c6302960fcacf32954e3edab53294fcd5278e86c53c47a95b345a8d9e18807d88fe4313d519d259  phoc.ini
+"

@@ -1,0 +1,59 @@
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=u-boot-veyron-speedy
+pkgver=2021.01
+pkgrel=0
+pkgdesc="U-Boot for ASUS Chromebook C201"
+url="https://www.denx.de/wiki/U-Boot/"
+arch="armv7"
+license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
+	ISC LGPL-2.0-only LGPL-2.1-only X11"
+options="!check" # no tests in upstream
+makedepends="$depends_dev bc dtc python3-dev swig bison flex openssl-dev
+	py3-setuptools linux-headers u-boot-tools vboot-utils"
+source="
+	https://ftp.denx.de/pub/u-boot/u-boot-${pkgver//_/-}.tar.bz2
+	0001-chainloading-v2021.01.patch
+	0002-supress-efi-errors-v2021.01.patch
+	0003-add-efi-support.patch
+	chromebook_speedy.its
+"
+
+builddir="$srcdir"/u-boot-${pkgver//_/-}
+
+prepare() {
+	default_prepare
+}
+
+build() {
+	make chromebook_speedy_defconfig
+	make
+
+	cp "$srcdir"/chromebook_speedy.its ./
+	mkimage -f chromebook_speedy.its u-boot-dtb.img
+
+	echo -e "\n" > dummy_config
+	echo -e "\n" > dummy_bootloader
+
+	vbutil_kernel \
+		--pack u-boot-dtb.img.kpart \
+		--keyblock /usr/share/vboot/devkeys/kernel.keyblock \
+		--signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
+		--version 1 \
+		--arch arm \
+		--config dummy_config \
+		--bootloader dummy_bootloader \
+		--vmlinuz u-boot-dtb.img
+}
+
+package() {
+	install -D -m644 "$builddir"/u-boot-dtb.img.kpart \
+		"$pkgdir"/usr/share/u-boot/google-veyron-speedy/u-boot-dtb.img.kpart
+}
+
+sha512sums="
+40dd4d9ef87a1829158658c433d46a047a39c0d8c314ad8d133f7240343ee3a75b060f009dd2efe598cfb8a766773f6cd773ea7f7745ee88e52a771c77eb1c6e  u-boot-2021.01.tar.bz2
+53e12dece9eb7ab4d5317ac2570714954c3158f1717abe729deca454244a97f885ae9cc571bab4f80a5b65d6dde7752242ac856138eede347fde719ff21a6097  0001-chainloading-v2021.01.patch
+b3fd3e1fea09f947b2f0b35dc5a4abd2bf8215907942a88c36685973d08112b74e5cc2e5fc3666a8d27a9f37873dfaedf2136f52c2756c9c97cbb8ad0472478c  0002-supress-efi-errors-v2021.01.patch
+789e50a7d01308f2eba442fe20ab93e2a3c2e47af00a20bc6f5cca7a7f91f8fa266884dd88712a28673c2191b0499f866ff560771169986b0d60387ebfdc8211  0003-add-efi-support.patch
+2944e710882522748816e2027eee9a9bfd16385ffa6ab051c385ad7ff04b663863e69273972c5988ad64ca7b3b71ee46937818490b1dbad6eb75928c1db7440a  chromebook_speedy.its
+"
