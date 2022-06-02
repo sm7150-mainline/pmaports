@@ -1,0 +1,24 @@
+pkgname=firmware-google-veyron-brcm
+pkgver=1
+pkgrel=0
+pkgdesc="Broadcom firmware for Google Veyron Chromebooks"
+url="https://github.com/jenneron/firmware-google-veyron-brcm"
+arch="armv7"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+
+_commit="8b21509dab9d5143ca4d289d453fc83cb3221d07"
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	mkdir -p "$pkgdir"
+	cd "$srcdir/firmware-google-veyron-brcm-$_commit"
+	install -Dm644 brcmfmac4354-sdio.bin -t "$pkgdir/$_fwdir"/brcm
+	install -Dm644 brcmfmac4354-sdio.txt -t "$pkgdir/$_fwdir"/brcm
+}
+
+sha512sums="
+ef763c9167094eb75a3a19aa04d4d75252f8ee141a06377e01b2ab005c392e6438b46446cd9f4bff42a848ddf078c5cd6f3128c50ec745455c3a17e70cd0a285  firmware-google-veyron-brcm-8b21509dab9d5143ca4d289d453fc83cb3221d07.tar.gz
+"
