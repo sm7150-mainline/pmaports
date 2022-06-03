@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-arubaslim
+pkgdesc="Samsung Galaxy Core"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-samsung-arubaslim
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+3373c15d8ebfc6467820cc1291b4456c13f2646762bd0b3f57aac1c56620e18a905d406082956f5f628ec6531d7bfb789903e4aa17008b7c40c8198826215af3  deviceinfo
+"
