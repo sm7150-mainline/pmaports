@@ -4,7 +4,7 @@
 pkgname=device-xiaomi-scorpio
 pkgdesc="Xiaomi Mi Note 2"
 pkgver=3
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -22,10 +22,11 @@ makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 
 source="
+	30-gpu-firmware.files
 	deviceinfo
+	gpu-nobin.sh
 	pointercal
 	phoc.ini
-	30-gpu-firmware.files
 	"
 
 build() {
@@ -37,6 +38,9 @@ package() {
 
 	install -D -m644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
+
+	install -D -m644 "$srcdir"/gpu-nobin.sh \
+		"$pkgdir"/etc/profile.d/gpu-nobin.sh
 }
 
 nonfree_firmware() {
@@ -62,8 +66,9 @@ phosh() {
 
 
 sha512sums="
+a1ca623314e80045ea8d64be06d12ffc091a5585ca40f9713039883e20889ba47f4a3f9c3bd92bd3b616bb6bb621e87409b6b6fa43bfe566a2a46468609c16f4  30-gpu-firmware.files
 52ba13a75f14c8d75a719f463a870df34eb59765bd43f29a49fb0dff201410fa388a04f73ec8e6e86d634547bf6ef0164466333b24da36d882b0d7254bfbe213  deviceinfo
+ecd40b8f9bc17f383c52aa96ad23ceec41be75a4500d5e7a67f2f59875bf9f72eb35686a0b6e4949b45fd589c5da409d1212c52172fef94de2d1655b28c339b4  gpu-nobin.sh
 e9ee9c1404b41ba15eafff3f728ff6e0e78dc17e9a88483fca92db1aa3efe0e4d5bf26142e533c4ff12b1bf8ce04ccabb7ca0f93aaea586d5b30910282aad237  pointercal
 38409d4ce48db4624539dbfd695d3c6e1596a29fd7c3004a41368b28cba646495d05360420ad728f82c63d6ddeeca71d09944df06ebaca120aedd9cc2b436eb3  phoc.ini
-a1ca623314e80045ea8d64be06d12ffc091a5585ca40f9713039883e20889ba47f4a3f9c3bd92bd3b616bb6bb621e87409b6b6fa43bfe566a2a46468609c16f4  30-gpu-firmware.files
 "
