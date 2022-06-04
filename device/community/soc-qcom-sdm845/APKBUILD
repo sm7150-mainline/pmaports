@@ -1,7 +1,7 @@
 # Maintainer: Caleb Connolly (kalube) <caleb@connolly.tech>
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
-pkgver=6
+pkgver=7
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -15,6 +15,7 @@ depends="
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-ucm
+	$pkgname-qbootctl
 "
 
 _ucm_commit="621c71fd5f5742c60d38766ebb2d1bd3b863a2a4"
@@ -46,6 +47,13 @@ ucm() {
 	# install audio config files
 	mkdir -p "$subpkgdir"/usr/share/alsa/ucm2
 	cp -r "$srcdir/alsa-ucm-conf-$_ucm_commit"/ucm2 "$subpkgdir"/usr/share/alsa/
+}
+
+qbootctl() {
+	pkgdesc="Enable qbootctl mark-boot-successful service"
+	depends="qbootctl"
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
