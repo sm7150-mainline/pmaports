@@ -1,3 +1,5 @@
-# map tm2-touchkey to KEY_MENU and KEY_BACK
-SUBSYSTEM=="input", KERNEL=="event*", DRIVERS=="tm2-touchkey", \
+# map tm2-touchkey to KEY_MENU and KEY_BACK (main variant)
+SUBSYSTEM=="input", KERNEL=="event*", DRIVERS=="tm2-touchkey", ATTRS{name}!="midas-touchkey", \
 ENV{KEYBOARD_KEY_00}="menu", ENV{KEYBOARD_KEY_01}="back", RUN{builtin}+="keyboard"
+
+# (udev rule for mapping midas variants is unnecessary because the default key mapping is correct)
