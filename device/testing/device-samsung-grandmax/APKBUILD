@@ -1,0 +1,40 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-grandmax
+pkgdesc="Samsung Galaxy Grand Max"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	postmarketos-base
+	mkbootimg
+	linux-postmarketos-qcom-msm8916
+	soc-qcom-msm8916
+	soc-qcom-msm8916-rproc
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+_pmb_select="soc-qcom-msm8916-rproc"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="firmware-qcom-adreno-a300 msm-firmware-loader firmware-samsung-grandmax-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+ac0b14302b9cc7db8a239eb801acf077c3c24b0226e97f9035315ebdf0e2e70fc3001a4b23381acf5732bd583e0ab4969f033537e5099c212038bcac49894fd5  deviceinfo
+"
