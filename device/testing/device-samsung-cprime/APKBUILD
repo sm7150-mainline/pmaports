@@ -1,0 +1,51 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-cprime
+pkgdesc="Samsung Galaxy Core Prime"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	postmarketos-base
+	mkbootimg
+	linux-postmarketos-qcom-msm8916
+	soc-qcom-msm8916
+	soc-qcom-msm8916-rproc
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	phoc.ini
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+_pmb_select="soc-qcom-msm8916-rproc"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="firmware-qcom-adreno-a300 msm-firmware-loader firmware-samsung-cprime-wcnss-nv"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+46e147f19e42996cf7c230a2b66bcfebd53f657b8baf410984e3a0a39826b610547687251bd9a2bac409319fa90954229dc536b189e320d9cdf8a9e3260098f9  deviceinfo
+9793dfd1ea066fbadeca874401a0c7c9b735b98054ccfbafa0b8d99e47ef78e28c971c544905ae556da50b55037e6970ab79be2e0a28672d9acb6f9d7d77093b  phoc.ini
+"
