@@ -15,7 +15,9 @@ def test_aports_ui(args):
     """
     Raise an error if package in _pmb_recommends is not found
     """
-    for arch in pmb.config.build_device_architectures:
+    pmaports_cfg = pmb.config.pmaports.read_config(args)
+
+    for arch in pmaports_cfg["supported_arches"].split(","):
         for path in glob.iglob(args.aports + "/main/postmarketos-ui-*/APKBUILD"):
             apkbuild = pmb.parse.apkbuild(path)
             # Skip if arch isn't enabled
