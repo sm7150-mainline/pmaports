@@ -318,7 +318,7 @@ resize_root_partition() {
 	# external partition.
 	if [ -z "${partition##"/dev/mapper/"*}" ]; then
 		# Get physical device
-		partition_dev=$(dmsetup deps -o devname "$partition" | \
+		partition_dev=$(dmsetup deps -o blkdevname "$partition" | \
 			awk -F "[()]" '{print "/dev/"$2}')
 		if has_unallocated_space "$partition_dev"; then
 			echo "Resize root partition ($partition)"
