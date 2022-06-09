@@ -1,0 +1,34 @@
+# A temporary package until these MRs are merged and available in Alpine:
+# - https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/merge_requests/596
+# - https://github.com/alsa-project/alsa-ucm-conf/pull/162
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=alsa-ucm-conf-google-gru
+pkgver=1
+pkgrel=0
+pkgdesc="ALSA Use Case Manager configuration for Google Gru Chromebooks"
+url="https://alsa-project.org"
+arch="aarch64"
+license="BSD-3-Clause"
+source="
+	HiFi-headphones.conf
+	HiFi-speakers.conf
+	rk3399-gru-soun.conf
+"
+options="!check" # no tests
+depends="alsa-ucm-conf"
+replaces="alsa-ucm-conf"
+
+package() {
+	install -Dm644 rk3399-gru-soun.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/rk3399-gru-soun/rk3399-gru-soun.conf
+	install -Dm644 HiFi-headphones.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/rk3399-gru-soun/HiFi-headphones.conf
+	install -Dm644 HiFi-speakers.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/rk3399-gru-soun/HiFi-speakers.conf
+}
+
+sha512sums="
+60f80a072b24a434f8c697e88064482113c4cb6c8fd81f0b53a694d9b6af40aa64aeb6ada17d178a26900ebf8b1b09aaab7a83825db032b9e8c32ed2417ea1cd  HiFi-headphones.conf
+69d250637616103770fac1a83421bae54559220974a142ecb618ef24fc5deaf53699dbf215bb3f094447525c643e3fbf3530524ef6fd57f1c383dc8c6ad4cec6  HiFi-speakers.conf
+54b662d6f66bf1694bce3993e3e2c779ee0d6cf9eee3964f894672b5ee0d540d705ee1127020fa52aa20fc2ebd7d5449779d369e7bb51d14c4f11729479b197e  rk3399-gru-soun.conf
+"
