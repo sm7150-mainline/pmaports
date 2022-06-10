@@ -2,7 +2,7 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-mkinitfs
 pkgver=1.4.1
-pkgrel=5
+pkgrel=6
 pkgdesc="Tool to generate initramfs images for postmarketOS"
 url="https://postmarketos.org"
 depends="
@@ -34,7 +34,8 @@ source="
 install="$pkgname.post-upgrade"
 arch="all"
 license="GPL-2.0-or-later"
-provides="mkinitfs=3.6.0"
+provider_priority=999  # higher priority than Alpine's mkinitfs
+provides="mkinitfs=3.6.1 initramfs-generator=3.6.1"
 
 export GOPATH="$srcdir"
 export CGO_ENABLED=0
