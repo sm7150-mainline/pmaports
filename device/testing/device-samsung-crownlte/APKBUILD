@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-crownlte
 pkgdesc="Samsung Galaxy Note 9"
-pkgver=0.2
+pkgver=0.3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -19,6 +19,8 @@ source="
 	deviceinfo
 	initfs-hook.sh
 	stylus.conf
+	hciattach
+	10-hciattach.rules
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -34,9 +36,15 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="WiFi firmware"
-	depends="firmware-samsung-crownlte"
+	pkgdesc="WiFi and BT firmware"
+	depends="firmware-samsung-crownlte bluez-deprecated"
+
+	# hciattach service for Bluetooth
 	mkdir "$subpkgdir"
+	install -Dm755 "$srcdir"/hciattach \
+		"$subpkgdir"/etc/init.d/hciattach
+	install -Dm644 "$srcdir"/10-hciattach.rules \
+		"$subpkgdir"/etc/udev/rules.d/10-hciattach.rules
 }
 
 x11() {
@@ -50,4 +58,6 @@ sha512sums="
 4d947f71b2eab1c82e727fb5592c82b27db5180a2ecdc807246d4807fa83b0539dca984e2330f80e4942694d77773fd83d56fb5b77c2f50c574e7815aabbfd1d  deviceinfo
 cec13a1cb076a249eb94d11fb122b1f6b0c3e9558a2ed3c8da3e73a8e2db633131ec8ce838e62da8f53b5500dcb77c6f4adf3c1d2f1cda6fd23cb2ca1ccf6abc  initfs-hook.sh
 29c2f8fbd67f6aa95a34fc465798be71dc360087b4e4fddbcdc9b43a628de384f48c1b9e6a7b3d41c93954baee3b88f08972f0a827d663b0279b06a4b2908bd2  stylus.conf
+70c4d3b7af9e58729b5caca87c6c0032675c4adfd3852b0e3fc1f866675d503c4f08d3edaf1b1949bf15344840222c1a7ba00384c290fa5e1b7742e1198855a8  hciattach
+58f72bb12532ce23782389bf9e9eb8eb8afe004dd46d11d48b21b6da6a84660846f79d528d9968a1c1be57716577035fd0da59b3fcda4f197599e92f243dbb45  10-hciattach.rules
 "
