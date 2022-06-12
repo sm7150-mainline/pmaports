@@ -53,10 +53,6 @@ setup_bootchart2
 
 # Switch root
 killall telnetd mdev udevd msm-fb-refresher 2>/dev/null
-umount /proc
-umount /sys
-umount /dev/pts
-umount /dev
 
 # shellcheck disable=SC2093
 exec switch_root /sysroot "$init"
