@@ -1,15 +1,16 @@
 pkgname=firmware-xiaomi-elish
-pkgver=20220516
+pkgver=20220612
 pkgrel=0
 pkgdesc="Firmware for Xiaomi Mi Pad 5 Pro"
 subpackages="
 	$pkgname-adreno
+	$pkgname-venus
 	"
 url="https://github.com/lujianhua/xiaomi-elish-firmware"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="aac9810065fcd633a6a136e51e0a7f6fe5384eed"
+_commit="d14ee69eaeb8955b20c8311c746cc0d088009279"
 source="https://github.com/lujianhua/xiaomi-elish-firmware/archive/$_commit/xiaomi-elish-firmware-$_commit.tar.gz"
 builddir="$srcdir/xiaomi-elish-firmware-$_commit"
 
@@ -21,14 +22,19 @@ package() {
 # Xiaomi elish boots with secure boot, it can only load signed firmwares.
 adreno() {
 	pkgdesc="Xiaomi elish adreno firmware"
-
-	install -Dm644 "$builddir"/a6* -t \
-		"$subpkgdir/lib/firmware/qcom/"
+	depends="firmware-qcom-adreno-a650"
 
 	install -Dm644 "$builddir"/sm8250/a650_zap.mbn -t \
 		"$subpkgdir/lib/firmware/qcom/sm8250/elish/"
 }
 
+venus() {
+	pkgdesc="Xiaomi elish venus firmware"
+
+	install -Dm644 "$builddir"/sm8250/venus.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm8250/elish/"
+}
+
 sha512sums="
-dfc96128b0eab7f9bc7e68dd1203c27b225b61ad8009c7a42545bd1371c2902ec3e71e2360ae27ff028e35740ef28f0c140664da6fdcf5778b4968dd68184c46  xiaomi-elish-firmware-aac9810065fcd633a6a136e51e0a7f6fe5384eed.tar.gz
+0eb1bb9e60a30c480b72fac3cef6b9f366e611a5b5b184aa9549866aa47aa61ffb31dc4b5fbf900ce084636a81023dcc8331dae833717124e7f0f1cd20845c14  xiaomi-elish-firmware-d14ee69eaeb8955b20c8311c746cc0d088009279.tar.gz
 "
