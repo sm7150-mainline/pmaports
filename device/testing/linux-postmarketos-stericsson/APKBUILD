@@ -5,7 +5,7 @@
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.18.0
+pkgver=5.19_rc2
 pkgrel=0
 pkgdesc="Mainline kernel fork for ST-Ericsson NovaThor devices"
 arch="armv7"
@@ -20,6 +20,7 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-nftables
 	"
 makedepends="
+	bash
 	bison
 	findutils
 	gmp-dev
@@ -37,7 +38,6 @@ esac
 source="
 	https://git.kernel.org/torvalds/t/linux-${_kernver//_/-}.tar.gz
 	config-$_flavor.armv7
-	arm-dts-ux500-add-line-impedance-to-fuel-gauge.patch
 	disable-busy-detect-on-ux500-mmci.patch
 	power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
 	power-supply-ab8500-respect-charge_restart_voltage_uv.patch
@@ -70,9 +70,8 @@ package() {
 }
 
 sha512sums="
-9268263f3b50736a853b000ab394926e304d262bd58136fe380b572fdc01cce9853128a804fe7f2c42183fd89a99d0cc96dd5ee34053d334e0fdd8394bedeb1a  linux-5.18.tar.gz
-a32f89562bef7728fa9179da6336e701c5eba40fc6f2236503dd6a98223fd7b0b55a29ac6a0d5d249495e1ade08690954c46dbf6ac8ffaa9acd9910492febddb  config-postmarketos-stericsson.armv7
-abd32f479cec53b9df092f2c0f434343b1e228be2cf340d26f6f61d4fabbba127f24ec1bd561b5b2fc806cec16eef46e18f6d5c781dd3ef256797acc5409dc62  arm-dts-ux500-add-line-impedance-to-fuel-gauge.patch
+bb0016e3f9f2f42c3e1b8e7e5a067e65cb2e76c5dacac55625655d6e65d286e9520860d21b7faecc7f20c3cff4a330b3ccddfb588595ef325dd81c56660daa1d  linux-5.19-rc2.tar.gz
+a9b342b511b342c877ee3a10334e596bee30a0d326715158a5071027e38eaf5d2767886febaf0d698cab9bc37c8b318cd0a40a2b977557ad4aaca2d065b166bb  config-postmarketos-stericsson.armv7
 4ea0fd3fa602bab21f0cc2c31462d3ef6958c63394b41061ddf0bc2c8baa8b9c571cb5553a37c43315df84049eb7d6a6dc4f873c6d06d9ea4883c37dce40d7ec  disable-busy-detect-on-ux500-mmci.patch
 56c0e375d9078abf1144bf6df25dab176794a18d5c33f77e76b5dc44fc60f0f40ffe26991f0529ff36deaef0b3b66f8ae880968aa2459f774feb4c7993658bdd  power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
 81c1acf81a250326b6917503ec70572e18b06864248f704c1a691b0f2fd096f9d0a87acd4e05e258583b4c21c990a3f3230a360a7a02f00b6e83e3034902641c  power-supply-ab8500-respect-charge_restart_voltage_uv.patch
