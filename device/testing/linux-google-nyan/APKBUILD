@@ -1,0 +1,80 @@
+# Maintainer: Jenneron <jenneron@protonmail.com>
+# Co-Maintainer: Segfault <awarnecke002@hotmail.com>
+pkgname=linux-google-nyan
+pkgver=5.18.5
+pkgrel=0
+pkgdesc="Mainline kernel fork for Google Nyan Chromebooks"
+arch="armv7"
+_carch="arm"
+_flavor="${pkgname#linux-}"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-apparmor
+	pmb:kconfigcheck-containers
+	pmb:kconfigcheck-iwd
+	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-zram
+"
+makedepends="
+	bison
+	findutils
+	flex
+	installkernel
+	openssl-dev
+	perl
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	xz
+"
+
+# Source
+_config="config-$_flavor.$arch"
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.0};;
+	*.*)	_kernver=$pkgver;;
+esac
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${pkgver//_/-}.tar.xz
+	$_config
+	0001-disable-spectre-log-spam.patch
+	0002-ARM-dts-tegra-nyan-add-mmc-aliases.patch
+	0003-ARM-tegra-nyan-fix-mic-jack-detection.patch
+"
+builddir="$srcdir/linux-${_kernver//_/-}"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+1872e2cf8cdd6e0033ce69f26f25526a30c237d220c02b20829fca31d6068fb816de2f2e5fd41f6807648cef8f28ddda392b199c7b1c3b48b2460c840fa1e150  linux-5.18.5.tar.xz
+ef6b65a2aa9652b23a70092c4c76ffeb43ae2f3d8a285dcf142a964786efd44da3372692c892559f063afa2267e438c1dc681b9c034a30fde1fe09bd91822cf9  config-google-nyan.armv7
+2367c64676e4329739e8cc8f874553981747c1bdea833871e2eefe649854fb5908ca0cff5ad11d07e095737632ee71a2f6010bf438a1a60414d7572800b4a07b  0001-disable-spectre-log-spam.patch
+be21d145f39d334e37f8dd79b78474c072e54502ba5c9ae63163f0ce30ffaa3a3448b05d153205ba8af7a761952ecddb3ae1a5b348902b4ce5f4f72138937fdb  0002-ARM-dts-tegra-nyan-add-mmc-aliases.patch
+4ec3bc3bce229ba664ad98251dbcad9d224a3792d3149cc64b5a1eee0801f1a366b83447b55a02cb0915bd3ef63f42260dd55a286f68c727fcfc4d46bba4363a  0003-ARM-tegra-nyan-fix-mic-jack-detection.patch
+"
