@@ -1,0 +1,32 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
+
+pkgname=device-volla-mimameid
+pkgdesc="Volla Phone 22"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-volla-mimameid
+	mesa-dri-gallium
+	mkbootimg
+	msm-fb-refresher
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+0a8ac9a10584d0473864581f0a18063ab29083c80b7f89383da507ddfe2d2deb680e16d8943b3dbf50e71c49bf4b98aa73584bfbb236a9655307af5f0438e5e4  deviceinfo
+"
