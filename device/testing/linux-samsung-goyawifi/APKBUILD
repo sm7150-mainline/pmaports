@@ -1,0 +1,70 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/goyawifi_pmos_etnaviv_defconfig
+
+pkgname=linux-samsung-goyawifi
+pkgver=3.4.5
+pkgrel=0
+pkgdesc="Samsung Galaxy Tab 3 Lite kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="samsung-goyawifi"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev devicepkg-dev gcc4"
+
+
+# Compiler: this kernel was only tested with GCC4. Feel free to make a merge
+# request if you find out that it is booting working with newer GCCs as
+# well. See <https://postmarketos.org/vendorkernel> for instructions.
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="linux_kernel_pxa988"
+_commit="fb2f8b6cd86864c0fcac790e97a372b1772003c7"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/T110-pmOS/$_repository/archive/$_commit.tar.gz
+	$_config
+	fix_memset-related_crashes.patch
+	fix_the_memset_fix.patch
+	gcc10-extern_YYLOC_global_declaration.patch
+	fix_makefile.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	# Modules
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
+		modules_install
+}
+
+
+sha512sums="
+acaa8d554c7c51c5365e98e3c19eedd2b2a24b877ca8ed9d84e547339e9b055165f53d62be47be04e1be5967f14c859254633fd9bd5b9052f428e5e55e8793bf  linux-samsung-goyawifi-fb2f8b6cd86864c0fcac790e97a372b1772003c7.tar.gz
+0d1d6ea24e473d114041fcfb845a01cb01b94b2079213ca27d705b97aaae7d46fb91ced5394301a3856d45a3c3739d69f39888707c864893291d4ce6de99941e  config-samsung-goyawifi.armv7
+efd1641c0892fddb9c5feea3e49e534fed311b01f0576688b5af766e0160850822d0eb8e296b08c5f82b586d5d0336a98e8e86707ba9af7fcf36fc89f0b288eb  fix_memset-related_crashes.patch
+5c080c27716d124616e4e684fc63bffb2665f00de06e894dfd78f58588feec2fec858fe8234b054061e3db14d28cb90fbac53f4b54c4fac5946d843cf038386c  fix_the_memset_fix.patch
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+fb16404be045f4d9c7bf29512321ec2a4cb17111a8c870adff91889f0e6b314265cddb5dd9caa8088425902d2032e9dac4b6ba8c648b32df0efd78edf24550c1  fix_makefile.patch
+"

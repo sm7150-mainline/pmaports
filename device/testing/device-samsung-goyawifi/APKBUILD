@@ -1,0 +1,87 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-goyawifi
+pkgdesc="Samsung Galaxy Tab 3 Lite"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-samsung-goyawifi
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	98-touchscreen-cal.rules
+	goyawifi.conf
+	sd8xxx.conf
+	dhcp-client.conf
+	ipv4-workaround.sh
+	etc-lightdm-lightdm.conf
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-networkmanager-dhclient:networkmanager_dhclient
+	$pkgname-fix-lightdm:fix_lightdm
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# Calibrate touchscreen rotation
+	install -D -m644 "$srcdir"/98-touchscreen-cal.rules \
+		"$pkgdir"/etc/udev/rules.d/98-touchscreen-cal.rules
+
+	# Add module rules for Wi-Fi (mbt8xxx kernel panic)
+	install -D -m644 "$srcdir"/goyawifi.conf \
+		"$pkgdir"/etc/modprobe.d/goyawifi.conf
+	install -D -m644 "$srcdir"/sd8xxx.conf \
+		"$pkgdir"/lib/modules-load.d/sd8xxx.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="Samsung T110 (goyawifi) WiFi & BT firmware"
+	depends="firmware-samsung-goyawifi"
+	mkdir "$subpkgdir"
+}
+
+networkmanager_dhclient() {
+	install_if="$pkgname networkmanager"
+	pkgdesc="Install and use dhclient for networkmanager to get IP throught DHCP"
+	depends="dhclient"
+
+	# Use DHCLIENT for networkmanager as internal client would not work on goyawifi
+	install -D -m644 "$srcdir"/dhcp-client.conf \
+		"$subpkgdir"/etc/NetworkManager/conf.d/dhcp-client.conf
+
+	install -D -m755 "$srcdir"/ipv4-workaround.sh \
+		"$subpkgdir"/etc/NetworkManager/dispatcher.d/ipv4-workaround.sh
+}
+
+fix_lightdm() {
+	install_if="$pkgname lightdm"
+	pkgdesc="Fix the problem for CanGraphical=no in LightDM according to Display Manager in PMOS Wiki"
+	depends="lightdm"
+	replaces="lightdm"
+
+	# Install lightdm configuration with logind-check-graphical=false
+	install -D -m644 "$srcdir"/etc-lightdm-lightdm.conf \
+		"$subpkgdir"/etc/lightdm/lightdm.conf
+}
+
+sha512sums="
+10fd6444d5d8a9a67eca2fa063f135aa25e992c137291bc38e200fb7d1772efa98dbeea94648ee87a73c871c5d06abe65ca495618f8103b7f79b77326a351838  deviceinfo
+79162e1d82bfa6cad52a17a1950d56ecddf00b99db69ff08eed7402927e32690f8bdd7e8b4e27f1cf1c5b1e09e1b70f1ba11979b3112aed35968924ef33d98e7  98-touchscreen-cal.rules
+73d03f53e08a650b3073e33653d3bcfa6951042203dde7104ffddbe59e29bafbb26c0e41cd9357ede8f01abe0049b190a2acae82e5a5b92868129ab66b118a8d  goyawifi.conf
+4bb1136341de6584baeffafe166ceca1c883ba36eebe8d3d5ac95db7d4dfc243e2988be429f8f4e1e98385701598806730debc6cc2f502e2b98bf7a9a444b129  sd8xxx.conf
+c1c9b58b5325ad11afc98bf1b20179c725b7627416270fe87558bdc259fbb996628d404aaaef6e8c9ea41c21b015ae767ce1c3054490481c24cc97d0002d69bb  dhcp-client.conf
+6d7178d18288f4ca9b8ad70b9fd9a28882c1a724448c9e4866224d6ffb5d1e7580ef402701b59cc67f880c7edcecd24ba37deba461ec1ed51889c5eb6bf2350a  ipv4-workaround.sh
+861270c6bc0b2a3e6cd389c21c8c895e62de8cf8bec6fcf23c178f8cbaae855d62b0ee98692671ab4f518d84cb43dd0b2fe46f5a609f65af6a6c06e0fdbb6d0c  etc-lightdm-lightdm.conf
+"
