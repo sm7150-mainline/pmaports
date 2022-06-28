@@ -1,6 +1,6 @@
 pkgname=msm-firmware-loader
-pkgver=1
-pkgrel=2
+pkgver=1.0
+pkgrel=3
 pkgdesc="Set of init services to automatically load firmware from device partitions"
 url="https://postmarketos.org/"
 subpackages="$pkgname-wcnss"
@@ -8,9 +8,8 @@ arch="armhf armv7 aarch64"
 license="MIT"
 install="$pkgname.post-install"
 source="
-	msm-firmware-loader.sh
+	https://gitlab.com/postmarketOS/msm-firmware-loader/-/archive/$pkgver/msm-firmware-loader-$pkgver.tar.gz
 	msm-firmware-loader.initd
-	msm-firmware-loader-unpack.sh
 	msm-firmware-loader-unpack.initd
 "
 options="!check"
@@ -26,9 +25,9 @@ package() {
 	# Create mountpoint for the scripts
 	mkdir -p "$pkgdir/lib/firmware/msm-firmware-loader"
 
-	install -Dm755 "$srcdir/msm-firmware-loader.sh" \
+	install -Dm755 msm-firmware-loader.sh \
 		"$pkgdir/usr/sbin/msm-firmware-loader.sh"
-	install -Dm755 "$srcdir/msm-firmware-loader-unpack.sh" \
+	install -Dm755 msm-firmware-loader-unpack.sh \
 		"$pkgdir/usr/sbin/msm-firmware-loader-unpack.sh"
 }
 
@@ -42,8 +41,7 @@ wcnss() {
 }
 
 sha512sums="
-e311f589c55670974f300f821a49baf54f4966ab5617dbaeef43389be013f1139490b8cfdc7ef4e3c59b6f0013ea1b2c50b37487c6d22104f8dc6d287c158fac  msm-firmware-loader.sh
+499379fdf61bac862860f4bc2f4be00061e8283a95f197918d8214ed931afe1e1b05e59783710b2fad294f866b0d735f768d52e2bf4f5fc6a02c1495b6eb636b  msm-firmware-loader-1.0.tar.gz
 d9ad3b21564de9a4970a8923b8598fb46a54543ac9f1494676a6833800bc68c64f230737b308fec54aae09c2cf635794e8f1abc46253b0386260b4580587483d  msm-firmware-loader.initd
-93063f24b64206f4e6115ca0276d47bb65e1c510fc56fe1a939030d09d3b63cf07f001fb789309bb317f787cbe687906258bb5eb961a9ea90568f672378e86ea  msm-firmware-loader-unpack.sh
 616a28c3a65a45bb65f798989d93daacdeea08a90a9a8538b5bac2d73b2c8b135554ecaf49b4084829f88af760a144802adcd89b50f46bc267d6b04c9c733ff8  msm-firmware-loader-unpack.initd
 "
