@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-fairphone-fp4
 pkgdesc="Fairphone 4"
-pkgver=0.4
-pkgrel=2
+pkgver=0.5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -10,11 +10,13 @@ options="!check !archcheck"
 depends="
 	linux-postmarketos-qcom-sm6350
 	mesa-dri-gallium
+	mesa-vulkan-freedreno
 	mkbootimg
 	postmarketos-base
 "
 makedepends="devicepkg-dev"
 source="
+	90-feedbackd-aw8695.rules
 	deviceinfo
 	gtk.css
 	phoc.ini
@@ -30,6 +32,9 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/90-feedbackd-aw8695.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/90-feedbackd-aw8695.rules
 }
 
 nonfree_firmware() {
@@ -60,6 +65,7 @@ phosh() {
 }
 
 sha512sums="
+2974ccc172bf1299daeb0bc746879b3a1db1fbc3a2b163a02a6554fed6ed9f733144bcf976cd2441c5664d496dcce3ae943f4314c653470dc07dda0de5ad632b  90-feedbackd-aw8695.rules
 d84e25eda52b40a0ca3bcfed79d4f73bfc7b28889d1882a5b78dffe069fdeb54390f0dea800e4ae4aae2011322b410551c204caf4a39fdf42d5faf3869f95556  deviceinfo
 25a93dcbe6dbc6cff24f57cbf5539bc475c5fe0f6bf5e8374c7032b9c38a939bef0aa0cde1707afcc16b1ec2d0859c03c6ee92d80d8048d1c6adc6e25178b85f  gtk.css
 65f74d29ab318b23f7ac8923a3661f2c4130049273a8c6be234ed2c8e00810b6a1254b54cf0932e42850a6d48f821dcd038900fbb836feeddfab2759afffae38  phoc.ini
