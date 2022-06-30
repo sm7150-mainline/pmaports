@@ -31,7 +31,7 @@ pkgver=11.2.1_git20220219
 [ "$CHOST" != "$CTARGET" ] && _target="-$CTARGET_ARCH" || _target=""
 
 pkgname=gcc-aarch64
-pkgrel=2
+pkgrel=3
 pkgdesc="Stage2 cross-compiler for aarch64"
 url="https://gcc.gnu.org"
 arch="x86_64"
@@ -593,6 +593,7 @@ gdc() {
 	pkgdesc="GCC-based D language compiler"
 	depends="gcc=$_gccrel libgphobos=$_gccrel musl-dev"
 	depends="$depends libucontext-dev"
+	provides="gcc-gdc-bootstrap=$_gccrel"
 
 	mkdir -p "$subpkgdir/$_gcclibexec" \
 		"$subpkgdir"/$_gcclibdir/include/d/ \
@@ -704,7 +705,7 @@ libgnatstatic() {
 gnat() {
 	pkgdesc="Ada support for GCC"
 	depends="gcc=$_gccrel"
-	provides="$pkgname-gnat-bootstrap"
+	provides="$pkgname-gnat-bootstrap=$_gccrel"
 	[ "$CHOST" = "$CTARGET" ] && depends="$depends libgnat=$_gccrel"
 
 	mkdir -p "$subpkgdir"/$_gcclibexec \
