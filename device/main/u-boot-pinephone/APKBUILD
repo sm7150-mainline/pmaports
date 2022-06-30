@@ -5,8 +5,8 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 # U-boot with patches to make the PinePhone boot faster and have control over the ddr clock speed
 pkgname=u-boot-pinephone
-pkgver=2021.10
-pkgrel=1
+pkgver=2022.07
+pkgrel=0
 pkgdesc="U-Boot bootloader for the PINE64 PinePhone"
 url="https://source.denx.de/u-boot"
 arch="aarch64"
@@ -26,22 +26,10 @@ makedepends="$depends_dev
 	swig
 	"
 options="!check"
-source="http://source.denx.de/u-boot/u-boot/-/archive/v$pkgver/u-boot-v$pkgver.tar.gz
+source="https://source.denx.de/u-boot/u-boot/-/archive/v$pkgver/u-boot-v$pkgver.tar.gz
 	update-u-boot
-	0001-sunxi-DT-H6-update-device-tree-files.patch
-	0002-tools-mkimage-Add-Allwinner-TOC0-support.patch
-	0003-sunxi-Support-both-SPL-image-types.patch
-	0004-sunxi-Support-building-a-SPL-as-a-TOC0-image.patch
-	0005-sunxi-DT-H6-Add-USB3-to-Pine-H64-DTS.patch
-	0006-sunxi-Load-sun8i-secure-monitor-to-SRAM-A2.patch
-	0007-pinephone-Add-volume_key-environment-variable.patch
-	0008-Enable-led-on-boot-to-notify-user-of-boot-status.patch
-	0009-disable-bootdelay.patch
-	0010-Reduce-DRAM-speed-to-528-for-better-compatibility-wi.patch
-	0011-mmc-sunxi-Add-support-for-DMA-transfers.patch
-	0012-mmc-sunxi-DDR-DMA-support-for-SPL.patch
-	0013-spl-ARM-Enable-CPU-caches.patch
-	0014-common-expose-DRAM-clock-speed.patch
+	0001-common-expose-DRAM-clock-speed.patch
+	0002-disable-bootdelay.patch
 	"
 builddir="$srcdir/u-boot-v$pkgver"
 install="$pkgname.post-upgrade"
@@ -77,20 +65,8 @@ package() {
 }
 
 sha512sums="
-f97d1531946d749d3a40c4a1c60489382d0100757ac8ed4e3e18b70685ba664641cc56de1e2fef2e00efc78e6779f0f52fab2c1ff98fefac98303973572ffd69  u-boot-v2021.10.tar.gz
+7cd524d5c4b692c99d61fae4e7d99287ce4bca06884dc02b62bd69dfdf594cc9232c13c5b8dbb3aeac125bf7907591dbc6a40e2ea3e39f024bd5a5d42aeaa4cd  u-boot-v2022.07.tar.gz
 d6e1ca6100fdc0ecd9559d556bb8f6699ff807a180d097808417cdacc07fc22b58f8bf33f1f104fcbb28201bd873e469f251176605bec123870ff49bde50024c  update-u-boot
-4d5526a9d492a45213bee5252407061441fc2a760e9ece2651f51a628ab55aac98ce66ff397276b8f5f5bb497ec07ed0344896ae127680666324a4968cd03418  0001-sunxi-DT-H6-update-device-tree-files.patch
-edc73a3472f4fb2c02785cb07042d2547fa0cebab4bd27b15085ccdc73aa92597d1325e8f7daed1e5d2a5f0875a763bcdb7ffef6af43612c87bbe37008d6ac3e  0002-tools-mkimage-Add-Allwinner-TOC0-support.patch
-8e60a6a633126265e5f9b363144ce77beaa0460856d007570f1772783cd8e47a250441ffeec525c7f9ac030350d52d2248f4bfc0a0e975cdc1d5525b61008002  0003-sunxi-Support-both-SPL-image-types.patch
-86b5c6cb43a7bb2dd9a0434c3875114a6ff569d994c23db8da1c149556dc2042d1af7f802dee4873a39dbd2a8059a1d891476c324594c53901de7455b1fc07f3  0004-sunxi-Support-building-a-SPL-as-a-TOC0-image.patch
-6addeafd556814239a5b0ac3c7604c84b8598d62e8f9fc71f506fb8d312500328a1bd66a688173ccaa8b197e0eb6d3cf2d31c8a1029033ca9a3204ea2906f17b  0005-sunxi-DT-H6-Add-USB3-to-Pine-H64-DTS.patch
-fe38e2cd396a1ba432e2951b35dfed4aa0b481499bd4cbbba5af7111717554fa73d3f0e762be1b060651e4216a7efcd13f12ad56f2026c1dcbf575520a372aab  0006-sunxi-Load-sun8i-secure-monitor-to-SRAM-A2.patch
-127b630f1656b7a2ebb946310cf9f478ec07d2df0899635b324efab9b76cf3158bfd01901400542ab2d314e3ac3de1680dc73e03bed7de29628cb4995f97cfd4  0007-pinephone-Add-volume_key-environment-variable.patch
-034b3f8800627d9a49761ef663f794375c816b33bf88d83eb9b87a73d123004de2c418a1a02761557463bfd6e311a3b85ea8159eeb13c32882ba99668430e4ab  0008-Enable-led-on-boot-to-notify-user-of-boot-status.patch
-ee42dabe8d8dce1200babb5d5060373d80a5457ee06a8adc3b18b0b7f2b8dca183cc5480c2d833ce3df823c3061c6c9f57b8b6a5122cfec0a6d4e24f1033e65c  0009-disable-bootdelay.patch
-74747317194f46855bc553c1371a3134db9017041ca3d8afdb377ca1162805931e3c93e44728e6d8980babd5e326f1654b70c683c1ee10dbfe4ddfb88684de6b  0010-Reduce-DRAM-speed-to-528-for-better-compatibility-wi.patch
-ae2d0baf7c2048e142230741368db1d0520b1764d62e798098d2548b0ba9622f098f64edc0988db10963543ca0169ae6f3db609f436e1fd090d785274cf30283  0011-mmc-sunxi-Add-support-for-DMA-transfers.patch
-eff2901ac5e14949f326a9d8b553f6f32d7e89502929090595b360d1b76d0d3335c94d0c4960b25603f9786524baf2386251bd4a18582ed1012a6db3e5e84618  0012-mmc-sunxi-DDR-DMA-support-for-SPL.patch
-f2ee73c774758bd13872d370bc7990474adc453531dacf15664609ca0fdc2a4844d4769376c370b7d18896ac734a7080ee709066659647a4cf0368928bf5e198  0013-spl-ARM-Enable-CPU-caches.patch
-86d9587cb2b0ca99fb4090bd0daacd47c0043858654f6f7114c8d0ed6c660eb2b8bc0b37de6723e738df9b1137d62482f00764c284f4aa0a6054db9efe754db9  0014-common-expose-DRAM-clock-speed.patch
+86d9587cb2b0ca99fb4090bd0daacd47c0043858654f6f7114c8d0ed6c660eb2b8bc0b37de6723e738df9b1137d62482f00764c284f4aa0a6054db9efe754db9  0001-common-expose-DRAM-clock-speed.patch
+9b9a5bd2cb5c04715a5bb2d34bfc06e63817dba7ec40fa2b09000a0827590623e85ed5877d6b6bb39f2bb917e5e9d8e1379e3df9128e3304be06abc487c68df2  0002-disable-bootdelay.patch
 "
