@@ -1,12 +1,13 @@
 pkgname=firmware-oneplus-oneplus3
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc="Firmware for OnePlus 3"
 url="https://gitlab.com/DrGitX/firmware-oneplus3"
 arch="aarch64"
 license="proprietary"
-makedepends="mtools pil-squasher"
+makedepends="mtools pil-squasher qca-swiss-army-knife"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
+replaces="linux-firmware-ath10k"
 _gpufw="https://github.com/TheMuppets/proprietary_vendor_oneplus/raw/lineage-17.1/oneplus3/proprietary/vendor/firmware"
 _files="adsp.b00
 	adsp.b01
@@ -18,6 +19,7 @@ _files="adsp.b00
 	adsp.b08
 	adsp.b09
 	adsp.mdt
+	bdwlan30.bin
 	modem.b00
 	modem.b01
 	modem.b02
@@ -68,6 +70,7 @@ source="$url/-/raw/master/oneplus3/NON-HLOS.bin
 	20-adreno-gpu-firmware.files
 "
 
+_ath10k_boardname="bus=pci,vendor=168c,device=003e,subsystem-vendor=0000,subsystem-device=0000"
 _mdtnames="adsp modem slpi venus"
 _mbns="a530_zap.mbn adsp.mbn mba.mbn modem.mbn slpi.mbn venus.mbn"
 
@@ -95,6 +98,11 @@ package() {
 	# Install 20-adreno-gpu-firmware.files
 	install -Dm644 "$srcdir/20-adreno-gpu-firmware.files" \
 		"$pkgdir/etc/postmarketos-mkinitfs/files/20-adreno-gpu-firmware.files"
+
+	# Create and install ath10k board file
+	echo "[{\"names\":[\"$_ath10k_boardname\"],\"data\":\"bdwlan30.bin\"}]" > board-2.json
+	ath10k-bdencoder -c board-2.json
+	install -Dm644 board-2.bin -t "$pkgdir/lib/firmware/ath10k/QCA6174/hw3.0"
 }
 
 sha512sums="
