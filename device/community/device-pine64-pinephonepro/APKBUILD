@@ -3,7 +3,7 @@
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
 pkgver=3.0
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -82,10 +82,13 @@ package() {
 		"$srcdir"/bootaa64.efi
 
 	# Alsa usecase manager config
-	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
-		"$srcdir"/PINE64-PinePhonePro-.conf \
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/PinePhonePro \
 		"$srcdir"/HiFi.conf \
+		"$srcdir"/PINE64-PinePhonePro-.conf \
 		"$srcdir"/VoiceCall.conf
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card
+	ln -s /usr/share/alsa/ucm2/PinePhonePro/PINE64-PinePhonePro-.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/PINE64-PinePhonePro-.conf
 
 	# Modem
 	install -Dm755 "$srcdir"/setup-modem.sh \
@@ -113,7 +116,7 @@ fdfa807c0de33aee3deb09ee25c37a58fa970ce71483e52f21793717cb89adeb74f251ff1a2c2086
 e69752fc7f2b8552ba2e1e6da5b6bec0e284c7f14bc09576c862faeb5154a44522535a919ae5aca33a22fd14557e802595a7c96c59b9362c5ac5b991a8eac5fc  grub.cfg
 0f9357d4eea089628fbceb1e3e96d21a3f4329aeb6743158a6f877f967ef274506404eba949d5f01b7e1adea149f9a3aef992a5e8cd4181f93ab00909b1c5ecd  grub_early.cfg
 1684514a6b814a83473e9da8855fd776cf3f31a2be1f8834c370f710428b4ee305559e275be52894d167ccd1e32f8f1c8586f8a072f19e44b46caec9f504d453  HiFi.conf
-71786596492f3ec176806a2f85b974cb13ca1482cd695a2ebc480c29a86d2ff47b0386776b8d7f8ed56c1f8c48886e15f583c4bb9811240ef8b486527b4bbd89  PINE64-PinePhonePro-.conf
+9c6edbe7ea387baf9bfa6c4a46b28c4fe274ab0994e0a1640012048407e6679c437de43cc50e6778c9a852132eaa680de3fd4e0256d36455d1dd57aa729ac8be  PINE64-PinePhonePro-.conf
 deb360baf914e1c917403d5e26291b9e9d27426876232ab753e4ebfe367423206f1fc01b85d195aa69fb4b51bcaed023423d0fcc0d73fa1bedd5fbe7b17f0fb5  VoiceCall.conf
 43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
 420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
