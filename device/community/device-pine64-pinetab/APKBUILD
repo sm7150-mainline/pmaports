@@ -4,7 +4,7 @@
 pkgname=device-pine64-pinetab
 pkgdesc="PINE64 PineTab"
 pkgver=0.13
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -120,10 +120,12 @@ package() {
 	devicepkg_package $startdir $pkgname
 
 	# Alsa usecase manager config
-	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
-		"$srcdir"/PineTab.conf
 	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/PineTab \
-		"$srcdir"/HiFi.conf
+		"$srcdir"/HiFi.conf \
+		"$srcdir"/PineTab.conf
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card
+	ln -s /usr/share/alsa/ucm2/PineTab/PineTab.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/PineTab.conf
 
 	# Pulseaudio config
 	install -Dm644 "$srcdir"/pulse-pinetab.conf \
