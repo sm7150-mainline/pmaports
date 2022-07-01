@@ -1,0 +1,32 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-lg-madai
+pkgdesc="LG Fx0"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-lg-madai
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+	mdss-fb-init-hack
+	wcnss-wlan
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+08a8ccb85acce23196b6439ec599cf530da679f1dc68df69b1237f6c7a59b62cc47eb9e40086dbddbed1e28e66da0ceae58d2bdd12aa17236b65c52cab68ec3b  deviceinfo
+"
