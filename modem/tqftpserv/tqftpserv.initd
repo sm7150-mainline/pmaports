@@ -1,9 +1,10 @@
 #!/sbin/openrc-run
 supervisor=supervise-daemon
 name="tqftpserv"
-description="QRTR TFTP service"
+description="Qualcomm Trivial File Transfer Protocol Server"
 command="/usr/bin/tqftpserv"
 
 depend() {
-	want qrtr-ns
+	before rmtfs
+	use qrtr-ns
 }
