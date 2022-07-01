@@ -5,7 +5,7 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
 pkgver=0.41
-pkgrel=2
+pkgrel=3
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -123,11 +123,13 @@ package() {
 		"$pkgdir"/usr/lib/udev/rules.d/10-pinephone-proximity.rules
 
 	# Alsa usecase manager config
-	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
-		"$srcdir"/PinePhone.conf
 	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/PinePhone \
 		"$srcdir"/HiFi.conf \
+		"$srcdir"/PinePhone.conf \
 		"$srcdir"/VoiceCall.conf
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card
+	ln -s /usr/share/alsa/ucm2/PinePhone/PinePhone.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/PinePhone.conf
 
 	# Pulseaudio config
 	install -Dm644 "$srcdir"/pulse-pinephone.conf \
