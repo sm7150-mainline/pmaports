@@ -3,7 +3,7 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.32
+pkgver=1.33
 pkgrel=0
 _confver=49
 _purismrel=1
@@ -125,9 +125,15 @@ package() {
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t "$pkgdir"/usr/lib/udev/rules.d/
 
-	# install audio config files from upstream Purism
-	mkdir -p "$pkgdir"/usr/share/alsa/ucm2
-	cp -r "$builddir"/default/audio/ucm2/ "$pkgdir"/usr/share/alsa/ucm2/conf.d/
+	# install audio config files from Purism
+	install -Dm644 "$builddir"/default/audio/ucm2/simple-card/Librem\ 5.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/NXP/iMX8/Librem_5/Librem\ 5.conf
+	install -Dm644 "$builddir"/default/audio/ucm2/simple-card/HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/NXP/iMX8/Librem_5/HiFi.conf
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card
+	# relative path seems to be required or else alsa-lib can't figure it out
+	ln -s ../../NXP/iMX8/Librem_5/Librem\ 5.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/Librem\ 5.conf
 
 	# enable bq25890_charger ship_mode
 	install -Dm644 "$srcdir"/modprobe.d-ship_mode.conf \
