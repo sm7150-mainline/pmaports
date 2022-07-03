@@ -1,6 +1,6 @@
 # Maintainer: Yassine Oudjana (Tooniis) <y.oudjana@protonmail.com>
 pkgname=firmware-xiaomi-scorpio
-pkgver=2
+pkgver=3
 pkgrel=0
 pkgdesc="Firmware for Xiaomi Mi Note 2"
 url="https://gitlab.com/Tooniis/firmware-xiaomi-scorpio"
@@ -8,22 +8,30 @@ arch="aarch64"
 license="proprietary"
 options="!strip !check !archcheck !tracedeps pmb:cross-native"
 
-_commit="9412b604f4908566830023f9434c3ebf47a5d32d"
+_commit="4c7763beb4de1fc4ff0da99e7fd43ea767fac2e7"
+source="$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz"
 
-source="
-	$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
-	firmware.files
+_mbns="
+	a530_zap.mbn
+	adsp.mbn
+	mba.mbn
+	modem.mbn
+	slpi.mbn
+	venus.mbn
 	"
 
 package() {
 	cd "$srcdir/$pkgname-$_commit/"
-	while IFS="" read -r _i || [ -n "$_i" ]; do
-		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
-		echo $_i
-		install -Dm644 $_i "$pkgdir/$_i"
-	done < "$srcdir/firmware.files"
+
+	# Install MBNs
+	for _i in $_mbns; do
+		install -Dm644 $_i "$pkgdir/lib/firmware/qcom/msm8996/scorpio/$_i"
+	done
+
+	# Install QCA6174 board firmware
+	install -Dm644 board-2.bin "$pkgdir/lib/firmware/postmarketos/ath10k/QCA6174/hw3.0/board-2.bin"
 }
+
 sha512sums="
-84183c62bf7a432507b975892b1f1099a1ac6cf9b0f1c4e12924c3bd9c9f0989eacc964555d96ece861895dc252cac50f185c5b44aee9500d6b42762291d0b4c  firmware-xiaomi-scorpio.tar.gz
-2c909dcf7ea542fec51b34f31f29ef85e7aa745c5237df51ac7498ebaa40ee704e2fa7c67fbb72f747b598963bd8828bc4d131f3f54ddcc7f99d731ef74c504f  firmware.files
+b8be4f664608f88e8140c7182e855fbf5078d23445bba14cb2242a9ea785678ab88b4584b0dc35d6325693e911bdf3c1b8ff3913414c7a1f2e0eae75692a2e45  firmware-xiaomi-scorpio-4c7763beb4de1fc4ff0da99e7fd43ea767fac2e7.tar.gz
 "
