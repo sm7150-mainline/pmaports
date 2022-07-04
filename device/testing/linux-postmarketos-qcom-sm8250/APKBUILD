@@ -3,29 +3,29 @@
 
 _flavor="postmarketos-qcom-sm8250"
 pkgname=linux-$_flavor
-pkgver=5.18.0_rc6
+pkgver=5.19.0_rc5
 pkgrel=0
 pkgdesc="Mainline kernel fork for SM8250"
 arch="aarch64"
 _carch="arm64"
 url="https://github.com/lujianhua/linux"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-nftables
+"
 makedepends="
-	findutils
-	linux-headers
-	xz
 	bash
-	bc
 	bison
-	devicepkg-dev
+	findutils
 	flex
+	installkernel
 	openssl-dev
 	perl
 "
 
 # Source
-_commit="a5b6404c37799e16363a226bf5ef45288317e52c"
+_commit="73df9964ab67db7e01eb4a54860c77eec731ee45"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz
@@ -36,31 +36,31 @@ _outdir="out"
 
 prepare() {
 	default_prepare
-	REPLACE_GCCH=0 \
-		. downstreamkernel_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
 }
 
 build() {
 	unset LDFLAGS
-	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
-	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+	mkdir -p "$pkgdir"/boot
 
-	install -Dm644 "$builddir/$_outdir/arch/$_carch/boot/Image.gz" \
-		"$pkgdir/boot/vmlinuz"
-
-	make O="$_outdir" \
+	make zinstall modules_install dtbs_install \
 		ARCH="$_carch" \
-		INSTALL_MOD_STRIP=1 \
+		INSTALL_PATH="$pkgdir"/boot/ \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb" \
-		modules_install dtbs_install
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
 sha512sums="
-0e12645f9830a91e52c7cdab807dcd04805c379238053977f934a3f13729f0ba8709671c3414e50fc02026a4c0db8fc3bf6ac71e31df5df466c8110f7059bf8e  linux-postmarketos-qcom-sm8250-a5b6404c37799e16363a226bf5ef45288317e52c.tar.gz
-f354cca1133a8f8241b9f3a87d6d6bf5e81630c6f885e8963d52e34b03b2f070641fe874ed943a2c44db419b90976aab45deb15fff404d7e84db797b92db8768  config-postmarketos-qcom-sm8250.aarch64
+b8d0fffd3bdd6b1cb1b206e1fcce457510e9d91ffcbe8524b9dab4dd9479860967b9fc863ccdc7d6fdfa34247582a9bbfbcdc23be64a7ebd049ef7fc59e2a092  linux-postmarketos-qcom-sm8250-73df9964ab67db7e01eb4a54860c77eec731ee45.tar.gz
+f6281a5d1437bbe12fc6a54e5f480e435d6aee4589956cc92175892e4d33016024f6937a9260bfee49217c973a206f8e778cd7b9e51cef09f404673a87795561  config-postmarketos-qcom-sm8250.aarch64
 "
