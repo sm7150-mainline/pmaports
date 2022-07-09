@@ -2,8 +2,8 @@
 # Maintainer: Minecrell <minecrell@minecrell.net>
 # Co-Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=device-qemu-aarch64
-pkgver=2.4
-pkgrel=3
+pkgver=3
+pkgrel=0
 pkgdesc="Simulated device in QEMU (aarch64)"
 url="https://postmarketos.org"
 arch="aarch64"
@@ -13,6 +13,8 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-lts:kernel_lts
 	$pkgname-kernel-virt:kernel_virt
+	$pkgname-kernel-edge:kernel_edge
+	$pkgname-kernel-edge4virt:kernel_edge4virt
 	$pkgname-mce
 	$pkgname-sway
 	$pkgname-weston
@@ -61,6 +63,18 @@ kernel_virt() {
 kernel_lts() {
 	pkgdesc="Alpine LTS kernel"
 	depends="linux-lts linux-firmware-none"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_edge() {
+	pkgdesc="Alpine Edge kernel"
+	depends="linux-edge linux-firmware-none"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_edge4virt() {
+	pkgdesc="Alpine Edge4Virt kernel"
+	depends="linux-edge4virt linux-firmware-none"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
