@@ -1,0 +1,59 @@
+# Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-lg-p895
+pkgdesc="LG Optimus Vu"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	libvdpau-tegra
+	linux-postmarketos-grate
+	mkbootimg
+	postmarketos-base
+	u-boot-tools
+"
+makedepends="
+	devicepkg-dev
+"
+source="
+	deviceinfo
+	pointercal
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-x11
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	# osk-sdl touchscreen calibration
+	install -Dm644 "$srcdir"/pointercal \
+		"$pkgdir"/etc/pointercal
+}
+
+nonfree_firmware() {
+	pkgdesc="LG Optimus X3 WiFi & BT firmware"
+	depends="firmware-lg-x3"
+	mkdir "$subpkgdir"
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	depends="xf86-video-opentegra"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+5cbb9296ed380059941b0182d0b66bb3db1864cd6fc65373deb95300ae2fd4eaf3c99b7323729911fb35a9de45d7a491a88c0ff500c39b6fe8c3097ec79b389a  deviceinfo
+de3c2db575a7c67adfd4f26700642e8fa0b912cb074dcc92778f620574e2f5e6dadcd4b05d13a2968668f943cc01557924c31b40f6fce3ce9002a3dcd55f423f  pointercal
+"
