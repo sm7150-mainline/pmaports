@@ -1,0 +1,60 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm/configs/ford_defconfig
+
+pkgname=linux-amazon-ford
+pkgver=3.10.54
+pkgrel=0
+pkgdesc="Amazon Fire 7 (2015) kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="amazon-ford"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+	linux-headers
+	xz
+"
+
+# Source
+_repository="kernel_amazon_mt8127-common"
+_commit="e53c86b915bed7e5455949277c31b700177df26b"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/cm14-mt8127/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc8-fix-put-user.patch
+	gcc10-extern_YYLOC_global_declaration.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+}
+
+sha512sums="
+aa1f8d4fb9152ca5d35fa14305101b1c8fec14f1a76febc03e84c235e2c8ded5f6ba728ec7359b1658675e6267d2d5a8622bea966a6d76f98baed491e5c20785  linux-amazon-ford-e53c86b915bed7e5455949277c31b700177df26b.tar.gz
+833592be7f6fd808bc2336b5c4a1eb0ee0a5bdb4a9b400fe1c1140e2439bebda2e1ee5cef61fe6375da94120600d4d666b9f990011fc4c63d82ab6f368fbd8a3  config-amazon-ford.armv7
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+"
