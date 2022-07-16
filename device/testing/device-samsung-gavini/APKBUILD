@@ -1,0 +1,52 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-gavini
+pkgdesc="Samsung Galaxy Beam (GT-I8530)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-stericsson mesa-dri-gallium"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kwin
+	$pkgname-phosh
+"
+source="
+	deviceinfo
+	kwin.sh
+	phoc.ini
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="firmware-samsung-u8500"
+	mkdir "$subpkgdir"
+}
+
+kwin() {
+	install_if="$pkgname kwin"
+	install -Dm644 "$srcdir"/kwin.sh "$subpkgdir"/etc/profile.d/kwin.sh
+}
+
+phosh() {
+	install_if="$pkgname postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+			"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+57297d1fb1baaa3ddd81a7b0deb7d2a34bf5c760816786ead0cbfecc3e56e161e11667cecec644132b621b38b607288427eb720f2e0c5f914b3413d07234f291  deviceinfo
+685ec71484a932c59f83f1039d4d18a010a5849342e96d9e15ae8ce64374aac15073f9c51d7d9f270c60e70d2ea15c685b8f528cdc40f991b093b9227cba6a48  kwin.sh
+95576332f1ad579d30359df9a3efcc3f478c56688509b5c470a70e8ae41466dbb397fb6db7578b5c54e13795ab8cf869b5c63ba775951817a8bb3d4c682bdfd5  phoc.ini
+"
