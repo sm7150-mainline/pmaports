@@ -146,10 +146,15 @@ find_root_partition() {
 	# mount_subpartitions() must get executed before calling
 	# find_root_partition(), so partitions from b) also get found.
 
-	# Short circuit all autodetection logic if pmos_root= is supplied
-	# on the kernel cmdline
+	# Short circuit all autodetection logic if pmos_root= or
+	# pmos_root_uuid= is supplied on the kernel cmdline
 	# shellcheck disable=SC2013
 	if [ "$ROOT_PARTITION_UNLOCKED" = 0 ]; then
+		for x in $(cat /proc/cmdline); do
+			[ "$x" = "${x#pmos_root_uuid=}" ] && continue
+			DEVICE="$(findfs UUID="${x#pmos_root_uuid=}")"
+		done
+
 		for x in $(cat /proc/cmdline); do
 			[ "$x" = "${x#pmos_root=}" ] && continue
 			DEVICE="${x#pmos_root=}"
@@ -198,6 +203,13 @@ find_root_partition() {
 }
 
 find_boot_partition() {
+	# shellcheck disable=SC2013
+	for x in $(cat /proc/cmdline); do
+		[ "$x" = "${x#pmos_boot_uuid=}" ] && continue
+		findfs UUID="${x#pmos_boot_uuid=}"
+		return
+	done
+
 	# shellcheck disable=SC2013
 	for x in $(cat /proc/cmdline); do
 		[ "$x" = "${x#pmos_boot=}" ] && continue
