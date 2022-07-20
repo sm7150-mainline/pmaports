@@ -1,8 +1,10 @@
 #!/bin/sh -e
 
-# Enable udev OpenRC services and runlevels
-# https://github.com/alpinelinux/aports/blob/master/main/eudev/setup-udev
-setup-udev -n
+# Enable eudev service
+rc-update add udev sysinit
+rc-update add udev-trigger sysinit
+rc-update add udev-settle sysinit
+rc-update add udev-postmount default
 
 # Enable other OpenRC services
 for service in devfs dmesg; do
