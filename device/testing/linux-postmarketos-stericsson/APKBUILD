@@ -5,8 +5,8 @@
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.19_rc2
-pkgrel=3
+pkgver=5.19.8
+pkgrel=0
 pkgdesc="Mainline kernel for ST-Ericsson NovaThor devices"
 arch="armv7"
 _carch="arm"
@@ -36,7 +36,7 @@ case $pkgver in
 	*.*)	_kernver=$pkgver;;
 esac
 source="
-	https://git.kernel.org/torvalds/t/linux-${_kernver//_/-}.tar.gz
+	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	config-$_flavor.armv7
 	disable-busy-detect-on-ux500-mmci.patch
 	power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
@@ -70,8 +70,8 @@ package() {
 }
 
 sha512sums="
-bb0016e3f9f2f42c3e1b8e7e5a067e65cb2e76c5dacac55625655d6e65d286e9520860d21b7faecc7f20c3cff4a330b3ccddfb588595ef325dd81c56660daa1d  linux-5.19-rc2.tar.gz
-2c04a0adb44e9daf90e581f1873f2cf3a4ca96632f38b1cdadfa57cf45eb86a48e263a6d8dbb79f9715d75adea0f65f2cbae7d27f5a385eb5d367646c57da3fd  config-postmarketos-stericsson.armv7
+68c307606c2e1e19d065a950d9de8f3aca0a572f7567262c942f8440f888421f807d689c92175308a97a4064e175ccc7a03d691f8c55a23bf52a758524312b23  linux-5.19.8.tar.xz
+23aca0fc9a86220a20972393d13ebc462f6e1e2c2593e9647b2543c9ebd1b2c2d7affd2524dbcdb0ed8e5b028cf01872d83a5ae08cb48e89c3e05049fea6210a  config-postmarketos-stericsson.armv7
 4ea0fd3fa602bab21f0cc2c31462d3ef6958c63394b41061ddf0bc2c8baa8b9c571cb5553a37c43315df84049eb7d6a6dc4f873c6d06d9ea4883c37dce40d7ec  disable-busy-detect-on-ux500-mmci.patch
 56c0e375d9078abf1144bf6df25dab176794a18d5c33f77e76b5dc44fc60f0f40ffe26991f0529ff36deaef0b3b66f8ae880968aa2459f774feb4c7993658bdd  power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
 81c1acf81a250326b6917503ec70572e18b06864248f704c1a691b0f2fd096f9d0a87acd4e05e258583b4c21c990a3f3230a360a7a02f00b6e83e3034902641c  power-supply-ab8500-respect-charge_restart_voltage_uv.patch
