@@ -590,7 +590,10 @@ show_splash() {
 		echo "NOTE: Skipping framebuffer splashscreen (deviceinfo_no_framebuffer)"
 		return
 	fi
-
+	# Disable splash
+	if grep -q PMOS_NOSPLASH /proc/cmdline; then 
+         	return
+	fi
 	echo "IMG_ALIGN=CM" >>/tmp/fbsplash.cfg
 	gzip -c -d "$1" >/tmp/splash.ppm
 	fbsplash -s /tmp/splash.ppm -i /tmp/fbsplash.cfg
