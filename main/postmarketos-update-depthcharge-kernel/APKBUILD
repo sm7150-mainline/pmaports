@@ -1,0 +1,19 @@
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=postmarketos-update-depthcharge-kernel
+pkgver=1
+pkgrel=0
+pkgdesc="depthcharge kernel updater script for postmarketOS"
+url="https://postmarketos.org"
+depends="util-linux-misc"
+source="update-depthcharge-kernel.sh"
+arch="noarch"
+license="GPL-3.0-or-later"
+
+package() {
+	install -Dm755 "$srcdir/update-depthcharge-kernel.sh" \
+		"$pkgdir/sbin/pmos-update-depthcharge-kernel"
+}
+
+sha512sums="
+e0348c99d9b13e41718ec2804866cca1b4585ead259450dc09f595092a0497903cb78fa23b8a33a8ac0ba0d1425e4c8b22af7b3bfc1a7292ac3a8a8dbf2a8717  update-depthcharge-kernel.sh
+"
