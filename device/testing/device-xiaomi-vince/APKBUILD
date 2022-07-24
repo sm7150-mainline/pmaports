@@ -1,27 +1,32 @@
 # Maintainer: m0rf30 <morf3089@gmail.com>
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-vince
-pkgdesc="Xiaomi Redmi Note 5 Plus"
-pkgver=3
-pkgrel=1
+pkgdesc="Xiaomi Redmi 5 Plus"
+pkgver=4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-xiaomi-vince mkbootimg mesa-dri-gallium msm-fb-refresher"
+depends="postmarketos-base mesa-dri-gallium mkbootimg"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-alsa
+	$pkgname-modem
 	"
-
-source="deviceinfo
+source="
+	30-gpu-firmware.files
+	deviceinfo
 	fb.modes
-	pointercal
 	misc/100-charging.rules
 	misc/buttons.conf
 	misc/charging.sh
 	misc/discharging.sh
 	misc/vince-audioctl.sh
+	pointercal
 	ucm2/msm8953-snd-car/HiFi.conf
 	ucm2/msm8953-snd-car/msm8953-snd-card-mtp.conf
 	"
@@ -45,6 +50,9 @@ package() {
 	install -Dm755 "$srcdir"/vince-audioctl.sh \
 		"$pkgdir"/usr/lib/device-xiaomi-vince/vince-audioctl.sh
 
+	install -Dm644 "$srcdir"/30-gpu-firmware.files \
+		"$pkgdir"/etc/postmarketos-mkinitfs/files/30-gpu-firmware.files
+
 	# Disable v4l udev rules (video4linux), because without the camera
 	#         firmware blobs this makes udev helper hang (#1033)
 	mkdir -p "$pkgdir"/etc/udev/rules.d
@@ -53,9 +61,21 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="Wi-Fi, ADSP Firmware"
-	depends="firmware-xiaomi-vince wcnss-wlan"
+	depends="firmware-xiaomi-vince"
 	install="$pkgname-nonfree-firmware.post-install"
 	mkdir "$subpkgdir"
+}
+
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-xiaomi-vince"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel, plenty of working features and fixes"
+	depends="linux-postmarketos-qcom-msm8953 lk2nd-msm8953"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 alsa() {
@@ -70,15 +90,22 @@ alsa() {
 		"$srcdir"/HiFi.conf
 }
 
+modem() {
+	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="
-cce2edf56b821550cc783cf9e31a824d1e695a36781269802517c4bb63f6633141b3c2486396800df24ebeff668828c26a9811d030d942c9eea2b0effbb646e9  deviceinfo
+0e8ee21fb65fa2d2f6b27e8d8e18ac8d0347d134002de3bd2fc8262b255edc55f3e2f976daf0a362f418e9213962616fecb90b40576effd1d5d5d09d2a45564d  30-gpu-firmware.files
+6e527ceeace4b9f79660edecac1c3028c485b6044540f2b80e631c2263d80c6aff63628087159327c4d093348ad9222a65359e668f789488d99e50e865f69860  deviceinfo
 9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
-4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
 b6951e2f8d2e21aa58f15b600a67289900d645b9dcff9992d0864dea383528539fc8b0140bff6af4eba4bb729db79a3d5d88ba248fcf2b579dd8c3cd0e20ae4e  100-charging.rules
 922519b787ab8d6886f3b2e0ace84de69d0e185208776aedd471828132d13bc6364393cd5c7f97634de014aaf3fb100c9fa4724c97d6d1220320d2e73e0f1947  buttons.conf
 89195cfaa131eef1a34c882685ed53eb0e80d1520cf9924e775875bde1de883448f3d182775f8323b261afaf0f6a5e73aa31142f2e72acc3ac584a64de6e72a3  charging.sh
 947fb09b7dce638d28afb367ce193437092bca956647486d67438a3fbb695c9354bc1174a68a5993644c3c619f9826cb8a84b8b9f49b513a484089a965b665c5  discharging.sh
 24762c3f4b0d1e9a035495c05e53852a68d46699e1f41915bd6d68af3d2a22dad075c77209533d92a81693aa45c86018ce825a8b7e7a8c163b59d826d9e204d1  vince-audioctl.sh
+4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
 a72522650df9ff6bda188aeca71b9e2dacf810e1efaa10d8c32eb65e445ffb69e49410f531bc110abab270126140baa047ca847c9ed7a84f231c9c678263fc0e  HiFi.conf
 4d034b7f38831a84d489c25d39b9363f86d701e336163be79f5313eaf3f527a83866e1a0e23c7aabbea706c0fe4dda64dfb8b04353c72ec84ac9a07cf3dae55d  msm8953-snd-card-mtp.conf
 "
