@@ -1,0 +1,42 @@
+# Maintainer: Molly Sophia <mollysophia379@gmail.com>
+
+pkgname=firmware-xiaomi-polaris
+pkgver=0.1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Mi Mix2s"
+url="https://github.com/MollySophia/firmware-xiaomi-polaris"
+arch="aarch64"
+depends="linux-firmware-qcom linux-firmware-qca linux-firmware-ath10k"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+
+_version="ec608e1a8bf2d4aded30abed8476f805fd6f6e3c"
+
+source="$pkgname.tar.gz::$url/archive/$_version.tar.gz
+	firmware.files
+	30-gpu-firmware.files"
+subpackages="
+	$pkgname-initramfs:firmware_initramfs"
+
+package() {
+	cd "$srcdir/$pkgname-$_version/"
+	for i in $(cat "$srcdir"/firmware.files); do
+		install -Dm644 "$i" "$pkgdir/$i"
+	done
+}
+
+firmware_initramfs() {
+	pkgdesc="Files to be included in the initramfs to support osk-sdl"
+	depends="$pkgname"
+	install_if="$pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+
+	install -Dm644 "$srcdir/30-gpu-firmware.files" \
+		"$subpkgdir/etc/postmarketos-mkinitfs/files/30-gpu-firmware.files"
+}
+
+sha512sums="
+9e9d095d4c2469acd22325c1546b53437557362cd90c407b9f212f9ac168ef577d5fb9b534b0b4eaa7f3da221d13ca4f488aa9364a34d6c2490aeac5e79145ee  firmware-xiaomi-polaris.tar.gz
+2a172fff3844c392c3f03c6d7f1508e03ed18fe916261cedebde79bb38fc21aaf6ed02e5cb88aa3546ea7b978717dc15d0bc71f64703d848cb1d974756dd3670  firmware.files
+7d430240abae210dd28db688258b45d025915db6fe60345346a1d2d12d7f5bddb0755b3bed8689f54081b7a5188d04906b95c1ea6bbf599019e54544bde1210b  30-gpu-firmware.files
+"

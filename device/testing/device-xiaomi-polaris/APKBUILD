@@ -1,0 +1,53 @@
+# Maintainer: Molly Sophia <mollysophia379@gmail.com>
+
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-polaris
+pkgdesc="Xiaomi Mi Mix 2S"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sdm845
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sdm845
+	soc-qcom-sdm845-ucm
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	phoc.ini
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi and GPU Firmware, also needed for osk-sdl"
+	depends="firmware-xiaomi-polaris firmware-xiaomi-polaris-initramfs soc-qcom-sdm845-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+04077cdb2a6cc541177981209526e9aea6d715f068b59f9176ff1fdf9ba9d0a00aab5b32eeb78cabef4a77dc24cc5b1bbb92385f9471a0bff3cfb0a750aa731c  deviceinfo
+e2e417169345c86a5dd34ac0afac4b2b983a755f4c7ba5698c385a01f96b9bd2c3ace1ce5a0569c121675e8b87e88e1cf5c648e995d9c50cba66e52bbc83753c  phoc.ini
+"
