@@ -1,0 +1,25 @@
+pkgname=firmware-samsung-a6plte
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware files for Samsung Galaxy A6+ (2018)"
+url="https://gitlab.com/ungeskriptet/firmware-samsung-a6plte"
+arch="aarch64"
+license="proprietary"
+options="!strip !check !archcheck !spdx !tracedeps pmb:cross-native"
+
+# Source
+_commit="8b8be38058ed267ac31004358fcf0ac122e56389"
+builddir="$srcdir/firmware-samsung-a6plte-$_commit"
+source="$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
+	firmware.files"
+
+package() {
+	for i in $(cat "$srcdir"/firmware.files); do
+		install -Dm644 "$i" "$pkgdir/$i"
+	done
+}
+
+sha512sums="
+ed169d1a68c4c5d94f9ae335a085aa603a1f2a9bdafc9a99ef79f47261982c576ed339d0cd37ed599a368b3a1029971ebc96b62c10d52fcb2d030f4d4b6db981  firmware-samsung-a6plte.tar.gz
+d43fae933bb12e3879588e96f604be0534be5455bb9edbea3c9cf96bcffbce44abae27de3f40a118536254ca85faeb0fecf390f8f6ae60ca9d06887ac32a7462  firmware.files
+"
