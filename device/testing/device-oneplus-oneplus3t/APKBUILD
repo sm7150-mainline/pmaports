@@ -1,24 +1,34 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oneplus-oneplus3t
 pkgdesc="OnePlus 3T"
-pkgver=1.1
+pkgver=1.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-kernel-s6e3fa3:kernel_s6e3fa3
 	$pkgname-kernel-s6e3fa5:kernel_s6e3fa5
+	$pkgname-phosh
 "
 depends="
 	postmarketos-base
+	postmarketos-update-kernel
+	mesa-dri-gallium
 	mkbootimg
 	soc-qcom-msm8996
 	reboot-mode
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	phoc.ini
+	device-oneplus-oneplus3t-nonfree-firmware.post-install
+	10-local-powersave.rules
+	gpu-nobin.sh
+	"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -26,6 +36,11 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -D -m644 "$srcdir"/10-local-powersave.rules \
+		-t "$pkgdir"/lib/udev/rules.d
+	install -D -m644 "$srcdir"/gpu-nobin.sh \
+		-t "$pkgdir"/etc/profile.d
 }
 
 nonfree_firmware() {
@@ -36,6 +51,7 @@ nonfree_firmware() {
 		linux-firmware-qca
 		soc-qcom-msm8996-nonfree-firmware
 		"
+	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
 }
 
@@ -51,6 +67,16 @@ kernel_s6e3fa5() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	install -D -m644 "$srcdir"/phoc.ini \
+		-t "$subpkgdir"/etc/phosh
+}
+
 sha512sums="
-cb5d3f287303d509dfa3db9c54a94b1cd49bfc7c113dc16e1caa3889bb78c97bcbe9f6aefab3191853150a5806846ee8ced497c0aed9d2a70faf257068b9cc4b  deviceinfo
+84bd86f7c3972adc0abf0655c4a1bd2fb6108d6101433ab7aa7f4ad5cf76876d698f808d022931753c348482af369b34a781c1874c634489730468b5cd207d94  deviceinfo
+38409d4ce48db4624539dbfd695d3c6e1596a29fd7c3004a41368b28cba646495d05360420ad728f82c63d6ddeeca71d09944df06ebaca120aedd9cc2b436eb3  phoc.ini
+7c9d5e9f2032e088f720918ead9ed27ae6f81b4163a835310f41880c8ce16e63ee412c21cf80f9ee5b4dc0f9034b14980a47c5a717110e67dc4fb73133ff77c1  device-oneplus-oneplus3t-nonfree-firmware.post-install
+c87ec170b7fcdbe37c27d389fe2aa8f9c25b76beeb02ea7f5958fe3daaeb6e55cfc4fc970c80571da9aea0316677dc12cbb23f4d3b14ff5215def03a7637f8e9  10-local-powersave.rules
+4d9908ea8d0a497133df155a9b263fcf793eaec4b23fd11604503c2d9126d2ed2e51e746e24f8daa4d35ae182bfb0690cff62a3c398684c0ed79afcd658fe009  gpu-nobin.sh
 "
