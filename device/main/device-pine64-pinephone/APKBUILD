@@ -5,7 +5,7 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
 pkgver=0.42
-pkgrel=2
+pkgrel=3
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -123,6 +123,7 @@ package() {
 		"$pkgdir"/etc/gpsd/device-hook
 	install -D -m644 "$srcdir"/10-pinephone-proximity.rules \
 		"$pkgdir"/usr/lib/udev/rules.d/10-pinephone-proximity.rules
+	install -Dm644 "$srcdir"/60-flashlight.rules -t "$pkgdir"/usr/lib/udev/rules.d/
 
 	# Alsa usecase manager config
 	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/PinePhone \
@@ -166,7 +167,6 @@ nonfree_firmware() {
 
 plasma_mobile() {
 	install_if="$pkgname=$pkgver-r$pkgrel kirigami2"
-	install -Dm644 "$srcdir"/60-flashlight.rules -t "$subpkgdir"/usr/lib/udev/rules.d/
 	install -Dm644 "$srcdir"/kirigami-lowpower.sh "$subpkgdir"/etc/profile.d/kirigami-lowpower.sh
 }
 
