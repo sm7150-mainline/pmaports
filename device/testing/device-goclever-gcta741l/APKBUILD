@@ -2,8 +2,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-goclever-gcta741l
 pkgdesc="GoClever Orion 70L"
-pkgver=0.2
-pkgrel=2
+pkgver=0.2.1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -44,10 +44,6 @@ package() {
 	# U-Boot boot script
 	install -Dm644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
-
-	# Device Tree - temporary workaround: copy from kernel package
-	install -Dm644 /usr/share/dtb/sun6i-a31s-goclever-gcta741l.dtb \
-		"$pkgdir"/boot/dtbs-postmarketos-allwinner/sun6i-a31s-goclever-gcta741l.dtb
 }
 
 nonfree_firmware() {
@@ -58,5 +54,5 @@ nonfree_firmware() {
 
 sha512sums="
 5ce62bae1017dffa217578011cd11acc832472406381fe36fbbea1a8c008706f4d84ddda5b8bda0d8f21ed35bb12d228505b908030c7707d10564933c6cf1993  deviceinfo
-6cfb7a8a996468441779207a24b6f346bc13b248758822f2a0cc78c296f68c97d1a7dd96bf226a039fb5936d93ff2659c25396466e97fb7e94ddf0ee4d11be67  u-boot-script.cmd
+5b8c1d440867a3cee891168a156fb428b14dfeaf0b437da3e4dc1dd1408458bde98b4ce4682dfb0c5f9c5055a0e2c34cc78ba6160b6ca64281f9721d8d02dede  u-boot-script.cmd
 "
