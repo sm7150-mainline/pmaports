@@ -2,8 +2,8 @@ setenv kernel-flavor postmarketos-allwinner
 
 setenv bootargs init=/init.sh rw console=tty1 panic=10 consoleblank=0 loglevel=1 PMOS_FORCE_PARTITION_RESIZE pmos_boot=/dev/mmcblk0p1 pmos_root=/dev/mmcblk0p2
 
-echo Loading DTB: dtbs-${kernel-flavor}/${fdtfile}
-load mmc 0:1 ${fdt_addr_r} dtbs-${kernel-flavor}/${fdtfile}
+echo Loading DTB: dtbs/${fdtfile}
+load mmc 0:1 ${fdt_addr_r} dtbs/${fdtfile}
 
 echo Resizing FDT
 fdt addr ${fdt_addr_r}
