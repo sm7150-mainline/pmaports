@@ -1,7 +1,7 @@
 _flavor=postmarketos-qcom-apq8064
 pkgname=linux-$_flavor
 pkgver=5.10.98
-pkgrel=0
+pkgrel=1
 _commit=217c7ff0a7127d28f024f75fd267752ca4180559
 arch="armv7"
 pkgdesc="Upstream unstable kernel with patches for APQ8064 devices"
@@ -36,7 +36,7 @@ package() {
 		ARCH="$_carch" \
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
 
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release

@@ -4,7 +4,7 @@
 _flavor="postmarketos-qcom-msm8953"
 pkgname=linux-$_flavor
 pkgver=5.18.3
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for Qualcomm MSM8953 devices"
 arch="aarch64"
 url="https://github.com/msm8953-mainline/linux"
@@ -49,7 +49,7 @@ package() {
 		ARCH="$_carch" \
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
 	install -D "$builddir"/include/config/kernel.release \

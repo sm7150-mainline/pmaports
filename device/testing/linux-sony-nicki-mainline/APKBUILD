@@ -13,7 +13,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=$_mainver.$((_patchlevel-1))
-pkgrel=5
+pkgrel=6
 
 arch="armv7"
 pkgdesc="Sony Xperia M kernel fork, close to mainline"
@@ -103,7 +103,7 @@ package() {
 	make -j1 $_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
 }
 
 sha512sums="31e9ef9b3e956df38824865c291530fa5dda067bfea8b0169a3871d7876cfe192a42ae631e51a8a02f7c64319269c8af2688d8ae180805173bf2c1c84c390a59  linux-sony-nicki-mainline-ad6ab7f8c57896cb3829e6a80408e0912d6096c2.tar.gz

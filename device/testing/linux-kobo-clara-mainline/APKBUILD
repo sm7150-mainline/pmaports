@@ -3,7 +3,7 @@
 
 pkgname=linux-kobo-clara-mainline
 pkgver=5.19.11
-pkgrel=0
+pkgrel=1
 pkgdesc="Kobo Clara HD kernel fork, close to mainline"
 arch="armv7"
 _carch="arm"
@@ -63,7 +63,7 @@ package() {
 	make modules_install dtbs_install \
 		O="$_outdir" ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
 	install -Dm644 "$_rtl8189fs_dir"/8189fs.ko "$pkgdir/lib/modules/$pkgver/kernel/drivers/net/wireless"
 }
 

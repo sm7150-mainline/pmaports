@@ -13,7 +13,7 @@ _kernver=${pkgver%_rc*}
 _mainver=${_kernver%.*}
 _patchlevel=${_kernver/$_mainver./}
 _basever=$_mainver.$((_patchlevel-1))
-pkgrel=3
+pkgrel=4
 
 arch="aarch64"
 pkgdesc="Google Pixel 3 XL kernel fork, close to mainline"
@@ -105,7 +105,7 @@ package() {
 	make -j1 $_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
 }
 
 

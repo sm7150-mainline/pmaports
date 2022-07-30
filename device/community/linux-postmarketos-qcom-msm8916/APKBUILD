@@ -5,7 +5,7 @@
 _flavor="postmarketos-qcom-msm8916"
 pkgname=linux-$_flavor
 pkgver=5.18
-pkgrel=1
+pkgrel=2
 pkgdesc="Mainline kernel fork for Qualcomm MSM8916 devices"
 arch="aarch64 armv7"
 url="https://github.com/msm8916-mainline/linux"
@@ -59,7 +59,7 @@ package() {
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_MOD_STRIP=1 \
-		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
 	install -D "$builddir"/include/config/kernel.release \
