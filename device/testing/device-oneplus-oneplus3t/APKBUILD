@@ -1,16 +1,18 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oneplus-oneplus3t
 pkgdesc="OnePlus 3T"
-pkgver=1
-pkgrel=9
+pkgver=1.1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kernel-s6e3fa3:kernel_s6e3fa3
+	$pkgname-kernel-s6e3fa5:kernel_s6e3fa5
+"
 depends="
 	postmarketos-base
-	linux-postmarketos-qcom-msm8996
 	mkbootimg
 	soc-qcom-msm8996
 	reboot-mode
@@ -36,6 +38,19 @@ nonfree_firmware() {
 		"
 	mkdir "$subpkgdir"
 }
+
+kernel_s6e3fa3() {
+	pkgdesc="Samsung S6E3FA3 Panel. To find out which panel your device uses run cat /proc/cmdline in TWRP terminal"
+	depends="linux-postmarketos-qcom-msm8996"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_s6e3fa5() {
+	pkgdesc="Samsung S6E3FA5 Panel. To find out which panel your device uses run cat /proc/cmdline in TWRP terminal"
+	depends="linux-postmarketos-qcom-msm8996"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 sha512sums="
-facdd94cdeebcabfcaa3aa06ecd7f0b3d573352afd1673c60e4598bbd1aa2889c04ccd5b319efdc5638acbb051a8871ff20fe4b22db087d05a9d266cc86d406f  deviceinfo
+cb5d3f287303d509dfa3db9c54a94b1cd49bfc7c113dc16e1caa3889bb78c97bcbe9f6aefab3191853150a5806846ee8ced497c0aed9d2a70faf257068b9cc4b  deviceinfo
 "
