@@ -21,16 +21,15 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-iwd"
 makedepends="bison findutils flex installkernel openssl-dev perl"
 
-_repo="linux"
 _config="config-$_flavor.$arch"
 _tag="sdm845-5.18.3"
 
 # Source
 source="
-	$_repo-$_tag.tar.gz::https://gitlab.com/sdm845-mainline/$_repo/-/archive/$_tag/$_repo-$_tag.tar.gz
+	linux-$_tag.tar.gz::https://gitlab.com/sdm845-mainline/linux/-/archive/$_tag/linux-$_tag.tar.gz
 	$_config
 "
-builddir="$srcdir/$_repo-$_tag"
+builddir="$srcdir/linux-$_tag"
 
 prepare() {
 	default_prepare
