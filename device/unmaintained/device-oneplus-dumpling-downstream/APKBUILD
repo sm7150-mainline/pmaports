@@ -1,0 +1,32 @@
+# Unmaintained: Downstream port, only for reference. Use mainline port (oneplus-dumpling)!
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-oneplus-dumpling-downstream
+pkgdesc="OnePlus 5T (Downstream)"
+pkgver=3
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-oneplus-msm8998-downstream
+	mesa-dri-gallium
+	msm-fb-refresher
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+f323aee4811ed30073b20d06a6b917e7d227d05be746b377b78b95a92742d7d190704eb2cce95f3ff9233169895e66a45b3c91b73c15a5bf12eabaf25e2ebdf6  deviceinfo
+"
