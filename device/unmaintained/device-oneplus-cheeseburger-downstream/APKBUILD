@@ -1,0 +1,32 @@
+# Unmaintained: Downstream port, only for reference. Use mainline port (oneplus-cheeseburger)!
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-oneplus-cheeseburger-downstream
+pkgdesc="OnePlus 5 (Downstream)"
+pkgver=3
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-oneplus-msm8998-downstream
+	mesa-dri-gallium
+	msm-fb-refresher
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+50702473149b77ac5a7e2c164218b2544a77814ad6faad1607c9a107bb0d92d3b78249d86cb6eff86faaba723a70553a0f1a2344a4a6645d885799f6e1759305  deviceinfo
+"

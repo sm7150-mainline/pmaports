@@ -1,5 +1,5 @@
+# Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
 # Reference: <https://postmarketos.org/devicepkg>
-
 pkgname=device-oneplus-cheeseburger
 pkgdesc="OnePlus 5"
 pkgver=2
@@ -19,7 +19,6 @@ source="
 	phoc.ini
 "
 subpackages="
-	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
@@ -33,12 +32,6 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-kernel_downstream() {
-	pkgdesc="Downstream kernel"
-	depends="linux-oneplus-msm8998 mesa-dri-gallium msm-fb-refresher"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 kernel_mainline() {
 	pkgdesc="Close to mainline kernel"
 	# soc-qcom-sdm845 is also applicable to msm8998
@@ -47,7 +40,7 @@ kernel_mainline() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Firmware for GPU, Wi-Fi, Bluetooth etc. (mainline only, also needed for osk-sdl)"
+	pkgdesc="Firmware for GPU, Wi-Fi, Bluetooth etc. (also needed for full disk encryption)"
 	depends="firmware-oneplus-msm8998"
 	mkdir "$subpkgdir"
 }
