@@ -2,8 +2,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oneplus-cheeseburger
 pkgdesc="OnePlus 5"
-pkgver=2
-pkgrel=1
+pkgver=3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -19,6 +19,7 @@ source="
 	phoc.ini
 "
 subpackages="
+	$pkgname-kernel-alpine:kernel_alpine
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
@@ -32,9 +33,15 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_alpine() {
+	pkgdesc="Pure mainline kernel, unpatched Alpine linux-edge"
+	depends="linux-edge linux-firmware-none"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 kernel_mainline() {
-	pkgdesc="Close to mainline kernel"
-	# soc-qcom-sdm845 is also applicable to msm8998
+	pkgdesc="Close to mainline kernel, plenty of working features and fixes"
+	# NOTE: soc-qcom-sdm845 is also applicable to msm8998
 	depends="linux-postmarketos-qcom-msm8998 soc-qcom-sdm845"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
@@ -52,6 +59,6 @@ phosh() {
 }
 
 sha512sums="
-dfa270249998db3fe79dd0bb83359e0af9366fcc80fe8239ec3e1747deb3ad26fac04c0874daaf1258d70885a1720120d79b84bc35fe1b0f04c2c8dffca3fdea  deviceinfo
+a5c0a7bf014f39c4f8ae06148eb2331f937d3075518e34d09fe5d8c48bc0fd13af7eb67dc33567073c78667a1fa9f2121d9ef9648e8f041f8342f00cc6233e4e  deviceinfo
 2288f08a44aae5136c0c0c846501c2bd4bcb10f05454b40c6e4490d398385b8a7129216047b5eb7982ca6d62d3aa71f3e18bfb8661d0cd32c8a600685ca0da48  phoc.ini
 "
