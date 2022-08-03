@@ -1,0 +1,127 @@
+# Maintainer: BinaryCraft <keep.it.sns@gmail.com>
+
+pkgname=linux-postmarketos-mtk-mt8183
+pkgver=5.18
+pkgrel=0
+pkgdesc="Mainline kernel for mediatek mt8183"
+arch="aarch64"
+_flavor="${pkgname#linux-}"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-anbox
+	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-containers
+	pmb:kconfigcheck-zram
+	"
+makedepends="
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	installkernel
+	openssl-dev
+	perl
+	rsync
+	gzip
+	xz
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	u-boot-tools
+	vboot-utils
+	lz4
+	zstd
+"
+
+_carch="arm64"
+
+# Source
+_config="config-$_flavor.$CARCH"
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.0};;
+	*.*)	_kernver=$pkgver;;
+esac
+
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
+	mt8183-cadmium-improved-kukui.gpu.patch
+	mt8183-cadmium-kukui.move-gpu-opp-to-3.patch
+	mt8183-cadmium-improved-kukui.opp-multi-regulator.patch
+	mt8183-cadmium-kukui.panel-dts-rotation.patch
+	mt8183-cadmium-kukui.cci-1.patch
+	mt8183-cadmium-kukui.panel-dts-rotation_sku0.patch
+	mt8183-cadmium-kukui.cci-2.patch
+	mt8183-fix-bluetooth.patch
+	mt8183-cadmium-kukui.cci-3.patch
+	mt8183-kukui-disable-unsupported-thermal-zones.patch
+	mt8183-cadmium-kukui.cci-4.patch
+	mt8183-kukui-jacuzzi-fennel14-rt1015p-sound.patch
+	mt8183-cadmium-kukui.cci-5.patch
+	mt8183-kukui-jacuzzi-fix-anx7625-01.patch
+	mt8183-cadmium-kukui.cci-6.patch
+	mt8183-kukui-jacuzzi-fix-anx7625-04.patch
+	mt8183-cadmium-kukui.cci-7.patch
+	mt8183-kukui-jacuzzi-fix-display-resume.patch
+	mt8183-cadmium-kukui.cci-8.patch
+	mt8183-kukui-jacuzzi-hack-dpms-resume.patch
+	mt8183-cadmium-kukui.gpu-vsram.patch
+	mt8183-panel-orientation.patch
+	config-$_flavor.aarch64
+"
+builddir="$srcdir/linux-$_kernver"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+
+sha512sums="
+dbbc9d1395898a498fa4947fceda1781344fa5d360240f753810daa4fa88e519833e2186c4e582a8f1836e6413e9e85f6563c7770523b704e8702d67622f98b5  linux-5.18.tar.xz
+efbb379c2c0e14116a4a941993fb4df243dde9d7477177e903b283356ebaa57ee78a685632effbb43208f25a5e490779385a36dcb1b19e96eadb46547b2c85db  mt8183-cadmium-improved-kukui.gpu.patch
+e79b5b652bfb44e7fc293d08c3b5355a8f6456389c05c29167cfaf5bf45cf19555f2b2e50aca8e93e8876f64ed09d63e0483f5b8c492a47d9d2e3e72413c4e45  mt8183-cadmium-kukui.move-gpu-opp-to-3.patch
+0252db7a1e3b6b041b351aaa17323e45e286b41b369945be483b4ce2be2fa6600124d12b8871e3bea50ca07949e12e90e9cc7c8a3a37ad19cd02677eb7bebd89  mt8183-cadmium-improved-kukui.opp-multi-regulator.patch
+ca3584808a2b27854d50d2c8cd3ba3306334302803e5684b19b338473011f7aa210f326232e2dbd364b2a9c5ad68db0b8443fe9c0b141cd8b596ba36db336595  mt8183-cadmium-kukui.panel-dts-rotation.patch
+34f72f57e7b1a5b4800c514a4443e2815dee6d14566990a75a9389aa1bec2f42c3dd7e4992ea4733d57e0515756f1f79d3298fab1ac66a9628dc3f8236dedf07  mt8183-cadmium-kukui.cci-1.patch
+de3968b5a4ab7e9b60a81ebc9845849a3b2fd23cfea8ca91d953322f3d0f64c978361217fe8327e16622fcc4f05f979b21c798b55eb1b6fe22cee531a5321a16  mt8183-cadmium-kukui.panel-dts-rotation_sku0.patch
+558611e9bbe11c99c4b70cb4d4882bc9a7b796575a553d3659953146f8c45c3c72b8e9cccd2606cacf17ff6501388fde01488e8eeae0706da51e74a356010474  mt8183-cadmium-kukui.cci-2.patch
+d74da1231181835bec82015da1b3f5b08a1fe9c3c35dd712e285891094d94d9427ceac75d32f74be3a635e17d93ad82b37adf97db8176efc91aed17535023fc2  mt8183-fix-bluetooth.patch
+0dab1f6e377de6f5593fe26078d8aaa65017fef405f99f33c172bc73f252138d0db394bec93bed4650aee74f57186f81b6c78fc408b345b47d80d3ea6acf95aa  mt8183-cadmium-kukui.cci-3.patch
+a5e99ea30bbdde3a5f0f9745306c9f58876a60489c3cbeacd783cf7e47a013d47c9fb77e4a9dbbd34ec6307d40e64a3623e3cece2f254f734979987f5a22e700  mt8183-kukui-disable-unsupported-thermal-zones.patch
+000e2f5a84a2fd436f100b4325812cadaba2c9fb820ce26ca26961fb16e2941b13ca14c272d8575d05f1e4541a5d324f78a17dc421b54a551ea73067dd7044a4  mt8183-cadmium-kukui.cci-4.patch
+9b8707de42635734031495da055c5860addeb656051540f1a14404b10aa8b501168d8b0e274b37bce989db3bc050e9beef722189556f6d782b92cc907731488d  mt8183-kukui-jacuzzi-fennel14-rt1015p-sound.patch
+538672cfd0401b1da7751b101b02639dea9f27e81f7f537b2f4b7b05d13878f61213a4933e74f8d3102fa93f13eca0faad19699d79568552a1b54969ac66b243  mt8183-cadmium-kukui.cci-5.patch
+7e73fd6ac2efa90f64dce5f631475b726c68a059805ab9ceba216eaae672db07f18c5f8e06a32f78d25153c5e4ce6a3dafc0d124c0994d3cae61f074f8e84f53  mt8183-kukui-jacuzzi-fix-anx7625-01.patch
+ba8eeb470e55a279d0cb42608443c99056da7bfbf4b1ca022a6449703cea4be5640e71edf110eaae9839d0fda1a6ca242e4a152cb8014c6451b18968a1dbcf07  mt8183-cadmium-kukui.cci-6.patch
+88560c512a328a7d142f62eb6b74a23d01741667bd731fce6b96a968595d641dcfd8aeb3b26c797d333a2eaeec218c033dc710eace4080d8324b99ff55dab47f  mt8183-kukui-jacuzzi-fix-anx7625-04.patch
+8e2bee598a6f7110d1e198e17ee5b8137f4029abdb651debb8a3e6204bb389485720b532fb07ab6075c432a68ffaacfd17f9c0b6c1bf9265e209dafb8a8d4982  mt8183-cadmium-kukui.cci-7.patch
+cd629355bb9b172a7e68d7334dc2a97f040f8d5757c835e064a8706e9cf5a31b91023ca6e0ef23e56a9965e19ceca61332a5fcf2a0b1cce420a90bbbc0425531  mt8183-kukui-jacuzzi-fix-display-resume.patch
+f0e78266b8d5db67476ca47fc115830d4296182486d88744d714b05bed35c4976b82a59a7aa4fb36144adb38980b8633e89830411ed073a2461dee63659b8652  mt8183-cadmium-kukui.cci-8.patch
+e9a128a8ddd98c6c8957ba45186afa2ea8ebeac83d4f2db3ff9ee8a5dd8027af90868c334a7b456bfe7dce793517f27ad63efa220bc933e3407f6362da6d7b2a  mt8183-kukui-jacuzzi-hack-dpms-resume.patch
+8ab89b0845d3aaee9ae5d244e7880601f21b85b159677464960c1e08cf20038db2a8ad1b57c9ed99d817735ad450d0e4d4fe9051cb1808dd08a00e2f68af5028  mt8183-cadmium-kukui.gpu-vsram.patch
+863966b986c3680d013ba81e02e2d0a5f092d95ef6d3b60cb6991ca7acc3c4ce5323e528b3190b95e594f72c1b0ae26f7b8db20e118557850161777a90e2b45f  mt8183-panel-orientation.patch
+3e67e0d9763872959ae2ce3e9c72f7530b647340df785037155dcb227788fbb6195ae24a390c2da9302b2e85e712849ad5e48f6f06790c00480a23ed707ab265  config-postmarketos-mtk-mt8183.aarch64
+"
