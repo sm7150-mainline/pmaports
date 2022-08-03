@@ -1,0 +1,40 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: BinaryCraft <keep.it.sns@gmail.com>
+# Co-Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-juniper
+pkgdesc="Acer Chromebook Spin 311"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	depthcharge-tools
+	linux-postmarketos-mtk-mt8183
+	mesa-dri-gallium
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+f0cdce2360b8d93c4d3d421c524be036450ba35f3eb5dee14d6070ec00e29166c799ecf392c60fd01678a58fb3c773fe12a620a9ce91f4dd18c22335189e9f90  deviceinfo
+"
