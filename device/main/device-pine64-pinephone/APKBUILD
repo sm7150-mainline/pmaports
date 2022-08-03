@@ -5,7 +5,7 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
 pkgver=0.42
-pkgrel=1
+pkgrel=2
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -59,7 +59,6 @@ source="
 	pinephone-vccq-mod.dts
 	pulse-pinephone.conf
 	sensorfw/90-pinephone.conf
-	sensorfw/primaryuse.conf
 	setup-modem.sh
 	uboot-script.cmd
 	uboot-user.cmd
@@ -207,8 +206,6 @@ vccq_mod() {
 sensorfw() {
 	install_if="$pkgname=$pkgver-r$pkgrel sensorfw"
 
-	install -Dm644 -t "$subpkgdir"/etc/sensorfw \
-		"$srcdir"/primaryuse.conf
 	install -Dm644 -t "$subpkgdir"/etc/sensorfw/sensord.conf.d \
 		"$srcdir"/90-pinephone.conf
 }
@@ -230,7 +227,6 @@ c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313
 d66ecef1fa5481ff138fe4e12b194903ceacab9d0649e716049f32e56ec6d9be09b97e2ff769ebc5c9fbced542986b9214f47ed14511ad761d80a41b19e02df7  pinephone-vccq-mod.dts
 9c472065b19141dd4c7555869b955de2e679b36e597f9fa3bdac18d0e9460986b0e2fffe1e04751301305f1b6474c1375803afb7d6212eeae91b4905d0bf8ff8  pulse-pinephone.conf
 967e3a43c7e91ed37fc932a7c580cd168ca11d8ec7f60ff60ece7f286e5144f27faead95162fa7d571a2317ed0da970fd86f5bc9ed0235a25c0be9182d42d64d  90-pinephone.conf
-8e362f48fc5db58dc37d035f80f5ab0b09a20c82e6859e9662affdc192e2aa0bc7a259a9b0c63db330b3873d8b1f22af3f9193a0b7d79068354d1a788391376c  primaryuse.conf
 420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
 24b241b6a30ecde8ec66b45f08d09d17d8ab0753cc5e8c75142b850af21d829d1f45e83e6b892f5cbad40f4fa3550de23e2b4d21f7727ada0e79751b0b0a1010  uboot-script.cmd
 f28902517bebe16f7ddbdbf9f4c52d5c97319e3b5ba7326ba96ed0e094d3d2a39c87061326893cdc34336bbfd56de084b2f217918ebba7ca6a080088cd0bd409  uboot-user.cmd
