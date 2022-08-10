@@ -1,0 +1,25 @@
+# Maintainer: Dang Huynh <danct12@disroot.org>
+pkgname=wl1251-cal
+pkgver=1.2
+pkgrel=0
+pkgdesc="Retrieve WiFi data from CAL on the Nokia N900 and feed it to the driver"
+url="https://github.com/maemo-leste/wl1251-cal"
+arch="all"
+license="LGPL-2.1-only"
+makedepends="linux-headers"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/wl1251-cal/archive/refs/tags/$pkgver.tar.gz
+	n900-update-wl1251"
+options="!check" # No tests
+
+build() {
+	make
+}
+
+package() {
+	make install DESTDIR="$pkgdir"
+	install -Dm755 "$srcdir/n900-update-wl1251" "$pkgdir/usr/bin/n900-update-wl1251"
+}
+sha512sums="
+1a402553fc98fa8f2d81d34a548f96be91d13bdcb77ec8e9d8373732b27a6e908895f6044aef8e88dbcd9fa6fa04f0a3d62bed877be91ba6207f68440c3ce758  wl1251-cal-1.2.tar.gz
+2cb484d8ab64198c97c61691151a19d26d57f340f85c70d39293e9428b5ac790bc1a6de5894a2a9a3886487f450fd09b21513add3f5fa776ac5289985e43c63a  n900-update-wl1251
+"

@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+if [ -e /in-pmbootstrap ]; then
+	echo "Skipping update of N900 WLAN calibration data (running in pmbootstrap)"
+	exit 0
+fi
+
+echo "Updating N900's WLAN calibration data.."
+wl1251-cal --nvs-loading=/dev/null --nvs-push-data=/lib/firmware/ti-connectivity/wl1251-nvs.bin
+echo "Done"
