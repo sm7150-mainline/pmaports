@@ -60,8 +60,8 @@ setup_firmware_path() {
 }
 
 setup_mdev() {
-	echo /sbin/mdev >/proc/sys/kernel/hotplug
-	mdev -s
+	# Start mdev daemon
+	mdev -d
 
 	# If udevd and udevadm are present in the initfs, coldplug all devices so that
 	# they can be used via libinput (e.g. by unl0kr). This is the same series of steps
