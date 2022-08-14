@@ -3,7 +3,7 @@
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
 pkgver=3.3
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -95,7 +95,10 @@ package() {
 	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card
 	ln -s /usr/share/alsa/ucm2/PinePhonePro/PINE64-PinePhonePro-.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/PINE64-PinePhonePro-.conf
-
+	# Below link is a temporary workaround until next Tow-Boot Release
+	# https://github.com/Tow-Boot/Tow-Boot/pull/171
+	ln -s /usr/share/alsa/ucm2/PinePhonePro/PINE64-PinePhonePro-.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/simple-card.conf
 	# Modem
 	install -Dm755 "$srcdir"/setup-modem.sh \
 		"$pkgdir"/usr/bin/pinephone_setup-modem
