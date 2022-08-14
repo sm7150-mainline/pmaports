@@ -336,7 +336,7 @@ resize_root_partition() {
 			echo "Resize root partition ($partition)"
 			# unmount subpartition, resize and remount it
 			kpartx -d "$partition"
-			parted -s "$partition_dev" resizepart 2 100%
+			parted -f -s "$partition_dev" resizepart 2 100%
 			kpartx -afs "$partition_dev"
 			ROOT_PARTITION_RESIZED=1
 		fi
@@ -350,7 +350,7 @@ resize_root_partition() {
 		partition_dev="$(echo "$partition" | sed -E 's/p?2$//')"
 		if has_unallocated_space "$partition_dev"; then
 			echo "Resize root partition ($partition)"
-			parted -s "$partition_dev" resizepart 2 100%
+			parted -f -s "$partition_dev" resizepart 2 100%
 			partprobe
 			ROOT_PARTITION_RESIZED=1
 		fi
