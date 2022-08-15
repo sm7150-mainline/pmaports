@@ -1,0 +1,22 @@
+# Maintainer: Dylan Van Assche <me@dylanvanassche.be>
+pkgname=bootmac
+pkgver=0.2.0
+pkgrel=0
+pkgdesc="Configure MAC addresses at boot"
+url="https://gitlab.com/postmarketOS/bootmac"
+arch="all"
+license="GPLv3-or-later"
+source="https://gitlab.com/postmarketOS/bootmac/-/archive/v$pkgver/bootmac-v$pkgver.tar.gz"
+options="!check"
+builddir="$srcdir/$pkgname-v$pkgver"
+
+package() {
+	install -Dm644 "$builddir"/bootmac.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/90-bootmac.rules
+	install -Dm755 "$builddir"/bootmac \
+		"$pkgdir"/usr/bin/bootmac
+}
+
+sha512sums="
+13147ceace03ec2739acc837b3b1426b099fe738e82d6d050535ebd51c70c3ced6770946c2e1d50af15dc9261251a221ec269cdd8089fc6ee5cdae3276f94aae  bootmac-v0.2.0.tar.gz
+"
