@@ -2,7 +2,7 @@
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
 pkgver=8
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
@@ -12,11 +12,11 @@ depends="
 	swclock-offset
 	msm-modem-uim-selection
 "
+replaces="upower"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-ucm
 	$pkgname-qbootctl
-	$pkgname-upower
 "
 
 _ucm_commit="621c71fd5f5742c60d38766ebb2d1bd3b863a2a4"
@@ -31,6 +31,10 @@ package() {
 	mkdir -p "$pkgdir"
 	install -Dm644 "$srcdir"/90-feedbackd-pmi8998.rules \
 		"$pkgdir"/usr/lib/udev/rules.d/90-feedbackd-pmi8998.rules
+
+	# Shutdown when battery is critical instead of sleep
+	install -Dm644 "$srcdir"/UPower.conf \
+		"$pkgdir"/etc/UPower/UPower.conf
 }
 
 nonfree_firmware() {
@@ -49,15 +53,6 @@ ucm() {
 	# install audio config files
 	mkdir -p "$subpkgdir"/usr/share/alsa/ucm2
 	cp -r "$srcdir/alsa-ucm-conf-$_ucm_commit"/ucm2 "$subpkgdir"/usr/share/alsa/
-}
-
-upower() {
-	install_if="$pkgname=$pkgver-r$pkgrel upower"
-	replaces="upower"
-
-	# Shutdown when battery is critical instead of sleep
-	install -Dm644 "$srcdir"/UPower.conf \
-		"$subpkgdir"/etc/UPower/UPower.conf
 }
 
 qbootctl() {
