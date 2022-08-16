@@ -1,0 +1,35 @@
+# Maintainer: BinaryCraft <keep.it.sns@gmail.com>
+pkgname=alsa-ucm-conf-google-kukui
+pkgver=1
+pkgrel=0
+pkgdesc="ALSA Use Case Manager configuration for Google Kukui Chromebooks"
+url="https://alsa-project.org"
+arch="aarch64"
+license="BSD-3-Clause"
+source="
+	mt8183_da7219_HiFi.conf
+	mt8183_da7219_rt1015p.conf
+	mt8183_mt6358_HiFi.conf
+	mt8183_mt6358_ts3a227_max98357.conf
+"
+options="!check" # no tests
+depends="alsa-ucm-conf"
+replaces="alsa-ucm-conf"
+
+package() {
+	install -Dm644 mt8183_da7219_HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/mt8183_da7219_r/HiFi.conf
+	install -Dm644 mt8183_da7219_rt1015p.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/mt8183_da7219_r/mt8183_da7219_rt1015p.conf
+	install -Dm644 mt8183_mt6358_HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/mt8183_mt6358_t/HiFi.conf
+	install -Dm644 mt8183_mt6358_ts3a227_max98357.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/mt8183_mt6358_t/mt8183_mt6358_ts3a227_max98357.conf
+}
+
+sha512sums="
+d998860ca82ec9277a7b660dbdc644fc8ec84d5f3703dc72eac44a6b70b61ea9f733eeae94d21d9d2cadf25f95e951ce3c804593b4f0a4c715770b4b422d4ca7  mt8183_da7219_HiFi.conf
+c8ce246275beaa3e89eb4e06bed825935122c9f6a9fff9f8e3188dec47f37db92d908148cd7551785de5282c13386134bd6daf8ed033de122218b698d67bab33  mt8183_da7219_rt1015p.conf
+749180019ca12ec342604fc6924aa60c5f4ff2892ce22d2199b78d707947a8b91e71fa7a71643f3475bf2dba6e94c36e4fc57cb98f7a96519c83106b08ebc5c3  mt8183_mt6358_HiFi.conf
+c8ce246275beaa3e89eb4e06bed825935122c9f6a9fff9f8e3188dec47f37db92d908148cd7551785de5282c13386134bd6daf8ed033de122218b698d67bab33  mt8183_mt6358_ts3a227_max98357.conf
+"
