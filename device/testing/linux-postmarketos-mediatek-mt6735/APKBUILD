@@ -1,0 +1,55 @@
+# Maintainer: Yassine Oudjana (Tooniis) <y.oudjana@protonmail.com>
+# Kernel config based on: arch/arm64/configs/defconfig
+
+_flavor="postmarketos-mediatek-mt6735"
+pkgname=linux-$_flavor
+pkgver=6.0.0
+pkgrel=0
+pkgdesc="Linux kernel with patches for devices with the MediaTek MT6735 SoC"
+arch="aarch64"
+_carch="arm64"
+url="https://gitlab.com/mt6735-mainline/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-zram
+"
+makedepends="bash bison findutils flex installkernel openssl-dev perl"
+
+# Source
+_tag=v${pkgver//_/-}-mt6735
+source="
+	linux-$_tag.tar.gz::$url/-/archive/$_tag/linux-$_tag.tar.gz
+	config-$_flavor.$arch
+"
+builddir="$srcdir/linux-$_tag"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+		"$pkgdir/boot/vmlinuz"
+
+	install -D "$builddir/include/config/kernel.release" \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+}
+sha512sums="
+5ca16dee290ace74a48c9c1d51474e2ebcec154d058f07e790417c35ff2511385fc164c5b2a35d1a53107b9f0ebc1253525ffb00a3a9de22bcc6f9b1d95b7009  linux-v6.0.0-mt6735.tar.gz
+c0c0a1e574faa33c7e95a6f89aab1ffec21c0a2b216e35d33a644bcc12df2f52305a0148c0ae4688ed693aaa36f00d35d4c9a7b79db6a495b945374562998f7f  config-postmarketos-mediatek-mt6735.aarch64
+"
