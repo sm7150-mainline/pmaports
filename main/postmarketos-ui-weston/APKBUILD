@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-weston
 pkgver=6
-pkgrel=3
+pkgrel=4
 pkgdesc="(Wayland) Reference compositor (demo, not a phone interface)"
 url="https://postmarketos.org"
 arch="noarch"
@@ -35,7 +35,7 @@ _pmb_recommends="htop
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="start_weston.sh weston.ini.default"
-options="!check" # Meta package, no test suite
+options="!check pmb:gpu-accel" # Meta package, no test suite
 
 package() {
 	install -Dm755 "$srcdir"/start_weston.sh \
