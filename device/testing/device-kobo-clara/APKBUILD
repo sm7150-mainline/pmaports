@@ -1,13 +1,14 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-kobo-clara
 pkgdesc="Kobo Clara HD"
-pkgver=0.4
+pkgver=0.5
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
+	kobo-epdc-extractor
 	mesa-dri-gallium
 	perl
 	postmarketos-base
@@ -15,7 +16,6 @@ depends="
 	u-boot-tools
 "
 makedepends="devicepkg-dev"
-install="$pkgname.post-install"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
@@ -23,8 +23,6 @@ subpackages="
 "
 source="
 	deviceinfo
-	extract-waveform.initd
-	extract-waveform.pl
 	uboot-script-downstream.cmd
 	uboot-script-mainline.cmd
 "
@@ -35,8 +33,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm755 "$srcdir"/extract-waveform.pl "$pkgdir"/usr/sbin/extract-waveform.pl
-	install -Dm755 "$srcdir"/extract-waveform.initd "$pkgdir"/etc/init.d/extract-waveform
 }
 
 kernel_downstream() {
@@ -66,9 +62,7 @@ nonfree_firmware() {
 }
 
 sha512sums="
-bdc2528bd09f164870a368caf0b06a6c816b883536c3033384060bcf480ddf987daf38db4b523406e1e591f9cea86c9bb97276d88ebc3b05e2ae6bb53adb4ba8  deviceinfo
-c68e4e41d73a1f9d08aeed95743d5a3ae6831d36d0259ba96ceca297479fef01b78c2b569c376c5b24b4ee24ea7d3cb44d6e97730f44d81fd67e9f0586c4911a  extract-waveform.initd
-34475b314e45135c84e4abdc769d3aba9df56e37814c7f689d5e1aca5af060b2e028c01e871c3863534fede0be7c79aaebe0a1ff4f2bfab2ee974489119005cf  extract-waveform.pl
+cf1537054e6123ccdc803c0ea5f99f2dbea499ea5d6be9f95893744a5dd2400544b5570232fb13009dfa3f9afd3b8dd54d29e645c9e0ff6aa5c845bca186a0b7  deviceinfo
 4bfc2714a2670efc451860bd97d36ba12559e00aed41afdde1ac3e01b41458390358ac7f6bc96a6dee6be6a34f534da52d845b02df0566b25f4868774ef69b1d  uboot-script-downstream.cmd
 9f624e90df6bc6acbd6db03d4319a778443b270e5756a2bc78002df8da19d23a3ea652f3d8da15257552a7381646b83553f794d24f6ef31479d3a16af9ae5e0b  uboot-script-mainline.cmd
 "
