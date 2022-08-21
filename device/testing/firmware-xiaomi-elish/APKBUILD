@@ -1,16 +1,17 @@
 pkgname=firmware-xiaomi-elish
-pkgver=20220612
+pkgver=20220808
 pkgrel=0
 pkgdesc="Firmware for Xiaomi Mi Pad 5 Pro"
 subpackages="
 	$pkgname-adreno
+	$pkgname-touchscreen
 	$pkgname-venus
 	"
 url="https://github.com/lujianhua/xiaomi-elish-firmware"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="d14ee69eaeb8955b20c8311c746cc0d088009279"
+_commit="cc6099f43db44f70565a419fa4ce5dd8d6d9ec9d"
 source="https://github.com/lujianhua/xiaomi-elish-firmware/archive/$_commit/xiaomi-elish-firmware-$_commit.tar.gz"
 builddir="$srcdir/xiaomi-elish-firmware-$_commit"
 
@@ -28,6 +29,13 @@ adreno() {
 		"$subpkgdir/lib/firmware/qcom/sm8250/elish/"
 }
 
+touchscreen() {
+	pkgdesc="Xiaomi elish touchscreen firmware"
+
+	install -Dm644 "$builddir"/novatek/nt36523.bin -t \
+		"$subpkgdir/lib/firmware/novatek/"
+}
+
 venus() {
 	pkgdesc="Xiaomi elish venus firmware"
 
@@ -36,5 +44,5 @@ venus() {
 }
 
 sha512sums="
-0eb1bb9e60a30c480b72fac3cef6b9f366e611a5b5b184aa9549866aa47aa61ffb31dc4b5fbf900ce084636a81023dcc8331dae833717124e7f0f1cd20845c14  xiaomi-elish-firmware-d14ee69eaeb8955b20c8311c746cc0d088009279.tar.gz
+a89d7478fc6c8c6a52f3f09ce33b2e8a4964113b2fdaadfd48e31aba1852d3d716e99eb34ec85c155e7a1d0e20ec7bb7cbe553a94b6371721db078d53194738d  xiaomi-elish-firmware-cc6099f43db44f70565a419fa4ce5dd8d6d9ec9d.tar.gz
 "
