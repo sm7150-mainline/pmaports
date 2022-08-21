@@ -8,10 +8,17 @@ setenv dtb_file "exynos5422-odroidhc1.dtb"
 printenv
 
 echo Setting bootargs
-setenv bootargs init=/init.sh rw console=tty0 console=ttySAC2,115200 panic=10 consoleblank=0 loglevel=9 cma=256M PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE
+setenv bootargs init=/init.sh rw console=tty0 console=ttySAC2,115200 panic=10 consoleblank=0 loglevel=9 cma=256M initcall_blacklist=exynos_drm_init PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE
 
-echo Loading Kernel
-load mmc ${mmcbootdev}:${mmcbootpart} ${kernel_addr_r} ${kernel_image}
+if test -e mmc ${mmcbootdev}:${mmcbootpart} ${kernel_image}; then
+    echo Loading Kernel: vmlinuz
+    load mmc ${mmcbootdev}:${mmcbootpart} ${kernel_addr_r} ${kernel_image};
+fi
+
+if test -e mmc ${mmcbootdev}:${mmcbootpart} ${kernel_image}-edge; then
+    echo Loading Kernel: vmlinuz-edge
+    load mmc ${mmcbootdev}:${mmcbootpart} ${kernel_addr_r} ${kernel_image}-edge
+fi
 
 echo Loading Initramfs
 load mmc ${mmcbootdev}:${mmcbootpart} ${initrd_addr_r} ${initrd_image}
