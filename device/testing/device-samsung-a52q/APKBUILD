@@ -1,0 +1,48 @@
+# Maintainer: Leandro Friedrich <email@leandrofriedrich.de>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-a52q
+pkgdesc="Samsung Galaxy A52"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm7125
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	soc-qcom-sm7125
+	alsa-ucm-conf-samsung-sm7125
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
+	depends="
+		firmware-samsung-a52q-adreno
+		firmware-samsung-a52q-adsp
+		firmware-samsung-a52q-cdsp
+		firmware-samsung-a52q-ipa
+		firmware-samsung-a52q-modem
+		firmware-samsung-a52q-wlan
+		firmware-samsung-a52q-bluetooth
+		firmware-samsung-a52q-venus
+	"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+ebbba971a0c250627bf12f8b0922b44720875e3e1987c2ad5da25b258af684e01e349c392c0706003a9104fbea9cd5c623ae80cc731c52b581713d3d68dc01e5  deviceinfo
+"
