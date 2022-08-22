@@ -1,0 +1,28 @@
+# Maintainer: Leandro Friedrich <email@leandrofriedrich.de>
+# Co-Maintainer: map220v <map220v300@gmail.com>
+pkgname=alsa-ucm-conf-samsung-sm7125
+pkgver=1
+pkgrel=0
+pkgdesc="ALSA Use Case Manager configuration for Samsung Galaxy Phones based on Qualcomm's SM7125 SoC"
+url="https://alsa-project.org"
+arch="aarch64"
+license="BSD-3-Clause"
+source="
+	sm7125_GalaxyA52_HiFi.conf
+	sm7125_GalaxyA52.conf
+"
+options="!check" # no tests
+depends="alsa-ucm-conf"
+replaces="alsa-ucm-conf"
+
+package() {
+	install -Dm644 "$srcdir/sm7125_GalaxyA52.conf" \
+		"$pkgdir/usr/share/alsa/ucm2/conf.d/sm8250/Galaxy A52.conf"
+	install -Dm644 "$srcdir/sm7125_GalaxyA52_HiFi.conf" \
+		"$pkgdir/usr/share/alsa/ucm2/Samsung/a52q/HiFi.conf"
+}
+
+sha512sums="
+79fd2c205785333018612a17560e3c03956e7847c83820ff3b21a68c4bd4c9dab8410d781af64fb812d6df9abdf56370cc4079d37ea03c4714cf699f287c4562  sm7125_GalaxyA52_HiFi.conf
+5bef7639487dea0853c89d55fd9adf28189b0a1439b9edb7278ef4ef15784c93017844e2947e0e16648cb31ce4a62cf77455c706b0377398530421d1b07d54c2  sm7125_GalaxyA52.conf
+"
