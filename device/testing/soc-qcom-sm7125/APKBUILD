@@ -1,0 +1,39 @@
+# Maintainer: Leandro Friedrich <email@leandrofriedrich.de>
+# Co-Maintainer: map220v <map220v300@gmail.com>
+pkgname=soc-qcom-sm7125
+pkgver=1.0
+pkgrel=0
+pkgdesc="Common package for Qualcomm SM7125 devices"
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !archcheck !tracedeps"
+depends="
+	msm-modem-uim-selection
+	bootmac
+"
+replaces="upower"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="
+	30-gpu-firmware.files
+	UPower.conf
+"
+
+package() {
+	# Shutdown when battery is critical instead of sleep
+	install -Dm644 "$srcdir"/UPower.conf \
+		"$pkgdir"/etc/UPower/UPower.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi and GPU Firmware"
+	depends="msm-modem pd-mapper tqftpserv"
+	install -Dm644 "$srcdir/30-gpu-firmware.files" \
+		"$subpkgdir/etc/postmarketos-mkinitfs/files/30-gpu-firmware.files"
+	install="$subpkgname.post-install"
+}
+
+sha512sums="
+9d455b56558d453d501a1ad869ffa79f9952ed43485a9847d506db6a78bfcd9f9c9d855660ee1d368eb74f4429385ec166addc30d802261c75562e785fe84c52  UPower.conf
+fa300fb92e3b375cd802a6243510d2a092d75ced7f62d044485566f4b76240259426eed6be91028c80e3a7f6894492f748a1dfd7122f90dc84253deb063338de  30-gpu-firmware.files
+"
