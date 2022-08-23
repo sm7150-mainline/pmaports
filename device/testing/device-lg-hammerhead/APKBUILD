@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-lg-hammerhead
 pkgver=5
-pkgrel=0
+pkgrel=1
 pkgdesc="Google Nexus 5"
 url="https://postmarketos.org"
 arch="armv7"
@@ -15,12 +15,11 @@ depends="
 	swclock-offset
 "
 makedepends="devicepkg-dev"
-subpackages="$pkgname-weston $pkgname-phosh $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-phosh $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	bt-module-deps.conf
 	deviceinfo
 	phoc.ini
-	weston.ini
 	xorg.conf
 "
 options="!check !archcheck"
@@ -50,12 +49,6 @@ phosh() {
 		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
-weston() {
-	install_if="$pkgname weston"
-	install -Dm644 "$srcdir"/weston.ini \
-		"$subpkgdir"/etc/xdg/weston/weston.ini
-}
-
 nonfree_firmware() {
 	pkgdesc="WiFi, GPU, Modem and ADSP firmware"
 	depends="
@@ -78,6 +71,5 @@ sha512sums="
 6cef5f8ae1785ac16e6fe84bfc861ac50cdfb94db35d764f44a25c960e123cb82f6e56f45362a5340c62a3d5ac225f2689afd4f6964cb88305a0892ba44214f0  bt-module-deps.conf
 728eeae91881e60c63e5434082cd4df4a7147b34a191fc8314637fd687fa9123d40f52431436ba5666948b12b7030a61564fd2e9dfe3aa90d050c2e21b2be400  deviceinfo
 ee1deae3c21de4dfcf9842abc7ba984229fd37bff058cb630a9bd44e787484ddfa3e5d4d85dbd30850d3ac34822aa91c82c3a5d7c107a990f202fb7da2f4db98  phoc.ini
-4c22070223f39c419260a6817e5cc2b7881c095deeba031363a5634842dd175dd67eecace980849f0553de79110ef4e43a66143d71433805cd916c37fe7248e9  weston.ini
 0a9da551fa9d48d8a663f6bc74e8a7d6e2d2a6e009bd163fa46cd302e75656ad7ae57402a0bd70614ec253e0f2445b4c6999df07104f4c657ed630305c7f40d4  xorg.conf
 "
