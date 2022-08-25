@@ -1,0 +1,49 @@
+# Maintainer: map220v <map220v300@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-a72q
+pkgdesc="Samsung Galaxy A72"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-samsung-sm7125
+	linux-postmarketos-qcom-sm7125
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	soc-qcom-sm7125
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
+	depends="
+		firmware-samsung-a72q-adreno
+		firmware-samsung-a72q-adsp
+		firmware-samsung-a72q-cdsp
+		firmware-samsung-a72q-ipa
+		firmware-samsung-a72q-modem
+		firmware-samsung-a72q-wlan
+		firmware-samsung-a72q-bluetooth
+		firmware-samsung-a72q-venus
+		linux-firmware-ath10k
+	"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+3368f04dbd21b79455dc8ae2934ca3079b1eb106b2566cbe8a0433f211d2cd7e01b06d43c0c1f824b0e8db0d416bea6e240cf01ddf7aa04b8536c8352747acdc  deviceinfo
+"

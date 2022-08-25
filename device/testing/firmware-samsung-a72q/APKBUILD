@@ -1,0 +1,93 @@
+# Maintainer: map220v <map220v300@gmail.com>
+pkgname=firmware-samsung-a72q
+pkgver=20220820
+pkgrel=0
+pkgdesc="Firmware for Samsung Galaxy A72"
+subpackages="
+	$pkgname-adreno
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-venus
+	$pkgname-wlan
+	$pkgname-bluetooth
+	"
+url="https://github.com/map220v/a72q-firmware"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="d279fb298ad9c9e7f23c23c8d88344d3724c5be9"
+source="https://github.com/map220v/a72q-firmware/archive/$_commit/a72q-firmware-$_commit.tar.gz"
+builddir="$srcdir/a72q-firmware-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adreno() {
+	pkgdesc="Samsung Galaxy A72 adreno firmware"
+
+	install -Dm644 "$builddir"/a6* -t \
+		"$subpkgdir/lib/firmware/qcom/"
+}
+
+adsp() {
+	pkgdesc="Samsung Galaxy A72 adsp firmware"
+
+	install -Dm644 "$builddir"/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7125/a72q/"
+}
+
+cdsp() {
+	pkgdesc="Samsung Galaxy A72 cdsp firmware"
+
+	install -Dm644 "$builddir"/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7125/a72q/"
+}
+
+ipa() {
+	pkgdesc="Samsung Galaxy A72 ipa firmware"
+
+	install -Dm644 "$builddir"/ipa_fws.* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7125/a72q/"
+}
+
+modem() {
+	pkgdesc="Samsung Galaxy A72 modem firmware"
+
+	# cp because of the modem_pr directory
+	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7125/a72q/"
+	cp -r "$builddir"/modem* \
+		"$subpkgdir/lib/firmware/qcom/sm7125/a72q/"
+	find "$subpkgdir/lib/firmware/qcom/sm7125/a72q/" \
+		-type f -exec chmod 0644 {} \;
+}
+
+venus() {
+	pkgdesc="Samsung Galaxy A72 venus firmware"
+
+	install -Dm644 "$builddir"/venus.* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7125/a72q/"
+}
+
+wlan() {
+	pkgdesc="Samsung Galaxy A72 wlan firmware"
+
+	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7125/a72q/"
+}
+
+bluetooth() {
+	pkgdesc="Samsung Galaxy A72 bluetooth firmware"
+
+	install -Dm644 "$builddir"/crbtfw21.tlv -t \
+		"$subpkgdir/lib/firmware/qca/"
+	install -Dm644 "$builddir"/crnv21.* -t \
+		"$subpkgdir/lib/firmware/qca/sm7125/a72q/"
+}
+
+sha512sums="
+1ccbbfb73bf949fe202d3333a59e39f2027ac5f67e536a8c28fa1154425b72a0a6a41eededa9af9b82292beefe4843e4e449fe84d87c31d5f2d6513004f04e18  a72q-firmware-d279fb298ad9c9e7f23c23c8d88344d3724c5be9.tar.gz
+"
