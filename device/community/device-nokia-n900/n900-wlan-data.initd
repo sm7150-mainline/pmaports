@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+description="Update N900 WLAN calibration data"
+
+depend()
+{
+	before modules
+	after localmount
+}
+
+start()
+{
+	if [ ! -f /var/lib/n900_cal/done ]
+	then
+		n900-update-wl1251
+		mkdir -p /var/lib/n900_cal
+		touch /var/lib/n900_cal/done
+	fi
+
+	eend $?
+}
