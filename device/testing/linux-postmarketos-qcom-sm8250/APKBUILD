@@ -3,8 +3,8 @@
 
 _flavor="postmarketos-qcom-sm8250"
 pkgname=linux-$_flavor
-pkgver=5.19.0
-pkgrel=1
+pkgver=6.3.0_rc1
+pkgrel=0
 pkgdesc="Mainline kernel fork for SM8250"
 arch="aarch64"
 _carch="arm64"
@@ -25,14 +25,13 @@ makedepends="
 "
 
 # Source
-_commit="858fabb41e9eedca992616d4dc191483a3c8b2c1"
+_commit="ddc806a03ff96274f95436371eefa1873f283080"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz
 	$_config
 "
 builddir="$srcdir/linux-$_commit"
-_outdir="out"
 
 prepare() {
 	default_prepare
@@ -61,6 +60,6 @@ package() {
 }
 
 sha512sums="
-3ef691a4f0162942fc0ca393ba51fcc43657562e0744dd33601cbcea9248ede5282cfb674717402d6e20dbe7ae5b0f060201d50418f6d682e8921d0eb00afde1  linux-postmarketos-qcom-sm8250-858fabb41e9eedca992616d4dc191483a3c8b2c1.tar.gz
-16580485bd471e6436964cb22800f64b1bdc88f0a0e6af8dde3b5f6e7c21aa41eeb44f1c6867fc0e50cb5675f03e1f7735587b3b5648945da4ccb49464dfbf22  config-postmarketos-qcom-sm8250.aarch64
+61cd62a648b73d5e166824d31f7a3a292bc8773631fca80aeca2c6ac4285a09d0aac11d1b5b84af4e8c97564e98662c1a0f2847160a9c10df18ab40c759873a9  linux-postmarketos-qcom-sm8250-ddc806a03ff96274f95436371eefa1873f283080.tar.gz
+ce768ad8e3302d4b8b99f8233c817cc4680ae13aa5ef558ed1d81f6efb05baf1208baab81c454b02e45e4663817316a6efe2bc22c692f4f006b30edc7d6b1c76  config-postmarketos-qcom-sm8250.aarch64
 "
