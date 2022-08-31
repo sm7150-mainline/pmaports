@@ -1,6 +1,6 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-welcome
-pkgver=0.5.1
+pkgver=0.6.0
 pkgrel=0
 pkgdesc="postmarketOS welcome app"
 url="https://gitlab.com/postmarketOS/postmarketos-welcome"
@@ -13,7 +13,10 @@ makedepends="
 	libadwaita-dev
 	meson
 	"
-source="https://gitlab.com/postmarketOS/postmarketos-welcome/-/archive/$pkgver/postmarketos-welcome-$pkgver.tar.bz2"
+source="
+	https://gitlab.com/postmarketOS/postmarketos-welcome/-/archive/$pkgver/postmarketos-welcome-$pkgver.tar.bz2
+	org.postmarketos.Welcome.desktop
+	"
 options="!check" # No tests
 replaces="postmarketos-welcome-gtk3"
 provides="postmarketos-welcome-gtk3=$pkgver-r$pkgrel"
@@ -25,14 +28,11 @@ build() {
 
 package() {
 	DESTDIR="$pkgdir" meson install -C output
-
-	# Autostart on first login, the app removes the symlink when started
-	local _autostartdir="$pkgdir/etc/skel/.config/autostart"
-	mkdir -p "$_autostartdir"
-	ln -s "/usr/share/applications/org.postmarketos.Welcome.desktop" \
-		"$_autostartdir/org.postmarketos.Welcome.desktop"
+	install -Dm644 "$srcdir"/org.postmarketos.Welcome.desktop \
+		"$pkgdir"/etc/xdg/autostart/org.postmarketos.Welcome.desktop
 }
 
 sha512sums="
-7a2383a7aa01facf7dce7189b4ccc54b6506cf1864739d3e70493b1c7f00632009934423893fe9912c5b9d17f10834c82c0bb4bb18f1fd0f2151f4be9912c4d4  postmarketos-welcome-0.5.1.tar.bz2
+9ff268f62dbce4d86e6ba22ef85193646db6b3b2029a7f1c462e2795e3c0e37caca779aa3d21fc2b68b99cf4c1a2a715331141185c39f2b2a73cda85982a730e  postmarketos-welcome-0.6.0.tar.bz2
+abf57cca997ef78cd6f71e370433e1776b80ab6a55c471eb5ce97008aedfec3e01e120dd8449899e4c15edf90e3679a6b3d62a64937b84d00762433680749ad1  org.postmarketos.Welcome.desktop
 "
