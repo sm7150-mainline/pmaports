@@ -1,0 +1,63 @@
+From 335011b36ca12391000731b3f8371e801069e87b Mon Sep 17 00:00:00 2001
+From: Oliver Smith <ollieparanoid@postmarketos.org>
+Date: Thu, 1 Sep 2022 21:56:03 +0200
+Subject: [PATCH] ARM: dts: exynos: disable HDMI on Midas
+
+Disable it as workaround because when unplugged, HDMI appears as
+DRM_MNODE_CONNECTED with a surface are of 0x0.
+
+Related: https://gitlab.gnome.org/World/Phosh/phosh/-/issues/828
+---
+ arch/arm/boot/dts/exynos4412-midas.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm/boot/dts/exynos4412-midas.dtsi b/arch/arm/boot/dts/exynos4412-midas.dtsi
+index 6e854e732599..79b9f773d98f 100644
+--- a/arch/arm/boot/dts/exynos4412-midas.dtsi
++++ b/arch/arm/boot/dts/exynos4412-midas.dtsi
+@@ -307,11 +307,13 @@ sii9234: hdmi-bridge@39 {
+ 			interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
+ 			reg = <0x39>;
+ 
++/*
+ 			port {
+ 				mhl_to_hdmi: endpoint {
+ 					remote-endpoint = <&hdmi_to_mhl>;
+ 				};
+ 			};
++*/
+ 		};
+ 	};
+ 
+@@ -544,6 +546,7 @@ &gpu {
+ 	status = "okay";
+ };
+ 
++/*
+ &hdmi {
+ 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
+ 	pinctrl-names = "default";
+@@ -566,6 +569,7 @@ hdmi_to_mhl: endpoint {
+ 		};
+ 	};
+ };
++*/
+ 
+ &hsotg {
+ 	vusb_d-supply = <&ldo15_reg>;
+@@ -1200,10 +1204,12 @@ sdhci2_cd: sdhci2-cd-irq-pins {
+ 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+ 	};
+ 
++/*
+ 	hdmi_hpd: hdmi-hpd-pins {
+ 		samsung,pins = "gpx3-7";
+ 		samsung,pin-pud = <EXYNOS_PIN_PULL_DOWN>;
+ 	};
++*/
+ 
+ 	sleep1: sleep-state {
+ 		PIN_SLP(gpk0-0, PREV, NONE);
+-- 
+2.30.2
+
