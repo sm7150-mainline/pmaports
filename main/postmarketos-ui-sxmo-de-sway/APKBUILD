@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=postmarketos-ui-sxmo-de-sway
-pkgver=1.9.0
-pkgrel=1
+pkgver=1.11.1
+pkgrel=0
 pkgdesc="Simple Mobile: Mobile environment based on SXMO and running on sway"
 url="http://sr.ht/~mil/Sxmo"
 arch="noarch !armhf"
@@ -48,18 +48,20 @@ _pmb_recommends="
 	"
 provides="postmarketos-ui-sxmo"
 provider_priority=1
-# TODO: Remove this file when this config
-# has been merged upstream.
-# Link: https://gitlab.com/postmarketOS/pmaports/-/merge_requests/3177
-source="pinephone-keyboard.conf"
 options="!check" # has no tests
+
+# bonsai requires hare which doesnt work on all arches
+# refer to https://pkgs.alpinelinux.org/packages?name=hare&branch=edge&repo=&arch=&maintainer=
+# and add arches here as they become available. Bonsai should always be preferred
+# cause it fixes alot of issues. If bonsai is not installed, sxmo will fallback
+# to the old buggy shell script.
+case "$CARCH" in
+	x86_64|aarch64)
+		depends="$depends bonsai"
+	;;
+esac
 
 package() {
 	mkdir -p "$pkgdir"
 	mkdir -p "$pkgdir"/etc/sway/config.d
-	install -Dm644 "$srcdir"/pinephone-keyboard.conf \
-		"$pkgdir"/etc/sway/config.d/pinephone-keyboard.conf
 }
-sha512sums="
-1741b6ff4cf89c4d58e008d08c72b3411df72090d1a1caec3d89a855e79f37c3bfda2b8401bb46e1c1843e28bc796ade5f91d75a147ff4b61a0bdc1ae1f87c77  pinephone-keyboard.conf
-"
