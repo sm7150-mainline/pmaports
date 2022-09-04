@@ -1,0 +1,61 @@
+# Forked from Alpine to upgrade to gcr4, will be moved eventually
+
+pkgname=gcr4
+pkgver=3.92.0
+pkgrel=0
+pkgdesc="library for bits of crypto UI and parsing"
+url="https://wiki.gnome.org/Projects/CryptoGlue"
+arch="all"
+license="LGPL-2.0-or-later"
+makedepends="
+	glib-dev
+	gobject-introspection-dev
+	gtk4.0-dev
+	libgcrypt-dev
+	libsecret-dev
+	libxslt
+	meson gtk-doc
+	openssh-client
+	p11-kit-dev
+	vala
+	"
+checkdepends="xvfb-run dbus-x11"
+subpackages="
+	$pkgname-dev
+	$pkgname-lang
+	$pkgname-base
+	"
+source="https://download.gnome.org/sources/gcr/${pkgver%.*}/gcr-$pkgver.tar.xz"
+options="!check"  # testsuite requires community/xvfb-run
+builddir="$srcdir/gcr-$pkgver"
+replaces="gcr"
+
+build() {
+	abuild-meson \
+		-Db_lto=true \
+		-Dgtk_doc=false \
+		-Dgpg_path=/usr/bin/gpg2 \
+		-Dsystemd=disabled \
+		output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+check() {
+	xvfb-run meson test --no-rebuild --print-errorlogs -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+}
+
+base() {
+	pkgdesc="$pkgdesc (base libraries)"
+	depends=""
+
+	amove usr/lib/libgck-2.so.*
+	amove usr/lib/libgcr-4.so.*
+}
+
+sha512sums="
+bd566c8846e1ee99f82eefd9f7fbc5959c09bf383fef9c7bdc82b6c2c9c7634faaddcf6d91b0eca10b69a99e8f954272c3decf0594864351a48a5473e2bb5db3  gcr-3.92.0.tar.xz
+"
