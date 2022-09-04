@@ -1,0 +1,113 @@
+# Forked from Alpine to apply mobile adaptivity patches
+
+pkgname=mutter-mobile
+pkgver=43.0_beta
+pkgrel=0
+pkgdesc="clutter-based window manager and compositor"
+url="https://wiki.gnome.org/Projects/Mutter/"
+arch="all !s390x !riscv64" # limited by gnome-settings-daemon -> rust
+license="GPL-2.0-or-later"
+depends="
+	gnome-settings-daemon
+	gsettings-desktop-schemas
+	mutter-schemas
+	xkeyboard-config
+	xwayland
+	zenity
+	"
+makedepends="
+	at-spi2-core-dev
+	cairo-dev
+	dbus-dev
+	elogind-dev
+	eudev-dev
+	fribidi-dev
+	gdk-pixbuf-dev
+	glib-dev
+	gnome-desktop-dev
+	gnome-settings-daemon-dev
+	gobject-introspection-dev
+	graphene-dev
+	gtk+3.0-dev
+	json-glib-dev
+	libcanberra-dev
+	libdrm-dev
+	libgudev-dev
+	libice-dev
+	libinput-dev
+	libsm-dev
+	libwacom-dev
+	libx11-dev
+	libxau-dev
+	libxcb-dev
+	libxcomposite-dev
+	libxcursor-dev
+	libxdamage-dev
+	libxext-dev
+	libxfixes-dev
+	libxi-dev
+	libxinerama-dev
+	libxkbcommon-dev
+	libxkbfile-dev
+	libxrandr-dev
+	libxrender-dev
+	libxtst-dev
+	mesa-dev
+	meson
+	pango-dev
+	pipewire-dev
+	startup-notification-dev
+	wayland-dev
+	wayland-protocols
+	xorg-server
+	"
+options="!check" # Can't be run with release builds
+provides="mutter=$pkgver-r$pkgrel"
+subpackages="$pkgname-dbg $pkgname-dev $pkgname-doc $pkgname-lang $pkgname-schemas::noarch"
+_commit="913655c03539fb03ff691dc5192acb03c7f0c011"
+source="mutter-$_commit.tar.gz::https://gitlab.gnome.org/verdre/mutter/-/archive/$_commit/mutter-$_commit.tar.gz
+	fixudev-req.patch"
+builddir="$srcdir/mutter-$_commit"
+
+build() {
+	abuild-meson \
+		-Degl_device=true \
+		-Dudev=true \
+		-Dnative_backend=true \
+		-Dintrospection=true \
+		-Dxwayland_path=/usr/bin/Xwayland \
+		-Dremote_desktop=true \
+		-Dprofiler=false \
+		-Dtests=false \
+		-Dinstalled_tests=false \
+		. output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+schemas() {
+	pkgdesc="Mutter schemas related files"
+	provides="mutter-schemas=$pkgver-r$pkgrel"
+	depends=""
+
+	amove usr/share/glib-2.0/schemas
+	amove usr/share/GConf/gsettings
+	amove usr/share/gnome-control-center/keybindings
+}
+
+lang() {
+	default_lang
+	provides="mutter-lang=$pkgver-r$pkgrel"
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/libmutter-11.pc"
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-clutter-11.pc"
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-cogl-11.pc"
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-cogl-pango-11.pc"
+}
+
+sha512sums="
+ed07d3df1dbd313f11724b70c9bff15589979bd534cf5f9790ae6ad9aec90a5e94b131c17578417363a68b571c2c747e48fa706c1c25d54d3dc732fa44d735ae  mutter-913655c03539fb03ff691dc5192acb03c7f0c011.tar.gz
+6f21171bbd0ad0fc67cbaf5fb1478b22b482a9ae33b9328cc51a5dd31bcf7d95cd41e6cbbac21d3d8801cc064a62a64ae38ed7d0501ab605b861058c32f3bc30  fixudev-req.patch
+"
