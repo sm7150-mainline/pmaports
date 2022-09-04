@@ -1,0 +1,122 @@
+# Forked from Alpine to add phone adaptivity patches
+
+pkgname=gnome-shell-mobile
+pkgver=43.0_beta
+pkgrel=0
+pkgdesc="GNOME shell"
+url="https://wiki.gnome.org/Projects/GnomeShell"
+arch="all !armhf !s390x !riscv64" # gjs
+license="GPL-2.0-or-later"
+depends="
+	accountsservice
+	caribou
+	elogind
+	gcr4
+	gsettings-desktop-schemas
+	gst-plugins-good
+	upower
+	ibus
+	librsvg
+	gnome-bluetooth
+	gnome-control-center
+	gnome-shell-mobile-schemas
+	font-adobe-source-code-pro
+	ttf-cantarell
+	adwaita-icon-theme
+	gnome-themes-standard
+	unzip
+	"
+makedepends="
+	gnome-desktop-dev>=3.35.91
+	libxml2-dev
+	libcanberra-dev
+	gobject-introspection-dev
+	startup-notification-dev
+	libsoup3-dev
+	polkit-dev
+	git
+	gcr4-dev
+	gjs-dev>=1.64.0
+	mutter-mobile-dev>=43.0_beta
+	pulseaudio-dev
+	evolution-data-server-dev evolution-dev
+	python3
+	meson
+	libxml2-utils
+	ibus-dev
+	sassc
+	networkmanager-dev
+	libnma-dev
+	gnome-control-center-dev
+	py3-setuptools
+	gnome-bluetooth-dev
+	gstreamer-dev
+	gnome-autoar-dev
+	asciidoc
+	elogind-dev
+	pipewire-dev
+	gtk4.0-dev
+	"
+checkdepends="
+	xvfb-run
+	mesa-dri-gallium
+	"
+	# gdm is also needed but introduces circular dep
+provides="gnome-shell=$pkgver-r$pkgrel"
+subpackages="$pkgname-dbg $pkgname-doc $pkgname-lang $pkgname-schemas::noarch"
+_commit="105051d4a12b7652ece8636a8975bc8bb00399e0"
+_gvc_commit="8e7a5a4c3e51007ce6579292642517e3d3eb9c50"
+source="gnome-shell-$_commit.tar.gz::https://gitlab.gnome.org/verdre/gnome-shell/-/archive/$_commit/gnome-shell-$_commit.tar.gz
+	libgnome-volume-control-$_gvc_commit.tar.gz::https://gitlab.gnome.org/GNOME/libgnome-volume-control/-/archive/$_gvc_commit/gnome-shell-$_gvc_commit.tar.gz
+	disable-telepathy-integration.patch"
+builddir="$srcdir/gnome-shell-$_commit"
+options="!check" # Tests have circular dependency 'gnome-shell <-> gdm'
+
+# secfixes:
+#   0:
+#     - CVE-2019-3820
+
+prepare() {
+	rm -rf "$builddir/subprojects/gvc"
+	mv "$srcdir/libgnome-volume-control-$_gvc_commit" $builddir/subprojects/gvc
+}
+
+build() {
+	abuild-meson \
+		-Dsystemd=false \
+		-Dtests=false \
+		-Dsoup2=true \
+		. output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+check() {
+	xvfb-run meson test --no-rebuild -v -C output
+}
+
+schemas() {
+	pkgdesc="GNOME Shell gsetting schemas"
+	depends=""
+	provides="gnome-shell-schemas=$pkgver-r$pkgrel"
+
+	amove usr/share/glib-2.0/schemas
+	amove usr/share/gnome-control-center/keybindings
+}
+
+lang() {
+	default_lang
+	provides="gnome-shell-lang=$pkgver-r$pkgrel"
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+
+	# owned by postmarketos-hidden-desktop-entries
+	rm $pkgdir/usr/share/applications/org.gnome.Extensions.desktop
+}
+
+sha512sums="
+9f8018df532ae9d2594033322e32380f0d9ceb65bfe9c4b41c3763b9b8746d62dd10db0cc7e84e50a52de9640b242a49b70e7025e19cf03e1c8ccd1860cce400  gnome-shell-105051d4a12b7652ece8636a8975bc8bb00399e0.tar.gz
+ebc6985afbda5ddebcda44d8b6732a9abc2d7249aff3adf7a76a90aa681590f830dcf2e5f3534a624adc32d1f0445e261ee149d65c221f733e0c33e0690a004d  libgnome-volume-control-8e7a5a4c3e51007ce6579292642517e3d3eb9c50.tar.gz
+2ca70115fab957fdf276b7f0772786e1afd56b0b22bcfd92f5b5f1d29676dc97c19cfb079434d0dbf7b459f1d133dbd8d1faa0d88f7b94846040a23856f951f8  disable-telepathy-integration.patch
+"
