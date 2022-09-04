@@ -6,7 +6,10 @@ deviceinfo_name="Motorola Moto E (2nd Gen)"
 deviceinfo_manufacturer="Motorola"
 deviceinfo_codename="motorola-surnia"
 deviceinfo_year="2015"
-deviceinfo_arch="armhf"
+deviceinfo_dtb="qcom/msm8916-motorola-surnia"
+deviceinfo_append_dtb="true"
+deviceinfo_modules_initfs="panel-motorola-surnia-boe panel-motorola-surnia-tianma msm rmi-i2c"
+deviceinfo_arch="aarch64"
 
 # Device related
 deviceinfo_gpu_accelerated="true"
@@ -15,17 +18,16 @@ deviceinfo_keyboard="false"
 deviceinfo_external_storage="true"
 deviceinfo_screen_width="540"
 deviceinfo_screen_height="960"
+deviceinfo_getty="ttyMSM0;115200"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
-deviceinfo_kernel_cmdline="console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom msm_rtb.filter=0x3F ehci-hcd.park=3 vmalloc=400M androidboot.bootdevice=soc.0 utags.blkdev=/dev/block/platform/soc.0/by-name/utags utags.backup=/dev/block/platform/soc.0/by-name/utagsBackup movablecore=160M androidboot.write_protect=0"
+deviceinfo_kernel_cmdline="earlycon console=ttyMSM0,115200 PMOS_NO_OUTPUT_REDIRECT"
 deviceinfo_generate_bootimg="true"
-deviceinfo_bootimg_qcdt="true"
 deviceinfo_flash_offset_base="0x80000000"
-deviceinfo_flash_offset_kernel="0x00008000"
+deviceinfo_flash_offset_kernel="0x00080000"
 deviceinfo_flash_offset_ramdisk="0x01000000"
 deviceinfo_flash_offset_second="0x00f00000"
 deviceinfo_flash_offset_tags="0x00000100"
 deviceinfo_flash_pagesize="2048"
-
-
+deviceinfo_flash_sparse="true"
