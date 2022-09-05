@@ -1,0 +1,51 @@
+# forked from Alpine Linux to work around: https://gitlab.com/postmarketOS/pmaports/-/issues/1677
+pkgname=upower
+pkgver=9999
+_pkgver=0.99.20
+pkgrel=0
+pkgdesc="Power Management Services"
+url="https://upower.freedesktop.org"
+arch="all"
+license="GPL-2.0-or-later"
+makedepends="
+	eudev-dev
+	glib-dev
+	gobject-introspection-dev
+	libgudev-dev
+	libxslt
+	meson
+	"
+checkdepends="
+	dbus
+	py3-dbus
+	py3-dbusmock
+	py3-gobject3
+	py3-packaging
+	umockdev-dev
+	"
+subpackages="$pkgname-dev $pkgname-lang $pkgname-doc"
+source="https://gitlab.freedesktop.org/upower/upower/-/archive/v$_pkgver/upower-v$_pkgver.tar.bz2"
+builddir="$srcdir/$pkgname-v$_pkgver"
+options="!check"
+
+build() {
+	abuild-meson \
+		-Dudevhwdbdir=/lib/udev/hwdb.d/ \
+		-Dudevrulesdir=/lib/udev/rules.d \
+		-Dsystemdsystemunitdir=no \
+		-Dgtk-doc=false \
+		. output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+check() {
+	meson test --no-rebuild -v -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+}
+
+sha512sums="
+50e5b03f1319da3869b0caba4fbe78c8eabf1df6f783f1463b06394bee58bae42ad411780faa503965c5fdb983d723c0b5ae0731fae4220997a17875f4850b1e  upower-v0.99.20.tar.bz2
+"
