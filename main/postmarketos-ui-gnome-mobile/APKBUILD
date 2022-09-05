@@ -1,0 +1,78 @@
+# Reference: https://postmarketos.org/uipkg
+# Maintainer: Newbyte <newbyte@postmarketos.org>
+pkgname=postmarketos-ui-gnome-mobile
+pkgver=1
+pkgrel=0
+pkgdesc="(Wayland) Gnome Shell patched to adapt better to phones (Experimental)"
+url="https://gnome.org/"
+arch="noarch !armhf" # gnome-shell
+license="GPL-3.0-or-later"
+depends="
+	bolt
+	dbus-x11
+	gdm
+	gnome-backgrounds
+	gnome-browser-connector
+	gnome-control-center
+	gnome-initial-setup
+	gnome-keyring
+	gnome-online-accounts
+	gnome-online-miners
+	gnome-remote-desktop
+	gnome-shell-mobile
+	gnome-shell-extensions
+	gnome-user-docs
+	gsettings-desktop-schemas
+	gvfs
+	iio-sensor-proxy
+	networkmanager-elogind
+	pinentry-gnome
+	polkit-elogind
+	polkit-gnome
+	postmarketos-base-ui-gnome
+	postmarketos-artwork-wallpapers
+	tracker
+	udisks2
+	xdg-desktop-portal-gtk
+	xdg-desktop-portal-gnome
+	xdg-user-dirs
+	xwayland
+	"
+_pmb_recommends="
+	calls
+	chatty
+	eog
+	firefox-esr
+	font-noto
+	font-noto-emoji
+	gedit
+	gnome-calculator
+	gnome-clocks
+	gnome-contacts
+	gnome-software
+	karlender
+	kgx
+	lollypop
+	megapixels
+	mobile-config-firefox
+	portfolio
+	postmarketos-artwork-wallpapers
+	postmarketos-hidden-desktop-entries
+	postmarketos-tweaks
+	postmarketos-welcome
+	postprocessd
+	ttyescape
+	xdg-user-dirs
+	"
+install="$pkgname.post-install $pkgname.post-upgrade"
+source="firefox-wayland.sh"
+options="!check"
+
+package() {
+	install -Dm755 \
+		"$srcdir"/firefox-wayland.sh \
+		-t "$pkgdir"/etc/profile.d/
+}
+sha512sums="
+0d9ec58be7dc354e181989c7f08e7d4dd93fefd06a99e784b87fe898479dd47a40dfa9689c6a63ebdc04bf87883a270686aec27f7cc34cb21ec0f370a4afe2d8  firefox-wayland.sh
+"
