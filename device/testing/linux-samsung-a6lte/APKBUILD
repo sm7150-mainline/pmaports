@@ -1,0 +1,79 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on the stock Android one
+
+pkgname=linux-samsung-a6lte
+pkgver=3.18.140
+pkgrel=0
+pkgdesc="Samsung Galaxy A6 2018 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-a6lte"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	dtbtool-exynos
+	flex
+	gcc4
+	openssl-dev
+	perl
+"
+
+if [ "${CC:0:5}" != "gcc4-" ]; then
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
+fi
+
+# Source
+_repository="a6lte-kernel-source"
+_commit="981969320c1cdc214cf8a1a357fab642f401a5d1"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/sleirsgoevy/$_repository/archive/$_commit.tar.gz
+	$_config
+	gcc10-extern_YYLOC_global_declaration.patch
+	zram-zs-create-pool-null.patch
+	decon-fb-colors.patch
+	firmware-paths-fix.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="."
+
+prepare() {
+	export ANDROID_MAJOR_VERSION=q
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	export ANDROID_MAJOR_VERSION=q
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool-exynos -o "$_outdir/arch/$_carch/boot"/dt.img \
+		$(find "$_outdir/arch/$_carch/boot/dts/" -name *a6lte*.dtb)
+}
+
+package() {
+	export ANDROID_MAJOR_VERSION=q
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+	install -Dm644 "$_outdir/arch/$_carch/boot"/dt.img \
+		"$pkgdir"/boot/dt.img
+}
+
+sha512sums="
+c2cc5190c480de4ac2d376827c5c56a542c6644d3dbeb47956d0b90c5570b246872ecedbf5655ac5564c9f61190d23567a4c496bb4235c46f6bd7a6d8addcc68  linux-samsung-a6lte-981969320c1cdc214cf8a1a357fab642f401a5d1.tar.gz
+eca0d202cf04a7a03b6ff5e59ee29c83723fc14aabf63186143b28f1117628130f941aacc29f24d0b7c0cd9893c9a306605bedfe69588ff2e3864a2d410702ae  config-samsung-a6lte.aarch64
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+3f65a690e48f913fcb980718fae4dc03c29a6dc86eecb1e2af644488ad415de326a61d840399fb69915cbc5d56d5586f2df2287b3e7323a2927ae73a3b1b1373  zram-zs-create-pool-null.patch
+5bd204239a5daff9f990757178398707ae5ec64f823ed9ec72a8d50ebe6d5f0a3cc9743e0d775094da4b3a7566f1ccceb56f39f3b0234d08ca05e537d86271ec  decon-fb-colors.patch
+e1409844c46869ffe6ac9e028c3f38868120b6fd38dcf52ca7c1fdb98e90d2717d72ed52f7f41d3b4a18862a5b7210b6921c5c635d91cbb2a5772b55d5f1b4fb  firmware-paths-fix.patch
+"

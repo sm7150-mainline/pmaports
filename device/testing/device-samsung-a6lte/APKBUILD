@@ -1,0 +1,67 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-a6lte
+pkgdesc="Samsung Galaxy A6 2018"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-utils
+	linux-samsung-a6lte
+	mesa-dri-gallium
+	mkbootimg
+	msm-fb-refresher
+	pipewire
+	pipewire-pulse
+	postmarketos-base
+"
+replaces="
+	lightdm
+	pipewire-media-session
+	udev-init-scripts-openrc
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	etc-init.d-udev-settle
+	etc-lightdm-lightdm.conf
+	etc-NetworkManager-conf.d-swlan0-unmanaged.conf
+	usr-share-alsa-ucm2-conf.d-Universal7870-I-HiFi.conf
+	usr-share-alsa-ucm2-conf.d-Universal7870-I-Universal7870-I.conf
+	usr-share-pipewire-media-session.d-alsa-monitor.conf
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+# pulseaudio does not seem to work on this device. Will use pipewire-pulse instead.
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm755 etc-init.d-udev-settle "$pkgdir"/etc/init.d/udev-settle
+	install -Dm644 etc-lightdm-lightdm.conf "$pkgdir"/etc/lightdm/lightdm.conf
+	install -Dm644 etc-NetworkManager-conf.d-swlan0-unmanaged.conf "$pkgdir"/etc/NetworkManager/conf.d/swlan0-unmanaged.conf
+	install -Dm644 usr-share-alsa-ucm2-conf.d-Universal7870-I-HiFi.conf "$pkgdir"/usr/share/alsa/ucm2/conf.d/Universal7870-I/HiFi.conf
+	install -Dm644 usr-share-alsa-ucm2-conf.d-Universal7870-I-Universal7870-I.conf "$pkgdir"/usr/share/alsa/ucm2/conf.d/Universal7870-I/Universal7870-I.conf
+	install -Dm644 usr-share-pipewire-media-session.d-alsa-monitor.conf "$pkgdir"/usr/share/pipewire/media-session.d/alsa-monitor.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-samsung-a6lte"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+63be7d1b44093c2d892a92ad788a9a6a9d510c9ca0aac1f249213458402c546560827aaaa23c88497efee4675b15bf47481e551e5de043abaf5ae65e3de9c10a  deviceinfo
+203b832a7080d5f1351c5e024e444f9fe509f6e0fd4b376a60c7d73359b7e356863a4f15caf9b2e4e733dc44d2971722083e7c69ca94a012eb004b4b8ded9d09  etc-init.d-udev-settle
+861270c6bc0b2a3e6cd389c21c8c895e62de8cf8bec6fcf23c178f8cbaae855d62b0ee98692671ab4f518d84cb43dd0b2fe46f5a609f65af6a6c06e0fdbb6d0c  etc-lightdm-lightdm.conf
+ef24527b13e48a9153643f3713167d3d08486e7de8b4c94d7c446ff380396115890573d8cd4aa5448766d9e779e189833a83e7921081679bd348c3f8a59410af  etc-NetworkManager-conf.d-swlan0-unmanaged.conf
+80ea4968be09dec3deac4d6c5c58b7848f6ea297f2fe2e09f58dec5ba78c0a39060a7d86410a52414f615a0fef9ae9506e12d492d700eb168793433ea7691155  usr-share-alsa-ucm2-conf.d-Universal7870-I-HiFi.conf
+fe527672d5e52a1b074e7e3613a6321f987270ececfdfaf49d1fde9fcd4f4dc93f37374c80ee3d539e4079a5c6e07ffddc648a1544bccbe4810e1bc30d0c2112  usr-share-alsa-ucm2-conf.d-Universal7870-I-Universal7870-I.conf
+5e87452f4cd70bbbcfb3e69bae73f2690ba328e7ccde55c47482e8fb1583d807de5bd3d328b1fe6a8733b4de78b2ed0c6ae8cdb60f6bf51ed4362c2174671b3e  usr-share-pipewire-media-session.d-alsa-monitor.conf
+"
