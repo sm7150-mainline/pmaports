@@ -7,7 +7,7 @@ _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 pkgver=5.19.8_git20220909
-pkgrel=0
+pkgrel=1
 _tag="orange-pi-5.19-20220909-1622"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
@@ -30,10 +30,7 @@ makedepends="
 	"
 options="!strip !check !tracedeps
 	pmb:cross-native
-	pmb:kconfigcheck-anbox
-	pmb:kconfigcheck-iwd
-	pmb:kconfigcheck-nftables
-	pmb:kconfigcheck-zram
+	pmb:kconfigcheck-community
 	"
 source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar.gz
 	config-$_flavor.aarch64
@@ -98,8 +95,8 @@ dev() {
 }
 sha512sums="
 c2d085522c0332d6b95dde22af92c7c2a8941f94714d9d2c83249d4ddd921fe0a85226b8a09715ca37dfe0874315dd97d0d4c5511f8fe315cb29a9fef99a1109  linux-postmarketos-allwinner-orange-pi-5.19-20220909-1622.tar.gz
-d56cdebda1879f063b13f31669330db879d0fad30b6d3ec165c08827cb35ecf3d517b428f2dbd33ee2dff1782fdd356bf9374e329666731eaf642ac7840020fe  config-postmarketos-allwinner.aarch64
-195c82cd0e56560a486cc88d918444be303c9c9a2f25654a20311514e5f1278462fbb9e15a1ec24de0b003c7deff0683cefee87a9a9671a1d3e5d62cc9dd2a04  config-postmarketos-allwinner.armv7
+e085ff692b48ea5b13326f6dfd04249355c3635c7cd47063dbfefe3afd30482a9a101e4209b136ebda8503de34fc99b3ba31fae2d3b65e42975d30760500d1ab  config-postmarketos-allwinner.aarch64
+9b5035d61a74cd8b99f549d232899cf7b687bf034e93a6bddfc5a298c466ccd4d925d0678b71bef6426820f142308f410135e05330aaa2537177f219c1fda13b  config-postmarketos-allwinner.armv7
 126e0a65e04f22f14eac1281a69000d9d5b107ed8fd1b52f37e812751f55e6c45b0240ceac61c9d95ae7f0543aaf9d96b85a8532baf59283c077b9945e615367  0001-dts-add-dontbeevil-pinephone-devkit.patch
 1dc710f5abacdd5698169d5e985efeca8114986c774c3d65e89812d08ceb3db5ebdc6dd64dd76a262c761f3bfc3ffb6bc237fd5236bd1f89c5975d12e42eda04  0002-dts-add-pinetab-dev-old-display-panel.patch
 96849f40f6defc4ad7646256814bea5ac353c4e0479fd069365ff27456d63da801541ec616f6db736d60f3134384321a9eeb5bfbd555363bf1259c8de63d17fa  0003-dts-pinetab-add-missing-bma223-ohci1.patch
