@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-phosh
-pkgver=18
-pkgrel=3
+pkgver=19
+pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5"
 url="https://puri.sm"
 arch="noarch !armhf"
@@ -51,13 +51,12 @@ _pmb_recommends="
 	xdg-user-dirs
 	"
 _pmb_groups="feedbackd"
-subpackages="$pkgname-qt_tweaks $pkgname-firefox"
+subpackages="$pkgname-qt_tweaks"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	01_postmarketos-ui-phosh.gschema.override
 	01-phoc-scaling
 	dconf-profile-postmarketos
-	firefox.desktop
 	mimeapps.list
 	osk.sh
 	phosh-qt-mobile-controls.sh
@@ -92,19 +91,10 @@ qt_tweaks() {
 		"$srcdir"/phosh-qt-wayland.sh
 }
 
-firefox() {
-	pkgdesc="Helper for phosh to display the icon"
-	# mobile-config-firefox instead of ff or ff-esr, so it works with both
-	install_if="$pkgname=$pkgver-r$pkgrel mobile-config-firefox"
-	install -Dm644 -t "$subpkgdir"/usr/share/applications \
-		"$srcdir"/firefox.desktop
-}
-
 sha512sums="
 9f012a14aa6aecae24bd7b1bace60fda0e7b3c599d5b4f61bf945e4ed130334ea7dc34e6dfc86f8252ec7da4d32d2b1193f0bdef5486a7b48778adc09fedb35d  01_postmarketos-ui-phosh.gschema.override
 6d0ccbecfab1dbf2543dbd938d4b7544e278af9e88c8ab6751494b49aa281369f46d2769a1a1874e9bdad2faf8e8025d2ce97ea6b6302569a95283af5cedf459  01-phoc-scaling
 e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742eee51d93dc83859a7ead553f4dcbc8b6fcefa33ae344ba178  dconf-profile-postmarketos
-5a450658f94e5064ff233ec0dd1fcc42334d599b07bcc7cf281f73e593f5188c1a23cec0246f28bfb19c70fe4c29709dd4bdc72a7593b79ccaca9f34af37e3d6  firefox.desktop
 253560b28bcb3d7908e07a7656bb1f5dab8d709c0a2e789c461d8d99dadb86f95203d6c66741197eaaa4c62eda52997736da618fc63ef1b9dcc79e4eaa635443  mimeapps.list
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
 bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  phosh-qt-mobile-controls.sh
