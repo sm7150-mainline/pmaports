@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
 pkgver=5
-pkgrel=0
+pkgrel=1
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -103,6 +103,7 @@ tinydm() {
 
 pulseaudio() {
 	install_if="$pkgname=$pkgver-r$pkgrel pulseaudio"
+	depends="pulseaudio-utils"
 	provides="postmarketos-base-pulseaudio=$pkgver-r$pkgrel"
 	amove etc/pulse/default.pa.d/postmarketos.pa
 }
