@@ -1,0 +1,24 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-gts28velte
+pkgdesc="Samsung Galaxy Tab S2 8.0 LTE"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-samsung-gts28velte mkbootimg mesa-dri-gallium mdss-fb-init-hack"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+afb2f1dab843e684199849a73e99fee51482c265e1e1c7978d45f39daa1e3af094b72b685513f00debc1147da07eb1c39c84b93067d26383f49da17938cdc56d  deviceinfo
+"
