@@ -34,9 +34,9 @@ def test_aports_kernel(args):
                                    " pmbootstrap installs cross-compiler"
                                    " automatically.")
 
-        # nftables support in kernels used by main and community devices
+        # check some options only for main and community devices
         for dir in ["main", "device/main", "device/community"]:
             if path.startswith(f"{args.aports}/{dir}"):
-                assert pmb.parse.kconfig.check(args,
-                                               aport_name.replace("linux-", ""),
-                                               force_nftables_check=True)
+                if "pmb:kconfigcheck-community" not in apkbuild["options"]:
+                    raise RuntimeError(f"{aport_name}: \"pmb:kconfigcheck-community\" missing in"
+                                       " options= line, required for all community/main devices.")
