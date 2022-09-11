@@ -72,10 +72,7 @@ def test_aports_unreferenced_files(args):
             for subpackage in apkbuild["subpackages"].values():
                 if not subpackage:
                     continue
-                try:
-                    subpackage_installs += subpackage["install"]
-                except KeyError:
-                    continue
+                subpackage_installs += subpackage.get("install", [])
 
         # Collect trigger files
         trigger_sources = []
