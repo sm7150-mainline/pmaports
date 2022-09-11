@@ -66,19 +66,23 @@ def test_aports_unreferenced_files(args):
         apkbuild = pmb.parse.apkbuild(apkbuild_path)
         sources_chk = parse_source_from_checksums(args, apkbuild_path)
 
-        # Collect install files from subpackages
+        # Collect files from subpackages
         subpackage_installs = []
+        subpackage_triggers = []
         if apkbuild["subpackages"]:
             for subpackage in apkbuild["subpackages"].values():
                 if not subpackage:
                     continue
                 subpackage_installs += subpackage.get("install", [])
+                subpackage_triggers += subpackage.get("triggers", [])
+                print(subpackage_installs)
+                if "device-nokia-n900-nonfree-firmware.post-install" in subpackage_installs:
+                    print(subpackage)
 
         # Collect trigger files
         trigger_sources = []
-        if apkbuild["triggers"]:
-            for trigger in apkbuild["triggers"]:
-                trigger_sources.append(trigger.split("=")[0])
+        for trigger in apkbuild["triggers"] + subpackage_triggers:
+            trigger_sources.append(trigger.split("=")[0])
 
         dirname = os.path.dirname(apkbuild_path)
         for file in glob.iglob(dirname + "/**", recursive=True):
