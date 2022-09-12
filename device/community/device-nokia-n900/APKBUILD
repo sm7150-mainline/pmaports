@@ -3,7 +3,7 @@
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
 pkgver=8
-pkgrel=4
+pkgrel=5
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
@@ -13,6 +13,7 @@ makedepends="devicepkg-dev u-boot-tools kbd kbd-bkeymaps"
 install="$pkgname.post-install"
 subpackages="
 	$pkgname-x11
+	$pkgname-xkeyboard-config:xkeyboard_config
 	$pkgname-i3wm
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
@@ -45,6 +46,7 @@ source="
 	10-initfs-keymap.files
 	10-initfs-keymap.sh
 	device-nokia-n900.start
+	x11-keymap
 "
 options="!check !archcheck"
 
@@ -119,6 +121,13 @@ x11() {
 		"$subpkgdir"/etc/X11/xorg.conf.d/11-n900.conf
 }
 
+xkeyboard_config() {
+	install_if="$pkgname=$pkgver-r$pkgrel xkeyboard-config"
+	replaces="xkeyboard-config"
+	install -D -m644 "$srcdir"/x11-keymap \
+		"$subpkgdir"/usr/share/X11/xkb/symbols/nokia_vndr/rx-51
+}
+
 i3wm() {
 	install_if="$pkgname postmarketos-ui-i3wm"
 	depends="unclutter-xfixes conky feh postmarketos-artwork-wallpapers pm-utils i3blocks"
@@ -177,4 +186,5 @@ a91f98daa60efa2beb2ff6b405097f92edca5f1bbb9e7675499139be52ca2570712f8f06f9032ef2
 6b475c12eca8563be48c562a1cb4ad8ca6a05d70fc54b21288b2dd7435a80a6f53351aa870db96d5bbecf1b1c5cb00dfe35f5066e6d3fd0ad0369e66aeef5a21  10-initfs-keymap.files
 4656d3b3ced0a86e2d6315c89322899f646a689e9cb64609aa8ad5a676b23d93706d8a37f3be6f6b12c6b1e8501b7d26ecafecf27322333850513a6805c61910  10-initfs-keymap.sh
 e6bbac8de1a198ba716f44ade76606e1e0adcc574156b855ac41be5eb5308389d3277fd89cc34b119fbc33d9801ab9f79a6ff213392596bff40bc17e931c05ef  device-nokia-n900.start
+654f2e1b8b7b64fc8c82a5f3c2b76b9d88f56d8dda520c1ce162648d65031bf62702e3bd43e135ab040b927c403f9970d6efae53f957bf1e55954125b358b313  x11-keymap
 "
