@@ -1,1 +1,0 @@
-../.shared-scripts/qt-mobile-controls.sh
