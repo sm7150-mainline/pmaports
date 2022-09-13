@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Newbyte <newbyte@postmarketos.org>
 pkgname=postmarketos-ui-phosh
-pkgver=21
-pkgrel=1
+pkgver=22
+pkgrel=0
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5"
 url="https://puri.sm"
 arch="noarch !armhf"
@@ -59,7 +59,6 @@ subpackages="$pkgname-qt_tweaks"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	01_postmarketos-ui-phosh.gschema.override
-	01-phoc-scaling
 	dconf-profile-postmarketos
 	mimeapps.list
 	osk.sh
@@ -81,8 +80,6 @@ package() {
 	install -Dm644 "$srcdir"/mimeapps.list \
 		"$pkgdir"/usr/share/applications/mimeapps.list
 	# Only relocatable schemas should be installed under dconf
-	install -Dm755 "$srcdir"/01-phoc-scaling \
-		"$pkgdir"/etc/dconf/db/postmarketos.d/01-phoc-scaling
 	install -Dm644 "$srcdir"/udiskie.desktop \
 		"$pkgdir"/etc/xdg/autostart/udiskie.desktop
 }
@@ -97,7 +94,6 @@ qt_tweaks() {
 
 sha512sums="
 bfdef6d89015c34cbb9cf67f623f8d51f0b2d9665bca447c434ac14031ad13e8a5fe6fc63bdf52957bc6fd5404f2fe1321df8f5f2a9b945a2df09c741a2c672b  01_postmarketos-ui-phosh.gschema.override
-6d0ccbecfab1dbf2543dbd938d4b7544e278af9e88c8ab6751494b49aa281369f46d2769a1a1874e9bdad2faf8e8025d2ce97ea6b6302569a95283af5cedf459  01-phoc-scaling
 e00756c2c056f68123d877f2f6a5ad3434ca7851095f021c26831c081728b821cf7947ba08d6742eee51d93dc83859a7ead553f4dcbc8b6fcefa33ae344ba178  dconf-profile-postmarketos
 d58379d4dcbcc8df68e20c4a2f45dc320db5e9c383b8ffe2f3ba3815ebff46e8c1c32d18195800ac8b37adfab23ef4f985be2bf5da7ed3f10d15c5e3915c2fd3  mimeapps.list
 4113ef59267e88d205ef1e1aec0ed11ccf817a25c232f2006a538b56fb466fad5025ad445d109e367ca92ee98d9b25f1f9a1a4b9bae2cb80df12a3739d62d10a  osk.sh
