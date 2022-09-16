@@ -1,5 +1,4 @@
 #!/bin/sh -e
 
-/sbin/postmarketos-mkinitfs
-sync
+/usr/sbin/postmarketos-mkinitfs
 exit 0
