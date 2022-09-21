@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import glob
-import pytest
-import sys
 import os
+import pytest
+import re
+import sys
 
 import add_pmbootstrap_to_import_path
 import pmb.parse
@@ -31,6 +32,8 @@ def test_deviceinfo(args):
     # Iterate over all devices
     last_exception = None
     count = 0
+    pattern = re.compile("^deviceinfo_[a-zA-Z0-9_]*=\".*\"$")
+
     for folder in glob.glob(args.aports + "/device/*/device-*"):
         device = folder[len(args.aports):].split("-", 1)[1]
 
@@ -39,10 +42,25 @@ def test_deviceinfo(args):
         f.close()
 
         try:
-            # variable can not be empty
             for line in lines:
+                # Require space after # for comments
+                if line.startswith("#") and not line.startswith("# "):
+                    raise RuntimeError("Comment style: please change '#' to"
+                                       f" '# ': {line}")
+
+                # Skip empty lines and comments
+                if not line or line.startswith("# "):
+                    continue
+
+                # Variable can not be empty
                 if '=""' in line:
                     raise RuntimeError("Please remove the empty variable: " + line)
+
+                # Check line against regex (can't use multiple lines etc.)
+                if not pattern.match(line) or line.endswith("\\\""):
+                    raise RuntimeError("Line looks invalid, maybe missing"
+                                       " quotes/multi-line string/comment next"
+                                       f" to line instead of above? {line}")
 
             # Successful deviceinfo parsing / obsolete options
             info = pmb.parse.deviceinfo(args, device)
