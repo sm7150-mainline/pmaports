@@ -21,9 +21,7 @@ subpackages="
 package() {
 	cd "$srcdir/$pkgname-$_version/"
 	while IFS="" read -r _i || [ -n "$_i" ]; do
-		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
-		echo $_i
-		install -Dm644 $_i "$pkgdir/$_i"
+		install -Dm644 "$_i" "$pkgdir/$_i"
 	done < "$srcdir/firmware.files"
 }
 
