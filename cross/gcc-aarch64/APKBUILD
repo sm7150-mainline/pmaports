@@ -31,7 +31,7 @@ pkgver=12.1.1_git20220630
 [ "$CHOST" != "$CTARGET" ] && _target="-$CTARGET_ARCH" || _target=""
 
 pkgname=gcc-aarch64
-pkgrel=5
+pkgrel=6
 pkgdesc="Stage2 cross-compiler for aarch64"
 url="https://gcc.gnu.org"
 arch="x86_64"
@@ -40,7 +40,7 @@ _gccrel=$pkgver-r$pkgrel
 depends="binutils-aarch64 mpc1"
 makedepends_build="gcc g++ bison flex texinfo gawk zip gmp-dev mpfr-dev mpc1-dev zlib-dev"
 makedepends_host="linux-headers gmp-dev mpfr-dev mpc1-dev isl-dev zlib-dev musl-dev-aarch64 binutils-aarch64"
-subpackages="g++-aarch64:gpp"
+subpackages="g++-aarch64:gpp libstdc++-dev-aarch64:libcxx_dev"
 [ "$CHOST" = "$CTARGET" ] && subpackages="gcc-doc$_target"
 replaces="libstdc++ binutils"
 
@@ -53,7 +53,7 @@ replaces="libstdc++ binutils"
 : "${LANG_JIT:=true}"
 
 _libgomp=true
-_libgcc=true
+_libgcc=false
 _libatomic=true
 _libitm=true
 
@@ -555,16 +555,16 @@ libcxx_dev() {
 	depends=
 	replaces="g++"
 
-	amove usr/lib/libstdc++.a \
-		usr/lib/libstdc++.so \
-		usr/lib/libstdc++fs.a \
-		usr/lib/libsupc++.a \
-		usr/include/c++
+	amove usr/${_target:+$CTARGET/}lib/libstdc++.a \
+		usr/${_target:+$CTARGET/}lib/libstdc++.so \
+		usr/${_target:+$CTARGET/}lib/libstdc++fs.a \
+		usr/${_target:+$CTARGET/}lib/libsupc++.a \
+		usr/${_target:+$CTARGET/}include/c++
 }
 
 gpp() {
 	pkgdesc="GNU C++ standard library and compiler"
-	depends="libstdc++=$_gccrel libstdc++-dev=$_gccrel gcc=$_gccrel libc-dev"
+	depends="libstdc++=$_gccrel libstdc++-dev$_target=$_gccrel gcc$_target=$_gccrel libc-dev"
 	mkdir -p "$subpkgdir/$_gcclibexec" \
 		"$subpkgdir"/usr/bin \
 		"$subpkgdir"/usr/${_target:+$CTARGET/}include \
