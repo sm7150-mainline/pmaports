@@ -2,7 +2,7 @@
 # Kernel config based on: arch/arm/configs/kobo_defconfig
 
 pkgname=linux-kobo-clara-mainline
-pkgver=5.17.9
+pkgver=5.19.11
 pkgrel=0
 pkgdesc="Kobo Clara HD kernel fork, close to mainline"
 arch="armv7"
@@ -28,9 +28,9 @@ makedepends="
 
 # Source
 _repository="linux"
-_commit="ed1f542d165b9d01e09497cb5583549972529aef"
+_commit="14094f669808ea48f3cea07f35b64cb6ece6f27e"
 _rtl8189fs_repository="rtl8189ES_linux"
-_rtl8189fs_commit="71500c28164369800041d1716ac513457179ce93"
+_rtl8189fs_commit="732da93d86a79e23adc75cc3f3f1cdc3b3524504"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/akemnade/$_repository/archive/$_commit.tar.gz
@@ -54,6 +54,7 @@ build() {
 	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$(( pkgrel + 1 ))-postmarketOS" \
 		CONFIG_RTW_SDIO_PM_KEEP_POWER=n \
+		CONFIG_RTW_DEBUG=n \
 		-C "$_rtl8189fs_dir" KSRC="$builddir"
 }
 
@@ -67,7 +68,7 @@ package() {
 }
 
 sha512sums="
-412fd300adace68f28f0e7cd2a709d798d65a3178a11666e5302f4017119cc94bc87b80045e511f2500b33eb425751e61f8ec1489df5334ebd24b05e9ff1cb3e  linux-kobo-clara-mainline-ed1f542d165b9d01e09497cb5583549972529aef.tar.gz
-d147907ec2e2258963fd97fa00be674211800576741e6631d778c1ba72f572fb2ed421a320a15950c55f73e99a0687fe5b0113a7a27a77dcbbfa2b129f7fbfa9  rtl8189ES_linux-71500c28164369800041d1716ac513457179ce93.tar.gz
-8fbc974ad17775dd5e6c69b4fc828cd0d7ad8d10620a3814c290e230ccb49677b62591cfe6a4c51a89f208cb6d4846d62b92fac93062d0f0c2354eebe1623662  config-kobo-clara-mainline.armv7
+f8159e239ccf7db75d0eda54bd0163e1110cedb4a392c6a107cf439eaf0c8a15b473bed5e9b9328d3cb999e121b42c71106d28d3458d64def35a270f8e754395  linux-kobo-clara-mainline-14094f669808ea48f3cea07f35b64cb6ece6f27e.tar.gz
+cbfc3e49686d291013a1fcdc26cf091ffef5087294e192387626ce4171e6ea8ff6c004efdf4242159793293e148899e3a0e07e72ef7c8e40da21bbf6fe8b71d5  rtl8189ES_linux-732da93d86a79e23adc75cc3f3f1cdc3b3524504.tar.gz
+1e6787cf1e5eabdf3e4f9d572c71bb79f480327ae6a86a24f80fd1110a8035d1dda7a62b2098feb6bc130b6941b4430e1b2b91a0b1d7a0cfdf74efd059c23c09  config-kobo-clara-mainline.armv7
 "
