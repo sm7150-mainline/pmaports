@@ -1,0 +1,37 @@
+# Maintainer: Yassine Oudjana (Tooniis) <y.oudjana@protonmail.com>
+
+pkgname=u-boot-grandpplte
+pkgver=2022.10_rc5
+pkgrel=0
+pkgdesc="U-Boot for Samsung Galaxy Grand Prime+"
+url="https://gitlab.com/mt6735-mainline/u-boot/"
+arch="aarch64"
+license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
+	ISC LGPL-2.0-only LGPL-2.1-only X11"
+makedepends="$depends_dev bc dtc python3-dev swig bison flex openssl-dev
+	py3-setuptools u-boot-tools vboot-utils"
+options="!check"
+
+_tag=v${pkgver//_/-}-mt6735
+source="u-boot-$_tag.tar.gz::$url/-/archive/$_tag/u-boot-$_tag.tar.gz"
+builddir="$srcdir/u-boot-$_tag"
+
+prepare() {
+	default_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH=arm grandpplte_defconfig
+	make ARCH=arm CC="${CC:-gcc}"
+}
+
+package() {
+	mkdir -p "$pkgdir/usr/share/u-boot/grandpplte/"
+
+	install -Dm644 "$builddir/u-boot.bin" \
+		"$pkgdir/usr/share/u-boot/grandpplte/"
+}
+sha512sums="
+566e56b22e6c0870cdef1a7d36c3a59c416304cf74adb4102a3da94a4d17e0e6b0c4d4ab7878773fe2c8076070eeac0b3a26224aaeecae15fe387a71b550d337  u-boot-v2022.10-rc5-mt6735.tar.gz
+"
