@@ -1,0 +1,29 @@
+# Maintainer: Yassine Oudjana (Tooniis) <y.oudjana@protonmail.com>
+
+pkgname=mt6735-bootshim
+pkgver=0.0.1
+pkgrel=0
+pkgdesc="MT6735 AArch64 boot shim"
+url="https://gitlab.com/mt6735-mainline/bootshim/"
+arch="noarch"
+license="MIT"
+makedepends="clang lld scons"
+options="!check"
+
+_commit="169b57cdf2ccbbe79dbca290b8ff789d0ca4e9b9"
+source="bootshim-$_commit.tar.gz::$url/-/archive/$_commit/bootshim-$_commit.tar.gz"
+builddir="$srcdir/bootshim-$_commit"
+
+build() {
+	scons
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	install -Dm644 "$builddir/bootshim" \
+		"$pkgdir/boot/bootshim"
+}
+sha512sums="
+ddb35ec7b387b275ea62ad275742dfa5b5514544788b9a5aaa9bd10241f52f253f1c789d1fd7da739ac6ca39eb0a306fc9509324b4d494263beabd877d2d7aa0  bootshim-169b57cdf2ccbbe79dbca290b8ff789d0ca4e9b9.tar.gz
+"
