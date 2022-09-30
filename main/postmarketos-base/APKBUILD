@@ -1,5 +1,5 @@
 pkgname=postmarketos-base
-pkgver=22
+pkgver=23
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
@@ -17,6 +17,7 @@ depends="
 install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-upgrade"
 triggers="$pkgname.trigger=/etc"
 subpackages="
+	$pkgname-mesa
 	$pkgname-nftables
 	$pkgname-nofde
 	"
@@ -90,6 +91,13 @@ package() {
 	done
 
 	postmarketos-mvcfg-package "$pkgdir" "$pkgname"
+}
+
+mesa() {
+	replaces=""
+	depends="mesa-dri-gallium"
+	install_if="$pkgname=$pkgver-r$pkgrel mesa"
+	mkdir "$subpkgdir"
 }
 
 nftables() {
