@@ -2,8 +2,8 @@
 # Maintainer:  Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=linux-purism-librem5
-pkgver=5.18.11
-pkgrel=2
+pkgver=6.0.0
+pkgrel=0
 _purismrel=1
 # <kernel ver>.<purism kernel release>
 _purismver=${pkgver}pureos$_purismrel
@@ -18,6 +18,7 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-community
 	"
 makedepends="
+	bash
 	bison
 	devicepkg-dev
 	findutils
@@ -35,11 +36,10 @@ install="$pkgname.post-upgrade"
 _repository="linux"
 # kconfig generated with: ARCH=arm64 make defconfig KBUILD_DEFCONFIG=librem5_defconfig
 _config="config-$_flavor.$arch"
+
+
 source="
 	$pkgname-$_purismver.tar.gz::https://source.puri.sm/Librem5/linux/-/archive/pureos/$_purismver/linux-pureos-$_purismver.tar.gz
-	0001-bq25890_charger-enter-ship-mode-on-power-off.patch
-	0002-arm64-dts-imx8mq-librem5.dtsi-adjust-the-usdhc-bus-s.patch
-	0003-imx8mq-librem5-r3-Set-the-CPU-voltage-to-1.0V-when-r.patch
 	$_config
 "
 builddir="$srcdir/$_repository-pureos-$_purismver"
@@ -48,6 +48,10 @@ prepare() {
 	default_prepare
 	REPLACE_GCCH=0 \
 		. downstreamkernel_prepare
+
+	# NOTE: only for generating a config based on Purism's defconfig, for rebasing...
+	# make ARCH="$_carch" CC="${CC:-gcc}" \
+	# 	defconfig KBUILD_DEFCONFIG=librem5_defconfig
 }
 
 build() {
@@ -79,9 +83,6 @@ dev() {
 		INSTALL_HDR_PATH="$subpkgdir"/usr
 }
 sha512sums="
-9f4a001ebb47cf7a166fb1d479a773443480199319022d0b411eee072ebc27aa6fed6f455a818a23f1c58e95eca5e6052d27a814d9f77943578d812cbd32c0ca  linux-purism-librem5-5.18.11pureos1.tar.gz
-0e3caf6275247e31b874b94330dc4f991837a4b62f3c15a1f8ad39a7edd02ae499679bcd7ddc9463bb1c1a5073ea5980fa144a2ece804d72a6b2fc8c76c50766  0001-bq25890_charger-enter-ship-mode-on-power-off.patch
-1dbf2adaf097bcce3ee179cd6b0f10d2ebefdc82191d34fffea8cb336c9dcbc66b717bf97a2e264b8068f178c0254f2b1281a09ae72d4825fd7b4a39916c0461  0002-arm64-dts-imx8mq-librem5.dtsi-adjust-the-usdhc-bus-s.patch
-c52f9e7e17f876697000a0c3b959a0d571ca506ba55ee5158e30ac00e148372097c88951a354190f669137a955405c87042a925c1bbe3cd91df40721650d45d3  0003-imx8mq-librem5-r3-Set-the-CPU-voltage-to-1.0V-when-r.patch
-0acd0a7380eeacdc94b2f7fc9e50b5fb70ad4008e7d3fbf68ab42f953e3f952d0173d75cd37283cd716768f5280a025a1279dd0213ea187059958351d4385f49  config-purism-librem5.aarch64
+19a6bd83a9ea6f0330228e95dce63a2241867459f6377302b60d929d122f610375ce2c9ed8f4ee9d1a3cf16190fca056c0162dec1c1b3c6a077e7e3a3cf11e4e  linux-purism-librem5-6.0.0pureos1.tar.gz
+203a6b2dd6207b0d482e99f89c6125e3ccfca70b338696bde9a0a99cd34aa033a0a8f8d21cbd1df6a8865980cb1c56a0f2eec2e7aa7f02313142aa8559d4f6d6  config-purism-librem5.aarch64
 "
