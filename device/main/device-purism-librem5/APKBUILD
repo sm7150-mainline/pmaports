@@ -3,9 +3,9 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.33
+pkgver=1.34
 pkgrel=0
-_confver=49
+_confver=52
 _purismrel=1
 # <librem5-base ver>.<purism release>
 _purismver=${_confver}pureos$_purismrel
@@ -16,6 +16,7 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf
 	gnss-share
+	i2c-tools
 	iw
 	linux-purism-librem5
 	mesa-dri-gallium
@@ -33,7 +34,6 @@ source="
 	77-mm-broadmobi-port-types.rules
 	deviceinfo
 	flash_script.lst
-	modprobe.d-ship_mode.conf
 	modprobe.d_rsi.conf
 	modules-load.d_librem5.conf
 	pcscd-librem5-reader.conf
@@ -42,6 +42,7 @@ source="
 	xorg.conf
 	70-librem5-xwayland-accel.sh
 	0002-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
+	l5-ship-mode.initd
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -49,6 +50,8 @@ subpackages="
 	$pkgname-pulseaudio
 	$pkgname-smartcard
 	$pkgname-tinydm
+	$pkgname-usbguard
+	$pkgname-x11
 "
 install="$pkgname.post-install $pkgname.post-upgrade"
 
@@ -100,6 +103,19 @@ smartcard() {
 		"$subpkgdir"/etc/init.d/pcscd-librem5
 }
 
+usbguard() {
+	pkgdesc="USB guard support for the Librem 5"
+	install_if="$pkgname usbguard"
+	install -Dm600 "$builddir"/default/usbguard/librem5.conf \
+		-t "$subpkgdir"/etc/usbguard/rules.d/
+}
+
+x11() {
+	install_if="$pkgname xorg-server"
+	install -Dm644 "$srcdir"/xorg.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/10-video.conf
+}
+
 package() {
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
@@ -107,20 +123,13 @@ package() {
 	install -D -m644 "$srcdir"/modules-load.d_librem5.conf "$pkgdir"/etc/modules-load.d/librem5.conf
 	install -D -m644 "$srcdir"/00-mesa.sh "$pkgdir"/etc/profile.d/00-mesa.sh
 	install -D -m644 "$srcdir"/flash_script.lst "$pkgdir"/usr/share/uuu/flash_script.lst
-	install -Dm644 "$srcdir"/xorg.conf \
-		"$pkgdir"/etc/X11/xorg.conf.d/10-video.conf
 
 	# udev
-	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-pm.udev  \
-		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-pm.rules
-	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-modem.udev  \
-		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-modem.rules
-	install -D -m644 "$builddir"/default/gpsd/99-gnss.rules  \
-		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-gnss.rules
-	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-storage.udev  \
-		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-storage.rules
-	install -D -m644 "$builddir"/debian/librem5-base-defaults.librem5-cameras.udev  \
-		"$pkgdir"/usr/lib/udev/rules.d/85-librem5-cameras.rules
+	for f in "$builddir"/debian/*.udev; do
+		# rename the udev rules, dropping the default prefix and (arbitrarily...) using "85-"
+		install -Dm644 "$f" \
+			"$pkgdir"/usr/lib/udev/rules.d/85-"$(basename ${f//librem5-base-defaults./})"
+	done
 
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t "$pkgdir"/usr/lib/udev/rules.d/
@@ -135,9 +144,12 @@ package() {
 	ln -s ../../NXP/iMX8/Librem_5/Librem\ 5.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/Librem\ 5.conf
 
-	# enable bq25890_charger ship_mode
-	install -Dm644 "$srcdir"/modprobe.d-ship_mode.conf \
-		"$pkgdir"/etc/modprobe.d/bq25890_charger.conf
+	# ship mode service
+	install -Dm755 "$builddir"/default/shipmode/l5-poweroff-shipmode \
+		-t "$pkgdir"/usr/sbin/
+
+	install -D -m755 "$srcdir"/l5-ship-mode.initd \
+		"$pkgdir"/etc/init.d/l5-ship-mode
 
 	devicepkg_package $startdir $pkgname
 }
@@ -149,13 +161,12 @@ nonfree_firmware() {
 }
 
 sha512sums="
-eb96cb23f2fe28ef528afe0d267453461611bfe7e8dffaf5afcd2de96f8e3c1f4612c3a9ec43feb50bbec8094ce31b5333ed85f14aaba5461e715024dff9ac9c  librem5-base-pureos-49pureos1.tar.gz
+fb1bf84a36db29dcd70753e6f5b3d5b574f89efd2277676d89574400da84ca825fae548cbc3d76af1b3a8a38430fc611933ecb7c27ee78c47957313f057ce754  librem5-base-pureos-52pureos1.tar.gz
 2e72d9a084ecd6c96cafbbd8fda461ae8b2ebd14ffda601d9f36d73f08f04088213de17da078293ddd958d4c76d33148c7af6e252eb0709f6934855a55578509  00-mesa.sh
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
-17c4cf3cfefddee8b47c62c311e177d829fc25140c56c2910ad37f64768e09dc209516d5f97c187ebdf5b1d7851ad7a3518ea5b16b01390b2906407c4f18eae1  deviceinfo
+3a5ded0cc86a0c3cb0b1fd91816a0b3479ab8eb8eae09494b7db5b778fc73e449bec29d983930e0b1425826a47fd91c3f093e1aff7eb877f7993701ea5cca70c  deviceinfo
 ccb47fd421c5e35a8def8e6fb61dad99e42cf542690068a68f90c257e41d33f45f1069db0a8d89372d9029681812957033995639a6a8a5e3eed48019325e0f4d  flash_script.lst
-110630f959e3f3a2acc335d755defeb0f49fb40f46cb2423205511f43d1dfdbb91722271fac34a6cbf04a5f0406e6a34ed77e75555acc3f420041d32224027d6  modprobe.d-ship_mode.conf
 3f62c04eb92d850e32d5e1b17534dec753563342ea6c4f9dc2572700d4f6eeb8ae8cd8e8e4f1b0f5c61f21d87bc61c02212f27313986157220003d78e2d69505  modprobe.d_rsi.conf
 a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f6e65a5d1b1a9099936382c99b49a44303f7b6d77a075a471  modules-load.d_librem5.conf
 8ef4ec7a9e9a4fb801d207e7d94b627aacc9243a93b0ec28e0823a6f44b8102416c040e4ddf499f87bb9dfa960cf6f627b008b79f197f6814b3fd881e18ae8ef  pcscd-librem5-reader.conf
@@ -164,4 +175,5 @@ a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f
 1cbc65cf2cb8fad4b0332d012a0256a266205b9b64371f5c0dae09dbb7f1e45b254e8c43993b896097e9d7035a72d547d9bce1ab2133addc56a5abdb80b44616  xorg.conf
 fad386071fc45f9880a94cc8004fabd5d98b3e6a12606c98d8e72e0208f22ab54f03b921f5967a959782507e2bff67d2fa92e46d8cd242011a3afcdbda529279  70-librem5-xwayland-accel.sh
 b45749fcddfd65a302b502bcabfa5828d1b63e45d844fd50e44009a756b919db20fe9526102947c0f0dfcdffe4a037e5050fe1b24fb915933ce0837f49759378  0002-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
+c723764d507ccd4b04aa5ce79b1d1ebc131873cdc37a943cb0f92b8a08a3c69eb9e0d31fcd4589fd8c40a9676bae9897e4f12ec2ebe4db8214ac85669ef35a53  l5-ship-mode.initd
 "
