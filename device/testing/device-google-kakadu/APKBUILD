@@ -1,0 +1,66 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-kakadu
+pkgdesc="ASUS Chromebook Detachable CM3 (CM3000)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	mesa-dri-gallium
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-load.d/sound.conf
+	modules-load.d/sound.conf.sku22
+"
+subpackages="
+	$pkgname-kernel-kakadu:kernel_kakadu
+	$pkgname-kernel-kakadu-sku22:kernel_kakadu_sku22
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+kernel_kakadu() {
+	pkgdesc="Google Kakadu"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	install -Dm644 "$srcdir"/sound.conf \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+kernel_kakadu_sku22() {
+	pkgdesc="Google Kakadu Sku 22"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	install -Dm644 "$srcdir"/sound.conf.sku22 \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+sha512sums="
+09507acaa2ae9dc7a33ed5d75bc5dd7ace1bbba5267a68e9d9c29f3a8c5cd902d9b96196ce820a7ca0f71a1d38c0f3b8d762951b029493f888f4baf2458547c7  deviceinfo
+37f11d243c4ecfd07bfb74e2d34e4c261db3a6aff755bf2dd08dad998de47e511c21082ca0d181e77e093e6f940fc570d8aef87fbc3a73ba55cb9f34b8c510f2  sound.conf
+bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf.sku22
+"
