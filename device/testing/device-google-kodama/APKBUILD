@@ -1,0 +1,75 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-kodama
+pkgdesc="Lenovo 10e Chromebook Tablet"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	mesa-dri-gallium
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-load.d/sound.conf
+"
+subpackages="
+	$pkgname-kernel-sku16:kernel_sku16
+	$pkgname-kernel-sku32:kernel_sku32
+	$pkgname-kernel-sku272:kernel_sku272
+	$pkgname-kernel-sku288:kernel_sku288
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/sound.conf \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+kernel_sku16() {
+	pkgdesc="Google Kodama Sku 16"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_sku32() {
+	pkgdesc="Google Kodama Sku 32"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_sku272() {
+	pkgdesc="Google Kodama Sku 272"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_sku288() {
+	pkgdesc="Google Kodama Sku 288"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+sha512sums="
+8cd59c8d3fb45fbd5e4520dfb01c037e273b264090550f479dab1622f594cf715563945f82ba08c97da455ca0e749aaeab27c45a5d366d08ab24a7077465b262  deviceinfo
+bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf
+"
