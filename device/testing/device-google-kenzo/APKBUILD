@@ -1,0 +1,46 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-kenzo
+pkgdesc="Acer Chromebook 311 (CB311-11H / CB311-11HT)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	linux-postmarketos-mtk-mt8183
+	mesa-dri-gallium
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-load.d/sound.conf
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/sound.conf \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+4cb67b7d6603a100e1888e161668f82251b78c2a695ba433d7b9a6ce33f27b552764649786b46d5c3b458b1af86096e7b89a09ea79be417d6753f595fcac6633  deviceinfo
+bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf
+"
