@@ -1,0 +1,76 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-fennel
+pkgdesc="Lenovo IdeaPad Flex 3 Chromebook (MT8183)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	mesa-dri-gallium
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-load.d/sound.conf.sku1.sku6
+	modules-load.d/sound.conf.sku7
+"
+subpackages="
+	$pkgname-kernel-sku1:kernel_sku1
+	$pkgname-kernel-sku6:kernel_sku6
+	$pkgname-kernel-sku7:kernel_sku7
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+kernel_sku1() {
+	pkgdesc="Google Fennel Sku 1"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	install -Dm644 "$srcdir"/sound.conf.sku1.sku6 \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+kernel_sku6() {
+	pkgdesc="Google Fennel Sku 6"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	install -Dm644 "$srcdir"/sound.conf.sku1.sku6 \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+kernel_sku7() {
+	pkgdesc="Google Fennel Sku 7"
+	depends="linux-postmarketos-mtk-mt8183"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	install -Dm644 "$srcdir"/sound.conf.sku7 \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+sha512sums="
+e11742515a9820be610be39beb20e8c427fedbc84ca4eee38a21ef90ecc61c85c14f56510d69811336398fdf23ade644264ea4216b367e7a5e40ac249b4d7bea  deviceinfo
+37f11d243c4ecfd07bfb74e2d34e4c261db3a6aff755bf2dd08dad998de47e511c21082ca0d181e77e093e6f940fc570d8aef87fbc3a73ba55cb9f34b8c510f2  sound.conf.sku1.sku6
+bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf.sku7
+"
