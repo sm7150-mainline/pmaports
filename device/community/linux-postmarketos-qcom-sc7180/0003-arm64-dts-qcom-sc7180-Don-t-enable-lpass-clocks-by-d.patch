@@ -1,0 +1,76 @@
+From 9b72464591d389f422b5e4485aa8c97afd79356a Mon Sep 17 00:00:00 2001
+From: Nikita Travkin <nikita@trvn.ru>
+Date: Mon, 15 May 2023 14:37:41 +0500
+Subject: [PATCH 3/5] arm64: dts: qcom: sc7180: Don't enable lpass clocks by
+ default
+
+lpass clocks are usually blocked from HLOS by the firmware and
+instead are managed by the ADSP. Mark them as reserved and explicitly
+enable in the CrOS boards that have special, cooperative firmware.
+
+The IDP board gets lpass clocks disabled as it doesn't make use of sound
+anyway and might use Qualcomm firmware that blocks those clocks. [1]
+
+[1] https://lore.kernel.org/all/ZBJhmDd3zK%2FAiwBD@google.com/
+
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Bjorn Andersson <andersson@kernel.org>
+Link: https://lore.kernel.org/r/20230515093744.289045-2-nikita@trvn.ru
+---
+ arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi | 8 ++++++++
+ arch/arm64/boot/dts/qcom/sc7180.dtsi         | 4 ++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+index eae22e6e97c1..6508628fd5ba 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+@@ -777,6 +777,10 @@ alc5682: codec@1a {
+ 	};
+ };
+ 
++&lpasscc {
++	status = "okay";
++};
++
+ &lpass_cpu {
+ 	status = "okay";
+ 
+@@ -802,6 +806,10 @@ hdmi@5 {
+ 	};
+ };
+ 
++&lpass_hm {
++	status = "okay";
++};
++
+ &mdp {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+index 6f0ee4e13ef1..a7cd017b3ece 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -3576,6 +3576,8 @@ lpasscc: clock-controller@62d00000 {
+ 			power-domains = <&lpass_hm LPASS_CORE_HM_GDSCR>;
+ 			#clock-cells = <1>;
+ 			#power-domain-cells = <1>;
++
++			status = "reserved"; /* Controlled by ADSP */
+ 		};
+ 
+ 		lpass_cpu: lpass@62d87000 {
+@@ -3621,6 +3623,8 @@ lpass_hm: clock-controller@63000000 {
+ 			clock-names = "iface", "bi_tcxo";
+ 			#clock-cells = <1>;
+ 			#power-domain-cells = <1>;
++
++			status = "reserved"; /* Controlled by ADSP */
+ 		};
+ 	};
+ 
+-- 
+2.41.0
+
