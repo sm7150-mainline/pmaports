@@ -2,8 +2,8 @@
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=device-fairphone-fp4
 pkgdesc="Fairphone 4"
-pkgver=0.8
-pkgrel=2
+pkgver=0.9
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -15,8 +15,11 @@ depends="
 	mkbootimg
 	postmarketos-base
 	postmarketos-update-kernel
+	qbootctl
+	swclock-offset
 "
 makedepends="devicepkg-dev"
+install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	90-feedbackd-aw8695.rules
 	deviceinfo
