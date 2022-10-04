@@ -1,8 +1,8 @@
 # Maintainer: Caleb Connolly (kalube) <caleb@connolly.tech>
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
-pkgver=8
-pkgrel=2
+pkgver=9
+pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
@@ -18,6 +18,7 @@ subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-qbootctl
 	$pkgname-ucm
+	$pkgname-vulkan
 "
 
 _ucm_commit="621c71fd5f5742c60d38766ebb2d1bd3b863a2a4"
@@ -60,6 +61,13 @@ qbootctl() {
 	pkgdesc="Enable qbootctl mark-boot-successful service"
 	depends="qbootctl"
 	install="$subpkgname.post-install $subpkgname.post-upgrade"
+	mkdir "$subpkgdir"
+}
+
+vulkan() {
+	pkgdesc="Vulkan support for freedreno"
+	install_if="$pkgname vulkan-loader"
+	depends="mesa-vulkan-freedreeno"
 	mkdir "$subpkgdir"
 }
 
