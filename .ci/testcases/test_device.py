@@ -25,6 +25,9 @@ def device_dependency_check(apkbuild, path):
                                " depends of " + path + ". These go into"
                                " subpackages now, see"
                                " <https://postmarketos.org/devicepkg>.")
+        if depend == "mesa-dri-gallium":
+            raise RuntimeError(f"{path}: mesa-dri-gallium shouldn't be in"
+                               " depends anymore (see pmaports!3478)")
 
 
 def test_aports_device(args):
