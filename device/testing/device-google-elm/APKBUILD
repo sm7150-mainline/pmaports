@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-elm
+pkgdesc="Acer Chromebook R13"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt8173
+	mesa-dri-gallium
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT and GPU firmware"
+	depends="linux-firmware-mrvl linux-firmware-mediatek firmware-powervr-gx6250"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+baca81e238cf5d272204f34b0189cb3504421b9fa86022de78c31d8631b929ebfa3e5fbe5262a69952df3d00a0e2da31af40857fdbcf1fe48e4681d25a76ca96  deviceinfo
+"
