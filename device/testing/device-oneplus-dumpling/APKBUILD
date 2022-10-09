@@ -41,8 +41,7 @@ kernel_alpine() {
 
 kernel_mainline() {
 	pkgdesc="Close to mainline kernel, plenty of working features and fixes"
-	# NOTE: soc-qcom-sdm845 is also applicable to msm8998
-	depends="linux-postmarketos-qcom-msm8998 soc-qcom-sdm845"
+	depends="linux-postmarketos-qcom-msm8998 soc-qcom-msm8998"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
@@ -54,11 +53,12 @@ nonfree_firmware() {
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
+	# some scaling tweaks
 	install -Dm644 "$srcdir"/phoc.ini \
 		"$subpkgdir"/etc/phosh/phoc.ini
 }
 
 sha512sums="
-affbfb887c9f590d93b0234b3997b6de6e10a067d8d4ecf382548eb39f15d4036f8bea20f94c5cf04f357ad5f26a67f09c189fb6695e38fe9da1942e0c3a95e4  deviceinfo
+f44c869cefabc84bdbed29d598f04f49bf07106fb6fb33c615fc854c991bfd5255f58cf8c361191419701a979c1e06d9b8c73f31d1429b9f63c7f13cc3d397f8  deviceinfo
 2288f08a44aae5136c0c0c846501c2bd4bcb10f05454b40c6e4490d398385b8a7129216047b5eb7982ca6d62d3aa71f3e18bfb8661d0cd32c8a600685ca0da48  phoc.ini
 "
