@@ -4,8 +4,8 @@
 # Co-Maintainer: Luca Weiss <luca@z3ntu.xyz>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.42
-pkgrel=4
+pkgver=0.43
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -51,6 +51,7 @@ source="
 	gpsd_pinephone.initd
 	hwtest.ini
 	kirigami-lowpower.sh
+	kxkbrc
 	modemmanager.conf
 	pinephone-vccq-mod.dts
 	pulse-pinephone.conf
@@ -164,6 +165,7 @@ nonfree_firmware() {
 plasma_mobile() {
 	install_if="$pkgname=$pkgver-r$pkgrel kirigami2"
 	install -Dm644 "$srcdir"/kirigami-lowpower.sh "$subpkgdir"/etc/profile.d/kirigami-lowpower.sh
+	install -Dm644 "$srcdir"/kxkbrc -t "$subpkgdir"/etc/xdg
 }
 
 gnome() {
@@ -219,6 +221,7 @@ ccbc83b84b5028bc2c8e526759004ce71b50b2675ecffee98f5676c70a3332197a231ff9d2fd4644
 1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
 6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
+03d547ece68445579352d0419bf16a43ca1c567c1b0b14a977982cc8adddd34f1f8e8691465f1420091a5d33fa50daaefcee404d9d4b89e7598c4ad43a72469e  kxkbrc
 c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313818e0b943e1f6212bcca0aff9ce37da60b29547b1631f24b  modemmanager.conf
 d66ecef1fa5481ff138fe4e12b194903ceacab9d0649e716049f32e56ec6d9be09b97e2ff769ebc5c9fbced542986b9214f47ed14511ad761d80a41b19e02df7  pinephone-vccq-mod.dts
 9c472065b19141dd4c7555869b955de2e679b36e597f9fa3bdac18d0e9460986b0e2fffe1e04751301305f1b6474c1375803afb7d6212eeae91b4905d0bf8ff8  pulse-pinephone.conf
