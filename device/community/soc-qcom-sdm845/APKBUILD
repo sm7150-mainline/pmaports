@@ -2,15 +2,13 @@
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
 pkgver=9
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
 options="!check !archcheck !tracedeps"
 depends="
 	swclock-offset
-	msm-modem-uim-selection
-	bootmac
 "
 replaces="upower"
 subpackages="
@@ -40,7 +38,17 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="Modem, WiFi and GPU Firmware"
-	depends="pd-mapper pd-mapper-openrc tqftpserv tqftpserv-openrc q6voiced q6voiced-openrc msm-modem"
+	depends="
+	pd-mapper
+	pd-mapper-openrc
+	tqftpserv
+	tqftpserv-openrc
+	q6voiced
+	q6voiced-openrc
+	msm-modem
+	msm-modem-uim-selection
+	bootmac
+"
 	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 
