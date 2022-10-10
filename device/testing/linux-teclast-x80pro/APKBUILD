@@ -7,12 +7,16 @@ _config="config-$_flavor.$CARCH"
 
 pkgname=linux-$_flavor
 
+# FIXME: this kernel doesn't build anymore!
+# Once this is fixed, re-apply MR 3254: put dtbs in /boot.
+# https://builds.sr.ht/~postmarketos/job/858721
+
 pkgver=4.14.73
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.*};;
 	*.*) _kernver=$pkgver;;
 esac
-pkgrel=7
+pkgrel=6
 
 arch="x86_64"
 pkgdesc="Linux for pmOS supported chipsets (stable)"
@@ -119,7 +123,7 @@ package() {
 	make -j1 $_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
-		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
 }
 
 
