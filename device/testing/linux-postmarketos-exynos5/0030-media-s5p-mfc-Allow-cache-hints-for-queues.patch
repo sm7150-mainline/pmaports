@@ -7,14 +7,16 @@ Passing V4L2_MEMORY_FLAG_NON_COHERENT from userspace significantly
 improves video rendering performance on Exynos 5422 (Odroid XU4).
 
 Signed-off-by: Pavel Golikov <Paullo612@ya.ru>
+[jenneron@protonmail.com: rebase]
+Signed-off-by: Anton Bambura <jenneron@protonmail.com>
 ---
  drivers/media/platform/s5p-mfc/s5p_mfc.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc.c b/drivers/media/platform/s5p-mfc/s5p_mfc.c
+diff --git a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
 index f6732f031e96..bbfae7b00961 100644
---- a/drivers/media/platform/s5p-mfc/s5p_mfc.c
-+++ b/drivers/media/platform/s5p-mfc/s5p_mfc.c
+--- a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
++++ b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc.c
 @@ -861,6 +861,7 @@ static int s5p_mfc_open(struct file *file)
  	q->dma_attrs = DMA_ATTR_ALLOC_SINGLE_PAGES;
  	q->mem_ops = &vb2_dma_contig_memops;

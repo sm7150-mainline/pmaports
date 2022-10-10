@@ -1,24 +1,19 @@
-From dcde1b82bbf5bb4b4f58beb1dfa593d4d8e1501e Mon Sep 17 00:00:00 2001
+From bccdde521bb64c23902f64303d12de5a4a11635d Mon Sep 17 00:00:00 2001
 From: Anton Bambura <jenneron@protonmail.com>
 Date: Sat, 5 Feb 2022 03:19:07 +0200
-Subject: [PATCH 1/3] WIP: ASoC: samsung: snow: add jack detection support
+Subject: [PATCH] ASoC: samsung: snow: add jack detection
 
 Add jack detection support with two GPIOs:
 - samsung,hp-det;
 - samsung,mic-det.
 
-This change works (alsa sends events, pulseaudio switches devices), but
-there are such messages in kmsg on each plug/unplug:
-[   85.673023] snow-audio sound: ASoC: DAPM unknown pin Headphone
-[   86.005010] snow-audio sound: ASoC: DAPM unknown pin Mic Jack
-
 Signed-off-by: Anton Bambura <jenneron@protonmail.com>
 ---
- sound/soc/samsung/snow.c | 86 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 86 insertions(+)
+ sound/soc/samsung/snow.c | 94 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
 diff --git a/sound/soc/samsung/snow.c b/sound/soc/samsung/snow.c
-index 6da674e90..bd534c56f 100644
+index 6da674e90..2d85e05cd 100644
 --- a/sound/soc/samsung/snow.c
 +++ b/sound/soc/samsung/snow.c
 @@ -3,10 +3,12 @@
@@ -34,7 +29,7 @@ index 6da674e90..bd534c56f 100644
  #include <sound/pcm_params.h>
  #include <sound/soc.h>
  
-@@ -22,6 +24,32 @@ SND_SOC_DAILINK_DEFS(links,
+@@ -22,6 +24,37 @@ SND_SOC_DAILINK_DEFS(links,
  struct snow_priv {
  	struct snd_soc_dai_link dai_link;
  	struct clk *clk_i2s_bus;
@@ -45,7 +40,7 @@ index 6da674e90..bd534c56f 100644
 +static struct snd_soc_jack snow_hp_jack;
 +
 +static struct snd_soc_jack_pin snow_hp_jack_pins[] = {
-+	{ .pin = "Headphone", .mask = SND_JACK_HEADPHONE },
++	{ .pin = "Headphone Jack", .mask = SND_JACK_HEADPHONE },
 +};
 +
 +static struct snd_soc_jack_gpio snow_hp_jack_gpio = {
@@ -64,10 +59,15 @@ index 6da674e90..bd534c56f 100644
 +	.name = "Microphone detection",
 +	.report = SND_JACK_MICROPHONE,
 +	.debounce_time = 150,
++};
++
++static const struct snd_soc_dapm_widget snow_dapm_widgets[] = {
++	SND_SOC_DAPM_HP("Headphone Jack", NULL),
++	SND_SOC_DAPM_MIC("Mic Jack", NULL),
  };
  
  static int snow_card_hw_params(struct snd_pcm_substream *substream,
-@@ -105,9 +133,56 @@ static int snow_late_probe(struct snd_soc_card *card)
+@@ -105,9 +138,56 @@ static int snow_late_probe(struct snd_soc_card *card)
  {
  	struct snd_soc_pcm_runtime *rtd;
  	struct snd_soc_dai *codec_dai;
@@ -124,7 +124,7 @@ index 6da674e90..bd534c56f 100644
  	/* In the multi-codec case codec_dais 0 is MAX98095 and 1 is HDMI. */
  	codec_dai = asoc_rtd_to_codec(rtd, 0);
  
-@@ -129,6 +204,7 @@ static int snow_probe(struct platform_device *pdev)
+@@ -129,6 +209,7 @@ static int snow_probe(struct platform_device *pdev)
  	struct device_node *cpu, *codec;
  	struct snd_soc_dai_link *link;
  	struct snow_priv *priv;
@@ -132,7 +132,7 @@ index 6da674e90..bd534c56f 100644
  	int ret;
  
  	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-@@ -137,6 +213,16 @@ static int snow_probe(struct platform_device *pdev)
+@@ -137,6 +218,16 @@ static int snow_probe(struct platform_device *pdev)
  
  	link = &priv->dai_link;
  
@@ -149,6 +149,16 @@ index 6da674e90..bd534c56f 100644
  	link->dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
  			SND_SOC_DAIFMT_CBS_CFS;
  
+@@ -154,6 +245,9 @@ static int snow_probe(struct platform_device *pdev)
+ 	card->num_links = 1;
+ 	card->dev = dev;
+ 
++	card->dapm_widgets = snow_dapm_widgets;
++	card->num_dapm_widgets = ARRAY_SIZE(snow_dapm_widgets);
++
+ 	/* Try new DT bindings with HDMI support first. */
+ 	cpu = of_get_child_by_name(dev->of_node, "cpu");
+ 
 -- 
-2.34.1
+2.36.1
 
