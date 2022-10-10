@@ -1,7 +1,7 @@
-From 69abbee01268780b8ccb952555ce8362ad8a8b5e Mon Sep 17 00:00:00 2001
+From 51ce6fc90efde5b3290215de7c4d1eaa5f81de77 Mon Sep 17 00:00:00 2001
 From: Pavel Golikov <Paullo612@ya.ru>
 Date: Mon, 6 Jun 2022 17:57:53 +0300
-Subject: [PATCH 1/2] ARM/dma-mapping: implement ->alloc_noncontiguous
+Subject: [PATCH 28/33] ARM/dma-mapping: implement ->alloc_noncontiguous
 
 Implement support for allocating a non-contiguous DMA region.
 Implementation is based on one in ma-iommu driver.
@@ -12,10 +12,10 @@ Signed-off-by: Pavel Golikov <Paullo612@ya.ru>
  1 file changed, 59 insertions(+)
 
 diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 4b61541853ea..bbccfba968fc 100644
+index 82ffac621854..56851c86ad46 100644
 --- a/arch/arm/mm/dma-mapping.c
 +++ b/arch/arm/mm/dma-mapping.c
-@@ -1757,6 +1757,63 @@ static void arm_iommu_unmap_sg(struct device *dev,
+@@ -1759,6 +1759,63 @@ static void arm_iommu_unmap_sg(struct device *dev,
  	__iommu_unmap_sg(dev, sg, nents, dir, attrs, false);
  }
  
@@ -79,7 +79,7 @@ index 4b61541853ea..bbccfba968fc 100644
  /**
   * arm_iommu_sync_sg_for_cpu
   * @dev: valid struct device pointer
-@@ -1994,6 +2051,8 @@ static const struct dma_map_ops iommu_ops = {
+@@ -1996,6 +2053,8 @@ static const struct dma_map_ops iommu_ops = {
  
  	.map_page		= arm_iommu_map_page,
  	.unmap_page		= arm_iommu_unmap_page,
@@ -89,5 +89,5 @@ index 4b61541853ea..bbccfba968fc 100644
  	.sync_single_for_device	= arm_iommu_sync_single_for_device,
  
 -- 
-2.25.1
+2.38.0
 

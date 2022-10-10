@@ -1,7 +1,7 @@
-From eec2539ec9efc8a4f50c68204c01c113c39f2976 Mon Sep 17 00:00:00 2001
+From 82fa57d6032ea78e3af65d4037aa272cf78c49da Mon Sep 17 00:00:00 2001
 From: Dongjin Kim <tobetter@gmail.com>
 Date: Wed, 17 Nov 2021 13:17:51 +0900
-Subject: [PATCH 07/16] ODROID-COMMON: phy/realtek: add Wake-on-Lan to Realtek
+Subject: [PATCH 07/33] ODROID-COMMON: phy/realtek: add Wake-on-Lan to Realtek
  PHY
 
 Wake-On-Lan can set with 'ethtool'
@@ -23,10 +23,10 @@ Change-Id: I8ade81ab50d8d886e2908b9cec543e3bf8cc7abd
  2 files changed, 36 insertions(+)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index d89455803bed..98f3913b7ae5 100644
+index abfb3cd5958d..8f7f1f6ae392 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -753,6 +753,8 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+@@ -771,6 +771,8 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
  	priv->wolopts = wol->wolopts;
  	mutex_unlock(&priv->lock);
  
@@ -103,5 +103,5 @@ index a5671ab896b3..f832992d80fd 100644
  		.write_page	= rtl821x_write_page,
  	}, {
 -- 
-2.34.1
+2.38.0
 
