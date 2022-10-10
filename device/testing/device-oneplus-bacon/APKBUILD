@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oneplus-bacon
 pkgver=2
-pkgrel=0
+pkgrel=1
 pkgdesc="OnePlus One"
 url="https://postmarketos.org"
 arch="armv7"
@@ -29,13 +29,13 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Downstream kernel"
-	depends="linux-oneplus-bacon mesa-dri-gallium msm-fb-refresher"
+	depends="linux-oneplus-bacon msm-fb-refresher"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline() {
 	pkgdesc="Close to mainline kernel"
-	depends="linux-postmarketos-qcom-msm8974 mesa-dri-gallium"
+	depends="linux-postmarketos-qcom-msm8974"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 

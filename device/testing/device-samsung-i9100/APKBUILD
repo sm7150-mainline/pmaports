@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-i9100
 pkgver=4
-pkgrel=6
+pkgrel=7
 pkgdesc="Samsung Galaxy SII"
 url="https://postmarketos.org"
 arch="armv7"
@@ -37,13 +37,13 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Downstream kernel"
-	depends="linux-samsung-i9100 mesa-dri-gallium"
+	depends="linux-samsung-i9100"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline() {
 	pkgdesc="Close to mainline kernel"
-	depends="linux-postmarketos-exynos4 mesa-dri-gallium mesa-egl"
+	depends="linux-postmarketos-exynos4 mesa-egl"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 

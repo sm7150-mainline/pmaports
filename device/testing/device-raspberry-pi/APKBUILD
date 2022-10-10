@@ -2,7 +2,7 @@
 pkgname=device-raspberry-pi
 pkgdesc="Raspberry Pi"
 pkgver=0.2
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="armhf"
@@ -51,14 +51,14 @@ kernel_rpi2() {
 
 sway() {
 	install_if="$pkgname postmarketos-ui-sway"
-	depends="$pkgname mesa-dri-gallium"
+	depends="$pkgname"
 	install -Dm644 "$srcdir"/start-even-without-input.sh "$pkgdir"/etc/profile.d/start-even-without-input.sh
 	mkdir "$subpkgdir"
 }
 
 phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
-	depends="$pkgname mesa-dri-gallium"
+	depends="$pkgname"
 	install -Dm644 "$srcdir"/start-even-without-input.sh "$pkgdir"/etc/profile.d/start-even-without-input.sh
 	mkdir "$subpkgdir"
 }
