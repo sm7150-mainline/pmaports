@@ -2,7 +2,7 @@
 
 pkgname=gnome-shell-mobile
 pkgver=43.0_beta
-pkgrel=2
+pkgrel=3
 pkgdesc="GNOME shell"
 url="https://wiki.gnome.org/Projects/GnomeShell"
 arch="all !armhf !s390x !riscv64" # gjs
@@ -85,7 +85,6 @@ build() {
 	abuild-meson \
 		-Dsystemd=false \
 		-Dtests=false \
-		-Dsoup2=true \
 		. output
 	meson compile ${JOBS:+-j ${JOBS}} -C output
 }
