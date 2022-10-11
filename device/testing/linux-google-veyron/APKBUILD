@@ -1,0 +1,77 @@
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=linux-google-veyron
+pkgver=6.0
+pkgrel=0
+pkgdesc="Mainline kernel for Google Veyron devices"
+arch="armv7"
+_carch="arm"
+_flavor="${pkgname#linux-}"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-community
+"
+makedepends="
+	bash
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	installkernel
+	openssl-dev
+	perl
+	rsync
+	gzip
+	xz
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+"
+_config="config-$_flavor.$arch"
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.0};;
+	*.*)	_kernver=$pkgver;;
+esac
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${pkgver//_/-}.tar.xz
+	$_config
+	veyron.better_clock_selection_logic_and_dts_rate_list.patch
+	veyron.dts_allow_dedicating_npll_to_vop.patch
+	veyron.dts_do_dedicate_npll_to_vop.patch
+	veyron.ignore-gpt-ignoreme.patch
+	veyron.support_dedicating_npll_to_vop.patch
+"
+builddir="$srcdir/linux-$_kernver"
+replaces="linux-postmarketos-rockchip"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	make -j1 modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
+}
+
+sha512sums="
+bac41a7aeb6e809616cee2f13dcd1c45e829dfd1ccf60aee1dc4c46b1e28532f4485c7d819a32940de84fdfbf89db80a4e919bce8a74b2948c5a01551771b714  linux-6.0.tar.xz
+f57790174d117cc6b58cbab5cfc26144d02b28c53fe346824cb5714551f723609eb551bdaa336deec6b996ab7022518ca3a9d4349b2d22e9fb5240475a405f5d  config-google-veyron.armv7
+2912c675c1e07f7e91e2edcaa82738643907ed46614e4b871565930ff4ffece468d47db7905c2c081f936c020ea78db4a9d9f33b76c110125a0e68a1bd57f9fd  veyron.better_clock_selection_logic_and_dts_rate_list.patch
+b16da0e0b1da9f074a773300e954aa5e0da6c2113e20c0b594a7a4875e9addb10efcf5be694467fb00cd8d7c2e3cc83e6d7aac618047775dc0bb354245cf7c35  veyron.dts_allow_dedicating_npll_to_vop.patch
+b7bda162526abdb61c0223f1aac31893526d3d1d21d79ebd3e707be8d9b5dc464f6b4fa20b74444c44fda987352728433913f6f50b9b860c2621d11ae2306e1b  veyron.dts_do_dedicate_npll_to_vop.patch
+67f49d49457eed7ae2de4582d53602743dc9c785720527d713e9b14a027a4716c755cf56e5188641cb69b35c5a561f298fa4cf2b37751696768e76e534139f40  veyron.ignore-gpt-ignoreme.patch
+30e78435b3ef7a1e2ca304297f3bb446e12acd416158707b98b4e38aa31871acac24a6671317bae752a25732534e3f273cd9ab5bf909d920b4b277a69aa11da2  veyron.support_dedicating_npll_to_vop.patch
+"
