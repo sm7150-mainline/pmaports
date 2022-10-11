@@ -1,16 +1,16 @@
 diff --git a/arch/arm/boot/dts/exynos4412-midas.dtsi b/arch/arm/boot/dts/exynos4412-midas.dtsi
-index 968c7943653e..73eda2984053 100644
+index 3167c51b6296..5d24b08d99d4 100644
 --- a/arch/arm/boot/dts/exynos4412-midas.dtsi
 +++ b/arch/arm/boot/dts/exynos4412-midas.dtsi
-@@ -17,6 +17,7 @@
+@@ -18,6 +18,7 @@
  #include <dt-bindings/interrupt-controller/irq.h>
  #include <dt-bindings/clock/maxim,max77686.h>
- #include <dt-bindings/pinctrl/samsung.h>
+ #include "exynos-pinctrl.h"
 +#include <dt-bindings/leds/common.h>
  
  / {
  	compatible = "samsung,midas", "samsung,exynos4412", "samsung,exynos4";
-@@ -24,6 +25,7 @@ / {
+@@ -25,6 +26,7 @@ / {
  	aliases {
  		i2c11 = &i2c_max77693;
  		i2c12 = &i2c_max77693_fuel;
@@ -18,7 +18,7 @@ index 968c7943653e..73eda2984053 100644
  	};
  
  	chosen {
-@@ -170,7 +170,7 @@ i2c_max77693: i2c-gpio-1 {
+@@ -171,7 +173,7 @@ i2c_max77693: i2c-gpio-1 {
  		#address-cells = <1>;
  		#size-cells = <0>;
  
@@ -27,11 +27,10 @@ index 968c7943653e..73eda2984053 100644
  			compatible = "maxim,max77693";
  			interrupt-parent = <&gpx1>;
  			interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
-@@ -249,6 +251,39 @@ touchkey@20 {
- 			linux,keycodes = <KEY_BACK KEY_MENU>;
+@@ -251,6 +253,39 @@ touchkey@20 {
  		};
  	};
-+	
+
 +	i2c_an30259a: i2c-gpio-5 {
 +		compatible = "i2c-gpio";
 +		gpios = <&gpf2 7 GPIO_ACTIVE_HIGH>, <&gpf2 6 GPIO_ACTIVE_HIGH>;
@@ -64,14 +63,15 @@ index 968c7943653e..73eda2984053 100644
 +			};
 +		};
 +	};
- 
++
  	i2c-mhl {
  		compatible = "i2c-gpio";
+ 		sda-gpios = <&gpf0 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 diff --git a/arch/arm/boot/dts/exynos4412-n710x.dts b/arch/arm/boot/dts/exynos4412-n710x.dts
-index 9ae05b0d684c..b63d6920aa13 100644
+index 9ae05b0d684c..5f2888816e4a 100644
 --- a/arch/arm/boot/dts/exynos4412-n710x.dts
 +++ b/arch/arm/boot/dts/exynos4412-n710x.dts
-@@ -138,6 +138,21 @@ &ldo25_reg {
+@@ -69,6 +69,21 @@ &ldo25_reg {
  	regulator-max-microvolt = <3000000>;
  };
  

@@ -3,8 +3,8 @@
 # Kernel config based on: arch/arm/configs/exynos_defconfig
 
 pkgname=linux-postmarketos-exynos4
-pkgver=5.18.0
-pkgrel=4
+pkgver=6.0.1
+pkgrel=0
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
 _carch="arm"
@@ -16,6 +16,7 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-community
 	"
 makedepends="
+	bash
 	bison
 	busybox-static-armv7
 	findutils
@@ -49,6 +50,8 @@ source="
 	0009-ARM-dts-exynos-n710x-add-leds.patch
 	0010-drm-Allow-DRM_IOCTL_MODE_CREATE_DUMB-on-render-nodes.patch
 	0011-ARM-dts-exynos-disable-HDMI-on-Midas.patch
+	0012-dt-bindings-display-simple-add_support_for_Samsung_L.patch
+	0013-drm-panel-simple-add_support_for_the_Samsung_LTL101A.patch
 	initramfs.list
 	init
 "
@@ -88,17 +91,17 @@ package() {
 }
 
 sha512sums="
-dbbc9d1395898a498fa4947fceda1781344fa5d360240f753810daa4fa88e519833e2186c4e582a8f1836e6413e9e85f6563c7770523b704e8702d67622f98b5  linux-5.18.tar.xz
-9886b327eff35a078afc0692196c796bd02365c97c61b3a9a6c398d16a89a0d2443254bbc4a0944ddcb8758a78d7c1c4da2c2bdd57fa1cec169764fedcb0a46e  config-postmarketos-exynos4.armv7
+64ea89d0b29fe21c15b6fb89b320db7398487dbb3b2e85448457744012e36d81ff209bbe30ab1f90d1281a32e59bc1dc1be7105a60e6923d7db384b1061b49b5  linux-6.0.1.tar.xz
+83fd18b81291bbc312d1791cc9fedde3aba3245f9eb2a9de18b3dff033304ee703f1bd388533873e8c1dc5e96038082dff9a33b7fabb1e7e4059107c05fe8544  config-postmarketos-exynos4.armv7
 a033fa9afa05825d5c923f1d5a224e230a8b02e75b02a21e0a0077f1b76c01d663ba54204e66db1e85096d9e44cc29fee0acaf919d3187cb47dba9005f94d8be  0001-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
 57590b105cb6d01e5f2d860a21c1417b197abbcaf8553bf57633b261ac1e161b0d424f8baeb7b14b3ed923ebac6f6e27401ef02c0b53a4b3e34600368fe85219  0002-ARM-dts-exynos-Add-reboot-modes-to-midas.patch
-81430b484a0747717ed8dba45c04c40689d9546b7b9d3eb20f0520e78c94f1438afc1f21a0b06007f60ff718e924d1586acc98f4498671a1a7609ed6e6f2b3f0  0003-mmc-core-Workaround-VTU00M-0xf1-FTL-metadata-corrupt.patch
+b884f80be35e96f0d19e63b39279b73734760fcd547ad4653f76d3ce97912848db0fbd4d5e2fd8d786f1ae850ebfb3f0cd08f3d03b21a28c80cc92a55899ac3b  0003-mmc-core-Workaround-VTU00M-0xf1-FTL-metadata-corrupt.patch
 0e3aad5d8306c5a957cd8351078cedc583517c2821c0e82e57aeaaffdbf27db32214cdff4607134d5a554645186613540867c9f8c2a1456fa090cee7df2f5e3a  0004-drivers-drm-Add-backlight-control-support-for-s6e8aa.patch
 65049c997705f3b3fe7feff089009b16f142d9138cd5bdd039535640dcabda8c5b3dac0238e0996e31bd909ff11e4cc82aab94dc5c518b641b71af4f7284cae6  0005-power_supply-max77693-Listen-for-cable-events-and-en.patch
 7711e7b7fda4f089fa510ea38431fcf0cad80cbba381b3dddb57118e469b5eb868024cf92c9fa91f892ba2ea060009dbbc522e3bd873d9045338d148cfdd199b  0006-mfd-max77693-Add-defines-for-charger-current-control.patch
 de87e6a6608165cdc35a03bd10dedef1c12a2a9e1f66f500879c05b287bae7181cc95021a3a2aad6abefd024f508ed61c19ee9341ad3cc24e260269b647e1010  0007-power_supply-max77693-change-the-supply-type-to-POWE.patch
 054a03b327386b32b516cf7f9fdbf15adba9b3fb6d0d20473493f7e4538202496829443eb18f9a928b4959b1296ee98171d4a19d8fcf58439d4fdb122fbb97ac  0008-ARM-dts-driver-exynos-n710x-add-panel.patch
-63c9e1a1d92e1deb286d6623e116e1cce36bfbae3f9b5db60dc1751573af7477003c7680afe054e7170fee632fd11e38c1bea12ec51299d547557112784f762f  0009-ARM-dts-exynos-n710x-add-leds.patch
+59471acf5f2382f20889a9f2ed714c36e2066234d431e4ccf88dfa40bd1ec00b362f06243fda5919863cfe06d4484dc8a36cbf9fe79889de5e5ea7bace030fce  0009-ARM-dts-exynos-n710x-add-leds.patch
 56b08a9b72760f26cdbda9f89875ee4b502dca4d9dd15bf33c8ed1cda82cf75c9588514a378fd2e942a41e52378348cc8e55da303660cce59bf8a12287568daf  0010-drm-Allow-DRM_IOCTL_MODE_CREATE_DUMB-on-render-nodes.patch
 5b09f9ee24c092143da79da6d89fbd4ff2689a9e74beeb5bef51cab47f5834f4857ecb8f08333722b1c4638354c27ab3db80aa2ad7b8d731743e53e0a08f2f6d  0011-ARM-dts-exynos-disable-HDMI-on-Midas.patch
 aaff0332b90e1f9f62de1128cace934717336e54ab09de46477369fa808302482d97334e43a85ee8597c1bcab64d3484750103559fea2ce8cd51776156bf7591  initramfs.list
