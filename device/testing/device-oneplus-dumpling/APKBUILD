@@ -2,7 +2,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oneplus-dumpling
 pkgdesc="OnePlus 5T"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -34,6 +34,7 @@ package() {
 }
 
 kernel_alpine() {
+	# FIXME: msm-modem-uim-selection hangs boot for some 20 seconds when installed with non-free FW
 	pkgdesc="Pure mainline kernel, unpatched Alpine linux-edge"
 	depends="linux-edge linux-firmware-none"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
@@ -59,6 +60,6 @@ phosh() {
 }
 
 sha512sums="
-77dd1e5ef535f911165e77803e0fbb4fc8c25bc4524dafb149f3365b701b5606182b351de346b1a337c36a58ccb96c46963d9e9c3a78b5459e2ebe342d0243e7  deviceinfo
+cf52087ee21e05d6b9851c6d5b582277ebc631cf36dd48570a5553cdc16d8381c5c7f84ebe38a1f8c4dfe83ab2a7bc66a4e0e8b19314a17472349fae8ee03164  deviceinfo
 2288f08a44aae5136c0c0c846501c2bd4bcb10f05454b40c6e4490d398385b8a7129216047b5eb7982ca6d62d3aa71f3e18bfb8661d0cd32c8a600685ca0da48  phoc.ini
 "
