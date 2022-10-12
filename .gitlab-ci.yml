@@ -61,6 +61,15 @@ shellcheck:
   script:
     - .ci/shellcheck.sh
 
+editor-config:
+  stage: lint
+  <<: *only-default
+  image: alpine:edge
+  before_script:
+    - apk -q add editorconfig-checker
+  script:
+    - ec
+
 # aports checks (generic)
 aports-static:
   stage: lint
