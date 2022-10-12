@@ -10,10 +10,11 @@
 # boot failure
 
 pkgname=linux-postmarketos-rockchip
-pkgver=5.18
-pkgrel=4
+pkgver=6.0
+pkgrel=0
 pkgdesc="Mainline kernel for rockchip devices"
-arch="aarch64 armv7"
+arch="aarch64"
+_carch="arm64"
 _flavor="${pkgname#linux-}"
 url="https://kernel.org"
 license="GPL-2.0-only"
@@ -22,6 +23,7 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-community
 	"
 makedepends="
+	bash
 	bison
 	devicepkg-dev
 	findutils
@@ -37,13 +39,8 @@ makedepends="
 	mpfr-dev
 	"
 
-case "$CARCH" in
-	aarch64*) _carch="arm64" ;;
-	arm*) _carch="arm" ;;
-esac
-
 # Source
-_config="config-$_flavor.$CARCH"
+_config="config-$_flavor.$arch"
 case $pkgver in
 	*.*.*)	_kernver=${pkgver%.0};;
 	*.*)	_kernver=$pkgver;;
@@ -51,10 +48,7 @@ esac
 
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
-	0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
-
-	config-$_flavor.aarch64
-	config-$_flavor.armv7
+	$_config
 "
 builddir="$srcdir/linux-$_kernver"
 
@@ -68,7 +62,6 @@ build() {
 	unset LDFLAGS
 	make ARCH="$_carch" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
-
 }
 
 package() {
@@ -80,19 +73,11 @@ package() {
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs-$_flavor"
 
-	# not all armv7 devices (google-veyon-jerry) support booting gzipped kernels yet
-	if [ $_carch = arm64 ]; then
-		gzip -v "$pkgdir"/boot/vmlinuz
-		mv "$pkgdir"/boot/vmlinuz.gz "$pkgdir"/boot/vmlinuz
-	else
-		mv "$pkgdir"/boot/vmlinuz "$pkgdir"/boot/vmlinuz
-	fi
+	gzip -v "$pkgdir"/boot/vmlinuz
+	mv "$pkgdir"/boot/vmlinuz.gz "$pkgdir"/boot/vmlinuz
 }
 
-
 sha512sums="
-dbbc9d1395898a498fa4947fceda1781344fa5d360240f753810daa4fa88e519833e2186c4e582a8f1836e6413e9e85f6563c7770523b704e8702d67622f98b5  linux-5.18.tar.xz
-265b05bc542edb290ec15cd5f50132698a32e80d30ce28ce3ad7e990b7c07df92c4556122505b07a6aa582a919459872d1d874f4ed422d2aff2cdfb51889e720  0007-block-partitions-efi-Add-support-for-IGNOREME-GPT-si.patch
-b06b76cf3197242af9277626df2d0041bc13036c07b88c7555bc5ee4a16185a659d3834aff04caf93df0e5ad19ab0b57f7e72beb813275f7c4ae859cb893ebea  config-postmarketos-rockchip.aarch64
-d44a72f0ba64f5c3227eb9f11211e4cf1e7cbe69bc112525649a09065f39b506644a2515ed9fa33844a8bef933ed5e7543678618cddc484b65d11613059eda58  config-postmarketos-rockchip.armv7
+bac41a7aeb6e809616cee2f13dcd1c45e829dfd1ccf60aee1dc4c46b1e28532f4485c7d819a32940de84fdfbf89db80a4e919bce8a74b2948c5a01551771b714  linux-6.0.tar.xz
+db32d09836cf9bc933a865355cb6f7cbcac884085f22e50fe06ee40945ada3eb0753475af014a8f27bd9f499e85e1b5f26506b06d6d6f9f30d5222228ce4e041  config-postmarketos-rockchip.aarch64
 "
