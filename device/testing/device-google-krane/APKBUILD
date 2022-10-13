@@ -3,8 +3,8 @@
 # Co-Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-krane
 pkgdesc="Lenovo IdeaPad Duet Chromebook"
-pkgver=2
-pkgrel=1
+pkgver=3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,6 +12,7 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-google-kukui
 	depthcharge-tools
+	linux-postmarketos-mediatek-mt8183
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 	soc-mediatek-mt8183
@@ -21,11 +22,7 @@ source="
 	deviceinfo
 	modules-load.d/sound.conf
 "
-subpackages="
-	$pkgname-kernel-sku0:kernel_sku0
-	$pkgname-kernel-sku176:kernel_sku176
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -44,20 +41,7 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-kernel_sku0() {
-	pkgdesc="Google Krane Sku 0"
-	depends="linux-postmarketos-mediatek-mt8183"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_sku176() {
-	pkgdesc="Google Krane Sku 176"
-	depends="linux-postmarketos-mediatek-mt8183"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-
 sha512sums="
-9f54b26fbbb4184dc54727b767b7756ce98bd409e2fbf8566e3d484eadd37b0e99d6383099e29af7d14905756f88b4f14c45d0fe2fd138be37405745c7a8bb34  deviceinfo
+3cee30adc42daa052e0cca078c5cdad5b936fb639d240b747382b7c0e4c2a184578cbdf097c24cb792f500e414ee92dc614c7f7fc30ae28aeb8d625639d03542  deviceinfo
 bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf
 "

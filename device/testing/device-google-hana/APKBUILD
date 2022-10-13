@@ -2,8 +2,8 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-hana
 pkgdesc="Google Hana Chromebooks"
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -11,16 +11,13 @@ options="!check !archcheck"
 depends="
 	alsa-utils
 	depthcharge-tools
+	linux-postmarketos-mediatek-mt8173
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 "
 makedepends="devicepkg-dev"
 source="deviceinfo"
-subpackages="
-	$pkgname-kernel-hana:kernel_hana
-	$pkgname-kernel-hana-rev7:kernel_hana_rev7
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -30,18 +27,6 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-kernel_hana() {
-	pkgdesc="Google Hana Rev 1-6"
-	depends="linux-postmarketos-mediatek-mt8173"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_hana_rev7() {
-	pkgdesc="Google Hana Rev 7"
-	depends="linux-postmarketos-mediatek-mt8173"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 nonfree_firmware() {
 	pkgdesc="WiFi/BT and GPU firmware"
 	depends="linux-firmware-mrvl linux-firmware-mediatek firmware-powervr-gx6250"
@@ -49,5 +34,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-a6bcef8552c7b64d966701b774c91c977a432813af217aa72fd2e2b2378dd93e2290becbf6cd38275e92082157b9757eddd7af606caa69036a5aea113ba4789d  deviceinfo
+86e687aa69807136aeb3c6dc1013c142b4405ac001e9e3e66db21da2912deb517d76593849b747d5f24fddcae586f15a8912a417202ed883266ebc6a749b835d  deviceinfo
 "
