@@ -1,0 +1,87 @@
+From 54d319bc32bc2c6ac6c77671bfd419bdeff6edcb Mon Sep 17 00:00:00 2001
+From: Peter Bloomfield <PeterBloomfield@bellsouth.net>
+Date: Sat, 30 Apr 2022 12:59:48 -0400
+Subject: [PATCH 2/2] gtkimagedefinition: Extend commit b38266c0
+
+Similarly, uses casts in `gtk_image_definition_unref()`. Compilation
+succeeds without them, unlike in `gtk_image_definition_ref()`, because
+`gtk_image_definition_unref()` is not called internally, unlike
+`gtk_image_definition_ref()`. But the build would fail if some function
+defined in the module were changed in the future to call
+`gtk_image_definition_unref()`, and we can future-proof it now. This
+also removes an inconsistency in how we access the members of the union.
+---
+ gtk/gtkimagedefinition.c | 35 ++++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
+
+diff --git a/gtk/gtkimagedefinition.c b/gtk/gtkimagedefinition.c
+index 9ef8223911..a26d6eb15c 100644
+--- a/gtk/gtkimagedefinition.c
++++ b/gtk/gtkimagedefinition.c
+@@ -265,9 +265,19 @@ gtk_image_definition_ref (GtkImageDefinition *def)
+ void
+ gtk_image_definition_unref (GtkImageDefinition *def)
+ {
+-  def->empty.ref_count--;
++  GtkImageDefinitionEmpty *empty_def;
++  GtkImageDefinitionPixbuf *pixbuf_def;
++  GtkImageDefinitionAnimation *animation_def;
++  GtkImageDefinitionSurface *surface_def;
++  GtkImageDefinitionStock *stock_def;
++  GtkImageDefinitionIconSet *icon_set_def;
++  GtkImageDefinitionIconName *icon_name_def;
++  GtkImageDefinitionGIcon *gicon_def;
++
++  empty_def = (GtkImageDefinitionEmpty *) def;
++  empty_def->ref_count--;
+ 
+-  if (def->empty.ref_count > 0)
++  if (empty_def->ref_count > 0)
+     return;
+ 
+   switch (def->type)
+@@ -277,27 +287,34 @@ gtk_image_definition_unref (GtkImageDefinition *def)
+       g_assert_not_reached ();
+       break;
+     case GTK_IMAGE_PIXBUF:
+-      g_object_unref (def->pixbuf.pixbuf);
++      pixbuf_def = (GtkImageDefinitionPixbuf *) def;
++      g_object_unref (pixbuf_def->pixbuf);
+       break;
+     case GTK_IMAGE_ANIMATION:
+-      g_object_unref (def->animation.animation);
++      animation_def = (GtkImageDefinitionAnimation *) def;
++      g_object_unref (animation_def->animation);
+       break;
+     case GTK_IMAGE_SURFACE:
+-      cairo_surface_destroy (def->surface.surface);
++      surface_def = (GtkImageDefinitionSurface *) def;
++      cairo_surface_destroy (surface_def->surface);
+       break;
+     case GTK_IMAGE_STOCK:
+-      g_free (def->stock.id);
++      stock_def = (GtkImageDefinitionStock *) def;
++      g_free (stock_def->id);
+       break;
+     case GTK_IMAGE_ICON_SET:
++      icon_set_def = (GtkImageDefinitionIconSet *) def;
+ G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
+-      gtk_icon_set_unref (def->icon_set.icon_set);
++      gtk_icon_set_unref (icon_set_def->icon_set);
+ G_GNUC_END_IGNORE_DEPRECATIONS;
+       break;
+     case GTK_IMAGE_ICON_NAME:
+-      g_free (def->icon_name.icon_name);
++      icon_name_def = (GtkImageDefinitionIconName *) def;
++      g_free (icon_name_def->icon_name);
+       break;
+     case GTK_IMAGE_GICON:
+-      g_object_unref (def->gicon.gicon);
++      gicon_def = (GtkImageDefinitionGIcon *) def;
++      g_object_unref (gicon_def->gicon);
+       break;
+     }
+ 
+-- 
+2.38.0
+
