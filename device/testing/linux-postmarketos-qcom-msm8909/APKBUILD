@@ -1,0 +1,63 @@
+# Maintainer: Affe Null <affenull2345@gmail.com>
+
+_flavor="postmarketos-qcom-msm8909"
+pkgname=linux-$_flavor
+pkgver=6.0_git20221013
+pkgrel=0
+pkgdesc="Mainline kernel fork for Qualcomm MSM8909 devices"
+arch="armv7"
+_carch="arm"
+url="https://gitlab.com/bananian/msm8909-mainline"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-nftables
+	"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	openssl-dev
+	perl
+	postmarketos-installkernel
+	"
+_repository="msm8909-mainline"
+_commit="8b819007b2d9840a3f0bbd98bc67380bf0f54ef9"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/$_repository-$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+sha512sums="
+9351e902f9778dbbd31b9ab9518a30a6d2e29510fa012af431214e2885b44a75801b8d4d4fd569b1534ad02dd8034ae4c6fb94f0b440f6e784a654cabb408437  linux-postmarketos-qcom-msm8909-8b819007b2d9840a3f0bbd98bc67380bf0f54ef9.tar.gz
+8d28b8d1b2122e2b76364c800c28198516261c3a78f6b6e4b7f09fcaf8c3820f354cc13566a4a23587772a9f74af112a8a4f887fc87bc496577035053659d086  config-postmarketos-qcom-msm8909.armv7
+"
