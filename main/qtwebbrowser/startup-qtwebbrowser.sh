@@ -9,7 +9,7 @@ while [ "$need_to_start" -eq "1" ]; do
 
 	START=$(date +%s)
 	#Start the app with X11 and scale factor to 1.75
-	QT_SCALE_FACTOR=1.75 QT_QPA_PLATFORM=xcb qtwebbrowser-bin >/tmp/qtwebbrowserlog 2>&1 
+	QT_SCALE_FACTOR=1.75 QT_QPA_PLATFORM=xcb qtwebbrowser-bin >/tmp/qtwebbrowserlog 2>&1
 	END=$(date +%s)
 	EXEC_TIME=$(( $END - $START ))
 
@@ -22,7 +22,7 @@ while [ "$need_to_start" -eq "1" ]; do
 
 	#If the browser did not crash we do not need to restart it
 	#It was closed intentionally by the user
-	#If it crashed 4 times in a row at startup don't try again 
+	#If it crashed 4 times in a row at startup don't try again
 	#in order to avoid loops
 	cat /tmp/qtwebbrowserlog | grep "Received signal"
 	if [ "$?" -ne "0" ] || [ "$crash_at_start" -ge "4" ]; then

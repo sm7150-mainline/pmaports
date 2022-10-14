@@ -12,8 +12,8 @@ read -n 1 ANSWER
 echo ""
 
 if [ "$ANSWER" != "y" ]; then
-    echo "Operation aborted"
-    exit 1
+	echo "Operation aborted"
+	exit 1
 fi
 
 echo "Which partition should be used as rootfs?:"
@@ -32,17 +32,17 @@ mount $HDD_ROOT_PARTITION $MOUNT_POINT
 # Copy rootfs
 echo "Copying rootfs... This can take a while."
 rsync \
-    -aAXx \
-    --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
-    / \
-    $MOUNT_POINT
+	-aAXx \
+	--exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
+	/ \
+	$MOUNT_POINT
 
 # Verify all files are copied
 rsync \
-    -aAXx \
-    --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
-    / \
-    $MOUNT_POINT
+	-aAXx \
+	--exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
+	/ \
+	$MOUNT_POINT
 sync
 echo "Rootfs successfully copied!"
 

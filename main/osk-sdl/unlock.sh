@@ -45,11 +45,11 @@ run_osk_sdl() {
 
 # shellcheck disable=SC2154
 if [ -n "$deviceinfo_mesa_driver" ]; then
-    # try to run osk-sdl with kmsdrm driver, then fallback to
-    # directfb if that fails
-    if ! run_osk_sdl "kmsdrm"; then
-        run_osk_sdl "directfb"
-    fi
+	# try to run osk-sdl with kmsdrm driver, then fallback to
+	# directfb if that fails
+	if ! run_osk_sdl "kmsdrm"; then
+		run_osk_sdl "directfb"
+	fi
 else
-    run_osk_sdl "directfb"
+	run_osk_sdl "directfb"
 fi

@@ -15,12 +15,12 @@ offset_file="/var/cache/swclock-offset/offset-storage"
 
 # check presence of rtc sys node
 if [ ! -f $rtc_sys_node ]; then
-  exit 1
+	exit 1
 fi
 
 # check presence of offset file
 if [ ! -f $offset_file ]; then
-  exit 2
+	exit 2
 fi
 
 # calculate system time

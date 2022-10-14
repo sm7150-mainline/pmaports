@@ -13,12 +13,12 @@ offset_directory="/var/cache/swclock-offset"
 
 # check presence of rtc sys node
 if [ ! -f $rtc_sys_node ]; then
-  exit 1
+	exit 1
 fi
 
 # check presence of offset directory
 if [ ! -d $offset_directory ]; then
-  mkdir -p $offset_directory
+	mkdir -p $offset_directory
 fi
 
 # calculate offset
