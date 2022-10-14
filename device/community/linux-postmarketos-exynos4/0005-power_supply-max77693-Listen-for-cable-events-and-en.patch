@@ -1,7 +1,7 @@
-From d57fcb3193511c714a278589578a9ba5e0518935 Mon Sep 17 00:00:00 2001
+From ca10f3dab78955ce9c780af1c71465b93b3b45df Mon Sep 17 00:00:00 2001
 From: Wolfgang Wiedmeyer <wolfgit@wiedmeyer.de>
 Date: Tue, 27 Sep 2016 00:56:37 +0200
-Subject: [PATCH 05/10] power_supply: max77693: Listen for cable events and
+Subject: [PATCH 05/13] power_supply: max77693: Listen for cable events and
  enable charging
 
 This patch adds a listener for extcon cable events and enables
@@ -21,14 +21,14 @@ GNUtoo@cyberdimension.org: small fixes
 Signed-off-by: Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ---
  drivers/power/supply/Kconfig            |   2 +-
- drivers/power/supply/max77693_charger.c | 176 ++++++++++++++++++++++++
- 2 files changed, 177 insertions(+), 1 deletion(-)
+ drivers/power/supply/max77693_charger.c | 177 ++++++++++++++++++++++++
+ 2 files changed, 178 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index fcc7534edcb2..91aaa3172b14 100644
+index 1aa8323ad9f6..8c25debb6f18 100644
 --- a/drivers/power/supply/Kconfig
 +++ b/drivers/power/supply/Kconfig
-@@ -548,7 +548,7 @@ config CHARGER_MAX77650
+@@ -567,7 +567,7 @@ config CHARGER_MAX77650
  
  config CHARGER_MAX77693
  	tristate "Maxim MAX77693 battery charger driver"
@@ -38,7 +38,7 @@ index fcc7534edcb2..91aaa3172b14 100644
  	  Say Y to enable support for the Maxim MAX77693 battery charger.
  
 diff --git a/drivers/power/supply/max77693_charger.c b/drivers/power/supply/max77693_charger.c
-index a2c5c9858639..b19490cb4a8f 100644
+index a2c5c9858639..f2b5ef7df446 100644
 --- a/drivers/power/supply/max77693_charger.c
 +++ b/drivers/power/supply/max77693_charger.c
 @@ -12,8 +12,11 @@
@@ -225,7 +225,7 @@ index a2c5c9858639..b19490cb4a8f 100644
  /*
   * Sets charger registers to proper and safe default values.
   */
-@@ -684,6 +812,45 @@ static int max77693_charger_probe(struct platform_device *pdev)
+@@ -684,6 +812,46 @@ static int max77693_charger_probe(struct platform_device *pdev)
  	if (ret)
  		return ret;
  
@@ -238,10 +238,11 @@ index a2c5c9858639..b19490cb4a8f 100644
 +	}
 +
 +	chg->cable.edev = extcon_get_extcon_dev(MAX77693_EXTCON_DEV_NAME);
-+	if (chg->cable.edev == NULL) {
-+		dev_dbg(&pdev->dev, "%s is not ready, probe deferred\n",
-+			MAX77693_EXTCON_DEV_NAME);
-+		return -EPROBE_DEFER;
++	if (IS_ERR(chg->cable.edev)) {
++		dev_err_probe(&pdev->dev, PTR_ERR(chg->cable.edev),
++			      "extcon_get_extcon_dev(%s) failed\n",
++			      MAX77693_EXTCON_DEV_NAME);
++		return PTR_ERR(chg->cable.edev);
 +	}
 +
 +	/* set initial value */
@@ -271,7 +272,7 @@ index a2c5c9858639..b19490cb4a8f 100644
  	ret = max77693_reg_init(chg);
  	if (ret)
  		return ret;
-@@ -724,6 +891,10 @@ static int max77693_charger_probe(struct platform_device *pdev)
+@@ -724,6 +892,10 @@ static int max77693_charger_probe(struct platform_device *pdev)
  	device_remove_file(&pdev->dev, &dev_attr_top_off_timer);
  	device_remove_file(&pdev->dev, &dev_attr_top_off_threshold_current);
  	device_remove_file(&pdev->dev, &dev_attr_fast_charge_timer);
@@ -282,7 +283,7 @@ index a2c5c9858639..b19490cb4a8f 100644
  
  	return ret;
  }
-@@ -736,6 +907,11 @@ static int max77693_charger_remove(struct platform_device *pdev)
+@@ -736,6 +908,11 @@ static int max77693_charger_remove(struct platform_device *pdev)
  	device_remove_file(&pdev->dev, &dev_attr_top_off_threshold_current);
  	device_remove_file(&pdev->dev, &dev_attr_fast_charge_timer);
  
@@ -295,5 +296,5 @@ index a2c5c9858639..b19490cb4a8f 100644
  
  	return 0;
 -- 
-2.33.0
+2.38.0
 

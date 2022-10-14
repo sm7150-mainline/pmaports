@@ -1,7 +1,7 @@
-From 3827de610edb21045623955af5f3c04e10f58d55 Mon Sep 17 00:00:00 2001
+From 743a22734931563687d38c54289eca346eb4f24f Mon Sep 17 00:00:00 2001
 From: belgin <belginstirbu@hotmail.com>
 Date: Tue, 29 Jun 2021 20:31:12 +0300
-Subject: [PATCH 03/10] mmc: core: Workaround VTU00M 0xf1 FTL metadata
+Subject: [PATCH 03/13] mmc: core: Workaround VTU00M 0xf1 FTL metadata
  corruption bug
 
 Some versions of the 0xf1 revision of the firmware of the
@@ -63,10 +63,10 @@ Signed-off-by: Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
  4 files changed, 227 insertions(+)
 
 diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
-index 29e58ffae379..12fa14e88ef6 100644
+index 89cd48fcec79..dc6fe015f872 100644
 --- a/drivers/mmc/core/mmc.c
 +++ b/drivers/mmc/core/mmc.c
-@@ -1894,6 +1894,12 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
+@@ -1929,6 +1929,12 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
  	if (!oldcard)
  		host->card = card;
  
@@ -79,7 +79,7 @@ index 29e58ffae379..12fa14e88ef6 100644
  	return 0;
  
  free_card:
-@@ -2294,6 +2300,17 @@ int mmc_attach_mmc(struct mmc_host *host)
+@@ -2329,6 +2335,17 @@ int mmc_attach_mmc(struct mmc_host *host)
  	if (err)
  		goto remove_card;
  
@@ -98,10 +98,10 @@ index 29e58ffae379..12fa14e88ef6 100644
  	return 0;
  
 diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-index 0c54858e89c0..b53e1544acba 100644
+index 81c55bfd6e0c..07e67b62515d 100644
 --- a/drivers/mmc/core/mmc_ops.c
 +++ b/drivers/mmc/core/mmc_ops.c
-@@ -826,6 +826,212 @@ int mmc_bus_test(struct mmc_card *card, u8 bus_width)
+@@ -856,6 +856,212 @@ int mmc_bus_test(struct mmc_card *card, u8 bus_width)
  	return mmc_send_bus_test(card, card->host, MMC_BUS_TEST_R, width);
  }
  
@@ -315,10 +315,10 @@ index 0c54858e89c0..b53e1544acba 100644
  {
  	unsigned int busy_timeout_ms = card->ext_csd.out_of_int_time;
 diff --git a/include/linux/mmc/card.h b/include/linux/mmc/card.h
-index 37f975875102..56a0157c09a3 100644
+index 8a30de08e913..4f7de8972923 100644
 --- a/include/linux/mmc/card.h
 +++ b/include/linux/mmc/card.h
-@@ -336,6 +336,7 @@ struct mmc_card {
+@@ -337,6 +337,7 @@ struct mmc_card {
  	unsigned int    nr_parts;
  
  	struct workqueue_struct *complete_wq;	/* Private workqueue */
@@ -327,10 +327,10 @@ index 37f975875102..56a0157c09a3 100644
  
  static inline bool mmc_large_sector(struct mmc_card *card)
 diff --git a/include/linux/mmc/core.h b/include/linux/mmc/core.h
-index 71101d1ec825..72a0568edf6d 100644
+index 6efec0b9820c..9bfbe8a2d22d 100644
 --- a/include/linux/mmc/core.h
 +++ b/include/linux/mmc/core.h
-@@ -179,4 +179,7 @@ nt mmc_hw_reset(struct mmc_card *card);
+@@ -179,4 +179,7 @@ int mmc_hw_reset(struct mmc_card *card);
  int mmc_sw_reset(struct mmc_card *card);
  void mmc_set_data_timeout(struct mmc_data *data, const struct mmc_card *card);
  
@@ -339,5 +339,5 @@ index 71101d1ec825..72a0568edf6d 100644
 +
  #endif /* LINUX_MMC_CORE_H */
 -- 
-2.33.0
+2.38.0
 

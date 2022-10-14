@@ -1,5 +1,29 @@
+From ef45d556725b6e29196e805795a9a2756fa6d706 Mon Sep 17 00:00:00 2001
+From: Jack Knightly <J__A__K@hotmail.com>
+Date: Fri, 14 Oct 2022 20:58:17 +0200
+Subject: [PATCH 08/13] Add s6evr02 panel
+
+This adds the s6evr02 panel which the Samsung Galaxy Note II
+uses. After this is merged I will create another MR for t0lte to be
+added as a new device.
+
+PLEASE NOTE - I did not write the panel driver, but merely brought up
+an old driver that worked with mainline a few years ago. The driver
+was written by forkbomb and can be found here:
+https://github.com/fourkbomb/linux/blob/master/drivers/gpu/drm/panel/panel-samsung-s6evr02.c
+Given it is based on another panel driver that is still in mainline
+today, I applied the commits that that panel driver underwent between
+then and now, and it works.
+---
+ arch/arm/boot/dts/exynos4412-n710x.dts        |  69 ++
+ drivers/gpu/drm/panel/Kconfig                 |   6 +
+ drivers/gpu/drm/panel/Makefile                |   1 +
+ drivers/gpu/drm/panel/panel-samsung-s6evr02.c | 764 ++++++++++++++++++
+ 4 files changed, 840 insertions(+)
+ create mode 100644 drivers/gpu/drm/panel/panel-samsung-s6evr02.c
+
 diff --git a/arch/arm/boot/dts/exynos4412-n710x.dts b/arch/arm/boot/dts/exynos4412-n710x.dts
-index 9ae05b0d684c..f5b6ffc92fdd 100644
+index 9ae05b0d684c..da0e475b1063 100644
 --- a/arch/arm/boot/dts/exynos4412-n710x.dts
 +++ b/arch/arm/boot/dts/exynos4412-n710x.dts
 @@ -38,6 +38,75 @@ &cam_io_reg {
@@ -79,10 +103,10 @@ index 9ae05b0d684c..f5b6ffc92fdd 100644
  	samsung,i2c-sda-delay = <100>;
  	samsung,i2c-slave-addr = <0x10>;
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index cfc8d644cedf..bcbb17224e6e 100644
+index a9043eacce97..6b7c6ef55a01 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -468,6 +468,12 @@ config DRM_PANEL_SAMSUNG_S6E8AA0
+@@ -536,6 +536,12 @@ config DRM_PANEL_SAMSUNG_S6E8AA0
  	depends on OF
  	select DRM_MIPI_DSI
  	select VIDEOMODE_HELPERS
@@ -96,10 +120,10 @@ index cfc8d644cedf..bcbb17224e6e 100644
  config DRM_PANEL_SAMSUNG_SOFEF00
  	tristate "Samsung sofef00/s6e3fc2x01 OnePlus 6/6T DSI cmd mode panels"
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index bca4cc1f2715..9674876ddcff 100644
+index 34e717382dbb..b3d149475a38 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -48,6 +48,7 @@ obj-$(CONFIG_DRM_PANEL_SAMSUNG_S6E63M0_SPI) += panel-samsung-s6e63m0-spi.o
+@@ -54,6 +54,7 @@ obj-$(CONFIG_DRM_PANEL_SAMSUNG_S6E63M0_SPI) += panel-samsung-s6e63m0-spi.o
  obj-$(CONFIG_DRM_PANEL_SAMSUNG_S6E63M0_DSI) += panel-samsung-s6e63m0-dsi.o
  obj-$(CONFIG_DRM_PANEL_SAMSUNG_S6E88A0_AMS452EF01) += panel-samsung-s6e88a0-ams452ef01.o
  obj-$(CONFIG_DRM_PANEL_SAMSUNG_S6E8AA0) += panel-samsung-s6e8aa0.o
@@ -877,3 +901,6 @@ index 000000000000..f1612a6c262c
 +MODULE_DESCRIPTION("MIPI-DSI based s6evr02 AMOLED LCD Panel Driver");
 +MODULE_LICENSE("GPL v2");
 +
+-- 
+2.38.0
+

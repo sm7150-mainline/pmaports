@@ -1,3 +1,17 @@
+From bcbebd252712b9c49d0221c58c87ad48c97d1da8 Mon Sep 17 00:00:00 2001
+From: Jack Knightly <J__A__K@hotmail.com>
+Date: Fri, 14 Oct 2022 20:59:44 +0200
+Subject: [PATCH 09/13] samsung-t0lte: add leds
+
+Adds flash/torch LED for samsung-t0lte
+
+AND notification LED to t0lte and other midas devices (samsung-m0,
+samsung-m3).
+---
+ arch/arm/boot/dts/exynos4412-midas.dtsi | 37 ++++++++++++++++++++++++-
+ arch/arm/boot/dts/exynos4412-n710x.dts  | 15 ++++++++++
+ 2 files changed, 51 insertions(+), 1 deletion(-)
+
 diff --git a/arch/arm/boot/dts/exynos4412-midas.dtsi b/arch/arm/boot/dts/exynos4412-midas.dtsi
 index 3167c51b6296..5d24b08d99d4 100644
 --- a/arch/arm/boot/dts/exynos4412-midas.dtsi
@@ -30,7 +44,7 @@ index 3167c51b6296..5d24b08d99d4 100644
 @@ -251,6 +253,39 @@ touchkey@20 {
  		};
  	};
-
+ 
 +	i2c_an30259a: i2c-gpio-5 {
 +		compatible = "i2c-gpio";
 +		gpios = <&gpf2 7 GPIO_ACTIVE_HIGH>, <&gpf2 6 GPIO_ACTIVE_HIGH>;
@@ -68,10 +82,10 @@ index 3167c51b6296..5d24b08d99d4 100644
  		compatible = "i2c-gpio";
  		sda-gpios = <&gpf0 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 diff --git a/arch/arm/boot/dts/exynos4412-n710x.dts b/arch/arm/boot/dts/exynos4412-n710x.dts
-index 9ae05b0d684c..5f2888816e4a 100644
+index da0e475b1063..739aa0080e3f 100644
 --- a/arch/arm/boot/dts/exynos4412-n710x.dts
 +++ b/arch/arm/boot/dts/exynos4412-n710x.dts
-@@ -69,6 +69,21 @@ &ldo25_reg {
+@@ -138,6 +138,21 @@ &ldo25_reg {
  	regulator-max-microvolt = <3000000>;
  };
  
@@ -93,3 +107,6 @@ index 9ae05b0d684c..5f2888816e4a 100644
  &s5c73m3 {
  	standby-gpios = <&gpm0 6 GPIO_ACTIVE_LOW>;   /* ISP_STANDBY */
  	vdda-supply = <&cam_vdda_reg>;
+-- 
+2.38.0
+
