@@ -63,6 +63,10 @@ def test_aports_unreferenced_files(args):
     Raise an error if an unreferenced file is found
     """
     for apkbuild_path in glob.iglob(args.aports + "/**/APKBUILD", recursive=True):
+        # pmbootstrap parser has some issues with complicated APKBUILDs, skip those.
+        if apkbuild_path.startswith(args.aports + "/cross/"):
+            continue
+
         apkbuild = pmb.parse.apkbuild(apkbuild_path)
         sources_chk = parse_source_from_checksums(args, apkbuild_path)
 
