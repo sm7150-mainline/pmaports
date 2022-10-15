@@ -2,7 +2,7 @@
 
 pkgname=linux-pine64-pinephonepro
 pkgver=5.17.9
-pkgrel=2
+pkgrel=3
 pkgdesc="Mainline kernel for the pinephone pro"
 arch="aarch64"
 _flavor="${pkgname#linux-}"
@@ -41,6 +41,11 @@ case $pkgver in
 esac
 source="
 	https://gitlab.com/pine64-org/linux/-/archive/ppp-$pkgver/linux-ppp-$pkgver.tar.gz
+	CVE-2022-41674.patch
+	CVE-2022-42719.patch
+	CVE-2022-42720.patch
+	CVE-2022-42721.patch
+	CVE-2022-42722.patch
 	config-$_flavor.aarch64
 	"
 builddir="$srcdir/linux-ppp-$pkgver"
@@ -74,5 +79,10 @@ package() {
 
 sha512sums="
 9508e0947a242f83b803e2667247c7a46aa9f602926096f8a98fa90ace297b4be6cd153eb75820c44d8dc2d94d1994560402e93dc2f771ad1719fc4f10c799e2  linux-ppp-5.17.9.tar.gz
+967ce8182838f62c89dfc9cce2378465c8d4db1c4186f08e0e7ef38f2fc5e9b01a88dd6323028fd88c39c6778b7b662c01b49652f0c116f25c79ff52a34403ea  CVE-2022-41674.patch
+90b2a6ec2d83dd532a25c4c70c03cf6a544ea11533cdf631a3b1e5008edc488850074c27ff49aa9fc16edf3f45a293b85cda38f4ad8832eae38f7b399946d336  CVE-2022-42719.patch
+0770f0e49a449d1f6ff72f862a2caba15ba4d4d5df33c7e3b24bab51bc292aa02c1cabb9380c11b8c37184ee7574075421465f7423e79aa5304466bc722c83b1  CVE-2022-42720.patch
+82b168de132d7038e0759b42d095ff78eb3c2bc182498ffbc5e8a71a7095dda8aedb0889dce996854820582028353594c1f11294e8565c3134e9c87279387332  CVE-2022-42721.patch
+85e00353048b74fd7345a101ad9146ab18b59bf9a3c699de5a753291f0e9946aa5ff871bd0a69aba5f799647c0c34fd20878b6eb7bfd2377232ef29baf0871da  CVE-2022-42722.patch
 687b3b04d1fa479aae3f5f351188364e13ea96cdcbd2785993379c3cb8da19ae74516f7db85847c0845f27f376a73623d1f6e4f964779c186f2f6cde87c58df8  config-pine64-pinephonepro.aarch64
 "
