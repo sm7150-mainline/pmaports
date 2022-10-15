@@ -32,7 +32,7 @@ pkgver=${_pkgbase}_git${_pkgsnap}
 [ "$CHOST" != "$CTARGET" ] && _target="-$CTARGET_ARCH" || _target=""
 
 pkgname=gcc-armv7
-pkgrel=2
+pkgrel=3
 pkgdesc="Stage2 cross-compiler for armv7"
 url="https://gcc.gnu.org"
 arch="x86_64"
@@ -322,10 +322,9 @@ build() {
 
 	case "$CTARGET_LIBC" in
 	musl)
-		# musl does not support mudflap, or libsanitizer
-		# libmpx uses secure_getenv and struct _libc_fpstate not present in musl
+		# musl does not support libsanitizer
 		# alpine musl provides libssp_nonshared.a, so we don't need libssp either
-		_libc_configure="--disable-libssp --disable-libmpx --disable-libmudflap --disable-libsanitizer"
+		_libc_configure="--disable-libssp --disable-libsanitizer"
 		_symvers="--disable-symvers"
 		export libat_cv_have_ifunc=no
 		;;
@@ -379,7 +378,6 @@ build() {
 		--enable-__cxa_atexit
 		--enable-default-pie
 		--enable-default-ssp
-		--enable-cloog-backend
 		--enable-languages=$_languages
 		$_arch_configure
 		$_libc_configure
@@ -435,7 +433,6 @@ package() {
 	# strip debug info from some static libs
 	find "$pkgdir" \( -name libgfortran.a -o -name libobjc.a -o -name libgomp.a \
 		-o -name libgphobos.a -o -name libgdruntime.a \
-		-o -name libmudflap.a -o -name libmudflapth.a \
 		-o -name libgcc.a -o -name libgcov.a -o -name libquadmath.a \
 		-o -name libitm.a -o -name libgo.a -o -name libcaf\*.a \
 		-o -name libatomic.a -o -name libasan.a -o -name libtsan.a \) \
@@ -667,8 +664,9 @@ libgo() {
 }
 
 go() {
-	pkgdesc="Go support for GCC"
+	pkgdesc="GCC Go frontend (intended for bootstrapping community/go)"
 	depends="gcc=$_gccrel libgo=$_gccrel !go"
+	install="$pkgname-go.post-install"
 
 	# See https://lists.alpinelinux.org/~alpine/devel/%3C33KG0XO61I4IL.2Z7RTAZ5J3SY6%408pit.net%3E
 	provides="go-bootstrap"
