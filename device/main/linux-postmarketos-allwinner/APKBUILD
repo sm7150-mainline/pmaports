@@ -6,7 +6,7 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=6.0.1_git20221004
+pkgver=6.0.2_git20221004
 pkgrel=0
 _tag="orange-pi-6.0-20221004-1652"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
@@ -34,6 +34,7 @@ options="!strip !check !tracedeps
 	"
 source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar.gz
 	patch-6.0.1.patch
+	patch-6.0.1-2.patch
 	config-$_flavor.aarch64
 	config-$_flavor.armv7
 	0001-dts-add-dontbeevil-pinephone-devkit.patch
@@ -97,6 +98,7 @@ dev() {
 sha512sums="
 017111cd0339a5a0c8df11c63ce302c10d42d432c8d7428962e168486221de51032096d5dc1a51b62c0e0ac4d5061a9257a8d209c6730f70016f3085c05899a9  linux-postmarketos-allwinner-orange-pi-6.0-20221004-1652.tar.gz
 cd7d362f4a4a91ff8b8ec615c292a81fa95ae2d02dffb39ecf3aa8c15b2e3158a82deb49a783ea3a32816f84ce05990ec5d6b94a4b334e9edf06bdb1f6e51dac  patch-6.0.1.patch
+dc8d9e30837737b284ed5d60348b5e5adcb9af109ac548822aca2520276e6f1c354b773485e6ed9cad0e4788b51fbd798035a19b97458fdc7adef8651cef4911  patch-6.0.1-2.patch
 c9e95bed83dc5d065b86356d67b4d7fb0c64a7a3d2b84b4a6a3e21bdccaff1b5f13259a90d4c665ac80d297fed29a208d24224ead57778e0a18cb2c828cce30f  config-postmarketos-allwinner.aarch64
 e3cc0a3bcad7ad300593fd279212f92b171e87e912bf8a982814212fd2b5b978b94a9ebaafb5175e7c14866e1f1335557726c92b5f29921e971e5c773d34f8ba  config-postmarketos-allwinner.armv7
 126e0a65e04f22f14eac1281a69000d9d5b107ed8fd1b52f37e812751f55e6c45b0240ceac61c9d95ae7f0543aaf9d96b85a8532baf59283c077b9945e615367  0001-dts-add-dontbeevil-pinephone-devkit.patch
