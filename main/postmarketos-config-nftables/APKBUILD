@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-config-nftables
 pkgver=0.12
-pkgrel=0
+pkgrel=1
 pkgdesc="nftables firewall configuration for postmarketOS"
 url="https://gitlab.com/postmarketos"
 arch="noarch"
@@ -64,7 +64,7 @@ log() {
 chromecast() {
 	depends="$pkgname $pkgname-mdns"
 	description="Enables networking for Chromium Chromecast"
-	install_if="$pkgname chromium"
+	install_if="$pkgname=$pkgver-r$pkgrel chromium"
 
 	# meta package is empty
 	mkdir -p "$pkgdir"-chromecast
@@ -73,7 +73,7 @@ chromecast() {
 docker() {
 	depends="$pkgname"
 	description="Enables networking for Docker"
-	install_if="$pkgname docker"
+	install_if="$pkgname=$pkgver-r$pkgrel docker"
 
 	amove etc/nftables.d/51_docker.nft
 }
@@ -96,7 +96,7 @@ moshserver() {
 upnp_client() {
 	depends="$pkgname"
 	description="Enables networking for SSDP/UPnP client"
-	install_if="$pkgname libupnp"
+	install_if="$pkgname=$pkgver-r$pkgrel libupnp"
 
 	amove etc/nftables.d/50_upnp_client.nft
 }
@@ -104,7 +104,7 @@ upnp_client() {
 vlc_chromecast() {
 	depends="$pkgname $pkgname-chromecast"
 	description="Enables networking for VLC Chromecast casting"
-	install_if="$pkgname vlc"
+	install_if="$pkgname=$pkgver-r$pkgrel vlc"
 
 	amove etc/nftables.d/50_vlc_chromecast.nft
 }
@@ -119,7 +119,7 @@ vncserver() {
 networkmanager() {
 	depends="$pkgname"
 	description="Enables nftables backend in NetworkManager"
-	install_if="$pkgname networkmanager"
+	install_if="$pkgname=$pkgver-r$pkgrel networkmanager"
 
 	install -Dm644 "$srcdir"/networkmanager.conf \
 	       "$subpkgdir"/etc/NetworkManager/conf.d/nftables.conf
