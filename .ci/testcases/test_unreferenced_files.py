@@ -79,9 +79,6 @@ def test_aports_unreferenced_files(args):
                     continue
                 subpackage_installs += subpackage.get("install", [])
                 subpackage_triggers += subpackage.get("triggers", [])
-                print(subpackage_installs)
-                if "device-nokia-n900-nonfree-firmware.post-install" in subpackage_installs:
-                    print(subpackage)
 
         # Collect trigger files
         trigger_sources = []
