@@ -3,7 +3,7 @@
 pkgname=device-pine64-pinebookpro
 pkgdesc="PINE64 Pinebook Pro"
 pkgver=10
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -24,7 +24,6 @@ source="
 	extlinux.conf
 	10-pinebookpro.hwdb
 	70-edp-backlight.rules
-	mem_sleep.conf
 	nvme-powersave.initd
 	wlan-powersave-off.start
 "
@@ -41,10 +40,6 @@ package() {
 	# Keyboard mapping
 	install -D -m644 "$srcdir"/10-pinebookpro.hwdb \
 		"$pkgdir"/etc/udev/hwdb.d/10-pinebookpro.hwdb
-
-	# Sleep workaround
-	install -D -m644 "$srcdir"/mem_sleep.conf \
-		"$pkgdir"/etc/sysfs.d/mem_sleep.conf
 
 	install -D -m755 "$srcdir"/nvme-powersave.initd \
 		"$pkgdir"/etc/init.d/nvme-powersave
@@ -63,10 +58,9 @@ nonfree_firmware() {
 }
 sha512sums="
 d748d300043b5f3d87af5ac4a7bb916b5af15186d30830273c2bb921cd67937b7bc4019505931c7152216d88d4043f89880c91a497713c510ba92c64ddc7830a  deviceinfo
-a24af007d87ec1b9108b4ca0fafa661a0c1298c8de97abeaeacb70283a1e797e8cd0caa41918e5f38e8e41c6195a1964b569f54cb4deca63d403b685455f118c  extlinux.conf
+faab3ef38ca5850dc0e323587fa8a46cda609af86278fae95b6ec05ed355184385620ecc844c390e6ff1a0df97b28e60e66a45c8af81a7f2fe3366ac84cbf673  extlinux.conf
 d3988fe83c54228d743f4a8c190e9530404a436a7fbc0b004bf20d3986b502d864717d8cc9c76812e599266bf84cb08f9a86e1bfd220875799c5a022aea588ec  10-pinebookpro.hwdb
 6e9e9ef54ee9aa9491be6dc30451fdcd9038b0efeb959509f48626d97a1696ee81711a46510049557b73269ff48acc85fad6496c65451e2e24908241b7655444  70-edp-backlight.rules
-bcae155e24a151d3c098833680b83b6004a329962f115480d560ebe19257eab87286b8a4c194e456c067ca54fb53e59a5a16b022cea13c11135b0855145db563  mem_sleep.conf
 2abfa31fa56028339efc6d2b6cb838f310990d7110ac4dd996bc4cfcf90f0a8770e70f28f77f7b6929d110e494bc33731302f16b9717729f991c2732be0731d5  nvme-powersave.initd
 0fd7580e197e409978c219726af627cabe347404ee826e32892b61f3da1775b0fd81f8ed5e9a0f0bfaad87faa434d7a73ddaebf475ed0ad8fdcef6690cd692d3  wlan-powersave-off.start
 "
