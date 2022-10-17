@@ -1,6 +1,6 @@
 # Maintainer: Alexey Minnekhanov <alexeymin@postmarketos.org>
 pkgname=lk2nd
-pkgver=0.12.0
+pkgver=0.13.0
 pkgrel=0
 pkgdesc="Secondary little kernel (lk) bootloader for several Qualcomm devices"
 arch="armv7 aarch64"
@@ -17,10 +17,11 @@ options="!check !archcheck !tracedeps !strip pmb:cross-native"
 # * stripping of unused sections is done in lk2nd's own ld script.
 
 subpackages="
+	$pkgname-msm8226
+	$pkgname-msm8226-appended:msm8226_appended
 	$pkgname-msm8916
 	$pkgname-msm8916-appended:msm8916_appended
 	$pkgname-msm8974
-	$pkgname-msm8226-appended:msm8226_appended
 "
 
 build() {
@@ -64,11 +65,16 @@ msm8974() {
 		"$subpkgdir"/boot
 }
 
+msm8226() {
+	install -Dm644 "$builddir"/build-lk2nd-msm8226/lk2nd.img \
+		"$subpkgdir"/boot/lk2nd.img
+}
+
 msm8226_appended() {
 	install -Dm644 "$builddir"/build-lk2nd-msm8226/lk2nd-appended-dtb.img \
 		"$subpkgdir"/boot/lk2nd.img
 }
 
 sha512sums="
-f5903875f0c96d3346d6d7116465d7dff7645bf0df577448623a044d2d03f3d48b18253e92fd8b7dffdb309b44d0b13ed3d3dde17a34afb2c8357852c504d0ab  lk2nd-0.12.0.tar.gz
+20fc61cdad9e376e45a72eeb8e4fd5019548de1014e012abba9c278d62304fd50efc70fb34c19cc1540c4bd541d56472529a6324bb8189847a770d68efc268df  lk2nd-0.13.0.tar.gz
 "
