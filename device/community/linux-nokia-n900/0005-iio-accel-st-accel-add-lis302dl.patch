@@ -1,20 +1,17 @@
 diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-index 96e66b2f4cd9e..5b0f54e33d9ef 100644
+index 8750dea56fcb..586146ac6884 100644
 --- a/drivers/iio/accel/st_accel.h
 +++ b/drivers/iio/accel/st_accel.h
-@@ -36,8 +36,10 @@
+@@ -61,6 +61,7 @@ enum st_accel_type {
  #define LIS3DE_ACCEL_DEV_NAME		"lis3de"
  #define LIS2DE12_ACCEL_DEV_NAME		"lis2de12"
  #define LIS2HH12_ACCEL_DEV_NAME		"lis2hh12"
 +#define LIS302DL_ACCEL_DEV_NAME		"lis302dl"
- #define SC7A20_ACCEL_DEV_NAME		"sc7a20"
  
-+
  #ifdef CONFIG_IIO_BUFFER
  int st_accel_allocate_ring(struct iio_dev *indio_dev);
- int st_accel_trig_set_state(struct iio_trigger *trig, bool state);
 diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 5c5da6fdb4902..673f3807f001c 100644
+index f1e6ec380667..2adf8cf7307b 100644
 --- a/drivers/iio/accel/st_accel_core.c
 +++ b/drivers/iio/accel/st_accel_core.c
 @@ -444,6 +444,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
@@ -26,48 +23,17 @@ index 5c5da6fdb4902..673f3807f001c 100644
  		.ch = (struct iio_chan_spec *)st_accel_8bit_channels,
  		.odr = {
 diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index 96adc4344f4a5..45ee0ddc133c9 100644
+index cba57459e90a..466443101e8a 100644
 --- a/drivers/iio/accel/st_accel_i2c.c
 +++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -108,6 +108,10 @@ static const struct of_device_id st_accel_of_match[] = {
+@@ -107,6 +107,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lis2hh12",
  		.data = LIS2HH12_ACCEL_DEV_NAME,
  	},
- 	{
++	{
 +		.compatible = "st,lis302dl",
 +		.data = LIS302DL_ACCEL_DEV_NAME,
 +	},
-+	{
- 		.compatible = "silan,sc7a20",
- 		.data = SC7A20_ACCEL_DEV_NAME,
- 	},
-@@ -146,6 +150,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
- 	{ LIS3DE_ACCEL_DEV_NAME },
- 	{ LIS2DE12_ACCEL_DEV_NAME },
- 	{ LIS2HH12_ACCEL_DEV_NAME },
-+	{ LIS302DL_ACCEL_DEV_NAME },
- 	{ SC7A20_ACCEL_DEV_NAME },
  	{},
- };
-diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index 108b63d0146c5..6c0917750288c 100644
---- a/drivers/iio/accel/st_accel_spi.c
-+++ b/drivers/iio/accel/st_accel_spi.c
-@@ -92,6 +92,10 @@ static const struct of_device_id st_accel_of_match[] = {
- 		.compatible = "st,lis3de",
- 		.data = LIS3DE_ACCEL_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,lis302dl",
-+		.data = LIS302DL_ACCEL_DEV_NAME,
-+	},
- 	{}
  };
  MODULE_DEVICE_TABLE(of, st_accel_of_match);
-@@ -147,6 +151,7 @@ static const struct spi_device_id st_accel_id_table[] = {
- 	{ LIS2DW12_ACCEL_DEV_NAME },
- 	{ LIS3DHH_ACCEL_DEV_NAME },
- 	{ LIS3DE_ACCEL_DEV_NAME },
-+	{ LIS302DL_ACCEL_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(spi, st_accel_id_table);
