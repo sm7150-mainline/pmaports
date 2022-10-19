@@ -83,25 +83,6 @@ index 2ba6646e8..ccdd8efa3 100644
  obj-$(CONFIG_TWL6040_CORE)	+= twl6040.o
  
  obj-$(CONFIG_MFD_MX25_TSADC)	+= fsl-imx25-tsadc.o
-diff --git a/drivers/mfd/twl-core.c b/drivers/mfd/twl-core.c
-index 289b556de..880ea446c 100644
---- a/drivers/mfd/twl-core.c
-+++ b/drivers/mfd/twl-core.c
-@@ -956,6 +956,14 @@ add_children(struct twl4030_platform_data *pdata, unsigned irq_base,
- 			return PTR_ERR(child);
- 	}
- 
-+	if (IS_ENABLED(CONFIG_TWL6030_POWER) && pdata->power) {
-+		child = add_child(TWL_MODULE_PM_MASTER, "twl6030_power",
-+				  pdata->power, sizeof(*pdata->power), false,
-+				  0, 0);
-+		if (IS_ERR(child))
-+			return PTR_ERR(child);
-+	}
-+
- 	return 0;
- }
- 
 diff --git a/drivers/mfd/twl6030-power.c b/drivers/mfd/twl6030-power.c
 new file mode 100644
 index 000000000..f6bacdfc3
