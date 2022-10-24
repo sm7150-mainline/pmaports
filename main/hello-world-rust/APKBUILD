@@ -9,6 +9,8 @@ license="Unlicense"
 makedepends="cargo"
 source="https://gitlab.com/ollieparanoid/hello-world-rust/-/archive/$pkgver/hello-world-rust-$pkgver.tar.bz2"
 
+[ "$CARCH" = "riscv64" ] && options="$options textrels"
+
 build() {
 	cargo build --release --locked
 }
