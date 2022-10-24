@@ -2,7 +2,7 @@
 pkgname=device-asus-x00td
 pkgdesc="Asus ZenFone Max Pro M1"
 pkgver=0.4
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,6 +12,7 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
 "
 source="deviceinfo"
 
@@ -33,6 +34,12 @@ kernel_mainline() {
 	pkgdesc="Close to mainline; for kernel development only (most features aren't working)"
 	depends="linux-postmarketos-qcom-sdm660"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi, Bluetooth, GPU, Modem, ADSP, Venus firmware"
+	depends="firmware-asus-x00td"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
