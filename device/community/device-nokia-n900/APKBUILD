@@ -2,7 +2,7 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=8.2
+pkgver=8.3
 pkgrel=1
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
@@ -10,7 +10,7 @@ arch="armv7"
 license="MIT"
 depends="postmarketos-base linux-nokia-n900 u-boot-tools kbd kbd-bkeymaps ofono alsa-utils"
 makedepends="devicepkg-dev u-boot-tools kbd kbd-bkeymaps"
-install="$pkgname.post-install"
+install="$pkgname.pre-upgrade $pkgname.post-install"
 subpackages="
 	$pkgname-x11
 	$pkgname-xkeyboard-config:xkeyboard_config
@@ -112,6 +112,8 @@ package() {
 		"$pkgdir"/usr/share/bkeymaps/fi/rx51_fi.bmap.gz
 	install -D -m644 "$srcdir"/keymaps/rx51_se.bmap.gz \
 		"$pkgdir"/usr/share/bkeymaps/se/rx51_se.bmap.gz
+
+	postmarketos-mvcfg-package "$pkgdir" "$pkgname"
 }
 
 x11() {
