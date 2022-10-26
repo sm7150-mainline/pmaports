@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-goyavewifi
+pkgdesc="Samsung Galaxy Tab 3 Lite"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-samsung-goyavewifi
+	mkbootimg
+	msm-fb-refresher
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+3931347a664fb45f0a0d56d437aa9ee7cff7ad62ace88f21cf7aeb2f78d4c7da6219c78a75fab707f25666fc8e784b3e3da81dd4b51d42b05452c471f4c5e066  deviceinfo
+"
