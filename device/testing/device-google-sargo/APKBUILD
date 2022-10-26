@@ -3,7 +3,7 @@
 pkgname=device-google-sargo
 pkgdesc="Google Pixel 3a"
 pkgver=0.3
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -19,6 +19,7 @@ depends="
 "
 makedepends="devicepkg-dev"
 source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -26,6 +27,14 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Proprietary firmware blobs for the Google Pixel 3a"
+	depends="firmware-google-sargo linux-firmware-qca linux-firmware-qcom"
+
+	# Create an empty sub-package directory because this sub-package is empty
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
