@@ -7,7 +7,7 @@ _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 pkgver=6.0.3_git20221022
-pkgrel=1
+pkgrel=2
 _tag="orange-pi-6.0-20221022-2043"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
@@ -48,7 +48,6 @@ source="$pkgname-$_tag.tar.gz::https://github.com/megous/linux/archive/$_tag.tar
 	0011-sunxi-mmc-h6-fix.patch
 	0012-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 	"
-subpackages="$pkgname-dev"
 builddir="$srcdir/linux-$_tag"
 
 case "$CARCH" in
@@ -82,17 +81,6 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
 }
 
-dev() {
-	provides="linux-headers"
-	replaces="linux-headers"
-
-	cd $builddir
-
-	# https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.rst
-	make -j1 headers_install \
-		ARCH="$_carch" \
-		INSTALL_HDR_PATH="$subpkgdir"/usr
-}
 sha512sums="
 476009ec3d0114d486a1c61fdfd6fb2fbaa9d8f9bce384b4f8732f088444d5f044b67dc2270c303c70aaf099cad9fb273671f1d7c81d000eb36a085a688be800  linux-postmarketos-allwinner-orange-pi-6.0-20221022-2043.tar.gz
 eb9cbef2d40eb9d47e94cf85a50df42e02c29a359638443f72c89cdfe25b395058be8139c4437be56bf5e30fdcc32a4dacba55e2fab64e7590af8b9eff5e4bb8  config-postmarketos-allwinner.aarch64

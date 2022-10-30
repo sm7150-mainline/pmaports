@@ -3,7 +3,7 @@ _flavor=sourceparts-pocketpc
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 pkgver=5.14.6_git20210920
-pkgrel=1
+pkgrel=2
 _tag="81a7953afc5cd1001b727701dc99625ec656160a"
 _wifi_ref="1b6ddd544b4a829ed2b7feb32575359b6443cd3d"
 pkgdesc="Kernel fork for the Pocket P.C."
@@ -36,7 +36,6 @@ source="$pkgname-$_tag.tar.gz::https://github.com/PopcornComputer/PocketPC-Linux
 	0001-rtl8723ds.patch
 	config-$_flavor.aarch64
 	"
-subpackages="$pkgname-dev"
 builddir="$srcdir/PocketPC-Linux-$_tag"
 
 case "$CARCH" in
@@ -72,17 +71,6 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
 }
 
-dev() {
-	provides="linux-headers"
-	replaces="linux-headers"
-
-	cd $builddir
-
-	# https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.rst
-	make -j1 headers_install \
-		ARCH="$_carch" \
-		INSTALL_HDR_PATH="$subpkgdir"/usr
-}
 sha512sums="
 49e091de60b820c48e19bb9d3602cb0e5c3470b99112ad63da3f112b503569e6bab21738f2be014705212974a3a824c9f91acd98fa33632e7bc8bf2057f51d75  linux-sourceparts-pocketpc-81a7953afc5cd1001b727701dc99625ec656160a.tar.gz
 68001a7fdc022b4ff82e3f1762a00369c2be18a4c9f5ea2074e3e9248678c48525f4bcec47ef0c4678d6a0b6aef031eb52cac9a9811f3291a73e00cb33fb5c85  1b6ddd544b4a829ed2b7feb32575359b6443cd3d.tar.gz

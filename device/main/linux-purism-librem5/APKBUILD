@@ -3,7 +3,7 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=linux-purism-librem5
 pkgver=6.0.2
-pkgrel=0
+pkgrel=1
 _purismrel=1
 # <kernel ver>.<purism kernel release>
 _purismver=${pkgver}pureos$_purismrel
@@ -29,7 +29,6 @@ makedepends="
 	rsync
 	xz
 	"
-subpackages="$pkgname-dev"
 install="$pkgname.post-upgrade"
 
 # Source
@@ -71,17 +70,6 @@ package() {
 
 }
 
-dev() {
-	provides="linux-headers"
-	replaces="linux-headers"
-
-	cd $builddir
-
-	# https://github.com/torvalds/linux/blob/master/Documentation/kbuild/headers_install.rst
-	make -j1 headers_install \
-		ARCH="$_carch" \
-		INSTALL_HDR_PATH="$subpkgdir"/usr
-}
 sha512sums="
 5fc6d1f6e944bdf3d0d3401ea8b86703547404843be478b9d15764155e46292096234d4c5ae3fc5ad6e61e3916b19763fa4b0120da6718084665a9f8db212aa5  linux-purism-librem5-6.0.2pureos1.tar.gz
 765858ba4ab66468b409f64b43eb6c15f235f5f830f9b7f1a43a41d6fb09bb678baa99777fe59ee750045cd9e0911d59904e07c8dea992435ad7600d7d53a5ff  config-purism-librem5.aarch64
