@@ -110,7 +110,7 @@ def main():
         print("")
         print("Now it's time to add some documentation:")
         print("1) Create a device specific wiki page as described here:")
-        print("   <https://wiki.postmarketos.org/wiki/Help:Device_Page>")
+        print("   https://wiki.postmarketos.org/wiki/Help:Device_Page")
         print("2) Set 'booting = yes' in the infobox of your device page.")
         print("3) Run these tests again with an empty commit in your MR:")
         print("   $ git commit --allow-empty -m 'run tests again'")
