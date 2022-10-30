@@ -36,7 +36,7 @@ wiki:
     - .ci/wiki.sh
 
 # testcases linting
-testcases-linting:
+flake8:
   stage: lint
   <<: *only-default
   only:
@@ -48,7 +48,8 @@ testcases-linting:
   before_script:
     - apk -q add py-flake8
   script:
-    - flake8 --ignore E501,F401,E722,W504,W605
+    - .ci/lib/gitlab_prepare_ci.sh
+    - .ci/flake8.sh
 
 # shellcheck
 shellcheck:
