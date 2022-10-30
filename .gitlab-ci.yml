@@ -65,10 +65,9 @@ editor-config:
   stage: lint
   <<: *only-default
   image: alpine:edge
-  before_script:
-    - apk -q add editorconfig-checker
   script:
-    - ec
+    - .ci/lib/gitlab_prepare_ci.sh
+    - .ci/ec.sh
 
 # aports checks (generic)
 aports-static:
