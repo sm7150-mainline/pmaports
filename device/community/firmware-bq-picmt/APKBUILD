@@ -1,6 +1,6 @@
 pkgname=firmware-bq-picmt
 pkgver=3
-pkgrel=0
+pkgrel=1
 _commit="04cced17ab21d84ea6145e58f0b12fd67ef640d0"
 pkgdesc="Firmware for BQ Aquaris X5"
 url="https://github.com/JonnyMe/picmt-firmware"
@@ -33,7 +33,7 @@ modem() {
 
 venus() {
 	pkgdesc="BQ Aquaris X5 video firmware"
-	provides="firmware-qcom-msm8916-venus"
+	provides="firmware-qcom-msm8916-venus=$pkgver-r$pkgrel"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
 	# file contents, so it is fine to install venus.mbn to venus.mdt
@@ -42,7 +42,7 @@ venus() {
 
 wcnss() {
 	pkgdesc="BQ Aquaris X5 WiFi/BT firmware"
-	provides="firmware-qcom-msm8916-wcnss"
+	provides="firmware-qcom-msm8916-wcnss=$pkgver-r$pkgrel"
 
 	install -Dm644 "$srcdir"/wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mdt
 }
