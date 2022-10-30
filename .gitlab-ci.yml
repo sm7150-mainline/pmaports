@@ -117,11 +117,9 @@ kernel-kconfig:
     changes:
       - device/*/linux-*/config-*
       - main/linux-*/config-*
-  before_script:
-    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
-    - sh ./install_pmbootstrap.sh pytest
   script:
-    - su pmos -c "pmbootstrap kconfig check"
+    - .ci/lib/gitlab_prepare_ci.sh
+    - .ci/kconfig.sh
 
 # MR settings
 # (Checks for "Allow commits from members who can merge to the target branch")
