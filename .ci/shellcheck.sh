@@ -1,16 +1,15 @@
 #!/bin/sh -e
-# Copyright 2021 Oliver Smith
+# Copyright 2022 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
+# Description: lint all shell scripts
+# https://postmarktos.org/pmb-ci
 
-set -e
-DIR="$(cd "$(dirname "$0")" && pwd -P)"
-cd "$DIR/.."
+DIR="$(cd "$(dirname "$0")/.." && pwd -P)"
 
-# Find CHANGEMEs in APKBUILDs
-if grep -qr '(CHANGEME!)' *; then
-	echo "ERROR: Please replace '(CHANGEME!)' in the following files:"
-	grep --color=always -r '(CHANGEME!)' *
-	exit 1
+if [ "$(id -u)" = 0 ]; then
+	set -x
+	apk -q add shellcheck
+	exec su "${TESTUSER:-build}" -c "sh -e $0"
 fi
 
 # Shell: shellcheck
@@ -42,8 +41,9 @@ sh_files="
 
 	$(find . -path '.ci/*.sh')
 "
+
 for file in $sh_files; do
 	echo "Test with shellcheck: $file"
-	cd "$DIR/../$(dirname "$file")"
+	cd "$DIR/$(dirname "$file")"
 	shellcheck -e SC1008 -x "$(basename "$file")"
 done

@@ -51,15 +51,15 @@ flake8:
     - .ci/lib/gitlab_prepare_ci.sh
     - .ci/flake8.sh
 
-# shellcheck
-shellcheck:
+# shellcheck and various grep checks
+shellcheck-grep:
   stage: lint
   <<: *only-default
   image: alpine:edge
-  before_script:
-    - apk -q add shellcheck
   script:
+    - .ci/lib/gitlab_prepare_ci.sh
     - .ci/shellcheck.sh
+    - .ci/grep.sh
 
 editor-config:
   stage: lint
