@@ -1,10 +1,21 @@
 #!/bin/sh -e
-# Copyright 2021 Oliver Smith
+# Copyright 2022 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
+# Description: lint with various python tests
+# Options: native
+# Use 'native' because it requires pmbootstrap.
+# https://postmarktos.org/pmb-ci
 
-# Require pmbootstrap
-if ! command -v pmbootstrap > /dev/null; then
-	echo "ERROR: pmbootstrap needs to be installed."
+if [ "$(id -u)" = 0 ]; then
+	set -x
+	wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
+	sh ./install_pmbootstrap.sh pytest
+	exec su "${TESTUSER:-pmos}" -c "sh -e $0"
+fi
+
+# Require pytest to be installed on the host system
+if [ -z "$(command -v pytest)" ]; then
+	echo "ERROR: pytest command not found, make sure it is in your PATH."
 	exit 1
 fi
 

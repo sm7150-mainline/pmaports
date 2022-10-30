@@ -70,16 +70,13 @@ editor-config:
     - .ci/ec.sh
 
 # aports checks (generic)
-aports-static:
+pytest-commits:
   stage: lint
   <<: *only-default
-  before_script:
-    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
-    - sh ./install_pmbootstrap.sh pytest
   script:
-    - su pmos -c ".ci/run_testcases.sh"
-    - su pmos -c ".ci/check_changed_aports_versions.py"
-    - su pmos -c ".ci/check-dtb-install-location.sh"
+    - .ci/lib/gitlab_prepare_ci.sh
+    - .ci/pytest.sh
+    - .ci/commits.sh
   artifacts:
     when: on_failure
     paths:
@@ -103,11 +100,9 @@ distfile-check:
 # APKBUILD linting
 aport-lint:
   stage: lint
-  before_script:
-    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
-    - sh ./install_pmbootstrap.sh
   script:
-    - su pmos -c ".ci/apkbuild-linting.py"
+    - .ci/lib/gitlab_prepare_ci.sh
+    - .ci/apkbuild-lint.sh
   only:
     - merge_requests
   allow_failure: true
@@ -145,10 +140,8 @@ mr-settings:
   stage: build
   <<: *only-default
   before_script:
-    - wget "https://gitlab.com/postmarketOS/ci-common/-/raw/master/install_pmbootstrap.sh"
-    - sh ./install_pmbootstrap.sh
-  script:
-    - .ci/build.sh
+    - .ci/lib/gitlab_prepare_ci.sh
+  after_script:
     - cp -r /home/pmos/.local/var/pmbootstrap/packages/ packages/ || true
   artifacts:
     expire_in: 1 week
@@ -158,18 +151,30 @@ mr-settings:
 
 build-x86_64:
   extends: .build
+  script:
+    - .ci/build-x86_64.sh
 
 build-x86:
   extends: .build
+  script:
+    - .ci/build-x86.sh
 
 build-aarch64:
   extends: .build
+  script:
+    - .ci/build-aarch64.sh
 
 build-armv7:
   extends: .build
+  script:
+    - .ci/build-armv7.sh
 
 build-armhf:
   extends: .build
+  script:
+    - .ci/build-armhf.sh
 
 build-riscv64:
   extends: .build
+  script:
+    - .ci/build-riscv64.sh

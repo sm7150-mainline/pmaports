@@ -17,7 +17,7 @@ def get_pmaports_dir():
     global cache
     if "pmaports_dir" in cache:
         return cache["pmaports_dir"]
-    ret = os.path.realpath(os.path.join(os.path.dirname(__file__) + "/.."))
+    ret = os.path.realpath(os.path.join(os.path.dirname(__file__) + "/../.."))
     cache["pmaports_dir"] = ret
     return ret
 

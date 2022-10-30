@@ -11,7 +11,7 @@ import subprocess
 import common
 
 # pmbootstrap
-import testcases.add_pmbootstrap_to_import_path  # noqa
+import add_pmbootstrap_to_import_path  # noqa
 import pmb.parse
 import pmb.parse.version
 import pmb.helpers.logging

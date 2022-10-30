@@ -7,7 +7,7 @@ import sys
 import common
 
 # pmbootstrap
-import testcases.add_pmbootstrap_to_import_path
+import add_pmbootstrap_to_import_path
 import pmb.parse
 import pmb.parse._apkbuild
 import pmb.helpers.pmaports
