@@ -31,10 +31,9 @@ wiki:
       - merge_requests
     changes:
       - device/*/device-*/*
-  before_script:
-    - apk -q add python3
   script:
-    - .ci/check_devices_in_wiki.py --booting
+    - .ci/lib/gitlab_prepare_ci.sh
+    - .ci/wiki.sh
 
 # testcases linting
 testcases-linting:

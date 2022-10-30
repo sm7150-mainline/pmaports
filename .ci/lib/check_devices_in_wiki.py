@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 Oliver Smith
+# Copyright 2022 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import argparse
@@ -13,7 +13,7 @@ def get_devices():
     """:returns: list of all devices"""
     ret = []
     pmaports = (os.path.realpath(os.path.join(os.path.dirname(__file__) +
-                "/..")))
+                "/../..")))
     for path in glob.glob(pmaports + "/device/*/device-*/"):
         device = os.path.dirname(path).split("device-", 1)[1]
 
