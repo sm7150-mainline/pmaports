@@ -1,7 +1,7 @@
 # Maintainer: BinaryCraft <keep.it.sns@gmail.com>
 pkgname=alsa-ucm-conf-google-kukui
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="ALSA Use Case Manager configuration for Google Kukui Chromebooks"
 url="https://alsa-project.org"
 arch="aarch64"
@@ -25,6 +25,11 @@ package() {
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/mt8183_mt6358_t/HiFi.conf
 	install -Dm644 mt8183_mt6358_ts3a227_max98357.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/mt8183_mt6358_t/mt8183_mt6358_ts3a227_max98357.conf
+
+	ln -s /usr/share/alsa/ucm2/conf.d/mt8183_da7219_r \
+		"$pkgdir"/usr/share/alsa/ucm2/mt8183_da7219_r
+	ln -s /usr/share/alsa/ucm2/conf.d/mt8183_mt6358_t \
+		"$pkgdir"/usr/share/alsa/ucm2/mt8183_mt6358_t
 }
 
 sha512sums="
