@@ -41,3 +41,8 @@ def test_aports_firmware(args):
             raise RuntimeError(f"{aport_name}: \"!tracedeps\" missing in"
                                " options= line. The tracedeps option is superfluous"
                                " for firmware packages.")
+
+        if "noarch" in apkbuild["arch"]:
+            raise RuntimeError(f"{aport_name}: \"arch\" must not be \"noarch\"!"
+                               " Please limit this firmware package to the"
+                               " required architectures only!")
