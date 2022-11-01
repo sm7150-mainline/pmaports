@@ -4,8 +4,8 @@
 
 pkgname=device-shift-axolotl
 pkgdesc="SHIFT6mq"
-pkgver=6
-pkgrel=1
+pkgver=7
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -25,6 +25,7 @@ makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	phoc.ini
+	q6voiced.conf
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -43,6 +44,8 @@ nonfree_firmware() {
 	pkgdesc="Modem, GPU and WiFi Firmware, also needed for osk-sdl"
 	depends="firmware-shift-sdm845 firmware-shift-sdm845-initramfs soc-qcom-sdm845-nonfree-firmware"
 	mkdir "$subpkgdir"
+
+	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
 phosh() {
@@ -54,4 +57,5 @@ phosh() {
 sha512sums="
 6a075c5ea73bc2700cc5cb0325599e19b1380358f95938367150082253ab909140e2a02a496343a94b0b98b9e21a862953a0db4a023f5ceda9b7cef98250210f  deviceinfo
 65f74d29ab318b23f7ac8923a3661f2c4130049273a8c6be234ed2c8e00810b6a1254b54cf0932e42850a6d48f821dcd038900fbb836feeddfab2759afffae38  phoc.ini
+2a3cbdad5aa91181d24a4e56e63986af6accf887c64fa4d1b6ddad1926e29050243c4b1e2fd892d38ca7c16e24dff8545a16552e5749ae31b6d01bf428468e51  q6voiced.conf
 "
