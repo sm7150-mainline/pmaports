@@ -1,20 +1,25 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-tablet-x64uefi
 pkgdesc="Various tablets with atom CPU"
-pkgver=0.3
-pkgrel=5
+pkgver=0.4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 # pmb:strict: avoid grub-related install error during build with pmbootstrap
 options="!check !archcheck pmb:strict"
-depends="postmarketos-base linux-lts"
+depends="postmarketos-base"
 makedepends="devicepkg-dev grub grub-efi"
+subpackages="
+	$pkgname-kernel-lts:kernel_lts
+	$pkgname-kernel-edge:kernel_edge
+	"
 source="
 	deviceinfo
-	grub.cfg
 	grub_early.cfg
-"
+	grub_edge.cfg
+	grub_lts.cfg
+	"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -50,14 +55,31 @@ build() {
 package() {
 	devicepkg_package $startdir $pkgname
 
-	install -Dm644 "$srcdir"/grub.cfg \
-		"$pkgdir"/boot/grub/grub.cfg
 	install -Dm644 "$srcdir"/bootx64.efi \
 		"$pkgdir"/boot/EFI/Boot/bootx64.efi
 }
 
+kernel_edge() {
+	pkgdesc="Alpine Edge kernel"
+	depends="linux-edge"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	install -Dm644 "$srcdir"/grub_edge.cfg \
+		"$pkgdir"/boot/grub/grub.cfg
+}
+
+kernel_lts() {
+	pkgdesc="Alpine LTS kernel"
+	depends="linux-lts"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	install -Dm644 "$srcdir"/grub_lts.cfg \
+		"$pkgdir"/boot/grub/grub.cfg
+}
+
 sha512sums="
 ab7a47ec92593c6008fb11d958397ffa77e506c7669c972294276dd898ef415983d4c28e5de261aacafe7717d1d5934c4c0dbfb1267a164a38ab79594b193363  deviceinfo
-e15beaf385a350a7c36be249cf9495e4622f7888c8def6ac47359ebd2ef2c994f954abec8ccb16b402269f949e6f6016d41711e6596f46ba3dad240f84ba163f  grub.cfg
 0f9357d4eea089628fbceb1e3e96d21a3f4329aeb6743158a6f877f967ef274506404eba949d5f01b7e1adea149f9a3aef992a5e8cd4181f93ab00909b1c5ecd  grub_early.cfg
+1fcae6891028bc07051e6e6faf9dd3ec2304c6165f9df05198f28a7fa2ba85c1dd8d07b72a5122d9628b67a2b0096ac180a9a2de0f391f9ce850c07dc79ac857  grub_edge.cfg
+e15beaf385a350a7c36be249cf9495e4622f7888c8def6ac47359ebd2ef2c994f954abec8ccb16b402269f949e6f6016d41711e6596f46ba3dad240f84ba163f  grub_lts.cfg
 "
