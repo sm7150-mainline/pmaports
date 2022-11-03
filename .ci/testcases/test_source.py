@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-# Copyright 2021 Oliver Smith
+# Copyright 2022 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
+# Various checks on source= in the APKBUILDs
 
 import glob
 import pytest
@@ -21,12 +22,13 @@ def parse_source_from_checksums(args, apkbuild_path):
     to parse shell code (like in postmarketos-base).
 
     :param apkbuild_path: full path to the APKBUILD
-    :returns: list of parsed "source" files, e.g.:
-              ["first.patch", "second.patch"]
+    :returns: dict of parsed "source" filenames and checksums, e.g.:
+              {"first.patch": "b4dc4f3…",
+               "second.patch": "b4dc4f3…"}
     """
     start = 'sha512sums="'
     in_block = False
-    ret = []
+    ret = {}
 
     with open(apkbuild_path, encoding="utf-8") as handle:
         for line in handle.readlines():
@@ -43,18 +45,21 @@ def parse_source_from_checksums(args, apkbuild_path):
                 continue
 
             try:
-                _, filename = line.rstrip().split("  ", 2)
+                checksum, filename = line.rstrip().split("  ", 2)
             except ValueError:
                 raise ValueError("Failed to parse checksums. Try to delete the"
                                  " checksums and generate them again with"
                                  f" 'pmbootstrap checksum': {apkbuild_path}")
 
+            # Cut off 'sha512sums="' if the first checksum is in that line
+            if checksum.startswith(start):
+                checksum = checksum[len(start):]
+
             # Find end
             if filename.endswith('"'):
-                ret += [filename[:-1]]
-                break
+                filename = filename[:-1]
 
-            ret += [filename]
+            ret[filename] = checksum
     return ret
 
 
