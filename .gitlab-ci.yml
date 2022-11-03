@@ -85,18 +85,6 @@ pytest-commits:
       - pmbootstrap.cfg
     expire_in: 1 week
 
-distfile-check:
-  stage: lint
-  <<: *only-default
-  before_script:
-    - apk -q add make findutils
-    - wget "https://gitlab.com/postmarketOS/ci-common/-/archive/master/ci-common-master.tar.bz2"
-    - tar -xf ci-common-master.tar.bz2
-    - mv ci-common-master/distfile-check/*.sh ci-common-master/distfile-check/Makefile .
-    - rm -r ci-common-master ci-common-master.tar.bz2
-  script:
-    - make -j999
-
 # APKBUILD linting
 aport-lint:
   stage: lint
