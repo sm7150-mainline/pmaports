@@ -19,14 +19,20 @@ fi
 
 setenv bootargs init=/init.sh rw console=ttymxc0,115200 cma=256M PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE
 
-# select the correct dtb based on device revision
-# default to "-r2" if board_rev isn't set, since it'll boot on any librem5
-# revision
-dtb_file=imx8mq-librem5-r2.dtb
+# Select the correct dtb based on device revision
+# Default to "-r4" if board_rev isn't set, since there are apparently Evergreen
+# boards that either 1) identify as r4, 2) identify as r5 (or something else?),
+# or 3) don't identify as anything(?).
+# See: https://gitlab.com/postmarketOS/pmaports/-/issues/1643#note_1147248594
+dtb_file=imx8mq-librem5-r4.dtb
 if itest.s "x3" == "x$board_rev" ; then
         dtb_file=imx8mq-librem5-r3.dtb
-elif itest.s "x4" == "x$board_rev" ; then
-        dtb_file=imx8mq-librem5-r4.dtb
+elif itest.s "x2" == "x$board_rev" ; then
+        dtb_file=imx8mq-librem5-r2.dtb
+elif itest.s "x1" == "x$board_rev" ; then
+        dtb_file=imx8mq-librem5-r2.dtb
+elif itest.s "x0" == "x$board_rev" ; then
+        dtb_file=imx8mq-librem5-r2.dtb
 fi
 
 echo Loading DTB
