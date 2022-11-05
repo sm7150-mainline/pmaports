@@ -3,8 +3,8 @@
 
 _flavor="postmarketos-qcom-sdm660"
 pkgname=linux-$_flavor
-pkgver=5.19.0
-pkgrel=1
+pkgver=6.0.5
+pkgrel=0
 pkgdesc="Close to mainline linux kernel for Qualcomm Snapdragon 660 SoC"
 arch="aarch64"
 url="https://kernel.org/"
@@ -27,7 +27,7 @@ makedepends="
 	postmarketos-installkernel
 	"
 
-_tag="v5.19.0-sdm660"
+_tag="v$pkgver-sdm660"
 
 source="
 	linux-$_tag.tar.gz::https://github.com/sdm660-mainline/linux/archive/refs/tags/$_tag.tar.gz
@@ -38,7 +38,7 @@ _carch="arm64"
 
 # for some reason, the directory inside .tar.gz does not match tag name: leading
 #     "v" is missing, so we can't use $_tag here
-builddir="$srcdir/linux-5.19.0-sdm660"
+builddir="$srcdir/linux-$pkgver-sdm660"
 
 prepare() {
 	default_prepare
@@ -67,6 +67,6 @@ package() {
 }
 
 sha512sums="
-9fe83da6f1b19f635a3a7ff4eada2c9053656a1262ac4eeae4b6f412fe60bde876d836aaaf2278a32fb9735fd29f6f286f703593b6a9449d4aa16a93d321b59c  linux-v5.19.0-sdm660.tar.gz
-c3a16885e4ed0a2533af50b14fd0d1627d43071561198b73b0e162ced09f6c2d541accfb031e03573a476984b2baf3b62cad9ba19e7d03cb18d14e0dc8d6aa80  config-postmarketos-qcom-sdm660.aarch64
+e657b96be3bc5f4835955e2aa70055d18eb1b9434d6d5ef1aabd3f555ba315f2abd08a39a35a3aea6b394a353f84b1962fe4421c49abda2e538e46bf6b155934  linux-v6.0.5-sdm660.tar.gz
+10004279a10bb1821e469137fe20436df59e089865338f6ebfe48b0cf882205e3446bc236dd127f5b9cffe38d6faeef2533c6a005bf425ebc2f14efa67d5fc11  config-postmarketos-qcom-sdm660.aarch64
 "
