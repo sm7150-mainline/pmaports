@@ -1,0 +1,57 @@
+# Maintainer: Segfault <awarnecke002@hotmail.com>
+pkgname=linux-htc-flounder
+pkgver=6.0.0
+pkgrel=0
+pkgdesc="Google Nexus 9 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="htc-flounder"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native
+	pmb:kconfigcheck-nftables pmb:kconfigcheck-zram
+	pmb:kconfigcheck-containers pmb:kconfigcheck-waydroid"
+makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev
+	     devicepkg-dev bison flex openssl-dev xz findutils gzip"
+
+# Source
+_repository="linux"
+_commit="1af7ece0542ef888433623a572ed8e19ca5e956a"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/TuxThePenguin0/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	REPLACE_GCCH=0 \
+		. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+
+	make modules_install dtbs_install \
+		O="$_outdir" ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
+
+	# Flounder requires a gzip compressed kernel
+	gzip "$pkgdir"/boot/vmlinuz
+	mv "$pkgdir"/boot/vmlinuz.gz "$pkgdir"/boot/vmlinuz
+}
+
+sha512sums="
+ee712d770cc863a6acff52ee32c5009657480864fcd748f0ccc7afb9edba912d727e56bd1d484bd391c5f3d0fed0d063ec8fca36af80c88572bcf85a6f00522e  linux-htc-flounder-1af7ece0542ef888433623a572ed8e19ca5e956a.tar.gz
+4c1a3d44019233ebe2ec9987b4b7ebc1f3d4f60cff7a0fef17b3bfa4df108c8810c023a795500e72f9a697a871438d10be45deb0799648050cf71733055c8637  config-htc-flounder.aarch64
+"
