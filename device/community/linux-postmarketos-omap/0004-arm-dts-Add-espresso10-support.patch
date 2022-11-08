@@ -5,7 +5,7 @@ Subject: [PATCH 3/3] arm/dts: Add espresso10 support
 
 ---
  arch/arm/boot/dts/Makefile                    |  1 +
- .../arm/boot/dts/omap4-samsung-espresso10.dts | 88 +++++++++++++++++++
+ .../arm/boot/dts/omap4-samsung-espresso10.dts | 103 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  2 files changed, 89 insertions(+)
  create mode 100644 arch/arm/boot/dts/omap4-samsung-espresso10.dts
 
@@ -26,15 +26,30 @@ new file mode 100644
 index 000000000..3fa4b18bd
 --- /dev/null
 +++ b/arch/arm/boot/dts/omap4-samsung-espresso10.dts
-@@ -0,0 +1,88 @@
+@@ -0,0 +1,103 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/dts-v1/;
 +
 +#include "omap4-samsung-espresso-common.dtsi"
-+
++#include <dt-bindings/power/summit,smb347-charger.h>
 +/ {
 +	model = "Samsung Galaxy Tab 2 (10 inch)";
 +	compatible = "samsung,espresso10", "ti,omap4430", "ti,omap4";
++
++	i2c-gpio-5 {
++	       smb347: charger@6 {
++       	        compatible = "summit,smb347";
++               	reg = <0x6>; // 0x0C >> 1
++
++	               interrupt-parent = <&gpio2>;
++	               interrupts = <0 IRQ_TYPE_EDGE_BOTH>;
++
++	               summit,enable-usb-charging;
++	               summit,enable-charge-control = <SMB3XX_CHG_ENABLE_SW>;
++	               summit,chip-temperature-threshold-celsius = <120>;
++	               summit,usb-current-limit-microamp = <1800000>;
++	       };
++	};
 +
 +	backlight: backlight {
 +		compatible = "pwm-backlight";
