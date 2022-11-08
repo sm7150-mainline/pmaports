@@ -1,0 +1,55 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/defconfig
+pkgname=linux-postmarketos-apple
+pkgver=6.1.0_rc1
+pkgrel=0
+pkgdesc="Mainline kernel fork for Apple iPhone and iPad devices"
+arch="aarch64"
+_carch="arm64"
+_flavor="apple-iphone6"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+	linux-headers
+"
+
+# Source
+_repository="linux-apple"
+_commit="bdffb36db88ab94ee624af340fef87cdb2b4aef3"
+_config="config-$_flavor.$arch"
+source="
+	http://github.com/konradybcio/linux-apple/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	make ARCH=arm64 mrproper
+	default_prepare
+	REPLACE_GCCH=0 . downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+}
+
+sha512sums="
+96c339d32c602f68700755d9aa7f7f867d5d89639d9126023fd7eca7f12c55a700308addefde95023b5847277c8506dc3f091118d1ff15fad7f2a3d0edd9f1f1  bdffb36db88ab94ee624af340fef87cdb2b4aef3.tar.gz
+54c1a7d4b77202f1c64d26f9f1db9ec7153fb41757f04ef0e12a02e348b30a89f5fa80d618edeb71a14e74217423b4343736b3b07c7f439aad61e6b745795a05  config-apple-iphone6.aarch64
+"

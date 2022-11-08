@@ -1,0 +1,27 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-apple-iphone6
+pkgdesc="Apple iPhone 6"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-apple
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+e6588b1da2bb612ac23c60f17b65fca7d6974e49c6925d7c1ff48023fc9f3cc4c324b5225c0fd7492c9ce01658df028aee5fd27a51e8673b8e761c6a7fc1cd1a  deviceinfo
+"
