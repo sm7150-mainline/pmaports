@@ -2,7 +2,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-raspberry-pi4
 pkgver=0.4
-pkgrel=1
+pkgrel=2
 pkgdesc="Raspberry Pi 4"
 url="https://postmarketos.org"
 license="MIT"
@@ -35,9 +35,7 @@ package() {
 nonfree_firmware() {
 	pkgdesc="WiFi/Bluetooth firmware"
 	depends="linux-firmware-brcm"
-	mkdir -p "$subpkgdir"/lib/firmware/brcm
-	ln -s "/lib/firmware/brcm/brcmfmac43455-sdio.bin" \
-		"$subpkgdir"/lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.bin
+	mkdir "$subpkgdir"
 }
 
 
