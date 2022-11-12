@@ -1,0 +1,32 @@
+# Unmaintained: Downstream port, only for testing. Use mainline port (shift-axolotl)!
+# This kernel is mostly used for bringing up new features on mainline, thus unmaintained
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-shift-axolotl-downstream
+pkgdesc="SHIFT6mq downstream"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-shift-axolotl-downstream
+	mkbootimg
+	msm-fb-refresher
+	postmarketos-base
+	postmarketos-update-kernel
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+3a60faa3024b6a066e5f5319c0e651ffe4980be51cc1b848a946b96cd861be16d651dc2184993eca89f28fe442a39a1a78f67753dc1bb295cab4bdaaa6f2fe49  deviceinfo
+"
