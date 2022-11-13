@@ -1,8 +1,7 @@
 # Maintainer: Johannes Marbach <n0-0ne+gitlab@mailbox.org>
 pkgname=unl0kr
-pkgver=0.2.0_git20221110
+pkgver=0.3.0
 pkgrel=0
-_commit=fb83848f53ede21300e34fd3bd9c63576f4c4fc0
 _commit_lvgl=bcf5d79cb4f868270d9f564a92a080e07280b67b
 _commit_lv_drivers=2ed01feab02940c117fa4cd3f83cd4649b8b9f0e
 _commit_squeek2lvgl=b67685dfede0771d2a237e1d8d4e784fcf406a70
@@ -26,7 +25,7 @@ makedepends="
 	meson
 	"
 source="
-	$pkgname-$_commit.tar.gz::https://gitlab.com/cherrypicker/unl0kr/-/archive/$_commit.tar.gz
+	https://gitlab.com/cherrypicker/unl0kr/-/archive/$pkgver/unl0kr-$pkgver.tar.gz
 	lvgl-$_commit_lvgl.tar.gz::https://github.com/lvgl/lvgl/archive/$_commit_lvgl.tar.gz
 	lv_drivers-$_commit_lv_drivers.tar.gz::https://github.com/lvgl/lv_drivers/archive/$_commit_lv_drivers.tar.gz
 	squeek2lvgl-$_commit_squeek2lvgl.tar.gz::https://gitlab.com/cherrypicker/squeek2lvgl/-/archive/$_commit_squeek2lvgl.tar.gz
@@ -34,7 +33,6 @@ source="
 	unl0kr.files
 	unlock.sh
 	"
-builddir="$srcdir/$pkgname-$_commit"
 options="!check" # No tests
 provides="postmarketos-fde-unlocker"
 provider_priority=999
@@ -70,7 +68,7 @@ package() {
 }
 
 sha512sums="
-73f873e23068148ae90c9a4093e0de26bd13fb8a2f028afc6d68af98d54c9d9a3740a752b270eb5903430a95296990022bb54fde48fcd2b3fd733c58acdd7efa  unl0kr-fb83848f53ede21300e34fd3bd9c63576f4c4fc0.tar.gz
+ae9395149bd5d73ce5faf0ca32a6914a7a76ea78e974ddcb75adfb71c459c69312763a2e1c003eedcd261da792677535e7b09955cfec92312ea28239d34f61e1  unl0kr-0.3.0.tar.gz
 bebe74f24c633245c28e8814e40afb3e54174758a65dbc1583bd50a68ad7b92d6ef1432715b52c021fd96ef1c98e03f0b40c237219ccdd5bf6005964c161d617  lvgl-bcf5d79cb4f868270d9f564a92a080e07280b67b.tar.gz
 eb1d303e9c1921470108e7d146c652f840a35bd73e26381afe1dbeb6838de392e4cfda0453d3ff5cadff5937b558e281bf5ceb8d9e0767cc442874b9f92c47bc  lv_drivers-2ed01feab02940c117fa4cd3f83cd4649b8b9f0e.tar.gz
 97bd9cfb8eb9d3b5cd5c29356533b5387469509464ed454c1fcbd470f4f89009b394c1b36be20beb6e6192c56e1351ad377ca16ddf23e73085a95d30d23d880b  squeek2lvgl-b67685dfede0771d2a237e1d8d4e784fcf406a70.tar.gz
