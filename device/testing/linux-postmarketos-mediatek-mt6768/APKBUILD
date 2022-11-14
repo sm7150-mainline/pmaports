@@ -1,0 +1,69 @@
+# Maintainer: Jami Kettunen <jami.kettunen@protonmail.com>
+# Mainline Linux kernel fork with patches for MediaTek MT6768 devices
+# Kernel config based on: arch/arm64/configs/mt6768_defconfig
+_flavor="postmarketos-mediatek-mt6768"
+pkgname=linux-$_flavor
+pkgver=6.1_rc5
+pkgrel=0
+_commit="d8741eb21ebe5b989e69e40a058cd2d593397ae2"
+pkgdesc="Mainline Kernel fork for MT6768-based devices"
+arch="aarch64"
+_carch="arm64"
+_config="config-$_flavor.$arch"
+url="https://gitlab.com/mtk-mainline/mt6768/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+"
+makedepends="
+	android-mkdtboimg
+	bash
+	bison
+	findutils
+	flex
+	linux-headers
+	openssl-dev
+	perl
+	postmarketos-installkernel
+	xz
+"
+
+# Source
+source="
+	https://gitlab.com/mtk-mainline/mt6768/linux/-/archive/$_commit/linux-$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/linux-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-$_flavor"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+
+	dtbodir="$builddir/$_outdir/arch/arm64/boot/dts/mediatek"
+	mkdtimg create "$pkgdir/boot/dtbo.img" \
+		"$dtbodir/mt6769z-volla-mimameid-minimal-dtbo.dtb"
+}
+
+sha512sums="
+20cd7ce324ff0a29a1ceaf0c69e77d619c0b21c924c0913214070308774cb88f1c803bef0da0a85d9bbca3797eadd7f63bb9bc6cf256350c658a8820c275c1e3  linux-d8741eb21ebe5b989e69e40a058cd2d593397ae2.tar.gz
+83f62a563afbbb688774a768c3a42f6677cde12e0b48bda343054cf5d79d03b99cd63183448b99435f8da49d6350286e1f56b3834e55268628f586a3f5edca94  config-postmarketos-mediatek-mt6768.aarch64
+"
