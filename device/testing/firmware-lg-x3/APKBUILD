@@ -1,0 +1,52 @@
+# Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+
+pkgname=firmware-lg-x3
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware files for LG Optimus X3"
+url="https://github.com/clamor-s/linux-firmware"
+arch="armv7"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+
+# source
+_commit="8fcb3d4a04e6c64da79828e57d1e21f54eb6dd1a"
+_url="https://github.com/clamor-s/linux-firmware"
+source="
+	$pkgname-$_commit-BCM4330B1_002.001.003.0967.0970.hcd::$_url/raw/$_commit/brcm/BCM4330B1_002.001.003.0967.0970.hcd
+	$pkgname-$_commit-BCM4330B1_002.001.003.0833.0867.lge,p895.hcd::$_url/raw/$_commit/brcm/BCM4330B1_002.001.003.0833.0867.lge%2Cp895.hcd
+	$pkgname-$_commit-brcmfmac4330-sdio.lge,p880.txt::$_url/raw/$_commit/brcm/brcmfmac4330-sdio.lge%2Cp880.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.lge,p895.txt::$_url/raw/$_commit/brcm/brcmfmac4330-sdio.lge%2Cp895.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.bin::$_url/raw/$_commit/brcm/brcmfmac4330-sdio.bin
+"
+
+package() {
+	# Bluetooth
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4330B1_002.001.003.0967.0970.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4330B1.lge,p880.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4330B1_002.001.003.0833.0867.lge,p895.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4330B1.lge,p895.hcd
+
+	# Wi-Fi NVRAM
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.lge,p880.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.lge,p880.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.lge,p895.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.lge,p895.txt
+
+	# Wi-Fi SDIO
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.bin \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.bin
+
+	# Symbolic links
+	cd "$pkgdir"/lib/firmware/postmarketos/brcm
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.lge,p880.bin
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.lge,p895.bin
+}
+
+sha512sums="
+b61cc86466a028e9160d1f2c7a3303fbb3a7dbcb2a6766b0afd9ef1fc9e25410d75f1e315638d0de8306ce23f3561c084542ad1c9e5eb11e9d07a3ba85dfec3d  firmware-lg-x3-8fcb3d4a04e6c64da79828e57d1e21f54eb6dd1a-BCM4330B1_002.001.003.0967.0970.hcd
+73abab98cef09965bcf9b2c175f70ef1aa0d86fb122a661663ae2c6cfd4900c69163a19bafe29e039b0bdac63cb31bf15305f67392bfca6004dff03f18fb14cb  firmware-lg-x3-8fcb3d4a04e6c64da79828e57d1e21f54eb6dd1a-BCM4330B1_002.001.003.0833.0867.lge,p895.hcd
+b5089bf3f6d357d53252f8e39e8a7dac2762e0770343ec2073cce7892ca321e173d5c06bc11f632e3339b7b04a561cb39fbc0669b93e923ddd2b1f34302db1a0  firmware-lg-x3-8fcb3d4a04e6c64da79828e57d1e21f54eb6dd1a-brcmfmac4330-sdio.lge,p880.txt
+078f86536b8cc6dd8d7177befcdb7e53a1b5e85276a73deb44912992550eb3e6fe8e487aa8d6c482ae1fb3168ba446568bfaa203270101b083e6642d24a4d62e  firmware-lg-x3-8fcb3d4a04e6c64da79828e57d1e21f54eb6dd1a-brcmfmac4330-sdio.lge,p895.txt
+53225312d886d052832095db8bf7a8f345353bd7e1e5ab1f328bb0d79d5d4d8e1f8f35957c0d1df70a2c594cb66cdc5a925857008a808ba6c0794195d2bbd954  firmware-lg-x3-8fcb3d4a04e6c64da79828e57d1e21f54eb6dd1a-brcmfmac4330-sdio.bin
+"
