@@ -15,6 +15,7 @@ def test_aports_firmware(args):
     """
 
     excluded = [
+        "firmware-motorola-ali",  # Depends on firmware-qcom-adreno-a530
         "firmware-motorola-potter",  # Depends on soc-qcom-msm8916-ucm
         "firmware-oneplus-msm8998",  # Depends on soc-qcom-sdm845-nonfree-firmware
         "firmware-xiaomi-sagit",  # Depends on soc-qcom-sdm845-nonfree-firmware

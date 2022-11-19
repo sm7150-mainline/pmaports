@@ -1,0 +1,47 @@
+pkgname=firmware-motorola-ali
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Motorola Moto G6"
+url="https://github.com/julianbraha/firmware-motorola-ali"
+arch="aarch64"
+depends="firmware-qcom-adreno-a530"
+license="proprietary"
+_repository="firmware-blobs"
+_commit="153ba76124497fb7ce22d87a90149a15bcf67942"
+source="$pkgname-$_commit.tar.gz::https://github.com/moto-g6-mainlining/firmware-blobs/archive/$_commit.tar.gz"
+options="!strip !check !archcheck !spdx !tracedeps"
+builddir="$srcdir/$_repository-$_commit"
+
+_fwdir="/lib/firmware/postmarketos"
+
+package() {
+	# Modem firmware
+	install -Dm644 mba.mbn -t "$pkgdir/$_fwdir"
+	install -Dm644 modem.* -t "$pkgdir/$_fwdir"
+
+	# ADSP firmware
+	install -Dm644 adsp.* -t "$pkgdir/$_fwdir"
+
+	# GPU and video acceleration firmwares
+	install -Dm644 a5* -t "$pkgdir/$_fwdir"
+	install -Dm644 venus.* -t "$pkgdir/$_fwdir"
+
+	# /lib/firmware/postmarketos
+	_files="wcnss.b00 wcnss.b01 wcnss.b02 wcnss.b04 wcnss.b06
+		 wcnss.b09 wcnss.b10 wcnss.b11 wcnss.b12 wcnss.mdt"
+	for _i in $_files; do
+		install -Dm644 "$_i" "$pkgdir"$_fwdir/"$_i"
+	done
+
+	# /lib/firmware/postmarketos/wlan/prima
+	_files="WCNSS_qcom_cfg.ini
+		WCNSS_qcom_wlan_nv.bin WCNSS_wlan_dictionary.dat"
+	for _i in $_files; do
+		install -Dm644 wlan/prima/"$_i" \
+			"$pkgdir"$_fwdir/wlan/prima/"$_i"
+	done
+}
+
+sha512sums="
+269ac182806e9128557ac614142bfd6a2feab2cc3d2555268064df7ad1880de0d5e85b781a34ca57693d9c32ffe7d31da7fd34f9fd6364bc2b7cc2fdb90edc80  firmware-motorola-ali-153ba76124497fb7ce22d87a90149a15bcf67942.tar.gz
+"
