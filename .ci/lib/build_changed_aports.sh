@@ -1,7 +1,7 @@
 #!/bin/sh -e
 # Description: build modified packages for this architecture
 # Options: native slow
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 if [ "$(id -u)" = 0 ]; then
 	set -x

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 # Description: check various bad patterns with grep
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 if [ "$(id -u)" = 0 ]; then
 	set -x

@@ -2,7 +2,7 @@
 # Description: run apkbuild-lint on modified APKBUILDs
 # Options: native
 # Use 'native' because it requires git commit history.
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 if [ "$(id -u)" = 0 ]; then
 	set -x

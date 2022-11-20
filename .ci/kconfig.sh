@@ -2,7 +2,7 @@
 # Description: check all kernel configs with 'pmbootstrap kconfig check'
 # Options: native
 # Use 'native' because it requires running pmbootstrap.
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 if [ "$(id -u)" = 0 ]; then
 	set -x

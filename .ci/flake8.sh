@@ -1,6 +1,6 @@
 #!/bin/sh -e
 # Description: lint CI related python scripts/tests
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 if [ "$(id -u)" = 0 ]; then
 	set -x

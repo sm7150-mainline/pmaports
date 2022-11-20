@@ -4,7 +4,7 @@
 # Description: lint with various python tests
 # Options: native
 # Use 'native' because it requires pmbootstrap.
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 if [ "$(id -u)" = 0 ]; then
 	set -x

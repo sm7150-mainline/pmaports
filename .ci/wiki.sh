@@ -2,7 +2,7 @@
 # Description: verify devices are documented in the wiki
 # Options: native
 # Run natively so we don't need to set up a chroot, python3 is the only dep.
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 if [ "$(id -u)" = 0 ]; then
 	set -x

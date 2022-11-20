@@ -2,7 +2,7 @@
 # Copyright 2022 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Description: lint all shell scripts
-# https://postmarktos.org/pmb-ci
+# https://postmarketos.org/pmb-ci
 
 DIR="$(cd "$(dirname "$0")/.." && pwd -P)"
 
