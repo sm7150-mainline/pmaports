@@ -3,8 +3,8 @@
 
 pkgname=device-oneplus-fajita
 pkgdesc="OnePlus 6T"
-pkgver=7
-pkgrel=1
+pkgver=8
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -19,7 +19,11 @@ depends="
 	soc-qcom-sdm845-qbootctl
 "
 makedepends="devicepkg-dev"
-source="deviceinfo phoc.ini"
+source="
+	deviceinfo
+	phoc.ini
+	q6voiced.conf
+"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 
 build() {
@@ -34,6 +38,8 @@ nonfree_firmware() {
 	pkgdesc="Modem, WiFi and GPU Firmware, also needed for osk-sdl"
 	depends="firmware-oneplus-sdm845 firmware-oneplus-sdm845-initramfs soc-qcom-sdm845-nonfree-firmware"
 	mkdir "$subpkgdir"
+
+	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
 phosh() {
@@ -45,4 +51,5 @@ phosh() {
 sha512sums="
 8561a33c0e7d5085186258a71d2fc44daa01b24d05781d53be87222b462059fee26baa2e004e799404606429629e56baad3778d74d1f725cec389f572c92155e  deviceinfo
 65f74d29ab318b23f7ac8923a3661f2c4130049273a8c6be234ed2c8e00810b6a1254b54cf0932e42850a6d48f821dcd038900fbb836feeddfab2759afffae38  phoc.ini
+fe9871c325a38c0cadc9631870801ec15ab9f5b786ee854325b93eb3d23e7d8b1ac4f1075572ffcd225d8ec514dec09b986972ddff12a89260c0218af6de7887  q6voiced.conf
 "
