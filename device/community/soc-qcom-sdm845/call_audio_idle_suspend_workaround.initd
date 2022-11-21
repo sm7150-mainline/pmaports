@@ -1,0 +1,28 @@
+#!/sbin/openrc-run
+
+name="call_audio_idle_suspend_workaround"
+description="Disable pulseaudio suspend-on-idle module during call"
+pid="/run/call_audio_idle_suspend_workaround.pid"
+
+depend() {
+	need dbus
+}
+
+start() {
+	ebegin "Starting call audio idle suspend workaround"
+
+	userid=10000 # Default User ID in pmOS
+	user=$(getent passwd $userid | cut -d: -f1)
+	env_var="XDG_RUNTIME_DIR=/run/user/$userid"
+	cmd="/usr/sbin/call_audio_idle_suspend_workaround"
+
+	start-stop-daemon --start --exec "$cmd" --env "$env_var" --background --user $user --pidfile "$pid" --make-pidfile
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping call audio idle suspend workaround"
+
+	start-stop-daemon --stop --pidfile "$pid"
+	eend $?
+}

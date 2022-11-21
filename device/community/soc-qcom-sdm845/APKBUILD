@@ -2,7 +2,7 @@
 # Co-Maintainer: Joel Selvaraj <joelselvaraj.oss@gmail.com>
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
-pkgver=12
+pkgver=13
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -19,12 +19,14 @@ subpackages="
 	$pkgname-vulkan
 "
 
-_ucm_commit="f2a9fad117c2c86d693623fd47dee5b6f7385fe2"
+_ucm_commit="3cece34e28f0a04daec2cf39a7830dd8043f614b"
 source="
 	alsa-ucm-conf-$_ucm_commit.tar.gz::https://gitlab.com/sdm845-mainline/alsa-ucm-conf/-/archive/$_ucm_commit/alsa-ucm-conf-$_ucm_commit.tar.gz
 	90-feedbackd-pmi8998.rules
 	modemmanager.conf
 	UPower.conf
+	call_audio_idle_suspend_workaround.sh
+	call_audio_idle_suspend_workaround.initd
 "
 
 package() {
@@ -49,12 +51,21 @@ nonfree_firmware() {
 	msm-modem
 	msm-modem-uim-selection
 	bootmac
+	alsa-utils
 "
 	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 
 	install -Dm644 "$srcdir"/modemmanager.conf \
 		"$subpkgdir"/etc/conf.d/modemmanager
+
+	# Call Audio idle suspend workaround code
+	install -Dm755 "$srcdir"/call_audio_idle_suspend_workaround.sh \
+		"$subpkgdir"/usr/sbin/call_audio_idle_suspend_workaround
+
+	# Call Audio idle suspend workaround init script
+	install -Dm755 "$srcdir"/call_audio_idle_suspend_workaround.initd \
+		"$subpkgdir"/etc/init.d/call_audio_idle_suspend_workaround
 }
 
 ucm() {
@@ -81,8 +92,10 @@ vulkan() {
 }
 
 sha512sums="
-92fa44327488d8deca17be50c3e37538e7e25875b7da8d921058a732ce2dbe8bf6a4d88b2052eea56ffd9a54212babbae10e94fe5e8eed04cce7ce3a37c03833  alsa-ucm-conf-f2a9fad117c2c86d693623fd47dee5b6f7385fe2.tar.gz
+22daa3477890d24b0410216cf483204dd6b35875bdc954c5092f8492ce389255d54aee4dbafe0cf1a2f7d08fd153364e18097391b3d8ceecd59ef2ef525bef02  alsa-ucm-conf-3cece34e28f0a04daec2cf39a7830dd8043f614b.tar.gz
 4f2c22a3a3fc7d380e200ad977578107d81f0e7ade7918e03bdb15b60a564e8db5f47e13cce22f636d38fd3722696bb46076b8872dae0ca2d8a3838522a1f025  90-feedbackd-pmi8998.rules
 e33f41360ccc4900bb76a26cc7b46bde1fb90facdf45c4fbcebc80499386939948401cacd6df9f779eafab10f4ee77ee1fef3e7bd06f483f8c2a4a644c84f327  modemmanager.conf
 9d455b56558d453d501a1ad869ffa79f9952ed43485a9847d506db6a78bfcd9f9c9d855660ee1d368eb74f4429385ec166addc30d802261c75562e785fe84c52  UPower.conf
+aa5cdb138a3cdd0b15d2bbb60c7f67ae0280ddc7d0488cfe2fc44680095a43c1cdacc54d70a689f2117538e9bf1e42758d8c3ac542c9cb8e8dc6d6f3161b7577  call_audio_idle_suspend_workaround.sh
+1111d28b6e23163fb47fcfadc2ed3f83543ce0435c6be187a38d418cfe7821fe7905ac103969f3f7c115bd522d99c43efd52409835e292270a6ac9c34b5bee75  call_audio_idle_suspend_workaround.initd
 "
