@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-desktop
 pkgver=2
-pkgrel=11
+pkgrel=12
 pkgdesc="(X11/Wayland) KDE Desktop Environment (works well with tablets)"
 url="https://www.kde.org"
 # armhf and riscv64 blocked by plasma
@@ -20,6 +20,7 @@ _pmb_recommends="
 	dolphin
 	ffmpegthumbs
 	firefox
+	fwupd
 	gwenview
 	kate
 	kdialog
@@ -40,6 +41,16 @@ _pmb_recommends="
 	print-manager
 	qt5-qtvirtualkeyboard
 	spectacle
+	"
+
+# For the KInfocenter pages in system settings
+_pmb_recommends="$_pmb_recommends
+	aha
+	mesa-demos
+	pciutils
+	vulkan-tools
+	wayland-utils
+	xdpyinfo
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 options="!check" # No tests for a metapkg
