@@ -1,0 +1,32 @@
+# Maintainer: Mighty17 <mightymb17@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-espresso10
+pkgdesc="Samsung Galaxy Tab 2 (10.1 inch)"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base postmarketos-update-kernel linux-postmarketos-omap mkbootimg"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="$pkgdesc (WiFi firmware)"
+	depends="firmware-samsung-espresso"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+71cfa96be567b907fe8f4af4d20deb5a67ab2d10eaa7ed9a46e3787176ca65071f48aa9cd3092f6944c7e382fb1da4ec2e843f9c68f53833fc46943bf07051d7  deviceinfo
+"
