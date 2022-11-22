@@ -1,13 +1,14 @@
+# Unmaintained: Downstream port, only for testing. Use mainline port (samsung-espresso10/samsung-espresso7)!
 # Reference: <https://postmarketos.org/devicepkg>
-pkgname=device-samsung-espresso10
+pkgname=device-samsung-espresso10-downstream
 pkgdesc="Samsung Galaxy Tab 2 (10.1 inch)"
 pkgver=0.2
-pkgrel=5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-samsung-espresso10 mkbootimg"
+depends="postmarketos-base linux-samsung-espresso10-downstream mkbootimg"
 makedepends="devicepkg-dev"
 source="deviceinfo"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
@@ -22,10 +23,10 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="Wifi firmware"
-	depends="firmware-samsung-espresso10"
+	depends="firmware-samsung-espresso"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-bcb54d60d6cabe8cfc36c5c1164f377404a43ca9324e15b12d33162c75ad8cad46907ff3bc1be216ecadbd46c060527abf332376f19b28323e1ec8534eba853c  deviceinfo
+8f93246eaf116a105c750c4bed98b0744e038ddd1b257ddf5cccd1735968a226dba4467f4a4818417f07842075b87683d8b79b1abb5ebf19a0262854e29dd8d4  deviceinfo
 "
