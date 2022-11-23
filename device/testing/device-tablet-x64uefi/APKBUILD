@@ -11,6 +11,7 @@ options="!check !archcheck pmb:strict"
 depends="postmarketos-base"
 makedepends="devicepkg-dev grub grub-efi"
 subpackages="
+	$pkgname-libva
 	$pkgname-kernel-lts:kernel_lts
 	$pkgname-kernel-edge:kernel_edge
 	$pkgname-vulkan
@@ -58,6 +59,12 @@ package() {
 
 	install -Dm644 "$srcdir"/bootx64.efi \
 		"$pkgdir"/boot/EFI/Boot/bootx64.efi
+}
+
+libva() {
+	install_if="$pkgname libva"
+	depends="intel-media-driver libva-intel-driver"
+	mkdir "$subpkgdir"
 }
 
 kernel_edge() {
