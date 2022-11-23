@@ -6,7 +6,7 @@
 # U-boot with patches to make the PinePhone boot faster and have control over the ddr clock speed
 pkgname=u-boot-pinephone
 pkgver=2022.07
-pkgrel=0
+pkgrel=1
 pkgdesc="U-Boot bootloader for the PINE64 PinePhone"
 url="https://source.denx.de/u-boot"
 arch="aarch64"
@@ -32,8 +32,7 @@ source="https://source.denx.de/u-boot/u-boot/-/archive/v$pkgver/u-boot-v$pkgver.
 	0002-disable-bootdelay.patch
 	"
 builddir="$srcdir/u-boot-v$pkgver"
-install="$pkgname.post-upgrade"
-frequencies='528 552 624'
+_frequencies='528 552 624'
 
 build() {
 	touch include/config.h
@@ -44,7 +43,7 @@ build() {
 	export SCP="/usr/share/crust/pinephone/scp.bin"
 	export BUILD_DIR="$builddir"/build
 
-	for freq in $frequencies; do
+	for freq in $_frequencies; do
 		mkdir -p "$BUILD_DIR-$freq"
 		sed -rie "s/^(CONFIG_DRAM_CLK=).*$/CONFIG_DRAM_CLK=$freq/" configs/pinephone_defconfig
 		cat configs/pinephone_defconfig | grep CONFIG_DRAM_CLK
@@ -55,7 +54,7 @@ build() {
 }
 
 package() {
-	for freq in $frequencies; do
+	for freq in $_frequencies; do
 		install -D -m644 "build-$freq/u-boot-sunxi-with-spl.bin" \
 			"$pkgdir/usr/share/u-boot/pine64-pinephone/u-boot-sunxi-with-spl-$freq.bin"
 		install -D -m644 "build-$freq/u-boot-sunxi-with-spl.bin.sha512" \
@@ -66,7 +65,7 @@ package() {
 
 sha512sums="
 7cd524d5c4b692c99d61fae4e7d99287ce4bca06884dc02b62bd69dfdf594cc9232c13c5b8dbb3aeac125bf7907591dbc6a40e2ea3e39f024bd5a5d42aeaa4cd  u-boot-v2022.07.tar.gz
-d6e1ca6100fdc0ecd9559d556bb8f6699ff807a180d097808417cdacc07fc22b58f8bf33f1f104fcbb28201bd873e469f251176605bec123870ff49bde50024c  update-u-boot
+8dc0a8847ed26d91d3acc9b7b9dd300f95a68049207b09c3cfca1ec485f6f976aa65e0d101a4b46ecc4e85e943cbdec35e81ab0da07b1d5d0b68b4b10858b44b  update-u-boot
 86d9587cb2b0ca99fb4090bd0daacd47c0043858654f6f7114c8d0ed6c660eb2b8bc0b37de6723e738df9b1137d62482f00764c284f4aa0a6054db9efe754db9  0001-common-expose-DRAM-clock-speed.patch
 9b9a5bd2cb5c04715a5bb2d34bfc06e63817dba7ec40fa2b09000a0827590623e85ed5877d6b6bb39f2bb917e5e9d8e1379e3df9128e3304be06abc487c68df2  0002-disable-bootdelay.patch
 "

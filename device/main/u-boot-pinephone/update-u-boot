@@ -153,6 +153,17 @@ if [ -z "$board" -o -z "$device" -o -z "$imagedir" -o  ! -e "$imagedir" ]; then
 	exit 1
 fi
 
+echo "/!\ WARNING:"
+echo "This upgrade may not work reliably, postmarketOS might not boot anymore!"
+echo "More information: https://postmarketos.org/pp-uboot-upgrade"
+echo
+read -p "Continue? (y/n) [n]: " -n 1 -r
+echo
+case "$REPLY" in
+	y|Y) ;;
+	*) exit 1 ;;
+esac
+
 if [ -z "$dryrun" ]; then
 	if [ ! -z "$freq" ]; then
 		echo "/!\ Disclaimer warning:"
