@@ -13,6 +13,7 @@ makedepends="devicepkg-dev grub grub-efi"
 subpackages="
 	$pkgname-kernel-lts:kernel_lts
 	$pkgname-kernel-edge:kernel_edge
+	$pkgname-vulkan
 	"
 source="
 	deviceinfo
@@ -75,6 +76,12 @@ kernel_lts() {
 
 	install -Dm644 "$srcdir"/grub_lts.cfg \
 		"$pkgdir"/boot/grub/grub.cfg
+}
+
+vulkan() {
+	install_if="$pkgname vulkan-loader"
+	depends="mesa-vulkan-intel"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
