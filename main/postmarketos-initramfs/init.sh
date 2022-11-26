@@ -25,7 +25,7 @@ setup_firmware_path
 
 if [ "$IN_CI" = "false" ]; then
 	# shellcheck disable=SC2154
-	load_modules /lib/modules/initramfs.load "usb_f_rndis"
+	load_modules /lib/modules/initramfs.load "libcomposite"
 	setup_framebuffer
 	show_splash "Loading..."
 	setup_mdev
