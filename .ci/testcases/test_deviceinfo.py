@@ -17,12 +17,15 @@ def deviceinfo_obsolete(info):
     Test for obsolete options used in the deviceinfo file. They must still be
     defined in pmbootstrap's config/__init__.py.
     """
-    obsolete_options = ["weston_pixman_type"]
+    obsolete_options = [
+        "usb_rndis_function",
+        "weston_pixman_type",
+    ]
     for option in obsolete_options:
-        if info[option]:
-            raise RuntimeError("option '" + option + "' is obsolete, please"
-                               " remove it (reasons for removal are at"
-                               " <https://postmarketos.org/deviceinfo>)")
+        if option in info and info[option]:
+            raise RuntimeError(f"option {option} is obsolete, please rename"
+                               " or remove it (see reasons for removal of at"
+                               " https://postmarketos.org/deviceinfo)")
 
 
 def test_deviceinfo(args):
