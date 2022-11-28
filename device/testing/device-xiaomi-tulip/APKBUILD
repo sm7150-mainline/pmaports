@@ -1,0 +1,50 @@
+# Maintainer: m0rf30 <morf3089@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-tulip
+pkgdesc="Xiaomi Redmi Note 6 Pro"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-modem
+"
+source="
+	deviceinfo
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wi-Fi, ADSP Firmware"
+	depends="firmware-xiaomi-tulip"
+	mkdir "$subpkgdir"
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline; for kernel development only (most features aren't working)"
+	depends="linux-postmarketos-qcom-sdm660"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+modem() {
+	depends="rmtfs rmtfs-openrc msm-modem-uim-selection"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+5c9802a4d55f92e06c9222397973ca2612bb495182da17493765f66f06ed815163848c76729b91d99a5b96c2eeae8d140939388669adacfe65f88436940810c1  deviceinfo
+"
