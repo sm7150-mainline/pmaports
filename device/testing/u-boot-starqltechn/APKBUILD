@@ -1,6 +1,6 @@
 # U-boot with patches to make the Samsung S9 boot
 pkgname=u-boot-starqltechn
-pkgver=2022.04_rc4
+pkgver=2023.01_rc2
 pkgrel=0
 pkgdesc="U-Boot bootloader for the Samsung SM-G9600 starqltechn"
 url="https://source.denx.de/u-boot"
@@ -18,11 +18,15 @@ makedepends="$depends_dev
 	swig
 	"
 options="!archcheck !check !strip"
-ubootver=2022.04-rc4
+ubootver=2023.01-rc2
 source="
-http://source.denx.de/u-boot/u-boot/-/archive/v$ubootver/u-boot-v$ubootver.tar.gz
-0001-arm-init-save-previous-bootloader-data.patch
-0002-board-starqltechn-get-board-usable-add-bootcmd-and-d.patch
+	http://source.denx.de/u-boot/u-boot/-/archive/v$ubootver/u-boot-v$ubootver.tar.gz
+	0001-starqltechn-enable-serial-console.patch
+	0002-sdm845-save-relocaddr-to-env-variables.patch
+	0003-input-do-not-override-console-when-stdin-and-device-.patch
+	0004-wip-input-driver-for-gpio-buttons.patch
+	0005-starqltechn-use-button-kbd-driver-for-navigating-boo.patch
+	0006-bootmenu-loop-over-menu-entries-with-one-key.patch
 	"
 builddir="$srcdir/u-boot-v$ubootver"
 
@@ -37,7 +41,11 @@ package() {
 }
 
 sha512sums="
-f9865d9aa552c4161deb416379b0221cbf3ba0530e4af4c95db6b7ef96843a9bc59a0fc30b38e9e3fd1403dc6557249930d7476423a1470820f07104f2e7747b  u-boot-v2022.04-rc4.tar.gz
-a6158cf9271f400e758b6c4724c044dea66066ae28c7ecae9c51323b795684238b9f4509b8f590e001568033478e87f0fb5abd7511c1bc65f757d62982fa5763  0001-arm-init-save-previous-bootloader-data.patch
-95d4fa1e7327fba05f0213aa29f27a231fd314a419b055a572ae23a5bb9155eb6149e91bfe90953b7725ab8b876ed4745c6b8082f30c7ecae9c4aaab9930e178  0002-board-starqltechn-get-board-usable-add-bootcmd-and-d.patch
+5e570a0070cd31bb4d9541542532229dbe15e28955428e8a6659de5e4140c89f82d635045d5594e6b9cc6b4bb3037ea4e2c6236433d65a7c814a0ec9c0f32004  u-boot-v2023.01-rc2.tar.gz
+068453a2eb3e2e6a950a31cd014f1dd4eed99f327f09aae69f4e4e55edf99cbef640d2361ada5844c5a02b2242c5668800d6b88599886c257764378615b351f8  0001-starqltechn-enable-serial-console.patch
+5e0dbe9a99c3931aba8d67510453058722f028ca3dbaeb8f12523b76b60349d2394175ffc25a6ea2395f5f65c5e86f563cd4db3794e17986c1085ca444613b0b  0002-sdm845-save-relocaddr-to-env-variables.patch
+ea3e3c270d04da74a7ab993802467631af7c47a14b78dcb3e185b234ceec804841eb4b6c0919d6bdd30157126fdb44a99e829712f3b44c60dd794a2a3acb812c  0003-input-do-not-override-console-when-stdin-and-device-.patch
+72b78a26737d9ee21854b71036ec5e31206be7cfe70e11ba583eb3e699da674db0db45ce9e51c30f1935aa8bcfa8ed6157899f129de55fb5966892490e6e7eb3  0004-wip-input-driver-for-gpio-buttons.patch
+1060f0517d5fe7ad36156313b50f7814e73b1ccfec96fa01cfb66bd63c6d6e5343121024c6ccc32ecbf12eeed499b00de5d7df73882edafac65a4bd7cacb7067  0005-starqltechn-use-button-kbd-driver-for-navigating-boo.patch
+e6217387c7e5f5766602feca99d3973c0a1780069d279e279b413425dc7ab1b6f4227eb0d108f17e6ccbeddb6ab99c5a6b236678980cf5a77dbff36fd1b1d2b0  0006-bootmenu-loop-over-menu-entries-with-one-key.patch
 "
