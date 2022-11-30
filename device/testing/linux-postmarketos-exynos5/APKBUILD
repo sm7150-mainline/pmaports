@@ -10,7 +10,7 @@ pkgdesc="Mainline kernel fork for Samsung Exynos5 devices"
 arch="armv7"
 _carch="arm"
 _flavor="${pkgname#linux-}"
-url="https://kernel.org"
+url="https://gitlab.com/exynos5-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps
 	pmb:cross-native
@@ -36,44 +36,12 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.0};;
 	*.*)	_kernver=$pkgver;;
 esac
+_tag="v${pkgver//_/-}-exynos5"
 source="
-	https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${pkgver//_/-}.tar.xz
+	$pkgname-$_tag.tar.bz2::$url/-/archive/$_tag/linux-$_tag.tar.bz2
 	$_config
-	0001-ODROID-COMMON-gpu-drm-Add-Hardkernel-3.2-LCD-driver-.patch
-	0002-ODROID-COMMON-gpu-drm-Add-new-Tiny-DRM-driver-with-I.patch
-	0003-ODROID-COMMON-hwmon-pwm-fan-fix-to-add-pwm1_enable-t.patch
-	0004-ODROID-COMMON-gpu-drm-add-new-display-resolution-256.patch
-	0005-ODROID-COMMON-Revert-drm-dbi-Print-errors-for-mipi_d.patch
-	0006-ODROID-COMMON-add-symbol-to-device-tree-compiler.patch
-	0007-ODROID-COMMON-phy-realtek-add-Wake-on-Lan-to-Realtek.patch
-	0008-ARM-exynos-add-machine-description-for-ODROID-XU3-4.patch
-	0009-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-	0010-ASoC-samsung-snow-add-jack-detection.patch
-	0011-ARM-dts-exynos-snow-add-mmc-aliases.patch
-	0012-ARM-dts-exynos-peach-pit-add-mmc-aliases.patch
-	0013-ARM-dts-exynos-peach-pi-add-mmc-aliases.patch
-	0014-ARM-dts-exynos-snow-use-num-interpolated-steps-for-b.patch
-	0015-ARM-dts-exynos-peach-pit-use-num-interpolated-steps-.patch
-	0016-ARM-dts-exynos-peach-pi-use-num-interpolated-steps-f.patch
-	0017-ARM-dts-exynos-peach-pit-enable-GPU.patch
-	0018-ARM-dts-exynos-peach-pi-enable-GPU.patch
-	0019-HACK-ARM-dts-exynos-snow-disable-HDMI-audio.patch
-	0020-HACK-ARM-dts-exynos-peach-pit-disable-HDMI-audio.patch
-	0021-HACK-ARM-dts-exynos-peach-pi-disable-HDMI-audio.patch
-	0022-ARM-dts-exynos-snow-add-atmel-mxt-touchpad.patch
-	0023-ARM-dts-exynos-snow-add-jack-detection.patch
-	0024-ARM-dts-exynos-peach-pit-add-jack-detection.patch
-	0025-ARM-dts-exynos-peach-pi-add-jack-detection.patch
-	0026-ARM-dts-exynos-snow-add-usb-hub.patch
-	0027-drm-set-DRM_RENDER_ALLOW-flag-on-DRM_IOCTL_MODE_CREA.patch
-	0028-ARM-dma-mapping-implement-alloc_noncontiguous.patch
-	0029-iommu-io-pgtable-arm-Fix-coherency-support-for-Mali-.patch
-	0030-media-s5p-mfc-Allow-cache-hints-for-queues.patch
-	0031-soc-samsung-pm_domains-Bring-back-old-driver-impleme.patch
-	0032-dt-bindings-arm-samsung-document-Klimt-LTE-board-bin.patch
-	0033-ARM-dts-Add-support-for-Samsung-Klimt-LTE.patch
 "
-builddir="$srcdir/linux-${_kernver//_/-}"
+builddir="$srcdir/linux-$_tag"
 
 prepare() {
 	default_prepare
@@ -101,39 +69,6 @@ package() {
 }
 
 sha512sums="
-1872e2cf8cdd6e0033ce69f26f25526a30c237d220c02b20829fca31d6068fb816de2f2e5fd41f6807648cef8f28ddda392b199c7b1c3b48b2460c840fa1e150  linux-5.18.5.tar.xz
+59cdc82bf4a2fb255aeb05e3554dd95b27b1c4835fcff7e7347dbc9464d1593e0325bd8ee0eb9e8e46ac48e3af7da3795b81f67e76f8384d8fdd69f59d3745ae  linux-postmarketos-exynos5-v5.18.5-exynos5.tar.bz2
 28014dffd66921421bfff49e90436e6672191228a76119da196ed0b86b8525f611176074efc056e8438fe284b8aabd1d31fab389f978ba9cdfc018f6b50606e8  config-postmarketos-exynos5.armv7
-c64b6638fe2550a094d248e7b46b7af816d9adbeb3b23b154102dc1a8be1eaba7197ec121ac6a228d813ba0bad891c2619b4c5413960ffdf5f764930f639ccd1  0001-ODROID-COMMON-gpu-drm-Add-Hardkernel-3.2-LCD-driver-.patch
-e094932b129f9cff1c1eae504116fe945deffaeaf549bc0ecd16c45823d0d95354f3646e291b9f6c8a9ebbbd98ee85870a690d949dab49762f65a2f5fa7c49f2  0002-ODROID-COMMON-gpu-drm-Add-new-Tiny-DRM-driver-with-I.patch
-47ddd260cb8f335991d8f885d5cf6134125b7f7d09794b6a875d92494666c60ddd7ae77463b97721fadf18b7f838f1a03a21389aa36c4de50ace6babac90f804  0003-ODROID-COMMON-hwmon-pwm-fan-fix-to-add-pwm1_enable-t.patch
-67bd8b613cac1e776c7751820865621de4fb41a0d7705a76062f6015b93d1cd1ee83e43509a100e9547a6d8a000aa2ac3e83ade6320428feee15aa0444a67b96  0004-ODROID-COMMON-gpu-drm-add-new-display-resolution-256.patch
-e6abd3e588f873c95a3b8681ac69a6ef7653f43bbab1e86d611aa3ffa192fb35d87a6b655b9f281b6fa5f6f24e27a62e772fb848b00671ed2aaff9675e6a7708  0005-ODROID-COMMON-Revert-drm-dbi-Print-errors-for-mipi_d.patch
-b238199d081338e77e590397ee32d78b364f98e65b07f6ec446a03bbd3c7a139c938640654e27b63e83febb28028e305484d4f39b0158f03efb172ae31acb85e  0006-ODROID-COMMON-add-symbol-to-device-tree-compiler.patch
-61f2d0e869bd4d13837e61ba8445e924b02b4052c01f21c6bf8f5bf6bf07530fa67f3e1dcdbb2e1ace9a3a2be41cd5148fa3305d8faa358052a80501625f6ac9  0007-ODROID-COMMON-phy-realtek-add-Wake-on-Lan-to-Realtek.patch
-dc2776122128270b2a873a67bbecf0dffe7fc79859c666e3f8d4c89d403db1fe50cf228a967930f1f642b4a878e2fababcb2cce95a570fd65aa116a5af24f0b3  0008-ARM-exynos-add-machine-description-for-ODROID-XU3-4.patch
-58906bb29fc84c07c4392d258ac4bfaca0934b0e0c353ec5729289a82d75bb79a7a26700c66e1bbc5e0349637a55c8c14413fba622041f61fdeb4da70e7c99ad  0009-ARM-decompressor-Flush-tlb-before-swiching-domain-0-.patch
-57596e30241092464fc9cb1398047f1d69ad9dc2d2b7ac7a909e037a3906370965c9387564986647c9b1b251448f29f78a1f45376574569aa08de57b50b2c2fe  0010-ASoC-samsung-snow-add-jack-detection.patch
-a38bc6dd01cc643639b421dcbbb06ab6d09f7c7ab73635ead31ff0ae21914a87c4dd832009d01e1674edf812f61a36bc0404682616f41369687eca712e2dc56f  0011-ARM-dts-exynos-snow-add-mmc-aliases.patch
-662ccd76149922bbfb5771ca13fa211f281ffb13961841999d9f7b078b2b1adc67d7c36eac08ee45b38b6f0a94c23a87056be797ad31ad523ebccdb76f5c2cd5  0012-ARM-dts-exynos-peach-pit-add-mmc-aliases.patch
-aa402acabd260c6076b257d8fb214b577687843b182aae8ce3ee29dfffe3cd3f86fcc43e52e6a2c10a8fd0b8b3cbdab6d6829d45d3fac56716f8f7e273c24bf2  0013-ARM-dts-exynos-peach-pi-add-mmc-aliases.patch
-32dff4f2c6e8c80969c5196507829335ca8f12a1df3f2a753cf9395ce06e354125a6508b13f39ec04934bbaa41d058e9a43a1480d4232f3e768cd38b91759b30  0014-ARM-dts-exynos-snow-use-num-interpolated-steps-for-b.patch
-dc54e1f8c815f7a24a9e06648ea4209725441008f116fe50f4c9117175d5d18397c376d219ac6b0831388dd70f586b979ed75978132b5be7d3fbb93d58a9bfa9  0015-ARM-dts-exynos-peach-pit-use-num-interpolated-steps-.patch
-584519c9a88316f29ed4ea9b4e473d0c7b8a6acae77ada10de798a11c1fa69d82e304b4480ce4e196ec732c1c973ebdcb6722b976dc6ec03621503ad9eef1b98  0016-ARM-dts-exynos-peach-pi-use-num-interpolated-steps-f.patch
-6451de185150f3a662300f934cd71806e362380c135f4a992a3acb7fcacd9058b2b0407dd6a2279d60458e92740c6c7eda59a1ac4b547486e79254b13b071efc  0017-ARM-dts-exynos-peach-pit-enable-GPU.patch
-eb26d9b3e6bd26ac448c528e7e50dabeab7b714195a4d524a50db37d60d44b4f024e3f65abe59b3062feb65bee8c684778dc1ca2a38e795c83ee9d8f3b1b5945  0018-ARM-dts-exynos-peach-pi-enable-GPU.patch
-391d682843187e58f321fc51e4796d452081bec20ad0fbdd4766c8b5d8a2a743d92579677a53d8584b5f2e972ab0ac98f3b9fff8ae202d892566abd92588b5a8  0019-HACK-ARM-dts-exynos-snow-disable-HDMI-audio.patch
-fd5fe4b7e0a46a7475a3ccb67372835eb0d8fd7c7fe556b3f6ba737c5c297829748d1e2f4b9909cba1a4c65a6c552c1efdb038ddd35939973e7e5b7ea4a4a20f  0020-HACK-ARM-dts-exynos-peach-pit-disable-HDMI-audio.patch
-86e8706aa7fd0e802a05de1c5fab6a3048853bb9dc824eab4c522310e0dc99b05f400ad3a100f7f9009411b2c1cc4ae5558dee5b560cb4c81eb8dec7543faca1  0021-HACK-ARM-dts-exynos-peach-pi-disable-HDMI-audio.patch
-a6678ea58da13f7a8d9dd9127c4a7453d5b00f91ef2a53d2dbce20285d1478539187c68fe68f1f2e291ca7914e8c09b8ea4629d99d07d7944ece82f17480b8d3  0022-ARM-dts-exynos-snow-add-atmel-mxt-touchpad.patch
-1635817e35e26c4d40cc9373361cedb46f1fd6325871cf1b1cd9c8cfa52869cf8f0d7043e2ab861896fe298e29ff7523ebb1fd71cd00a6868315d001d9aa16d5  0023-ARM-dts-exynos-snow-add-jack-detection.patch
-1d952aabafd7e885e8e1f2ee53d4f82d634ca48df4f9c7536d52d4c73f2606fca07e6a963dd65a0f99e607ec954f2c99075dca85ea3a25b583db13a8d9159963  0024-ARM-dts-exynos-peach-pit-add-jack-detection.patch
-312426ee2ce6c31f28374ac6b43e373c61a735ba9c064e79494e953a64adcbfe989aeb120480f942f945a2896992ed7712ebc63d3bfa966f55b8510762aa703e  0025-ARM-dts-exynos-peach-pi-add-jack-detection.patch
-9d54e0fd3550c86c51f42888f0eadbd1820aa0de1c2aa6d616b735943726a53c9c50490cb53af2739216cf27d98eafbc31731fbae5096d0e599c1af134e15ae3  0026-ARM-dts-exynos-snow-add-usb-hub.patch
-3e0f029bb73918169b47cfc14545a6d226118a1b85d9033dfa3943cd45d4568ee9bebde24db21060092177eda3becec138856b12ede2f4953f2c2fa9614e3617  0027-drm-set-DRM_RENDER_ALLOW-flag-on-DRM_IOCTL_MODE_CREA.patch
-c0eef95b54101623e49172310d71eacff803465025c8350b64ab4628d3449455fa79e96ea803a8105efed2241c6fb98b79c9883b19ae86f407b87c2a0b1e2255  0028-ARM-dma-mapping-implement-alloc_noncontiguous.patch
-844862cdf4aae3e673c51faf48735382d03cb7312884fa0fa050245898c15cd618ebf5aa3e996e978a2d125b61212a3614f38572a42abc76a0bcde1d970f5c23  0029-iommu-io-pgtable-arm-Fix-coherency-support-for-Mali-.patch
-343b7aa611249712e22c02dfd4ef54b23ab0fdc750c6cb6630bde3eee9496ccb60afb409fcf9da4c2211541852fa516238432cc240bcfd4d50566d117714f1e6  0030-media-s5p-mfc-Allow-cache-hints-for-queues.patch
-52aff179b2f87a423d2ea9ab7f002a094bbf1d90ca6037e6038e8ed754acd1124673842add125c1dbec34dab790b648e0cc6b4b578423457411c379d200253dc  0031-soc-samsung-pm_domains-Bring-back-old-driver-impleme.patch
-19a0ec83153f8660566919f2bf54058495686e2d1b5cefe4571264df8cd4c5131ff0da45e81a89e414a0978e5a58d59a57d9756feaba02f42db2fdb4c21e4c41  0032-dt-bindings-arm-samsung-document-Klimt-LTE-board-bin.patch
-5f3f50ba65e517672311dd25edba6c6c7ec25afcd57e185437f6fb17dfee3cb2e457cc832f09f2848955eeca702093fe93c9341ddd52050acc7a6ba861775fe1  0033-ARM-dts-Add-support-for-Samsung-Klimt-LTE.patch
 "
