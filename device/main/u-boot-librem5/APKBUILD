@@ -3,7 +3,7 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=u-boot-librem5
 pkgver=2022.04_git20220420
-pkgrel=0
+pkgrel=1
 # 'upstream/librem5-v3' branch in uboot repo
 _commit="3fdb96e723a3fb0f2a271c5ff24bba7a39478c86"
 # 'librem5' branch in atf repo
@@ -51,12 +51,17 @@ prepare() {
 	./firmware-imx-$_firmwareversion.bin --auto-accept
 	cp -v "$_firmware_builddir"/firmware/ddr/synopsys/lpddr4*.bin $builddir/
 	cp -v "$_firmware_builddir"/firmware/hdmi/cadence/signed_*imx8m.bin $builddir/
+
+	# Disable -Werror in arm-trusted-firmware so it builds with GCC 12. The
+	# version we use here is missing E=0 introduced here:
+	# https://github.com/ARM-software/arm-trusted-firmware/commit/6336b07ad25cb05ca75f5a465d816af7956e0a59
+	sed -i "s/-Werror//g" "$_atf_builddir"/Makefile
 }
 
 build() {
 	msg "Building ARM trusted firmware"
 	cd "$_atf_builddir"
-	LDFLAGS="" make PLAT=imx8mq bl31
+	LDFLAGS="-no-warn-rwx-segment" make PLAT=imx8mq bl31
 	# Overwrite default bl31 binary with one made here
 	export BL31="$_atf_builddir/build/imx8mq/release/bl31.bin"
 	cp -v "$_atf_builddir"/build/imx8mq/release/bl31.bin "$builddir"/
