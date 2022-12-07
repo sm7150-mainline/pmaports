@@ -1,7 +1,7 @@
 # Maintainer: Richard Acayan <mailingradian@gmail.com>
 pkgname=firmware-google-sargo
 pkgver=220505.008
-pkgrel=0
+pkgrel=1
 pkgdesc="Proprietary firmware blobs from the Google Pixel 3a factory image"
 url="https://github.com/TheMuppets/proprietary_vendor_google_sargo"
 arch="aarch64"
@@ -14,13 +14,20 @@ options="!check !archcheck !strip !tracedeps pmb:cross-native"
 
 build() {
 	pil-squasher a615_zap.mbn proprietary/vendor/firmware/a615_zap.mdt
+	pil-squasher ipa_fws.mbn proprietary/vendor/firmware/ipa_fws.mdt
 }
 
 package() {
 	install -Dm755 "$builddir"/a615_zap.mbn \
 		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/a615_zap.mbn
+	install -Dm755 "$builddir"/ipa_fws.mbn \
+		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/ipa_fws.mbn
+	install -Dm755 "$builddir"/proprietary/vendor/firmware/modemuw.jsn \
+		       "$pkgdir"/lib/firmware/postmarketos/modemuw.jsn
 	install -Dm755 "$builddir"/proprietary/vendor/firmware/venus.mbn \
 		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/venus.mbn
+	install -Dm755 "$builddir"/proprietary/vendor/firmware/wlanmdsp.mbn \
+		       "$pkgdir"/lib/firmware/postmarketos/wlanmdsp.mbn
 }
 
 sha512sums="
