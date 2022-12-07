@@ -3,7 +3,7 @@
 # Co-Maintainer: Bhushan Shah <bshah@kde.org>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.36
+pkgver=1.37
 pkgrel=0
 _confver=54
 _purismrel=1
@@ -43,8 +43,10 @@ source="
 	0002-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
 	l5-ship-mode.initd
 	l5-lockdown-support.initd
+	org.freedesktop.GeoClue2.service
 "
 subpackages="
+	$pkgname-geoclue
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
 	$pkgname-pulseaudio
@@ -60,6 +62,14 @@ builddir="$srcdir/librem5-base-pureos-$_purismver"
 build() {
 	mkimage -A arm64 -C none -O linux -T script -d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
 	devicepkg_build $startdir $pkgname
+}
+
+geoclue() {
+	pkgdesc="geoclue configuration for the Librem 5"
+	install_if="$pkgname geoclue"
+	replaces="geoclue"
+	install -Dm644 "$srcdir"/org.freedesktop.GeoClue2.service \
+		-t "$subpkgdir"/usr/share/dbus-1/system-services/
 }
 
 phosh() {
@@ -185,4 +195,5 @@ fad386071fc45f9880a94cc8004fabd5d98b3e6a12606c98d8e72e0208f22ab54f03b921f5967a95
 b45749fcddfd65a302b502bcabfa5828d1b63e45d844fd50e44009a756b919db20fe9526102947c0f0dfcdffe4a037e5050fe1b24fb915933ce0837f49759378  0002-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
 c723764d507ccd4b04aa5ce79b1d1ebc131873cdc37a943cb0f92b8a08a3c69eb9e0d31fcd4589fd8c40a9676bae9897e4f12ec2ebe4db8214ac85669ef35a53  l5-ship-mode.initd
 f4b314d553655f7975445ac0a33099923e20dabb082c07e2cf6a78e4118c143d777dd4ad2c09cbc388600bdefe8deb3073fbd15b238772ddf09c66ac46415590  l5-lockdown-support.initd
+fd91bcd8cecd509587f0a26d454157a1df094d2d86c75329d1002e9474946494d4d1b5407e055fbd5f21e22394eeb1bbd4b3439ae6925db50a3427b4fac101cf  org.freedesktop.GeoClue2.service
 "
