@@ -3,7 +3,7 @@
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
 pkgver=3.5
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -35,11 +35,12 @@ source="
 	deviceinfo
 	grub.cfg
 	grub_early.cfg
+	modemmanager.conf
+	ppkb.sh
+	setup-modem.sh
 	ucm/HiFi.conf
 	ucm/PINE64-PinePhonePro-.conf
 	ucm/VoiceCall.conf
-	ppkb.sh
-	setup-modem.sh
 	"
 
 build() {
@@ -99,6 +100,8 @@ package() {
 		"$pkgdir"/usr/bin/pinephone_setup-modem
 	install -Dm644 "$srcdir"/90-modem-eg25.rules -t \
 		"$pkgdir"/usr/lib/udev/rules.d/
+	install -Dm644 "$srcdir"/modemmanager.conf \
+		"$pkgdir"/etc/conf.d/modemmanager
 
 	# Keyboard config
 	install -Dm755 "$srcdir"/ppkb.sh "$pkgdir"/etc/profile.d/ppkb.sh
@@ -126,9 +129,10 @@ sha512sums="
 e591572d0bfc4d7d990fcc15bc82e78e60404becf62a38283b4ceee6f49a812b63eebbc5c304907330e33dce5f023edba26c9b86f1375affa3cf6b49fbd06539  deviceinfo
 065b88a825a2b32c66ffe2ef3b4004560f41cdeedbd1a9cdbdc7bc29d52b43c698e4cd6881ce80eacac56b4689176a697dbfd0a89b20afb06963af2970db99cc  grub.cfg
 0f9357d4eea089628fbceb1e3e96d21a3f4329aeb6743158a6f877f967ef274506404eba949d5f01b7e1adea149f9a3aef992a5e8cd4181f93ab00909b1c5ecd  grub_early.cfg
+c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313818e0b943e1f6212bcca0aff9ce37da60b29547b1631f24b  modemmanager.conf
+43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
+420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
 1684514a6b814a83473e9da8855fd776cf3f31a2be1f8834c370f710428b4ee305559e275be52894d167ccd1e32f8f1c8586f8a072f19e44b46caec9f504d453  HiFi.conf
 9c6edbe7ea387baf9bfa6c4a46b28c4fe274ab0994e0a1640012048407e6679c437de43cc50e6778c9a852132eaa680de3fd4e0256d36455d1dd57aa729ac8be  PINE64-PinePhonePro-.conf
 e4d721163a844c68c0240be62a4692e7b9983054aee6d717f70687b901f569c6008e0c64a5bddf37e20f41b3936b4ef80909d7cbf09feeb0813303b3b46de80f  VoiceCall.conf
-43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
-420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
 "
