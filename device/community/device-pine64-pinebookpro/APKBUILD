@@ -2,8 +2,8 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-pine64-pinebookpro
 pkgdesc="PINE64 Pinebook Pro"
-pkgver=10
-pkgrel=2
+pkgver=11
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -21,7 +21,6 @@ subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	deviceinfo
-	extlinux.conf
 	10-pinebookpro.hwdb
 	70-edp-backlight.rules
 	nvme-powersave.initd
@@ -34,8 +33,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/extlinux.conf \
-		"$pkgdir"/boot/extlinux/extlinux.conf
 
 	# Keyboard mapping
 	install -D -m644 "$srcdir"/10-pinebookpro.hwdb \
@@ -57,8 +54,7 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 sha512sums="
-d748d300043b5f3d87af5ac4a7bb916b5af15186d30830273c2bb921cd67937b7bc4019505931c7152216d88d4043f89880c91a497713c510ba92c64ddc7830a  deviceinfo
-faab3ef38ca5850dc0e323587fa8a46cda609af86278fae95b6ec05ed355184385620ecc844c390e6ff1a0df97b28e60e66a45c8af81a7f2fe3366ac84cbf673  extlinux.conf
+6d6fcb8bbfa2eb0fda691cc646f484ce383ba80bbfd5affde17852913e1f8fe68290fd764f5d7a1cc2f3e9de288a7f4db9ff90dfed66b3a0daf47a0c836e0926  deviceinfo
 d3988fe83c54228d743f4a8c190e9530404a436a7fbc0b004bf20d3986b502d864717d8cc9c76812e599266bf84cb08f9a86e1bfd220875799c5a022aea588ec  10-pinebookpro.hwdb
 6e9e9ef54ee9aa9491be6dc30451fdcd9038b0efeb959509f48626d97a1696ee81711a46510049557b73269ff48acc85fad6496c65451e2e24908241b7655444  70-edp-backlight.rules
 2abfa31fa56028339efc6d2b6cb838f310990d7110ac4dd996bc4cfcf90f0a8770e70f28f77f7b6929d110e494bc33731302f16b9717729f991c2732be0731d5  nvme-powersave.initd
