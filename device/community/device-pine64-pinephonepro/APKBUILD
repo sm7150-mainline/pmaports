@@ -2,8 +2,8 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
-pkgver=3.5
-pkgrel=1
+pkgver=3.6
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -33,8 +33,6 @@ source="
 	51_keyboard.gschema.override
 	90-modem-eg25.rules
 	deviceinfo
-	grub.cfg
-	grub_early.cfg
 	modemmanager.conf
 	ppkb.sh
 	setup-modem.sh
@@ -47,8 +45,7 @@ build() {
 	devicepkg_build $startdir $pkgname
 
 	grub-mkimage \
-		--config="$srcdir/grub_early.cfg" \
-		--prefix="" \
+		--prefix="/grub" \
 		--output="bootaa64.efi" \
 		--format="arm64-efi" \
 		--compression="xz" \
@@ -78,8 +75,6 @@ package() {
 	devicepkg_package $startdir $pkgname
 
 	# Grub / bootloader
-	install -Dm644 -t "$pkgdir"/boot/grub \
-		"$srcdir"/grub.cfg
 	install -Dm644 -t "$pkgdir"/boot/EFI/Boot \
 		"$srcdir"/bootaa64.efi
 
@@ -126,9 +121,7 @@ gnome() {
 sha512sums="
 2d68ffe143f633a86670f30e45dbad1cc313f219f22b7cd3319ab44bb7209c20cb29f2ff2c60c92390154af9c9a6815c4186be555364cf31552005eba024c0e7  51_keyboard.gschema.override
 98e9dcfb36dd5843ff441b148e3bffb70757c59601c5f01f55a584e8f017c7ca73f2275c1bff46e4236dd8174df36a43d10abf9b8dadee988b962036846dc6ed  90-modem-eg25.rules
-e591572d0bfc4d7d990fcc15bc82e78e60404becf62a38283b4ceee6f49a812b63eebbc5c304907330e33dce5f023edba26c9b86f1375affa3cf6b49fbd06539  deviceinfo
-065b88a825a2b32c66ffe2ef3b4004560f41cdeedbd1a9cdbdc7bc29d52b43c698e4cd6881ce80eacac56b4689176a697dbfd0a89b20afb06963af2970db99cc  grub.cfg
-0f9357d4eea089628fbceb1e3e96d21a3f4329aeb6743158a6f877f967ef274506404eba949d5f01b7e1adea149f9a3aef992a5e8cd4181f93ab00909b1c5ecd  grub_early.cfg
+969e0b786e1697f1071e443e1bc5c08253b78c0ecdb410cfc70eeb4216ac464c18d02f543bd5d707fc8bb4ecbff52a6b4be18a94c26e6522b12ec0a38cb0eaaf  deviceinfo
 c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313818e0b943e1f6212bcca0aff9ce37da60b29547b1631f24b  modemmanager.conf
 43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
 420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
