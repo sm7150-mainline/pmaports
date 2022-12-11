@@ -1,0 +1,28 @@
+# Maintainer: Anjandev Momi <anjan@momi.ca>
+pkgname=sxmo-common-audio
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="SXMO/SWMO audio backends"
+url="http://sr.ht/~mil/Sxmo"
+arch="noarch !armhf"
+license="MIT"
+subpackages="$pkgname-pipewire $pkgname-pulse"
+options="!check" # has no tests
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+pipewire() {
+	provides="sxmo-common-audio"
+	provider_priority="20"
+	depends="pipewire-pulse pipewire wireplumber"
+	mkdir -p "$subpkgdir"
+}
+
+pulse() {
+	provides="sxmo-common-audio"
+	provider_priority="10"
+	depends="pulseaudio pulseaudio-alsa !pipewire-pulse !sxmo-common-bluetooth !pipewire-alsa"
+	mkdir -p "$subpkgdir"
+}
