@@ -1,7 +1,7 @@
-From 646a1191b49fb99a8f6fbc219d45a0611dee1fa4 Mon Sep 17 00:00:00 2001
+From c5fb774025229eae5660a2690273edd6a5936acf Mon Sep 17 00:00:00 2001
 From: Newbyte <newbie13xd@gmail.com>
 Date: Thu, 24 Mar 2022 11:25:26 +0100
-Subject: [PATCH 10/13] drm: Allow DRM_IOCTL_MODE_CREATE_DUMB on render nodes
+Subject: [PATCH 10/11] drm: Allow DRM_IOCTL_MODE_CREATE_DUMB on render nodes
 
 Due to a change in Mesa, the render node ends up being picked
 instead of the primary node when using Exynos DRM kmsro. In turn,
@@ -15,10 +15,10 @@ Mesa issue: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5510
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/drm_ioctl.c b/drivers/gpu/drm/drm_ioctl.c
-index 8faad23dc1d8..484112b89b01 100644
+index ca2a6e6101dc..233b218f8cc8 100644
 --- a/drivers/gpu/drm/drm_ioctl.c
 +++ b/drivers/gpu/drm/drm_ioctl.c
-@@ -672,7 +672,7 @@ static const struct drm_ioctl_desc drm_ioctls[] = {
+@@ -678,7 +678,7 @@ static const struct drm_ioctl_desc drm_ioctls[] = {
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_RMFB, drm_mode_rmfb_ioctl, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_PAGE_FLIP, drm_mode_page_flip_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_DIRTYFB, drm_mode_dirtyfb_ioctl, DRM_MASTER),
@@ -28,5 +28,5 @@ index 8faad23dc1d8..484112b89b01 100644
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_DESTROY_DUMB, drm_mode_destroy_dumb_ioctl, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_OBJ_GETPROPERTIES, drm_mode_obj_get_properties_ioctl, 0),
 -- 
-2.38.0
+2.38.1
 

@@ -1,7 +1,7 @@
-From c5a7a1f1518e39079260b2c4c53dd0361eed77b8 Mon Sep 17 00:00:00 2001
+From 9a833a40c7288466318dd10cc8fa7a898613f75a Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>
 Date: Fri, 30 Nov 2012 17:05:40 -0800
-Subject: [PATCH 01/13] ARM: decompressor: Flush tlb before swiching domain 0
+Subject: [PATCH 01/11] ARM: decompressor: Flush tlb before swiching domain 0
  to client mode
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -20,10 +20,10 @@ Signed-off-by: Arve Hjønnevåg <arve@android.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm/boot/compressed/head.S b/arch/arm/boot/compressed/head.S
-index bf79f2f78d23..083e59d474fe 100644
+index 9f406e9c0ea6..750c8c0d5d9e 100644
 --- a/arch/arm/boot/compressed/head.S
 +++ b/arch/arm/boot/compressed/head.S
-@@ -896,6 +896,8 @@ __armv7_mmu_cache_on:
+@@ -892,6 +892,8 @@ __armv7_mmu_cache_on:
  		bic     r6, r6, #1 << 31        @ 32-bit translation system
  		bic     r6, r6, #(7 << 0) | (1 << 4)	@ use only ttbr0
  		mcrne	p15, 0, r3, c2, c0, 0	@ load page table pointer
@@ -33,5 +33,5 @@ index bf79f2f78d23..083e59d474fe 100644
  		mcrne   p15, 0, r6, c2, c0, 2   @ load ttb control
  #endif
 -- 
-2.38.0
+2.38.1
 

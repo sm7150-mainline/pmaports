@@ -1,7 +1,7 @@
-From 743a22734931563687d38c54289eca346eb4f24f Mon Sep 17 00:00:00 2001
+From 9d3455e9112fe73fb77bd1237673c6c944375adb Mon Sep 17 00:00:00 2001
 From: belgin <belginstirbu@hotmail.com>
 Date: Tue, 29 Jun 2021 20:31:12 +0300
-Subject: [PATCH 03/13] mmc: core: Workaround VTU00M 0xf1 FTL metadata
+Subject: [PATCH 03/11] mmc: core: Workaround VTU00M 0xf1 FTL metadata
  corruption bug
 
 Some versions of the 0xf1 revision of the firmware of the
@@ -315,10 +315,10 @@ index 81c55bfd6e0c..07e67b62515d 100644
  {
  	unsigned int busy_timeout_ms = card->ext_csd.out_of_int_time;
 diff --git a/include/linux/mmc/card.h b/include/linux/mmc/card.h
-index 8a30de08e913..4f7de8972923 100644
+index c726ea781255..e6e168651b35 100644
 --- a/include/linux/mmc/card.h
 +++ b/include/linux/mmc/card.h
-@@ -337,6 +337,7 @@ struct mmc_card {
+@@ -338,6 +338,7 @@ struct mmc_card {
  	unsigned int    nr_parts;
  
  	struct workqueue_struct *complete_wq;	/* Private workqueue */
@@ -339,5 +339,5 @@ index 6efec0b9820c..9bfbe8a2d22d 100644
 +
  #endif /* LINUX_MMC_CORE_H */
 -- 
-2.38.0
+2.38.1
 
