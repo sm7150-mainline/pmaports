@@ -1,0 +1,28 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-j7elte
+pkgdesc="Samsung Galaxy J7"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-samsung-j7elte
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+c5fae735cfa092040dc9028649fe043bb76c3faeb0fd7ad60cba6164dea03b95421c6171f2d4f3a73b607ebba77146ba257cc6aef13b1a89aaccdbf46bd4bac9  deviceinfo
+"
