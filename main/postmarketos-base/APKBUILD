@@ -1,5 +1,5 @@
 pkgname=postmarketos-base
-pkgver=24
+pkgver=24.1
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
@@ -12,7 +12,7 @@ depends="
 	postmarketos-mkinitfs
 	postmarketos-mvcfg
 	postmarketos-keys
-	sudo
+	cmd:sudo
 	"
 install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-upgrade"
 triggers="$pkgname.trigger=/etc"
@@ -38,6 +38,7 @@ replaces_priority=100  # leave plenty for alpine
 
 _source440="
 	etc/sudoers
+	etc/doas.d/10-postmarketos.conf
 	"
 _source644="
 	etc/conf.d/bootmisc
@@ -118,6 +119,7 @@ nofde() {
 
 sha512sums="
 e529f5cef1f31481b577f99b8917704f2cfefb963d98bf40a14b017938e55a00134d2033f81d2cb0b8489c5e9b4a92fdc0a788013f1adb4cd46d9580c9988186  rootfs-etc-sudoers
+9591c9cb2194fa1092505159c9eb3d899bec95b6dbd9a0222be62098db012da113a125e40d70373d60af9880dfa489bdbe12b6b897bdef5613e023800fb6ee1b  rootfs-etc-doas.d-10-postmarketos.conf
 a5c6bfaf6ee41f9623f463b64dab95924453d7b70bdd114cc441be9fc68fb6b0e042ae3163ec357d0dd6db93767232224b8c03df29f2cadf3ac2c6e2c998784f  rootfs-etc-conf.d-bootmisc
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  rootfs-etc-conf.d-swapfile
 e4576c58c35f80bedddb1e89e186f37d31a186d3e9eb046581b8c5d7b7d435e18924539e851d3e67dc0ede80f9d44d16bd9ef52e73350d3f13224edc31d73a34  rootfs-etc-conf.d-syslog
