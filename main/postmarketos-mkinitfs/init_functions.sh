@@ -355,6 +355,22 @@ resize_root_partition() {
 			ROOT_PARTITION_RESIZED=1
 		fi
 	fi
+
+	# Resize the root partition (non-subpartitions) on Chrome OS devices.
+	# Match $deviceinfo_cgpt_kpart not being empty instead of cmdline
+	# because it does not make sense here as all these devices use the same
+	# partitioning methods. This also resizes third partition instead of
+	# second, because these devices have an additional kernel partition
+	# at the start.
+	if [ -n "$deviceinfo_cgpt_kpart" ]; then
+		partition_dev="$(echo "$partition" | sed -E 's/p?3$//')"
+		if has_unallocated_space "$partition_dev"; then
+			echo "Resize root partition ($partition)"
+			parted -f -s "$partition_dev" resizepart 3 100%
+			partprobe
+			ROOT_PARTITION_RESIZED=1
+		fi
+	fi
 }
 
 unlock_root_partition() {
