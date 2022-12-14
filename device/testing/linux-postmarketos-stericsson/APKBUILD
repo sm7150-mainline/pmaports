@@ -5,7 +5,7 @@
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=5.19.8
+pkgver=6.1
 pkgrel=0
 pkgdesc="Mainline kernel for ST-Ericsson NovaThor devices"
 arch="armv7"
@@ -38,10 +38,8 @@ esac
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	config-$_flavor.armv7
-	disable-busy-detect-on-ux500-mmci.patch
-	power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
-	power-supply-ab8500-respect-charge_restart_voltage_uv.patch
-	pwm-ab8500-get-hw-id-from-reg-value.patch
+	0001-Disable-busy-detect-on-Ux500-MMCI.patch
+	0002-pwm-ab8500-Get-HW-ID-from-reg-value.patch
 	"
 builddir="$srcdir/linux-${_kernver//_/-}"
 
@@ -70,10 +68,8 @@ package() {
 }
 
 sha512sums="
-68c307606c2e1e19d065a950d9de8f3aca0a572f7567262c942f8440f888421f807d689c92175308a97a4064e175ccc7a03d691f8c55a23bf52a758524312b23  linux-5.19.8.tar.xz
-23aca0fc9a86220a20972393d13ebc462f6e1e2c2593e9647b2543c9ebd1b2c2d7affd2524dbcdb0ed8e5b028cf01872d83a5ae08cb48e89c3e05049fea6210a  config-postmarketos-stericsson.armv7
-4ea0fd3fa602bab21f0cc2c31462d3ef6958c63394b41061ddf0bc2c8baa8b9c571cb5553a37c43315df84049eb7d6a6dc4f873c6d06d9ea4883c37dce40d7ec  disable-busy-detect-on-ux500-mmci.patch
-56c0e375d9078abf1144bf6df25dab176794a18d5c33f77e76b5dc44fc60f0f40ffe26991f0529ff36deaef0b3b66f8ae880968aa2459f774feb4c7993658bdd  power-supply-ab8500-exit-maintenance-if-too-low-voltage.patch
-81c1acf81a250326b6917503ec70572e18b06864248f704c1a691b0f2fd096f9d0a87acd4e05e258583b4c21c990a3f3230a360a7a02f00b6e83e3034902641c  power-supply-ab8500-respect-charge_restart_voltage_uv.patch
-56126fcfee94121cddacf6987d64517c88fb35739285143fd2fb7f8c3c10d3e326d931c5a981d3cbc5a09d7286e41c9013866b36532a410441140b4af80a2808  pwm-ab8500-get-hw-id-from-reg-value.patch
+6ed2a73c2699d0810e54753715635736fc370288ad5ce95c594f2379959b0e418665cd71bc512a0273fe226fe90074d8b10d14c209080a6466498417a4fdda68  linux-6.1.tar.xz
+2e88c854ccb8b6e8aff23aeb818f4a9883d6aa366ecc96216f8d298a50346597ac59c22eacfda204d2e7720ce0d843e3e5c41a8b3c958ecb8da1a991a58ea49e  config-postmarketos-stericsson.armv7
+2850f2c7a4405ed13c6ae18c97a1e8b3b0be545fb517a0b692666e559efdc00981a177f556c4c8fb6c8115d1c29674b6487a10700d9c30317ffb8d953c595281  0001-Disable-busy-detect-on-Ux500-MMCI.patch
+3abf1a2b28077a2784c33f468facf44c2312f8bb54422463cffcb92a0eaa1f8954f1fa5f8f5acac0262495c08692a2161325c1ca68f7d23aecb36c1f9138d7ef  0002-pwm-ab8500-Get-HW-ID-from-reg-value.patch
 "
