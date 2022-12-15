@@ -1,0 +1,61 @@
+# Maintainer: Raffaele Tranquillini <raffaele.tranquillini@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-cutiepi-tablet
+pkgdesc="CutiePi Tablet"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base raspberrypi-bootloader linux-rpi4"
+makedepends="devicepkg-dev dtc"
+install="$pkgname.post-install $pkgname.post-upgrade"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo
+	mpu6050-i2c5-overlay.dts
+	backlight.rules
+	config.txt
+	usercfg.txt
+	cmdline.txt
+	95-vchiq-permissions.rules
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	dtc -@ -I dts -O dtb -o mpu6050-i2c5.dtbo mpu6050-i2c5-overlay.dts
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/config.txt "$pkgdir"/boot/config.txt
+	install -Dm644 "$srcdir"/usercfg.txt "$pkgdir"/boot/usercfg.txt
+	install -Dm644 "$srcdir"/cmdline.txt "$pkgdir"/boot/cmdline.txt
+	install -Dm644 "$srcdir"/mpu6050-i2c5.dtbo \
+		"$pkgdir"/boot/overlays/mpu6050-i2c5.dtbo
+	install -Dm644 "$srcdir"/95-vchiq-permissions.rules \
+		"$pkgdir"/etc/udev/rules.d/95-vchiq-permissions.rules
+	install -Dm644 "$srcdir"/backlight.rules \
+		"$pkgdir"/etc/udev/rules.d/backlight.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/Bluetooth firmware"
+	depends="linux-firmware-brcm"
+	mkdir -p "$subpkgdir"/lib/firmware/brcm
+	ln -s "/lib/firmware/brcm/brcmfmac43455-sdio.bin" \
+		"$subpkgdir"/lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-compute-module.bin
+	ln -s "/lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt" \
+		"$subpkgdir"/lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-compute-module.txt
+}
+
+
+sha512sums="
+6e7b92616b8cf8bc4752ab8dd48fa48c9b9c80cbd616b9e9ee9223eac8dcdcf1d5b2a6c4cc1ceb6d04ebe03702141735aa62109546226fc5de50d37ca5920c07  deviceinfo
+afc9f83be2b4d089fa1e2c17f7fcfe7f5131233c5f3ff7bca1d95e080416088c5d2f65b7146021fca6eec492ad67961d1fb5ee58b02fb9ddfa7b5b2a586e238d  mpu6050-i2c5-overlay.dts
+9fbf1e8fcad332980b345b1a5eb0b92e752e6f5490027084f5d5713dc113ea20c71932a44ec5a0e077798fee99e52b8db13c8bb2cd263f4d39bfe9d27ca51b2d  backlight.rules
+26d14d996561ef29de965bdcd9e2ee93192e76c7ab08c805f71bab550d7c938248ca72c744c78f351791d3312751f60ed74b21ce3e16515ceff2a03e0f8e8c01  config.txt
+2d69cf6b05c3a97dde203fd2b174e7817ac85680f8f5adc607bdb0e888dde3e448a5e91848c899ad49fe5f777facba0050ffa25402e5babd1992958bcbd92fd8  usercfg.txt
+ae3de0b8fec07d3a283dc3c06bf8678eec1e65c9faf0b7f4fdc9fb92751e324d1f8e2fb224dbbf561b7e5a6fb34769bfa1657858375f74b101a130d78e0737e2  cmdline.txt
+7e5505cb07d5b4a81bd28443d508336b5c547356538f1c06f91ed93ad0d7d456d4f74f1d24df5a2e08c17e74f0a66607352ac4874e967e9a91dfec9522d2d58d  95-vchiq-permissions.rules
+"
