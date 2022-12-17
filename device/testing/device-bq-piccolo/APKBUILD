@@ -2,14 +2,14 @@
 pkgname=device-bq-piccolo
 pkgdesc="BQ Aquaris M5"
 pkgver=3
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916 soc-qcom-msm8939"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="deviceinfo pointercal"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
@@ -20,6 +20,7 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/pointercal "$pkgdir"/etc/pointercal
 }
 
 nonfree_firmware() {
@@ -31,4 +32,5 @@ nonfree_firmware() {
 
 sha512sums="
 6e66c90b5a1ae54561705c3c28c282de6adba76cdd8cf5e89bddb56e280b85ceba9125cc20c2e831f891d2b89fc3827798cf4087ee7cf1323240411bd58bb815  deviceinfo
+07785092e30dcaca238e7b54ba4df7ad11ea69bec39180129448c7900a07d60171ec79386c3d1eb9bece4b63cd0c5dd8309e5ce4a668f7035733c2c00e84d537  pointercal
 "
