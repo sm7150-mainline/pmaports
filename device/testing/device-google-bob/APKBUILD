@@ -1,0 +1,56 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-bob
+pkgdesc="ASUS Chromebook Flip C101"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-gru
+	depthcharge-tools
+	linux-postmarketos-rockchip
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+source="
+	deviceinfo
+	phoc.ini
+	modprobe.d/accel.conf
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/accel.conf \
+		"$pkgdir"/etc/modprobe.d/accel.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT and DP firmware"
+	depends="linux-firmware-mrvl linux-firmware-rockchip"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+5f9ea58eb7abb554c4c0fd6f76c3a90d905c68034f69f6e9ef351f1806425e6616eef8d648d7aa148cc8c4b5655d8e240a160c0fd22e8ad029db077a266a801d  deviceinfo
+bd63cfc97d37e81dd9559dad60f330c10dc280afd20081495c6302960fcacf32954e3edab53294fcd5278e86c53c47a95b345a8d9e18807d88fe4313d519d259  phoc.ini
+1ba29c50747458b68ed98706c008cfaeea9eff56d2977a23e060f3a9fcf306c9d62d162e2906472d24a6c25596af95e26722c6b55ca97a031b2d5c8db2661390  accel.conf
+"
