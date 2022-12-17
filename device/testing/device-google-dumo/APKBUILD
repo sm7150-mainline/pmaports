@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-dumo
+pkgdesc="ASUS Chromebook Tablet CT100"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-gru
+	depthcharge-tools
+	linux-postmarketos-rockchip
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT and DP firmware"
+	depends="linux-firmware-ath10k linux-firmware-rockchip"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+046dafb336f5c26233cc18169d46d997c4ca1c11ee596c777f928a7367df2dcf1dcff9f67d6dde9f8d137cfcec0b660c29077d38581f8a27482a024e56895519  deviceinfo
+"
