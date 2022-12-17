@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-druwl
+pkgdesc="AOpen Chromebook Commercial Tab / CTL Chromebook Tablet Tx1"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-gru
+	depthcharge-tools
+	linux-postmarketos-rockchip
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT and DP firmware"
+	depends="linux-firmware-ath10k linux-firmware-rockchip"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+0e24f9073517f74f0281419df06a0a01fd296df911b8681348a6da0d71e8b282d61c201e10596bd9dfe0e0c36cf923b069535392894951008b51823ce1e43858  deviceinfo
+"
