@@ -4,7 +4,7 @@ pkgver=3
 pkgrel=0
 pkgdesc="Firmware for Motorola Moto G 2015"
 url="https://github.com/pmsourcedump/firmware-motorola-osprey"
-subpackages="$pkgname-wcnss-nv:wcnss_nv $pkgname-venus"
+subpackages="$pkgname-wcnss $pkgname-wcnss-nv:wcnss_nv $pkgname-venus"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
@@ -19,12 +19,21 @@ builddir="$srcdir/firmware-motorola-osprey-$_commit"
 _fwdir="/lib/firmware/postmarketos"
 
 build() {
+	pil-squasher wcnss.mbn wcnss.mdt
 	# venus.mbn exists already but seems a bit different
 	pil-squasher venus2.mbn venus.mdt
 }
 
 package() {
 	mkdir -p "$pkgdir"
+}
+
+wcnss() {
+	pkgdesc="Motorola Moto G 2015 WiFi/BT firmware"
+
+	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
+	# file contents, so it is fine to install wcnss.mbn to wcnss.mdt
+	install -Dm644 "$builddir"/wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mdt
 }
 
 wcnss_nv() {
