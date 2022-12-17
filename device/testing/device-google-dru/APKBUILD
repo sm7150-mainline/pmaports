@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-dru
+pkgdesc="Acer Chromebook Tab 10"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-gru
+	depthcharge-tools
+	linux-postmarketos-rockchip
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT and DP firmware"
+	depends="linux-firmware-ath10k linux-firmware-rockchip"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+e07c02df50314681fd939dd9ab531c5f9fc4258bf970dcb4b2695bb1275ceef9fb34ef3d047cbe848ff4735a470d9bbdc4570412d80b9d9aac553250283df145  deviceinfo
+"
