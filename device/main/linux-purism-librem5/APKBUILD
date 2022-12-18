@@ -3,7 +3,7 @@
 # Co-Maintainer: Alistair Francis <alistair@alistair23.me>
 pkgname=linux-purism-librem5
 pkgver=6.1.0
-pkgrel=0
+pkgrel=1
 _purismrel=1
 # <kernel ver>.<purism kernel release>
 _purismver=${pkgver}pureos$_purismrel
@@ -39,6 +39,7 @@ _config="config-$_flavor.$arch"
 
 source="
 	$pkgname-$_purismver.tar.gz::https://source.puri.sm/Librem5/linux/-/archive/pureos/$_purismver/linux-pureos-$_purismver.tar.gz
+	0001-dts-imx8mq-librem5-Add-166MHz-to-DDRC-OPP-table.patch
 	$_config
 "
 builddir="$srcdir/$_repository-pureos-$_purismver"
@@ -72,5 +73,6 @@ package() {
 
 sha512sums="
 120ac18a0b93c302062578b3b80ef0d18f351be94b6b89322b25b4fdce416261ef311a327acd42718741db5e1d5516d45109fc7ef8ef338f6af6dfb78cf2beb1  linux-purism-librem5-6.1.0pureos1.tar.gz
+fef3f0dad3a039a3e419c209d9cecc21f4767fe2150b8c5dcf5d70d0c00ee62cf45f71d5f24ef2f88311ca7d63356a5be6399837682e66531be88005c882e629  0001-dts-imx8mq-librem5-Add-166MHz-to-DDRC-OPP-table.patch
 18826512ca9b78d61bda5d892afa31404dccc4be4492ff9a29e69d8c68edebc2ed0c470d6fe8d577f3840a5db0f79221e55ee334dd9b841d2cfd0a2ebe59c22a  config-purism-librem5.aarch64
 "

@@ -1,0 +1,29 @@
+From c78892e4d8d30370430acc1bca24685f4d223b76 Mon Sep 17 00:00:00 2001
+From: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Date: Thu, 15 Dec 2022 17:47:28 +0100
+Subject: [PATCH] dts: imx8mq-librem5: Add 166MHz to DDRC OPP table
+
+This is the lowest frequency supported by older iMX8MQ SoC
+revisions.
+---
+ arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
+index cebbbb81648d..a699dcfba372 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
+@@ -452,6 +452,10 @@ opp-100M {
+ 			opp-hz = /bits/ 64 <100000000>;
+ 		};
+ 
++		opp-166M {
++			opp-hz = /bits/ 64 <166935483>;
++		};
++
+ 		opp-800M {
+ 			opp-hz = /bits/ 64 <800000000>;
+ 		};
+-- 
+2.38.1
+
