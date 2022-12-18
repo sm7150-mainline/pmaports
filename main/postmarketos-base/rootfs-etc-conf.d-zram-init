@@ -1,0 +1,55 @@
+. /etc/deviceinfo
+
+# Size defaults to:
+# - 75% of RAM for devices with 2GB of RAM or less
+# - 50% of RAM for devices with between 2GB and 6GB of RAM
+# - 25% of RAM for devices with greater 6GB of RAM
+# This is loosely based on some data here:
+# https://gitlab.com/postmarketOS/pmaports/-/merge_requests/3752#note_1229631449
+
+_mem_size_mb="$(LC_ALL=C free -m | awk '/^Mem:/{print $2}')"
+
+if [ $_mem_size_mb -le 2048 ]; then
+        _size_pct=75
+elif [ $_mem_size_mb -gt 6144 ]; then
+        _size_pct=25
+else
+        _size_pct=50
+fi
+
+# Allow overriding the size as a percentage of RAM using a deviceinfo var, or
+# disabling it completely
+if [ -n "$deviceinfo_zram_swap_pct" ]; then
+
+        # 0% --> disable zram swap
+        if [ "$deviceinfo_zram_swap_pct" == "0" ]; then
+                echo "zram swap: disabled in deviceinfo, exiting"
+                exit 0
+        fi
+
+        _size_pct="$deviceinfo_zram_swap_pct"
+fi
+
+size0=$(($_mem_size_mb * $_size_pct / 100))
+
+echo "zram swap: activating with size: $size0 MB"
+# zstd (since linux-4.18), lz4 (since linux-3.15), or lzo.
+# Size: zstd (best) > lzo > lz4. Speed: lz4 (best) > zstd > lzo
+algo0=zstd 
+
+# The following are defaults from the zram-init package:
+load_on_start=yes
+unload_on_stop=yes
+num_devices=1
+type0=swap
+flag0= # The default "16383" is fine for us
+mlim0= # no hard memory limit
+back0= # no backup device
+icmp0= # no incompressible page writing to backup device
+idle0= # no idle page writing to backup device
+wlim0= # no writeback_limit for idle page writing for backup device
+notr0= # keep the default on linux-3.15 or newer
+maxs0=1 # maximum number of parallel processes for this device
+labl0=zram_swap # the label name
+uuid0= # Do not force UUID
+args0= # we could e.g. have set args0="-L 'zram_swap'" instead of using labl0

@@ -1,5 +1,5 @@
 pkgname=postmarketos-base
-pkgver=24.1
+pkgver=25
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
@@ -13,6 +13,7 @@ depends="
 	postmarketos-mvcfg
 	postmarketos-keys
 	cmd:sudo
+	zram-init
 	"
 install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-upgrade"
 triggers="$pkgname.trigger=/etc"
@@ -33,6 +34,7 @@ replaces="
 	busybox-openrc
 	openrc
 	sudo
+	zram-init-openrc
 	"
 replaces_priority=100  # leave plenty for alpine
 
@@ -43,6 +45,7 @@ _source440="
 _source644="
 	etc/conf.d/bootmisc
 	etc/conf.d/swapfile
+	etc/conf.d/zram-init
 	etc/conf.d/syslog
 	etc/fstab
 	etc/issue
@@ -122,6 +125,7 @@ e529f5cef1f31481b577f99b8917704f2cfefb963d98bf40a14b017938e55a00134d2033f81d2cb0
 9591c9cb2194fa1092505159c9eb3d899bec95b6dbd9a0222be62098db012da113a125e40d70373d60af9880dfa489bdbe12b6b897bdef5613e023800fb6ee1b  rootfs-etc-doas.d-10-postmarketos.conf
 a5c6bfaf6ee41f9623f463b64dab95924453d7b70bdd114cc441be9fc68fb6b0e042ae3163ec357d0dd6db93767232224b8c03df29f2cadf3ac2c6e2c998784f  rootfs-etc-conf.d-bootmisc
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  rootfs-etc-conf.d-swapfile
+488440c14ff7a662a6a0e5cad9caed1a972f82d2361b4985a68c3f05fab0a3fe9c58887907e66f683c8f8b6c12ba7e17cafdec1aa72cd9055190bd9f7a14c888  rootfs-etc-conf.d-zram-init
 e4576c58c35f80bedddb1e89e186f37d31a186d3e9eb046581b8c5d7b7d435e18924539e851d3e67dc0ede80f9d44d16bd9ef52e73350d3f13224edc31d73a34  rootfs-etc-conf.d-syslog
 9b8d0493bb64457fe176fea801e0771d3c5279302c61559824bf81b3d2b66d2c1e076f4aaac65f55389005acb18c27e44bed858c2bdbad37d74199f07c86c354  rootfs-etc-fstab
 45bd0742a64a9d3c4a88e152b97edcf3fa1edca28884f9ea69e7c4c365f1e41ef9056dbe204545de7d4b2ba92e1e5872b2a929c2dcc1dd468e627cc3f090b8e6  rootfs-etc-issue
