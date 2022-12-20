@@ -1,0 +1,58 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-motorola-smi
+pkgdesc="Motorola RAZR i"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="x86"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-intel-medfield
+	mkbootimg
+	postmarketos-base
+	watchdog-kick
+"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+source="
+	deviceinfo
+	gsk-renderer-cairo.sh
+	phoc.ini
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm755 "$srcdir"/gsk-renderer-cairo.sh -t \
+		"$pkgdir"/etc/profile.d/
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="linux-firmware-ti-connectivity"
+	replaces="linux-firmware-ti-connectivity"
+
+	mkdir -p "$subpkgdir"/lib/firmware/ti-connectivity
+	ln -s wl128x-nvs.bin "$subpkgdir"/lib/firmware/ti-connectivity/wl127x-nvs.bin
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+51936db50cd6b21e6ae6d3b9ce4843e537ec8c967a179a98a4e4511d8cfe2c88513037fc0eecc3b260fff1a0803a2634bd080326a87d7cde41c666d17c01229a  deviceinfo
+3f1422115c9a12f94b6fb7cc4e987f25ea331a9c7cbc34649470bc5557dfc85b79cbc4369e48f12f284ed1e20af6194d8bbb3c5e37227a7d9bc3e6670cd41aa9  gsk-renderer-cairo.sh
+9263024be649673b4c94094fb0807fd2597cfe9b7042902df71b843eb507912ef8df9fd476811db275b11ec2b1a9c6b45eb90cb6a85d699f45666e0cee8d6553  phoc.ini
+"
