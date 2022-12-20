@@ -1,0 +1,61 @@
+_flavor="postmarketos-intel-medfield"
+pkgname=linux-$_flavor
+pkgver=5.10.158
+pkgrel=0
+_commit="c6e874098175b03deb6829c340fccad7bfb5a258"
+pkgdesc="Mainline Kernel fork for Intel Medfield based devices"
+url="https://www.kernel.org/"
+arch="x86"
+_carch="x86"
+_config="config-$_flavor.$arch"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+"
+
+makedepends="
+	bash
+	bison
+	findutils
+	flex
+	linux-headers
+	openssl-dev
+	perl
+	postmarketos-installkernel
+	xz
+"
+
+source="
+	https://gitlab.com/julianwi/linux-intel-medfield/-/archive/$_commit/linux-$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/linux-intel-medfield-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-$_flavor"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	make install modules_install \
+		ARCH="$_carch" INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+8a4e1113e07ed968c82d882fa2b1fcc94017a4dc236b856cb78a32f42480bff9987c0cdd1586a293d78f5d4dd4366c08c534d13a77115bfcac4bf2d1ce416cb4  linux-c6e874098175b03deb6829c340fccad7bfb5a258.tar.gz
+45690af1dad11d4a1a9a7382ff36287b9133389efef201aaa327d4519b2446cff8167d92a06eca932687f7689c3bc64105f0e652427b1ab391bbe162ed650aa3  config-postmarketos-intel-medfield.x86
+"
