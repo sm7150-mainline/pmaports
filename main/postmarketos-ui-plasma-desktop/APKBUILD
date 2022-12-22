@@ -2,7 +2,7 @@
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-desktop
 pkgver=2
-pkgrel=12
+pkgrel=13
 pkgdesc="(X11/Wayland) KDE Desktop Environment (works well with tablets)"
 url="https://www.kde.org"
 # armhf and riscv64 blocked by plasma
@@ -16,7 +16,6 @@ depends="
 	"
 _pmb_recommends="
 	ark
-	audiocd-kio
 	dolphin
 	ffmpegthumbs
 	firefox
@@ -26,9 +25,7 @@ _pmb_recommends="
 	kdialog
 	kfind
 	kio-extras
-	kolourpaint
 	konsole
-	kwrite
 	maliit-keyboard
 	networkmanager
 	networkmanager-cli
@@ -36,7 +33,6 @@ _pmb_recommends="
 	networkmanager-tui
 	networkmanager-wifi
 	networkmanager-wwan
-	okular
 	postmarketos-artwork-wallpapers
 	print-manager
 	qt5-qtvirtualkeyboard
@@ -46,7 +42,6 @@ _pmb_recommends="
 # For the KInfocenter pages in system settings
 _pmb_recommends="$_pmb_recommends
 	aha
-	mesa-demos
 	pciutils
 	vulkan-tools
 	wayland-utils
@@ -57,4 +52,18 @@ options="!check" # No tests for a metapkg
 
 package() {
 	mkdir -p "$pkgdir"
+}
+
+extras() {
+	pkgdesc="Meta package for additional Plasma apps and functionality"
+	# For Kinfocenter: mesa-demos
+	_pmb_recommends="
+		audiocd-kio
+		kolourpaint
+		kwrite
+		mesa-demos
+		okular
+		"
+
+	mkdir -p "$subpkgdir"
 }
