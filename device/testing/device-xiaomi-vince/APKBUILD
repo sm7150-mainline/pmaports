@@ -2,7 +2,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-vince
 pkgdesc="Xiaomi Redmi 5 Plus"
-pkgver=4.1
+pkgver=5
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -12,23 +12,14 @@ depends="postmarketos-base mkbootimg"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
-	$pkgname-alsa
 	$pkgname-modem
 	"
 source="
 	30-gpu-firmware.files
 	deviceinfo
 	fb.modes
-	misc/100-charging.rules
-	misc/buttons.conf
-	misc/charging.sh
-	misc/discharging.sh
-	misc/vince-audioctl.sh
 	pointercal
-	ucm2/msm8953-snd-car/HiFi.conf
-	ucm2/msm8953-snd-car/msm8953-snd-card-mtp.conf
 	"
 
 build() {
@@ -37,57 +28,21 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir"/fb.modes \
-		"$pkgdir"/etc/fb.modes
-	install -Dm644 "$srcdir"/pointercal \
-		"$pkgdir"/etc/pointercal
-	install -Dm644 "$srcdir"/100-charging.rules \
-		"$pkgdir"/etc/udev/rules.d/100-charging.rules
-	install -Dm755 "$srcdir"/charging.sh \
-		"$pkgdir"/usr/lib/device-xiaomi-vince/charging.sh
-	install -Dm755 "$srcdir"/discharging.sh \
-		"$pkgdir"/usr/lib/device-xiaomi-vince/discharging.sh
-	install -Dm755 "$srcdir"/vince-audioctl.sh \
-		"$pkgdir"/usr/lib/device-xiaomi-vince/vince-audioctl.sh
-
-	install -Dm644 "$srcdir"/30-gpu-firmware.files \
-		"$pkgdir"/etc/postmarketos-mkinitfs/files/30-gpu-firmware.files
-
-	# Disable v4l udev rules (video4linux), because without the camera
-	#         firmware blobs this makes udev helper hang (#1033)
-	mkdir -p "$pkgdir"/etc/udev/rules.d
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
+	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
+	install -Dm644 "$srcdir"/pointercal "$pkgdir"/etc/pointercal
+	install -Dm644 "$srcdir"/30-gpu-firmware.files "$pkgdir"/etc/postmarketos-mkinitfs/files/30-gpu-firmware.files
 }
 
 nonfree_firmware() {
 	pkgdesc="Wi-Fi, ADSP Firmware"
 	depends="firmware-xiaomi-vince"
-	install="$pkgname-nonfree-firmware.post-install"
 	mkdir "$subpkgdir"
-}
-
-kernel_downstream() {
-	pkgdesc="Downstream kernel"
-	depends="linux-xiaomi-vince"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline() {
 	pkgdesc="Close to mainline kernel, plenty of working features and fixes"
 	depends="linux-postmarketos-qcom-msm8953 lk2nd-msm8953"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-alsa() {
-	pkgdesc="Audio configuration files"
-	depends="adsp-audio alsa-plugins-pulse alsa-ucm-conf alsa-utils pulseaudio pulseaudio-alsa triggerhappy"
-	mkdir "$subpkgdir"
-	# Install triggerhappy evdev rules for vince
-	install -Dm755 "$srcdir"/buttons.conf -t \
-		"$subpkgdir"/etc/triggerhappy/triggers.d
-	install -Dm644 -t "$subpkgdir"/usr/share/alsa/ucm2/conf.d/msm8953-snd-card \
-		"$srcdir"/msm8953-snd-card-mtp.conf \
-		"$srcdir"/HiFi.conf
 }
 
 modem() {
@@ -98,14 +53,7 @@ modem() {
 
 sha512sums="
 0e8ee21fb65fa2d2f6b27e8d8e18ac8d0347d134002de3bd2fc8262b255edc55f3e2f976daf0a362f418e9213962616fecb90b40576effd1d5d5d09d2a45564d  30-gpu-firmware.files
-3b1b92427e36252e8a2f7febf452d54e778aeda13566b7fbf03106bab26488f352959e4de94308e12c85162fbf7f6d86d8fd827cde222cfa94d1ef7305aa928b  deviceinfo
+406b3e9cc75cbc054381e80c89cbb0fa2e4518e29d8d9254fbf9014ece829ec72a591da186fb622f1944d4f45e79b2c26468c016f9dca605ad1981668522323a  deviceinfo
 9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
-b6951e2f8d2e21aa58f15b600a67289900d645b9dcff9992d0864dea383528539fc8b0140bff6af4eba4bb729db79a3d5d88ba248fcf2b579dd8c3cd0e20ae4e  100-charging.rules
-922519b787ab8d6886f3b2e0ace84de69d0e185208776aedd471828132d13bc6364393cd5c7f97634de014aaf3fb100c9fa4724c97d6d1220320d2e73e0f1947  buttons.conf
-ab320227a6f680b51139ee2943bab315651a50b1681ab161af4b555b41cf1b895e0b3fc0e66590dc51b6a3d914ea6c88a6c0dfefaa11fd0023e473ceffaafeb9  charging.sh
-000bf443d48a32f9ab5279e4adaeaf8b16d32ac3a034d7003db1de240c7cff5eb7bdc75e0fdeb64a07584633aac322682945574ce5873a957ccdad2ad345f5da  discharging.sh
-24762c3f4b0d1e9a035495c05e53852a68d46699e1f41915bd6d68af3d2a22dad075c77209533d92a81693aa45c86018ce825a8b7e7a8c163b59d826d9e204d1  vince-audioctl.sh
 4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
-a72522650df9ff6bda188aeca71b9e2dacf810e1efaa10d8c32eb65e445ffb69e49410f531bc110abab270126140baa047ca847c9ed7a84f231c9c678263fc0e  HiFi.conf
-4d034b7f38831a84d489c25d39b9363f86d701e336163be79f5313eaf3f527a83866e1a0e23c7aabbea706c0fe4dda64dfb8b04353c72ec84ac9a07cf3dae55d  msm8953-snd-card-mtp.conf
 "
