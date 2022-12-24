@@ -3,7 +3,7 @@
 
 _flavor="postmarketos-qcom-msm8994"
 pkgname=linux-$_flavor
-pkgver=5.17.2
+pkgver=6.1.2
 pkgrel=1
 pkgdesc="Kernel mainline Qualcomm MSM8994 and MSM8992 devices"
 arch="aarch64"
@@ -31,13 +31,11 @@ esac
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	config-$_flavor.$arch
-	0001-arm64-dts-qcom-msm8992-lg-bullhead-Place-LG-Bullhead.patch
-	0002-arm64-dts-qcom-msm8994-SoC-specific-compatible-strin.patch
-	0003-arm64-dts-qcom-msm8994-huawei-angler-Add-vendor-name.patch
-	0004-arm64-dts-qcom-msm8994-huawei-angler-Add-sdhc1-defin.patch
-	0005-arm64-dts-qcom-msm8994-Fix-sleep-clock-name.patch
-	0006-dt-bindings-clock-qcom-rpmcc-Add-RPM-Modem-SubSystem.patch
-	0007-clk-qcom-smd-Add-missing-RPM-clocks-for-msm8992-4.patch
+	0001-arm64-dts-msm8992-bullhead-add-memory-hole-region.patch
+	0002-arm64-dts-qcom-msm8992-bullhead-Fix-cont_splash_mem-.patch
+	0003-arm64-dts-qcom-msm8992-bullhead-Disable-dfps_data_me.patch
+	0004-arm64-dts-qcom-msm8992-Don-t-use-sfpb-mutex.patch
+	0005-arm64-dts-msm8994-angler-fix-the-memory-map.patch
 "
 builddir="$srcdir/linux-$_kernver"
 
@@ -67,13 +65,11 @@ package() {
 }
 
 sha512sums="
-d62537333c1cedf839e95bfcbf757f45dd063f27ecf7fbba910f04663c9bb259438c1616f4bd68c5b59157d79dbd40815bf13d3b3e99a18cbade2b32e4dc5483  linux-5.17.2.tar.xz
-8f4972dfe2142aca4836255cdedea9bb9fa8ea06273ec61b87b32abc9eaa44ad7966f81f0b639ab0a3edd6eba43bdfdef57c9c926a8a7627e5d0e487ea2d6c70  config-postmarketos-qcom-msm8994.aarch64
-e2283b4b6624c22856b1f68d21ac81a42a1cfe17ebbfacdf85e1070edc987e01f09cb25de4d9454e4f4491a8815a7c3a8ab19a314f1246d707e0e491808d60a4  0001-arm64-dts-qcom-msm8992-lg-bullhead-Place-LG-Bullhead.patch
-f50b54d3f2f77b4fd14edb5d64791ea015d28e7de537ff01729320075e996685c3c9856e82b3c88a5bfad9f9a1a2ff7d700e7e831c9e41b3a0852f070816e94d  0002-arm64-dts-qcom-msm8994-SoC-specific-compatible-strin.patch
-28be5b50a3a99c04e595a01c7ae5aef248dce51c67d7c27b4168e6f49578b948a675388e9d3590ad214e866ace441beae87dba15a3ab42309ab3e6b1addcf17e  0003-arm64-dts-qcom-msm8994-huawei-angler-Add-vendor-name.patch
-5f02fe1063a260f7741ed252f3e09db2e2ae252c26b5909ec74168438aac9ce9a5b6ac684f359fa8b540bef06cd03b8d02daffc5a0d65693c7827cd82dfa189a  0004-arm64-dts-qcom-msm8994-huawei-angler-Add-sdhc1-defin.patch
-3c3d9a7000f2892d57d67178cef4ff9d4efc56f8fbfdf75dc45e19c84ead40a02ea91da71074be57b7abc06be2a9e71711308951fd0ca9c0189ef0ca7515a5e5  0005-arm64-dts-qcom-msm8994-Fix-sleep-clock-name.patch
-31ca34945bfcdccd1ae4e41471f6ee05da56b8cd1b5ef7d331d4b743f77b2f302024986e0e057fea5d3aaeaea4aaa42e88f9ddf2dc3a7223cc6649ad95ff36de  0006-dt-bindings-clock-qcom-rpmcc-Add-RPM-Modem-SubSystem.patch
-e982f438044c5b4b728699f49d4bcb317efc3be6609162dffe105fc6777d3a369789db5981cfb77fc6d66b4ba24f074d48ff2e51882a883abe7f878ee4881eb7  0007-clk-qcom-smd-Add-missing-RPM-clocks-for-msm8992-4.patch
+a906c15b1eb4f3015b1d9a0e6a321b5a399e77ccd0127cb8caabbe7cb337e77a85a432bac4763ab5448d86dd319441eef865aad41939ca1f796663c2b52170e6  linux-6.1.2.tar.xz
+4191f3ffd3ca9a4c5e3986e57ca31d69d811045b91cb357957bd2d794b9cfb88fbbd9c6597cbd04aae74e5015d61c8344b4f20962cafbdb72a7dea94b05a26a9  config-postmarketos-qcom-msm8994.aarch64
+878a48bff265b91e7970c84d3d8dc38753fdc15d7412db9000c2974989fa8fefc312bab0abd442365f83e7af27e2eb712d7f6abc41ab9c20fbe9f4e4419a9a94  0001-arm64-dts-msm8992-bullhead-add-memory-hole-region.patch
+901fcae7ae813ea0a4d301283f423cd84696c7200075170c0385027955daa5796cd658cbb34d3d65053b50867638d78acb86913666f6ea48c5c59bb6e68f70d1  0002-arm64-dts-qcom-msm8992-bullhead-Fix-cont_splash_mem-.patch
+6d06b1770dd8471fcc4c4fb1f37707833f3d1da1d8a2a58ca311c73dcbedb8ecdf2e8e52512a90676bd7a0a328585023aa8b94feeb4b0bafd75ca57cd1d637a1  0003-arm64-dts-qcom-msm8992-bullhead-Disable-dfps_data_me.patch
+293b85417ffecfe59ae0955a98eb2232f98f676bcc4cc0743df9b4f945d8059a17bb09714e5abccc93e2858b13a0006e154c4f5efaecde0c544a31170671fb73  0004-arm64-dts-qcom-msm8992-Don-t-use-sfpb-mutex.patch
+645a22550864f9f98798ff7334eef654537a113e0e6988282a68909d7d78e7a7122fb11cf12b6c44aff23d3c51964113d39fd1e387809c6d1576f5dd237d4b0d  0005-arm64-dts-msm8994-angler-fix-the-memory-map.patch
 "
