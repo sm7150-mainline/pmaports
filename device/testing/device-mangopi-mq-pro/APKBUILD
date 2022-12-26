@@ -1,0 +1,84 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-mangopi-mq-pro
+pkgdesc="MangoPi MQ-Pro"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="riscv64"
+# pmb:strict: avoid grub-related install error during build with pmbootstrap
+options="!check !archcheck pmb:strict"
+depends="
+	linux-postmarketos-allwinner-d1
+	postmarketos-base
+	u-boot-tools
+	u-boot-mangopi-mq-pro
+"
+makedepends="
+	devicepkg-dev
+	grub
+	grub-efi
+	"
+source="
+	deviceinfo
+	grub_early.cfg
+	grub.cfg
+	uboot-script.cmd
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	grub-mkimage \
+		--config="$srcdir/grub_early.cfg" \
+		--prefix="" \
+		--output="BOOTRISCV64.EFI" \
+		--format="riscv64-efi" \
+		--compression="xz" \
+		\
+		all_video \
+		cat \
+		configfile \
+		disk \
+		echo \
+		efi_gop \
+		fat \
+		ext2 \
+		gzio \
+		help \
+		iso9660 \
+		linux \
+		ls \
+		normal \
+		part_gpt \
+		part_msdos \
+		search \
+		search_label \
+		test \
+		true
+	mkimage -A riscv -O linux -T script -C none -a 0 -e 0  \
+		-n postmarketos -d "$srcdir"/uboot-script.cmd \
+		"$srcdir"/boot.scr
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/BOOTRISCV64.EFI \
+		"$pkgdir"/boot/EFI/BOOT/BOOTRISCV64.EFI
+	install -D "$srcdir"/grub.cfg \
+		"$pkgdir"/boot/grub/grub.cfg
+	install -D -m644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+
+	}
+
+
+
+sha512sums="
+d30ee6bea102258278a0ba23b9e8512e8f969220175bd275faa7aeb51ad922215d9b4a73c68dfc8f93a681690d307c76807c4238b28c69ea30346a0a63010138  deviceinfo
+611908cde1084216ac5013b86019edc91cdae42c3557fd87e244df1815150a2b0a95e24951ee1cc43fc47771a136cf1c1afa95d9daf7ee17d3158a50bd2d1c0d  grub.cfg
+95cbead11ff1c299e8f47af5a8b36c6e55ec8b41eb5dee54c9db28d707b42ffac94a81115edb960f844aa8fce417ec23a82d39e334090698e0fc45a3d880b471  grub_early.cfg
+54824f653c983be53afdbc7f024245562c7ca52413b0eeb1bbec74b70d8edc453a52437da9eeb331625bcc51f7a80928e40fca7de927f09879dc13fcb07e54ad  uboot-script.cmd
+"
+
