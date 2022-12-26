@@ -1,0 +1,58 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-nokia-sparkler
+pkgdesc="Nokia 8000 4G"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="GPL-2.0-only"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-msm8916
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8909
+	soc-qcom-msm8916-rproc
+"
+_pmb_select="soc-qcom-msm8916-rproc"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+makedepends="devicepkg-dev mipi-dbi-cmd"
+_panel="nokia,sparkler-gc9307-hlt-28-panel"
+source="
+	$_panel.txt
+	00-nokia-sparkler-display.files
+	deviceinfo
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkdir -p "$builddir"
+	mipi-dbi-cmd "$builddir"/"$_panel".bin \
+			"$srcdir"/"$_panel".txt
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	# Package display init sequence
+	install -Dm644 "$builddir"/"$_panel".bin -t \
+			"$pkgdir"/lib/firmware/
+	install -Dm644 "$srcdir"/00-nokia-sparkler-display.files -t \
+			"$pkgdir"/etc/postmarketos-mkinitfs/files/
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="
+		firmware-qcom-adreno-a300
+		msm-firmware-loader
+		firmware-nokia-sparkler-venus
+		firmware-nokia-sparkler-wcnss-nv
+	"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+721d740ff8dbbbafff4bc734228a82bd57d76177b9bf417d660ecb181a72a998319ddbde77d0efc5e875d2256596578212e3e0bfb85c2e77e5bbf6d0e88d9fa4  nokia,sparkler-gc9307-hlt-28-panel.txt
+89b3dd5bf1dd5e85bf66bfb6dba56e2a8e919fe3aa7dc369c18c9e56f7e0ae88319186551412497a601081b904c12dd07ebed4f39fd4a4ba6199fb8af9c90f40  00-nokia-sparkler-display.files
+6279651bed23b7f5b1b129cb5aa96389432426a7d9119e80665e497df353a77201335eaa53cb14923bb3cf0b98a2f33f1c884076162459f3d62fd1c9760d2f96  deviceinfo
+"
