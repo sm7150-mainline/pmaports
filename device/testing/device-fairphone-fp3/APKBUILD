@@ -1,16 +1,16 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-fairphone-fp3
 pkgdesc="Fairphone 3"
-pkgver=0.5
+pkgver=0.6
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
-	msm-fb-refresher
 	mkbootimg
 	postmarketos-base
+	swclock-offset
 "
 makedepends="devicepkg-dev"
 source="deviceinfo"
@@ -32,7 +32,7 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Downstream kernel (recommended)"
-	depends="linux-fairphone-fp3"
+	depends="linux-fairphone-fp3 msm-fb-refresher"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
