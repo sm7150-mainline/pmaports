@@ -1,0 +1,79 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: https://github.com/150balbes/build/blob/risc-v/config/kernel/linux-d1-current.config
+# Kernel config based on: arch/riscv/configs/nezha_defconfig
+
+_flavor="postmarketos-allwinner-d1"
+pkgname=linux-$_flavor
+pkgver=6.1_rc3
+pkgrel=0
+pkgdesc="Mainline kernel fork for d1/d1-h"
+arch="riscv64"
+_carch="riscv"
+url="https://github.com/smaeul/linux/tree/riscv/d1-wip"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-nftables
+"
+makedepends="
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	gmp-dev
+	installkernel
+	mpc1-dev
+	mpfr-dev
+	openssl-dev
+	perl
+	rsync
+	xz
+	bash
+"
+
+_commit="9496edef9edad6eb4a3c6808b0d81fe68754f02f"
+_config="config-$_flavor.$arch"
+
+# Source
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/smaeul/linux/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/linux-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" CARCH=riscv\
+		CFLAGS_MODULE=-fno-pic \
+		DTC_FLAGS="-@"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+		"$pkgdir/boot/vmlinuz"
+
+	make modules_install dtbs_install \
+		CARCH=riscv \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot/ \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+7f3daae1964118df9a764557848742e8d34a40c26c41bf4c3012cbbbd78c3d795041e9081c9312a0f088aadd4126887238ee1aafec3f9137fc755f4865e2f5b1  linux-postmarketos-allwinner-d1-9496edef9edad6eb4a3c6808b0d81fe68754f02f.tar.gz
+180222615f4d44ea8a2ed53819ab238b3dd2720993c666c1090ccfb640d83cdb1c48f6aadabf3a59020bb9d25fbf369c4f6b96e20422c3e5748800e6e0f0b6a4  config-postmarketos-allwinner-d1.riscv64
+"
