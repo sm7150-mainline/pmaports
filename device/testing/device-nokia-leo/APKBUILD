@@ -1,0 +1,58 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-nokia-leo
+pkgdesc="Nokia 6300 4G"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="GPL-2.0-only"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-msm8916
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8909
+	soc-qcom-msm8916-rproc
+"
+_pmb_select="soc-qcom-msm8916-rproc"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+makedepends="devicepkg-dev mipi-dbi-cmd"
+_panel="nokia,leo-gc9305-hlt-24-panel"
+source="
+	$_panel.txt
+	00-nokia-leo-display.files
+	deviceinfo
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkdir -p "$builddir"
+	mipi-dbi-cmd "$builddir"/"$_panel".bin \
+			"$srcdir"/"$_panel".txt
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	# Package display init sequence
+	install -Dm644 "$builddir"/"$_panel".bin -t \
+			"$pkgdir"/lib/firmware/
+	install -Dm644 "$srcdir"/00-nokia-leo-display.files -t \
+			"$pkgdir"/etc/postmarketos-mkinitfs/files/
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="
+		firmware-qcom-adreno-a300
+		msm-firmware-loader
+		firmware-nokia-sparkler-venus
+		firmware-nokia-sparkler-wcnss-nv
+	"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+8583c7d5a97c4efedff3ec554cf682d815fd7b83140c2cab9eec4b6e2e735ce3c012bc3bd97f8bc75adc3483f76ce83a5bf1090d4f3e73a327efc64ca9eca5a7  nokia,leo-gc9305-hlt-24-panel.txt
+c9985232e5e64ddb0906b053e5024c87fa62cc1bcb254260e1ef6afb43d384196e09d41287143bcba61dff616dd6b562a5ca335dbe592fcd8c954642b8085f38  00-nokia-leo-display.files
+29b261a4c9d8a6101ef91898e725ae92372416a743a8dd895bace543ddd06b727237f4ea411d56b5e3f3e9c7d5c726876a802bcec86db0a851653e8f0f6bf717  deviceinfo
+"
