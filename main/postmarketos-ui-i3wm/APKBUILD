@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=postmarketos-ui-i3wm
-pkgver=0.3
-pkgrel=13
+pkgver=0.4
+pkgrel=0
 pkgdesc="(X11) Tiling WM (keyboard required)"
 url="https://i3wm.org"
 arch="noarch"
@@ -13,8 +13,8 @@ depends="
 	elogind
 	i3status
 	i3wm
-	lightdm
-	lightdm-openrc
+	tinydm
+	tinydm-openrc
 	mesa-egl
 	networkmanager
 	networkmanager-cli
@@ -24,22 +24,15 @@ depends="
 	networkmanager-wwan
 	postmarketos-base-ui
 	st
-	xinput
 	xorg-server
-	xset
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="lock.sh 65-lightdm-autologin.conf"
 options="!check"
 
-package() {
-	install -Dm755 "$srcdir"/lock.sh \
-		"$pkgdir"/usr/bin/lock.sh
-
-	install -Dm644 "$srcdir"/65-lightdm-autologin.conf \
-		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/65-autologin.conf
+build() {
+	return 0
 }
-sha512sums="
-caf9f4c45d11c28e1a6681255fafe5a286b0c417737fac1ca0ee37d3f82fd65c1712f5180375d7813fa308dfdca91d96876b5ce5b05b55ac14cfc31303b1ea5f  lock.sh
-60f4e1f3314ce8de6b92a2eb642f199c5ed24a18981958d787f0e876fa629598340cf467ab991dda4e3927ed6b11011dc0357bdcf0e5f1baac444939b4647445  65-lightdm-autologin.conf
-"
+
+package() {
+	mkdir -p "$pkgdir"
+}

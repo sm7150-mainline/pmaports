@@ -2,8 +2,8 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=8.3
-pkgrel=3
+pkgver=8.4
+pkgrel=0
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
@@ -41,6 +41,7 @@ source="
 	keymaps/rx51_fise.map
 	keymaps/rx51_it.map
 	keymaps/rx51_us.map
+	lock.sh
 	n900-wlan-data.initd
 	pointercal
 	uboot-script.cmd
@@ -118,10 +119,13 @@ package() {
 
 x11() {
 	install_if="$pkgname xorg-server"
+	depends="xset xinput"
 	install -D -m644 "$srcdir"/40-xkb.conf \
 		"$subpkgdir"/etc/X11/xorg.conf.d/40-xkb.conf
 	install -D -m644 "$srcdir"/xorg.conf \
 		"$subpkgdir"/etc/X11/xorg.conf.d/11-n900.conf
+	install -Dm755 "$srcdir"/lock.sh \
+		"$pkgdir"/usr/bin/lock.sh
 }
 
 xkeyboard_config() {
@@ -187,6 +191,7 @@ dc585e11bf4e06e36c5c62bcc024eaacecc30437d9da5257df14be05e247a2f2bc208874be3058ed
 0a3e58a3a81c463937caf508a76461b4cc43f593f0817a52b6581fdd132cc894c0960fe7b950b6e6bfac1fad15cd9dd230c103fcf08a30b44ef7d8fbe31cea28  rx51_fise.map
 082a5166e38296b097e873b0b4aeaf007e594d3bf4470c74e91ee3efedcf28ad25cd55c23dd63e460339898ae08e77e111b0e1092fa5e661db90bb40732103a1  rx51_it.map
 e440ed7a3070c17e003b86b72dbe6d8194d01b577ca8dd56dd066f216b6dda32bb965c780950f1789a66f7c948290016b048da9f1cf63aba9e11d7e7fd6873ba  rx51_us.map
+caf9f4c45d11c28e1a6681255fafe5a286b0c417737fac1ca0ee37d3f82fd65c1712f5180375d7813fa308dfdca91d96876b5ce5b05b55ac14cfc31303b1ea5f  lock.sh
 b50e7f37ffb1fa0bb782b117a4e8bcfdb722b6127c3e5d643e90cd901a1f4e65e77a0773ed418673c8195595347482be0c8096f5a723e840315ad61ccd043b66  n900-wlan-data.initd
 143c21f0b18a016d37cb44178e9daea09f128a90769b48353c03c3f245cb9b1f7e773b9ccee084973fc78ddd7a18c2642e54888a85bda7c7daecddc9a8c62eff  pointercal
 9aaae66ae159236346f67818c44da61aed84a63b3bac0c706492f198db82fc67c2378bcabaf260b695b980bf2faf144472f15355bb097b021551db9547f2e1bc  uboot-script.cmd
