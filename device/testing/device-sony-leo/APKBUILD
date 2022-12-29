@@ -2,8 +2,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-sony-leo
 pkgdesc="Sony Xperia Z3"
-pkgver=0.2
-pkgrel=1
+pkgver=0.3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -15,6 +15,7 @@ depends="
 "
 makedepends="devicepkg-dev"
 subpackages="
+	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-nonfree-firmware:nonfree_firmware
 	"
@@ -34,12 +35,18 @@ kernel_downstream() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
+kernel_mainline() {
+	pkgdesc="Kernel close to mainline"
+	depends="linux-postmarketos-qcom-msm8974"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
-	pkgdesc="Wifi and touchscreen firmware"
-	depends="firmware-sony-leo"
+	pkgdesc="Wifi/GPU firmware"
+	depends="linux-firmware-brcm linux-firmware-cypress firmware-qcom-adreno-a330"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-e03ad1d4cb45929b1f3401c5d4b09e2c2c8b5a770f5adeecd7f0403af25e401d3e18dd72585a0069c82ba80c029fe692538c1ffafcfbbf63027d280c6bb87cca  deviceinfo
+46d4d5cb5611fada17e8800dcccaee1573a18dd434ce0332bb647f26a2127c080a52c9e253c828bb559272eea851f980937b6d7088617180b8b06848cb71efa1  deviceinfo
 "
