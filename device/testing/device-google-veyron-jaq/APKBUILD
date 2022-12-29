@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-veyron-jaq
+pkgdesc="Google Veyron Jaq Chromebooks"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	depthcharge-tools
+	linux-google-veyron
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-mrvl"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+d8d46836b2e26b6fc9c070d044a135a499809e62a6f52da6c439d265e4051505307251c1386e57228bef87fbd111b4b3896433eb65f39dfa66134ac9e5b3f4e2  deviceinfo
+"
