@@ -38,6 +38,7 @@ start_unudhcpd
 mount_boot_partition /boot
 show_splash_loading
 extract_initramfs_extra /boot/initramfs-extra
+setup_udev
 # charging-sdl does not work properly at the moment, so skip it.
 # See also https://gitlab.com/postmarketOS/pmaports/-/issues/1064
 # start_charging_mode

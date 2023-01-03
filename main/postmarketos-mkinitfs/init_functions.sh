@@ -62,10 +62,12 @@ setup_firmware_path() {
 setup_mdev() {
 	# Start mdev daemon
 	mdev -d
+}
 
-	# If udevd and udevadm are present in the initfs, coldplug all devices so that
-	# they can be used via libinput (e.g. by unl0kr). This is the same series of steps
-	# performed by the udev, udev-trigger and udev-settle RC services. See also:
+setup_udev() {
+	# Use udev to coldplug all devices so that they can be used via libinput (e.g.
+	# by unl0kr). This is the same series of steps performed by the udev,
+	# udev-trigger and udev-settle RC services. See also:
 	# - https://git.alpinelinux.org/aports/tree/main/eudev/setup-udev
 	# - https://git.alpinelinux.org/aports/tree/main/udev-init-scripts/APKBUILD
 	if command -v udevd > /dev/null && command -v udevadm > /dev/null; then
