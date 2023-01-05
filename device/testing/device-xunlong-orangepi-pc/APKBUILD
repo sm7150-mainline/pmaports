@@ -1,0 +1,25 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Marco Loletti <marco.loletti@zohomail.eu>
+pkgname=device-xunlong-orangepi-pc
+pkgdesc="Xunlong Orange Pi PC"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="GPL-3.0-or-later"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-allwinner
+	postmarketos-base
+	u-boot-sunxi
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+f03f27dbb76cb5e4946a8290c9778074aeb86d15897334c8f75901a9593a4d783ab0d585df9ce62935eedeba2f9bfc30ebf139035ffe8240436b24bffdf6f756  deviceinfo
+"
