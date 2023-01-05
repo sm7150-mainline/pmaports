@@ -1,0 +1,54 @@
+pkgname=u-boot-pine64-pinenote
+pkgver=2023.04_git20232303
+pkgrel=0
+pkgdesc="u-boot bootloader for the Pinenote (rk3566)"
+url="https://gitlab.com/a-wai/u-boot-pinenote"
+arch="aarch64"
+license="GPL-2.0-or-later OFL-1.1 BSD-2-Clause BSD-3-Clause eCos-2.0 IBM-pibs
+	ISC LGPL-2.0-only LGPL-2.1-only X11"
+options="!check"
+
+makedepends="
+	bc
+	bison
+	dtc
+	flex
+	libfdt
+	make
+	openssl-dev
+	py3-elftools
+	py3-setuptools
+	python3-dev
+	swig
+"
+
+_commit="2e0e11b8e65c48a43270f4ec4a88b74c8a83e269"
+_ram_commit="9e44f3e17cc51378df294fcd909be48c0f07b47b"
+_bl31_commit="7fac639ad6e3949ddb571cc9646c564d9af2bdeb"
+
+builddir=$srcdir/u-boot-rockchip-$_commit
+
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/Kwiboo/u-boot-rockchip/archive/$_commit.tar.gz
+	ram_init.bin::https://github.com/rockchip-linux/rkbin/raw/$_ram_commit/bin/rk35/rk3566_ddr_1056MHz_v1.16.bin
+	bl31.elf::https://github.com/rockchip-linux/rkbin/raw/$_bl31_commit/bin/rk35/rk3568_bl31_v1.42.elf
+"
+
+build() {
+	export ROCKCHIP_TPL=$srcdir/ram_init.bin
+	export BL31=$srcdir/bl31.elf
+	make pinenote-rk3566_defconfig
+	make
+}
+
+package() {
+	install -Dm644 u-boot-rockchip.bin \
+		-t "$pkgdir"/usr/share/u-boot/pine64-pinenote
+}
+
+
+sha512sums="
+7cc310164fb04986acd9e3aca6df6279ee65edd5f51167f9fd011c405bd503ee5811cd4ebca8fa79ec312335ed4e8006b79523c6312b46bf670f8305c8c5c228  u-boot-pine64-pinenote-2e0e11b8e65c48a43270f4ec4a88b74c8a83e269.tar.gz
+4cac163b76bfe405dbe3889ed146c9e2af384862b9c9e17e6bad3ad036a206e7160deee0a319eff5d25d512b3ab89d313183fde6848da6117540363f4416dad8  ram_init.bin
+97ce818a8b6f6434811a2b2a31bbac0863badc89696bd9e6a2596e37faf8dc5c948adc86bd159bff5570628270cfcb322fe28728a501ccc9371ac8848473c3ba  bl31.elf
+"
