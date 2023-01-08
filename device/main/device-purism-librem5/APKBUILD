@@ -3,7 +3,7 @@
 # Co-Maintainer: Alistair Francis <alistair@alistair23.me>
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
-pkgver=1.37
+pkgver=1.38
 pkgrel=0
 _confver=54
 _purismrel=1
@@ -44,6 +44,7 @@ source="
 	l5-ship-mode.initd
 	l5-lockdown-support.initd
 	org.freedesktop.GeoClue2.service
+	brcmfmac-no-powersave.conf
 "
 subpackages="
 	$pkgname-geoclue
@@ -169,6 +170,12 @@ package() {
 	install -Dm755 "$srcdir"/l5-lockdown-support.initd \
 		"$pkgdir"/etc/init.d/l5-lockdown-support
 
+
+	# disable PM for brcmfmac wifi / Sparklan WLAN
+	# see: https://source.puri.sm/Librem5/linux/-/issues/404
+	install -D -m644 "$srcdir"/brcmfmac-no-powersave.conf \
+		-t "$pkgdir"/etc/NetworkManager/conf.d
+
 	devicepkg_package $startdir $pkgname
 }
 
@@ -196,4 +203,5 @@ b45749fcddfd65a302b502bcabfa5828d1b63e45d844fd50e44009a756b919db20fe9526102947c0
 c723764d507ccd4b04aa5ce79b1d1ebc131873cdc37a943cb0f92b8a08a3c69eb9e0d31fcd4589fd8c40a9676bae9897e4f12ec2ebe4db8214ac85669ef35a53  l5-ship-mode.initd
 f4b314d553655f7975445ac0a33099923e20dabb082c07e2cf6a78e4118c143d777dd4ad2c09cbc388600bdefe8deb3073fbd15b238772ddf09c66ac46415590  l5-lockdown-support.initd
 fd91bcd8cecd509587f0a26d454157a1df094d2d86c75329d1002e9474946494d4d1b5407e055fbd5f21e22394eeb1bbd4b3439ae6925db50a3427b4fac101cf  org.freedesktop.GeoClue2.service
+7e679cbd0970d017790e4217a027128a0c99c20a1b757cbce49d92eb0df9fa54148017313dc27bcd1029ab6c904f98c5c4032a1f5db7849401a55cb2e564add1  brcmfmac-no-powersave.conf
 "
