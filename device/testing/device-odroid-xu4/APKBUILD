@@ -3,39 +3,26 @@
 
 pkgname=device-odroid-xu4
 pkgdesc="ODROID XU4"
-pkgver=0.1
-pkgrel=2
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="linux-postmarketos-exynos5
-	 postmarketos-base
+	 postmarketos-base>=25-r1
 	 u-boot-odroid
-	 u-boot-tools
 	"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo uboot-script.cmd"
+source="deviceinfo"
 
 build() {
 	devicepkg_build $startdir $pkgname
-	mkimage \
-		-A arm \
-		-O linux \
-		-T script \
-		-C none \
-		-a 0 \
-		-e 0 \
-		-n postmarketos \
-		-d "$srcdir"/uboot-script.cmd \
-		"$srcdir"/boot.scr
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir"/boot.scr \
-		"$pkgdir"/boot/boot.scr
 }
 
 nonfree_firmware() {
@@ -45,6 +32,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-59528a57adafb1510c86a8ae1569243488a0abbe6907543f33a03ff1bdc60780c58ebe409b99e6d81b2bbaea6972965d194924e4117a06c3dfb88fa6b44032a5  deviceinfo
-d6001fde71fb393ddf74838a7c2a29635a540f9f466ba8dfdea0fd053bbe99ffa491cb05a0b510f58ca31c80d8483387b1d019e905ff09b9f44a1033fcda7705  uboot-script.cmd
+dc89cd7b207b84fa8bdd1d26ffc16f89261123c92b3575e4b998cbdffa0752ebcf7fa130ec742cfb13b2066d7ae1bb9fb55621d67840ebfec17ab9fe5064866c  deviceinfo
 "
