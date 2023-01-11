@@ -38,7 +38,11 @@ def test_aports_device(args):
         apkbuild = pmb.parse.apkbuild(path)
 
         # Depends: Require "postmarketos-base"
-        if "postmarketos-base" not in apkbuild["depends"]:
+        depend_flag = False
+        for dependency in apkbuild["depends"]:
+            if "postmarketos-base" == dependency or "postmarketos-base>" in dependency:
+                depend_flag = True
+        if not depend_flag:
             raise RuntimeError("Missing 'postmarketos-base' in depends of " +
                                path)
 
