@@ -2,7 +2,7 @@
 # Co-Maintainer: Segfault <awarnecke002@hotmail.com>
 pkgname=linux-google-nyan
 pkgver=5.18.5
-pkgrel=1
+pkgrel=2
 pkgdesc="Mainline kernel fork for Google Nyan Chromebooks"
 arch="armv7"
 _carch="arm"
@@ -59,7 +59,7 @@ package() {
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_MOD_STRIP=1 \
-		INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
 	install -D "$builddir"/include/config/kernel.release \
