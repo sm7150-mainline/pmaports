@@ -16,8 +16,10 @@ if grep -qr '(CHANGEME!)' *; then
 fi
 
 # DTBs installed to /usr/share/db
-if grep -r 'INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb'; then
-	echo 'Please do not install dtbs to /usr/share/dtb!'
-	echo 'Unless you have a good reason not to, please put them in /boot/dtbs'
+if grep -qr 'INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb' device/; then
+	echo 'ERROR: Please do not install dtbs to /usr/share/dtb!'
+	echo 'ERROR: Unless you have a good reason not to, please put them in /boot/dtbs'
+	echo 'ERROR: Files that need fixing:'
+	grep --color=always -r 'INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb' device/
 	exit 1
 fi
