@@ -3,7 +3,7 @@
 # Co-Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.44
+pkgver=0.45
 pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
@@ -55,6 +55,7 @@ source="
 	pulse-pinephone.conf
 	sensorfw/90-pinephone.conf
 	setup-modem.sh
+	sun50i-a64-psci.dts
 	uboot-script.cmd
 	uboot-user.cmd
 	ucm/HiFi.conf
@@ -96,12 +97,22 @@ build() {
 		-O dtb \
 		-o "$srcdir"/pinephone-vccq-mod.dtbo \
 		"$srcdir"/pinephone-vccq-mod.dts
+	# Build Device Tree Overlay for psci cpu
+	dtc \
+		-@ \
+		-I dts \
+		-O dtb \
+		-o "$srcdir"/sun50i-a64-psci.dtbo \
+		"$srcdir"/sun50i-a64-psci.dts
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
 	install -Dm644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
+
+	install -Dm644 "$srcdir"/sun50i-a64-psci.dtbo \
+		"$pkgdir"/boot/sun50i-a64-psci.dtbo
 
 	# Make /boot/allwinner/sun50i-a64-pine64-pinephone*.dtb resolve to
 	# /boot/sun50i-a64-pine64-pinephone*.dtb. This is because the device tree
@@ -225,7 +236,8 @@ d66ecef1fa5481ff138fe4e12b194903ceacab9d0649e716049f32e56ec6d9be09b97e2ff769ebc5
 9c472065b19141dd4c7555869b955de2e679b36e597f9fa3bdac18d0e9460986b0e2fffe1e04751301305f1b6474c1375803afb7d6212eeae91b4905d0bf8ff8  pulse-pinephone.conf
 967e3a43c7e91ed37fc932a7c580cd168ca11d8ec7f60ff60ece7f286e5144f27faead95162fa7d571a2317ed0da970fd86f5bc9ed0235a25c0be9182d42d64d  90-pinephone.conf
 420ee1d7522d4d56c2909580fd6ba7580483ca5455b13eb6d22e700063ce0c1a5c6d2f5b161dfce0d777636fe9a712aa82f38a0585f2feabea3785b02bae7515  setup-modem.sh
-24b241b6a30ecde8ec66b45f08d09d17d8ab0753cc5e8c75142b850af21d829d1f45e83e6b892f5cbad40f4fa3550de23e2b4d21f7727ada0e79751b0b0a1010  uboot-script.cmd
+1f573b4a6686dac30b6e20507ec6590764a9e9e60c5373bda3838b1f25370b447a3220670710c43a64eb518a4aa54d4ab3beb942513ef269e596a73653c6528e  sun50i-a64-psci.dts
+3c5c7cb57dee019fbc53b40023097f39be08bbaabd111d9d0b71c2d6190280bcbc54a98506cce5640aa064747d6eeb63a9bc3defdddf41ddc16c123112ad35ee  uboot-script.cmd
 f28902517bebe16f7ddbdbf9f4c52d5c97319e3b5ba7326ba96ed0e094d3d2a39c87061326893cdc34336bbfd56de084b2f217918ebba7ca6a080088cd0bd409  uboot-user.cmd
 f963898fa2ce66bc830e56feeec6ffc9888834e14cc1591d72908ef45ad82532bc3ef5fb32413e07b6722749c9d03e7cf92f06f1fcb859c38b9297cf58e5cedd  HiFi.conf
 4b0c51ab169aebe8177c5c43eba41afa90370098a5a54e710d17e97ec1651869a20cb5d780a6132028c864916609e3b4f4a13158835310d0441bdb4915872372  PinePhone.conf

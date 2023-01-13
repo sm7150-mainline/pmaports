@@ -13,8 +13,32 @@ setenv bootargs init=/init.sh rw console=tty0 console=ttyS0,115200 earlycon=uart
 
 printenv
 
+echo Detecting psci idle state
+fdt addr ${fdtcontroladdr}
+fdt get name pscifdt /cpus/idle-states /
+if test $? -eq 0; then
+	echo PSCI idle state enabled;
+	setenv iscpscienabled 1;
+else
+	echo PSCI idle state disabled;
+fi
+
 echo Loading DTB
 load mmc ${mmc_bootdev}:1 ${fdt_addr_r} ${fdtfile}
+fdt addr ${fdt_addr_r}
+fdt resize 2048
+
+if printenv ram_freq; then
+	echo Adding FTD RAM clock
+	fdt mknode / memory
+	fdt set /memory ram_freq ${ram_freq}
+fi
+
+if test ${iscpscienabled} -eq 1; then
+	echo Applying PSCI DTBO;
+	load mmc ${mmc_bootdev}:1 ${fdtoverlay_addr_r} sun50i-a64-psci.dtbo
+	fdt apply ${fdtoverlay_addr_r}
+fi
 
 echo Loading Initramfs
 load mmc ${mmc_bootdev}:1 ${ramdisk_addr_r} initramfs
@@ -25,14 +49,6 @@ load mmc ${mmc_bootdev}:1 ${kernel_addr_r} vmlinuz
 
 gpio set 115
 
-echo Resizing FDT
-fdt addr ${fdt_addr_r}
-fdt resize
-
-echo Adding FTD RAM clock
-fdt mknode / memory
-fdt set /memory ram_freq ${ram_freq}
-fdt list /memory
 
 echo Loading user script
 setenv user_scriptaddr 0x50700000
