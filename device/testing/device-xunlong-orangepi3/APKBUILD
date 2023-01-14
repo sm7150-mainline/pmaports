@@ -1,37 +1,29 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Maintainer: Maxim Karasev <begs@disroot.org>
+# Co-Maintainer: exkc <exkc@exkc.moe>
 pkgname=device-xunlong-orangepi3
 pkgdesc="Xunlong Orange Pi 3"
-pkgver=0.2
-pkgrel=2
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
 	linux-postmarketos-allwinner
-	postmarketos-base
-	u-boot-tools
+	postmarketos-base>=25-r1
 	u-boot-sunxi
 "
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="
-	deviceinfo
-	uboot-script.cmd
-"
+source="deviceinfo"
 
 build() {
 	devicepkg_build $startdir $pkgname
-	mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
-		-n postmarketos -d "$srcdir"/uboot-script.cmd \
-		"$srcdir"/boot.scr
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/boot.scr \
-		"$pkgdir"/boot/boot.scr
 }
 
 nonfree_firmware() {
@@ -41,6 +33,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-e7ee9769224ecb122e82327a6913b8357b94644e43936f36a4a134082e409db5d2734722e392e485b61cb50f6bcd1e4ced87fd578235f8207eeab7936fa95903  deviceinfo
-31635b6f41c504c124ccb84366831f05e55fd1154b9714d1128d124c6d2170a1bc890c0185ca16e541a72630130d9dbcc6021aefa75ee248bcdbdc730b8bbca0  uboot-script.cmd
+fc068b1693b29a0fa0d4f2586f9dffd44dda8ea348eb644bce827b3049863008cba5cd0579da221b0918d99106e7e7672b7c4d7aecb74b9b732af2b08f0c3e1c  deviceinfo
 "
