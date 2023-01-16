@@ -1,0 +1,66 @@
+# Maintainer: Newbyte <newbie13xd@gmail.com>
+# Kernel config based on: arch/arm/configs/qcom_defconfig
+
+_flavor="postmarketos-qcom-msm8226"
+pkgname=linux-$_flavor
+pkgver=6.2_rc4
+pkgrel=0
+pkgdesc="Mainline kernel fork for Qualcomm APQ8026/MSM8226/MSM8926 devices"
+arch="armv7"
+_carch="arm"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+"
+makedepends="
+	bison
+	findutils
+	flex
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	openssl-dev
+	perl
+	postmarketos-installkernel
+"
+
+# Source
+_tag=${pkgver//_/-}
+source="
+	https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
+	config-$_flavor.armv7
+	0001-ARM-dts-qcom-Add-support-for-Samsung-Galaxy-Tab-4-10.patch
+	"
+builddir="$srcdir/linux-${_tag#v}"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+1437bf3745132523e691190dbd8e7f7591116d768b63cc5c17418b666bb55e968cb2c2a600f3fcb5a91725067c0bebb8da7f570d7b36f35efa941a70435666ed  linux-6.2-rc4.tar.gz
+e78f06394ce126802af6b055380c3ee721931a75c243cbac4cf57559bfbb60938f6d5d283ff55450ffc9e4775d38cdb1007f9296519911b061ae0c2f0eb9ffdb  config-postmarketos-qcom-msm8226.armv7
+dd21321070b5d1eb91936d0b318b8d815a6c1fc7823ec0299b5ec911fb7844da4f0c5d90ccbdca357424ab929f682e7bf00c2da2fbbdd226d0b98efae9935562  0001-ARM-dts-qcom-Add-support-for-Samsung-Galaxy-Tab-4-10.patch
+"
