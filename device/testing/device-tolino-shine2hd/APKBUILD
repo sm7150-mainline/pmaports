@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-tolino-shine2hd
 pkgdesc="Tolino Shine 2 HD"
-pkgver=0.3
-pkgrel=1
+pkgver=0.4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -16,6 +16,7 @@ depends="
 	u-boot-tools
 "
 makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 source="
 	deviceinfo
@@ -31,6 +32,12 @@ package() {
 	mkimage -A arm -O linux -T script -n postmarketOS \
 		-d "$srcdir/uboot-script.cmd" "$srcdir/boot.scr"
 	install -Dm644 "$srcdir/boot.scr" "$pkgdir/boot/boot.scr"
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="linux-firmware-brcm"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
