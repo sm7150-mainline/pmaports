@@ -18,6 +18,7 @@ sh_files="
 	./main/osk-sdl/unlock.sh
 	./main/postmarketos-base/rootfs-usr-lib-firmwareload.sh
 	./main/postmarketos-base-ui/rootfs-etc-NetworkManager-dispatcher.d-99-dns-filter.sh
+	./main/postmarketos-base-ui/rootfs-etc-NetworkManager-dispatcher.d-85-tethering
 	./main/postmarketos-installkernel/installkernel-pmos
 	./main/postmarketos-initramfs/init.sh
 	./main/postmarketos-initramfs/init_functions.sh
