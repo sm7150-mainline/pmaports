@@ -2,10 +2,10 @@
 # Co-Maintainer: Jan Jasper de Kroon <jajadekroon@gmail.com>
 
 pkgname=linux-pine64-pinephonepro
-pkgver=6.1
+pkgver=6.1.10
 _pkgver=6.1
-_tagdate=20221212-1243
-pkgrel=1
+_tagdate=20230207-2251
+pkgrel=0
 pkgdesc="Mainline kernel for the pinephone pro"
 arch="aarch64"
 _flavor="${pkgname#linux-}"
@@ -39,18 +39,12 @@ esac
 
 # Source
 _config="config-$_flavor.$CARCH"
-case $pkgver in
-	*.*rc*)  _kernver=$_pkgver
-	         _rc=1;;
-	*.*.*)	_kernver=${pkgver%.0};;
-	*.*)	_kernver=$pkgver;;
-esac
 source="
-	https://gitlab.com/pine64-org/linux/-/archive/ppp-$_kernver-$_tagdate/linux-ppp-$_kernver-$_tagdate.tar.gz
+	https://gitlab.com/pine64-org/linux/-/archive/ppp-$_pkgver-$_tagdate/linux-ppp-$_pkgver-$_tagdate.tar.gz
 	config-$_flavor.aarch64
 	stk3311-pinctl-patch.patch
 	"
-builddir="$srcdir/linux-ppp-$_kernver-$_tagdate"
+builddir="$srcdir/linux-ppp-$_pkgver-$_tagdate"
 
 prepare() {
 	default_prepare
@@ -80,7 +74,7 @@ package() {
 
 
 sha512sums="
-9fe6d47bcd8799a0d1ab4eb8bf0e3c52854b28f4de0f75789c4bb5aad48e76aea4edecfc36350623ed320f43b480c69aa2c83f4244c51f1c0d0cc7f610f5882b  linux-ppp-6.1-20221212-1243.tar.gz
-3223648b5269c902445297a4da4a29cea2e92ced6ca22c1a75cf02b71c21de650b605d6c0a1028f02889ba971bac2e17e0418668dbc020245b4396e52f8bebed  config-pine64-pinephonepro.aarch64
+e3a59fccffd3f43242253d4211a27bde534487c4e0b55607ccce0cd11f60ec7946609d90e8aece9f789e4535e89e5ad712f6db0d94fd160dfeca5fbe9c82c2d2  linux-ppp-6.1-20230207-2251.tar.gz
+53bffdc47d5f0d59a1e08f2cad06f615224b1ea18e123f6944e83ef2fd27c34a1fb4d9aa8edfa3b8c03855912f4b096a40ba6bd019bced314dd8636c20873139  config-pine64-pinephonepro.aarch64
 b04b4081b5716802bfe6323f9b1c5fce503bef92e680e8ee49d3c1bc579bed5e79d23054db11f39620c055167a0444104423ec497bc7b60d7aaa115e2f7db775  stk3311-pinctl-patch.patch
 "
