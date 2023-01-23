@@ -450,6 +450,20 @@ mount_root_partition() {
 	fi
 }
 
+# $1: path to the hooks dir
+run_hooks() {
+	scriptsdir="$1"
+
+	if ! [ -d "$scriptsdir" ]; then
+		return
+	fi
+
+	for hook in "$scriptsdir"/*.sh; do
+		echo "Running initramfs hook: $hook"
+		sh "$hook"
+	done
+}
+
 setup_usb_network_android() {
 	# Only run, when we have the android usb driver
 	SYS=/sys/class/android_usb/android0

@@ -22,12 +22,7 @@ setup_mdev
 setup_dynamic_partitions "${deviceinfo_super_partitions:=}"
 mount_subpartitions
 setup_framebuffer
-
-# Hooks
-for hook in /etc/postmarketos-mkinitfs/hooks/*.sh; do
-	[ -e "$hook" ] || continue
-	sh "$hook"
-done
+run_hooks /etc/postmarketos-mkinitfs/hooks
 
 # Always run dhcp daemon/usb networking for now (later this should only
 # be enabled, when having the debug-shell hook installed for debugging,
@@ -39,6 +34,8 @@ mount_boot_partition /boot
 show_splash_loading
 extract_initramfs_extra /boot/initramfs-extra
 setup_udev
+run_hooks /etc/postmarketos-mkinitfs/hooks-extra
+
 # charging-sdl does not work properly at the moment, so skip it.
 # See also https://gitlab.com/postmarketOS/pmaports/-/issues/1064
 # start_charging_mode
