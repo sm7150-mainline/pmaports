@@ -1,4 +1,5 @@
 #!/bin/sh -e
+# shellcheck disable=SC1091
 # Handle USB tethering with unudhcpd and NetworkManager while also
 # keeping SSH login over USB working when tethering is disabled.
 #
@@ -9,8 +10,10 @@
 # using UUID allows the user to change the connection name if they want to.
 con_uuid="83bd1823-feca-4c2b-9205-4b83dc792e1f"
 interface="usb0"
-host_ip="172.16.42.1"
-client_ip="172.16.42.2"
+
+[ -e /etc/unudhcpd.conf ] && . /etc/unudhcpd.conf
+host_ip="${unudhcpd_host_ip:-172.16.42.1}"
+client_ip="${unudhcpd_client_ip:-172.16.42.2}"
 
 # Skip if iface does not match
 if [ "$DEVICE_IFACE" != "$interface" ]; then

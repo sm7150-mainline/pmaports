@@ -3,6 +3,7 @@
 
 [ -e /hooks/10-verbose-initfs.sh ] && set -x
 
+[ -e /etc/unudhcpd.conf ] && . /etc/unudhcpd.conf
 . ./init_functions.sh
 . /usr/share/misc/source_deviceinfo
 

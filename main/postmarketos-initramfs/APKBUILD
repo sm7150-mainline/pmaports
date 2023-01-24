@@ -1,7 +1,7 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-initramfs
-pkgver=1.3.1
+pkgver=1.4.0
 pkgrel=0
 pkgdesc="Base files for the postmarketOS initramfs / initramfs-extra"
 url="https://postmarketos.org"
@@ -30,11 +30,15 @@ source="
 	00-initramfs-extra-base.files
 	init.sh
 	init_functions.sh
+	unudhcpd.conf
 	"
 arch="noarch"
 license="GPL-2.0-or-later"
 
 package() {
+	install -Dm644 "$srcdir/unudhcpd.conf" \
+		"$pkgdir/etc/unudhcpd.conf"
+
 	install -Dm644 "$srcdir/init_functions.sh" \
 		"$pkgdir/usr/share/mkinitfs/init_functions.sh"
 
@@ -66,8 +70,9 @@ package() {
 sha512sums="
 bed319179bcd0b894d6267c7e73f2890db07bc07df71542936947dfb3bdb17fade8a7b4e7b577f278af4472464427bba07f75aff0a1e454a4167052c088f3b6a  00-default.modules
 399da6e61993f48c8a62c956bb15d294cac10bf003d84257efdf4a213ebc87bb51cdcd75c4675f51c3be832146b8f21a7c769bf3e94f574a5067f001662632a1  00-initramfs-base.dirs
-3bc73f3a0d1de210444d9c45fab51fd4520e38b43ffbb76368f8ff854b990aa2f21c6356840c5a48eb9808e834eb885a6d581639a60707c26abf66fc20b70db9  00-initramfs-base.files
+db8ba79257ed2666628825f9f28ab27c8d8b55f631b27f28d59fa322aaea6488355ad169c4ec3ad7d080c42af2b3ad00cf35cc6186791d15c301c74350f2bf21  00-initramfs-base.files
 e984cd3033ce8752ebc71127828b964b46259a5263c2ebfab32c1394b674bcff464862ff00b8e920d3d31386c54ca0b94f84bc77580d275ecfeea33e76c07ef4  00-initramfs-extra-base.files
-4e6f5b79b0bd6188bab9a96526f727780dda6be1c1e5fe04c3ce5a892bf0f92b7c7d0fc5809ac3eacc8121096a4815c6177a573f1b968752972f20460cc04ac6  init.sh
-38416294fe58af8f687a85a3b20b285075cdb34da8aab6c96a778994ee3dd121d1bb29da71b8147b2a53f19b58eb3203f583ce261cbb05b4bd1987bc7c82b1d9  init_functions.sh
+6605a4d92d36ce1fcb4d86536279d19eaa5308ed58067bf03427f2d82f772ca0c3df3bfbda9f4fff9cd91c1535f5802878a65eef3b9db16a43864e9ee4417675  init.sh
+d77d880ff3558606131e99ee0dfc6a484853e13f0f355f2d38d9488fc6ed6e8bf7db1c177e23ac12d3b9fb4ed2de769da047f166f78d841d24b1119ac695342d  init_functions.sh
+ba3275a9af788c7c782322a22a0f144d5e50e3498ea6886486a29331f23ae89cd32d500a3635cfa7cab369afba92edc18aeca64ccbf0cd589061cce23d15b46c  unudhcpd.conf
 "

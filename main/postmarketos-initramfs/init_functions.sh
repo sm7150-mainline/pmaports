@@ -1,6 +1,5 @@
 #!/bin/sh
 # This file will be in /init_functions.sh inside the initramfs.
-IP=172.16.42.1
 ROOT_PARTITION_UNLOCKED=0
 ROOT_PARTITION_RESIZED=0
 
@@ -586,15 +585,17 @@ start_unudhcpd() {
 		return
 	fi
 
-	echo "Starting unudhcpd"
+	local host_ip="${unudhcpd_host_ip:-172.16.42.1}"
+	local client_ip="${unudhcpd_client_ip:-172.16.42.2}"
+	echo "Starting unudhcpd with server ip $host_ip, client ip: $client_ip"
 	# Get usb interface
 	INTERFACE=""
-	ifconfig rndis0 "$IP" 2>/dev/null && INTERFACE=rndis0
+	ifconfig rndis0 "$host_ip" 2>/dev/null && INTERFACE=rndis0
 	if [ -z $INTERFACE ]; then
-		ifconfig usb0 "$IP" 2>/dev/null && INTERFACE=usb0
+		ifconfig usb0 "$host_ip" 2>/dev/null && INTERFACE=usb0
 	fi
 	if [ -z $INTERFACE ]; then
-		ifconfig eth0 "$IP" 2>/dev/null && INTERFACE=eth0
+		ifconfig eth0 "$host_ip" 2>/dev/null && INTERFACE=eth0
 	fi
 
 	if [ -z $INTERFACE ]; then
@@ -607,7 +608,7 @@ start_unudhcpd() {
 	echo "  Using interface $INTERFACE"
 	echo "  Starting the DHCP daemon"
 	(
-		unudhcpd -i "$INTERFACE" -s 172.16.42.1 -c 172.16.42.2
+		unudhcpd -i "$INTERFACE" -s "$host_ip" -c "$client_ip"
 	) &
 }
 
