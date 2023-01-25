@@ -1,0 +1,52 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Henrik Grimler <henrik@grimler.se>
+
+pkgname=device-odroid-u2
+pkgdesc="ODROID U2/U3"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	 postmarketos-base>=25-r1
+	 u-boot-odroid>=2023.04-r1
+"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-kernel-lts:kernel_lts
+	$pkgname-kernel-exynos4:kernel_exynos4
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+kernel_lts() {
+	pkgdesc="Use Alpine's long-term support kernel"
+	depends="linux-lts"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_exynos4() {
+	pkgdesc="Use linux-postmarketos-exynos4"
+	depends="linux-postmarketos-exynos4"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Early bootloaders and trustzone firmware (required for a bootable system)"
+	depends="firmware-odroid-u2"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+0bd51dc15da00985ecb032726d6914b836dc6d639a9d10a700d2b4430a388a1b4ac8ce9e334ed339b0df969b301ee6951cbf35f94156fb3a5475029703669fee  deviceinfo
+"
