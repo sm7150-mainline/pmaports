@@ -50,8 +50,8 @@ source="
 "
 subpackages="
 	$pkgname-geoclue
+	$pkgname-gnome
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-phosh
 	$pkgname-pulseaudio
 	$pkgname-smartcard
 	$pkgname-tinydm
@@ -75,9 +75,8 @@ geoclue() {
 		-t "$subpkgdir"/usr/share/dbus-1/system-services/
 }
 
-phosh() {
-	pkgdesc="Phosh support for the Librem 5"
-	install_if="$pkgname phosh"
+gnome() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-base-ui-gnome"
 	depends="
 		wys
 	"
