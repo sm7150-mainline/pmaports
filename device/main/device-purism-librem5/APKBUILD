@@ -5,7 +5,7 @@
 pkgname=device-purism-librem5
 pkgdesc="Purism Librem 5 Phone"
 pkgver=1.40
-pkgrel=0
+pkgrel=1
 _confver=54
 _purismrel=1
 # <librem5-base ver>.<purism release>
@@ -49,6 +49,7 @@ source="
 	brcmfmac-no-powersave.conf
 "
 subpackages="
+	$pkgname-camera
 	$pkgname-geoclue
 	$pkgname-gnome
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -82,6 +83,12 @@ gnome() {
 	"
 	install -D -m644 "$builddir"/default/org.freedesktop.ModemManager1.pkla \
 		"$subpkgdir"/var/lib/polkit-1/localauthority/10-vendor.d/org.freedesktop.ModemManager1.pkla
+}
+
+camera() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-default-camera"
+	depends="millipixels"
+	mkdir -p "$subpkgdir"
 }
 
 pulseaudio() {
