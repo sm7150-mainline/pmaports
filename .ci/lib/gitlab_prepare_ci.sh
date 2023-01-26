@@ -1,5 +1,5 @@
 #!/bin/sh -e
-# Copyright 2022 Oliver Smith
+# Copyright 2023 Oliver Smith
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 if ! mount | grep -q /proc/sys/fs/binfmt_misc; then
