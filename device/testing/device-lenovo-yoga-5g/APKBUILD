@@ -1,0 +1,66 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-lenovo-yoga-5g
+pkgdesc="Lenovo Yoga 5G"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck pmb:strict"
+depends="
+	linux-postmarketos-qcom-sc8180x
+	postmarketos-base
+	soc-qcom-sc8180x
+"
+makedepends="devicepkg-dev grub grub-efi"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	grub-mkimage \
+		--prefix="/grub" \
+		--output="bootaa64.efi" \
+		--format="arm64-efi" \
+		--compression="xz" \
+		\
+		all_video \
+		cat \
+		configfile \
+		disk \
+		echo \
+		efi_gop \
+		fat \
+		gzio \
+		help \
+		iso9660 \
+		linux \
+		ls \
+		normal \
+		part_gpt \
+		part_msdos \
+		search \
+		search_label \
+		test \
+		true
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/bootaa64.efi \
+		-t "$pkgdir"/boot/EFI/Boot
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi firmware"
+	depends="firmware-lenovo-yoga-5g linux-firmware-ath10k soc-qcom-sc8180x-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="
+fd15fc48a08713b3bb54e031ce1b0c9e3080497ce86129789647472ecdee167eb915a88c8894f94cade4b2e04a8b9bd2c0e396b62615ae3027d55d86ef2b9538  deviceinfo
+"
