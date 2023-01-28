@@ -1,0 +1,59 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-lenovo-flex-5g
+pkgdesc="Lenovo Flex 5G"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck pmb:strict"
+depends="
+	linux-postmarketos-qcom-sc8180x
+	postmarketos-base
+	soc-qcom-sc8180x
+"
+makedepends="devicepkg-dev grub grub-efi"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	grub-mkimage \
+		--prefix="/grub" \
+		--output="bootaa64.efi" \
+		--format="arm64-efi" \
+		--compression="xz" \
+		\
+		all_video \
+		cat \
+		configfile \
+		disk \
+		echo \
+		efi_gop \
+		fat \
+		gzio \
+		help \
+		iso9660 \
+		linux \
+		ls \
+		normal \
+		part_gpt \
+		part_msdos \
+		search \
+		search_label \
+		test \
+		true
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/bootaa64.efi \
+		-t "$pkgdir"/boot/EFI/Boot
+}
+
+
+sha512sums="
+60c20ddb112f7ebfaeada1c06ce8d01c8c65be1eb12527ff02049f00a9d52532027b2d155b32b440a419b4c56ee4e81bcdc1e6e0973e65f9c29836579418d85f  deviceinfo
+"
