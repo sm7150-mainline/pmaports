@@ -12,6 +12,7 @@ arch="aarch64"
 options="!check !archcheck"
 subpackages="
 	$pkgname-gnome
+	$pkgname-kirigami:kirigami
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-shelli
 	$pkgname-plasma-mobile:plasma_mobile
@@ -171,10 +172,9 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-plasma_mobile() {
+kirigami() {
 	install_if="$pkgname=$pkgver-r$pkgrel kirigami2"
 	install -Dm644 "$srcdir"/kirigami-lowpower.sh "$subpkgdir"/etc/profile.d/kirigami-lowpower.sh
-	install -Dm644 "$srcdir"/kxkbrc -t "$subpkgdir"/etc/xdg
 }
 
 gnome() {
@@ -183,6 +183,11 @@ gnome() {
 		"$subpkgdir"/usr/share/glib-2.0/schemas/50_sleep.gschema.override
 	install -Dm644 "$srcdir"/51_keyboard.gschema.override -t \
 		"$subpkgdir"/usr/share/glib-2.0/schemas
+}
+
+plasma_mobile() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-plasma-mobile"
+	install -Dm644 "$srcdir"/kxkbrc -t "$subpkgdir"/etc/xdg
 }
 
 upower() {
