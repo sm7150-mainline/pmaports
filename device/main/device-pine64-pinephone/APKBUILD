@@ -4,21 +4,22 @@
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
 pkgver=0.45
-pkgrel=0
+pkgrel=1
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 subpackages="
+	$pkgname-camera
 	$pkgname-gnome
 	$pkgname-kirigami:kirigami
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-shelli
 	$pkgname-plasma-mobile:plasma_mobile
+	$pkgname-sensorfw
+	$pkgname-shelli
 	$pkgname-upower
 	$pkgname-vccq-mod:vccq_mod
-	$pkgname-sensorfw
 	"
 depends="
 	alsa-ucm-conf>=1.2.6.2
@@ -170,6 +171,12 @@ nonfree_firmware() {
 		firmware-pine64-ov5640
 		"
 	mkdir "$subpkgdir"
+}
+
+camera() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-default-camera"
+	depends="megapixels"
+	mkdir -p "$subpkgdir"
 }
 
 kirigami() {
