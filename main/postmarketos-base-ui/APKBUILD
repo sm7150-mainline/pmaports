@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
 pkgver=6
-pkgrel=2
+pkgrel=3
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -26,6 +26,7 @@ subpackages="
 	$pkgname-pulseaudio
 	$pkgname-bluez-obexd:_obexd
 	$pkgname-networkmanager
+	postmarketos-default-camera:_default_camera
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 replaces="
@@ -127,6 +128,13 @@ networkmanager() {
 		networkmanager-wwan"
 	amove etc/NetworkManager/conf.d/hostname-mode.conf
 }
+
+_default_camera() {
+	# dummy package for camera app, packages can install_if on this to install
+	# the appropriate camera app for that device/UI
+	mkdir "$subpkgdir"
+}
+
 
 sha512sums="
 3c9ae7415f4891bee8595166ed6a42cb577a837f741c6b5409d193558626348b41516888a01d0c4895282c5f4e9a1ff838c19712888750b2ef68429bb4b42ee3  rootfs-etc-NetworkManager-conf.d-hostname-mode.conf
