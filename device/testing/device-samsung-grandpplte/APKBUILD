@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-grandpplte
 pkgdesc="Samsung Galaxy Grand Prime Plus"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -21,7 +21,10 @@ source="
 	boot.cmd
 	boot-image.its
 	deviceinfo
+	phoc.ini
+	samsung,grandpplte.json
 "
+subpackages="$pkgname-phosh"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -42,8 +45,19 @@ package() {
 		"$pkgdir/usr/share/u-boot/grandpplte/"
 }
 
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+	install -Dm644 "$srcdir/samsung,grandpplte.json" \
+		"$subpkgdir/usr/share/feedbackd/themes/samsung,grandpplte.json"
+}
+
 sha512sums="
-7c44c3ebf446083853a9e343f397406a4176118c23bfcf564392dd9ac00208fe63cab56870269e2ff8b9db181f039fd945991d7b3faea196ef2a8902017a6aa7  boot.cmd
+96c119dab3b4445da4d9732fde2aef5b4cf2491b2b23c622dc91b4bacaa100eefff39b67289f7e8f0d110e5de96e55a64d4212c77463e50f73a1de877c43d632  boot.cmd
 8226a99856b5613c5f4a9bb4314c1bfad676126df1260381baf40b92b201aa460522998b87b1b50b7ce31cd688d023d3bf4bae0977d7d586268c63e719e6770a  boot-image.its
-3418aafdcbff0cbfbadfa0a6e4b075c9667f56306bed6da1ba9658ac817eaba797d4b3acfb8d1dad1538841291c2166644617882529c9e083e23866cfc2df4fb  deviceinfo
+9e972a4e3d31cc5cad059e599335ce6d19b678e4a348fecfa1184f4af7d33603204dedf3aa382db700aa66a8371bf9aae75f2b1898e19b3a0eb36fb3a5a6aaa4  deviceinfo
+57ff51fdf94882e303c9cd301891a4c9de0e4604d73b17ae855d84410802b9a91b47045c136f62a002134549b179d55ad8da096d4ffbe79430dceea9b18ccebd  phoc.ini
+9845b869b9499c8477d83dc1da5eb05d3f9cecb6a773638a148c149cb09016427dd87e5fe9c23e37bd184442a7a4fefb05b1c930142b0e682794f6c805f85819  samsung,grandpplte.json
 "
