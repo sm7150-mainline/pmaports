@@ -1,0 +1,66 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-samsung-w767
+pkgdesc="Samsung Galaxy Book S"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck pmb:strict"
+depends="
+	linux-postmarketos-qcom-sc8180x
+	postmarketos-base
+	soc-qcom-sc8180x
+"
+makedepends="devicepkg-dev grub grub-efi"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+
+	grub-mkimage \
+		--prefix="/grub" \
+		--output="bootaa64.efi" \
+		--format="arm64-efi" \
+		--compression="xz" \
+		\
+		all_video \
+		cat \
+		configfile \
+		disk \
+		echo \
+		efi_gop \
+		fat \
+		gzio \
+		help \
+		iso9660 \
+		linux \
+		ls \
+		normal \
+		part_gpt \
+		part_msdos \
+		search \
+		search_label \
+		test \
+		true
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/bootaa64.efi \
+		-t "$pkgdir"/boot/EFI/Boot
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi firmware"
+	depends="firmware-samsung-w767 linux-firmware-ath10k soc-qcom-sc8180x-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="
+313be64ddb5091264ff4be3d1423af7e5c2b4fc99393d5c9ff5fa446b2c701ed4363e6f8ac6ed461d5a54ac67e12e45174d5ebc402155d6b3e20d75994764da1  deviceinfo
+"
