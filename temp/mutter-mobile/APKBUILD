@@ -1,8 +1,8 @@
 # Forked from Alpine to apply mobile adaptivity patches
 
 pkgname=mutter-mobile
-pkgver=43.0
-pkgrel=4
+pkgver=43.1_git20210203
+pkgrel=0
 pkgdesc="clutter-based window manager and compositor"
 url="https://wiki.gnome.org/Projects/Mutter/"
 # ricsv64: doesn't build currently:
@@ -65,7 +65,7 @@ makedepends="
 options="!check" # Can't be run with release builds
 provides="mutter=$pkgver-r$pkgrel"
 subpackages="$pkgname-dbg $pkgname-dev $pkgname-doc $pkgname-lang $pkgname-schemas::noarch"
-_commit="4e6674075cfd7e644da14837a661ed3a1fb0395b"
+_commit="585802e5afeb268251dbb202f7d108fdf4f51da4"
 source="mutter-$_commit.tar.gz::https://gitlab.gnome.org/verdre/mutter/-/archive/$_commit/mutter-$_commit.tar.gz
 	fixudev-req.patch
 	pcversion.patch
@@ -104,14 +104,14 @@ lang() {
 
 package() {
 	DESTDIR="$pkgdir" meson install --no-rebuild -C output
-	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/libmutter-11.pc"
-	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-clutter-11.pc"
-	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-cogl-11.pc"
-	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-cogl-pango-11.pc"
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/libmutter-12.pc"
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-clutter-12.pc"
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-cogl-12.pc"
+	sed -e 's/43.beta/43.0_beta/g' -i "$pkgdir/usr/lib/pkgconfig/mutter-cogl-pango-12.pc"
 }
 
 sha512sums="
-cf3988aa555fd5e05a7362cf089384c00a74636aeef1b15b7f144edd80ac7483636b5760b621f6c53904940b8e39f7bd0b9a83d50735425154c0352f72e4e0c3  mutter-4e6674075cfd7e644da14837a661ed3a1fb0395b.tar.gz
+11cb01d69e54cf5a4ad05a516a32293f99110ab660695facd6967ab442fe50f0ddbbb67933299a160eb63fa7c391bb285f48a672c3246d2708dc90bd59d26dfe  mutter-585802e5afeb268251dbb202f7d108fdf4f51da4.tar.gz
 6f21171bbd0ad0fc67cbaf5fb1478b22b482a9ae33b9328cc51a5dd31bcf7d95cd41e6cbbac21d3d8801cc064a62a64ae38ed7d0501ab605b861058c32f3bc30  fixudev-req.patch
 bb46a4692aaff0c9e6092d1ba80d19b336035e983f0f20a437a586757bc2530860f50fbd46b09f73e88f0dd80ea7188d1df467b8f762918717785e618b6e9c4b  pcversion.patch
 "
