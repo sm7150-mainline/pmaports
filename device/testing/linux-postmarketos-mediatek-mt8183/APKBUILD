@@ -2,7 +2,7 @@
 # Co-Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=linux-postmarketos-mediatek-mt8183
 pkgver=5.18
-pkgrel=1
+pkgrel=2
 pkgdesc="Mainline kernel for mediatek mt8183"
 arch="aarch64"
 _flavor="${pkgname#linux-}"
@@ -17,7 +17,7 @@ makedepends="
 	devicepkg-dev
 	findutils
 	flex
-	installkernel
+	postmarketos-installkernel
 	openssl-dev
 	perl
 	rsync
@@ -26,8 +26,6 @@ makedepends="
 	gmp-dev
 	mpc1-dev
 	mpfr-dev
-	u-boot-tools
-	vboot-utils
 	lz4
 	zstd
 "
@@ -44,6 +42,11 @@ esac
 
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
+	0001-drm-panel-Add-inx-Himax8279d-MIPI-DSI-LCD-panel-driv.patch
+	0002-arm64-dts-mt8183-Add-katsu-board.patch
+	0003-arm64-dts-mt8183-Add-kukui-jacuzzi-makomo-board.patch
+	0004-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-kats.patch
+	0005-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-jacu.patch
 	mt8183-cadmium-improved-kukui.gpu.patch
 	mt8183-cadmium-kukui.move-gpu-opp-to-3.patch
 	mt8183-cadmium-improved-kukui.opp-multi-regulator.patch
@@ -99,6 +102,11 @@ package() {
 
 sha512sums="
 dbbc9d1395898a498fa4947fceda1781344fa5d360240f753810daa4fa88e519833e2186c4e582a8f1836e6413e9e85f6563c7770523b704e8702d67622f98b5  linux-5.18.tar.xz
+3c2b433fc1e3514f4d32e2ddd811f5536958857da55ab22f98278b91733b8b1a06945665df0deadaf57a0458d248dc659e1dcdf5a196ce49d7a3c704cb313878  0001-drm-panel-Add-inx-Himax8279d-MIPI-DSI-LCD-panel-driv.patch
+c0b38b2d4b827cf34b8474d78f588528e1aa665ed091301c0bd970ae10aba642551d7eff9fbea4b7accf0906b41c00f4e1108e1c7573041fea4f2fcd13045c65  0002-arm64-dts-mt8183-Add-katsu-board.patch
+385fe4f278f16af63ad416c195366974d0fad6ca3eaa63e4ccf052175f183ec0da263d4b5964273420bd4e1e5d1a0761f170f38e7c941ee617a8ccab84d6cf21  0003-arm64-dts-mt8183-Add-kukui-jacuzzi-makomo-board.patch
+2748f1f3ec84de63a2d4a7a254cefdd88ccd52d70193d268f55df8a0b51b4d288ffa3153e16d15a27d60eaa4552132090901633b49d0b062f8a3b11447efe8f9  0004-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-kats.patch
+912519749bcdac4ee13178078e3bcef5a3a64d9527a368dd39e387224c21c01f3d54586728585f434147cbc507e5906c41e5f3597f2a975dca7468b0e7e96b90  0005-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-jacu.patch
 efbb379c2c0e14116a4a941993fb4df243dde9d7477177e903b283356ebaa57ee78a685632effbb43208f25a5e490779385a36dcb1b19e96eadb46547b2c85db  mt8183-cadmium-improved-kukui.gpu.patch
 e79b5b652bfb44e7fc293d08c3b5355a8f6456389c05c29167cfaf5bf45cf19555f2b2e50aca8e93e8876f64ed09d63e0483f5b8c492a47d9d2e3e72413c4e45  mt8183-cadmium-kukui.move-gpu-opp-to-3.patch
 0252db7a1e3b6b041b351aaa17323e45e286b41b369945be483b4ce2be2fa6600124d12b8871e3bea50ca07949e12e90e9cc7c8a3a37ad19cd02677eb7bebd89  mt8183-cadmium-improved-kukui.opp-multi-regulator.patch
@@ -121,5 +129,5 @@ f0e78266b8d5db67476ca47fc115830d4296182486d88744d714b05bed35c4976b82a59a7aa4fb36
 e9a128a8ddd98c6c8957ba45186afa2ea8ebeac83d4f2db3ff9ee8a5dd8027af90868c334a7b456bfe7dce793517f27ad63efa220bc933e3407f6362da6d7b2a  mt8183-kukui-jacuzzi-hack-dpms-resume.patch
 8ab89b0845d3aaee9ae5d244e7880601f21b85b159677464960c1e08cf20038db2a8ad1b57c9ed99d817735ad450d0e4d4fe9051cb1808dd08a00e2f68af5028  mt8183-cadmium-kukui.gpu-vsram.patch
 863966b986c3680d013ba81e02e2d0a5f092d95ef6d3b60cb6991ca7acc3c4ce5323e528b3190b95e594f72c1b0ae26f7b8db20e118557850161777a90e2b45f  mt8183-panel-orientation.patch
-39e8bcd5eb1552ed3ea348e6947212947dd3d02dff22f8874a535d071cfc7bacb143699c15bcda516fa341039220f81b143a07c83c1a39be4df02234e93a2020  config-postmarketos-mediatek-mt8183.aarch64
+5dd10e26aa90b9610a3ac9fa643aed72b727860cfcc949e087bbd1a963256aeb51b8d9785f778c7a766df8d421442c767da9e9b7da0be67a4dc02ff98de7dd8c  config-postmarketos-mediatek-mt8183.aarch64
 "
