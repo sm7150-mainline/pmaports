@@ -1,0 +1,46 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-katsu
+pkgdesc="ASUS Chromebook Detachable CZ1"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt8183
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+	soc-mediatek-mt8183
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-load.d/sound.conf
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/sound.conf \
+		"$pkgdir"/etc/modules-load.d/sound.conf
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+0371627464f99c4bd90464683cbcccc4768ce3b95042c5c13d724f8743ca6e3475938de192a0148fde8158fa10858494d6d8e96f575503ed45780916aad27efd  deviceinfo
+2abf68f27d19a6d30d7070f4b9b506b585668e85423f4127bbdf72247dc6da2204bbf064310dd2dc0fa43b44e02758a21f5fbd21870187d45149a56d534c8cfe  sound.conf
+"
