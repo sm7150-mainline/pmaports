@@ -3,7 +3,7 @@
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
 pkgver=14
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
@@ -27,6 +27,7 @@ source="
 	UPower.conf
 	call_audio_idle_suspend_workaround.sh
 	call_audio_idle_suspend_workaround.initd
+	call_audio_idle_suspend_workaround.confd
 "
 
 package() {
@@ -66,6 +67,9 @@ nonfree_firmware() {
 	# Call Audio idle suspend workaround init script
 	install -Dm755 "$srcdir"/call_audio_idle_suspend_workaround.initd \
 		"$subpkgdir"/etc/init.d/call_audio_idle_suspend_workaround
+
+	install -Dm644 "$srcdir"/call_audio_idle_suspend_workaround.confd \
+		"$subpkgdir"/etc/conf.d/call_audio_idle_suspend_workaround
 }
 
 ucm() {
@@ -97,5 +101,6 @@ e55545b0b319bb0cb7e8c6ca961828f7e8c389f97b45492e0c432b9bbd5d3158359828e852ceac68
 e33f41360ccc4900bb76a26cc7b46bde1fb90facdf45c4fbcebc80499386939948401cacd6df9f779eafab10f4ee77ee1fef3e7bd06f483f8c2a4a644c84f327  modemmanager.conf
 9d455b56558d453d501a1ad869ffa79f9952ed43485a9847d506db6a78bfcd9f9c9d855660ee1d368eb74f4429385ec166addc30d802261c75562e785fe84c52  UPower.conf
 aa5cdb138a3cdd0b15d2bbb60c7f67ae0280ddc7d0488cfe2fc44680095a43c1cdacc54d70a689f2117538e9bf1e42758d8c3ac542c9cb8e8dc6d6f3161b7577  call_audio_idle_suspend_workaround.sh
-1111d28b6e23163fb47fcfadc2ed3f83543ce0435c6be187a38d418cfe7821fe7905ac103969f3f7c115bd522d99c43efd52409835e292270a6ac9c34b5bee75  call_audio_idle_suspend_workaround.initd
+5a58475b6e2ee1d655f3f23d8dc19e1cb2f32f1dfff3b9a9337d9c5baad1ec24bfaec0fb9cc03f00e5a291bee27c6b8bffbc65157e2bee5d65ef6d1adcb0910b  call_audio_idle_suspend_workaround.initd
+6fb4c0bd8b7ed534d855a6732ccff783960e3cfa0e0cc7effcbb93afa00798dec15361a37a3200081bc114c8d266b7a0851cc4e819ad36eabdb47a50c72620d9  call_audio_idle_suspend_workaround.confd
 "
