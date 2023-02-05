@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-a6lte
 pkgdesc="Samsung Galaxy A6 2018"
-pkgver=0.2
+pkgver=0.3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -16,7 +16,6 @@ depends="
 	pipewire-pulse
 	postmarketos-base
 	samsungipcd
-	samsungipcd-openrc
 	util-linux
 "
 replaces="
@@ -30,6 +29,7 @@ source="
 	deviceinfo
 	etc-conf.d-samsungipcd
 	etc-init.d-udev-settle
+	etc-init.d-wlan0-up
 	etc-lightdm-lightdm.conf
 	etc-NetworkManager-conf.d-swlan0-unmanaged.conf
 	usr-libexec-samsungipcd-voicecall.sh
@@ -50,6 +50,7 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -Dm644 etc-conf.d-samsungipcd "$pkgdir"/etc/conf.d/samsungipcd
 	install -Dm755 etc-init.d-udev-settle "$pkgdir"/etc/init.d/udev-settle
+	install -Dm755 etc-init.d-wlan0-up "$pkgdir"/etc/init.d/wlan0-up
 	install -Dm644 etc-lightdm-lightdm.conf "$pkgdir"/etc/lightdm/lightdm.conf
 	install -Dm644 etc-NetworkManager-conf.d-swlan0-unmanaged.conf "$pkgdir"/etc/NetworkManager/conf.d/swlan0-unmanaged.conf
 	install -Dm755 usr-libexec-samsungipcd-voicecall.sh "$pkgdir"/usr/libexec/samsungipcd/voicecall.sh
@@ -69,6 +70,7 @@ sha512sums="
 63be7d1b44093c2d892a92ad788a9a6a9d510c9ca0aac1f249213458402c546560827aaaa23c88497efee4675b15bf47481e551e5de043abaf5ae65e3de9c10a  deviceinfo
 3e5bb764529010d2b6b1f2759a7799f665d140aebcee2dd63433e68cd4282e09b5d3b34fb7c21e737595b406501e7f02ece4592651c60e4c2b9419de4aedb438  etc-conf.d-samsungipcd
 203b832a7080d5f1351c5e024e444f9fe509f6e0fd4b376a60c7d73359b7e356863a4f15caf9b2e4e733dc44d2971722083e7c69ca94a012eb004b4b8ded9d09  etc-init.d-udev-settle
+7caddfe4659c969a33adcc27a760bc78d4f70ca4b7a4a5ec28a6411c12f3e6dd6d427b59f75976a737a5fe0f09806f8b6d65798f6358bd1e1954ad2a28fbfdc8  etc-init.d-wlan0-up
 861270c6bc0b2a3e6cd389c21c8c895e62de8cf8bec6fcf23c178f8cbaae855d62b0ee98692671ab4f518d84cb43dd0b2fe46f5a609f65af6a6c06e0fdbb6d0c  etc-lightdm-lightdm.conf
 ef24527b13e48a9153643f3713167d3d08486e7de8b4c94d7c446ff380396115890573d8cd4aa5448766d9e779e189833a83e7921081679bd348c3f8a59410af  etc-NetworkManager-conf.d-swlan0-unmanaged.conf
 abe1c4a2f59fe862cebef75c54b8806bd86ce06aeb15d8c0699ab1338c9d575cb72a4d5b099f94272b1d9c9c3f4960af209a9e058ea9e57733b7d905dad0d33f  usr-libexec-samsungipcd-voicecall.sh
