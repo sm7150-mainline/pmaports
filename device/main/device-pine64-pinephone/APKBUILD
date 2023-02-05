@@ -3,8 +3,8 @@
 # Co-Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 # Co-Maintainer: Dylan Van Assche <me@dylanvanassche.be>
 pkgname=device-pine64-pinephone
-pkgver=0.45
-pkgrel=1
+pkgver=0.46
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -20,6 +20,8 @@ subpackages="
 	$pkgname-shelli
 	$pkgname-upower
 	$pkgname-vccq-mod:vccq_mod
+	$pkgname-sway
+	$pkgname-x11
 	"
 depends="
 	alsa-ucm-conf>=1.2.6.2
@@ -64,6 +66,8 @@ source="
 	ucm/PinePhone.conf
 	ucm/VoiceCall.conf
 	ppkb.sh
+	sway-pinephone-keyboard.conf
+	x11-pinephone-keyboard.conf
 	"
 # workaround to purge the -elogind subpackage that was previously
 # created/installed
@@ -228,6 +232,17 @@ sensorfw() {
 	install -Dm644 -t "$subpkgdir"/etc/sensorfw/sensord.conf.d \
 		"$srcdir"/90-pinephone.conf
 }
+sway() {
+	install_if="$pkgname=$pkgver-r$pkgrel sway-virtual"
+	install -Dm644 "$srcdir"/sway-pinephone-keyboard.conf \
+		"$subpkgdir"/etc/sway/config.d/pinephone_keyboard.conf
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	install -Dm644 "$srcdir"/x11-pinephone-keyboard.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/pinephone-keyboard.conf
+}
 sha512sums="
 5736444fd38ab4351d148ae96c479085f469bd1e51a692fb1827f8ac921a584389f7696985e1fba21c2deac88709910531f4ece282f45ff54e590c2b54b84ba3  00_alsa_pinephone_dshare.conf
 b53cc6f2531854cc9c1e4c334185a20551d64c8675ee8a8eaa03b99d80808fad421a0f6e99e5be212a974d88c85f461a71ba59ac59c29f298c82f211e3be1ef4  10-pinephone-proximity.rules
@@ -255,4 +270,6 @@ f963898fa2ce66bc830e56feeec6ffc9888834e14cc1591d72908ef45ad82532bc3ef5fb32413e07
 4b0c51ab169aebe8177c5c43eba41afa90370098a5a54e710d17e97ec1651869a20cb5d780a6132028c864916609e3b4f4a13158835310d0441bdb4915872372  PinePhone.conf
 e093f71c37370927468de35a987150a3db3e1cc1c76c144bf58918a09c688c3da84303b5533241e691a6aa0758589e2a6498b1097974117782e909f0bbc6bf71  VoiceCall.conf
 43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
+bb11151e246d16e071761ebb35ca7f8b8cedbad8366e9bac6aed30554a795877cc9dccbe69ecca4b19b6f72bd87e613705f3ae4f2f40d2f9c2d09cc179999d59  sway-pinephone-keyboard.conf
+a7b49a638f664f7682ce6b00eb4d1ae26a429e89354056de05fb49d25fc9555d7f80e6d8f4b0a250878a4e7823860fd156068ed6604ce6cf58badef45c545161  x11-pinephone-keyboard.conf
 "
