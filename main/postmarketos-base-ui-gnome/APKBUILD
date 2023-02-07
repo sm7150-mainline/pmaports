@@ -1,6 +1,6 @@
 pkgname=postmarketos-base-ui-gnome
 pkgver=1
-pkgrel=6
+pkgrel=7
 pkgdesc="Meta package for shared configuration for GNOME-based UIs"
 url="https://postmarketos.org"
 arch="noarch"
@@ -9,6 +9,10 @@ depends="
 	dnsmasq
 	elogind
 	gnome-bluetooth
+	iio-sensor-proxy
+	iio-sensor-proxy-openrc
+	modemmanager
+	modemmanager-openrc
 	polkit-elogind
 	postmarketos-base-ui
 	postmarketos-base-ui-networkmanager
@@ -18,6 +22,7 @@ depends="
 	xdg-desktop-portal-gtk
 	xdg-user-dirs
 	"
+install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	00_postmarketos-base-ui-gnome.gschema.override
 	"
