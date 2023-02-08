@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-goyawifi
 pkgdesc="Samsung Galaxy Tab 3 Lite"
-pkgver=0.1
+pkgver=0.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -15,7 +15,6 @@ depends="
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
-	98-touchscreen-cal.rules
 	goyawifi.conf
 	sd8xxx.conf
 	dhcp-client.conf
@@ -34,10 +33,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	# Calibrate touchscreen rotation
-	install -D -m644 "$srcdir"/98-touchscreen-cal.rules \
-		"$pkgdir"/etc/udev/rules.d/98-touchscreen-cal.rules
 
 	# Add module rules for Wi-Fi (mbt8xxx kernel panic)
 	install -D -m644 "$srcdir"/goyawifi.conf \
@@ -78,7 +73,6 @@ fix_lightdm() {
 
 sha512sums="
 10fd6444d5d8a9a67eca2fa063f135aa25e992c137291bc38e200fb7d1772efa98dbeea94648ee87a73c871c5d06abe65ca495618f8103b7f79b77326a351838  deviceinfo
-79162e1d82bfa6cad52a17a1950d56ecddf00b99db69ff08eed7402927e32690f8bdd7e8b4e27f1cf1c5b1e09e1b70f1ba11979b3112aed35968924ef33d98e7  98-touchscreen-cal.rules
 73d03f53e08a650b3073e33653d3bcfa6951042203dde7104ffddbe59e29bafbb26c0e41cd9357ede8f01abe0049b190a2acae82e5a5b92868129ab66b118a8d  goyawifi.conf
 4bb1136341de6584baeffafe166ceca1c883ba36eebe8d3d5ac95db7d4dfc243e2988be429f8f4e1e98385701598806730debc6cc2f502e2b98bf7a9a444b129  sd8xxx.conf
 c1c9b58b5325ad11afc98bf1b20179c725b7627416270fe87558bdc259fbb996628d404aaaef6e8c9ea41c21b015ae767ce1c3054490481c24cc97d0002d69bb  dhcp-client.conf
