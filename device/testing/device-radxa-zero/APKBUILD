@@ -1,0 +1,41 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: exkc <exxxxkc@getgoogleoff.me>
+pkgname=device-radxa-zero
+pkgver=1
+pkgrel=0
+pkgdesc="Radxa Zero"
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base linux-edge u-boot-radxa-zero"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	# Due to linux-edge bugs in boot-deploy (see boot-deploy!20)
+	# This device could not be use generated extlinux.conf.
+	# There are hack for the boot-deploy bugs.
+	# However,if i put the hack in the deviceinfo file directly
+	# the ci will fail.
+	# so i have to use those command at below to put the hack in the deviceinfo.
+	echo '# Hack for lnux-edge bugs in boot-deploy (see boot-deploy!20)' >> $srcdir/deviceinfo
+	echo 'kernel_filename="vmlinuz-edge"' >> $srcdir/deviceinfo
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="firmware-radxa-zero linux-firmware-meson"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+c465e3ff343476a3bdd50e490a1487a439caee7f6a80682e178ef2b6881d1e158cf99b2337287df484fbb00dd4e0fde4f64ac6a687cb1b93ed3fb38bd25c495c  deviceinfo
+"
+
