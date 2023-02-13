@@ -1,0 +1,41 @@
+# Forked from Alpine with patch to support devicetree on x86
+
+pkgname=kexec-tools
+_pkgver=2.0.26
+pkgver=9999
+pkgrel=0
+pkgdesc="Directly boot into a new kernel over a currently running one"
+url="https://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git/"
+arch="x86" # others can use package from alpine
+license="GPL-2.0-only"
+makedepends="zlib-dev xz-dev linux-headers"
+subpackages="$pkgname-doc"
+source="https://www.kernel.org/pub/linux/utils/kernel/kexec/kexec-tools-$_pkgver.tar.xz
+	fix-build-on-Alpine-linux.patch
+	add-devicetree-support-on-x86.patch
+	"
+options="!check"
+builddir="$srcdir/$pkgname-$_pkgver"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--with-zlib \
+		--with-lzma
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="
+afecb64f50a0a2e553712d7e6e4d48e0dc745e4140983a33a10cce931e6aeddaff9c4a3385fbaf7ab9ff7b3b905d932fbce1e0e37aa2c35d5c1e61277140dee9  kexec-tools-2.0.26.tar.xz
+228166102bfc48f81c04f3b13fbf29d6edf2e66918a967f243c8d2652f40c27af565f1db6b1a58783bd12d67184a70e6b00b1ab82e0f0d195dd51009260c3329  fix-build-on-Alpine-linux.patch
+2de609f06e7b626c9032c4e51195a4d303c0ee4820b1d66e7ddc95951c02fa97b900f22db7f9d991f9fcc9a1928f1b7167b4634919c439ef0e05c9bd62ba426f  add-devicetree-support-on-x86.patch
+"
