@@ -1,0 +1,59 @@
+From aa89157d137ee6d63ff41a72a5744ef5ebba112d Mon Sep 17 00:00:00 2001
+From: Julian Winkler <julian.winkler1@web.de>
+Date: Sat, 18 Feb 2023 22:31:04 +0100
+Subject: [PATCH 1/2] discover/grub2: implement 'devicetree' command
+
+This change adds support for the grub2 'devicetree' command, loading a
+dtb file from filesystem.
+---
+ discover/grub2/builtins.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/discover/grub2/builtins.c b/discover/grub2/builtins.c
+index ff28586..c96b181 100644
+--- a/discover/grub2/builtins.c
++++ b/discover/grub2/builtins.c
+@@ -102,6 +102,29 @@ static int builtin_initrd(struct grub2_script *script,
+ 	return 0;
+ }
+ 
++static int builtin_devicetree(struct grub2_script *script,
++		void *data __attribute__((unused)),
++		int argc, char *argv[])
++{
++	struct discover_boot_option *opt = script->opt;
++
++	if (!opt) {
++		pb_log("grub2 syntax error: 'devicetree' statement outside "
++				"a menuentry.\n");
++		return -1;
++	}
++
++	if (argc < 2) {
++		pb_log("grub2 syntax error: no filename provided to "
++				"devicetree statement\n");
++		return -1;
++	}
++
++	opt->dtb = create_grub2_resource(script, opt, argv[1]);
++
++	return 0;
++}
++
+ static const struct option search_options[] = {
+ 	{
+ 		.name = "set",
+@@ -511,6 +534,10 @@ static struct {
+ 		.name = "initrd16",
+ 		.fn = builtin_initrd,
+ 	},
++	{
++		.name = "devicetree",
++		.fn = builtin_devicetree,
++	},
+ 	{
+ 		.name = "search",
+ 		.fn = builtin_search,
+-- 
+2.39.1
+

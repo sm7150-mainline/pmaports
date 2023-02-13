@@ -1,0 +1,31 @@
+From d9191994688b04b04e14e8395e6a3e0473dba643 Mon Sep 17 00:00:00 2001
+From: Lincoln Ramsay <lincoln.ramsay@opengear.com>
+Date: Mon, 19 Jul 2021 19:23:06 +1000
+Subject: [PATCH] Prevent the UI from locking up while the countdown runs
+
+struct status has 4 parameters. Provide values for all of them
+so that random values are not used instead.
+
+Visible on an ARMv7 device as a "hang" (ignoring input) when the
+countdown starts, after things have been probed.
+
+Signed-off-by: Lincoln Ramsay <lincoln.ramsay@opengear.com>
+---
+ discover/device-handler.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/discover/device-handler.c b/discover/device-handler.c
+index d85f1af..3d6c47d 100644
+--- a/discover/device-handler.c
++++ b/discover/device-handler.c
+@@ -775,6 +775,7 @@ static void countdown_status(struct device_handler *handler,
+ 			_("Booting in %d sec: [%s] %s"), sec,
+ 			opt->device->device->id, opt->option->name);
+ 	status.backlog = false;
++	status.boot_active = false;
+ 
+ 	device_handler_status(handler, &status);
+ 
+-- 
+2.39.1
+

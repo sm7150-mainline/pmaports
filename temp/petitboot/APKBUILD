@@ -1,0 +1,36 @@
+pkgname=petitboot
+pkgver=1.13
+pkgrel=0
+pkgdesc="Petitboot is an operating system bootloader based on Linux kexec"
+url="https://github.com/open-power/petitboot"
+arch="all"
+license="GPL-2.0-only"
+makedepends="eudev-dev lvm2-dev musl-libintl elfutils-dev ncurses-dev flex bison"
+source="
+	https://github.com/open-power/petitboot/releases/download/v$pkgver/petitboot-v$pkgver.tar.gz
+	discover-grub2-implement-devicetree-command.patch
+	Prevent-the-UI-from-locking-up-while-the-countdown-r.patch
+	udev-check-idpath-for-nullptr-before-calling-strcmp.patch
+	"
+subpackages="
+	$pkgname-doc
+	$pkgname-dbg
+	"
+
+builddir="$srcdir/$pkgname-v$pkgver"
+
+build() {
+	HOST_PROG_KEXEC=/usr/sbin/kexec ./configure --prefix=/usr
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="
+5dd8e605a8ceb8a8165db52f660e25aa3e88e53f26a5dc5e715a17e7fb3f36dd43c2c284c0fd6a2dc8da4eaf72e132ebe4c2b13df4e46a341b7146c38c7810bb  petitboot-v1.13.tar.gz
+44b32d3cd760bd06417bdee3f4165b72783f5790763233b07222ac98d5ac99f5f63afd32587259cc25d0cb1db0e0695c692fdced9e5c1e9d214ce277ceb45229  discover-grub2-implement-devicetree-command.patch
+330b88c1922f1e6a9b2e77114056c6fa4b66aa6a0655d273911acadc778cd9d1a102d2c4fd61c59096c06f7f231159db961aa39401b421b049e05dc39d3437a9  Prevent-the-UI-from-locking-up-while-the-countdown-r.patch
+c05e2769660ab95f9380b2233d81cad78ef82637dfed46c4b094e8e30d9f865a6c949e6c9ed1928c47b519f81bb2ed5c8fc8355c793a61db34b33838d212f8a9  udev-check-idpath-for-nullptr-before-calling-strcmp.patch
+"
