@@ -1,0 +1,68 @@
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=device-valve-jupiter
+pkgdesc="Valve Steam Deck"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="x86_64"
+options="!check !archcheck"
+depends="
+	gummiboot
+	linux-edge
+	linux-firmware-none
+	postmarketos-base
+	"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-gnome-mobile:gnome_mobile
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-vulkan
+	"
+source="
+	00-scaling-factor.gschema.override
+	deviceinfo
+	initramfs.modules
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/initramfs.modules \
+		"$pkgdir"/usr/share/mkinitfs/modules/jupiter.modules
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for the Steam Deck"
+	depends="
+		linux-firmware-amdgpu
+		linux-firmware-cirrus
+		linux-firmware-rtl_bt
+		linux-firmware-rtw88
+	"
+
+	mkdir -p "$subpkgdir"
+}
+
+vulkan() {
+	install_if="$pkgname=$pkgver-r$pkgrel vulkan-loader"
+	depends="mesa-vulkan-ati"
+	mkdir "$subpkgdir"
+}
+
+gnome_mobile() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-gnome-mobile"
+	install -Dm644 "$srcdir"/00-scaling-factor.gschema.override \
+		-t "$subpkgdir"/usr/share/glib-2.0/schemas/
+}
+
+
+sha512sums="
+f2b0e3bf013b87e13828f95d3db7327c7afee33a0703d764ea5b96f0f791a01af2f2685ab5b17db1729fe68e78fd0e39f3a9b2f53530aa493897066d87b43248  00-scaling-factor.gschema.override
+4c6da65957641ece0c823dc913d83868cd990aaaab2b379e51ea2b0868bd7797da2782e824acebdf4b1d833e84673b65323b827d7001cefa9f9b9006be897b12  deviceinfo
+43e5218da859222d54a6a32b618ada8ce14c5f7f1f8e7f0efffadd2df6a05051221ee612fd04d067f956935e4b9eb3321863a2ccd32abcf5fc878e6b0ee84aef  initramfs.modules
+"
