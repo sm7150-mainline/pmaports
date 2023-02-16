@@ -1,7 +1,7 @@
 # U-boot with patches to make the Samsung S9 boot
 pkgname=u-boot-starqltechn
 pkgver=2023.01_rc2
-pkgrel=0
+pkgrel=1
 pkgdesc="U-Boot bootloader for the Samsung SM-G9600 starqltechn"
 url="https://source.denx.de/u-boot"
 arch="aarch64"
@@ -18,9 +18,9 @@ makedepends="$depends_dev
 	swig
 	"
 options="!archcheck !check !strip"
-ubootver=2023.01-rc2
+_ubootver=2023.01-rc2
 source="
-	http://source.denx.de/u-boot/u-boot/-/archive/v$ubootver/u-boot-v$ubootver.tar.gz
+	http://source.denx.de/u-boot/u-boot/-/archive/v$_ubootver/u-boot-v$_ubootver.tar.gz
 	0001-starqltechn-enable-serial-console.patch
 	0002-sdm845-save-relocaddr-to-env-variables.patch
 	0003-input-do-not-override-console-when-stdin-and-device-.patch
@@ -28,7 +28,7 @@ source="
 	0005-starqltechn-use-button-kbd-driver-for-navigating-boo.patch
 	0006-bootmenu-loop-over-menu-entries-with-one-key.patch
 	"
-builddir="$srcdir/u-boot-v$ubootver"
+builddir="$srcdir/u-boot-v$_ubootver"
 
 build() {
 	make HOSTCC=gcc ARCH=arm starqltechn_defconfig
