@@ -8,18 +8,17 @@ _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
 
 pkgver=5.3
-_pkgver=${pkgver/_/-}
-_kernver=${pkgver%_rc*}
-_mainver=${_kernver%.*}
-_patchlevel=${_kernver/$_mainver./}
-_basever=$_mainver.$((_patchlevel-1))
-pkgrel=6
+pkgrel=7
 
 arch="armv7"
+_carch="arm"
 pkgdesc="Sony Xperia M kernel fork, close to mainline"
 url="https://kernel.org/"
 makedepends="perl sed installkernel bash gmp-dev bc linux-headers elfutils-dev openssl-dev file bison flex"
-options="!strip !check !tracedeps pmb:cross-native"
+options="!strip !check !tracedeps
+		pmb:cross-native
+		pmb:kconfigcheck-community"
+license="GPL-2.0-only"
 
 _repository="linux"
 _commit="ad6ab7f8c57896cb3829e6a80408e0912d6096c2"
@@ -30,82 +29,42 @@ source="
 	linux4.17-gcc10-extern_YYLOC_global_declaration.patch
 "
 
-license="GPL2"
-_abi_release=$_pkgver
-_carch=$CARCH
-case "$_carch" in
-aarch64*) _carch="arm64" ;;
-arm*) _carch="arm" ;;
-ppc*) _carch="powerpc" ;;
-s390*) _carch="s390" ;;
-esac
-
 builddir="$srcdir/linux-$_commit"
 
 prepare() {
-	local _patch_failed=
-	# first apply patches in specified order
-	for i in $source; do
-		case $i in
-		*.patch|*.patch::*)
-			_patch=${i%::*}
-			msg "Applying $_patch..."
-			if ! patch -s -p1 -N -i "$srcdir"/$_patch; then
-				echo $_patch >>failed
-				_patch_failed=1
-			fi
-			;;
-		esac
-	done
+	default_prepare
 
-	if ! [ -z "$_patch_failed" ]; then
-		error "The following patches failed:"
-		cat failed
-		return 1
-	fi
-
-	mkdir -p "$srcdir"/build
-	cp -v "$srcdir"/$_config "$srcdir"/build/.config
-	make -C "$builddir" O="$srcdir"/build ARCH="$_carch" \
-		olddefconfig
+	cp "$srcdir"/$_config .config
 }
 
 build() {
-	cd "$srcdir"/build
 	unset LDFLAGS
+	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
-		CFLAGS_MODULE=-fno-pic
+		CFLAGS_MODULE=-fno-pic V=1
 }
 
 package() {
-	cd "$srcdir/build/arch/$_carch/boot"
-
-	if [ "$CARCH" == "aarch64" ]; then
-		install -Dm644 "$srcdir/build/arch/$_carch/boot/Image.gz" \
+	install -Dm644 "$builddir/arch/$_carch/boot/"*zImage \
 			"$pkgdir/boot/vmlinuz"
-	else
-		install -Dm644 "$srcdir/build/arch/$_carch/boot/"*zImage \
-			"$pkgdir/boot/vmlinuz"
-	fi
 
-	install -D "$srcdir/build/include/config/kernel.release" \
+	install -D "$builddir/include/config/kernel.release" \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 
-	cd "$srcdir"/build
-
-	local _install
-	case "$CARCH" in
-	aarch64*|arm*)	_install="modules_install dtbs_install" ;;
-	*)		_install="modules_install" ;;
-	esac
-
-	make -j1 $_install \
+	make modules_install \
 		ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+
 }
 
-sha512sums="31e9ef9b3e956df38824865c291530fa5dda067bfea8b0169a3871d7876cfe192a42ae631e51a8a02f7c64319269c8af2688d8ae180805173bf2c1c84c390a59  linux-sony-nicki-mainline-ad6ab7f8c57896cb3829e6a80408e0912d6096c2.tar.gz
-d2d9d1a6387e11ee519c8fe22633cb5fa58fd2890eea253df4540ab76d75afe9398b46cabc9761c1daf844bd89d6fe2bcda1951ff24435cde6bec6c945290570  config-sony-nicki-mainline.armv7
-27827877040007fc1c4c719f7e2e19e5c272d44972415cfc53feba0313d87e4074f8204bdb13cbc5fe21ea61bf595314b68f10c081e7b7bac3c888b60f008acf  linux4.17-gcc10-extern_YYLOC_global_declaration.patch"
+sha512sums="
+31e9ef9b3e956df38824865c291530fa5dda067bfea8b0169a3871d7876cfe192a42ae631e51a8a02f7c64319269c8af2688d8ae180805173bf2c1c84c390a59  linux-sony-nicki-mainline-ad6ab7f8c57896cb3829e6a80408e0912d6096c2.tar.gz
+c72724663ad84538441046d15f7746fae44faa0d98b51cd9359016c757c321d8ec5a8602cbccbccfad6f8e6b1b19c9be8109f9e390cb52468304a61f8bc6d2e1  config-sony-nicki-mainline.armv7
+27827877040007fc1c4c719f7e2e19e5c272d44972415cfc53feba0313d87e4074f8204bdb13cbc5fe21ea61bf595314b68f10c081e7b7bac3c888b60f008acf  linux4.17-gcc10-extern_YYLOC_global_declaration.patch
+"
