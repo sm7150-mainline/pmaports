@@ -36,9 +36,6 @@ extract_initramfs_extra /boot/initramfs-extra
 setup_udev
 run_hooks /etc/postmarketos-mkinitfs/hooks-extra
 
-# charging-sdl does not work properly at the moment, so skip it.
-# See also https://gitlab.com/postmarketOS/pmaports/-/issues/1064
-# start_charging_mode
 wait_root_partition
 delete_old_install_partition
 resize_root_partition

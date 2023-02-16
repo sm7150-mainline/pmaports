@@ -592,42 +592,6 @@ start_unudhcpd() {
 	) &
 }
 
-start_charging_mode() {
-	# NOTE: To reenable charging-sdl, revert the whole commit,
-	# including the APKBUILD and mkinitfs changes!
-	# Check cmdline for charging mode
-	chargingmodes="
-		androidboot.mode=charger
-		lpm_boot=1
-		androidboot.huawei_type=oem_rtc
-		startup=0x00010004
-		lpcharge=1
-		androidboot.bootchg=true
-	"
-
-	# Support devices using KMS
-	# shellcheck disable=SC2154
-	if [ -n "$deviceinfo_mesa_driver" ]; then
-		export SDL_VIDEODRIVER="kmsdrm"
-	fi
-
-	# shellcheck disable=SC2086
-	grep -Eq "$(echo $chargingmodes | tr ' ' '|')" /proc/cmdline || return
-	setup_directfb_tslib
-	# Get the font from osk-sdl config
-	fontpath=$(awk '/^keyboard-font\s=/{print $3}' /etc/osk.conf)
-	# Set up triggerhappy config
-	{
-		echo "KEY_POWER 1 pgrep -x charging-sdl || charging-sdl -pcf $fontpath"
-	} >/etc/triggerhappy.conf
-	# Start it once and then start triggerhappy
-	(
-		charging-sdl -pcf "$fontpath" \
-			|| show_splash "Charging mode failed"
-	) &
-	thd --deviceglob /dev/input/event* --triggers /etc/triggerhappy.conf
-}
-
 # $1: Message to show
 show_splash() {
 	# Skip for non-framebuffer devices
