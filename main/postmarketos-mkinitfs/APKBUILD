@@ -1,44 +1,40 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-mkinitfs
-pkgver=1.6.1
-pkgrel=3
+pkgver=2.0
+pkgrel=0
 pkgdesc="Tool to generate initramfs images for postmarketOS"
 url="https://postmarketos.org"
 depends="
 	boot-deploy>=0.7
-	busybox-extras
-	btrfs-progs
-	bzip2
-	cryptsetup
-	device-mapper
-	e2fsprogs
-	e2fsprogs-extra
-	f2fs-tools
-	lz4
-	multipath-tools
-	parted
-	postmarketos-fde-unlocker
-	unudhcpd
-	xz
-	"
-makedepends="go"
+"
+makedepends="go scdoc"
 replaces="mkinitfs"
-triggers="$pkgname.trigger=/etc/postmarketos-mkinitfs/*:/usr/share/kernel/*:/usr/share/postmarketos-mkinitfs-triggers"
+triggers="$pkgname.trigger=/usr/share/mkinitfs/*:/usr/share/kernel/*:/usr/share/mkinitfs-triggers"
+# mkinitfs-vendor-$pkgver.tar.gz: vendored Go deps, is part of the release:
+# https://gitlab.com/postmarketOS/postmarketos-mkinitfs/-/releases
 source="
 	https://gitlab.com/postmarketOS/postmarketos-mkinitfs/-/archive/$pkgver/postmarketos-mkinitfs-$pkgver.tar.gz
-	00-default.modules
-	init.sh
-	init_functions.sh
+	https://gitlab.com/api/v4/projects/postmarketOS%2Fpostmarketos-mkinitfs/packages/generic/mkinitfs-vendor-$pkgver/$pkgver/mkinitfs-vendor-$pkgver.tar.gz
 	"
+
 install="$pkgname.post-upgrade"
 arch="all"
 license="GPL-2.0-or-later"
 provider_priority=999  # higher priority than Alpine's mkinitfs
 provides="initramfs-generator"
+subpackages="$pkgname-doc"
 
-export GOPATH="$srcdir"
 export CGO_ENABLED=0
+export GOCACHE="${GOCACHE:-"$srcdir/go-cache"}"
+export GOMODCACHE="${GOMODCACHE:-"$srcdir/go"}"
+export GOPATH="$srcdir"
+export GOTMPDIR="${GOTMPDIR:-"$srcdir"}"
+
+prepare() {
+	default_prepare
+	ln -s "$srcdir"/vendor "$builddir"/vendor
+}
 
 build() {
 	unset LDFLAGS  # passed to Go as linker flags, which are invalid
@@ -46,17 +42,6 @@ build() {
 }
 
 package() {
-	install -Dm644 "$srcdir/init_functions.sh" \
-		"$pkgdir/usr/share/postmarketos-mkinitfs/init_functions.sh"
-
-	install -Dm755 "$srcdir/init.sh" \
-		"$pkgdir/usr/share/postmarketos-mkinitfs/init.sh"
-
-	install -Dm644 "$srcdir/00-default.modules" \
-		"$pkgdir/etc/postmarketos-mkinitfs/modules/00-default.modules"
-
-	mkdir -p "$pkgdir/etc/postmarketos-mkinitfs/hooks/"
-
 	make PREFIX=/usr DESTDIR="$pkgdir" install
 }
 
@@ -65,8 +50,6 @@ check() {
 }
 
 sha512sums="
-eb4af0fd9b5050e792c2ffb5d72e38899d19e623eda8f41e7cfeaa3d6dcae7e0342381cfc12f4969017d1e3b3b5d879614b0bbc3e4cf2d5fd01769e741bea17e  postmarketos-mkinitfs-1.6.1.tar.gz
-20f110337113e8de8999cf2a064a93fea36821d5c216bfa4ba46ec1f83825638262b92fd7be29eee0a85a54a108b7315a96cbe30da8ae4419f54c2ed53bb08c7  00-default.modules
-2ef30df1d00edc95a8789c20b51d5a5fba29940d0809dbdd46d98023d50077c2a77ee3a767b42e879ea12db1fdb18d12128e33009527bd0d18f74b50b6d13108  init.sh
-43a5240e03183db722a1d2e81b10fe8be0a1d1e6c11783e869adbf605b7886a05208296debafd0dd0b8d0b0be6dd695515114b8bd6716f82e69105c12b225571  init_functions.sh
+c401902f9adc2c8dbefa31c2eda4b33be678fe3db103e5e868c4a4b8850aff4fffcbd4d922d3ab1a27aee956ed25ed26671217e689d8f7bed6dc422dfe0ec98d  postmarketos-mkinitfs-2.0.tar.gz
+185074152b7fba098a9fe10253cb5a33c57d3da5f6b657cdde2c599a9acc94bb1771d8dd06478af4765e344ff156bbe9fa8a240f007096e411d447baeb744388  mkinitfs-vendor-2.0.tar.gz
 "

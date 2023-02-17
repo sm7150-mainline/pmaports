@@ -1,4 +1,4 @@
 #!/bin/sh -e
 
-/usr/sbin/postmarketos-mkinitfs
+/usr/sbin/mkinitfs
 exit 0
