@@ -1,0 +1,72 @@
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+# Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=postmarketos-initramfs
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Base files for the postmarketOS initramfs / initramfs-extra"
+url="https://postmarketos.org"
+depends="
+	busybox-extras
+	btrfs-progs
+	bzip2
+	cryptsetup
+	device-mapper
+	e2fsprogs
+	e2fsprogs-extra
+	f2fs-tools
+	lz4
+	multipath-tools
+	parted
+	postmarketos-fde-unlocker
+	postmarketos-mkinitfs
+	unudhcpd
+	xz
+	"
+source="
+	00-default.modules
+	00-initramfs-base.dirs
+	00-initramfs-base.files
+	00-initramfs-extra-base.files
+	init.sh
+	init_functions.sh
+	"
+arch="noarch"
+license="GPL-2.0-or-later"
+
+package() {
+	install -Dm644 "$srcdir/init_functions.sh" \
+		"$pkgdir/usr/share/mkinitfs/init_functions.sh"
+
+	install -Dm755 "$srcdir/init.sh" \
+		"$pkgdir/usr/share/mkinitfs/init.sh"
+
+	install -Dm644 "$srcdir"/00-initramfs-base.dirs \
+		-t "$pkgdir"/usr/share/mkinitfs/dirs/
+	mkdir -p "$pkgdir"/etc/mkinitfs/dirs
+
+	install -Dm644 "$srcdir"/00-default.modules \
+		-t "$pkgdir"/usr/share/mkinitfs/modules/
+	mkdir -p "$pkgdir"/etc/mkinitfs/modules
+
+	install -Dm644 "$srcdir"/00-initramfs-base.files \
+		-t "$pkgdir"/usr/share/mkinitfs/files/
+	mkdir -p "$pkgdir"/etc/mkinitfs/files
+
+	install -Dm644 "$srcdir"/00-initramfs-extra-base.files \
+		-t "$pkgdir"/usr/share/mkinitfs/files-extra/
+	mkdir -p "$pkgdir"/etc/mkinitfs/files-extra
+
+	mkdir -p "$pkgdir"/usr/share/mkinitfs/hooks
+	mkdir -p "$pkgdir"/usr/share/mkinitfs/hooks-extra
+	mkdir -p "$pkgdir"/etc/mkinitfs/hooks
+	mkdir -p "$pkgdir"/etc/mkinitfs/hooks-extra
+}
+
+sha512sums="
+bed319179bcd0b894d6267c7e73f2890db07bc07df71542936947dfb3bdb17fade8a7b4e7b577f278af4472464427bba07f75aff0a1e454a4167052c088f3b6a  00-default.modules
+399da6e61993f48c8a62c956bb15d294cac10bf003d84257efdf4a213ebc87bb51cdcd75c4675f51c3be832146b8f21a7c769bf3e94f574a5067f001662632a1  00-initramfs-base.dirs
+3c47e9169ee8cfe78e1a554cf325962f5425c41a0125dcba8561f377d8c52cbfccdd791b269656478c92604644fb286b1ee8df42db9f5a771657e415da35e619  00-initramfs-base.files
+e984cd3033ce8752ebc71127828b964b46259a5263c2ebfab32c1394b674bcff464862ff00b8e920d3d31386c54ca0b94f84bc77580d275ecfeea33e76c07ef4  00-initramfs-extra-base.files
+347637ba837c75d2e7c5e93b10364de6a784d70067c65dcc3b95277f5feb89fc9b243822022b2380846dd977c4a3f6f96877f547e6ffc7cd3051845d7907d6a1  init.sh
+6978bb42349bc318a4cd8894aff77de05ad3d70345a232e683fdcf98270e71087669d05f750f55256b1af3a3b747ce5e224aa939a43b5c61b9675d9dd44c9080  init_functions.sh
+"
