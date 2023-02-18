@@ -1,7 +1,7 @@
 # Maintainer: Richard Acayan <mailingradian@gmail.com>
 pkgname=make-dynpart-mappings
 pkgver=10.2.4
-pkgrel=0
+pkgrel=1
 pkgdesc="a command-line tool that uses the device mapper to make block devices based on dynamic partitions"
 url="https://gitlab.com/flamingradian/make-dynpart-mappings/"
 arch="all"
@@ -19,7 +19,7 @@ build() {
 
 package() {
 	install -Dm755 "$builddir/make-dynpart-mappings" "$pkgdir/usr/bin/make-dynpart-mappings"
-	install -Dm644 "$srcdir/10-setup-dynamic-partitions.files" "$pkgdir/etc/postmarketos-mkinitfs/files/10-setup-dynamic-partitions.files"
+	install -Dm644 "$srcdir/10-setup-dynamic-partitions.files" "$pkgdir/usr/share/mkinitfs/files/10-setup-dynamic-partitions.files"
 }
 
 sha512sums="
