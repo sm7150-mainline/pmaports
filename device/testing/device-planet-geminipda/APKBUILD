@@ -2,7 +2,7 @@
 pkgname=device-planet-geminipda
 pkgdesc="Gemini PDA"
 pkgver=0.2
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -21,7 +21,7 @@ package() {
 	devicepkg_package $startdir $pkgname
 
 	install -Dm644 "$srcdir"/10-geminipda-loopback-device.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/10-geminipda-loopback-device.sh
+		"$pkgdir"/usr/share/mkinitfs/hooks/10-geminipda-loopback-device.sh
 
 	install -Dm644 "$srcdir"/20-fbdev.conf \
 		"$pkgdir"/etc/X11/xorg.conf.d/20-fbdev.conf
