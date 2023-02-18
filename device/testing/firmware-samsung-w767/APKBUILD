@@ -1,7 +1,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=firmware-samsung-w767
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware files for Samsung Galaxy Book S"
 url="https://gitlab.com/jenneron/firmware-samsung-galaxy-boo-s"
 arch="aarch64"
@@ -39,13 +39,13 @@ package() {
 	install -Dm644 wlanmdsp.mbn -t "$_fwdir"
 
 	install -Dm644 "$srcdir"/30-gpu-firmware.files -t \
-		"$pkgdir"/etc/postmarketos-mkinitfs/files
+		"$pkgdir"/usr/share/mkinitfs/files
 
 	# While loading ADSP firmware which is responsible for VBUS supply,
 	# USB loses power for a short time. We need remoteproc firmware
 	# on initramfs stage to boot from USB.
 	install -Dm644 "$srcdir"/31-remoteproc-firmware.files -t \
-		"$pkgdir"/etc/postmarketos-mkinitfs/files
+		"$pkgdir"/usr/share/mkinitfs/files
 }
 
 sha512sums="
