@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=msm-fb-refresher
 pkgver=0.2
-pkgrel=3
+pkgrel=4
 pkgdesc="Display refresher for Qualcomm devices"
 arch="all"
 url="https://github.com/AsteroidOS/msm-fb-refresher"
@@ -27,7 +27,7 @@ package() {
 		"$pkgdir"/etc/init.d/msm-fb-refresher
 
 	# Initramfs hook
-	local initfsdir="$pkgdir"/etc/postmarketos-mkinitfs/
+	local initfsdir="$pkgdir"/usr/share/mkinitfs/
 	mkdir -p "$initfsdir"/hooks "$initfsdir"/files
 	install -Dm755 "$srcdir"/00-msm-fb-refresher.sh \
 		"$initfsdir"/hooks/00-msm-fb-refresher.sh
