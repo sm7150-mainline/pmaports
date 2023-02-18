@@ -31,7 +31,7 @@ fi
 
 if [ -f "$srcdir/initfs-hook.sh" ]; then
 	install -Dm644 "$srcdir/initfs-hook.sh" \
-		"$pkgdir/etc/postmarketos-mkinitfs/hooks/00-$pkgname.sh"
+		"$pkgdir/usr/share/mkinitfs/hooks/00-$pkgname.sh"
 fi
 
 if [ -f "$srcdir/modules-load.conf" ]; then
