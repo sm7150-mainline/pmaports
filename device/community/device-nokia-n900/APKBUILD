@@ -3,7 +3,7 @@
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
 pkgver=8.4
-pkgrel=0
+pkgrel=1
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
@@ -75,7 +75,7 @@ package() {
 	install -D -m644 "$srcdir"/boot.scr \
 		"$pkgdir"/boot/boot.scr
 	install -D -m644 "$srcdir"/backlight-enable.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/00-$pkgname-backlight.sh
+		"$pkgdir"/usr/share/mkinitfs/hooks/00-$pkgname-backlight.sh
 	install -D -m644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
 	install -D -m644 "$srcdir"/asound.state.speakers \
@@ -83,9 +83,9 @@ package() {
 	install -D -m644 "$srcdir"/asound.state.headset \
 		"$pkgdir"/var/lib/alsa/asound.state.headset
 	install -Dm644 "$srcdir"/10-initfs-keymap.files \
-		"$pkgdir"/etc/postmarketos-mkinitfs/files/10-initfs-keymap.files
+		"$pkgdir"/usr/share/mkinitfs/files/10-initfs-keymap.files
 	install -Dm644 "$srcdir"/10-initfs-keymap.sh \
-		"$pkgdir"/etc/postmarketos-mkinitfs/hooks/10-initfs-keymap.sh
+		"$pkgdir"/usr/share/mkinitfs/hooks/10-initfs-keymap.sh
 	install -Dm755 "$srcdir"/$pkgname.start \
 		"$pkgdir"/etc/local.d/$pkgname.start
 
