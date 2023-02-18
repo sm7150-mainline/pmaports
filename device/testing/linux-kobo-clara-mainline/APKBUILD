@@ -2,7 +2,7 @@
 # Kernel config based on: arch/arm/configs/kobo_defconfig
 
 pkgname=linux-kobo-clara-mainline
-pkgver=6.1
+pkgver=6.1.12
 pkgrel=0
 pkgdesc="Kobo Clara HD kernel fork, close to mainline"
 arch="armv7"
@@ -28,7 +28,7 @@ makedepends="
 
 # Source
 _repository="linux"
-_commit="6f9a6143fbd97dc73829f4b39fb3eaa66f66aa3d"
+_commit="d6a0a4cc5f6fd75a5c6e26e14b2c2d6c94918ff3"
 _rtl8189fs_repository="rtl8189ES_linux"
 _rtl8189fs_commit="476020109b3841421af289a7b78c7a25b0c45fac"
 _config="config-$_flavor.$arch"
@@ -64,11 +64,11 @@ package() {
 		O="$_outdir" ARCH="$_carch" \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
-	install -Dm644 "$_rtl8189fs_dir"/8189fs.ko "$pkgdir/lib/modules/$pkgver/kernel/drivers/net/wireless"
+	install -Dm644 "$_rtl8189fs_dir"/8189fs.ko "$pkgdir/lib/modules/$(make -s O="$_outdir" ARCH="$_carch" kernelrelease)/kernel/drivers/net/wireless"
 }
 
 sha512sums="
-0e1b71e7caf680fbf53c9afa17de690240cf979693813140c7a9fdf117dd87b79f0c91fa8d5bb92bd54566fb9327c7cd16a49abee3e9abf8e32e35b12268c345  linux-kobo-clara-mainline-6f9a6143fbd97dc73829f4b39fb3eaa66f66aa3d.tar.gz
+e490188a6748c99209fcefef461c47bbc6174149c6ea00c35d141be0b924733ee7650a78776647781dc69ed8530a49b0eaa3fe0edd844094100ed75254f6f303  linux-kobo-clara-mainline-d6a0a4cc5f6fd75a5c6e26e14b2c2d6c94918ff3.tar.gz
 24a3db037d52c8d1b537e8e3fb106dc722f80688801eca5d3f423027be8e9acf189a53b514375a44d9b7f2e7e9565627d73cb25bf083cdc5d68d0b8260028d9b  rtl8189ES_linux-476020109b3841421af289a7b78c7a25b0c45fac.tar.gz
 124728c37c8cc701c2286d852283de312339298fe67db108ebc588a7eea68820241ce34d09a8a4f6cf16103fa2d9accfc0c7fcb2387dfcea7994b5cd9150a2a6  config-kobo-clara-mainline.armv7
 "
