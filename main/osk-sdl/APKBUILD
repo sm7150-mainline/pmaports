@@ -5,7 +5,7 @@
 # https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10712
 pkgname=osk-sdl
 pkgver=0.67.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Onscreen keyboard for unlocking LUKS devices"
 url="https://gitlab.com/postmarketOS/osk-sdl"
 arch="all"
@@ -51,10 +51,10 @@ package() {
 	# needed to trigger initfs rebuild:
 	touch osk-sdl
 	install -Dm644 osk-sdl \
-		"$pkgdir"/usr/share/postmarketos-mkinitfs-triggers/osk-sdl
+		"$pkgdir"/usr/share/mkinitfs-triggers/osk-sdl
 
 	install -Dm644 "$srcdir"/osk-sdl.files \
-		"$pkgdir"/etc/postmarketos-mkinitfs/files/30-osk-sdl.files
+		"$pkgdir"/usr/share/mkinitfs/files/30-osk-sdl.files
 }
 
 sha512sums="
