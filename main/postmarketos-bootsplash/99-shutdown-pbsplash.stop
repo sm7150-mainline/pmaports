@@ -1,0 +1,12 @@
+#!/bin/sh
+
+VT=7
+
+# Retrieve device name
+source /etc/deviceinfo
+
+# Run on separate VT to avoid interference of display managers
+chvt "$VT"
+
+# Run splash
+pbsplash -s /usr/share/pbsplash/pmos-logo-text.svg -b "Linux $(uname -r) | $deviceinfo_codename" -m "Shutting down..." &
