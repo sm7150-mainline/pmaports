@@ -17,7 +17,7 @@ if itest.s "x" == "x$bootpart" ; then
         bootpart=1
 fi
 
-setenv bootargs init=/init.sh rw console=ttymxc0,115200 cma=256M PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE
+setenv bootargs init=/init.sh rw console=ttymxc0,115200 PMOS_NO_OUTPUT_REDIRECT PMOS_FORCE_PARTITION_RESIZE
 
 # Select the correct dtb based on device revision
 # Default to "-r4" if board_rev isn't set, since there are apparently Evergreen
