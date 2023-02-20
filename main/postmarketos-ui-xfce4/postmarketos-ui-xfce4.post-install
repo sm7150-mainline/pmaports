@@ -1,7 +1,10 @@
 #!/bin/sh
 
-rc-update add bluetooth default
-rc-update add networkmanager default
-rc-update add tinydm default
+sed -i "s/username/$(getent passwd 10000 | cut -d: -f1)/g" /usr/share/lightdm/lightdm.conf.d/64-autologin.conf
 
-tinydm-set-session -s /usr/share/xsessions/xfce.desktop
+rc-update add bluetooth default
+rc-update add lightdm default
+rc-update add networkmanager default
+
+# Needed to fully revert pma!3887
+rc-update -q del tinydm default
