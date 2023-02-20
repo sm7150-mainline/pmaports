@@ -1,0 +1,139 @@
+# Maintainer: Teemu Ikonen <tpikonen@mailbox.org>
+# Forked from Alpine to apply patches for adaptive transient window handling
+pkgname=gtk4.0
+pkgver=9999.4.10.4
+_pkgver=4.10.4
+pkgrel=0
+pkgdesc="The GTK Toolkit (v4)"
+url="https://www.gtk.org/"
+install="$pkgname.post-install $pkgname.post-upgrade $pkgname.post-deinstall"
+arch="all"
+options="!check" # Test suite is known to fail upstream
+license="LGPL-2.1-or-later"
+subpackages="$pkgname-dbg $pkgname-demo $pkgname-dev $pkgname-doc $pkgname-lang"
+depends="shared-mime-info gtk-update-icon-cache tzdata iso-codes"
+depends_dev="
+	at-spi2-core-dev
+	gdk-pixbuf-dev
+	glib-dev
+	libepoxy-dev
+	libxext-dev
+	libxi-dev
+	libxinerama-dev
+	libxkbcommon-dev
+	vulkan-headers
+	wayland-dev
+	wayland-protocols
+	"
+makedepends="
+	$depends_dev
+	cairo-dev
+	colord-dev
+	cups-dev
+	expat-dev
+	fontconfig-dev
+	gettext-dev
+	gi-docgen
+	gnutls-dev
+	gobject-introspection-dev
+	graphene-dev
+	gst-plugins-bad-dev
+	gstreamer-dev
+	gtk-doc>=1.33
+	iso-codes-dev
+	libice-dev
+	libx11-dev
+	libxcomposite-dev
+	libxcursor-dev
+	libxdamage-dev
+	libxfixes-dev
+	libxrandr-dev
+	meson
+	pango-dev
+	perl
+	py3-docutils
+	sassc
+	tiff-dev
+	vulkan-loader-dev
+	zlib-dev
+	zstd-dev
+	"
+source="
+	https://download.gnome.org/sources/gtk/${_pkgver%.*}/gtk-${_pkgver}.tar.xz
+	0001-window-Maximize-resizable-transient-windows-on-small.patch
+	0002-windowcontrols-Force-close-buttons-for-transient-win.patch
+	"
+builddir="$srcdir/gtk-${_pkgver}"
+
+prepare() {
+	default_prepare
+	sed -i "s/        version: '.*',/        version: '4.90.99',/g" meson.build
+	sed -i "s/^gtk_interface_age = .*/gtk_interface_age = 90/g" meson.build
+}
+
+build() {
+	CFLAGS="$CFLAGS -O2" \
+	abuild-meson \
+		-Dgtk_doc=true \
+		-Dintrospection=enabled \
+		-Dbroadway-backend=true \
+		-Dman-pages=true \
+		-Dbuild-tests=false \
+		-Dbuild-testsuite=false \
+		. output
+	meson compile ${JOBS:+-j ${JOBS}} -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+
+	# use gtk-update-icon-cache from gtk+2.0 for now. The icon cache is forward
+	# compatible so this is fine.
+	# do the same for gtk4-update-icon-cache
+	rm -f "$pkgdir"/usr/bin/gtk-update-icon-cache
+	rm -f "$pkgdir"/usr/bin/gtk4-update-icon-cache
+	rm -f "$pkgdir"/usr/share/man/man1/gtk-update-icon-cache.1
+}
+
+demo() {
+	pkgdesc="$pkgdesc (demonstration application)"
+	amove \
+		usr/bin/gtk4-demo \
+		usr/bin/gtk4-demo-application \
+		usr/bin/gtk4-icon-browser \
+		usr/bin/gtk4-node-editor \
+		usr/bin/gtk4-print-editor \
+		usr/bin/gtk4-widget-factory \
+		usr/share/applications/org.gtk.Demo4.desktop \
+		usr/share/applications/org.gtk.IconBrowser4.desktop \
+		usr/share/applications/org.gtk.PrintEditor4.desktop \
+		usr/share/applications/org.gtk.WidgetFactory4.desktop \
+		usr/share/applications/org.gtk.gtk4.NodeEditor.desktop \
+		usr/share/glib-2.0/schemas/org.gtk.Demo4.gschema.xml \
+		usr/share/gtk-4.0/gtk4builder.rng \
+		usr/share/icons \
+		usr/share/metainfo
+}
+
+dev() {
+	default_dev
+
+	amove \
+		usr/bin/gtk4-builder-tool \
+		usr/bin/gtk4-encode-symbolic-svg \
+		usr/bin/gtk4-query-settings \
+		usr/share/gtk-4.0/valgrind
+}
+
+lang() {
+	default_lang
+
+	# These are some localized emoji labels.
+	amove usr/share/gtk-4.0/emoji
+}
+
+sha512sums="
+0c5db3af72227977e11fea3adddec1321b82bcace3c3d10a7c914b8d98b0bdb7994084c0a9e883b24815038bf4a0efe1eb1c4ff79e6838e83cadb6ddf2a1239f  gtk-4.10.4.tar.xz
+e7b1e11207ea56c4173210d9a92f4a7b5ab41323b55366a69fd7e333d13c09aa872ec5ef1e1527fda068f0fbe91b1b9ba933fe9a8b0961efa5f32eaba2c7482b  0001-window-Maximize-resizable-transient-windows-on-small.patch
+d2f09af3965eee592602819be6ed9240b6467f6409ca9ab892a757760af504ac4a7551ff89389659e2602a6e12489080dadc444c9d7e0665e7038dc4b409a68a  0002-windowcontrols-Force-close-buttons-for-transient-win.patch
+"

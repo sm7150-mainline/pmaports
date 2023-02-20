@@ -1,0 +1,46 @@
+From ec91be7b61e5f82222976f789f731c4060b2cecf Mon Sep 17 00:00:00 2001
+From: Teemu Ikonen <tpikonen@mailbox.org>
+Date: Mon, 20 Feb 2023 19:43:24 +0200
+Subject: [PATCH 2/2] windowcontrols: Force close buttons for transient windows
+
+Based on Purism adaptive patches by Alexander Mikhaylenko,
+https://source.puri.sm/Librem5/debs/gtk4/-/blob/pureos/byzantium/debian/patches/pureos/adaptive/
+---
+ gtk/gtkwindowcontrols.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/gtk/gtkwindowcontrols.c b/gtk/gtkwindowcontrols.c
+index 52ba2f8b32..34cf80a213 100644
+--- a/gtk/gtkwindowcontrols.c
++++ b/gtk/gtkwindowcontrols.c
+@@ -25,6 +25,7 @@
+ #include "gtkboxlayout.h"
+ #include "gtkbutton.h"
+ #include "gtkenums.h"
++#include "deprecated/gtkdialog.h"
+ #include "gtkicontheme.h"
+ #include "gtkimage.h"
+ #include <glib/gi18n-lib.h>
+@@ -125,9 +126,16 @@ get_layout (GtkWindowControls *self)
+   if (self->decoration_layout)
+     layout_desc = g_strdup (self->decoration_layout);
+   else
+-    g_object_get (gtk_widget_get_settings (widget),
+-                  "gtk-decoration-layout", &layout_desc,
+-                  NULL);
++    {
++      gboolean is_mobile_dialog = GTK_IS_DIALOG (root) || !!gtk_window_get_transient_for (GTK_WINDOW (root));
++
++      if (is_mobile_dialog)
++        layout_desc = g_strdup (":close");
++      else
++        g_object_get (gtk_widget_get_settings (widget),
++                      "gtk-decoration-layout", &layout_desc,
++                      NULL);
++    }
+ 
+   tokens = g_strsplit (layout_desc, ":", 2);
+ 
+-- 
+2.39.2
+
