@@ -75,6 +75,9 @@ package() {
 
 	gzip -v "$pkgdir"/boot/vmlinuz
 	mv "$pkgdir"/boot/vmlinuz.gz "$pkgdir"/boot/vmlinuz
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
 sha512sums="
