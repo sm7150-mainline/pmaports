@@ -5,6 +5,7 @@
 pkgname=linux-purism-librem5
 pkgver=6.2.0
 pkgrel=0
+# NOTE: Don't forget to rebase the config! See prepare() for instructions.
 _purismrel=1
 # <kernel ver>.<purism kernel release>
 _purismver=${pkgver}pureos$_purismrel
@@ -49,9 +50,19 @@ prepare() {
 	REPLACE_GCCH=0 \
 		. downstreamkernel_prepare
 
-	# NOTE: only for generating a config based on Purism's defconfig, for rebasing...
-	# make ARCH="$_carch" CC="${CC:-gcc}" \
-	# 	defconfig KBUILD_DEFCONFIG=librem5_defconfig
+	####### Rebase config
+	# The kernel config needs to be periodically rebased to enable new
+	# modules/features that Purism has enabled in their defconfig. This is done
+	# by: 1) generate .config using librem5_defconfig, 2) diff that .config
+	# with the config in this package, 3) carefully going over the diff and
+	# selecting new things enabled in their config.
+	#
+	# This can be uncommented to help generate the defconfig using "pmbootstrap
+	# build linux-purism-librem5". The build will fail (exit 1) to let you grab
+	# the config before it starts building the kernel:
+	#    make ARCH="$_carch" CC="${CC:-gcc}" \
+	#       defconfig KBUILD_DEFCONFIG=librem5_defconfig
+	#    exit 1
 }
 
 build() {
