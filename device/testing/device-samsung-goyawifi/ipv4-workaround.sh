@@ -6,7 +6,7 @@
 IF=$1
 STATUS=$2
 
-if [ "$IF" == "mlan0" ]; then
+if [ "$IF" == "wlan0" ]; then
 	if [ "$STATUS" == "up" ]; then
 		logger -s "Setting IP on $IF"
 		logger -s "IP4_ADDRESS_0 $IP4_ADDRESS_0"
