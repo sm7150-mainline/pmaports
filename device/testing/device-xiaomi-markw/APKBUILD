@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-markw
+pkgdesc="Xiaomi Redmi 4 Prime"
+pkgver=1.0
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8953"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi, Bluetooth, Modem, Display and GPU Firmware"
+	depends="firmware-xiaomi-markw"
+	mkdir "$subpkgdir"
+}
+sha512sums="
+282bda182bc7439bafbb5e85da15797b7d96c34945fd312ef45f369581767a25d9c6d0a768abdf6a4562deff096e732f39b5e9efe2533e6d75b1b065a63efc93  deviceinfo
+"
