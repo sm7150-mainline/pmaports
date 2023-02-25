@@ -1,21 +1,24 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-t03g
 pkgdesc="Samsung Galaxy Note II (GSM)"
-pkgver=1
-pkgrel=1
+pkgver=1.1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf
-	linux-postmarketos-exynos4
 	mkbootimg
 	postmarketos-base
 	soc-samsung-exynos4412-haptics
 "
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-kernel-s6evr02:kernel_s6evr02
+	$pkgname-kernel-ea8061:kernel_ea8061
+"
 source="
 	deviceinfo
 	ucm/Midas.conf
@@ -46,8 +49,20 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
+kernel_s6evr02() {
+	pkgdesc="Samsung S6EVR02 panel. To know which panel your device uses, see the wiki page of this device: https://wiki.postmarketos.org/wiki/Samsung_Galaxy_Note_II_(samsung-t03g)"
+	depends="linux-postmarketos-exynos4"
+	devicepkg_subpackage_kernel "$startdir" "$pkgname" "$subpkgname"
+}
+
+kernel_ea8061() {
+	pkgdesc="Magnachip EA8061 panel. To know which panel your device uses, see the wiki page of this device: https://wiki.postmarketos.org/wiki/Samsung_Galaxy_Note_II_(samsung-t03g)"
+	depends="linux-postmarketos-exynos4"
+	devicepkg_subpackage_kernel "$startdir" "$pkgname" "$subpkgname"
+}
+
 sha512sums="
-6988a69d5f061f9e697373902f25c08c25dbabcc660f8b0b0c7af97012335ab305b21e7da4d02c65013d6a948e93caed25464a3afff5472d735b135e34415e72  deviceinfo
+dacaf39343e03a84444f34e57abd0cef3933dd86b0212c358f0d42e416d4b23b6cf3dca41112eeb6feccae8d784ef5db2041a8b05a6803445359181cbe4df168  deviceinfo
 caa81e8ab6753c0ca24c22fb6742288765dfbf2469b8b8c35c5789edfcee546ef1c3b14ad6e540c417f434258399300f17d312b58157635eafab134587ef94cc  Midas.conf
 a56ce19331a8997b1cc493b8ab6b16ecfc423254a380e13a9461ec94ec5bc124cb3283256ef8cc014db60937a5e7404c6f7728bc2cc2494a70c612ccb3fd4105  HiFi.conf
 56a2bdffc273cb0a581192e65378ff50e71c7bc8a696af7d5e7c165a53c005aae104c4514c68afb668454c5a94ce78bd509f8a40e3401d67e16636b1ed81d051  modules-load.conf
