@@ -18,6 +18,7 @@ source="
 	deviceinfo
 	goyawifi.conf
 	sd8xxx.conf
+	galcore.conf
 	dhcp-client.conf
 	ipv4-workaround.sh
 	etc-lightdm-lightdm.conf
@@ -43,6 +44,9 @@ package() {
 		"$pkgdir"/etc/modprobe.d/goyawifi.conf
 	install -D -m644 "$srcdir"/sd8xxx.conf \
 		"$pkgdir"/lib/modules-load.d/sd8xxx.conf
+	# Load Vivante GPU module
+	install -D -m644 "$srcdir"/galcore.conf \
+		"$pkgdir"/lib/modules-load.d/galcore.conf
 
 	# Alsa UCM configs
 	install -Dm644 "$srcdir"/emei-dkb-hifi.conf \
@@ -84,7 +88,8 @@ fix_lightdm() {
 sha512sums="
 10fd6444d5d8a9a67eca2fa063f135aa25e992c137291bc38e200fb7d1772efa98dbeea94648ee87a73c871c5d06abe65ca495618f8103b7f79b77326a351838  deviceinfo
 73d03f53e08a650b3073e33653d3bcfa6951042203dde7104ffddbe59e29bafbb26c0e41cd9357ede8f01abe0049b190a2acae82e5a5b92868129ab66b118a8d  goyawifi.conf
-23c88588dc8859512b15dc54027cfb23aa3783d746eace21ed919ed769f6ed5d0dd89bfbdb6d7285e5dc7d1fa7e921411df0d40ef7ca4d32d6a51274845726dc  sd8xxx.conf
+33f81e747f68472709c9933837809853d2786df627b1f3e41b5a0524577097cf0fadcdbaf403cbe1e16f3480f5b1924ea6d1c0b67e37340e9a0f51bd154a1dc4  sd8xxx.conf
+2be76a8208a5d7244aa975d122e73ad76d8ca4f6ef0776fb84c2e1ac075d5f4e810338c09009ef3317bf447b42f3b6657ba762e73d6ae7392a756c37ba5b34d4  galcore.conf
 c1c9b58b5325ad11afc98bf1b20179c725b7627416270fe87558bdc259fbb996628d404aaaef6e8c9ea41c21b015ae767ce1c3054490481c24cc97d0002d69bb  dhcp-client.conf
 94a84eb3c91108596e8edcb0a615ce642a37af4092011845d2c0e7214b3c2daa6c51ca9951501be9277c7c0d3c71c32a0bca60d806d284a97a350db4a9e9bbd2  ipv4-workaround.sh
 861270c6bc0b2a3e6cd389c21c8c895e62de8cf8bec6fcf23c178f8cbaae855d62b0ee98692671ab4f518d84cb43dd0b2fe46f5a609f65af6a6c06e0fdbb6d0c  etc-lightdm-lightdm.conf
