@@ -3,7 +3,8 @@
 # Kernel config based on: arch/arm64/configs/omap2plus_defconfig
 
 pkgname=linux-postmarketos-omap
-pkgver=6.1
+pkgver=6.2.1
+_pkgver=6.2.1
 pkgrel=0
 pkgdesc="Mainline kernel fork for OMAP devices"
 arch="armv7"
@@ -15,11 +16,13 @@ makedepends="bash bison findutils flex openssl-dev perl gmp-dev mpc1-dev mpfr-de
 _carch="arm"
 _flavor="postmarketos-omap"
 _config="config-$_flavor.armv7"
+
+
 case $pkgver in
-	*.*_rc*) _kernver=$_pkgver
+	*.*rc*) _kernver=$_pkgver
 		_rc=1;;
-		*.*.0) _kernver=${pkgver%.0};;
-	*.*.*) _kernver=${pkgver%.*};;
+	*.*.0) _kernver=${pkgver%.0};;
+	*.*.*) _kernver=$pkgver;;
 	*.*) _kernver=$pkgver;;
 esac
 if [ $_rc ]
@@ -28,9 +31,9 @@ then
 else
 	_kernsrc="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz"
 fi
+
 source="
 	$_kernsrc
-	$_patch
 	$_config
 	0001-Add-TWL6032-dtsi.patch
 	0002-arm-dts-Add-common-dtsi-for-espresso.patch
@@ -38,9 +41,8 @@ source="
 	0004-arm-dts-Add-espresso10-support.patch
 	0005-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
 	0006-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
-	0007-Revert-partially-Revert-usb-musb-Set-the-DT-node-on-the-child-device.patch
 "
-builddir="$srcdir/linux-$_kernver"
+builddir="$srcdir/linux-$_pkgver"
 replaces="linux-samsung-espresso3g"
 
 prepare() {
@@ -67,15 +69,13 @@ package() {
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
-
 sha512sums="
-6ed2a73c2699d0810e54753715635736fc370288ad5ce95c594f2379959b0e418665cd71bc512a0273fe226fe90074d8b10d14c209080a6466498417a4fdda68  linux-6.1.tar.xz
-65da1e6bb7324fdd29ee2c954755b322ef99776dc39c4d7225f6415b5c6d682ca38ad96cec737980133c575241fdf53d12858496f0db742619fd385ea4e3cdca  config-postmarketos-omap.armv7
+79d3465955dd557dc599fa1c18c7a68699f4febdd7264fe4e223c694e879ef5bb65fff9fad1ec5599f894ad6519bad292efbd5b9990dac3223d843f5c22c65f2  linux-6.2.1.tar.xz
+b4d2e70255e4798840485602daeecf3784e81ac25c629fc5c218b6add25648fe4efe7fc1d3c9ce82b6abcac814328cbbf4d52a67279d8f7ac184ca7149552b25  config-postmarketos-omap.armv7
 727ff96d7d4701e93bf43db5d7bd872b4fbf1a8439edb4d84987a8f89e669d65b7a413740172b4a84df711b990d7e30b7880df5b9365496b7894d129cd4ebfa6  0001-Add-TWL6032-dtsi.patch
 cbabba85dc1e4de5ad2faaea8d87595ceef5af740a9b06f20aeb5ac5bff37747e17a11f77d66e3cde42e3fdb48134a37a98205e32109464a87ac7bb5e91fb34c  0002-arm-dts-Add-common-dtsi-for-espresso.patch
 b2c2d81bdfb4095a87d6821342127cc7c74bbc12a70786a81d64fd264b5487d522effab349fc1de2b01752cce494bf782d59021d4e95740aa1e3ff5de12632f7  0003-arm-dts-Add-espresso7-support.patch
 1029debd9fa9fe357f725c42e901bcabb9a364f8b3fcf7986cc5506a078a075e22db3351dcbb607014af8a87a84d13b780e1e613924c8ad6a767ac8b8b763a94  0004-arm-dts-Add-espresso10-support.patch
 9dc84421cbc2ea7c2c37847d8704ff46dd4a485485bfa4a671167fdef4ac6f53a4e8f787aa774f3748299c374e7c7dc5d36fd4ba9b1a1a9697e0526f2bf3ece4  0005-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
-fdf62d90b1381541743e9502160854a920c05050cc6f530769071e2eb362ba3c1f5c84afd140533d7aa3f318205e1b0b1c55387edc99a643e1593e634e740c10  0006-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
-5dea3463f13ebdaf17535a59ee5ffd98ad6d9d3750f6bcafc527699ead6cc4e6a3cf2aa161419c56d4bcec3a51ac2e3427a7883ce26137bec91440239645ec1e  0007-Revert-partially-Revert-usb-musb-Set-the-DT-node-on-the-child-device.patch
+1aa4521deb4e6d0977f8e704dd7f38ca3a861212c0ced34145713c72a68d8f255f3631a82c5ef2006f4c8b954fce6198e5d0870392cd4db6b6fb9610abe50c4c  0006-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
 "
