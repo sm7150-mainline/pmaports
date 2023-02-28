@@ -4,7 +4,7 @@
 
 pkgname=linux-postmarketos-exynos4
 pkgver=6.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
 _carch="arm"
@@ -71,8 +71,17 @@ prepare() {
 
 build() {
 	unset LDFLAGS
+	# V=1: otherwise it compiles a lot of files silently
+	# https://builds.sr.ht/~postmarketos/job/948827#task-pmbootstrap_build-463
+	# pmbootstrap will kill the build for not printing any output after
+	# 15 minutes, as usually this means the build is in an infinite loop
+	# somewhere. Looks like the silent mode in linux' Makefile was
+	# refactored recently and this is a bug? Can be removed again after
+	# upgrading the kernel again and ensuring that it doesn't do a silent
+	# build anymore.
 	make ARCH="$_carch" CC="${CC:-gcc}" KCFLAGS="-Wno-array-bounds" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		V=1
 }
 
 package() {
