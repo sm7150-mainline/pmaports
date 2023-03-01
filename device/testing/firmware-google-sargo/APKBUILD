@@ -1,7 +1,7 @@
 # Maintainer: Richard Acayan <mailingradian@gmail.com>
 pkgname=firmware-google-sargo
 pkgver=220505.008
-pkgrel=1
+pkgrel=2
 pkgdesc="Proprietary firmware blobs from the Google Pixel 3a factory image"
 url="https://github.com/TheMuppets/proprietary_vendor_google_sargo"
 arch="aarch64"
@@ -22,6 +22,9 @@ package() {
 		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/a615_zap.mbn
 	install -Dm755 "$builddir"/ipa_fws.mbn \
 		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/ipa_fws.mbn
+
+	install -Dm755 "$builddir"/proprietary/vendor/firmware/adsp.mbn \
+		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/adsp.mbn
 	install -Dm755 "$builddir"/proprietary/vendor/firmware/modemuw.jsn \
 		       "$pkgdir"/lib/firmware/postmarketos/modemuw.jsn
 	install -Dm755 "$builddir"/proprietary/vendor/firmware/venus.mbn \
