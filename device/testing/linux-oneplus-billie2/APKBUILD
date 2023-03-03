@@ -1,13 +1,9 @@
 # Reference: <https://postmarketos.org/vendorkernel>
 # Kernel config based on: arch/arm64/configs/vendor/bengal_defconfig
 
-# FIXME: this kernel doesn't build anymore!
-# Once this is fixed, re-apply MR 3254: put dtbs in /boot.
-# https://builds.sr.ht/~postmarketos/job/858910
-
 pkgname=linux-oneplus-billie2
 pkgver=4.19.95
-pkgrel=2
+pkgrel=3
 pkgdesc="OnePlus Nord N100 kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -54,9 +50,9 @@ package() {
 	KERNEL_IMAGE_NAME=Image.gz downstreamkernel_package \
 		"$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 
-	mkdir -p "$pkgdir/usr/share/dtb"
+	mkdir -p "$pkgdir/boot/dtbs"
 	install -Dm644 "$_outdir/arch/arm64/boot/dts/vendor/20882/bengal-qrd.dtb" \
-		"$pkgdir/usr/share/dtb"
+		"$pkgdir/boot/dtbs"
 
 	make O="$_outdir" \
 		ARCH="$_carch" \
