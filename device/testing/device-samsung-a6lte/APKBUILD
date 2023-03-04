@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-a6lte
 pkgdesc="Samsung Galaxy A6 2018"
-pkgver=0.3
+pkgver=0.4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -9,11 +9,8 @@ arch="aarch64"
 options="!check !archcheck"
 depends="
 	alsa-utils
-	linux-samsung-a6lte
 	mkbootimg
 	msm-fb-refresher
-	pipewire
-	pipewire-pulse
 	postmarketos-base
 	samsungipcd
 	util-linux
@@ -38,9 +35,14 @@ source="
 	usr-share-alsa-ucm2-conf.d-Universal7870-I-VoiceCall.conf
 	usr-share-pipewire-media-session.d-alsa-monitor.conf
 "
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 
 # pulseaudio does not seem to work on this device. Will use pipewire-pulse instead.
+# (For downstream kernel, mainline does not have audio yet and I'd like to run Phosh)
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -58,6 +60,18 @@ package() {
 	install -Dm644 usr-share-alsa-ucm2-conf.d-Universal7870-I-Universal7870-I.conf "$pkgdir"/usr/share/alsa/ucm2/conf.d/Universal7870-I/Universal7870-I.conf
 	install -Dm644 usr-share-alsa-ucm2-conf.d-Universal7870-I-VoiceCall.conf "$pkgdir"/usr/share/alsa/ucm2/conf.d/Universal7870-I/VoiceCall.conf
 	install -Dm644 usr-share-pipewire-media-session.d-alsa-monitor.conf "$pkgdir"/usr/share/pipewire/media-session.d/alsa-monitor.conf
+}
+
+kernel_downstream() {
+	pkgdesc="Working: display, touchscreen, wifi, audio, cellular"
+	depends="linux-samsung-a6lte pipewire pipewire-pulse"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_mainline() {
+	pkgdesc="Close-to-mainline WIP (display and touchscreen works)"
+	depends="linux-postmarketos-exynos7870"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
