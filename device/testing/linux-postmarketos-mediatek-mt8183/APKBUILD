@@ -2,7 +2,7 @@
 # Co-Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=linux-postmarketos-mediatek-mt8183
 pkgver=5.18
-pkgrel=3
+pkgrel=4
 pkgdesc="Mainline kernel for mediatek mt8183"
 arch="aarch64"
 _flavor="${pkgname#linux-}"
@@ -80,8 +80,9 @@ prepare() {
 
 build() {
 	unset LDFLAGS
+	# V=1: workaround for pma#1990
 	make ARCH="$_carch" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" V=1
 }
 
 package() {
