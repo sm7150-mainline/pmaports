@@ -2,7 +2,7 @@
 # Co-Maintainer: Segfault <awarnecke002@hotmail.com>
 pkgname=linux-google-nyan
 pkgver=5.18.5
-pkgrel=2
+pkgrel=3
 pkgdesc="Mainline kernel fork for Google Nyan Chromebooks"
 arch="armv7"
 _carch="arm"
@@ -48,8 +48,9 @@ prepare() {
 
 build() {
 	unset LDFLAGS
+	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" V=1
 }
 
 package() {
