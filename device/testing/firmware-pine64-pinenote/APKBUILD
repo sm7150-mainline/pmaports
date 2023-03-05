@@ -1,0 +1,31 @@
+# Maintainer: Petr Hodina <phodina@protonmail.com>
+pkgname=firmware-pine64-pinenote
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Pine64 Pinenote"
+url="https://gitlab.com/calebccff/firmware-pine64-pinenote"
+arch="aarch64"
+license="proprietary"
+options="!check !archcheck !strip !tracedeps pmb:cross-native"
+_commit="6676e4cabf5f68062da86ef528ac033507f02529"
+source="https://gitlab.com/calebccff/firmware-pine64-pinenote/-/archive/$_commit/firmware-pine64-pinenote-$_commit.tar.gz
+	30-eink-waveform.files
+"
+
+builddir="$srcdir/$pkgname-$_commit/"
+
+package() {
+	install -Dm644 "$srcdir/30-eink-waveform.files" \
+		"$pkgdir/etc/postmarketos-mkinitfs/files/30-eink-waveform.files"
+
+	install -Dm644 waveform.bin "$pkgdir"/lib/firmware/rockchip/ebc.wbf
+	install -Dm644 brcm/BCM4345C0_cy.hcd "$pkgdir"/lib/firmware/brcm/BCM4345C0_cy.hcd
+	install -Dm644 brcm/BCM4345C0.hcd "$pkgdir"/lib/firmware/brcm/BCM4345C0.hcd
+	install -Dm644 brcm/fw_bcm43455c0_ag_cy.bin "$pkgdir"/lib/firmware/brcm/brcmfmac43455-sdio.bin
+	install -Dm644 brcm/nvram_ap6255_cy.txt "$pkgdir"/lib/firmware/brcm/brcmfmac43455-sdio.txt
+}
+
+sha512sums="
+645df0df980a2595f6d7afc2a2477c1754a8e23f10a35f656c03410ad2e0e932d1501e648fcf8f1b22cf0c1e7b24b9a3eab3304780622701e343b89580ee1a54  firmware-pine64-pinenote-6676e4cabf5f68062da86ef528ac033507f02529.tar.gz
+6f28e561114d8740c4eb3115231fb714aaa8e194ffe38c1b656bbed121eb3dff3684130b8f3eb58f76b6caa1f5eb1dd07856d6ff4b88fa8c45d2555e30e01e86  30-eink-waveform.files
+"

@@ -1,0 +1,61 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/pinenote_defconfig
+
+pkgname=linux-pine64-pinenote
+pkgver=5.17.0
+pkgrel=0
+pkgdesc="Pine64 PineNote close to mainline fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="pine64-pinenote"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bison findutils flex installkernel openssl-dev perl"
+
+# Source
+_repo="linux"
+_tag=20230119
+_config="config-$_flavor.$arch"
+
+source="
+	$pkgname-$_tag.tar.gz::https://github.com/m-weigand/$_repo/archive/refs/tags/v$_tag.tar.gz
+	$_config
+"
+builddir="$srcdir/linux-$_tag"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	# FIXME: Currently we need the verbose flag as the CI kills the build
+	# without any output in the console after 900s (pma#1990)
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" V=1
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+	install -Dm644 "$builddir/arch/$_carch/boot/Image" \
+		"$pkgdir/boot/vmlinuz"
+
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot/ \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+24cc2471ebae2ebef9321fe3fbda48f2aaf8161ae8480d429b506815ac165ed61f71e496001c62a4feac40785cb3f46111efa6f38f30397e1ee8df95a131bfcf  linux-pine64-pinenote-20230119.tar.gz
+ef85c30d1c9886297cdb56e758127dca26d06ae308e8e140bfa7c59ccd15d4947a6fd5c2d2bb4b15073d7c52bb0a4f5010eb66ec3067afd1d835c98b6e802ffa  config-pine64-pinenote.aarch64
+"

@@ -1,0 +1,48 @@
+# Maintainer: Petr Hodina <phodina@protonmail.com>
+pkgname=device-pine64-pinenote
+pkgdesc="Pine64 PineNote"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-pine64-pinenote
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo
+	phoc.ini
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi, Bluetooth and display firmware"
+	depends="firmware-pine64-pinenote"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	depends="postmarketos-theme"
+
+	install -Dm644 "$srcdir"/phoc.ini \
+		-t "$subpkgdir"/etc/phosh
+}
+
+sha512sums="
+c6847fc0128f8ccbc76fee5b5cd328c3b9d67774097e0fd16ee4a6cb8645b953bb38f0598fad6610abb64e43a8db3cae54c426dfcb58eecf750f5ea35a2af0fc  deviceinfo
+4bf5158fbd53274a7429e825bb66225001f2403a4851e2d6803323b77d9095738ee3e5340ac85baf3e86bb4f47d38af8cbd78d8a5055c59a62f5b06e722e19cb  phoc.ini
+"
