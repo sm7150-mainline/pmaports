@@ -614,8 +614,10 @@ show_splash() {
 		sleep 0.01
 	done
 
-	# shellcheck disable=SC2154
-	/usr/bin/pbsplash -s /usr/share/pbsplash/pmos-logo-text.svg -b "Linux $(uname -r) | $deviceinfo_codename" -m "$1 " &
+	# shellcheck disable=SC2154,SC2059
+	/usr/bin/pbsplash -s /usr/share/pbsplash/pmos-logo-text.svg \
+		-b "Linux $(uname -r) | $deviceinfo_codename" \
+		-m "$(printf "$1")" &
 }
 
 set_framebuffer_mode() {
