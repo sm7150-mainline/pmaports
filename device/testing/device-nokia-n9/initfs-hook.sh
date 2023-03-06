@@ -6,7 +6,7 @@ watchdog_kick() {
 			[ -c $wd ] && echo X > $wd
 		done
 
-		# /etc/postmarketos-mkinitfs/hooks/00-device-nokia-rm696.sh: line 12: sleep: not found
+		# /usr/share/mkinitfs/hooks/00-device-nokia-rm696.sh: line 12: sleep: not found
 		if [ -f /bin/sleep ]; then
 			/bin/sleep 2s
 		else
