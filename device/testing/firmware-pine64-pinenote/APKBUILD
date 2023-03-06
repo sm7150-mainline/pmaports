@@ -1,7 +1,7 @@
 # Maintainer: Petr Hodina <phodina@protonmail.com>
 pkgname=firmware-pine64-pinenote
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for Pine64 Pinenote"
 url="https://gitlab.com/calebccff/firmware-pine64-pinenote"
 arch="aarch64"
@@ -16,7 +16,7 @@ builddir="$srcdir/$pkgname-$_commit/"
 
 package() {
 	install -Dm644 "$srcdir/30-eink-waveform.files" \
-		"$pkgdir/etc/postmarketos-mkinitfs/files/30-eink-waveform.files"
+		"$pkgdir/usr/share/mkinitfs/files/30-eink-waveform.files"
 
 	install -Dm644 waveform.bin "$pkgdir"/lib/firmware/rockchip/ebc.wbf
 	install -Dm644 brcm/BCM4345C0_cy.hcd "$pkgdir"/lib/firmware/brcm/BCM4345C0_cy.hcd
