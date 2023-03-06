@@ -23,3 +23,16 @@ if grep -qr 'INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb' device/; then
 	grep --color=always -r 'INSTALL_DTBS_PATH="$pkgdir"/usr/share/dtb' device/
 	exit 1
 fi
+
+
+# Find old mkinitfs paths (pre mkinitfs 2.0)
+if grep -qr '/etc/postmarketos-mkinitfs' *; then
+	echo "ERROR: Please replace '/etc/postmarketos-mkinitfs' with '/usr/share/mkinitfs' in the following files:"
+	grep --color=always -r '/etc/postmarketos-mkinitfs' *
+	exit 1
+fi
+if grep -qr '/usr/share/postmarketos-mkinitfs' *; then
+	echo "ERROR: Please replace '/usr/share/postmarketos-mkinitfs' with '/usr/share/mkinitfs' in the following files:"
+	grep --color=always -r '/usr/share/postmarketos-mkinitfs' *
+	exit 1
+fi
