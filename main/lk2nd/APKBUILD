@@ -17,12 +17,17 @@ options="!check !archcheck !tracedeps !strip pmb:cross-native"
 # * stripping of unused sections is done in lk2nd's own ld script.
 
 subpackages="
-	$pkgname-msm8226
-	$pkgname-msm8226-appended:msm8226_appended
 	$pkgname-msm8916
 	$pkgname-msm8916-appended:msm8916_appended
-	$pkgname-msm8974
 "
+
+if [ "$CARCH" = "armv7" ]; then
+	subpackages="
+		$subpackages
+		$pkgname-msm8226
+		$pkgname-msm8226-appended:msm8226_appended
+		$pkgname-msm8974"
+fi
 
 build() {
 	# This builds baremetal executable; distro-specific compiler flags
@@ -41,8 +46,10 @@ build() {
 	export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8916
-	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8974
-	make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8226
+	if [ "$CARCH" = "armv7" ]; then
+		make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8974
+		make LK2ND_VERSION="$pkgver-r$pkgrel-postmarketos" TOOLCHAIN_PREFIX=arm-none-eabi- lk2nd-msm8226
+	fi
 }
 
 package() {
