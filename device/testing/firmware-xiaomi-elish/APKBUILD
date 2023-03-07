@@ -1,9 +1,12 @@
 pkgname=firmware-xiaomi-elish
-pkgver=20220808
+pkgver=20230307
 pkgrel=0
 pkgdesc="Firmware for Xiaomi Mi Pad 5 Pro"
 subpackages="
 	$pkgname-adreno
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-slpi
 	$pkgname-touchscreen
 	$pkgname-venus
 	"
@@ -11,7 +14,7 @@ url="https://github.com/lujianhua/xiaomi-elish-firmware"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="cc6099f43db44f70565a419fa4ce5dd8d6d9ec9d"
+_commit="fb9e4c29873223a08beed5ca0b9a8f82f5c5c0a7"
 source="https://github.com/lujianhua/xiaomi-elish-firmware/archive/$_commit/xiaomi-elish-firmware-$_commit.tar.gz"
 builddir="$srcdir/xiaomi-elish-firmware-$_commit"
 
@@ -26,7 +29,28 @@ adreno() {
 	depends="firmware-qcom-adreno-a650"
 
 	install -Dm644 "$builddir"/sm8250/a650_zap.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm8250/elish/"
+		"$subpkgdir/lib/firmware/qcom/sm8250/xiaomi/elish/"
+}
+
+adsp() {
+	pkgdesc="Xiaomi elish adsp firmware"
+
+	install -Dm644 "$builddir"/sm8250/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm8250/xiaomi/elish/"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi elish cdsp firmware"
+
+	install -Dm644 "$builddir"/sm8250/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm8250/xiaomi/elish/"
+}
+
+slpi() {
+	pkgdesc="Xiaomi elish slpi firmware"
+
+	install -Dm644 "$builddir"/sm8250/slpi* -t \
+		"$subpkgdir/lib/firmware/qcom/sm8250/xiaomi/elish/"
 }
 
 touchscreen() {
@@ -40,9 +64,9 @@ venus() {
 	pkgdesc="Xiaomi elish venus firmware"
 
 	install -Dm644 "$builddir"/sm8250/venus.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm8250/elish/"
+		"$subpkgdir/lib/firmware/qcom/sm8250/xiaomi/elish/"
 }
 
 sha512sums="
-a89d7478fc6c8c6a52f3f09ce33b2e8a4964113b2fdaadfd48e31aba1852d3d716e99eb34ec85c155e7a1d0e20ec7bb7cbe553a94b6371721db078d53194738d  xiaomi-elish-firmware-cc6099f43db44f70565a419fa4ce5dd8d6d9ec9d.tar.gz
+25bd59ebb9a301ca8972d28918d6d08b95eb6cea5782461e32f17dffe0b97e61e9ff09c3b2d43f9af840703df88fb102404c32028e7bf896e9cf75cf13c8e854  xiaomi-elish-firmware-fb9e4c29873223a08beed5ca0b9a8f82f5c5c0a7.tar.gz
 "
