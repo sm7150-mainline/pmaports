@@ -1,0 +1,43 @@
+# Maintainer: Ferass El Hafidi <vitali64pmemail@protonmail.com>
+pkgname=soc-amlogic-s905
+pkgdesc="Common package for devices using the Amlogic S905 SoC"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+makedepends="u-boot-tools"
+subpackages="
+	$pkgname-boot:boot
+	$pkgname-xorg:x11
+"
+source="
+	s905_autoscript.cmd
+	xorg.conf
+"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+boot() {
+	pkgdesc="Script for chainloading modern U-Boot from legacy U-Boot on Amlogic TV Boxes."
+	mkdir -p "$subpkgdir/boot"
+	# Required if installing to an SD card
+	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n "S905 autoscript" \
+		-d "$srcdir/s905_autoscript.cmd" "$subpkgdir/boot/s905_autoscript"
+}
+
+x11() {
+	# Shamelessly taken from Armbian.
+	# https://github.com/armbian/build/blob/master/config/sources/families/include/meson64_common.inc
+	install_if="$pkgname xorg-server"
+	install -D -m644 "$srcdir"/xorg.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/11-meson.conf
+}
+
+sha512sums="
+f91f61b101b6659d82b14d78f9146ab1e4cbaf515838c60aa21627226d30b394d1ad8327b86eff105e1dced6e562b774499fd2cd56104db596982e50b665ec8f  s905_autoscript.cmd
+72267e7bb0e3cd4a7c89d51c046c3a9c93d7ff9fe23a24357088fc94d45c6cc314cf12c8475421eadc507937ebc1ca9b1b9afdec0c78cf39977ebdd5f5eab24d  xorg.conf
+"
