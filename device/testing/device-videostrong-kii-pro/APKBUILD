@@ -1,0 +1,40 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Ferass El Hafidi <vitali64pmemail@protonmail.com>
+pkgname=device-videostrong-kii-pro
+pkgdesc="VideoStrong KII Pro"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	postmarketos-base
+	u-boot-tools
+	linux-postmarketos-amlogic
+	soc-amlogic-s905
+	u-boot-amlogic-s905-tv
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wi-Fi firmware, Bluetooth firmware, vdec firmware"
+	depends="firmware-videostrong-kii-pro"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+ae5013b907c047fc756c0b75be1e633a874dcbf9ac3e0bea0a8740998f6c5d5b85f8a02242212112e771ed9aa8da3d162306d403275cc70259796155bc1dccb1  deviceinfo
+"
