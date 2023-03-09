@@ -1,0 +1,72 @@
+# Reference: <https://postmarketos.org/mainline>
+# Kernel config based on: arch/arm64/configs/defconfig
+# Maintainer: Ferass El Hafidi <vitali64pmemail@protonmail.com>
+# Co-Maintainer: exkc <exxxxkc@getgoogleoff.me>
+pkgname=linux-postmarketos-amlogic
+pkgver=6.1.10
+pkgrel=0
+pkgdesc="Mainline kernel for Amlogic devices"
+arch="aarch64"
+_carch="arm64"
+_flavor=postmarketos-amlogic
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	findutils
+	postmarketos-installkernel
+	gzip
+"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$pkgver.tar.xz::https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$pkgver.tar.xz
+	$_config
+	0001-WIP-arm64-dts-meson-gxbb-kii-pro-sort-and-tidy-the-d.patch
+	0002-WIP-arm64-dts-meson-gxbb-kii-pro-complete-the-blueto.patch
+	0003-WIP-arm64-dts-meson-gxbb-kii-pro-add-initial-audio-s.patch
+"
+builddir="$srcdir/linux-$pkgver"
+
+prepare() {
+	default_prepare
+	cp -v "$srcdir"/$_config .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		V=1 # See pmaports#1990
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make install modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs" \
+		V=1 # See pmaports#1990
+
+	install -D "$builddir"/include/config/kernel.release \
+				"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="
+7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d  linux-postmarketos-amlogic-6.1.10.tar.xz
+c215fbc93b736c22c2ce76dd29cd88bd0eb39aab889cfc73cb71643ac0d68f280d08b36607e6567c878e75c1b6f9a1315f0e9e3175dc40fcdfd6bbd0d36da04d  config-postmarketos-amlogic.aarch64
+182d779a91acd47dcd865eba919b404db24840493f54775dcf4508237edf65ff8aae9f84d8aa673d7aa2414934325ea972491cbf6d590434a6a5aad33eb8e20c  0001-WIP-arm64-dts-meson-gxbb-kii-pro-sort-and-tidy-the-d.patch
+2a772de080dda5100a653a9806ee60130228dd2e232055362fa330ee42644374161aa032b1838f12555e952214ac29eb4ef664c587af2363796ba9f70d95dee3  0002-WIP-arm64-dts-meson-gxbb-kii-pro-complete-the-blueto.patch
+a497d042112e1f6bf4b4793992907b25b99b9b6d5f77b051261b80ed90ef70022c647ef2db2385bb9dccf31e94b23fa9f3d9bc42b4d1ff1049bcf8cafb7a6b6d  0003-WIP-arm64-dts-meson-gxbb-kii-pro-add-initial-audio-s.patch
+"
