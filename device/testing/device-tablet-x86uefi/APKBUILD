@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-tablet-x86uefi
 pkgdesc="Various tablets with atom CPU"
-pkgver=3
-pkgrel=3
+pkgver=4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -10,7 +10,7 @@ options="!check !archcheck"
 depends="postmarketos-base linux-lts libva-intel-driver grub-x86 alsa-ucm-conf"
 makedepends="devicepkg-dev"
 source="deviceinfo grub.cfg phoc.ini"
-subpackages="$pkgname-phosh $pkgname-x11"
+subpackages="$pkgname-phosh"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -27,12 +27,6 @@ phosh() {
 	install_if="$pkgname postmarketos-ui-phosh"
 	install -Dm644 "$srcdir"/phoc.ini \
 		"$subpkgdir"/etc/phosh/phoc.ini
-}
-
-x11() {
-	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
-	depends="xf86-video-modesetting"
-	mkdir "$subpkgdir"
 }
 
 sha512sums="
