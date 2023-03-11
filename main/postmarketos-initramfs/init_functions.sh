@@ -282,7 +282,9 @@ extract_initramfs_extra() {
 		loop_forever
 	fi
 	echo "Extract $initramfs_extra"
-	cpio -di < "$initramfs_extra"
+	# uncompressed:
+	# cpio -di < "$initramfs_extra"
+	gzip -d -c "$initramfs_extra" | cpio -i
 }
 
 wait_root_partition() {
