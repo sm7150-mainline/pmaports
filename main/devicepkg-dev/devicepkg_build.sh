@@ -67,11 +67,12 @@ echo_libinput_calibration()
 # Generate the contents for /etc/machine-info
 generate_machine_info()
 {
+	# shellcheck disable=SC2154
 	{
-		# shellcheck disable=SC2154
 		echo "PRETTY_HOSTNAME=\"$deviceinfo_name\""
-		# shellcheck disable=SC2154
-		echo "CHASSIS=\"${deviceinfo_chassis}\""
+		echo "CHASSIS=\"$deviceinfo_chassis\""
+		echo "HARDWARE_VENDOR=\"$deviceinfo_manufacturer\""
+		echo "HARDWARE_MODEL=\"$deviceinfo_name\""
 	} > "$srcdir/machine-info"
 }
 
