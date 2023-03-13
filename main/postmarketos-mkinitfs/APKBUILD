@@ -1,14 +1,14 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-mkinitfs
-pkgver=2.1
+pkgver=2.1.1
 pkgrel=0
 pkgdesc="Tool to generate initramfs images for postmarketOS"
 url="https://postmarketos.org"
 depends="
 	boot-deploy>=0.7
 "
-makedepends="git go scdoc"
+makedepends="go scdoc"
 replaces="mkinitfs"
 triggers="$pkgname.trigger=/usr/share/mkinitfs/*:/usr/share/kernel/*:/usr/share/mkinitfs-triggers"
 # mkinitfs-vendor-$pkgver.tar.gz: vendored Go deps, is part of the release:
@@ -38,7 +38,7 @@ prepare() {
 
 build() {
 	unset LDFLAGS  # passed to Go as linker flags, which are invalid
-	make
+	make VERSION="$pkgver"
 }
 
 package() {
@@ -50,6 +50,6 @@ check() {
 }
 
 sha512sums="
-a10bc40cf3bc0a0e850dabb4cbbdf044879459ac5d3b3b107961627a69261f6fb7454daffd6742151a8f2608a2fd4eda6992b6dca1d7e8a2298c6a7225d40d6c  postmarketos-mkinitfs-2.1.tar.gz
-801ea6882413377523e954f960b6eb2b419fbf9134ff0a79aa6f49874125eafe9fd3da2cf853a2783c9bbcd1aa283a916e76aa2d6381c76ef9667ceac87da298  mkinitfs-vendor-2.1.tar.gz
+6ff8b63a0c90002de40115dd25315105321323efdf5041e380a9200fa8a9925d109e08b9575333571acb00bf4abd358d89121b86dd73e6509c0a4d6924f568aa  postmarketos-mkinitfs-2.1.1.tar.gz
+368175d6d934963ffb29a7be89bcd54469aca1c4c5e7bf02bb33bd2b35ec9c56dc826fe2213fba485b97456be41d7cb30551aaecf9cac6b292736c33feeaf8e0  mkinitfs-vendor-2.1.1.tar.gz
 "
