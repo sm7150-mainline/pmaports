@@ -4,7 +4,7 @@
 
 _flavor="postmarketos-qcom-sdm670"
 pkgname=linux-$_flavor
-pkgver=6.1.14
+pkgver=6.2.6
 pkgrel=0
 pkgdesc="Mainline Kernel fork for SDM670 devices"
 arch="aarch64"
@@ -34,8 +34,7 @@ prepare() {
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
-		V=1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
@@ -57,7 +56,7 @@ package() {
 }
 
 sha512sums="
-f4bc8c7b32cd3ad468cae64d00dce19d9b24d97b08a9f818213d202809c8706043f777566635a60df8a02e0883a04d2be7e0fdf40b32196a4ee1744914dfe9dd  linux-sdm670-v6.1.14.tar.gz
-f983d7524bc81831e716e078ada9841ea53ba56fea9b25d67f3d74fde370df142b5aeac946553039245ec52bb341703cffc73c0690f45713a6a9887b4c437996  config-postmarketos-qcom-sdm670.aarch64
-ee032082eef7cde79602e16c8e97d19661f0fcfd649c55edad070866cb60a39a8d42cf2a739f06670932ff2035b117b9401cef812ebb084de29bce22f502840f  0001-arm64-dts-qcom-sdm670-google-sargo-move-modem-firmwa.patch
+2e9edd94decbee15282f418446528c50e8ab5e1e570593ccf1ebadb1d36ca45c5c17d84bdc1f530fc8e63c82a505ef5dd241253df82afecd8117472a0b669078  linux-sdm670-v6.2.6.tar.gz
+5e2160cf5d103cdd6ecd8cdca7b96933e25fadb8f2ff93502fce89b22f6285fe1fc831a60119bd8bd325662d1624ff4c393517c985df8384db140362e6ca3f05  config-postmarketos-qcom-sdm670.aarch64
+678b0d657eeef10fa5891fecebfd2cd3a934e89ce7b3a56b3539899d9fc622daa4447ca4b9af993a636aeab3ac5c9d731c863ed167528025f033ff48f99ce9cb  0001-arm64-dts-qcom-sdm670-google-sargo-move-modem-firmwa.patch
 "
