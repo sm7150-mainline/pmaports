@@ -1,11 +1,11 @@
 # Maintainer: Mighty <mightymb17@gmail.com>
 # Co-Maintainer: Sicelo <absicsz@gmail.com>
-# Kernel config based on: arch/arm64/configs/omap2plus_defconfig
+# Kernel config based on: arch/arm/configs/omap2plus_defconfig
 
 pkgname=linux-postmarketos-omap
 pkgver=6.2.1
 _pkgver=6.2.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for OMAP devices"
 arch="armv7"
 url="https://kernel.org/"
@@ -41,9 +41,11 @@ source="
 	0004-arm-dts-Add-espresso10-support.patch
 	0005-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
 	0006-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
+	0007-ARM-dts-N900-use-iio-driver-for-accelerometer.patch
+	0008-hsi-ssi_port-force-pio-path.patch
 "
 builddir="$srcdir/linux-$_pkgver"
-replaces="linux-samsung-espresso3g"
+replaces="linux-samsung-espresso3g linux-nokia-n900"
 
 prepare() {
 	default_prepare
@@ -71,11 +73,13 @@ package() {
 
 sha512sums="
 79d3465955dd557dc599fa1c18c7a68699f4febdd7264fe4e223c694e879ef5bb65fff9fad1ec5599f894ad6519bad292efbd5b9990dac3223d843f5c22c65f2  linux-6.2.1.tar.xz
-b4d2e70255e4798840485602daeecf3784e81ac25c629fc5c218b6add25648fe4efe7fc1d3c9ce82b6abcac814328cbbf4d52a67279d8f7ac184ca7149552b25  config-postmarketos-omap.armv7
+c7253ddd38b18d093c14fb5623807fe6c6c7652cf209c915a8288e314c302e7fb57b6f6d76779dc68650d9b91649ca8da9c6ab230775b239bcef80b8ed5a26f7  config-postmarketos-omap.armv7
 727ff96d7d4701e93bf43db5d7bd872b4fbf1a8439edb4d84987a8f89e669d65b7a413740172b4a84df711b990d7e30b7880df5b9365496b7894d129cd4ebfa6  0001-Add-TWL6032-dtsi.patch
 cbabba85dc1e4de5ad2faaea8d87595ceef5af740a9b06f20aeb5ac5bff37747e17a11f77d66e3cde42e3fdb48134a37a98205e32109464a87ac7bb5e91fb34c  0002-arm-dts-Add-common-dtsi-for-espresso.patch
 b2c2d81bdfb4095a87d6821342127cc7c74bbc12a70786a81d64fd264b5487d522effab349fc1de2b01752cce494bf782d59021d4e95740aa1e3ff5de12632f7  0003-arm-dts-Add-espresso7-support.patch
 1029debd9fa9fe357f725c42e901bcabb9a364f8b3fcf7986cc5506a078a075e22db3351dcbb607014af8a87a84d13b780e1e613924c8ad6a767ac8b8b763a94  0004-arm-dts-Add-espresso10-support.patch
 9dc84421cbc2ea7c2c37847d8704ff46dd4a485485bfa4a671167fdef4ac6f53a4e8f787aa774f3748299c374e7c7dc5d36fd4ba9b1a1a9697e0526f2bf3ece4  0005-Add-TWL6030-power-driver-with-minimal-support-for-power-off.patch
 1aa4521deb4e6d0977f8e704dd7f38ca3a861212c0ced34145713c72a68d8f255f3631a82c5ef2006f4c8b954fce6198e5d0870392cd4db6b6fb9610abe50c4c  0006-Add-TWL6030-power-button-support-to-twl-pwrbutton.patch
+302aa8e6677e7ecfae473553806cdf5d47687c4f8e73322d0ace78486f9290ba503069ed6b41250fe38802b6c6091c7c4eac06ab387e011f1316b84ad5e2641d  0007-ARM-dts-N900-use-iio-driver-for-accelerometer.patch
+c3af9715b3559c2d593f4fcfa078730722c7deeec132c5b83e085ff4d9815d85ef349384097c580efe1bbc37c60f42e18ef559f0abccfe236080670e4403fa77  0008-hsi-ssi_port-force-pio-path.patch
 "
