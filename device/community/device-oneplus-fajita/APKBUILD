@@ -3,8 +3,8 @@
 
 pkgname=device-oneplus-fajita
 pkgdesc="OnePlus 6T"
-pkgver=10
-pkgrel=1
+pkgver=11
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -20,6 +20,7 @@ depends="
 "
 makedepends="devicepkg-dev"
 source="
+	10-unl0kr.conf
 	deviceinfo
 	modules-initfs
 	q6voiced.conf
@@ -32,6 +33,9 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/10-unl0kr.conf \
+		"$pkgdir"/etc/unl0kr.conf.d/10-unl0kr.conf
 }
 
 nonfree_firmware() {
@@ -44,6 +48,7 @@ nonfree_firmware() {
 }
 
 sha512sums="
+e957b7b0ed219eaa56be6c6b976b60886f73970703fdebf045800154ee652affee4e19654b3ac4244b29bcf6760ad3db6cb87143dc9c4673e905800d751103d1  10-unl0kr.conf
 53f2c5223fd708990b7642c3c83a5a58388e810d179aa24fae4e9fe0f187008a32511c8294819f8933c3377a0c2ebd5512fb03a3900fde78662bd93d034338df  deviceinfo
 ea8709aa214cffaefb1d486c0c47044537446faebff16efb3b015623f043f730b7121e401c676e43aa8868bd6c630fc8a2d7dbf5fb082490e9b5493e0405b66d  modules-initfs
 fe9871c325a38c0cadc9631870801ec15ab9f5b786ee854325b93eb3d23e7d8b1ac4f1075572ffcd225d8ec514dec09b986972ddff12a89260c0218af6de7887  q6voiced.conf
