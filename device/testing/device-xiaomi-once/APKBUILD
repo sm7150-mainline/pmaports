@@ -1,0 +1,43 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: exkc <exxxxkc@getgoogleoff.me>
+pkgname=device-xiaomi-once
+pkgdesc="Xiaomi Mi Box 3"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	postmarketos-base
+	linux-postmarketos-amlogic
+	soc-amlogic-s905
+	u-boot-amlogic-s905x-tv
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	asound.state"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/asound.state \
+		"$pkgdir"/var/lib/alsa/asound.state
+}
+
+nonfree_firmware() {
+	pkgdesc="Wi-Fi firmware, Bluetooth firmware, vdec firmware"
+	depends="firmware-xiaomi-once linux-firmware-meson"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+4030119277a6dd2199d29e069fd8bc0331b97cd732254eb0e67f12f2f1418814f4480643b86f9d5896aa091c48d7b43eabdc9e470dc8030c3c78836c3a2ee58d  deviceinfo
+d17c248b7ac02450143965e9b8a506b54ac6e73413fd62b55fa356f5c7304acb1a831c7f8f8ce457d9aba097f6823d6ee97285657e07b667f8d0046435a0c45a  asound.state
+"
+
