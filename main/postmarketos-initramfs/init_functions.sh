@@ -390,7 +390,7 @@ unlock_root_partition() {
 	partition="$(find_root_partition)"
 	if cryptsetup isLuks "$partition"; then
 		# Make sure the splash doesn't interfere
-		killall pbsplash 2>/dev/null
+		hide_splash
 		tried=0
 		until cryptsetup status root | grep -qwi active; do
 			fde-unlock "$partition" "$tried"
@@ -625,16 +625,20 @@ show_splash() {
 		return
 	fi
 
-	killall pbsplash 2>/dev/null
-
-	while pgrep pbsplash >/dev/null; do
-		sleep 0.01
-	done
+	hide_splash
 
 	# shellcheck disable=SC2154,SC2059
 	/usr/bin/pbsplash -s /usr/share/pbsplash/pmos-logo-text.svg \
 		-b "Linux $(uname -r) | $deviceinfo_codename" \
 		-m "$(printf "$1")" &
+}
+
+hide_splash() {
+	killall pbsplash 2>/dev/null
+
+	while pgrep pbsplash >/dev/null; do
+		sleep 0.01
+	done
 }
 
 set_framebuffer_mode() {
