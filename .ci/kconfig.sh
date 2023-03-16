@@ -1,5 +1,5 @@
 #!/bin/sh -e
-# Description: check all kernel configs with 'pmbootstrap kconfig check'
+# Description: check modified kernel configs
 # Options: native
 # Use 'native' because it requires running pmbootstrap.
 # https://postmarketos.org/pmb-ci
@@ -11,12 +11,6 @@ if [ "$(id -u)" = 0 ]; then
 	exec su "${TESTUSER:-pmos}" -c "sh -e $0"
 fi
 
-# Wrap pmbootstrap to use this repository for --aports
-pmaports="$(cd "$(dirname "$0")"/..; pwd -P)"
-_pmbootstrap="$(command -v pmbootstrap)"
-pmbootstrap() {
-	"$_pmbootstrap" --aports="$pmaports" "$@"
-}
+export PYTHONUNBUFFERED=1
 
-set -x
-pmbootstrap kconfig check
+.ci/lib/check_changed_kernels.py

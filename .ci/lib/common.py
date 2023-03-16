@@ -190,3 +190,11 @@ def get_changed_packages():
         ret.add(os.path.basename(dirname))
 
     return ret
+
+
+def get_changed_kernels():
+    ret = []
+    for pkgname in get_changed_packages():
+        if pkgname.startswith("linux-"):
+            ret += [pkgname]
+    return ret
