@@ -12,7 +12,7 @@ if [ "$(id -u)" = 0 ]; then
 fi
 
 # Wrap pmbootstrap to use this repository for --aports
-pmaports="$(cd $(dirname $0)/..; pwd -P)"
+pmaports="$(cd "$(dirname "$0")"/..; pwd -P)"
 _pmbootstrap="$(command -v pmbootstrap)"
 pmbootstrap() {
 	"$_pmbootstrap" --aports="$pmaports" "$@"

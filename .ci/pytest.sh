@@ -20,7 +20,7 @@ if [ -z "$(command -v pytest)" ]; then
 fi
 
 # Wrap pmbootstrap to use this repository for --aports
-pmaports="$(cd $(dirname $0)/..; pwd -P)"
+pmaports="$(cd "$(dirname "$0")"/..; pwd -P)"
 _pmbootstrap="$(command -v pmbootstrap)"
 pmbootstrap() {
 	"$_pmbootstrap" --aports="$pmaports" "$@"
@@ -34,6 +34,7 @@ pmbootstrap -q shutdown
 # Make sure we have a valid device (pmbootstrap#1128)
 device="$(pmbootstrap config device)"
 deviceinfo="$pmaports/device/*/device-$device/deviceinfo"
+# shellcheck disable=SC2086
 if ! [ -e $deviceinfo ]; then
 	echo "ERROR: Could not find deviceinfo file for selected device '$device'."
 	echo "Expected path: $deviceinfo"

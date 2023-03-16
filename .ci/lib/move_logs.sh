@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 if [ -z "$1" ]; then
-	echo "usage: $(basename $0) \$CI_PROJECT_DIR"
+	echo "usage: $(basename "$0") \$CI_PROJECT_DIR"
 	exit 1
 fi
 
