@@ -5,6 +5,16 @@ VT=7
 # Retrieve device name
 source /etc/deviceinfo
 
+# Do not show splash if framebuffer is disabled
+if [ "$deviceinfo_no_framebuffer" = "true" ]; then
+	return;
+fi
+
+# Do not show splash if PMOS_SPLASH is set
+if grep -q PMOS_NOSPLASH /proc/cmdline; then
+	return;
+fi
+
 # Run on separate VT to avoid interference of display managers
 chvt "$VT"
 
