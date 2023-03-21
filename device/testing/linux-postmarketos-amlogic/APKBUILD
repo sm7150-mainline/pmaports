@@ -4,14 +4,17 @@
 # Co-Maintainer: exkc <exxxxkc@getgoogleoff.me>
 pkgname=linux-postmarketos-amlogic
 pkgver=6.1.10
-pkgrel=1
+pkgrel=2
 pkgdesc="Mainline kernel for Amlogic devices"
 arch="aarch64"
 _carch="arm64"
 _flavor=postmarketos-amlogic
 url="https://kernel.org"
 license="GPL-2.0-only"
-options="!strip !check !tracedeps pmb:cross-native"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-community
+"
 makedepends="
 	bash
 	bc
@@ -65,7 +68,7 @@ package() {
 
 sha512sums="
 7bec1d76ecafd89fdb13bc7c9c69b4f378e41b29aed33c302b235540f40f1d5e6b3c653d2dea83c2d03408e324ffa73ff3dcc7c47c685572719d62bc66a06a1d  linux-postmarketos-amlogic-6.1.10.tar.xz
-9aafc14e72fdc745be5a3811ba90d0a7bef02e17ef1f18ffff81d79c593be3a13a1f85d9bfd9218b115c88b3279250e0eacc3afbd4370a1a718575563773c8b2  config-postmarketos-amlogic.aarch64
+10c6fa8668ff125f377738f6921f1862cd289a4c92a122fd8067201c8c23832efb7c218b44179f00b75a1c0e3118db65945b7ce5a49ca59e38bee0e719bdc95a  config-postmarketos-amlogic.aarch64
 182d779a91acd47dcd865eba919b404db24840493f54775dcf4508237edf65ff8aae9f84d8aa673d7aa2414934325ea972491cbf6d590434a6a5aad33eb8e20c  0001-WIP-arm64-dts-meson-gxbb-kii-pro-sort-and-tidy-the-d.patch
 2a772de080dda5100a653a9806ee60130228dd2e232055362fa330ee42644374161aa032b1838f12555e952214ac29eb4ef664c587af2363796ba9f70d95dee3  0002-WIP-arm64-dts-meson-gxbb-kii-pro-complete-the-blueto.patch
 a497d042112e1f6bf4b4793992907b25b99b9b6d5f77b051261b80ed90ef70022c647ef2db2385bb9dccf31e94b23fa9f3d9bc42b4d1ff1049bcf8cafb7a6b6d  0003-WIP-arm64-dts-meson-gxbb-kii-pro-add-initial-audio-s.patch
