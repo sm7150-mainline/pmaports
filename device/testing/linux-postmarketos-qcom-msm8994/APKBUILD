@@ -3,9 +3,9 @@
 
 _flavor="postmarketos-qcom-msm8994"
 pkgname=linux-$_flavor
-pkgver=6.1.2
+pkgver=6.3_rc5
 pkgrel=1
-pkgdesc="Kernel mainline Qualcomm MSM8994 and MSM8992 devices"
+pkgdesc="Mainline kernel for Qualcomm MSM8994/MSM8992 devices"
 arch="aarch64"
 _carch="arm64"
 url="https://kernel.org"
@@ -13,6 +13,7 @@ license="GPL-2.0-only"
 options="!strip !check !tracedeps
 	pmb:cross-native
 	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-zram
 	"
 makedepends="
 	bison
@@ -21,23 +22,17 @@ makedepends="
 	openssl-dev
 	perl
 	postmarketos-installkernel
-	xz
 "
 
-case $pkgver in
-	*.*.*)	_kernver=${pkgver%.0};;
-	*.*)	_kernver=$pkgver;;
-esac
+_tag=${pkgver//_/-}
 source="
-	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
+	https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
 	config-$_flavor.$arch
-	0001-arm64-dts-msm8992-bullhead-add-memory-hole-region.patch
-	0002-arm64-dts-qcom-msm8992-bullhead-Fix-cont_splash_mem-.patch
-	0003-arm64-dts-qcom-msm8992-bullhead-Disable-dfps_data_me.patch
-	0004-arm64-dts-qcom-msm8992-Don-t-use-sfpb-mutex.patch
-	0005-arm64-dts-msm8994-angler-fix-the-memory-map.patch
+	0001-arm64-dts-msm8994-angler-Fix-cont_splash_mem-mapping.patch
+	0002-arm64-dts-msm8994-angler-removed-clash-with-smem_reg.patch
+	0003-arm64-dts-qcom-msm8994-huawei-angler-Add-regulators.patch
 "
-builddir="$srcdir/linux-$_kernver"
+builddir="$srcdir/linux-${_tag#v}"
 
 prepare() {
 	default_prepare
@@ -65,11 +60,9 @@ package() {
 }
 
 sha512sums="
-a906c15b1eb4f3015b1d9a0e6a321b5a399e77ccd0127cb8caabbe7cb337e77a85a432bac4763ab5448d86dd319441eef865aad41939ca1f796663c2b52170e6  linux-6.1.2.tar.xz
-4191f3ffd3ca9a4c5e3986e57ca31d69d811045b91cb357957bd2d794b9cfb88fbbd9c6597cbd04aae74e5015d61c8344b4f20962cafbdb72a7dea94b05a26a9  config-postmarketos-qcom-msm8994.aarch64
-878a48bff265b91e7970c84d3d8dc38753fdc15d7412db9000c2974989fa8fefc312bab0abd442365f83e7af27e2eb712d7f6abc41ab9c20fbe9f4e4419a9a94  0001-arm64-dts-msm8992-bullhead-add-memory-hole-region.patch
-901fcae7ae813ea0a4d301283f423cd84696c7200075170c0385027955daa5796cd658cbb34d3d65053b50867638d78acb86913666f6ea48c5c59bb6e68f70d1  0002-arm64-dts-qcom-msm8992-bullhead-Fix-cont_splash_mem-.patch
-6d06b1770dd8471fcc4c4fb1f37707833f3d1da1d8a2a58ca311c73dcbedb8ecdf2e8e52512a90676bd7a0a328585023aa8b94feeb4b0bafd75ca57cd1d637a1  0003-arm64-dts-qcom-msm8992-bullhead-Disable-dfps_data_me.patch
-293b85417ffecfe59ae0955a98eb2232f98f676bcc4cc0743df9b4f945d8059a17bb09714e5abccc93e2858b13a0006e154c4f5efaecde0c544a31170671fb73  0004-arm64-dts-qcom-msm8992-Don-t-use-sfpb-mutex.patch
-645a22550864f9f98798ff7334eef654537a113e0e6988282a68909d7d78e7a7122fb11cf12b6c44aff23d3c51964113d39fd1e387809c6d1576f5dd237d4b0d  0005-arm64-dts-msm8994-angler-fix-the-memory-map.patch
+84f8b612268a2f6d47e35afc06865db3a779c7877ab2fde8a70e219093c113fb82d10cddf042f2600522659d7f86c5daa1ee622a72baeaba74de55b374093221  linux-6.3-rc5.tar.gz
+9b896642fb33669c387b6707fef50c9e680f0a290916a1a619a72b8c4c3f7dc0f0b1f63e7c5bc998e3862bd47e5a1e9411c4ea92fc49907de1250c1eab17fa4e  config-postmarketos-qcom-msm8994.aarch64
+29573678c82723821e3522a649158137dfc49e61b78c6319a4c6bc97cfe0d98fdc994d2271934beb223da11bd0cdb085bf5422454287575c28ed06c47ea63f68  0001-arm64-dts-msm8994-angler-Fix-cont_splash_mem-mapping.patch
+ca46f96560b14044b88791e04e49b7cff59f1217a5e7e8f56092f624c24707b30edfc3d862098599a784a8695558a1b67ff964789188f26518a1496377de7632  0002-arm64-dts-msm8994-angler-removed-clash-with-smem_reg.patch
+4dc3de184eac5cfb593a308278e3a5ab27f5e94b5dec8b288c053070f788fdb8d8fad8628b5a996701eacc11b1015999b99f8d279b207e214dd0e63f97cfb4d6  0003-arm64-dts-qcom-msm8994-huawei-angler-Add-regulators.patch
 "
