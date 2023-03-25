@@ -15,8 +15,10 @@ def path_pmbootstrap():
         code from there.
         returns: pmbootstrap installation folder
     """
-    # Find 'pmbootstrap' executable
-    bin = shutil.which("pmbootstrap")
+    # This variable is set by pmbootstrap 1.52 and later
+    # If it's undefined, try to find 'pmbootstrap' in path
+    bin = os.environ.get("PMBOOTSTRAP_CMD") or shutil.which("pmbootstrap")
+
     if not bin:
         print("ERROR: 'pmbootstrap' not found in $PATH")
         sys.exit(1)
