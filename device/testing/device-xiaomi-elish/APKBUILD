@@ -8,7 +8,6 @@ license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
-	linux-postmarketos-qcom-sm8250
 	make-dynpart-mappings
 	mkbootimg
 	postmarketos-base
@@ -17,6 +16,8 @@ makedepends="devicepkg-dev"
 source="deviceinfo"
 
 subpackages="
+	$pkgname-kernel-boe:kernel_boe
+	$pkgname-kernel-csot:kernel_csot
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 
@@ -26,6 +27,18 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+kernel_boe() {
+	pkgdesc="BOE Panel. To know which panel your device use and the status of the port, Visit the Mi Pad 5 Pro wiki page: https://wiki.postmarketos.org/wiki/Xiaomi_Mi_Pad_5_Pro_(xiaomi-elish)"
+	depends="linux-postmarketos-qcom-sm8250"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_csot() {
+	pkgdesc="CSOT Panel. To know which panel your device use and the status of the port, Visit the Mi Pad 5 Pro wiki page: https://wiki.postmarketos.org/wiki/Xiaomi_Mi_Pad_5_Pro_(xiaomi-elish)"
+	depends="linux-postmarketos-qcom-sm8250"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
@@ -44,5 +57,5 @@ nonfree_firmware() {
 }
 
 sha512sums="
-93cbe7765f03f9f52a9b6f09e812e30f6ffa1309d86dc8bf5812dc93cd6c62ec864ec4c95dfaf5de976ebd49148f29ab0d4fd759a68964b36de58d726314a74b  deviceinfo
+09e53e9a0052e37f06db9a117bc5760a3e1da700f80721a738f1d0ef8c2e6e3348721280f611ef238cc1f45b0651bf577a1d91f8b2341b75c2034751a8267bcd  deviceinfo
 "
