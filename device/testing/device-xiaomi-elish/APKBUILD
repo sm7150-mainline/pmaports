@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-elish
 pkgdesc="Xiaomi Mi Pad 5 Pro"
-pkgver=0.5
+pkgver=0.6
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -9,10 +9,15 @@ arch="aarch64"
 options="!check !archcheck"
 depends="
 	make-dynpart-mappings
+	mesa-vulkan-freedreno
 	mkbootimg
 	postmarketos-base
+	postmarketos-update-kernel
+	qbootctl
+	swclock-offset
 "
 makedepends="devicepkg-dev"
+install="$pkgname.post-install $pkgname.post-upgrade"
 source="deviceinfo"
 
 subpackages="
@@ -52,10 +57,13 @@ nonfree_firmware() {
 		firmware-xiaomi-elish-venus
 		linux-firmware-ath11k
 		linux-firmware-qca
+		pd-mapper
+		tqftpserv
 		"
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-09e53e9a0052e37f06db9a117bc5760a3e1da700f80721a738f1d0ef8c2e6e3348721280f611ef238cc1f45b0651bf577a1d91f8b2341b75c2034751a8267bcd  deviceinfo
+7ea1943a4c4e0c6c2f06679481fab5a5a386293deaaf7ae5d6cd1d376110fd27211257596dbba12c7a9b57bc5bacd61849204ac4f527810b6098730b7bd98d09  deviceinfo
 "
