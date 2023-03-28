@@ -1,11 +1,12 @@
 pkgname=firmware-xiaomi-elish
-pkgver=20230307
+pkgver=20230516
 pkgrel=0
 pkgdesc="Firmware for Xiaomi Mi Pad 5 Pro"
 subpackages="
 	$pkgname-adreno
 	$pkgname-adsp
 	$pkgname-cdsp
+	$pkgname-cirrus
 	$pkgname-slpi
 	$pkgname-touchscreen
 	$pkgname-venus
@@ -14,7 +15,7 @@ url="https://github.com/lujianhua/xiaomi-elish-firmware"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="fb9e4c29873223a08beed5ca0b9a8f82f5c5c0a7"
+_commit="d81ba3dfd6b13a719906b1e1f708fd3e46c8c39b"
 source="https://github.com/lujianhua/xiaomi-elish-firmware/archive/$_commit/xiaomi-elish-firmware-$_commit.tar.gz"
 builddir="$srcdir/xiaomi-elish-firmware-$_commit"
 
@@ -46,6 +47,13 @@ cdsp() {
 		"$subpkgdir/lib/firmware/qcom/sm8250/xiaomi/elish/"
 }
 
+cirrus() {
+	pkgdesc="Xiaomi elish cirrus firmware"
+
+	install -Dm644 "$builddir"/cirrus/cs35l41* -t \
+		"$subpkgdir/lib/firmware/cirrus/"
+}
+
 slpi() {
 	pkgdesc="Xiaomi elish slpi firmware"
 
@@ -56,7 +64,7 @@ slpi() {
 touchscreen() {
 	pkgdesc="Xiaomi elish touchscreen firmware"
 
-	install -Dm644 "$builddir"/novatek/nt36523.bin -t \
+	install -Dm644 "$builddir"/novatek/nt36523* -t \
 		"$subpkgdir/lib/firmware/novatek/"
 }
 
@@ -68,5 +76,5 @@ venus() {
 }
 
 sha512sums="
-25bd59ebb9a301ca8972d28918d6d08b95eb6cea5782461e32f17dffe0b97e61e9ff09c3b2d43f9af840703df88fb102404c32028e7bf896e9cf75cf13c8e854  xiaomi-elish-firmware-fb9e4c29873223a08beed5ca0b9a8f82f5c5c0a7.tar.gz
+e4e46e0c72d0f06c98cc8947a3c2ddf5edec84dff68cd9fa63059c50868a98e73dfa3acc9469f70ee245130f90c4d795a80871e82681162ee0df08aaab1ef22c  xiaomi-elish-firmware-d81ba3dfd6b13a719906b1e1f708fd3e46c8c39b.tar.gz
 "
