@@ -1,0 +1,44 @@
+# Maintainer: Jianhua Lu <lujianhua000@gmail.com>
+_pkgname="alsa-ucm-conf"
+_flavor="qcom-sm8250"
+pkgname=$_pkgname-$_flavor
+pkgver=1.0
+pkgrel=0
+pkgdesc="ALSA Use Case Manager configuration for phones and tablets based on Qualcomm's SM8250 SoC"
+subpackages="
+	$_pkgname-xiaomi-elish:xiaomi_elish
+"
+url="https://alsa-project.org"
+arch="aarch64"
+license="BSD-3-Clause"
+source="
+	alsa-ucm-conf/elish.conf
+	alsa-ucm-conf/elish_HiFi.conf
+"
+options="!check" # no tests
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+xiaomi_elish() {
+	pkgdesc="ALSA Use Case Manager configuration for Xiaomi Mi Pad 5 Pro"
+	depends="alsa-ucm-conf"
+	replaces="alsa-ucm-conf"
+
+	mkdir -p "$subpkgdir/usr/share/alsa/ucm2/conf.d/sm8250"
+
+	install -Dm644 "$srcdir/elish.conf" \
+		"$subpkgdir/usr/share/alsa/ucm2/Xiaomi/elish/elish.conf"
+
+	install -Dm644 "$srcdir/elish_HiFi.conf" \
+		"$subpkgdir/usr/share/alsa/ucm2/Xiaomi/elish/HiFi.conf"
+
+	ln -s ../../Xiaomi/elish/elish.conf \
+	  "$subpkgdir/usr/share/alsa/ucm2/conf.d/sm8250/Xiaomi Mi Pad 5 Pro.conf"
+}
+
+sha512sums="
+7b5def03dc5da28c7449719f0619f9d9ddbd988235b8591304ae4fea0989189d65ca1bc0d43664115f595137ba7896359b1b5f48fd6e350cac5d41ef9b1df869  elish.conf
+ed9a509f70715fd6c6614ee5fddbdb0ed2aa69f4a2983af9dbec26bdeb18fe93e3d1a65e03c618550c61da1416c79eb9440fb1bcd4961f85059b27904c4395cc  elish_HiFi.conf
+"
