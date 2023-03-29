@@ -1,0 +1,54 @@
+From d3c7a74f54e623312dc41774147f55222aa8a7c7 Mon Sep 17 00:00:00 2001
+From: exkc_is_using_redmi_2 <exkc@exkc.moe>
+Date: Thu, 9 Mar 2023 01:14:49 +0800
+Subject: [PATCH 2/4] enable ext2/ext4 support for the boot partition
+
+---
+ device/testing/soc-amlogic-s905/APKBUILD            | 8 ++++----
+ device/testing/soc-amlogic-s905/s905_autoscript.cmd | 3 +++
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/device/testing/soc-amlogic-s905/APKBUILD b/device/testing/soc-amlogic-s905/APKBUILD
+index a395ccda48..543def044c 100644
+--- a/device/testing/soc-amlogic-s905/APKBUILD
++++ b/device/testing/soc-amlogic-s905/APKBUILD
+@@ -2,8 +2,8 @@
+ # Co-Maintainer: exkc <exxxxkc@getgoogleoff.me>
+ pkgname=soc-amlogic-s905
+ pkgdesc="Common package for devices using the Amlogic S905 SoC"
+-pkgver=1
+-pkgrel=2
++pkgver=2
++pkgrel=0
+ url="https://postmarketos.org"
+ license="MIT"
+ arch="aarch64"
+@@ -25,7 +25,7 @@ package() {
+ boot() {
+ 	pkgdesc="Script for chainloading modern U-Boot from legacy U-Boot on Amlogic TV Boxes."
+ 	mkdir -p "$subpkgdir/boot"
+-	# Required if installing to an SD card
++	# Required if installing to an SD card/USB Stick
+ 	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n "S905 autoscript" \
+ 		-d "$srcdir/s905_autoscript.cmd" "$subpkgdir/boot/s905_autoscript"
+ 	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n "AML_autoscript" \
+@@ -41,6 +41,6 @@ x11() {
+ }
+ 
+ sha512sums="
+-dad8855a4a4f0c72e8556b88f27e7709d97c66808db0cc3ea57edc0f336d4f5b8ef9f6b9f07a0c676e74cf0e6f32b5c2b31b5a152f46ab4b1a01045e1f79072b  s905_autoscript.cmd
++0eed64dc6125623b5bcc07513db7daa8285b46a25fe1039ffe5adfbf0a26a8895b52a5ce5aa196a1cdde1ae422719a17c7c1040d78fe99d0e33e068d922d14d1  s905_autoscript.cmd
+ 72267e7bb0e3cd4a7c89d51c046c3a9c93d7ff9fe23a24357088fc94d45c6cc314cf12c8475421eadc507937ebc1ca9b1b9afdec0c78cf39977ebdd5f5eab24d  xorg.conf
+ "
+diff --git a/device/testing/soc-amlogic-s905/s905_autoscript.cmd b/device/testing/soc-amlogic-s905/s905_autoscript.cmd
+index 85ce791b5e..be8a554c58 100644
+--- a/device/testing/soc-amlogic-s905/s905_autoscript.cmd
++++ b/device/testing/soc-amlogic-s905/s905_autoscript.cmd
+@@ +1,4 @@
++if ext4load mmc 0 0x1000000 u-boot.bin; then go 0x1000000; fi;
++if ext4load usb 0 0x1000000 u-boot.bin; then go 0x1000000; fi;
+ if fatload mmc 0 0x1000000 u-boot.bin; then go 0x1000000; fi;
+ if fatload usb 0 0x1000000 u-boot.bin; then go 0x1000000; fi;
+-- 
+GitLab
+
