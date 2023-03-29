@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=sxmo-common
-pkgver=1.13.0
-pkgrel=1
+pkgver=1.14.0
+pkgrel=0
 pkgdesc="Simple Mobile: Core package to build custom SXMO desktop environments"
 url="http://sr.ht/~mil/Sxmo"
 arch="noarch !armhf"
@@ -12,12 +12,12 @@ depends="
 	alsa-utils
 	callaudiod
 	codemadness-frontends
+	conky
 	dnsmasq
 	dunstify
-	ffmpeg
 	file
-	font-fira-mono-nerd
-	font-terminus-nerd
+	font-dejavu
+	font-dejavu-sans-mono-nerd
 	geoclue
 	inotify-tools
 	light
@@ -31,7 +31,6 @@ depends="
 	modemmanager-openrc
 	mpv
 	ncurses
-	pamixer
 	pnc
 	polkit
 	polkit-openrc
@@ -42,7 +41,6 @@ depends="
 	sxmo-common-audio
 	sxmo-utils
 	sxmo-utils-openrc
-	terminus-font
 	tinydm
 	tinydm-openrc
 	tzdata
@@ -59,6 +57,17 @@ source="
 	postmarketos.conf
 	"
 options="!check" # has no tests
+
+# bonsai and sxmobar requires hare which doesnt work on all arches
+# refer to https://pkgs.alpinelinux.org/packages?name=hare&branch=edge&repo=&arch=&maintainer=
+# and add arches here as they become available. Bonsai should always be preferred
+# cause it fixes alot of issues. If bonsai is not installed, sxmo will fallback
+# to the old buggy shell script.
+case "$CARCH" in
+	x86_64|aarch64)
+		depends="$depends bonsai sxmobar"
+	;;
+esac
 
 package() {
 	mkdir -p "$pkgdir"
