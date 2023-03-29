@@ -1,8 +1,9 @@
 # Maintainer: Ferass El Hafidi <vitali64pmemail@protonmail.com>
+# Co-Maintainer: exkc <exxxxkc@getgoogleoff.me>
 pkgname=soc-amlogic-s905
 pkgdesc="Common package for devices using the Amlogic S905 SoC"
 pkgver=1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -27,6 +28,8 @@ boot() {
 	# Required if installing to an SD card
 	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n "S905 autoscript" \
 		-d "$srcdir/s905_autoscript.cmd" "$subpkgdir/boot/s905_autoscript"
+	mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -n "AML_autoscript" \
+		-d "$srcdir/s905_autoscript.cmd" "$subpkgdir/boot/aml_autoscript"
 }
 
 x11() {
