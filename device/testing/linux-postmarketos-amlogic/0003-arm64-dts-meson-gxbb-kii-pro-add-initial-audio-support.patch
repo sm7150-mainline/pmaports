@@ -1,18 +1,20 @@
-From b56967450d3aa37a7b0fc296de8a1a64801ae09f Mon Sep 17 00:00:00 2001
+From a2fc22db011ab46d8485ca831bb4c4e723e11225 Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Fri, 10 Feb 2023 02:29:00 +0000
-Subject: [PATCH 3/3] WIP: arm64: dts: meson: gxbb-kii-pro: add initial audio
- support
+Subject: [PATCH] FROMGIT(6.4): arm64: dts: meson: gxbb-kii-pro: add initial
+ audio support
 
 Add initial support for HDMI and S/PDIF audio output.
 
 Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Tested-by: Ferass El Hafidi <vitali64pmemail@protonmail.com>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
- .../boot/dts/amlogic/meson-gxbb-kii-pro.dts   | 61 +++++++++++++++++++
- 1 file changed, 61 insertions(+)
+ .../boot/dts/amlogic/meson-gxbb-kii-pro.dts   | 60 +++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
-index 435ae2aa4..b6ee76011 100644
+index a800e8955c4a3e..e238f1f1012419 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
 +++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
 @@ -9,11 +9,19 @@
@@ -34,8 +36,8 @@ index 435ae2aa4..b6ee76011 100644
 +
  	leds {
  		compatible = "gpio-leds";
- 
-@@ -35,6 +43,59 @@ button-reset {
+ 		led {
+@@ -34,6 +42,58 @@
  			gpios = <&gpio_ao GPIOAO_3 GPIO_ACTIVE_HIGH>;
  		};
  	};
@@ -50,7 +52,6 @@ index 435ae2aa4..b6ee76011 100644
 +		assigned-clock-rates = <294912000>,
 +				       <270950400>,
 +				       <393216000>;
-+		status = "okay";
 +
 +		dai-link-0 {
 +			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
@@ -95,6 +96,4 @@ index 435ae2aa4..b6ee76011 100644
  };
  
  &ethmac {
--- 
-2.39.1
 
