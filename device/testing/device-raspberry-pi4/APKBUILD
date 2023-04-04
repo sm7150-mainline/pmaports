@@ -2,7 +2,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-raspberry-pi4
 pkgver=0.4
-pkgrel=2
+pkgrel=3
 pkgdesc="Raspberry Pi 4"
 url="https://postmarketos.org"
 license="MIT"
@@ -11,12 +11,16 @@ options="!check !archcheck"
 depends="postmarketos-base raspberrypi-bootloader linux-rpi4"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install $pkgname.post-upgrade"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-plasma-bigscreen:plasma_bigscreen
+	"
 source="deviceinfo
 	config.txt
 	usercfg.txt
 	cmdline.txt
 	95-vchiq-permissions.rules
+	enforce-platform.sh
 	"
 
 build() {
@@ -30,12 +34,20 @@ package() {
 	install -Dm644 "$srcdir"/cmdline.txt "$pkgdir"/boot/cmdline.txt
 	install -Dm644 "$srcdir"/95-vchiq-permissions.rules \
 		"$pkgdir"/etc/udev/rules.d/95-vchiq-permissions.rules
+	install -Dm755 "$srcdir"/enforce-platform.sh -t "$pkgdir"/etc/profile.d/
 }
 
 nonfree_firmware() {
 	pkgdesc="WiFi/Bluetooth firmware"
 	depends="linux-firmware-brcm"
 	mkdir "$subpkgdir"
+}
+
+plasma_bigscreen() {
+	pkgdesc="$pkgdesc (Plasma Bigscreen)"
+	install_if="$pkgname plasma-bigscreen"
+
+	amove etc/profile.d
 }
 
 
@@ -45,4 +57,5 @@ sha512sums="
 18c5809f939260281637c1493009b724cfdc80efba8321fcad7bb4c252833eb75596326df06dcf8986693a501fa11d54680393ceccdec42e347fdd78d37417c9  usercfg.txt
 ae3de0b8fec07d3a283dc3c06bf8678eec1e65c9faf0b7f4fdc9fb92751e324d1f8e2fb224dbbf561b7e5a6fb34769bfa1657858375f74b101a130d78e0737e2  cmdline.txt
 7e5505cb07d5b4a81bd28443d508336b5c547356538f1c06f91ed93ad0d7d456d4f74f1d24df5a2e08c17e74f0a66607352ac4874e967e9a91dfec9522d2d58d  95-vchiq-permissions.rules
+56d3ca295eeced3535d033a2a492774254a9bfefa6595ae12cf8146917af1521ad6e25440670657c39a7b1a66d61da298334d3019acf0dbf7568cfed01600414  enforce-platform.sh
 "
