@@ -1,0 +1,43 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-oneplus-instantnoodlep
+pkgdesc="OnePlus 8 Pro"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+kernel_downstream() {
+	pkgdesc="Downstream kernel (not recommended, for debugging purposes)"
+	depends="linux-oneplus-instantnoodlep"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for OnePlus 8 Pro"
+	depends="firmware-oneplus-instantnoodlep"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+e6f01d250e86dd8f2ec60019bc470b5c6adb5e271dff9bd8420268709f33691db2a756194664539edd95f201ccf69301f953e644a87b298500561c02d0898792  deviceinfo
+"
