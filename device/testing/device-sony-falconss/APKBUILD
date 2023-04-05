@@ -1,0 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-sony-falconss
+pkgdesc="Sony Xperia E1"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="postmarketos-base linux-sony-falconss mkbootimg"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Wifi firmware"
+	depends="firmware-sony-falconss"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+4f7861578fae318d981405dfc2e9b4449860cc43d1685ff782ce3108f90f26e9db1a2e3a1132e3e2374cfc3eea7dc0682010fd0f1b788f07ee3e8dbdd55b1fef  deviceinfo
+"
