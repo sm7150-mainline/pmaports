@@ -3,7 +3,7 @@
 
 pkgname=linux-samsung-jackpotlte
 pkgver=4.4.177
-pkgrel=1
+pkgrel=2
 pkgdesc="Samsung Galaxy A8 (2018) kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -20,6 +20,7 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/VDavid003/$_repository/archive/$_commit.tar.gz
 	kernel-define-android-version.patch
+	fix-read-only-segment-has-dynamic-relocations-error.patch
 	$_config
 "
 builddir="$srcdir/$_repository-$_commit"
@@ -54,4 +55,5 @@ package() {
 
 sha512sums="63d0a2161f926999b32cbb8eb69dbe69864752f53619d4f046181f5187bb57bd3f0b11ac46dd469c8596efd075d2a422db4bc3fc94e07785ed61c8cbb3b9d6b0  linux-samsung-jackpotlte-494009fa0b85ef8c6cc8678da8d9c85014c17205.tar.gz
 f3161f62a6ba0de56342b1410e509dce8320e43f788ae2670ebd59d93e5504aab77a913eecdebae33ff9135228869c5fd0559211c511f503fdc25f2fbab48351  kernel-define-android-version.patch
+763b7bb86f7b0d381771c292f531f81e33826438e7d3e866e3b295295415366a68f55a0b9ed6afd1a2a1ffc4204537cbc14a55af8b500e2c087cc4ef7f25b059  fix-read-only-segment-has-dynamic-relocations-error.patch
 199f3f82c2c85ad3689a37f311267a956d8fe5ad0d70e26feb869278e3d159699530f943541694ab70478169d4657aa1ec67c86616cc5692674943d0e3955acc  config-samsung-jackpotlte.aarch64"
