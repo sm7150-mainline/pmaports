@@ -6,3 +6,4 @@ Helpful resources:
 * [Alpine Linux aports](https://gitlab.alpinelinux.org/alpine/aports/)
 * [Alpine Linux package search](https://pkgs.alpinelinux.org/packages)
 * [postmarketOS package search](https://pkgs.postmarketos.org/packages)
+* [postmarketOS commit style](./COMMITSTYLE.md)
