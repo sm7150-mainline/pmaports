@@ -1,0 +1,32 @@
+From b4c555ca3b2f4311a1a45ca4d27ca82c0c4d3b8f Mon Sep 17 00:00:00 2001
+From: Alistair Francis <alistair@alistair23.me>
+Date: Mon, 10 Apr 2023 21:11:12 +1000
+Subject: [PATCH] pm: udev: Use DEVPATH instead of ID_PATH
+
+ID_PATH doesn't correctly apply the quirks when using pmOS. Let's use
+DEVPATH instead of ID_PATH to allow the udev quirks to work in pmOS as
+well as PureOS.
+
+Signed-off-by: Alistair Francis <alistair@alistair23.me>
+---
+ debian/librem5-base-defaults.librem5-pm.udev | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/debian/librem5-base-defaults.librem5-pm.udev b/debian/librem5-base-defaults.librem5-pm.udev
+index cad668e..f1e319d 100644
+--- a/debian/librem5-base-defaults.librem5-pm.udev
++++ b/debian/librem5-base-defaults.librem5-pm.udev
+@@ -8,8 +8,8 @@ DEVPATH=="/devices/platform/soc@0/38100000.usb", TEST=="power/control", ATTR{pow
+ 
+ ### Enable power management for internal USB devices:
+ 
+-SUBSYSTEM=="usb", ENV{ID_PATH}=="platform-xhci-hcd.4.auto-usb-0:0:1.0", ATTR{usb1-port1/quirks}="10000000"
+-SUBSYSTEM=="usb", ENV{ID_PATH}=="platform-xhci-hcd.4.auto-usb-0:1:1.0", ATTR{1-1-port2/quirks}="10000000", ATTR{1-1-port3/power/pm_qos_no_power_off}="0"
++SUBSYSTEM=="usb", ENV{DEVPATH}=="/devices/platform/soc@0/38200000.usb/xhci-hcd.4.auto/usb1/1-0:1.0", ATTR{usb1-port1/quirks}="10000000"
++SUBSYSTEM=="usb", ENV{DEVPATH}=="/devices/platform/soc@0/38200000.usb/xhci-hcd.4.auto/usb1/1-1/1-1:1.0", ATTR{1-1-port2/quirks}="10000000", ATTR{1-1-port3/power/pm_qos_no_power_off}="0"
+ 
+ # Broadmobi BM818
+ SUBSYSTEM=="usb", ATTR{idVendor}=="2020", ATTR{idProduct}=="2060", TEST=="power/control", ATTR{power/control}="auto"
+-- 
+2.39.2
+

@@ -1,11 +1,11 @@
 # Reference: <https://postmarketos.org/devicepkg>
-# Maintainer:  Clayton Craft <clayton@craftyguy.net>
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
 # Co-Maintainer: Alistair Francis <alistair@alistair23.me>
 # Co-Maintainer: Newbyte <newbyte@postmarketos.org>
 pkgname=device-purism-librem5
-pkgver=1.43
-pkgrel=1
-_confver=58
+pkgver=1.44
+pkgrel=0
+_confver=59
 _purismrel=1
 # <librem5-base ver>.<purism release>
 _purismver=${_confver}pureos$_purismrel
@@ -45,6 +45,7 @@ source="
 	l5-ship-mode.initd
 	l5-lockdown-support.initd
 	org.freedesktop.GeoClue2.service
+	0002-pm-udev-Use-DEVPATH-instead-of-ID_PATH.patch
 "
 subpackages="
 	$pkgname-camera
@@ -186,7 +187,7 @@ nonfree_firmware() {
 }
 
 sha512sums="
-1243a6e47862c60e9aedf32b63826083a27c3f584bd42ef028501382eb12fdd8e8eab6c535801010058aca1b38ca766b51b8e3c855e0463aec959cae252f01db  librem5-base-pureos-58pureos1.tar.gz
+36670bcc87019503d2693e984be5a89135361d4db2c6ecd301619cf2fd1b89b536fe7b8063368e59ced5f866a9d941703ad9e3bee898a9dcb615b44b8333696c  librem5-base-pureos-59pureos1.tar.gz
 2e72d9a084ecd6c96cafbbd8fda461ae8b2ebd14ffda601d9f36d73f08f04088213de17da078293ddd958d4c76d33148c7af6e252eb0709f6934855a55578509  00-mesa.sh
 8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
 00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
@@ -203,4 +204,5 @@ b45749fcddfd65a302b502bcabfa5828d1b63e45d844fd50e44009a756b919db20fe9526102947c0
 c723764d507ccd4b04aa5ce79b1d1ebc131873cdc37a943cb0f92b8a08a3c69eb9e0d31fcd4589fd8c40a9676bae9897e4f12ec2ebe4db8214ac85669ef35a53  l5-ship-mode.initd
 f4b314d553655f7975445ac0a33099923e20dabb082c07e2cf6a78e4118c143d777dd4ad2c09cbc388600bdefe8deb3073fbd15b238772ddf09c66ac46415590  l5-lockdown-support.initd
 fd91bcd8cecd509587f0a26d454157a1df094d2d86c75329d1002e9474946494d4d1b5407e055fbd5f21e22394eeb1bbd4b3439ae6925db50a3427b4fac101cf  org.freedesktop.GeoClue2.service
+f70597afb93ca5a8bf1ff2414d77616e3820bb187120b252142af3d586f69fc1e71b438112f3c9173c86e81172f6a855f54e040b26d2591a04ee3510458c58d1  0002-pm-udev-Use-DEVPATH-instead-of-ID_PATH.patch
 "
