@@ -1,7 +1,8 @@
 #!/bin/sh
 
-rc-update add tinydm default
+rc-update add elogind default
 rc-update add networkmanager default
+rc-update add tinydm default
 
 sed -i "s/^Exec=weston$/Exec=dbus-run-session start_weston.sh/g" /usr/share/wayland-sessions/weston.desktop
 
