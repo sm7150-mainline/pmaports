@@ -55,10 +55,12 @@ prepare() {
 
 build() {
 	unset LDFLAGS
+	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
 		CFLAGS_MODULE=-fno-pic \
-		DTC_FLAGS="-@"
+		DTC_FLAGS="-@" \
+		V=1
 }
 
 package() {
