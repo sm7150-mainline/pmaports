@@ -50,8 +50,10 @@ prepare() {
 
 build() {
 	unset LDFLAGS
+	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 )) \
+		V=1
 }
 
 package() {
