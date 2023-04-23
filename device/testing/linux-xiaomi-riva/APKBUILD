@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm64/configs/riva_defconfig
 
 pkgname=linux-xiaomi-riva
-pkgver=4.9.241
+pkgver=4.9.337
 pkgrel=0
 pkgdesc="Xiaomi Redmi 5A kernel fork"
 arch="aarch64"
@@ -15,11 +15,11 @@ options="!strip !check !tracedeps pmb:cross-native"
 makedepends="bash bc bison devicepkg-dev flex openssl-dev perl"
 
 # Source
-_repository="android_kernel_xiaomi_msm8917"
-_commit="e452b3a9c3b97522b1b58e41ea3e12059b5ee92e"
+_repository="android_kernel_xiaomi_msm8937"
+_commit="1c2aef5588be23134801cfa304b1b30168367811"
 _config="config-$_flavor.$arch"
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/SunnyRaj84348/$_repository/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
 	$_config
 	fix-xorg-mdss-update-fb-info.patch
 	99_framebuffer.patch
@@ -43,8 +43,8 @@ package() {
 }
 
 sha512sums="
-8cb6764ccbb24a2216e66527487ae11047b0b192e6f8e15075ea52320061cb108346eb6328fbbd65e1ea3b0c8c1efca581827ee7bbf225f88579f3d2cdef5e45  linux-xiaomi-riva-e452b3a9c3b97522b1b58e41ea3e12059b5ee92e.tar.gz
-1056c26b9a8c93799b689bdf04b9c13953d0c7d97cb61125642067af2cb36f8e33cfa2c9283d5c08d38926a14272dfa9b1fc1fec4ad2630503687c488f2c8706  config-xiaomi-riva.aarch64
+723376e9ce54f1d7745e45658690ea503d716792638716275e0d47bb8bfdf83ce635555c28b1be80a660e1e391f0124ad264aa135ed9b4e08a2d63cb5f9beb78  linux-xiaomi-riva-1c2aef5588be23134801cfa304b1b30168367811.tar.gz
+e271cddb8401e8aa1f0d729d83064ad0c6ca3cd46e9105a7b281aedfb39eab867aa72c69c7322b716b897d27b6598ea19b7e2d2fedf1f3a8f7e00a29107e8148  config-xiaomi-riva.aarch64
 e11a1ca524a05a5fe8b845937dbc57ee38c52e0a1a979d8e7be0ac53df22f84dfb424205ee7f541acfca3daba3e9f5d49bb4b9e9bb482eb354de14eb28bd0094  fix-xorg-mdss-update-fb-info.patch
 741a46c6679172639568df96614b12a543563895ddee79051d88d28742b26d9c725f1d03dc208152c46e87b8b58240a3e206877da9a6a72035095e0f43458a72  99_framebuffer.patch
 "
