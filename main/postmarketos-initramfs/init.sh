@@ -3,8 +3,8 @@
 
 [ -e /hooks/10-verbose-initfs.sh ] && set -x
 
-. /etc/deviceinfo
 . ./init_functions.sh
+source_deviceinfo
 
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 /bin/busybox --install -s
