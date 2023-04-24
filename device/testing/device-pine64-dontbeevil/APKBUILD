@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-pine64-dontbeevil
-pkgver=0.3
-pkgrel=3
+pkgver=0.4
+pkgrel=0
 pkgdesc="PINE64 PinePhone Don't be evil devkit"
 url="https://postmarketos.org"
 license="MIT"
@@ -62,14 +62,13 @@ nonfree_firmware() {
 kernel_shortts() {
 	pkgdesc="Short touch cable version"
 	depends="linux-postmarketos-allwinner"
-	mkdir "$subpkgdir"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_longts() {
 	pkgdesc="Long touch cable version"
 	depends="linux-postmarketos-allwinner"
-	install="$subpkgname.post-install"
-	mkdir "$subpkgdir"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 sensorfw() {
@@ -81,7 +80,7 @@ sensorfw() {
 
 
 sha512sums="
-85dde682b5fc2975595d9a31c2054c8c375cc77fa4f6d7f83222994c9deb93d53436c1e8df8efe609e2d75d16e05077d30f549efce3c354e47a5605d3c59bc48  deviceinfo
+ac804eaba70f052b780b8f8bd59ec04d2c4fe4b50402c6eb38ccb80288cd18ccd4568a62e95a4221f850b064fa1ca385f8ea19033bd1fc4628301f9aca0b8df1  deviceinfo
 967e3a43c7e91ed37fc932a7c580cd168ca11d8ec7f60ff60ece7f286e5144f27faead95162fa7d571a2317ed0da970fd86f5bc9ed0235a25c0be9182d42d64d  90-dontbeevil.conf
 7d46b92a9a831ead6c1919b95ec4930242b35c2d8e2ce05fcb70dcd8c77c61d840d78738c5d82f6f4d56a1e676237243a795a728e76f38c27a74ed6dcb44279a  uboot-script.cmd
 c4c57d1627dd451213e1ef20d89de9266cd4edcc2d33a69aa9a1f13e16d9f9742036b69dc149fd910d7213f7525c41eb79576d4457bc85cc96eba0d986382d27  weston.ini
