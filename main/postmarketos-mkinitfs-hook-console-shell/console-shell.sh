@@ -1,7 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC1091
-. /etc/deviceinfo
 . ./init_functions.sh
+source_deviceinfo
 
 # mount pstore, if possible
 if [ -d /sys/fs/pstore ]; then
