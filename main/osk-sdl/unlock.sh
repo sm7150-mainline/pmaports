@@ -1,8 +1,9 @@
 #!/bin/sh
-# shellcheck disable=SC1091
 
 partition=$1
-. /etc/deviceinfo
+# shellcheck disable=SC1091
+. ./init_functions.sh
+source_deviceinfo
 
 # $1: SDL_VIDEODRIVER value (e.g. 'kmsdrm', 'directfb')
 run_osk_sdl() {
