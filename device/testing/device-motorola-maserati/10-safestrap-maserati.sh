@@ -1,6 +1,6 @@
 #!/bin/sh
-. /etc/deviceinfo
 . ./init_functions.sh
+source_deviceinfo
 
 mount_safestrap() {
 	grep -q PMOS_NO_SAFESTRAP /proc/cmdline && return
