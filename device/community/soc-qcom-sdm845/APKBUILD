@@ -3,7 +3,7 @@
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
 pkgver=14
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
@@ -13,6 +13,7 @@ depends="
 "
 replaces="upower"
 subpackages="
+	$pkgname-modem
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-qbootctl
 	$pkgname-ucm
@@ -40,20 +41,14 @@ package() {
 		"$pkgdir"/etc/UPower/UPower.conf
 }
 
-nonfree_firmware() {
-	pkgdesc="Modem, WiFi and GPU Firmware"
+modem() {
+	pkgdesc="Modem services and configuration"
 	depends="
-	pd-mapper
-	pd-mapper-openrc
-	tqftpserv
-	tqftpserv-openrc
-	q6voiced
-	q6voiced-openrc
-	msm-modem
-	msm-modem-uim-selection
-	bootmac
-	alsa-utils
-"
+		q6voiced
+		q6voiced-openrc
+		msm-modem-uim-selection
+	"
+
 	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 
@@ -70,6 +65,22 @@ nonfree_firmware() {
 
 	install -Dm644 "$srcdir"/call_audio_idle_suspend_workaround.confd \
 		"$subpkgdir"/etc/conf.d/call_audio_idle_suspend_workaround
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi and GPU Firmware"
+	depends="
+		pd-mapper
+		pd-mapper-openrc
+		tqftpserv
+		tqftpserv-openrc
+		msm-modem
+		bootmac
+		alsa-utils
+	"
+
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
+	mkdir "$subpkgdir"
 }
 
 ucm() {

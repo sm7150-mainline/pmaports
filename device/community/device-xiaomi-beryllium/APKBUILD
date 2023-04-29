@@ -4,7 +4,7 @@
 pkgname=device-xiaomi-beryllium
 pkgdesc="Xiaomi Poco F1"
 pkgver=8
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -40,7 +40,8 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="GPU, venus, modem firmware"
-	depends="firmware-xiaomi-beryllium soc-qcom-sdm845-nonfree-firmware"
+	depends="firmware-xiaomi-beryllium soc-qcom-sdm845-nonfree-firmware
+		 soc-qcom-sdm845-modem"
 	mkdir "$subpkgdir"
 
 	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
