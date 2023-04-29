@@ -3,19 +3,17 @@
 
 _flavor="postmarketos-qcom-msm8953"
 pkgname=linux-$_flavor
-pkgver=6.1.0
-pkgrel=1
+pkgver=6.3.0
+pkgrel=0
 pkgdesc="Close to mainline linux kernel for Qualcomm Snapdragon MSM8953"
 arch="aarch64"
+_carch="arm64"
 url="https://github.com/msm8953-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps
 	pmb:cross-native
-	pmb:kconfigcheck-containers
-	pmb:kconfigcheck-iwd
-	pmb:kconfigcheck-nftables
-	pmb:kconfigcheck-waydroid
-	"
+	pmb:kconfigcheck-community
+"
 makedepends="
 	bash
 	bison
@@ -24,31 +22,26 @@ makedepends="
 	openssl-dev
 	perl
 	postmarketos-installkernel
-	"
+"
 
 # Source
-_commit="b5b016f951f44dcc5a584d31843ea7e0ce5bf1c2"
+_commit="a6766f68acf854f926b091b438b6569d1ebca302"
 
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/msm8953-mainline/linux/archive/$_commit.tar.gz
 	config-$_flavor.aarch64
 "
-
-_carch="arm64"
-
 builddir="$srcdir/linux-$_commit"
 
 prepare() {
 	default_prepare
-	cp -v "$srcdir/config-$_flavor.$CARCH" "$builddir"/.config
+	cp "$srcdir/config-$_flavor.$arch" .config
 }
 
 build() {
 	unset LDFLAGS
-	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
-		V=1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
@@ -67,6 +60,6 @@ package() {
 }
 
 sha512sums="
-3dfa002828db13baa9beb59aa7512051cec149924c2e29cc6ae87938ee6fe74b9ac013e0fb62e4be7213666f700b6e37f0d27b2bb860a54b4f0649f55e4a9590  linux-postmarketos-qcom-msm8953-b5b016f951f44dcc5a584d31843ea7e0ce5bf1c2.tar.gz
-4d39e837a6fdaf8022197c76bafbe5f87ab3cf82ceff10a86b029510cd1acb9ffa0476245046f09228f539439b02b40a6f93be1c79ff215d340a32e58cdbc6f5  config-postmarketos-qcom-msm8953.aarch64
+910d30e14d2549c887b7d27470531a17b0203e26f44eab9fd3ce7865c405a532f9583a992ea22b4297be5a2db163aa24683c9b1dd66dee5c9a7020c741b0409b  linux-postmarketos-qcom-msm8953-a6766f68acf854f926b091b438b6569d1ebca302.tar.gz
+c9012c1d88c7c029acb53ac73e959e089e5832f1cfd64e6909256f6cdf9237fe494a824449cc7ec58155fa60512889ea9054d152dd3f1abfee3823b037988e64  config-postmarketos-qcom-msm8953.aarch64
 "
