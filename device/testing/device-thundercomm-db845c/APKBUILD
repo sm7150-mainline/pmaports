@@ -1,0 +1,47 @@
+
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Caleb Connolly <caleb@connolly.tech>
+
+pkgname=device-thundercomm-db845c
+pkgdesc="Thundercomm Dragonboard 845c"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sdm845
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sdm845
+	soc-qcom-sdm845-ucm
+	soc-qcom-sdm845-qbootctl
+	fwupd>=1.8.6
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, GPU and WiFi Firmware"
+	depends="linux-firmware-qcom soc-qcom-sdm845-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+832731020692787e954daca9ddff33b2c5e4d66858dc4b78927d290f366101b958d1226b3da8fd5078bb04c3d94b80abe8c4962ce0aa8d60ec8825de49de3207  deviceinfo
+"
