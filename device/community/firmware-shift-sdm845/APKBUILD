@@ -2,7 +2,7 @@
 
 pkgname=firmware-shift-sdm845
 pkgver=20230815
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for SHIFT sdm845 devices"
 url="https://gitlab.com/sdm845-mainline/firmware-shift-sdm845"
 arch="aarch64"
@@ -11,19 +11,22 @@ depends="
 	linux-firmware-qcom
 "
 license="proprietary"
-options="!check !strip !archcheck !tracedeps pmb:cross-native"
+# Textrels appear in DSP libraries which we cannot avoid
+options="!check !strip !archcheck !tracedeps textrels pmb:cross-native"
 
 _version="ba16d92aa0e0eaa697eeb937f3349de7089c5f0a"
 _board2_commit="fc750b3f1bda29c08cfe9329eb781c0ae3608456"
 
 source="$pkgname.tar.gz::$url/-/archive/$_version/$pkgname-$_version.tar.gz
 	firmware.files
+	sensors.files
 	30-gpu-firmware.files
 	30-shift-sdm845-firmware-ci.files
 	board-2.bin::https://gitlab.com/dylanvanassche/ath10k-firmware/-/raw/$_board2_commit/linux-firmware/board-2.bin"
 subpackages="
 	$pkgname-initramfs:firmware_initramfs
 	$pkgname-pmtest
+	$pkgname-sensors:firmware_sensors
 "
 
 package() {
@@ -56,9 +59,24 @@ pmtest() {
 		"$subpkgdir/usr/share/mkinitfs/files/30-shift-sdm845-firmware-ci.files"
 }
 
+firmware_sensors() {
+	pkgdesc="Firmware files of the sensor registry"
+	depends="$pkgname"
+	install_if="$pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+
+	cd "$srcdir/$pkgname-$_version/"
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$pkgdir/$_i"
+	done < "$srcdir/sensors.files"
+}
+
 sha512sums="
 72cbbbc2d1ea2698ee25e554cdb099729c059a01ab21efe66d2dd60c7aff7b138ec1b4dc1b5b86e5d69a87ef2950b614f36089e919c9436881cc2a3fbe384d55  firmware-shift-sdm845.tar.gz
 2f1087a2133d5dbdaad94927be9e88acdceb6873eab731b76b295b5248e5a91c3e9e6498b4400fc7219ba378ca4362448b882ccd87d2e73ae5fbf0fd613277ba  firmware.files
+be1aa0e7d1a5689d2f6b85d6244d0a2ec0729b92d3a165fc5162f039849ee2da49b311a4713cd11924ee70933dacb88c879b805504bb89709f10807d89207a15  sensors.files
 8695a37da5578fdae506f373131ce9481be3db1a86f329c19893e7360b9cb0fadd47b0b1318b2e74702c5e76a9be022f58610940ad17becab49788689f6ca3f8  30-gpu-firmware.files
 97756b554cc0f91a69f511496663a012287517ec5853167246fe59c4deeb1cbf1eb352ec267bd0ad897e3f30547d2ad2818e70b597d9dfec26db45efca85b3f2  30-shift-sdm845-firmware-ci.files
 a8eaab63f467553a65789a316d6f58cc15b0ad9bf3f698e6dbe51efa841db7f62a69d0c24b69da4f36de4a01dc29b723911d9cf17f925d3ce1170cbfa6b16029  board-2.bin
