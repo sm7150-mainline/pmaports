@@ -1,0 +1,66 @@
+# Forked from Alpine to add Qualcomm SSC support with libssc
+
+pkgname=iio-sensor-proxy
+pkgver=9999
+pkgrel=0
+pkgdesc="IIO sensors to D-Bus proxy"
+url="https://gitlab.freedesktop.org/hadess/iio-sensor-proxy"
+arch="all"
+license="GPL-2.0-or-later"
+depends="dbus"
+makedepends="
+	eudev-dev
+	glib-dev
+	libgudev-dev
+	meson
+	polkit-dev
+	libssc-dev
+	"
+subpackages="$pkgname-openrc"
+_commit="48cb957c41b8d51d882219866e1366c45e21c352"
+builddir="$srcdir/$pkgname-$_commit"
+source="https://gitlab.freedesktop.org/hadess/iio-sensor-proxy/-/archive/$_commit/iio-sensor-proxy-$_commit.tar.gz
+	iio-sensor-proxy.initd
+	0001-iio-sensor-proxy-depend-on-libssc.patch
+	0002-proximity-support-SSC-proximity-sensor.patch
+	0003-light-support-SSC-light-sensor.patch
+	0004-accelerometer-support-SSC-accelerometer-sensor.patch
+	0005-compass-support-SSC-compass-sensor.patch
+	0006-accelerometer-apply-accel-attributes.patch
+	0007-data-add-libssc-udev-rules.patch
+	"
+# tests fail on armv7 and armhf, and it seems to be due to some weird issue
+# with pmaports qemu CI (not reproducible locally with `pmb build --arch
+# armv7`)
+options="!check"
+build() {
+	abuild-meson \
+		-Db_lto=true \
+		-Dssc-support=true \
+		-Dsystemdsystemunitdir=/no \
+		. output
+	meson compile -C output
+}
+
+check() {
+	meson test --no-rebuild --print-errorlogs -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+	rm -r "$pkgdir"/no
+
+	install -Dm755 "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/$pkgname
+}
+
+sha512sums="
+f899058ba346b272c5174de0f2c0870bf6a13782f0c0c248163bc6cec7fbebca689ed97a0fbebd770a8857212cfc760849ad97034eaaec7fef40b7e58d811f31  iio-sensor-proxy-48cb957c41b8d51d882219866e1366c45e21c352.tar.gz
+b25df94e249ca46fe96926e5a866c20dc913fa52a2d9259fb7a3594861c6b2f246fc7fef8a21f5b021f3a71401f734ae27210137b0b1917a7daaffb5e3221f2e  iio-sensor-proxy.initd
+43bf2ce5928c996ef56939a5ff232160f6af5a40cc673753763facbcb18511b1f551fa1a91f55ac9d0d4cbe544de7326208617ffc032cfeb9e39a5ab6538e825  0001-iio-sensor-proxy-depend-on-libssc.patch
+c6eb40824d5f4fe8b46d26f3ed4773502c9ff3ed58ec82df4a4f570bdcba81c39ff41f6d400bcece13fc46486272d13238d58afc34982b0972894b4d01a81309  0002-proximity-support-SSC-proximity-sensor.patch
+2e909a9a2a8c95d5255e14f6e0280f329e83e02dce8c16555df77c818a3cda658a7ebfb4c27d3e251e6830de2374f5f1bf2735be09af09ff0255c902125601ea  0003-light-support-SSC-light-sensor.patch
+cb627cb4fc40e195683dcf1a7837f2fc902851310f3cee42ab18e42d6243b8fafc92accf699b5805670f9a8c76cf0cc422a201be64836efe9e5b943f6d151d70  0004-accelerometer-support-SSC-accelerometer-sensor.patch
+045d76e0399ea2a5e99955d56a77f4fab9b5bc7d50512c60ae1a6dfd8e56e209690743545582bef35451fbd1a03f67d58e7143c2c91811d402a0e8e908f22bbc  0005-compass-support-SSC-compass-sensor.patch
+17eab0005d6d4989e57ef6f37a7bfbd7541c19c129c9dc481000635884b981a8da0b9f264bc61059ac27882cd653eff7a78ec231ecbd158773f71d55e6ab8e9b  0006-accelerometer-apply-accel-attributes.patch
+5495aa9d9ba3b83c0845556bcc1ef66d72a76d9685b791c15080dece62c00d93c76a2dce0e146ba0f3027ed2c34957d0019def9cee0fd133ec72c554ccfeb2d3  0007-data-add-libssc-udev-rules.patch
+"
