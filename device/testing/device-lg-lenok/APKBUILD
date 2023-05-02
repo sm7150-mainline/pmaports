@@ -1,18 +1,23 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-lg-lenok
-pkgver=1.1
-pkgrel=2
 pkgdesc="LG G Watch R"
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
-arch="armv7"
 license="MIT"
+arch="armv7"
+options="!check !archcheck"
 depends="
-	linux-lg-lenok
 	mkbootimg
 	postmarketos-base
 	"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-asteroid"
+subpackages="
+	$pkgname-asteroid
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+	"
 source="
 	90-android-touch-dev.rules
 	deviceinfo
@@ -20,7 +25,6 @@ source="
 	initfs-hook.sh
 	machine.conf
 	"
-options="!check !archcheck"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -28,10 +32,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 -t "$pkgdir"/etc/udev/rules.d \
-		"$srcdir"/90-android-touch-dev.rules
-	install -Dm644 -t "$pkgdir"/etc/profile.d \
-		"$srcdir"/fb_fix.sh
 }
 
 asteroid() {
@@ -41,9 +41,33 @@ asteroid() {
 		"$srcdir"/machine.conf
 }
 
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-lg-lenok"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	amove usr/share/mkinitfs/hooks/00-$pkgname.sh
+	install -Dm644 -t "$subpkgdir"/etc/udev/rules.d \
+		"$srcdir"/90-android-touch-dev.rules
+	install -Dm644 -t "$subpkgdir"/etc/profile.d \
+		"$srcdir"/fb_fix.sh
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel"
+	depends="linux-postmarketos-qcom-msm8226"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for WiFi, ADSP, etc."
+	depends="firmware-lg-lenok-adsp firmware-lg-lenok-wifi"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="
 a36ba9017df3b4be233783096c303abafa873dcdf50f6357b82f3c5526fd161a1914dafe143377cb5982955108b987890638b51911d0dd339172554e39a82d9f  90-android-touch-dev.rules
-470c765fee8ed7d81fa4177b682d0c4f6c138c8d472809b6a484fbd252b5ccb2911e4f21b915241b45e0757f42f8a15250cbe9ac87f7d3dc3ca8aa56d056da1d  deviceinfo
+a494222a0d2c0b89f8826815c6f762d97d5f7dcf504c4940b6365e59b9c8c4fdeebb101d54b604aab8ae6f16ec05b22189eb545982ac117773cfdfa7c79a3ba7  deviceinfo
 1fc5a7609d8f79f74f29d55ce492dc6b77bb247da1b79abc1361e5e9072b5283816cef02c4cc283300031d708733c5fdbed94f539ae1c16b1dca96bf4d512234  fb_fix.sh
 d29105805adcd79d4f73c2f2c4483a2c627dc7b70acb77f43d085742ef930407c9b1423f7020c34f38e8a09f40cadd991b9acae23e936c90d6a4c0900250da22  initfs-hook.sh
 81cf2c20d2efa0f71f18116efeda11ae4f18fee96ba998dc4d6a36205626dce496cb36711af5c4e3215578b174942e721290cfcff8db6fb1c998b90b7345244d  machine.conf

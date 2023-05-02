@@ -6,22 +6,24 @@ deviceinfo_name="LG G Watch R"
 deviceinfo_manufacturer="LG"
 deviceinfo_codename="lg-lenok"
 deviceinfo_year="2015"
-deviceinfo_chassis="watch"
-deviceinfo_keyboard="false"
-deviceinfo_external_storage="false"
-deviceinfo_flash_method="fastboot"
 deviceinfo_dtb_mainline="qcom-apq8026-lg-lenok"
 deviceinfo_append_dtb_mainline="true"
 deviceinfo_arch="armv7"
 
-# Splash screen
+# Device related
+deviceinfo_chassis="watch"
+deviceinfo_keyboard="false"
+deviceinfo_external_storage="false"
 deviceinfo_screen_width="320"
 deviceinfo_screen_height="320"
 
-# Fastboot related
+# Bootloader related
+deviceinfo_flash_method="fastboot"
+# limit to single-core until we have cpufreq to avoid fast overheating
+deviceinfo_kernel_cmdline_mainline="maxcpus=1"
 deviceinfo_generate_bootimg="true"
+deviceinfo_flash_pagesize="2048"
 deviceinfo_flash_offset_kernel="0x0000000"
 deviceinfo_flash_offset_ramdisk="0x02000000"
 deviceinfo_flash_offset_second="0x00f00000"
 deviceinfo_flash_offset_tags="0x01e00000"
-deviceinfo_flash_pagesize="2048"
