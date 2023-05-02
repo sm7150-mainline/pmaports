@@ -3,8 +3,9 @@
 
 _flavor="postmarketos-qcom-msm8226"
 pkgname=linux-$_flavor
-pkgver=6.2_rc4
+pkgver=6.3.0
 pkgrel=0
+_tag="v$pkgver-msm8226"
 pkgdesc="Mainline kernel fork for Qualcomm APQ8026/MSM8226/MSM8926 devices"
 arch="armv7"
 _carch="arm"
@@ -26,13 +27,11 @@ makedepends="
 "
 
 # Source
-_tag=${pkgver//_/-}
 source="
-	https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
+	linux-$_tag.tar.gz::https://github.com/msm8226-mainline/linux/archive/refs/tags/$_tag.tar.gz
 	config-$_flavor.armv7
-	0001-ARM-dts-qcom-Add-support-for-Samsung-Galaxy-Tab-4-10.patch
 	"
-builddir="$srcdir/linux-${_tag#v}"
+builddir="$srcdir/linux-$pkgver-msm8226"
 
 prepare() {
 	default_prepare
@@ -60,7 +59,6 @@ package() {
 }
 
 sha512sums="
-1437bf3745132523e691190dbd8e7f7591116d768b63cc5c17418b666bb55e968cb2c2a600f3fcb5a91725067c0bebb8da7f570d7b36f35efa941a70435666ed  linux-6.2-rc4.tar.gz
-e78f06394ce126802af6b055380c3ee721931a75c243cbac4cf57559bfbb60938f6d5d283ff55450ffc9e4775d38cdb1007f9296519911b061ae0c2f0eb9ffdb  config-postmarketos-qcom-msm8226.armv7
-dd21321070b5d1eb91936d0b318b8d815a6c1fc7823ec0299b5ec911fb7844da4f0c5d90ccbdca357424ab929f682e7bf00c2da2fbbdd226d0b98efae9935562  0001-ARM-dts-qcom-Add-support-for-Samsung-Galaxy-Tab-4-10.patch
+a4031f1d3219f746a392b9389bbe3ff1b6ba49e59b6e97cfa02ff469236836129eae0afc0ffbaf94503328ca39626751df7d3bfb854cf22ed2bbe74da67f3474  linux-v6.3.0-msm8226.tar.gz
+ed033699f2abc862b2bad9b989cfd52bc6c00c3913a45219553fa6997a53e76ba37783e448abf2f35f4454e3bdef234ed274dd4a084e2c33478e17effd571e33  config-postmarketos-qcom-msm8226.armv7
 "
