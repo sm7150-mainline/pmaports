@@ -1,24 +1,45 @@
-# Maintainer: Timbz <timon.baetz@protonmail.com>
 pkgname=firmware-huawei-sturgeon
-pkgver=1
+pkgver=2
 pkgrel=0
-pkgdesc="Firmware for Huawei Watch (huawei-sturgeon)"
-url="https://github.com/timbz/firmware-huawei-sturgeon"
+pkgdesc="Firmware for Huawei Watch"
+subpackages="
+	$pkgname-adsp
+	$pkgname-wifi
+	"
+url="https://github.com/FairBlobs/sturgeon-firmware"
 arch="armv7"
 license="proprietary"
-options="!check !tracedeps pmb:cross-native"
-
-# Source
-_commit="29fc975c771553d0a2a3ff5df2c9089946b1c324"
-source="$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz"
-builddir="$srcdir/$pkgname-$_commit"
+_commit="646d3d18e9abc656c6f833cf7ae0313afc174a4d"
+builddir="$srcdir/sturgeon-firmware-$_commit"
+source="$pkgname-$_commit.tar.gz::https://github.com/FairBlobs/sturgeon-firmware/archive/$_commit.tar.gz"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
 
 package() {
-	for f in fw_bcmdhd.bin bcm4343s.txt; do
-		install -Dm644 "$f" "$pkgdir/lib/firmware/postmarketos/$f"
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adsp() {
+	pkgdesc="Huawei Watch - ADSP firmware"
+
+	cd "$builddir"
+	for _i in adsp.*; do
+		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
 	done
 }
 
+wifi() {
+	pkgdesc="Huawei Watch - WiFi/Bluetooth firmware"
+
+	cd "$builddir"
+	install -Dm644 BCM4343A0.hcd \
+		"$subpkgdir"/lib/firmware/brcm/BCM4343A0.hcd
+	install -Dm644 brcmfmac43430a0-sdio.huawei,sturgeon.bin \
+		"$subpkgdir"/lib/firmware/brcm/brcmfmac43430a0-sdio.huawei,sturgeon.bin
+	install -Dm644 brcmfmac43430a0-sdio.huawei,sturgeon.txt \
+		"$subpkgdir"/lib/firmware/brcm/brcmfmac43430a0-sdio.huawei,sturgeon.txt
+}
+
 sha512sums="
-bbbba0607da078cd8f648c083f1a8bbdf6e37f98dffa75e1c68de58db4f1de30b51c0cd969295758e64efcfcc2b30e2298e8f4b2d9747eebc69e44f3ee590ba6  firmware-huawei-sturgeon-29fc975c771553d0a2a3ff5df2c9089946b1c324.tar.gz
+58e85968f381966fe0c24bb651b4dc37edded9297c3e00f7e482fa9aabec56ce09361b8fedc78ccd9d96e3dd2b740e5b07e50ba7acb989352c6df41b96bf7378  firmware-huawei-sturgeon-646d3d18e9abc656c6f833cf7ae0313afc174a4d.tar.gz
 "
