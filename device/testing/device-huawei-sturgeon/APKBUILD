@@ -1,16 +1,14 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-huawei-sturgeon
 pkgdesc="Huawei Watch"
-pkgver=0.3
-pkgrel=1
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
-	linux-huawei-sturgeon
 	mkbootimg
-	msm-fb-refresher
 	postmarketos-base
 "
 makedepends="devicepkg-dev"
@@ -18,7 +16,11 @@ source="
 	deviceinfo
 	networkmanager.conf
 "
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+	"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -26,17 +28,30 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-huawei-sturgeon msm-fb-refresher"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
 	install -Dm644 "$srcdir"/networkmanager.conf \
-		"$pkgdir"/etc/NetworkManager/conf.d/10-sturgeon.conf
+		"$subpkgdir"/etc/NetworkManager/conf.d/10-sturgeon.conf
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel"
+	depends="linux-postmarketos-qcom-msm8226"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
-	pkgdesc="WiFi firmware"
-	depends="firmware-huawei-sturgeon"
+	pkgdesc="Firmware for WiFi, ADSP, etc."
+	depends="firmware-huawei-sturgeon-adsp firmware-huawei-sturgeon-wifi"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-33c27ad87e7e530b496fceebe1fc565a662d44c3619d991d5c41476a9f2d6354863f9135b29d70b0e9f14f08dae798b06a5cbf2a64fd7eecee232f5000be0fe9  deviceinfo
+295d405017fc1bb0658da5e0e440b16cbf4660ac5fe9ceb4bbd4e5052d31f2949f3733fd3bb44e7a37b0eec03562676519d0711265ddb2d5db51ffe1ee332db2  deviceinfo
 a19923f30ac1d328a85ab1162e44442da28dd1ae45529fb73e21d8004594487f61c8f5372e5bbaadfefd27fe27c8a22ce430b81891ac1965e5704bbfec108b82  networkmanager.conf
 "

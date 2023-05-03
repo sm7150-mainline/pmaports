@@ -20,7 +20,9 @@ deviceinfo_screen_height="400"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
-deviceinfo_kernel_cmdline="androidboot.hardware=sturgeon user_debug=31 maxcpus=4 msm_rtb.filter=0x3F pm_levels.sleep_disabled=1 selinux=0"
+# limit to single-core until we have cpufreq to avoid fast overheating
+deviceinfo_kernel_cmdline_mainline="maxcpus=1"
+deviceinfo_kernel_cmdline_downstream="androidboot.hardware=sturgeon user_debug=31 maxcpus=4 msm_rtb.filter=0x3F pm_levels.sleep_disabled=1 selinux=0"
 deviceinfo_generate_bootimg="true"
 deviceinfo_bootimg_qcdt="false"
 deviceinfo_bootimg_mtk_mkimage="false"
