@@ -20,7 +20,9 @@ deviceinfo_screen_height="320"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
-deviceinfo_kernel_cmdline="console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=sparrow user_debug=31 maxcpus=4 msm_rtb.filter=0x3F"
+# limit to single-core until we have cpufreq to avoid fast overheating
+deviceinfo_kernel_cmdline_mainline="maxcpus=1"
+deviceinfo_kernel_cmdline_downstream="console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=sparrow user_debug=31 maxcpus=4 msm_rtb.filter=0x3F"
 deviceinfo_generate_bootimg="true"
 deviceinfo_bootimg_qcdt="false"
 deviceinfo_bootimg_mtk_mkimage="false"
