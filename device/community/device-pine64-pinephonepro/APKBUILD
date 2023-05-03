@@ -2,7 +2,7 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
-pkgver=3.7
+pkgver=3.8
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -24,6 +24,8 @@ makedepends="
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-gnome
+	$pkgname-sway
+	$pkgname-x11
 	"
 install="
 	$pkgname.post-install
@@ -39,6 +41,8 @@ source="
 	ucm/HiFi.conf
 	ucm/PINE64-PinePhonePro-.conf
 	ucm/VoiceCall.conf
+	sway-pinephone-keyboard.conf
+	x11-pinephone-keyboard.conf
 	"
 
 build() {
@@ -118,6 +122,18 @@ gnome() {
 		"$subpkgdir"/usr/share/glib-2.0/schemas
 }
 
+sway() {
+	install_if="$pkgname=$pkgver-r$pkgrel sway-virtual"
+	install -Dm644 "$srcdir"/sway-pinephone-keyboard.conf \
+		"$subpkgdir"/etc/sway/config.d/pinephone_keyboard.conf
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	install -Dm644 "$srcdir"/x11-pinephone-keyboard.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/pinephone-keyboard.conf
+}
+
 sha512sums="
 2d68ffe143f633a86670f30e45dbad1cc313f219f22b7cd3319ab44bb7209c20cb29f2ff2c60c92390154af9c9a6815c4186be555364cf31552005eba024c0e7  51_keyboard.gschema.override
 98e9dcfb36dd5843ff441b148e3bffb70757c59601c5f01f55a584e8f017c7ca73f2275c1bff46e4236dd8174df36a43d10abf9b8dadee988b962036846dc6ed  90-modem-eg25.rules
@@ -128,4 +144,6 @@ c5006c38828eb519917d57756f7831c4552feffef2d4922a384073f6a551535f615ad397d784e313
 1684514a6b814a83473e9da8855fd776cf3f31a2be1f8834c370f710428b4ee305559e275be52894d167ccd1e32f8f1c8586f8a072f19e44b46caec9f504d453  HiFi.conf
 9c6edbe7ea387baf9bfa6c4a46b28c4fe274ab0994e0a1640012048407e6679c437de43cc50e6778c9a852132eaa680de3fd4e0256d36455d1dd57aa729ac8be  PINE64-PinePhonePro-.conf
 e4d721163a844c68c0240be62a4692e7b9983054aee6d717f70687b901f569c6008e0c64a5bddf37e20f41b3936b4ef80909d7cbf09feeb0813303b3b46de80f  VoiceCall.conf
+a7b49a638f664f7682ce6b00eb4d1ae26a429e89354056de05fb49d25fc9555d7f80e6d8f4b0a250878a4e7823860fd156068ed6604ce6cf58badef45c545161  x11-pinephone-keyboard.conf
+bb11151e246d16e071761ebb35ca7f8b8cedbad8366e9bac6aed30554a795877cc9dccbe69ecca4b19b6f72bd87e613705f3ae4f2f40d2f9c2d09cc179999d59  sway-pinephone-keyboard.conf
 "
