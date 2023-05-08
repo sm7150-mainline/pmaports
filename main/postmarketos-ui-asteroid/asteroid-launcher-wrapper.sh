@@ -8,4 +8,6 @@ export QT_QPA_EGLFS_INTEGRATION=eglfs_kms
 # has chosen their language in the setup screen
 export LANG=en_GB.utf8
 
+/usr/libexec/mapplauncherd/booster-qt5 &
+
 /usr/bin/asteroid-launcher
