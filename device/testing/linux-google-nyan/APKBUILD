@@ -61,6 +61,9 @@ package() {
 		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
 
+	# Prevent kernel self-decompression from overwriting initramfs
+	truncate -s 10M "$pkgdir"/boot/vmlinuz
+
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
