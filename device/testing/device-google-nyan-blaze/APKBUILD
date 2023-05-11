@@ -2,19 +2,20 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-nyan-blaze
 pkgdesc="HP Chromebook 14 G3"
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf
+	depthcharge-tools
+	linux-google-nyan>=6.1.27-r0
 	postmarketos-base
+	postmarketos-update-depthcharge-kernel
 "
 subpackages="
-	$pkgname-kernel-nyan-blaze-2gb:kernel_nyan_blaze_2gb
-	$pkgname-kernel-nyan-blaze-4gb:kernel_nyan_blaze_4gb
 	$pkgname-mpv-wayland:mpv_wayland
 	$pkgname-mpv-xorg:mpv_xorg
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -58,18 +59,6 @@ package() {
 		"$pkgdir"/boot/boot.scr
 }
 
-kernel_nyan_blaze_2gb() {
-	pkgdesc="Google Nyan Blaze (2 GB)"
-	depends="linux-google-nyan u-boot-nyan-2gb"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_nyan_blaze_4gb() {
-	pkgdesc="Google Nyan Blaze (4 GB)"
-	depends="linux-google-nyan u-boot-nyan-4gb"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 nonfree_firmware() {
 	pkgdesc="WiFi/BT, USB and GPU firmware"
 	depends="linux-firmware-mrvl linux-firmware-nvidia"
@@ -100,7 +89,7 @@ sway() {
 
 sha512sums="
 793688374d77efaf050c187d296d7fd55243773a1257b4d8adfa4cda50d4c0cacc035fb3d419a4b608989ed920636048680d900afe8a712f2166edf51552087a  30-xusb-firmware.files
-792dfcb0d3e428593167f4f9fdaddbff15999f8a54f20e493c5af6cf6fb0fd0dc24d29ae26077b83dced583ad74744db2fe331964f3c49d1c6e9b265b2db8503  deviceinfo
+086e7ad43a685eea83db0cffe17e707e9cf484f1f9fa1a0c5b2045c0592b02c5510f0febb0f29c367e74a2dfa6a3b8e5e82b81d827eb54d2d9e7028cb9824a37  deviceinfo
 e6c5382b6f7dd10f350136d65a714de3ae337978c3ca88e63f016b4a42be87b422d2388fbf6d6a2feba15516fb9b409f6c5ff08968829e6fc2d1e8aeb9d3c508  gpu.conf
 8f9dc3c7caeab6c5321dc2bf498f1a03a793f23cb776763316bc356b9d433d7a3337e61154069464dcda200bf390b99f3be8f657a40c6d2f6be3cbc6fb751080  mpv.conf.wayland
 d6bc39df48ba0e985a796426039205335adf1c91b9c150b05a4239339fc78b1748b3a83c699de69e9a5829f29573a323f40788da58ed15b1951de1eab7e31c3d  mpv.conf.xorg
