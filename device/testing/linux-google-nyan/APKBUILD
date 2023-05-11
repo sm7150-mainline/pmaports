@@ -1,8 +1,8 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 # Co-Maintainer: Segfault <awarnecke002@hotmail.com>
 pkgname=linux-google-nyan
-pkgver=5.18.5
-pkgrel=3
+pkgver=6.1.27
+pkgrel=0
 pkgdesc="Mainline kernel fork for Google Nyan Chromebooks"
 arch="armv7"
 _carch="arm"
@@ -33,11 +33,10 @@ case $pkgver in
 	*.*)	_kernver=$pkgver;;
 esac
 source="
-	https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${pkgver//_/-}.tar.xz
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-${pkgver//_/-}.tar.xz
 	$_config
-	0001-disable-spectre-log-spam.patch
-	0002-ARM-dts-tegra-nyan-add-mmc-aliases.patch
-	0003-ARM-tegra-nyan-fix-mic-jack-detection.patch
+	0001-ARM-dts-tegra-nyan-add-mmc-aliases.patch
+	0002-ARM-tegra-nyan-fix-mic-jack-detection.patch
 "
 builddir="$srcdir/linux-${_kernver//_/-}"
 
@@ -48,9 +47,8 @@ prepare() {
 
 build() {
 	unset LDFLAGS
-	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" V=1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
@@ -68,9 +66,8 @@ package() {
 }
 
 sha512sums="
-1872e2cf8cdd6e0033ce69f26f25526a30c237d220c02b20829fca31d6068fb816de2f2e5fd41f6807648cef8f28ddda392b199c7b1c3b48b2460c840fa1e150  linux-5.18.5.tar.xz
-59f4d39d6e817df6b56ef1429b45da77fe714c3ff286889b145e6f65811a29cd8f7d480ebf1c72f780890f45e2ba112f3bb10c90e002324ed5e6b0b6b04b8af6  config-google-nyan.armv7
-2367c64676e4329739e8cc8f874553981747c1bdea833871e2eefe649854fb5908ca0cff5ad11d07e095737632ee71a2f6010bf438a1a60414d7572800b4a07b  0001-disable-spectre-log-spam.patch
-be21d145f39d334e37f8dd79b78474c072e54502ba5c9ae63163f0ce30ffaa3a3448b05d153205ba8af7a761952ecddb3ae1a5b348902b4ce5f4f72138937fdb  0002-ARM-dts-tegra-nyan-add-mmc-aliases.patch
-4ec3bc3bce229ba664ad98251dbcad9d224a3792d3149cc64b5a1eee0801f1a366b83447b55a02cb0915bd3ef63f42260dd55a286f68c727fcfc4d46bba4363a  0003-ARM-tegra-nyan-fix-mic-jack-detection.patch
+657c241c8e4d62dabf7f1789c342352f757655129b8b21d92d3a90859d24f5f05f33aa39491851f690f7d9b0ba9234c47907ae05e1cb32a8d00fcf11ff71c61b  linux-6.1.27.tar.xz
+af051de016dab75d91aad84bf02a0f877018330728b2afd50166da8c076c33fbb2d9ecc0b25fa787305713277e3a82560052db8947a32e75d1810327acebf817  config-google-nyan.armv7
+be21d145f39d334e37f8dd79b78474c072e54502ba5c9ae63163f0ce30ffaa3a3448b05d153205ba8af7a761952ecddb3ae1a5b348902b4ce5f4f72138937fdb  0001-ARM-dts-tegra-nyan-add-mmc-aliases.patch
+4ec3bc3bce229ba664ad98251dbcad9d224a3792d3149cc64b5a1eee0801f1a366b83447b55a02cb0915bd3ef63f42260dd55a286f68c727fcfc4d46bba4363a  0002-ARM-tegra-nyan-fix-mic-jack-detection.patch
 "
