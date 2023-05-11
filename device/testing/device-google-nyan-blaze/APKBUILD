@@ -21,7 +21,7 @@ subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-sway
 "
-makedepends="devicepkg-dev u-boot-tools"
+makedepends="devicepkg-dev"
 source="
 	30-xusb-firmware.files
 	deviceinfo
@@ -29,22 +29,10 @@ source="
 	mpv/mpv.conf.wayland
 	mpv/mpv.conf.xorg
 	sway/tinydm/10-no-hardware-cursor.sh
-	uboot-script.cmd
 "
 
 build() {
 	devicepkg_build $startdir $pkgname
-
-	mkimage \
-		-A arm \
-		-O linux \
-		-T script \
-		-C none \
-		-a 0 \
-		-e 0 \
-		-n postmarketos \
-		-d "$srcdir"/uboot-script.cmd \
-		"$srcdir"/boot.scr
 }
 
 package() {
@@ -53,10 +41,6 @@ package() {
 	# Block nouveau as it is in very bad condition
 	install -Dm644 "$srcdir"/gpu.conf \
 		"$pkgdir"/etc/modprobe.d/gpu.conf
-
-	# U-Boot script
-	install -Dm644 "$srcdir"/boot.scr \
-		"$pkgdir"/boot/boot.scr
 }
 
 nonfree_firmware() {
@@ -89,10 +73,9 @@ sway() {
 
 sha512sums="
 793688374d77efaf050c187d296d7fd55243773a1257b4d8adfa4cda50d4c0cacc035fb3d419a4b608989ed920636048680d900afe8a712f2166edf51552087a  30-xusb-firmware.files
-086e7ad43a685eea83db0cffe17e707e9cf484f1f9fa1a0c5b2045c0592b02c5510f0febb0f29c367e74a2dfa6a3b8e5e82b81d827eb54d2d9e7028cb9824a37  deviceinfo
+96f137901007504dafd1c1463075cc18d607f5d825fc87157935d5d42bd371cc1579507baf9e8b539242d98d441b5b14b74138f8b240e009460abebc29d8d8da  deviceinfo
 e6c5382b6f7dd10f350136d65a714de3ae337978c3ca88e63f016b4a42be87b422d2388fbf6d6a2feba15516fb9b409f6c5ff08968829e6fc2d1e8aeb9d3c508  gpu.conf
 8f9dc3c7caeab6c5321dc2bf498f1a03a793f23cb776763316bc356b9d433d7a3337e61154069464dcda200bf390b99f3be8f657a40c6d2f6be3cbc6fb751080  mpv.conf.wayland
 d6bc39df48ba0e985a796426039205335adf1c91b9c150b05a4239339fc78b1748b3a83c699de69e9a5829f29573a323f40788da58ed15b1951de1eab7e31c3d  mpv.conf.xorg
 78e566bf3a597b9b5f73f686feb93ae61d1bed350366428d74c7735f1f82ab390f47ba9deb9d21e8dfcee251dc6178956838ca1b34838bb0a7d740be0e2c8330  10-no-hardware-cursor.sh
-7a3006bdb2c8f1a0fa38c11f044e3f59bef0c061e8e1d849cfeb02e8a7db3579bbf589349205f3ff908b8911561dd5451c5e9bf5633e9a40cd07720c6ba0361a  uboot-script.cmd
 "
