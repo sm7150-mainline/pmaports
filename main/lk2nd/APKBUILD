@@ -1,7 +1,7 @@
 # Maintainer: Alexey Minnekhanov <alexeymin@postmarketos.org>
 pkgname=lk2nd
 pkgver=0.14.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Secondary little kernel (lk) bootloader for several Qualcomm devices"
 arch="armv7 aarch64"
 url="https://github.com/msm8916-mainline/lk2nd"
@@ -26,7 +26,9 @@ if [ "$CARCH" = "armv7" ]; then
 		$subpackages
 		$pkgname-msm8226
 		$pkgname-msm8226-appended:msm8226_appended
-		$pkgname-msm8974"
+		$pkgname-msm8974
+		$pkgname-msm8974-appended:msm8974_appended
+	"
 fi
 
 build() {
@@ -70,6 +72,11 @@ msm8916_appended() {
 msm8974() {
 	install -Dm644 "$builddir"/build-lk2nd-msm8974/lk2nd.img -t \
 		"$subpkgdir"/boot
+}
+
+msm8974_appended() {
+	install -Dm644 "$builddir"/build-lk2nd-msm8974/lk2nd-appended-dtb.img \
+		"$subpkgdir"/boot/lk2nd.img
 }
 
 msm8226() {
