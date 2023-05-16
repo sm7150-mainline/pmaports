@@ -1,18 +1,5 @@
-From ae92d9b9f1bd0b7c26fb49bc8256356ae3734e97 Mon Sep 17 00:00:00 2001
-From: xiazhengqiao <xiazhengqiao@huaqin.corp-partner.google.com>
-Date: Mon, 8 Nov 2021 18:06:08 +0800
-Subject: [PATCH 1/5] drm/panel: Add inx Himax8279d MIPI-DSI LCD panel driver
-
-Add STARRY 2081101QFH032011-53G 10.1" WUXGA TFT LCD panel
-
-Signed-off-by: xiazhengqiao <xiazhengqiao@huaqin.corp-partner.google.com>
-Tested-by: Hsin-Yi Wang <hsinyi@chromium.org>
----
- drivers/gpu/drm/panel/Kconfig                 |   9 +
- drivers/gpu/drm/panel/Makefile                |   1 +
- .../gpu/drm/panel/panel-innolux-himax8279d.c  | 515 ++++++++++++++++++
- 3 files changed, 525 insertions(+)
- create mode 100644 drivers/gpu/drm/panel/panel-innolux-himax8279d.c
+based on: https://patchwork.freedesktop.org/patch/482097/
+adjusted for v6.1: inx_panel_remove returns void now in drivers/gpu/drm/panel/panel-innolux-himax8279d.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index ddf5f38e8731..375a67f69230 100644
@@ -51,7 +38,7 @@ new file mode 100644
 index 000000000000..6840449548e4
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-innolux-himax8279d.c
-@@ -0,0 +1,515 @@
+@@ -0,0 +1,513 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2021, Huaqin Telecom Technology Co., Ltd
@@ -528,7 +515,7 @@ index 000000000000..6840449548e4
 +	drm_panel_unprepare(&inx->base);
 +}
 +
-+static int inx_panel_remove(struct mipi_dsi_device *dsi)
++static void inx_panel_remove(struct mipi_dsi_device *dsi)
 +{
 +	struct inx_panel *inx = mipi_dsi_get_drvdata(dsi);
 +	int ret;
@@ -541,8 +528,6 @@ index 000000000000..6840449548e4
 +
 +	if (inx->base.dev)
 +		drm_panel_remove(&inx->base);
-+
-+	return 0;
 +}
 +
 +static const struct of_device_id inx_of_match[] = {
@@ -567,6 +552,3 @@ index 000000000000..6840449548e4
 +MODULE_AUTHOR("Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>");
 +MODULE_DESCRIPTION("INNOLUX HIMAX8279D 1200x1920 video mode panel driver");
 +MODULE_LICENSE("GPL v2");
--- 
-2.39.1
-
