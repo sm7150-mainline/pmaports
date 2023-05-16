@@ -2,7 +2,7 @@
 # aintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-makomo
 pkgdesc="Lenovo 100e Chromebook 2nd Gen MTK 2"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,16 +11,13 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-google-kukui
 	depthcharge-tools
-	linux-postmarketos-mediatek-mt8183
+	linux-postmarketos-mediatek-mt8183>=6.1.28-r0
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 	soc-mediatek-mt8183
 "
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
-	modules-load.d/sound.conf
-"
+source="deviceinfo"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -29,9 +26,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/sound.conf \
-		"$pkgdir"/etc/modules-load.d/sound.conf
 }
 
 nonfree_firmware() {
@@ -42,5 +36,4 @@ nonfree_firmware() {
 
 sha512sums="
 3ed0183b0a6f6c840af39a99945061bcc3c97d51610db94ae1cde22d3e11cd2ca90e296726ed6b9bafd118ebb5392e61be0f14943cea58fc398d818cf2803180  deviceinfo
-2abf68f27d19a6d30d7070f4b9b506b585668e85423f4127bbdf72247dc6da2204bbf064310dd2dc0fa43b44e02758a21f5fbd21870187d45149a56d534c8cfe  sound.conf
 "

@@ -2,7 +2,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-fennel
 pkgdesc="Lenovo IdeaPad Flex 3 Chromebook (MT8183)"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,22 +11,14 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-google-kukui
 	depthcharge-tools
+	linux-postmarketos-mediatek-mt8183>=6.1.28-r0
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 	soc-mediatek-mt8183
 "
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
-	modules-load.d/sound.conf.sku1.sku6
-	modules-load.d/sound.conf.sku7
-"
-subpackages="
-	$pkgname-kernel-sku1:kernel_sku1
-	$pkgname-kernel-sku6:kernel_sku6
-	$pkgname-kernel-sku7:kernel_sku7
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -42,35 +34,6 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-kernel_sku1() {
-	pkgdesc="Google Fennel Sku 1"
-	depends="linux-postmarketos-mediatek-mt8183"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-
-	install -Dm644 "$srcdir"/sound.conf.sku1.sku6 \
-		"$pkgdir"/etc/modules-load.d/sound.conf
-}
-
-kernel_sku6() {
-	pkgdesc="Google Fennel Sku 6"
-	depends="linux-postmarketos-mediatek-mt8183"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-
-	install -Dm644 "$srcdir"/sound.conf.sku1.sku6 \
-		"$pkgdir"/etc/modules-load.d/sound.conf
-}
-
-kernel_sku7() {
-	pkgdesc="Google Fennel Sku 7"
-	depends="linux-postmarketos-mediatek-mt8183"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-
-	install -Dm644 "$srcdir"/sound.conf.sku7 \
-		"$pkgdir"/etc/modules-load.d/sound.conf
-}
-
 sha512sums="
-4baf53df10fd495caa6bbc89018518377217f06d0b05dc0a08428e569ce8cccf7f01d7b236885355d4ed7c38079824435a0d02af220ad642c0370c5aa987e47c  deviceinfo
-37f11d243c4ecfd07bfb74e2d34e4c261db3a6aff755bf2dd08dad998de47e511c21082ca0d181e77e093e6f940fc570d8aef87fbc3a73ba55cb9f34b8c510f2  sound.conf.sku1.sku6
-bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf.sku7
+c95bc929775ca2969cfc64d24a5b8adc0259279e3578420cc68f5f92b372c4e1bb22ddf17715ffb9a4ccf0dee28612e2de000a2e8ebd015e16828f7b611899f3  deviceinfo
 "

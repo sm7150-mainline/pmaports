@@ -2,7 +2,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-fennel14
 pkgdesc="Lenovo IdeaPad 3 Chromebook (MT8183)"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,21 +11,14 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-google-kukui
 	depthcharge-tools
+	linux-postmarketos-mediatek-mt8183>=6.1.28-r0
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 	soc-mediatek-mt8183
 "
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
-	modules-load.d/sound.conf.sku0
-	modules-load.d/sound.conf.sku2
-"
-subpackages="
-	$pkgname-kernel-sku0:kernel_sku0
-	$pkgname-kernel-sku2:kernel_sku2
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -41,26 +34,6 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-kernel_sku0() {
-	pkgdesc="Google Fennel14 Sku 0"
-	depends="linux-postmarketos-mediatek-mt8183"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-
-	install -Dm644 "$srcdir"/sound.conf.sku0 \
-		"$pkgdir"/etc/modules-load.d/sound.conf
-}
-
-kernel_sku2() {
-	pkgdesc="Google Fennel14 Sku 2"
-	depends="linux-postmarketos-mediatek-mt8183"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-
-	install -Dm644 "$srcdir"/sound.conf.sku2 \
-		"$pkgdir"/etc/modules-load.d/sound.conf
-}
-
 sha512sums="
-e88e0e58e3d3529c3dbb3ef28345aead4d3250400f80b0f664b43c4185996ee46aebc02218555ba9ca1d493432b572366f0eb6957f6176b1821f6faa767696d9  deviceinfo
-37f11d243c4ecfd07bfb74e2d34e4c261db3a6aff755bf2dd08dad998de47e511c21082ca0d181e77e093e6f940fc570d8aef87fbc3a73ba55cb9f34b8c510f2  sound.conf.sku0
-bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf.sku2
+95cb84756794a84e3a5f6806b57054b0210685397c8f6a8be2b71e234d1d847a5734ac3c4b81478ccd2fab9a7ee1f331409cdd3c811ff5755da734e70ffb6041  deviceinfo
 "

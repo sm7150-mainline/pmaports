@@ -2,7 +2,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-damu
 pkgdesc="ASUS Chromebook Flip CM3 (CM3200, MT8183)"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,16 +11,13 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-google-kukui
 	depthcharge-tools
-	linux-postmarketos-mediatek-mt8183
+	linux-postmarketos-mediatek-mt8183>=6.1.28-r0
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 	soc-mediatek-mt8183
 "
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
-	modules-load.d/sound.conf
-"
+source="deviceinfo"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -29,9 +26,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/sound.conf \
-		"$pkgdir"/etc/modules-load.d/sound.conf
 }
 
 nonfree_firmware() {
@@ -42,5 +36,4 @@ nonfree_firmware() {
 
 sha512sums="
 06fb84b1c7c144fe3511dda65530441d42073b62a95e36c50e53eb1d1dafcee58974cd74287c407c0839f9ecc6065f5cc3fd6bf518d8faf98698b63def540959  deviceinfo
-37f11d243c4ecfd07bfb74e2d34e4c261db3a6aff755bf2dd08dad998de47e511c21082ca0d181e77e093e6f940fc570d8aef87fbc3a73ba55cb9f34b8c510f2  sound.conf
 "

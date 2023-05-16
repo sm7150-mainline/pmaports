@@ -3,7 +3,7 @@
 # Co-Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-krane
 pkgdesc="Lenovo IdeaPad Duet Chromebook"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -12,16 +12,13 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-google-kukui
 	depthcharge-tools
-	linux-postmarketos-mediatek-mt8183
+	linux-postmarketos-mediatek-mt8183>=6.1.28-r0
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 	soc-mediatek-mt8183
 "
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
-	modules-load.d/sound.conf
-"
+source="deviceinfo"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -30,9 +27,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/sound.conf \
-		"$pkgdir"/etc/modules-load.d/sound.conf
 }
 
 nonfree_firmware() {
@@ -43,5 +37,4 @@ nonfree_firmware() {
 
 sha512sums="
 3cee30adc42daa052e0cca078c5cdad5b936fb639d240b747382b7c0e4c2a184578cbdf097c24cb792f500e414ee92dc614c7f7fc30ae28aeb8d625639d03542  deviceinfo
-bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf
 "

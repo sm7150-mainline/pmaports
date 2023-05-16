@@ -2,7 +2,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-kodama
 pkgdesc="Lenovo 10e Chromebook Tablet"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,16 +11,13 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-google-kukui
 	depthcharge-tools
-	linux-postmarketos-mediatek-mt8183
+	linux-postmarketos-mediatek-mt8183>=6.1.28-r0
 	postmarketos-base
 	postmarketos-update-depthcharge-kernel
 	soc-mediatek-mt8183
 "
 makedepends="devicepkg-dev"
-source="
-	deviceinfo
-	modules-load.d/sound.conf
-"
+source="deviceinfo"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -29,9 +26,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/sound.conf \
-		"$pkgdir"/etc/modules-load.d/sound.conf
 }
 
 nonfree_firmware() {
@@ -42,5 +36,4 @@ nonfree_firmware() {
 
 sha512sums="
 78a2288faf43dc60c6c236bb91ef479cff42d7441dadccc67bc35a83dded4c21f082e49851ad7d68dc8b2c8a3002d4a0e1acfb39a506da5ee702e48c6c3141cd  deviceinfo
-bdf45461873b9754bc91d7f72afd6cef1aa6e523ead0a7816c8976ed98ff2d39b66c53dba2f2d92e36162c092360d1524845f27160f6af2bb010cd3259d5b7ed  sound.conf
 "
