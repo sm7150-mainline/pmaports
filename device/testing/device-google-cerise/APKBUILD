@@ -1,0 +1,39 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-cerise
+pkgdesc="ASUS Chromebook CZ1"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt8183
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+	soc-mediatek-mt8183
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-qca linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+2f40a8d3e9fc7b064fdc5dfb1774e9e8948ea991238ddbcd8c7bcf59e8bbc45c947856c41b47c1c7ac576e4ca1bad3f8e878d50807593e5da918c55213521310  deviceinfo
+"
