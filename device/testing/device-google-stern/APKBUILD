@@ -1,0 +1,39 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-stern
+pkgdesc="ASUS Chromebook Flip CZ1"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt8183
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+	soc-mediatek-mt8183
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-qca linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+b9ab043cd23ab5e3f005937137d78664fa91587cb948648119fa0999aaad361e09edfb4edf842ee8427a388c95ce4fcb4d6e05f92937807edddd68b9bba3180b  deviceinfo
+"
