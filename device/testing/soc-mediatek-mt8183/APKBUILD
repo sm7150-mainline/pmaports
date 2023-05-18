@@ -2,14 +2,17 @@
 # Co-Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=soc-mediatek-mt8183
 pkgdesc="Common package for Mediatek MT8183 devices"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
 options="!check !archcheck"
 depends="soc-qcom-msm8916"
-subpackages="$pkgname-x11"
+subpackages="
+	$pkgname-firmware
+	$pkgname-x11
+"
 source="
 	xorg.conf.d/11-modesetting.conf
 	xorg.conf.d/13-panfrost-swapped-dri-nodes.conf
@@ -17,6 +20,14 @@ source="
 
 package() {
 	mkdir -p "$pkgdir"
+}
+
+firmware() {
+	install_if="$pkgname=$pkgver-r$pkgrel linux-firmware-mediatek"
+
+	mkdir -p "$subpkgdir"/lib/firmware
+	ln -s /lib/firmware/mediatek/mt8183/scp.img \
+		"$subpkgdir"/lib/firmware/scp.img
 }
 
 x11() {
