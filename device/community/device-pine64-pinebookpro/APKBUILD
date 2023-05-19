@@ -2,14 +2,15 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-pine64-pinebookpro
 pkgdesc="PINE64 Pinebook Pro"
-pkgver=11
-pkgrel=1
+pkgver=12
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf>=1.2.7
+	eudev-hwids
 	linux-postmarketos-rockchip>=5.14
 	nvme-cli
 	postmarketos-base>=25-r1
@@ -21,7 +22,6 @@ subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	deviceinfo
-	10-pinebookpro.hwdb
 	70-edp-backlight.rules
 	nvme-powersave.initd
 	wlan-powersave-off.start
@@ -33,10 +33,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	# Keyboard mapping
-	install -D -m644 "$srcdir"/10-pinebookpro.hwdb \
-		"$pkgdir"/etc/udev/hwdb.d/10-pinebookpro.hwdb
 
 	install -D -m755 "$srcdir"/nvme-powersave.initd \
 		"$pkgdir"/etc/init.d/nvme-powersave
@@ -55,7 +51,6 @@ nonfree_firmware() {
 }
 sha512sums="
 6d6fcb8bbfa2eb0fda691cc646f484ce383ba80bbfd5affde17852913e1f8fe68290fd764f5d7a1cc2f3e9de288a7f4db9ff90dfed66b3a0daf47a0c836e0926  deviceinfo
-d3988fe83c54228d743f4a8c190e9530404a436a7fbc0b004bf20d3986b502d864717d8cc9c76812e599266bf84cb08f9a86e1bfd220875799c5a022aea588ec  10-pinebookpro.hwdb
 6e9e9ef54ee9aa9491be6dc30451fdcd9038b0efeb959509f48626d97a1696ee81711a46510049557b73269ff48acc85fad6496c65451e2e24908241b7655444  70-edp-backlight.rules
 2abfa31fa56028339efc6d2b6cb838f310990d7110ac4dd996bc4cfcf90f0a8770e70f28f77f7b6929d110e494bc33731302f16b9717729f991c2732be0731d5  nvme-powersave.initd
 0fd7580e197e409978c219726af627cabe347404ee826e32892b61f3da1775b0fd81f8ed5e9a0f0bfaad87faa434d7a73ddaebf475ed0ad8fdcef6690cd692d3  wlan-powersave-off.start
