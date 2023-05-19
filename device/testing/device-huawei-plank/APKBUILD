@@ -1,0 +1,28 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-huawei-plank
+pkgdesc="Huawei Honor 7"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-huawei-plank
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+b987d515eafaa324d9096529e6b8efbadfc2a73fe0f5e6b3626aa04cd5292386a9743ddde6f4443211ee52b3b8198157a3382c33ecbeba6baa05e0cd9bb93707  deviceinfo
+"
