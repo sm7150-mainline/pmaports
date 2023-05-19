@@ -1,27 +1,29 @@
 # Maintainer: Caleb Connolly <caleb@connolly.tech>
 
 pkgname=firmware-oneplus-sdm845
-pkgver=8
-pkgrel=1
+pkgver=9
+pkgrel=0
 pkgdesc="Firmware for OnePlus 6 / 6T"
 url="https://gitlab.com/sdm845-mainline/firmware-oneplus-sdm845"
 arch="aarch64"
 depends="linux-firmware-qcom linux-firmware-ath10k"
 license="proprietary"
-options="!check !strip !archcheck !tracedeps pmb:cross-native"
+options="!check !strip !archcheck !tracedeps textrels pmb:cross-native"
 
-_version="895bb1c8dd0695635df354bbd713740af48e47ce"
+_version="dc9c77f220d104d7224c03fcbfc419a03a58765e"
 _board2_commit="fc750b3f1bda29c08cfe9329eb781c0ae3608456"
 
 source="$pkgname.tar.gz::$url/-/archive/$_version/$pkgname-$_version.tar.gz
 	firmware.files
+	sensor.files
 	30-gpu-firmware.files
 	board-2.bin::https://gitlab.com/dylanvanassche/ath10k-firmware/-/raw/$_board2_commit/linux-firmware/board-2.bin
 	30-oneplus-sdm845-firmware-ci.files
-	"
+"
 subpackages="
 	$pkgname-initramfs:firmware_initramfs
 	$pkgname-pmtest
+	$pkgname-sensors:firmware_sensors
 "
 
 package() {
@@ -52,9 +54,24 @@ pmtest() {
 		"$subpkgdir/usr/share/mkinitfs/files/30-oneplus-sdm845-firmware-ci.files"
 }
 
+firmware_sensors() {
+	pkgdesc="Files to be included to add sensor support"
+	depends="$pkgname"
+	install_if="$pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+
+	cd "$srcdir/$pkgname-$_version/"
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$pkgdir/$_i"
+	done < "$srcdir/sensor.files"
+}
+
 sha512sums="
-59091452f1d6363fab0474ebc2738ec8fca6903c64837c3b6228eefb2030b0b4d5f0694770ddadf81f59f2ace4fad548459ad7a6604498aaa08a9064fb1dc736  firmware-oneplus-sdm845.tar.gz
-f7a850f76eb5c757d4c7329b8e2040aadc62d9d5d7a6c21752f0fe1afb2343f9630738ede4b3c45cf1eba305e35923dd7f011e9fb6a68e97f3d25564b5c29306  firmware.files
+d14b22434016cb12b8c04a3e7ac186451d77b92284e926a2771d958960d4da8ffb10cb9db555a200babcedd7be3379d2840882d19c26edc88805eee943310c2f  firmware-oneplus-sdm845.tar.gz
+23e4ea891f688bf5669e4b8479aab06b56c5478429b759c22fa417e1ad09cb413e55856140b456c6b676b8920ecec40aa0215d8fd61a23ac2c5c02240552f247  firmware.files
+4e5c4f55d4b084c6c21810b93a63a75ad86dd04cd1c079497bd2387f8bd0a411053ca1e894974af8bfda77ddc79c92a6669550be3a48fbef01cf797b54d6cb67  sensor.files
 bc6c329bf6bb9622320ab610f4f5fb944129e276855a4cf5646cb29a553f4c47cd9a4ef4305cbcd94a991471bc109b8f615cefd6871be99bf6a457fe0fa5aa19  30-gpu-firmware.files
 a8eaab63f467553a65789a316d6f58cc15b0ad9bf3f698e6dbe51efa841db7f62a69d0c24b69da4f36de4a01dc29b723911d9cf17f925d3ce1170cbfa6b16029  board-2.bin
 d6a81ab4697e763eebf2b428e8a63dbdd0a44743691d9277e9d3c7de26dbcbddaea1928a6cfa5509f8f41506d8812022f200ec47f87d28e05af77302683ffcf4  30-oneplus-sdm845-firmware-ci.files
