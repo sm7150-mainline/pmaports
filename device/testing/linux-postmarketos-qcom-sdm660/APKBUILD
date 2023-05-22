@@ -3,19 +3,15 @@
 
 _flavor="postmarketos-qcom-sdm660"
 pkgname=linux-$_flavor
-pkgver=6.0.10
-pkgrel=1
+pkgver=6.3.3
+pkgrel=0
 pkgdesc="Close to mainline linux kernel for Qualcomm Snapdragon 660 SoC"
 arch="aarch64"
 url="https://kernel.org/"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps
 	pmb:cross-native
-	pmb:kconfigcheck-waydroid
-	pmb:kconfigcheck-containers
-	pmb:kconfigcheck-iwd
-	pmb:kconfigcheck-nftables
-	pmb:kconfigcheck-zram
+	pmb:kconfigcheck-community
 	"
 makedepends="
 	bash
@@ -47,10 +43,9 @@ prepare() {
 
 build() {
 	unset LDFLAGS
-	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" \
-		V=1
+		LOCALVERSION=-sdm660
 }
 
 package() {
@@ -58,6 +53,7 @@ package() {
 
 	make zinstall modules_install dtbs_install \
 		ARCH="$_carch" \
+		LOCALVERSION=-sdm660 \
 		INSTALL_PATH="$pkgdir"/boot \
 		INSTALL_MOD_PATH="$pkgdir" \
 		INSTALL_MOD_STRIP=1 \
@@ -69,6 +65,6 @@ package() {
 }
 
 sha512sums="
-cf71a37ad587805fc5393ac5eaf65ffd4fc98fd85fdd2bd5e4ee1b825ccee43194e45f6d54b4485b3c04f661a174a7fefc300004ae428b5b250b66603f388e14  linux-v6.0.10-sdm660.tar.gz
-ac5f076165727416d4b7063cef82a3f606dbe32feefa67c4dd52e766ac105aced27e393b84f6ba4f59a662dfd6e0aaaf3cf8d8a143a25f30cdd6957f76fcc496  config-postmarketos-qcom-sdm660.aarch64
+2f436cad5bfaa48a008bdc13306d890bea099da49aa01d016adb851e4b99254da8ac9c5fbc00c000bac9ecc57fbd7781068f2bb837428b31281a5a6550e98024  linux-v6.3.3-sdm660.tar.gz
+ad03eaa65aff11f63eb4fbd3fb42adecb2bccc0a3a54c8b5c8abace25ffffcce54e87814ab7b68e2d239a557a3ca2a2e6c7975333fa2f5cfb6ca3009a2eac825  config-postmarketos-qcom-sdm660.aarch64
 "
