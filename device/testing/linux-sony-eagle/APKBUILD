@@ -3,7 +3,7 @@
 
 pkgname=linux-sony-eagle
 pkgver=3.4.0
-pkgrel=5
+pkgrel=6
 pkgdesc="Sony Xperia M2 kernel fork"
 arch="armv7"
 _carch="arm"
@@ -29,7 +29,7 @@ _primacommit="79403896e1c410582044c50dfce92d5e97233e0c"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/ilpianista/$_repository/archive/$_commit.tar.gz
-	$pkgname-prima-$_primacommit.tar.gz::https://source.codeaurora.org/external/wlan/prima/snapshot/$_primacommit.tar.gz
+	prima-$_primacommit.tar.gz::https://git.codelinaro.org/clo/external-wlan/prima/-/archive/$_primacommit/prima-$_primacommit.tar.gz
 	$_config
 	timeconst.pl-Eliminate-Perl-warning.patch
 	02_reduce_lzo_compression.patch
@@ -40,7 +40,7 @@ source="
 	06_fix_mdss_fb_rgb_mode.patch
 "
 builddir="$srcdir/$_repository-$_commit"
-_primadir="$srcdir/$_primacommit"
+_primadir="$srcdir/prima-$_primacommit"
 _outdir="out"
 
 prepare() {
@@ -73,7 +73,7 @@ package() {
 
 sha512sums="
 4c5a675e2583480cf91ddd73527cb26480fd0d385427b5d6fd6a4e975cfe8d979a647451291c8d123cff66efbc1f97baa87b4eb8be4d7745f739d4bda5ea081e  linux-sony-eagle-53fc207771ed87a44d9f7c73058f4638b883e474.tar.gz
-f9e75725bd2c8e8e65af0ed07601aa9cfb3404653b94cb249d2e063be2877e0738fcbcdfb8bfefeaba7aafc2f542735e0af56a586a22340889922e7db469f0fb  linux-sony-eagle-prima-79403896e1c410582044c50dfce92d5e97233e0c.tar.gz
+75ccdd063fd2e6435d6ab9aa4f8158bb5f1f335311472a491c194d0ad2e56079cc5757455182bdf78d204851d2232b49f439f173d1b05366043a10e2340692a7  prima-79403896e1c410582044c50dfce92d5e97233e0c.tar.gz
 7822530d295958b9f2de25975e1846662b280e4091cd82c177f501e9b428118c3699bdac61fe774e560f311d383f1e9059786695a10544d320538729eb68e31b  config-sony-eagle.armv7
 1fcfb5f06a2bfdcc55d53054ca80d1b989599a39a5379d057a0724fc405187d74da4309a650e70b9c79d39444e81923cfc5c9199ed8c0a77c83dcd7998446bb7  timeconst.pl-Eliminate-Perl-warning.patch
 30ac7171fe2a5aa90c15e56465b35bfc84015079296df2ebbb4287a2848ac5e8cf8e0dbb00dfdf84acb6692587eefdfc338e65ef3170a1a3e5b279b317ba43f3  02_reduce_lzo_compression.patch
