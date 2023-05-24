@@ -1,10 +1,11 @@
 pkgname=firmware-fairphone-fp4
 pkgver=20230215
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for Fairphone 4"
 subpackages="
 	$pkgname-adreno
 	$pkgname-adsp
+	$pkgname-bluetooth
 	$pkgname-cdsp
 	$pkgname-ipa
 	$pkgname-modem
@@ -36,6 +37,15 @@ adsp() {
 
 	install -Dm644 "$builddir"/adsp* -t \
 		"$subpkgdir/lib/firmware/qcom/sm7225/fairphone4/"
+}
+
+bluetooth() {
+	pkgdesc="Fairphone 4 bluetooth firmware"
+
+	install -Dm644 "$builddir"/apbtfw11.tlv -t \
+		"$subpkgdir/lib/firmware/qca/"
+	install -Dm644 "$builddir"/apnv11.bin -t \
+		"$subpkgdir/lib/firmware/qca/"
 }
 
 cdsp() {
