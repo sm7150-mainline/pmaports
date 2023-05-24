@@ -1,0 +1,36 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-pine
+pkgdesc="Xiaomi Redmi 7A"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-xiaomi-pine
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Proprietary firmware"
+	depends="firmware-xiaomi-pine"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+ec6735d85de4cc3754d64324674ff339a2d7285531c11e8b79fcee44a227748762f63249a30f66338faaf6daa71cf5a472544c9d18a4afd8c7d82a47fbd125d1  deviceinfo
+"

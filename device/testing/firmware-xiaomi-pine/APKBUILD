@@ -1,0 +1,31 @@
+pkgname=firmware-xiaomi-pine
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Redmi 7A"
+url="https://github.com/dburkov05/firmware-xiaomi-pine"
+arch="aarch64"
+depends="wcnss-wlan"
+license="proprietary"
+options="!strip !check !archcheck"
+
+_commit="be929cc62c8d8150f0a4806aa2af059c6fb4e31e"
+
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit.tar.gz"
+
+package() {
+	cd "$srcdir/$pkgname-$_commit"
+
+	for _i in $(ls -p | grep -v /); do
+		install -D -m644 "$_i" \
+			"$pkgdir/lib/firmware/postmarketos/$_i"
+	done
+
+
+	for _i in $(ls -p "wlan/prima" | grep -v /); do
+		install -D -m644 "wlan/prima/$_i" \
+			"$pkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
+	done
+}
+sha512sums="
+d5ea67d08e39b55c786137fd5a1ead047810b2a352b8b08c8c0a36f1ee81ad28a4a900868de67efff98fbc195d184f772b2ca6e53efef2319d6c3c1f863350e3  firmware-xiaomi-pine-be929cc62c8d8150f0a4806aa2af059c6fb4e31e.tar.gz
+"
