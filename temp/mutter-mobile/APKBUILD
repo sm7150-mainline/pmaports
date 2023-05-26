@@ -2,7 +2,7 @@
 
 pkgname=mutter-mobile
 pkgver=44_git20230405
-pkgrel=0
+pkgrel=1
 pkgdesc="clutter-based window manager and compositor"
 url="https://wiki.gnome.org/Projects/Mutter/"
 # ricsv64: doesn't build currently:
@@ -71,6 +71,12 @@ source="mutter-$_commit.tar.gz::https://gitlab.gnome.org/verdre/mutter/-/archive
 	pcversion.patch
 	"
 builddir="$srcdir/mutter-$_commit"
+
+prepare() {
+	default_prepare
+
+	sed -i "s/libmutter_api_version = '.*'/libmutter_api_version = '99'/g" meson.build
+}
 
 build() {
 	abuild-meson \
