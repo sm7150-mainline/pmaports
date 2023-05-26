@@ -2,7 +2,7 @@
 
 pkgname=gnome-shell-mobile
 pkgver=44_git20230405
-pkgrel=0
+pkgrel=1
 pkgdesc="GNOME shell"
 url="https://wiki.gnome.org/Projects/GnomeShell"
 arch="all !armhf !s390x !riscv64" # gjs / riscv64: mutter-mobile
@@ -80,6 +80,8 @@ prepare() {
 	default_prepare
 	rm -rf "$builddir/subprojects/gvc"
 	mv "$srcdir/libgnome-volume-control-$_gvc_commit" $builddir/subprojects/gvc
+
+	sed -i "s/mutter_api_version = '.*'/mutter_api_version = '99'/g" meson.build
 }
 
 build() {
