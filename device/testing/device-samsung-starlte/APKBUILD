@@ -1,0 +1,61 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-starlte
+pkgdesc="Samsung Galaxy S9"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-samsung-starlte
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	initfs-hook.sh
+	hciattach
+	10-hciattach.rules
+	10-logind-check-graphical.conf
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-x11
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi and BT firmware"
+	depends="firmware-samsung-crownlte bluez-deprecated"
+
+	# hciattach service for Bluetooth
+	mkdir "$subpkgdir"
+	install -Dm755 "$srcdir"/hciattach \
+		-t "$subpkgdir"/etc/init.d
+	install -Dm644 "$srcdir"/10-hciattach.rules \
+		-t "$subpkgdir"/etc/udev/rules.d
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	depends="xf86-input-evdev"
+	install -Dm644 "$srcdir"/10-logind-check-graphical.conf \
+		-t "$subpkgdir"/usr/share/lightdm/lightdm.conf.d
+}
+sha512sums="
+6607d9160a6ec5a444d12efdbd60e2e351808065d381c0b13a47e7f881b04807139a3646567462fcde55aa66708b1b6186716dda284808919217280939d337d7  deviceinfo
+cec13a1cb076a249eb94d11fb122b1f6b0c3e9558a2ed3c8da3e73a8e2db633131ec8ce838e62da8f53b5500dcb77c6f4adf3c1d2f1cda6fd23cb2ca1ccf6abc  initfs-hook.sh
+70c4d3b7af9e58729b5caca87c6c0032675c4adfd3852b0e3fc1f866675d503c4f08d3edaf1b1949bf15344840222c1a7ba00384c290fa5e1b7742e1198855a8  hciattach
+58f72bb12532ce23782389bf9e9eb8eb8afe004dd46d11d48b21b6da6a84660846f79d528d9968a1c1be57716577035fd0da59b3fcda4f197599e92f243dbb45  10-hciattach.rules
+00addbea452dd3e2cb90e18793becc47d22118e6b99a79b76eb57db02aa8b00b133569beaea81cce4b39c9e556280c1d6ac8ab687016354e2d189734e38768cf  10-logind-check-graphical.conf
+"
