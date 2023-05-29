@@ -38,3 +38,10 @@ if grep -qr '/usr/share/postmarketos-mkinitfs' -- *; then
 	grep --color=always -r '/usr/share/postmarketos-mkinitfs' -- *
 	exit 1
 fi
+
+# Direct sourcing of deviceinfo
+if grep --exclude='source_deviceinfo' -qEr 'source /etc/deviceinfo|\. /etc/deviceinfo' -- *; then
+	echo 'ERROR: Please source the source_deviceinfo script instead of sourcing deviceinfo directly!'
+	grep --color=always --exclude='rootfs-usr-share-misc-source_deviceinfo' -Er 'source /etc/deviceinfo|\. /etc/deviceinfo' -- *
+	exit 1
+fi
