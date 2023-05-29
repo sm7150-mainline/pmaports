@@ -20,7 +20,7 @@ if [ "$deviceinfo" = "true" ]; then
 	deviceinfo_getty=""
 
 	# shellcheck disable=SC1091
-	. /etc/deviceinfo
+	. /usr/share/misc/source_deviceinfo
 
 	if [ -n "${deviceinfo_getty}" ]; then
 		port=$(echo "${deviceinfo_getty}" | cut -s -d ";" -f 1)
