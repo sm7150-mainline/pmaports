@@ -6,7 +6,7 @@ set -e
 deviceinfo_append_dtb=""
 
 # shellcheck disable=SC1091
-. /etc/deviceinfo
+. /usr/share/misc/source_deviceinfo
 
 # On A/B devices with bootloader cmdline ON this will return the slot suffix
 # if booting with an alternate method which erases the stock bootloader cmdline
