@@ -1,12 +1,11 @@
-# Reference: <https://postmarketos.org/vendorkernel>
 # Maintainer: Newbyte <newbyte@disroot.org>
 # Kernel config based on: arch/arm/configs/u8500_defconfig
 
 _flavor="postmarketos-stericsson"
 _config="config-$_flavor.armv7"
 pkgname=linux-$_flavor
-pkgver=6.1
-pkgrel=1
+pkgver=6.3.5
+pkgrel=0
 pkgdesc="Mainline kernel for ST-Ericsson NovaThor devices"
 arch="armv7"
 _carch="arm"
@@ -38,7 +37,7 @@ esac
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
 	config-$_flavor.armv7
-	0001-Disable-busy-detect-on-Ux500-MMCI.patch
+	0001-fix-busydetect-ux500.patch
 	0002-pwm-ab8500-Get-HW-ID-from-reg-value.patch
 	"
 builddir="$srcdir/linux-${_kernver//_/-}"
@@ -50,10 +49,8 @@ prepare() {
 
 build() {
 	unset LDFLAGS
-	# V=1: workaround for pma#1990
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION=$((pkgrel + 1 )) \
-		V=1
+		KBUILD_BUILD_VERSION=$((pkgrel + 1 ))
 }
 
 package() {
@@ -70,8 +67,8 @@ package() {
 }
 
 sha512sums="
-6ed2a73c2699d0810e54753715635736fc370288ad5ce95c594f2379959b0e418665cd71bc512a0273fe226fe90074d8b10d14c209080a6466498417a4fdda68  linux-6.1.tar.xz
-a84a5fbd68f8d68ab92a8c181eeec65309a5f062b93e3b5b143aa0adc4201bfb4d2f7daafa55d31ce593cf73b3bb9251ace9a02848f0c236e53861d12f2692f6  config-postmarketos-stericsson.armv7
-2850f2c7a4405ed13c6ae18c97a1e8b3b0be545fb517a0b692666e559efdc00981a177f556c4c8fb6c8115d1c29674b6487a10700d9c30317ffb8d953c595281  0001-Disable-busy-detect-on-Ux500-MMCI.patch
+91a98c56191645c4ba32f657da59b6be92021b37a698eaf79e1ed3a79b959626386e7b69c8cb0c9eab0645c287a3e53393b1710158eca67b2f66a8d3eaec13de  linux-6.3.5.tar.xz
+16c4b7327fce72d9c05c669fffb8ace4bf51c3093f2167383ee638dc3f26b11ffb50567030443b43fd5903b1284effdab10e64d007c2c06793743dbd46780c87  config-postmarketos-stericsson.armv7
+10df6cacbed7b76d23a879aea4b9913b22551a6e4f9cd49814f491af4b8121dccbae4b3f1400584917f071355bdcd298f900b712ce31905c4ec561247dbb14e0  0001-fix-busydetect-ux500.patch
 3abf1a2b28077a2784c33f468facf44c2312f8bb54422463cffcb92a0eaa1f8954f1fa5f8f5acac0262495c08692a2161325c1ca68f7d23aecb36c1f9138d7ef  0002-pwm-ab8500-Get-HW-ID-from-reg-value.patch
 "

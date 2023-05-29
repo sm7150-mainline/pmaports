@@ -1,0 +1,1146 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 1/12] mmc: mmci: Clear busy_status when starting command
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:22 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-1-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+If we are starting a command which can generate a busy
+response, then clear the variable host->busy_status
+if the variant is using a ->busy_complete callback.
+
+We are lucky that the member is zero by default and
+hopefully always gets cleared in the ->busy_complete
+callback even on errors, but it's just fragile so
+make sure it is always initialized to zero.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Unconditionally clear host->busy_status if we get a
+  busy response.
+---
+ drivers/mmc/host/mmci.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index b9e5dfe74e5c..9b48df842425 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -1238,17 +1238,21 @@ mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
+ 			c |= host->variant->cmdreg_srsp;
+ 	}
+ 
+-	if (host->variant->busy_timeout && cmd->flags & MMC_RSP_BUSY) {
+-		if (!cmd->busy_timeout)
+-			cmd->busy_timeout = 10 * MSEC_PER_SEC;
++	if (cmd->flags & MMC_RSP_BUSY) {
++		host->busy_status = 0;
+ 
+-		if (cmd->busy_timeout > host->mmc->max_busy_timeout)
+-			clks = (unsigned long long)host->mmc->max_busy_timeout * host->cclk;
+-		else
+-			clks = (unsigned long long)cmd->busy_timeout * host->cclk;
++		if (host->variant->busy_timeout) {
++			if (!cmd->busy_timeout)
++				cmd->busy_timeout = 10 * MSEC_PER_SEC;
+ 
+-		do_div(clks, MSEC_PER_SEC);
+-		writel_relaxed(clks, host->base + MMCIDATATIMER);
++			if (cmd->busy_timeout > host->mmc->max_busy_timeout)
++				clks = (unsigned long long)host->mmc->max_busy_timeout * host->cclk;
++			else
++				clks = (unsigned long long)cmd->busy_timeout * host->cclk;
++
++			do_div(clks, MSEC_PER_SEC);
++			writel_relaxed(clks, host->base + MMCIDATATIMER);
++		}
+ 	}
+ 
+ 	if (host->ops->pre_sig_volt_switch && cmd->opcode == SD_SWITCH_VOLTAGE)
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 2/12] mmc: mmci: Unwind big if() clause
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:23 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-2-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This does two things: firsr replace the hard-to-read long
+if-expression:
+
+  if (!host->busy_status && !(status & err_msk) &&
+      (readl(base + MMCISTATUS) & host->variant->busy_detect_flag)) {
+
+With the more readable:
+
+  if (!host->busy_status && !(status & err_msk)) {
+     status = readl(base + MMCISTATUS);
+     if (status & host->variant->busy_detect_flag) {
+
+Second notice that the re-read MMCISTATUS register is now
+stored into the status variable, using logic OR because what
+if something else changed too?
+
+While we are at it, explain what the function is doing.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Only assign the cached status in host->busy_status if
+  we have busy detect signalling going on.
+---
+ drivers/mmc/host/mmci.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 9b48df842425..8496df2020d9 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -654,6 +654,13 @@ static u32 ux500v2_get_dctrl_cfg(struct mmci_host *host)
+ 	return MCI_DPSM_ENABLE | (host->data->blksz << 16);
+ }
+ 
++/*
++ * ux500_busy_complete() - this will wait until the busy status
++ * goes off, saving any status that occur in the meantime into
++ * host->busy_status until we know the card is not busy any more.
++ * The function returns true when the busy detection is ended
++ * and we should continue processing the command.
++ */
+ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ {
+ 	void __iomem *base = host->base;
+@@ -671,14 +678,16 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * while, to allow it to be set, but tests indicates that it
+ 	 * isn't needed.
+ 	 */
+-	if (!host->busy_status && !(status & err_msk) &&
+-	    (readl(base + MMCISTATUS) & host->variant->busy_detect_flag)) {
+-		writel(readl(base + MMCIMASK0) |
+-		       host->variant->busy_detect_mask,
+-		       base + MMCIMASK0);
++	if (!host->busy_status && !(status & err_msk)) {
++		status = readl(base + MMCISTATUS);
++		if (status & host->variant->busy_detect_flag) {
++			writel(readl(base + MMCIMASK0) |
++			       host->variant->busy_detect_mask,
++			       base + MMCIMASK0);
+ 
+-		host->busy_status = status & (MCI_CMDSENT | MCI_CMDRESPEND);
+-		return false;
++			host->busy_status = status & (MCI_CMDSENT | MCI_CMDRESPEND);
++			return false;
++		}
+ 	}
+ 
+ 	/*
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 3/12] mmc: mmci: Stash status while waiting for busy
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:24 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-3-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Some interesting flags can arrive while we are waiting for
+the first busy detect IRQ so OR then onto the stashed
+flags so they are not missed.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 8496df2020d9..e742dedaca1a 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -703,6 +703,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 */
+ 	if (host->busy_status &&
+ 	    (status & host->variant->busy_detect_flag)) {
++		host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 		return false;
+ 	}
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 4/12] mmc: mmci: Break out error check in busy detect
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:25 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-4-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The busy detect callback for Ux500 checks for an error
+in the status in the first if() clause. The only practical
+reason is that if an error occurs, the if()-clause is not
+executed, and the code falls through to the last
+if()-clause if (host->busy_status) which will clear and
+disable the irq. Make this explicit instead: it is easier
+to read.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index e742dedaca1a..7d42625f2356 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -665,6 +665,15 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ {
+ 	void __iomem *base = host->base;
+ 
++	if (status & err_msk) {
++		/* Stop any ongoing busy detection if an error occurs */
++		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++		writel(readl(base + MMCIMASK0) &
++		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
++		host->busy_status = 0;
++		return true;
++	}
++
+ 	/*
+ 	 * Before unmasking for the busy end IRQ, confirm that the
+ 	 * command was sent successfully. To keep track of having a
+@@ -678,7 +687,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * while, to allow it to be set, but tests indicates that it
+ 	 * isn't needed.
+ 	 */
+-	if (!host->busy_status && !(status & err_msk)) {
++	if (!host->busy_status) {
+ 		status = readl(base + MMCISTATUS);
+ 		if (status & host->variant->busy_detect_flag) {
+ 			writel(readl(base + MMCIMASK0) |
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 5/12] mmc: mmci: Make busy complete state machine
+ explicit
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:26 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-5-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This refactors the ->busy_complete() callback currently
+only used by Ux500 to handle busy detection on hardware
+where one and the same IRQ is fired whether we get a
+start or an end signal on busy detect.
+
+The code is currently using the cached status from the
+command IRQ in ->busy_status as a state to select what to
+do next: if this state is non-zero we are waiting for
+IRQs and if it is zero we treat the state as the starting
+point for a busy detect wait cycle.
+
+Make this explicit by creating a state machine where the
+->busy_complete callback moves between four states:
+MMCI_BUSY_NOT_STARTED, MMCI_BUSY_WAITING_FOR_IRQS,
+MMCI_BUSY_START_IRQ and MMCI_BUSY_END_IRQ.
+
+The code currently assumes this order: we enable the busy
+detect IRQ, get a busy start IRQ, then a busy end IRQ, and
+then we clear and mask this IRQ and proceed.
+
+We insert dev_err() prints for unexpected states.
+
+Augment the STM32 driver with similar states for
+completeness.
+
+This works as before on most cards, however on a
+problematic card that is not working with busy detect, and
+which I have been debugging, this happens:
+
+[127220.662719] mmci-pl18x 80005000.mmc: lost busy status
+		when waiting for busy end IRQ
+
+This probably means that the busy detect start IRQ has
+already occurred when we start executing the
+->busy_complete() callbacks, and the busy detect end IRQ
+is counted as the start IRQ, and this is what is causing
+the card to not be detected properly.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c             | 55 +++++++++++++++++++++++++++++++------
+ drivers/mmc/host/mmci.h             | 16 +++++++++++
+ drivers/mmc/host/mmci_stm32_sdmmc.c |  6 +++-
+ 3 files changed, 68 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 7d42625f2356..887b83e392a4 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -670,6 +670,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 		writel(readl(base + MMCIMASK0) &
+ 		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
++		host->busy_state = MMCI_BUSY_DONE;
+ 		host->busy_status = 0;
+ 		return true;
+ 	}
+@@ -687,7 +688,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * while, to allow it to be set, but tests indicates that it
+ 	 * isn't needed.
+ 	 */
+-	if (!host->busy_status) {
++	if (host->busy_state == MMCI_BUSY_IDLE) {
+ 		status = readl(base + MMCISTATUS);
+ 		if (status & host->variant->busy_detect_flag) {
+ 			writel(readl(base + MMCIMASK0) |
+@@ -695,6 +696,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			       base + MMCIMASK0);
+ 
+ 			host->busy_status = status & (MCI_CMDSENT | MCI_CMDRESPEND);
++			host->busy_state = MMCI_BUSY_WAITING_FOR_IRQS;
+ 			return false;
+ 		}
+ 	}
+@@ -710,11 +712,40 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * both the start and the end interrupts needs to be cleared,
+ 	 * one after the other. So, clear the busy start IRQ here.
+ 	 */
+-	if (host->busy_status &&
+-	    (status & host->variant->busy_detect_flag)) {
+-		host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+-		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+-		return false;
++	if (host->busy_state == MMCI_BUSY_WAITING_FOR_IRQS) {
++		if (status & host->variant->busy_detect_flag) {
++			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
++			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++			host->busy_state = MMCI_BUSY_START_IRQ;
++			return false;
++		} else {
++			dev_dbg(mmc_dev(host->mmc),
++				"lost busy status when waiting for busy start IRQ\n");
++			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++			writel(readl(base + MMCIMASK0) &
++			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
++			host->busy_state = MMCI_BUSY_DONE;
++			host->busy_status = 0;
++			return true;
++		}
++	}
++
++	if (host->busy_state == MMCI_BUSY_START_IRQ) {
++		if (status & host->variant->busy_detect_flag) {
++			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
++			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++			host->busy_state = MMCI_BUSY_END_IRQ;
++			return false;
++		} else {
++			dev_dbg(mmc_dev(host->mmc),
++				"lost busy status when waiting for busy end IRQ\n");
++			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++			writel(readl(base + MMCIMASK0) &
++			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
++			host->busy_state = MMCI_BUSY_DONE;
++			host->busy_status = 0;
++			return true;
++		}
+ 	}
+ 
+ 	/*
+@@ -723,11 +754,18 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * the busy end IRQ. Clear and mask the IRQ, then continue to
+ 	 * process the command.
+ 	 */
+-	if (host->busy_status) {
+-		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++	if (host->busy_state == MMCI_BUSY_END_IRQ) {
++		if (status & host->variant->busy_detect_flag) {
++			/* We should just get two IRQs for busy detect */
++			dev_err(mmc_dev(host->mmc), "spurious busy detect IRQ\n");
++			return false;
++		}
+ 
++		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 		writel(readl(base + MMCIMASK0) &
+ 		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
++
++		host->busy_state = MMCI_BUSY_DONE;
+ 		host->busy_status = 0;
+ 	}
+ 
+@@ -1258,6 +1296,7 @@ mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
+ 	}
+ 
+ 	if (cmd->flags & MMC_RSP_BUSY) {
++		host->busy_state = MMCI_BUSY_IDLE;
+ 		host->busy_status = 0;
+ 
+ 		if (host->variant->busy_timeout) {
+diff --git a/drivers/mmc/host/mmci.h b/drivers/mmc/host/mmci.h
+index e1a9b96a3396..82f3850325c8 100644
+--- a/drivers/mmc/host/mmci.h
++++ b/drivers/mmc/host/mmci.h
+@@ -261,6 +261,21 @@ struct clk;
+ struct dma_chan;
+ struct mmci_host;
+ 
++/**
++ * enum mmci_busy_state - enumerate the busy detect wait states
++ *
++ * This is used for the state machine waiting for different busy detect
++ * interrupts on hardware that fire a single IRQ for start and end of
++ * the busy detect phase on DAT0.
++ */
++enum mmci_busy_state {
++	MMCI_BUSY_IDLE,
++	MMCI_BUSY_WAITING_FOR_IRQS,
++	MMCI_BUSY_START_IRQ,
++	MMCI_BUSY_END_IRQ,
++	MMCI_BUSY_DONE,
++};
++
+ /**
+  * struct variant_data - MMCI variant-specific quirks
+  * @clkreg: default value for MCICLOCK register
+@@ -409,6 +424,7 @@ struct mmci_host {
+ 	u32			clk_reg;
+ 	u32			clk_reg_add;
+ 	u32			datactrl_reg;
++	enum mmci_busy_state	busy_state;
+ 	u32			busy_status;
+ 	u32			mask1_reg;
+ 	u8			vqmmc_enabled:1;
+diff --git a/drivers/mmc/host/mmci_stm32_sdmmc.c b/drivers/mmc/host/mmci_stm32_sdmmc.c
+index 60bca78a72b1..24831a1092b2 100644
+--- a/drivers/mmc/host/mmci_stm32_sdmmc.c
++++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
+@@ -393,8 +393,10 @@ static bool sdmmc_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	busy_d0 = sdmmc_status & MCI_STM32_BUSYD0;
+ 
+ 	/* complete if there is an error or busy_d0end */
+-	if ((status & err_msk) || busy_d0end)
++	if ((status & err_msk) || busy_d0end) {
++		host->busy_state = MMCI_BUSY_DONE;
+ 		goto complete;
++	}
+ 
+ 	/*
+ 	 * On response the busy signaling is reflected in the BUSYD0 flag.
+@@ -408,6 +410,7 @@ static bool sdmmc_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			host->busy_status = status &
+ 				(MCI_CMDSENT | MCI_CMDRESPEND);
+ 		}
++		host->busy_state = MMCI_BUSY_END_IRQ;
+ 		return false;
+ 	}
+ 
+@@ -416,6 +419,7 @@ static bool sdmmc_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		writel_relaxed(mask & ~host->variant->busy_detect_mask,
+ 			       base + MMCIMASK0);
+ 		host->busy_status = 0;
++		host->busy_state = MMCI_BUSY_DONE;
+ 	}
+ 
+ 	writel_relaxed(host->variant->busy_detect_mask, base + MMCICLEAR);
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 6/12] mmc: mmci: Retry the busy start condition
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:27 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-6-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This makes the ux500 ->busy_complete() callback re-read
+the status register 10 times while waiting for the busy
+signal to assert in the status register.
+
+If this does not happen, we bail out regarding the
+command completed already, i.e. before we managed to
+start to check the busy status.
+
+There is a comment in the code about this, let's just
+implement it to be certain that we can catch this glitch
+if it happens.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Move over the initial saving of host->busy_status from
+  an unrelated patch to this one: it is clear what we are
+  doing: we don't want to miss any transient
+  (MCI_CMDSENT | MCI_CMDRESPEND) in the status register.
+---
+ drivers/mmc/host/mmci.c | 40 ++++++++++++++++++++++++++++------------
+ 1 file changed, 28 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 887b83e392a4..590703075bbc 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -664,6 +664,7 @@ static u32 ux500v2_get_dctrl_cfg(struct mmci_host *host)
+ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ {
+ 	void __iomem *base = host->base;
++	int retries = 10;
+ 
+ 	if (status & err_msk) {
+ 		/* Stop any ongoing busy detection if an error occurs */
+@@ -684,21 +685,36 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * Note that, the card may need a couple of clock cycles before
+ 	 * it starts signaling busy on DAT0, hence re-read the
+ 	 * MMCISTATUS register here, to allow the busy bit to be set.
+-	 * Potentially we may even need to poll the register for a
+-	 * while, to allow it to be set, but tests indicates that it
+-	 * isn't needed.
+ 	 */
+ 	if (host->busy_state == MMCI_BUSY_IDLE) {
+-		status = readl(base + MMCISTATUS);
+-		if (status & host->variant->busy_detect_flag) {
+-			writel(readl(base + MMCIMASK0) |
+-			       host->variant->busy_detect_mask,
+-			       base + MMCIMASK0);
+-
+-			host->busy_status = status & (MCI_CMDSENT | MCI_CMDRESPEND);
+-			host->busy_state = MMCI_BUSY_WAITING_FOR_IRQS;
+-			return false;
++		/*
++		 * Save the first status register read to be sure to catch
++		 * all bits that may be lost will retrying. If the command
++		 * is still busy this will result in assigning 0 to
++		 * host->busy_status, which is what it should be in IDLE.
++		 */
++		host->busy_status = status & (MCI_CMDSENT | MCI_CMDRESPEND);
++		while (retries) {
++			status = readl(base + MMCISTATUS);
++			if (status & host->variant->busy_detect_flag) {
++				writel(readl(base + MMCIMASK0) |
++				       host->variant->busy_detect_mask,
++				       base + MMCIMASK0);
++
++				/* Keep accumulating status bits */
++				host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
++				host->busy_state = MMCI_BUSY_WAITING_FOR_IRQS;
++				return false;
++			}
++			retries--;
+ 		}
++		dev_dbg(mmc_dev(host->mmc), "no busy signalling in time\n");
++		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++		writel(readl(base + MMCIMASK0) &
++		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
++		host->busy_state = MMCI_BUSY_DONE;
++		host->busy_status = 0;
++		return true;
+ 	}
+ 
+ 	/*
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 7/12] mmc: mmci: Use state machine state as exit
+ condition
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:28 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-7-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Return true if and only if we reached the state
+MMCI_BUSY_DONE in the ux500 ->busy_complete() callback.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 590703075bbc..2689c6bb62d6 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -673,7 +673,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+ 		host->busy_state = MMCI_BUSY_DONE;
+ 		host->busy_status = 0;
+-		return true;
++		goto out_ret_state;
+ 	}
+ 
+ 	/*
+@@ -704,7 +704,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 				/* Keep accumulating status bits */
+ 				host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 				host->busy_state = MMCI_BUSY_WAITING_FOR_IRQS;
+-				return false;
++				goto out_ret_state;
+ 			}
+ 			retries--;
+ 		}
+@@ -713,8 +713,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		writel(readl(base + MMCIMASK0) &
+ 		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+ 		host->busy_state = MMCI_BUSY_DONE;
+-		host->busy_status = 0;
+-		return true;
++		goto out_ret_state;
+ 	}
+ 
+ 	/*
+@@ -733,7 +732,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 			host->busy_state = MMCI_BUSY_START_IRQ;
+-			return false;
++			goto out_ret_state;
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy start IRQ\n");
+@@ -742,7 +741,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+ 			host->busy_state = MMCI_BUSY_DONE;
+ 			host->busy_status = 0;
+-			return true;
++			goto out_ret_state;
+ 		}
+ 	}
+ 
+@@ -751,7 +750,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 			host->busy_state = MMCI_BUSY_END_IRQ;
+-			return false;
++			goto out_ret_state;
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy end IRQ\n");
+@@ -760,7 +759,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+ 			host->busy_state = MMCI_BUSY_DONE;
+ 			host->busy_status = 0;
+-			return true;
++			goto out_ret_state;
+ 		}
+ 	}
+ 
+@@ -774,7 +773,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		if (status & host->variant->busy_detect_flag) {
+ 			/* We should just get two IRQs for busy detect */
+ 			dev_err(mmc_dev(host->mmc), "spurious busy detect IRQ\n");
+-			return false;
++			goto out_ret_state;
+ 		}
+ 
+ 		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+@@ -783,9 +782,13 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 
+ 		host->busy_state = MMCI_BUSY_DONE;
+ 		host->busy_status = 0;
++	} else {
++		dev_dbg(mmc_dev(host->mmc), "fell through on state %d\n",
++			host->busy_state);
+ 	}
+ 
+-	return true;
++out_ret_state:
++	return (host->busy_state == MMCI_BUSY_DONE);
+ }
+ 
+ /*
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 8/12] mmc: mmci: Use a switch statement machine
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:29 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-8-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+As is custom, use a big switch statement to transition
+between the edges of the state machine inside
+the ux500 ->busy_complete callback.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c | 34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 2689c6bb62d6..76d885d7e49f 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -676,6 +676,12 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		goto out_ret_state;
+ 	}
+ 
++	/*
++	 * The state transitions are encoded in a state machine crossing
++	 * the edges in this switch statement.
++	 */
++	switch (host->busy_state) {
++
+ 	/*
+ 	 * Before unmasking for the busy end IRQ, confirm that the
+ 	 * command was sent successfully. To keep track of having a
+@@ -686,7 +692,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * it starts signaling busy on DAT0, hence re-read the
+ 	 * MMCISTATUS register here, to allow the busy bit to be set.
+ 	 */
+-	if (host->busy_state == MMCI_BUSY_IDLE) {
++	case MMCI_BUSY_IDLE:
+ 		/*
+ 		 * Save the first status register read to be sure to catch
+ 		 * all bits that may be lost will retrying. If the command
+@@ -713,8 +719,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		writel(readl(base + MMCIMASK0) &
+ 		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+ 		host->busy_state = MMCI_BUSY_DONE;
+-		goto out_ret_state;
+-	}
++		break;
+ 
+ 	/*
+ 	 * If there is a command in-progress that has been successfully
+@@ -727,12 +732,11 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * both the start and the end interrupts needs to be cleared,
+ 	 * one after the other. So, clear the busy start IRQ here.
+ 	 */
+-	if (host->busy_state == MMCI_BUSY_WAITING_FOR_IRQS) {
++	case MMCI_BUSY_WAITING_FOR_IRQS:
+ 		if (status & host->variant->busy_detect_flag) {
+ 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 			host->busy_state = MMCI_BUSY_START_IRQ;
+-			goto out_ret_state;
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy start IRQ\n");
+@@ -741,16 +745,14 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+ 			host->busy_state = MMCI_BUSY_DONE;
+ 			host->busy_status = 0;
+-			goto out_ret_state;
+ 		}
+-	}
++		break;
+ 
+-	if (host->busy_state == MMCI_BUSY_START_IRQ) {
++	case MMCI_BUSY_START_IRQ:
+ 		if (status & host->variant->busy_detect_flag) {
+ 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 			host->busy_state = MMCI_BUSY_END_IRQ;
+-			goto out_ret_state;
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy end IRQ\n");
+@@ -759,9 +761,8 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+ 			host->busy_state = MMCI_BUSY_DONE;
+ 			host->busy_status = 0;
+-			goto out_ret_state;
+ 		}
+-	}
++		break;
+ 
+ 	/*
+ 	 * If there is a command in-progress that has been successfully
+@@ -769,11 +770,10 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 	 * the busy end IRQ. Clear and mask the IRQ, then continue to
+ 	 * process the command.
+ 	 */
+-	if (host->busy_state == MMCI_BUSY_END_IRQ) {
++	case MMCI_BUSY_END_IRQ:
+ 		if (status & host->variant->busy_detect_flag) {
+ 			/* We should just get two IRQs for busy detect */
+ 			dev_err(mmc_dev(host->mmc), "spurious busy detect IRQ\n");
+-			goto out_ret_state;
+ 		}
+ 
+ 		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+@@ -782,9 +782,15 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 
+ 		host->busy_state = MMCI_BUSY_DONE;
+ 		host->busy_status = 0;
+-	} else {
++		break;
++
++	case MMCI_BUSY_DONE:
++		break;
++
++	default:
+ 		dev_dbg(mmc_dev(host->mmc), "fell through on state %d\n",
+ 			host->busy_state);
++		break;
+ 	}
+ 
+ out_ret_state:
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 9/12] mmc: mmci: Break out a helper function
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:30 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-9-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+These four lines clearing, masking and resetting the state
+of the busy detect state machine is repeated five times in
+the code so break this out to a small helper so things are
+easier to read.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c | 42 ++++++++++++++++--------------------------
+ 1 file changed, 16 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 76d885d7e49f..9a7f441ec9d6 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -654,6 +654,17 @@ static u32 ux500v2_get_dctrl_cfg(struct mmci_host *host)
+ 	return MCI_DPSM_ENABLE | (host->data->blksz << 16);
+ }
+ 
++static void ux500_busy_clear_mask_done(struct mmci_host *host)
++{
++	void __iomem *base = host->base;
++
++	writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++	writel(readl(base + MMCIMASK0) &
++	       ~host->variant->busy_detect_mask, base + MMCIMASK0);
++	host->busy_state = MMCI_BUSY_DONE;
++	host->busy_status = 0;
++}
++
+ /*
+  * ux500_busy_complete() - this will wait until the busy status
+  * goes off, saving any status that occur in the meantime into
+@@ -668,11 +679,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 
+ 	if (status & err_msk) {
+ 		/* Stop any ongoing busy detection if an error occurs */
+-		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+-		writel(readl(base + MMCIMASK0) &
+-		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+-		host->busy_state = MMCI_BUSY_DONE;
+-		host->busy_status = 0;
++		ux500_busy_clear_mask_done(host);
+ 		goto out_ret_state;
+ 	}
+ 
+@@ -715,10 +722,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			retries--;
+ 		}
+ 		dev_dbg(mmc_dev(host->mmc), "no busy signalling in time\n");
+-		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+-		writel(readl(base + MMCIMASK0) &
+-		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+-		host->busy_state = MMCI_BUSY_DONE;
++		ux500_busy_clear_mask_done(host);
+ 		break;
+ 
+ 	/*
+@@ -740,11 +744,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy start IRQ\n");
+-			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+-			writel(readl(base + MMCIMASK0) &
+-			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+-			host->busy_state = MMCI_BUSY_DONE;
+-			host->busy_status = 0;
++			ux500_busy_clear_mask_done(host);
+ 		}
+ 		break;
+ 
+@@ -756,11 +756,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy end IRQ\n");
+-			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+-			writel(readl(base + MMCIMASK0) &
+-			       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+-			host->busy_state = MMCI_BUSY_DONE;
+-			host->busy_status = 0;
++			ux500_busy_clear_mask_done(host);
+ 		}
+ 		break;
+ 
+@@ -775,13 +771,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			/* We should just get two IRQs for busy detect */
+ 			dev_err(mmc_dev(host->mmc), "spurious busy detect IRQ\n");
+ 		}
+-
+-		writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+-		writel(readl(base + MMCIMASK0) &
+-		       ~host->variant->busy_detect_mask, base + MMCIMASK0);
+-
+-		host->busy_state = MMCI_BUSY_DONE;
+-		host->busy_status = 0;
++		ux500_busy_clear_mask_done(host);
+ 		break;
+ 
+ 	case MMCI_BUSY_DONE:
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 10/12] mmc: mmci: mmci_card_busy() from state machine
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:31 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-10-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+If we have a .busy_complete() callback, then check if
+the state machine triggered from the busy detect interrupts
+is busy: then we are certainly busy.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Do this in a safer way that falls back to reading busy
+  status from the hardware if the state machine is NOT
+  busy.
+---
+ drivers/mmc/host/mmci.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 9a7f441ec9d6..180a7b719347 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -339,6 +339,12 @@ static int mmci_card_busy(struct mmc_host *mmc)
+ 	unsigned long flags;
+ 	int busy = 0;
+ 
++	/* If we are waiting for IRQs we are certainly busy */
++	if (host->ops->busy_complete &&
++	    host->busy_state != MMCI_BUSY_IDLE &&
++	    host->busy_state != MMCI_BUSY_DONE)
++		return 1;
++
+ 	spin_lock_irqsave(&host->lock, flags);
+ 	if (readl(host->base + MMCISTATUS) & host->variant->busy_detect_flag)
+ 		busy = 1;
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 11/12] mmc: mmci: Drop end IRQ from Ux500 busydetect
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:32 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-11-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The Ux500 has these state transition edges:
+
+IDLE -> WAITING_FOR_IRQS -> START_IRQ -> DONE
+
+The first IRQ move us from WAITING_FOR_IRQS to START_IRQ
+and the second IRQ moves us from START_IRQ to DONE.
+
+This didn't come out until after all refactoring.
+
+For STM32 we keep the END_IRQ state around, because that
+is indeed what we are waiting for in that case.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c | 16 +---------------
+ 1 file changed, 1 insertion(+), 15 deletions(-)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 180a7b719347..17233702e7fb 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -758,7 +758,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		if (status & host->variant->busy_detect_flag) {
+ 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+-			host->busy_state = MMCI_BUSY_END_IRQ;
++			ux500_busy_clear_mask_done(host);
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy end IRQ\n");
+@@ -766,20 +766,6 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		}
+ 		break;
+ 
+-	/*
+-	 * If there is a command in-progress that has been successfully
+-	 * sent and the busy bit isn't set, it means we have received
+-	 * the busy end IRQ. Clear and mask the IRQ, then continue to
+-	 * process the command.
+-	 */
+-	case MMCI_BUSY_END_IRQ:
+-		if (status & host->variant->busy_detect_flag) {
+-			/* We should just get two IRQs for busy detect */
+-			dev_err(mmc_dev(host->mmc), "spurious busy detect IRQ\n");
+-		}
+-		ux500_busy_clear_mask_done(host);
+-		break;
+-
+ 	case MMCI_BUSY_DONE:
+ 		break;
+ 
+-- 
+2.39.2
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 12/12] mmc: mmci: Add busydetect timeout
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 09 Apr 2023 00:00:33 +0200
+Message-Id: <20230405-pl180-busydetect-fix-v2-12-eeb10323b546@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Add a timeout for busydetect IRQs using a delayed work.
+It might happen (and does happen) on Ux500 that the first
+busy detect IRQ appears and not the second one. This will
+make the host hang indefinitely waiting for the second
+IRQ to appear.
+
+Fire a delayed work after 10ms and re-engage the command
+IRQ so the transaction finishes: we are certainly done
+at this point, or we will catch an error in the status
+register.
+
+This makes the eMMC work again on Skomer.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- No changes
+---
+ drivers/mmc/host/mmci.c | 23 +++++++++++++++++++++++
+ drivers/mmc/host/mmci.h |  1 +
+ 2 files changed, 24 insertions(+)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 17233702e7fb..1af129fba0ed 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -37,6 +37,7 @@
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/reset.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/workqueue.h>
+ 
+ #include <asm/div64.h>
+ #include <asm/io.h>
+@@ -747,6 +748,8 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
+ 			host->busy_state = MMCI_BUSY_START_IRQ;
++			schedule_delayed_work(&host->busy_timeout_work,
++					      msecs_to_jiffies(10));
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+ 				"lost busy status when waiting for busy start IRQ\n");
+@@ -758,6 +761,7 @@ static bool ux500_busy_complete(struct mmci_host *host, u32 status, u32 err_msk)
+ 		if (status & host->variant->busy_detect_flag) {
+ 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
+ 			writel(host->variant->busy_detect_mask, base + MMCICLEAR);
++			cancel_delayed_work_sync(&host->busy_timeout_work);
+ 			ux500_busy_clear_mask_done(host);
+ 		} else {
+ 			dev_dbg(mmc_dev(host->mmc),
+@@ -1498,6 +1502,22 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
+ 	}
+ }
+ 
++/*
++ * This busy timeout worker is used to "kick" the command IRQ if a
++ * busy detect IRQ fails to appear in reasonable time. Only used on
++ * variants with busy detection IRQ delivery.
++ */
++static void busy_timeout_work(struct work_struct *work)
++{
++	struct mmci_host *host =
++		container_of(work, struct mmci_host, busy_timeout_work.work);
++	u32 status;
++
++	dev_dbg(mmc_dev(host->mmc), "timeout waiting for busy IRQ\n");
++	status = readl(host->base + MMCISTATUS);
++	mmci_cmd_irq(host, host->cmd, status);
++}
++
+ static int mmci_get_rx_fifocnt(struct mmci_host *host, u32 status, int remain)
+ {
+ 	return remain - (readl(host->base + MMCIFIFOCNT) << 2);
+@@ -2311,6 +2331,9 @@ static int mmci_probe(struct amba_device *dev,
+ 			goto clk_disable;
+ 	}
+ 
++	if (host->variant->busy_detect && host->ops->busy_complete)
++		INIT_DELAYED_WORK(&host->busy_timeout_work, busy_timeout_work);
++
+ 	writel(MCI_IRQENABLE | variant->start_err, host->base + MMCIMASK0);
+ 
+ 	amba_set_drvdata(dev, mmc);
+diff --git a/drivers/mmc/host/mmci.h b/drivers/mmc/host/mmci.h
+index 82f3850325c8..68ce7ea4d3b2 100644
+--- a/drivers/mmc/host/mmci.h
++++ b/drivers/mmc/host/mmci.h
+@@ -453,6 +453,7 @@ struct mmci_host {
+ 	void			*dma_priv;
+ 
+ 	s32			next_cookie;
++	struct delayed_work	busy_timeout_work;
+ };
+ 
+ #define dma_inprogress(host)	((host)->dma_in_progress)
+-- 
+2.39.2
+
