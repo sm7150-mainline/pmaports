@@ -677,8 +677,3 @@ loop_forever() {
 		sleep 1
 	done
 }
-
-source_deviceinfo() {
-	# shellcheck disable=SC1091
-	. /etc/deviceinfo
-}
