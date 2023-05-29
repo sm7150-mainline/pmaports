@@ -6,8 +6,7 @@ set -e
 # Declare used deviceinfo variables to pass shellcheck
 deviceinfo_cgpt_kpart=""
 
-# shellcheck disable=SC1091
-. /etc/deviceinfo
+. /usr/share/misc/source_deviceinfo
 
 # shellcheck disable=SC2013
 for x in $(cat /proc/cmdline); do
