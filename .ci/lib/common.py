@@ -134,7 +134,7 @@ def get_changed_packages_sanity_check(count):
     print("ERROR: Too many packages have changed!")
     print()
     print("This is a sanity check, so we don't end up building packages that")
-    print("have not been modified. CI won't run for more than one hour")
+    print("have not been modified. CI won't run for more than three hours")
     print("anyway.")
     print()
     print("Your options:")
