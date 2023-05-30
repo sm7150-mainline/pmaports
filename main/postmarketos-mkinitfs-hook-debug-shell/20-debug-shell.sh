@@ -1,7 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC1091
 . ./init_functions.sh
-source_deviceinfo
+. /usr/share/misc/source_deviceinfo
 TELNET_PORT=23
 
 setup_usb_network
