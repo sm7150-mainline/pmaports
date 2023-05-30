@@ -1,7 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC1091
 . ./init_functions.sh
-source_deviceinfo
+. /usr/share/misc/source_deviceinfo
 NBD_PORT=9999
 NBD_IP=172.16.42.2
 NBD_BLOCK_SIZE=${deviceinfo_rootfs_image_sector_size:-512}
