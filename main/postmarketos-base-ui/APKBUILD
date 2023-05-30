@@ -1,6 +1,6 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
-pkgver=9
+pkgver=10
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
@@ -20,13 +20,14 @@ depends="
 	wpa_supplicant
 	"
 subpackages="
+	$pkgname-bluez
+	$pkgname-bluez-obexd:_obexd
 	$pkgname-elogind
+	$pkgname-networkmanager
 	$pkgname-openrc-settingsd:_openrc_settingsd
+	$pkgname-pulseaudio
 	$pkgname-tinydm
 	$pkgname-x11
-	$pkgname-pulseaudio
-	$pkgname-bluez-obexd:_obexd
-	$pkgname-networkmanager
 	postmarketos-default-camera:_default_camera
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
@@ -42,6 +43,7 @@ _source644="
 	etc/NetworkManager/conf.d/use-dnsmasq.conf
 	etc/NetworkManager/conf.d/tethering.conf
 	etc/chrony/chrony.conf
+	etc/conf.d/bluetooth
 	etc/conf.d/openrc-settingsd
 	etc/conf.d/tinydm
 	etc/conf.d/wpa_supplicant
@@ -91,6 +93,12 @@ x11() {
 		xf86-video-fbdev"
 	provides="postmarketos-base-x11=$pkgver-r$pkgrel"
 	amove etc/X11/Xwrapper.config
+}
+
+bluez() {
+	install_if="$pkgname=$pkgver-r$pkgrel bluez-openrc"
+
+	amove etc/conf.d/bluetooth
 }
 
 elogind() {
@@ -168,6 +176,7 @@ sha512sums="
 900554534191fa0797064d35350934cdd8af59f30f0ae7d8ec63c2e11c44a16c643d3024b6543940488cd590fec1d392548bcaacc3be88cddff90f69b17ece07  rootfs-etc-NetworkManager-conf.d-use-dnsmasq.conf
 6507eb31cdd694a7db0280246433118a650bf5d99fbe639f967ae2d95945429a7e03ca6feb5bb6e7b9fb14fcec21e13e51209a79edd0041e77b5bf76b129ed6f  rootfs-etc-NetworkManager-conf.d-tethering.conf
 e5d049db1d82c510bab9246208b51b8ec2711d008d67792fc10d4c0b65ed4dece7b5ae3c3dd28a8539d177b6849c1f921cb9fef3d2c7bee0355451f7b4757ec6  rootfs-etc-chrony-chrony.conf
+b841282b96110ec59a7aa539db0737327b09549d55c78dc4b2c3b28b4a6ad1facf015b3175cb6d3a38f13e47aa6314ef3dc1514a4e60dd653a97409ec54ba706  rootfs-etc-conf.d-bluetooth
 49fb494b659fe0149a93eafe109609acce6a470bb8acea160638d07e0e4b11af2544f34549d5ef2deb2914a7ef13d0d470b04ad62981f14f96999af02a5f24cf  rootfs-etc-conf.d-openrc-settingsd
 44e4283c6f77de83915977dd3bc2d8e2d96b3ed6cc68d3cc156304359ae649b5a8b0bac843e517ec6faa2066dd43ba85e313899b1eda04862f864fb9eb508aa0  rootfs-etc-conf.d-tinydm
 fe0651904c1f40ffa67d83daca190af199f63247e53642a59a1e1147cd06776fcf20b7b2fcc5373783d50b8bd6ce8d1354c8e5f4d582d319727b9ceefd1e8e16  rootfs-etc-conf.d-wpa_supplicant
