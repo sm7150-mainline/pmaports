@@ -1,6 +1,6 @@
 #!/bin/sh
 . ./init_functions.sh
-source_deviceinfo
+. /usr/share/misc/source_deviceinfo
 
 mount_loopback_device() {
 	loopback_img=postmarketOS.img
