@@ -3,7 +3,7 @@
 # Co-Maintainer: Alistair Francis <alistair@alistair23.me>
 # Co-Maintainer: Newbyte <newbyte@postmarketos.org>
 pkgname=device-purism-librem5
-pkgver=1.47
+pkgver=1.48
 pkgrel=0
 _confver=60
 _purismrel=1
@@ -15,7 +15,7 @@ license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
-	alsa-ucm-conf>=1.2.9
+	alsa-ucm-conf
 	gnss-share
 	i2c-tools
 	iw
@@ -57,6 +57,8 @@ subpackages="
 	$pkgname-usbguard
 	$pkgname-x11
 "
+# TODO: remove "replaces" when upstream ucm has proper L5 support...
+replaces="alsa-ucm-conf"
 install="$pkgname.post-install $pkgname.post-upgrade"
 
 builddir="$srcdir/librem5-base-pureos-$_purismver"
@@ -142,6 +144,16 @@ package() {
 
 	# Wifi / PM
 	install -Dm644 "$srcdir"/70-wifi-pm.rules -t "$pkgdir"/usr/lib/udev/rules.d/
+
+	# install audio config files from Purism
+	install -Dm644 "$builddir"/default/audio/ucm2/simple-card/Librem\ 5.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/NXP/iMX8/Librem_5/Librem\ 5.conf
+	install -Dm644 "$builddir"/default/audio/ucm2/simple-card/HiFi.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/NXP/iMX8/Librem_5/HiFi.conf
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card
+	# relative path seems to be required or else alsa-lib can't figure it out
+	ln -s ../../NXP/iMX8/Librem_5/Librem\ 5.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/Librem\ 5.conf
 
 	# ship mode service
 	install -Dm755 "$builddir"/default/shipmode/l5-poweroff-shipmode \

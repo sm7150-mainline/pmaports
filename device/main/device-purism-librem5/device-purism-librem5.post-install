@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Enable GPS support
-sed -i 's|# nmea-socket=/var/run/gps-share.sock|nmea-socket=/var/run/gnss-share.sock|' /etc/geoclue/geoclue.conf
-
 rc-update -qq del gpsd
 rc-update -q add gnss-share
 rc-update -q add l5-ship-mode shutdown
