@@ -2,7 +2,7 @@
 # Kernel config based on: arch/arm64/configs/pinenote_defconfig
 
 pkgname=linux-pine64-pinenote
-pkgver=5.17.0
+pkgver=6.2.0
 pkgrel=0
 pkgdesc="Pine64 PineNote close to mainline fork"
 arch="aarch64"
@@ -14,15 +14,14 @@ options="!strip !check !tracedeps pmb:cross-native"
 makedepends="bison findutils flex installkernel openssl-dev perl"
 
 # Source
-_repo="linux"
-_tag=20230119
 _config="config-$_flavor.$arch"
+_commit="e135fe39af47671ded230a8c92f6850a5985f0b6"
 
 source="
-	$pkgname-$_tag.tar.gz::https://github.com/m-weigand/$_repo/archive/refs/tags/v$_tag.tar.gz
+	$pkgname-$pkgver.tar.gz::https://github.com/m-weigand/linux/archive/$_commit.tar.gz
 	$_config
 "
-builddir="$srcdir/linux-$_tag"
+builddir="$srcdir/linux-$_commit"
 
 prepare() {
 	default_prepare
@@ -31,10 +30,8 @@ prepare() {
 
 build() {
 	unset LDFLAGS
-	# FIXME: Currently we need the verbose flag as the CI kills the build
-	# without any output in the console after 900s (pma#1990)
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" V=1
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
 }
 
 package() {
@@ -56,6 +53,6 @@ package() {
 }
 
 sha512sums="
-24cc2471ebae2ebef9321fe3fbda48f2aaf8161ae8480d429b506815ac165ed61f71e496001c62a4feac40785cb3f46111efa6f38f30397e1ee8df95a131bfcf  linux-pine64-pinenote-20230119.tar.gz
-ef85c30d1c9886297cdb56e758127dca26d06ae308e8e140bfa7c59ccd15d4947a6fd5c2d2bb4b15073d7c52bb0a4f5010eb66ec3067afd1d835c98b6e802ffa  config-pine64-pinenote.aarch64
+e127d44a19da6578528d23286d5c0b113e8dce0351d4e36471ba73a655de45864c0fda019459a07e0842d5375732c96d20ecde079b4ae678be5c2d5fb6944eb1  linux-pine64-pinenote-6.2.0.tar.gz
+bfb11501c04926efc6a2b6cc443aab2973d9ccd6107db870101f42ee1b046e6037a48b2dbf4f400e1850883f5f8a9d25f2dda0fcfc201df24c1f3f9aa42adf90  config-pine64-pinenote.aarch64
 "
