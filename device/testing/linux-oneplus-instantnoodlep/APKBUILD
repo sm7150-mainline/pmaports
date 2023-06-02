@@ -3,7 +3,7 @@
 
 pkgname=linux-oneplus-instantnoodlep
 pkgver=4.19.272
-pkgrel=0
+pkgrel=1
 pkgdesc="OnePlus 8 Pro kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -12,7 +12,6 @@ url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="
-	android-mkdtboimg
 	bash
 	bc
 	bison
@@ -53,7 +52,8 @@ prepare() {
 build() {
 	unset LDFLAGS
 	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		V=1
 }
 
 package() {
