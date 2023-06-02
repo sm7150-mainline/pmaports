@@ -3,7 +3,7 @@
 
 pkgname=linux-oneplus-kebab
 pkgver=4.19.110
-pkgrel=4
+pkgrel=5
 pkgdesc="OnePlus 8T kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -12,7 +12,7 @@ url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="
-	android-mkdtboimg
+	android-tools
 	bash
 	bc
 	bison
@@ -51,7 +51,8 @@ prepare() {
 build() {
 	unset LDFLAGS
 	make O="$_outdir" DTC_EXT="/usr/bin/dtc" ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		V=1
 }
 
 package() {
@@ -59,7 +60,7 @@ package() {
 		"$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
 
 	dtbodir="$builddir/$_outdir/arch/arm64/boot/dts/vendor/qcom"
-	mkdtimg create "$pkgdir/boot/dtbo.img" --page_size=4096 \
+	mkdtboimg create "$pkgdir/boot/dtbo.img" --page_size=4096 \
 		"$dtbodir/kebab-overlay.dtbo" \
 		"$dtbodir/instantnoodle-overlay-dvt.dtbo" \
 		"$dtbodir/instantnoodle-overlay-evt1.dtbo" \
