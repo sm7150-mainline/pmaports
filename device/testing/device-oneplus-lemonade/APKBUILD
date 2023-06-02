@@ -2,7 +2,7 @@
 pkgname=device-oneplus-lemonade
 pkgdesc="OnePlus 9 & 9 Pro"
 pkgver=0.2
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -16,7 +16,7 @@ depends="
 makedepends="
 	devicepkg-dev
 	dtc
-	android-mkdtimg
+	android-tools
 "
 source="
 	deviceinfo
@@ -32,7 +32,7 @@ build() {
 		"$srcdir/empty-oneplus-lemonade.dts"
 	dtc -O dtb -o "$srcdir/empty-oneplus-lemonadep.dtbo" -b 0 -@ \
 		"$srcdir/empty-oneplus-lemonadep.dts"
-	mkdtimg create "$srcdir/dtbo.img" --page_size=4096 \
+	mkdtboimg create "$srcdir/dtbo.img" --page_size=4096 \
 		"$srcdir/empty-oneplus-lemonade.dtbo" \
 		"$srcdir/empty-oneplus-lemonadep.dtbo"
 }
