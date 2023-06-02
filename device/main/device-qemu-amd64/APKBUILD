@@ -2,8 +2,8 @@
 # Maintainer: Minecrell <minecrell@minecrell.net>
 # Co-Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=device-qemu-amd64
-pkgver=3
-pkgrel=3
+pkgver=4
+pkgrel=0
 pkgdesc="Simulated device in QEMU (x86_64)"
 url="https://postmarketos.org"
 arch="x86_64"
@@ -11,6 +11,7 @@ license="MIT"
 depends="postmarketos-base"
 makedepends="devicepkg-dev"
 subpackages="
+	$pkgname-kernel-none:kernel_none
 	$pkgname-kernel-lts:kernel_lts
 	$pkgname-kernel-virt:kernel_virt
 	$pkgname-kernel-edge:kernel_edge
@@ -50,6 +51,11 @@ weston() {
 	install_if="$pkgname=$pkgver-r$pkgrel weston"
 	install -Dm644 "$srcdir"/weston.ini \
 		"$subpkgdir"/etc/xdg/weston/weston.ini
+}
+
+kernel_none() {
+	pkgdesc="No kernel (does not boot! can be used during pmbootstrap testing to save time)"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_virt() {
