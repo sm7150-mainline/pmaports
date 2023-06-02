@@ -4,7 +4,7 @@
 _flavor="postmarketos-mediatek-mt6763"
 pkgname=linux-$_flavor
 pkgver=6.1_rc5
-pkgrel=0
+pkgrel=1
 _commit="e5f07514a6172f194c8829c45965137ffa1834ea"
 pkgdesc="Mainline Kernel fork for MT6763-based devices"
 arch="aarch64"
@@ -16,7 +16,7 @@ options="!strip !check !tracedeps
 	pmb:cross-native
 "
 makedepends="
-	android-mkdtboimg
+	android-tools
 	bash
 	bison
 	findutils
@@ -43,7 +43,8 @@ prepare() {
 build() {
 	unset LDFLAGS
 	make ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1))-$_flavor"
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-$_flavor" \
+		V=1
 }
 
 package() {
@@ -59,7 +60,7 @@ package() {
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 
 	dtbodir="$builddir/$_outdir/arch/arm64/boot/dts/mediatek"
-	mkdtimg create "$pkgdir/boot/dtbo.img" \
+	mkdtboimg create "$pkgdir/boot/dtbo.img" \
 		"$dtbodir/mt6763v-volla-yggdrasil-minimal-dtbo.dtb"
 }
 
