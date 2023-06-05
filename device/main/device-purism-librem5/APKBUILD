@@ -3,7 +3,7 @@
 # Co-Maintainer: Alistair Francis <alistair@alistair23.me>
 # Co-Maintainer: Newbyte <newbyte@postmarketos.org>
 pkgname=device-purism-librem5
-pkgver=1.48
+pkgver=1.49
 pkgrel=0
 _confver=60
 _purismrel=1
@@ -46,6 +46,7 @@ source="
 	l5-lockdown-support.initd
 	0002-pm-udev-Use-DEVPATH-instead-of-ID_PATH.patch
 	0003-fix-ship-mode-linux-6.3.patch
+	modemmanager.conf
 "
 subpackages="
 	$pkgname-camera
@@ -170,6 +171,10 @@ package() {
 	install -Dm755 "$srcdir"/l5-lockdown-support.initd \
 		"$pkgdir"/etc/init.d/l5-lockdown-support
 
+	# Modem
+	install -Dm644 "$srcdir"/modemmanager.conf \
+		"$pkgdir"/etc/conf.d/modemmanager
+
 	devicepkg_package $startdir $pkgname
 }
 
@@ -198,4 +203,5 @@ c723764d507ccd4b04aa5ce79b1d1ebc131873cdc37a943cb0f92b8a08a3c69eb9e0d31fcd4589fd
 f4b314d553655f7975445ac0a33099923e20dabb082c07e2cf6a78e4118c143d777dd4ad2c09cbc388600bdefe8deb3073fbd15b238772ddf09c66ac46415590  l5-lockdown-support.initd
 f70597afb93ca5a8bf1ff2414d77616e3820bb187120b252142af3d586f69fc1e71b438112f3c9173c86e81172f6a855f54e040b26d2591a04ee3510458c58d1  0002-pm-udev-Use-DEVPATH-instead-of-ID_PATH.patch
 a075f3952dfdd4bcadc055f853b6d5206c5db4efcacfa27541653fd5a7daef6e753d6c7ed74fd1aad2a40837450fdac76fa04a61829e08bd938cc3548cbe8390  0003-fix-ship-mode-linux-6.3.patch
+e089b0c4320c8cb5a6bd1e85f12b6afb24d035958f2bdc7a8ed2cee5b0f379e6fdfad876d8d22c03c9cb0576b4aa7c20c3e9986ba8147500add6d93b44e5f266  modemmanager.conf
 "
