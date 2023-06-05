@@ -1,16 +1,17 @@
-# Maintainer: Olgierd "moondeck" Nowakowski <olgierd@novakovsky.eu>
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-artwork
-pkgver=2
-pkgrel=1
+pkgver=3
+pkgrel=0
 pkgdesc="Meta package for the postmarketOS artwork"
 url="https://postmarketos.org/"
 arch="noarch"
 license="CC-BY-SA-4.0"
-_hash="03553d4ab273d83c40a75e0355e3d93044897411"
+_hash="cebafc36eeb73bf135cd977dc6dc490f72876007"
 source="postmarketos-artwork-$_hash.tar.gz::https://gitlab.com/postmarketOS/artwork/-/archive/$_hash/artwork-$_hash.tar.gz"
 subpackages="
 	$pkgname-wallpapers
 	$pkgname-wallpapers-extra:wallpapers_extra
+	$pkgname-wallpapers-gnome:wallpapers_gnome
 	$pkgname-icons
 	$pkgname-sounds
 	"
@@ -44,6 +45,14 @@ wallpapers_extra() {
 		"$subpkgdir"/usr/share/wallpapers/pmos.jpg
 }
 
+wallpapers_gnome() {
+	pkgdesc="postmarketOS wallpapers for GNOME"
+	install -Dm644 "$srcdir"/artwork-$_hash/wallpapers/gnome/pmos-light.jpg \
+		"$subpkgdir"/usr/share/wallpapers/postmarketos-gnome-light.jpg
+	install -Dm644 "$srcdir"/artwork-$_hash/wallpapers/gnome/pmos-dark.jpg \
+		"$subpkgdir"/usr/share/wallpapers/postmarketos-gnome-dark.jpg
+}
+
 icons() {
 	pkgdesc="Icons for postmarketOS"
 	install -Dm644 "$srcdir"/artwork-$_hash/logo/logo.svg \
@@ -63,4 +72,6 @@ sounds() {
 		"$subpkgdir"/usr/share/sounds/postmarketOS/
 }
 
-sha512sums="2a9dc5738de6f79d81253da45755bb97065468a04a3123d2ab68bdc4c4080569f568dcccc9ededecb58681233432ff4ef7dca97fa2cd8df71f805894c00883f0  postmarketos-artwork-03553d4ab273d83c40a75e0355e3d93044897411.tar.gz"
+sha512sums="
+f05e7e4c54d295dddd3799f728bbfd7773ecb5677ffb053350096415066533dffd1ddc4188ecf970f0fc3312fcc6cac92dadca54a7139e1bed8224157e963f13  postmarketos-artwork-cebafc36eeb73bf135cd977dc6dc490f72876007.tar.gz
+"
