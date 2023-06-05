@@ -29,7 +29,7 @@ INTERFACE="${BLOCK_INSTANCE:-wlan0}"
 
 #------------------------------------------------------------------------
 
-QUALITY=$(grep $INTERFACE /proc/net/wireless | awk '{ print int($3 * 100 / 70) }')
+QUALITY=$(nmcli -f IN-USE,SIGNAL,SSID device wifi | awk '/^\*/{if (NR!=1) {print $2}}')
 IPADDR=$(ip addr show $INTERFACE | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 
 #------------------------------------------------------------------------
