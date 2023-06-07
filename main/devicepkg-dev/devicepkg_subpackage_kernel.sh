@@ -13,12 +13,14 @@ srcdir="$startdir/src"
 pkgdir="$startdir/pkg/$pkgname"
 subpkgdir="$startdir/pkg/$subpkgname"
 
-if [ -e "$pkgdir/etc/deviceinfo" ]; then
-	rm -v "$pkgdir/etc/deviceinfo"
+if [ -e "$pkgdir/usr/share/deviceinfo/$pkgname" ]; then
+	rm -v "$pkgdir/usr/share/deviceinfo/$pkgname"
 fi
 
+deviceinfo="$subpkgdir/usr/share/deviceinfo/$subpkgname"
 install -Dm644 "$srcdir/deviceinfo" \
-	"$subpkgdir/etc/deviceinfo"
+	"$deviceinfo"
+ln -s "$subpkgname" "$subpkgdir/usr/share/deviceinfo/deviceinfo"
 
 # Get the kernel type ("downstream", "mainline")
 kernel=$(echo "$subpkgname" | sed -n "s/.*-kernel-\(.*\)/\1/p" | tr - _)
@@ -38,17 +40,17 @@ fi
 
 # Iterate over deviceinfo variables that have the kernel type as suffix
 # var looks like: deviceinfo_kernel_cmdline, ...
-grep -E "(.+)_$kernel=.*" "$subpkgdir/etc/deviceinfo" | \
+grep -E "(.+)_$kernel=.*" "$deviceinfo" | \
 	sed "s/\(.\+\)_$kernel=.*/\1/g" | while IFS= read -r var
 do
-	if grep -Eq "$var=.*" "$subpkgdir/etc/deviceinfo"; then
+	if grep -Eq "$var=.*" "$deviceinfo"; then
 		echo "ERROR: variable '$var' should contain a kernel subpackage suffix"
 		exit 1
 	fi
 
 	# Remove the kernel suffix from the variable
-	sed -i "s/$var\_$kernel/$var/g" "$subpkgdir/etc/deviceinfo"
+	sed -i "s/$var\_$kernel/$var/g" "$deviceinfo"
 
 	# Remove the variables with other kernel suffixes
-	sed -i "/$var\_.*=.*/d" "$subpkgdir/etc/deviceinfo"
+	sed -i "/$var\_.*=.*/d" "$deviceinfo"
 done

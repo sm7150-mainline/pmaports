@@ -19,7 +19,8 @@ if [ ! -f "$srcdir/deviceinfo" ]; then
 fi
 
 install -Dm644 "$srcdir/deviceinfo" \
-	"$pkgdir/etc/deviceinfo"
+	"$pkgdir/usr/share/deviceinfo/$pkgname"
+ln -s "$pkgname" "$pkgdir/usr/share/deviceinfo/deviceinfo"
 install -Dm644 "$srcdir/machine-info" \
 	"$pkgdir/etc/machine-info"
 
@@ -52,8 +53,3 @@ if [ -f "$srcdir/modprobe.conf" ]; then
 	install -Dm644 "$srcdir/modprobe.conf" \
 		"$pkgdir/etc/modprobe.d/$pkgname.conf"
 fi
-
-# Workaround for https://gitlab.com/postmarketOS/pmaports/-/issues/2228
-touch "$pkgname"-trigger
-install -Dm644 "$pkgname"-trigger \
-	"$pkgdir"/usr/share/mkinitfs-triggers/"$pkgname"
