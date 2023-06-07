@@ -1,0 +1,28 @@
+# Maintainer: Petr Hodina <phodina@protonmail.com>
+pkgname=gnome-shell-extension-pinenote
+pkgver=1.0
+pkgrel=0
+pkgdesc="GNOME Pinenote helper extension"
+url="https://github.com/PNDeb/pinenote-gnome-extension"
+arch="aarch64"
+license="GPL-2.0-or-later"
+depends="sassc mozjs102-dev gettext-dev pinenote-dbus-service"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/PNDeb/pinenote-gnome-extension/archive/refs/tags/v$pkgver.tar.gz
+	0001-Change-to-GNOME-Shell-44.patch
+"
+
+_extension_dir="usr/share/gnome-shell/extensions/"
+options="!check"
+
+builddir="$srcdir/pinenote-gnome-extension-$pkgver"
+
+package() {
+	mkdir -p "$pkgdir/$_extension_dir"
+	cp -r pnhelper@m-weigand.github.com "$pkgdir/$_extension_dir/"
+}
+
+sha512sums="
+e71fad02656f862495ea77a070830ba37b4eee95aa4e6ed2eee4549911da4852aac7db2772eafdfe8e91340c333e3e2a7f4a4e2fd7f203cd21d9d3d7ab554883  gnome-shell-extension-pinenote-1.0.tar.gz
+f94480d69533653a60c45729a7c6594fbf64faecbf14fb624ad9152924523b5d337392183bf53ef27dcbaa552bb856103fc6013666bb5261e94937b32c95f494  0001-Change-to-GNOME-Shell-44.patch
+"
