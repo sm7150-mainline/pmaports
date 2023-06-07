@@ -2,7 +2,7 @@
 pkgname=device-pine64-pinenote
 pkgdesc="Pine64 PineNote"
 pkgver=1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -14,9 +14,14 @@ depends="
 makedepends="devicepkg-dev"
 source="deviceinfo
 	phoc.ini
+	local-overrides.quirks
+	50-touchscreen.conf
+	81-libinput-pinenote.rules
+	82-ebc-rockchip.rules
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-gnome
 	$pkgname-phosh
 "
 
@@ -26,12 +31,21 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/local-overrides.quirks \
+		-t "$pkgdir"/etc/libinput/
+	install -Dm644 "$srcdir"/50-touchscreen.conf \
+		-t "$pkgdir"/etc/X11/xorg.conf.d
+	install -Dm644 "$srcdir"/81-libinput-pinenote.rules \
+		-t "$pkgdir"/lib/udev/rules.d
+	install -Dm644 "$srcdir"/82-ebc-rockchip.rules \
+		"$pkgdir"/lib/udev/rules.d
 }
 
-nonfree_firmware() {
-	pkgdesc="WiFi, Bluetooth and display firmware"
-	depends="firmware-pine64-pinenote"
-	mkdir "$subpkgdir"
+gnome() {
+	install_if="$pkgname=$pkgver-r$pkgrel gnome"
+	depends="gnome-shell gnome-shell-extension-pinenote"
+	mkdir -p "$subpkgdir"
 }
 
 phosh() {
@@ -42,7 +56,17 @@ phosh() {
 		-t "$subpkgdir"/etc/phosh
 }
 
+nonfree_firmware() {
+	pkgdesc="WiFi, Bluetooth and display firmware"
+	depends="firmware-pine64-pinenote"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="
-c6847fc0128f8ccbc76fee5b5cd328c3b9d67774097e0fd16ee4a6cb8645b953bb38f0598fad6610abb64e43a8db3cae54c426dfcb58eecf750f5ea35a2af0fc  deviceinfo
+e29807d5a0ae9ed1def7f1a9037bd67f58f40de8a731905c3a2cf5265d4a4bdd201ec7e7004e9c04897732c15144670bdf84b9c40d15f476c8f9dcf820f3b36a  deviceinfo
 4bf5158fbd53274a7429e825bb66225001f2403a4851e2d6803323b77d9095738ee3e5340ac85baf3e86bb4f47d38af8cbd78d8a5055c59a62f5b06e722e19cb  phoc.ini
+1123720962c9c8fec3c50302ca6a3dd56e2907dc9eea361a7b8eb4201b042476633d41a0ee4f6ab61d9c60eeccc894f83491ba9fa309a9bce2f1db0b0341d79d  local-overrides.quirks
+ac433eebbc35a48561837495997aee4e55510b979bc0d8e3bafb761bc1be5b4bdeed2f456369dcbc582688aefd07c63966b0d72b6ffa99e84cfd868e677f02c8  50-touchscreen.conf
+2bc51f200baefc37abfaaad368a911244999e906bdca4b728ac233f49a8fb3ae7206ee3c95cdb20d7dceae2a31d25a57f4e1da4fd67057fd64724b8232e42aed  81-libinput-pinenote.rules
+7c418cebf336df96cd484d7f0243cf27e859b11a7f2e7fb54dd2b4afedc4f570588bee08a5de8075db7c7d6d56b7971d19dc09909ebe68247505a3e37427e312  82-ebc-rockchip.rules
 "
