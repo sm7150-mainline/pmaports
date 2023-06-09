@@ -33,6 +33,11 @@ if [ -f "$srcdir/initfs-hook.sh" ]; then
 		"$pkgdir/usr/share/mkinitfs/hooks/00-$pkgname.sh"
 fi
 
+if [ -f "$srcdir/modules" ]; then
+	install -Dm644 "$srcdir/modules" \
+		"$pkgdir/usr/share/mkinitfs/modules/00-$pkgname.modules"
+fi
+
 if [ -f "$srcdir/modules-load.conf" ]; then
 	install -Dm644 "$srcdir/modules-load.conf" \
 		"$pkgdir/etc/modules-load.d/00-$pkgname.conf"

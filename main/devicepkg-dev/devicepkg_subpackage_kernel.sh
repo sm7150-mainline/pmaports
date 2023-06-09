@@ -23,6 +23,11 @@ install -Dm644 "$srcdir/deviceinfo" \
 # Get the kernel type ("downstream", "mainline")
 kernel=$(echo "$subpkgname" | sed -n "s/.*-kernel-\(.*\)/\1/p" | tr - _)
 
+if [ -f "$srcdir/modules.$kernel" ]; then
+	install -Dm644 "$srcdir/modules.$kernel" \
+		"$subpkgdir/usr/share/mkinitfs/modules/00-$pkgname.modules"
+fi
+
 # Iterate over deviceinfo variables that have the kernel type as suffix
 # var looks like: deviceinfo_kernel_cmdline, ...
 grep -E "(.+)_$kernel=.*" "$subpkgdir/etc/deviceinfo" | \
