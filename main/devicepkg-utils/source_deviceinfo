@@ -1,3 +1,6 @@
-# This script must be sourced (not executed) to work properly
+# These scripts must be sourced (not executed) to work properly
 # shellcheck disable=SC1091
-. /etc/deviceinfo
+[ -f /usr/share/deviceinfo/deviceinfo ] && . /usr/share/deviceinfo/deviceinfo
+[ -f /etc/deviceinfo ] && . /etc/deviceinfo
+
+[ -z "$deviceinfo_arch" ] && { echo "$0: ERROR: deviceinfo file is missing!!"; exit 1; } || true
