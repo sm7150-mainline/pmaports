@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-pine
 pkgdesc="Xiaomi Redmi 7A"
-pkgver=0.1
+pkgver=0.2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -13,9 +13,15 @@ depends="
 	postmarketos-base
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="
+	deviceinfo
+	etc-lightdm-lightdm.conf
+"
 
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-fix-lightdm:fix_lightdm
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -31,6 +37,18 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
+# copied from device-samsung-goyawifi
+fix_lightdm() {
+	install_if="$pkgname lightdm"
+	pkgdesc="Fix the problem for CanGraphical=no in LightDM according to Display Manager in PMOS Wiki"
+	depends="lightdm"
+	replaces="lightdm"
+
+	# Install lightdm configuration with logind-check-graphical=false
+	install -D -m644 "$srcdir"/etc-lightdm-lightdm.conf \
+		"$subpkgdir"/etc/lightdm/lightdm.conf
+}
 sha512sums="
 13d394f6cf0050034dc4bc996865d7a68369a3c0111fdb6af4987756c68a7921dc92cfa1d1086d269871d7a127f298b597b91d453fcce5809d3d232d6a7d70ce  deviceinfo
+861270c6bc0b2a3e6cd389c21c8c895e62de8cf8bec6fcf23c178f8cbaae855d62b0ee98692671ab4f518d84cb43dd0b2fe46f5a609f65af6a6c06e0fdbb6d0c  etc-lightdm-lightdm.conf
 "
