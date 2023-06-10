@@ -3,7 +3,7 @@
 
 pkgname=linux-xiaomi-pine
 pkgver=4.9.337
-pkgrel=0
+pkgrel=1
 pkgdesc="Xiaomi Redmi 7A kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -47,9 +47,13 @@ build() {
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
 		"$_flavor" "$_outdir"
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS" \
+		INSTALL_MOD_PATH="$pkgdir" modules_install
 }
 
 sha512sums="
 491349581f0e0ffcbf59c20367f6d2e1a4f82d909b17398bc80db2711f543f845ddad4b8f0d0ae31f5a876e2ce1873315935700c1a42cd1f9abff1aa0d4253ae  linux-xiaomi-pine-2bcfae17be1b3e70d41ee89f6fed7825627d952b.tar.gz
-8cff7c83c012b4bfcd34a53a01f3c53949fc77bb976e784840b5c389bd19c0ff872e6d32a62e80bc5fbfb3537afbbac6858f9003ad8fef89bb8dce545a8b4e52  config-xiaomi-pine.aarch64
+a70d088f147e52fb35e60dad7807a1fa6eac5e320f0391cdf320926dcfed64696d5e8c9c8c5a539cb46e7b577766537248ad5f0511b0b2abd6a6d88350c48058  config-xiaomi-pine.aarch64
 "
