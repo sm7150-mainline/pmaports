@@ -28,6 +28,7 @@
 
 ### On what environment did you encounter the issue?
 #### Environments
+* [ ] GNOME Shell on Mobile
 * [ ] Phosh
 * [ ] Plasma Mobile
 * [ ] Sxmo (Wayland/Sway) **Please post the output of `sxmo_version.sh`**
