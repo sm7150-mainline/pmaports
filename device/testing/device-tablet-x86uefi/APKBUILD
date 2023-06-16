@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-tablet-x86uefi
 pkgdesc="Various tablets with atom CPU"
-pkgver=5
+pkgver=6
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -9,8 +9,8 @@ arch="x86_64"
 options="!check !archcheck"
 depends="postmarketos-base linux-lts libva-intel-driver grub-x86 alsa-ucm-conf"
 makedepends="devicepkg-dev"
-source="deviceinfo grub.cfg phoc.ini"
-subpackages="$pkgname-phosh"
+source="deviceinfo grub.cfg"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,15 +22,13 @@ package() {
 		"$pkgdir"/boot/grub/grub.cfg
 }
 
-# most tablets don't need scaling, at least x2
-phosh() {
-	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/phoc.ini \
-		"$subpkgdir"/etc/phosh/phoc.ini
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware, used by some tablets"
+	depends="firmware-ath6kl"
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
-bfb8c66a672c439454617796f135aa8f888f4364edd83b06c7c8bb3845cec56e9d4ad64223b92dfd9c334a5f8d93c734e4c208efc5125b4409992de450af54d0  deviceinfo
+ef32274fb8c97537b12e461760ff525814bc311bf3fd56c26e8186a53a1a81d6424d0864093ad41695551ba0592ac505407332a36ce61a8e41430abec096c245  deviceinfo
 2d951d71102181db85a2468fd770ee3a7958c06b14e27e52e0d4ff0e9b88f3ab3c5c9b15c8a938d1cd2ae0c94ad2aad7001f1b6fe943f96a38602085f481a4cf  grub.cfg
-e8f734a2f8d154813dbb493f0d58af50a7f624ffed41967a81493b975a6211efc6d30743b23825562cfd126791cbdd3348bfbed32eeece9b8acec0a37c3c51b6  phoc.ini
 "
