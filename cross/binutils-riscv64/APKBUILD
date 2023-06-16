@@ -8,12 +8,11 @@ CTARGET="$(arch_to_hostspec $CTARGET_ARCH)"
 
 pkgname=binutils-riscv64
 pkgver=2.40
-pkgrel=11
+pkgrel=12
 pkgdesc="Tools necessary to build programs for riscv64 targets"
 url="https://www.gnu.org/software/binutils/"
 makedepends_build="bison flex texinfo"
 makedepends_host="zlib-dev jansson-dev zstd-dev"
-makedepends="$makedepends_build $makedepends_host"
 arch="x86_64"
 license="GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause"
 subpackages="binutils-dev binutils-doc"
@@ -27,6 +26,7 @@ builddir="$srcdir/binutils-$pkgver"
 
 if [ -z "$BOOTSTRAP" ]; then
 	makedepends_host="$makedepends_host jansson-dev zstd-dev"
+	_noboot_configure="--enable-jansson --with-zstd"
 fi
 
 if [ "$CHOST" = "$CBUILD" ] && [ "$CBUILD" = "$CTARGET" ] && [ "$CTARGET_ARCH" != "riscv64" ]; then
@@ -99,6 +99,7 @@ build() {
 		$_cross_configure \
 		$_gold_configure \
 		$_plugin_configure \
+		$_noboot_configure \
 		--disable-gprofng \
 		--disable-multilib \
 		--disable-nls \
