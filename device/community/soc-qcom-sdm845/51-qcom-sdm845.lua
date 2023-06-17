@@ -11,6 +11,10 @@ table.insert(alsa_monitor.rules,
     },
     apply_properties = {
       ["audio.format"]           = "S16LE",
+      ["audio.rate"]             = 48000,
+      ["api.alsa.period-size"]   = 4096,
+      ["api.alsa.period-num"]    = 6,
+      ["api.alsa.headroom"]      = 512,
     },
   }
 )
