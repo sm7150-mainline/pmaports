@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-tablet-x86uefi
 pkgdesc="Various tablets with atom CPU"
-pkgver=6
+pkgver=7
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -9,7 +9,11 @@ arch="x86_64"
 options="!check !archcheck"
 depends="postmarketos-base linux-lts libva-intel-driver grub-x86 alsa-ucm-conf"
 makedepends="devicepkg-dev"
-source="deviceinfo grub.cfg"
+source="
+	ath6kl.conf
+	deviceinfo
+	grub.cfg
+	"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -18,8 +22,12 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
 	install -D "$srcdir"/grub.cfg \
 		"$pkgdir"/boot/grub/grub.cfg
+
+	install -Dm644 "$srcdir"/ath6kl.conf \
+		-t "$pkgdir"/lib/modprobe.d/
 }
 
 nonfree_firmware() {
@@ -29,6 +37,7 @@ nonfree_firmware() {
 }
 
 sha512sums="
+41bfee76f89b323afa642a2d96f18b33cb73fec28518873e1e3f7e05764d85afd7b620b1ef23fd8d43172fd1cc164056ed893f872fa1894eebafc7ce7b2030f1  ath6kl.conf
 ef32274fb8c97537b12e461760ff525814bc311bf3fd56c26e8186a53a1a81d6424d0864093ad41695551ba0592ac505407332a36ce61a8e41430abec096c245  deviceinfo
 2d951d71102181db85a2468fd770ee3a7958c06b14e27e52e0d4ff0e9b88f3ab3c5c9b15c8a938d1cd2ae0c94ad2aad7001f1b6fe943f96a38602085f481a4cf  grub.cfg
 "
