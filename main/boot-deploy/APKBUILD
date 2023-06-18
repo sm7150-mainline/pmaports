@@ -1,13 +1,13 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=boot-deploy
-pkgver=0.8.2
+pkgver=0.9.1
 pkgrel=0
 pkgdesc="tool for finalizing and deploying boot related files"
 url="https://gitlab.com/postmarketos/boot-deploy"
 arch="noarch"
 license="GPL-2.0-or-later"
 source="
-	boot-deploy.config
+	os-customization
 	https://gitlab.com/postmarketOS/boot-deploy/-/archive/$pkgver/boot-deploy-$pkgver.tar.gz
 	"
 options="!check"
@@ -16,14 +16,14 @@ package() {
 	install -Dm755 boot-deploy "$pkgdir"/sbin/boot-deploy
 	install -Dm755 boot-deploy-functions.sh \
 		"$pkgdir"/usr/share/boot-deploy/boot-deploy-functions.sh
-	install -Dm644 "$srcdir"/boot-deploy.config "$pkgdir"/etc/boot/boot-deploy
+	install -Dm644 "$srcdir"/os-customization \
+		"$pkgdir"/usr/share/boot-deploy/os-customization
 
 	touch boot-deploy-trigger
 	install -Dm644 boot-deploy-trigger \
 		"$pkgdir"/usr/share/mkinitfs-triggers/boot-deploy
 }
-
 sha512sums="
-a243975b9850d9933e0f917f7eb38fc4a76ea658c3dcc56f035f60ee6c62d6740c1107143b8210bdc0231d4c9b6b2003e458120985604eb09649322d359ae89f  boot-deploy.config
-8c2ad0fe91ad4ff8470b39ed3c2b4e098dcc684afed5911a2197724c5ce962a58c30b10a083a4cc4169ffdb2fab650a29b08ce04b9aeee9cfb709a328a209ea2  boot-deploy-0.8.2.tar.gz
+a243975b9850d9933e0f917f7eb38fc4a76ea658c3dcc56f035f60ee6c62d6740c1107143b8210bdc0231d4c9b6b2003e458120985604eb09649322d359ae89f  os-customization
+2e043ae87db33147b17a95fdaf990ad3d3d17b060f0611cf9985f90bad3745cfc3d15ea59b85abdc3cc268724784f0c40f487d4b17f63b290776ed2d83beab01  boot-deploy-0.9.1.tar.gz
 "
