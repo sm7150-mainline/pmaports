@@ -14,14 +14,10 @@ depends="
 	linux-postmarketos-exynos5
 	u-boot-peach-pit
 "
-makedepends="
-	devicepkg-dev
-	u-boot-tools
-"
+makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	i3wm/xorg.conf.d/90-tap-to-click.conf
-	uboot-script.cmd
 	ucm/Peach-Pit-I2S-MAX98090.conf
 	ucm/HiFi.conf
 "
@@ -32,17 +28,6 @@ subpackages="
 
 build() {
 	devicepkg_build $startdir $pkgname
-
-	mkimage \
-		-A arm \
-		-O linux \
-		-T script \
-		-C none \
-		-a 0 \
-		-e 0 \
-		-n postmarketos \
-		-d "$srcdir"/uboot-script.cmd \
-		"$srcdir"/boot.scr
 }
 
 package() {
@@ -55,10 +40,6 @@ package() {
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Peach-Pit-I2S-MAX98090/HiFi.conf
 	ln -s /usr/share/alsa/ucm2/conf.d/Peach-Pit-I2S-MAX98090 \
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Peach-Pit-I2S-M
-
-	# U-Boot script
-	install -Dm644 "$srcdir"/boot.scr \
-		"$pkgdir"/boot/boot.scr
 }
 
 i3wm() {
@@ -74,9 +55,8 @@ nonfree_firmware() {
 }
 
 sha512sums="
-0de17ee83b81220bf6b107ad80801e52ccc1ab5a13b035df32dfba286153ab34830861547fe180f40c38c89e627900ab59f1499b2e455832c1b4e6069abf86c8  deviceinfo
+71545382e0efabb154ffa1288b6960674cfafabae2fefc76c8e49b354465feced308bce7ed7978b5ef5e1d190ba2739dbc4e62344a14519a135d7e40f5743acc  deviceinfo
 e53ca475830930ecfc1fd537702e850e2abcb66fbed521cb6c3a2918d762649254bd0244ec93a47b20dfc593ec3afc9bdebdec1759a7bc96dcbe4800f40893da  90-tap-to-click.conf
-7c59bbec6b54d4a96d7e80468a49f1ccb7e4ec216c6a598a0f2fe3bc5b0aea19640eeb311a25d5ac4532ff85ed98a8612f22a02e723d089940da8efdbbd047f0  uboot-script.cmd
 6fe67c8f2e09e3e37297eebaf2a86a32671923a5fd4d18e5aeb10e580fb998e4ddb4a691531a0c8f4b4e70c6f0f7e91008dd836ffca8026d59862c6e829fd996  Peach-Pit-I2S-MAX98090.conf
 194b6169168b40592cf1e6b5f3b21aaa24a602869d7aec358cd5e1f06de34e9b0fe3da094e438ef2d3ab5be80275e6c0b6afe7ce92e2365a70e8b5a21a873234  HiFi.conf
 "
