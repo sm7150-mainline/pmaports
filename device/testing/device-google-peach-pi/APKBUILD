@@ -15,14 +15,10 @@ depends="
 	linux-postmarketos-exynos5
 	u-boot-peach-pi
 "
-makedepends="
-	devicepkg-dev
-	u-boot-tools
-"
+makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	i3wm/xorg.conf.d/90-tap-to-click.conf
-	uboot-script.cmd
 	ucm/Peach-Pi-I2S-MA.conf
 	ucm/HiFi.conf
 "
@@ -33,17 +29,6 @@ subpackages="
 
 build() {
 	devicepkg_build $startdir $pkgname
-
-	mkimage \
-		-A arm \
-		-O linux \
-		-T script \
-		-C none \
-		-a 0 \
-		-e 0 \
-		-n postmarketos \
-		-d "$srcdir"/uboot-script.cmd \
-		"$srcdir"/boot.scr
 }
 
 package() {
@@ -54,10 +39,6 @@ package() {
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Peach-Pi-I2S-MA/Peach-Pi-I2S-MA.conf
 	install -Dm644 "$srcdir"/HiFi.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Peach-Pi-I2S-MA/HiFi.conf
-
-	# U-Boot script
-	install -Dm644 "$srcdir"/boot.scr \
-		"$pkgdir"/boot/boot.scr
 }
 
 i3wm() {
@@ -73,9 +54,8 @@ nonfree_firmware() {
 }
 
 sha512sums="
-60f345f0707459abc4fb9aa5afb2b4f935531eea641cf6897d6a19fc9425f8eeb89d035153fa3fe6ed2d4fb703db83980c77d1d612a86e0ccbcad357b893d8ba  deviceinfo
+277c4bd4a71c438c076f6a4a37fac49f469c9169ecc9949dfa2cc80ccebc898bc6ced4a3bac3c77e5b195d07ffb0b32374ddb2e6d1bbc2226f64fc156ccce19f  deviceinfo
 e53ca475830930ecfc1fd537702e850e2abcb66fbed521cb6c3a2918d762649254bd0244ec93a47b20dfc593ec3afc9bdebdec1759a7bc96dcbe4800f40893da  90-tap-to-click.conf
-56737f856b252f6d657015ba6510c8e7fa71dc7e4897c10dabe6848ef263336789103a32f6d6189764c261af4e739f4444195c87e97075356f1dbd7f8a0de897  uboot-script.cmd
 2ccec36a88003673471fcec7c0e408c24892e43701d88986c6a85a7882ac275565eb3abf566709306ddc16a62b4558ebceffbc289e7c95336ba28262719c6413  Peach-Pi-I2S-MA.conf
 a95701b30c6b7535a60d0db932d018673a72346974cca86b9a1212fa8c66b1ad5fffaa0c6ac5fe5ead2c91a90375d5d24f74fd571300a21c53e4a2c16953c170  HiFi.conf
 "
