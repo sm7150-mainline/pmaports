@@ -13,15 +13,11 @@ depends="
 	postmarketos-base
 	u-boot-snow
 "
-makedepends="
-	devicepkg-dev
-	u-boot-tools
-"
+makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	i3wm/xorg.conf.d/90-tap-to-click.conf
 	modprobe.d/mali.conf
-	uboot-script.cmd
 	ucm/HiFi.conf
 	ucm/Snow-I2S-MAX98090.conf
 	mpv/mpv.conf.wayland
@@ -41,17 +37,6 @@ subpackages="
 
 build() {
 	devicepkg_build $startdir $pkgname
-
-	mkimage \
-		-A arm \
-		-O linux \
-		-T script \
-		-C none \
-		-a 0 \
-		-e 0 \
-		-n postmarketos \
-		-d "$srcdir"/uboot-script.cmd \
-		"$srcdir"/boot.scr
 }
 
 package() {
@@ -66,10 +51,6 @@ package() {
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Snow-I2S-MAX980/Snow-I2S-MAX98090.conf
 	install -Dm644 "$srcdir"/HiFi.conf \
 		"$pkgdir"/usr/share/alsa/ucm2/conf.d/Snow-I2S-MAX980/HiFi.conf
-
-	# U-Boot script
-	install -Dm644 "$srcdir"/boot.scr \
-		"$pkgdir"/boot/boot.scr
 }
 
 i3wm() {
@@ -78,7 +59,7 @@ i3wm() {
 		"$subpkgdir"/etc/X11/xorg.conf.d/90-tap-to-click.conf
 }
 
-# Kernel subpackages to copy correct DTB, uboot-script.cmd selects copied one
+# Kernel subpackages to copy correct DTB
 
 kernel_rev4() {
 	pkgdesc="Google Snow Rev 4"
@@ -120,10 +101,9 @@ sway() {
 }
 
 sha512sums="
-f7d3b70ee5f19e634cd41294aa4d1287dad6a8324f9223aa9c26de28b46305e3a9d22e340e0121d7a335aee0be49727e1e289d5daa53e7f22faa7d1347c5abd1  deviceinfo
+6bdd7571b754757369bf202837613de1461e3f7c3acafe80074f2d3923358f524abf7781f850271ede1fd6c9fbd3665008d647b919c8a7b8ae2fbf6ff648ae8d  deviceinfo
 e53ca475830930ecfc1fd537702e850e2abcb66fbed521cb6c3a2918d762649254bd0244ec93a47b20dfc593ec3afc9bdebdec1759a7bc96dcbe4800f40893da  90-tap-to-click.conf
 c5fdd5a39a41044343d937a1ad31cc6bb893f19a329beb4ce09249064cac066d643c84ffcbfcd794113c228c5a56e28c82812092751546b49ab31142dc8245b1  mali.conf
-e55e7ccbd038546b70825ed58bdf39bd2780176eacf4fbb36a0bfa3dcfa585a42f891905171ac4e7ce2e98f0c16d41a8586eca870fc53ac8f3adacc7b045777e  uboot-script.cmd
 8a8f593694528a9323ef4a0aff7e9c6ad45608957eb042d425663f682885c2f95eb01db4fe87b7c43a90de48f3e5f8b10cab4b13c547b5b0d31b924fcb083cad  HiFi.conf
 b163535da7626e3866faa45768c3888f69f90c98d694650e16a7594a03eb91391e166931eb487901217d983bb2dc4e49b99a2a5531740a7d87f8f4f5c3d0cf59  Snow-I2S-MAX98090.conf
 8f9dc3c7caeab6c5321dc2bf498f1a03a793f23cb776763316bc356b9d433d7a3337e61154069464dcda200bf390b99f3be8f657a40c6d2f6be3cbc6fb751080  mpv.conf.wayland
