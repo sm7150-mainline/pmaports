@@ -1,0 +1,32 @@
+# Maintainer: Petr Hodina <phodina@protonmail.com>
+pkgname=pinenote-dbus-service
+pkgver=20221207
+pkgrel=0
+pkgdesc="Dbus daemon for controlling driver aspects on Pine64 Pinenote"
+url="https://github.com/m-weigand/pinenote_dbus_service"
+arch="aarch64"
+license="MIT"
+makedepends="cargo"
+depends="dbus-dev"
+source="
+	pinenote-dbus-service-$pkgver.tar.gz::https://github.com/m-weigand/pinenote_dbus_service/archive/refs/tags/v$pkgver.tar.gz
+	pinenote.initd
+"
+
+builddir="$srcdir/pinenote_dbus_service-$pkgver"
+
+build() {
+	cargo build --release --locked
+}
+
+package() {
+	cargo install --path . --root="$pkgdir/usr"
+	install -Dm644 dbus_security_configuration/pinenote.conf -t "$pkgdir"/usr/dbus-1/system.d/
+	install -Dm755 "$srcdir"/pinenote.initd $pkgdir/etc/init.d/pinenote
+	rm "$pkgdir"/usr/.crates.toml
+}
+
+sha512sums="
+b5d2e1a778ca3fa47d61df93aeeb7e06d7383d1a6aac70f422ea8ea9337ce3b987a35d9894fce98284eefa5f666989751117ee519d1c2a2b8547dc8b62bfe443  pinenote-dbus-service-20221207.tar.gz
+2f732735e84ea91465ff56eb09afea2c12af9964b6ace5222d3a58320dfe71bf7d7fd697b2c686f3e7342799c3ff9a522f8e12227028ab294d3bebecfe9a6a8d  pinenote.initd
+"
