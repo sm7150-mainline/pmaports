@@ -1,14 +1,15 @@
 # Maintainer: Alejandro Tafalla <atafalla@dnyon.com>
 pkgname=lk2nd-msm8953
 pkgver=0.3.3
-pkgrel=0
+pkgrel=1
 pkgdesc="Secondary little kernel (lk) bootloader for msm8953 based devices"
 arch="aarch64"
 url="https://github.com/msm8953-mainline/lk2nd"
 license="MIT AND GPL-2.0-only"
 makedepends="dtc dtc-dev gcc-arm-none-eabi python3 py3-libfdt"
 builddir="$srcdir"/lk2nd-$pkgver
-source="lk2nd-$pkgver.tar.gz::https://github.com/msm8953-mainline/lk2nd/archive/refs/tags/$pkgver.tar.gz"
+source="lk2nd-$pkgver.tar.gz::https://github.com/msm8953-mainline/lk2nd/archive/refs/tags/$pkgver.tar.gz
+	o2.patch"
 options="!check !archcheck !tracedeps !strip pmb:cross-native"
 # This APKBUILD builds bare metal executable; options are very specific!
 # * there are no tests (how do you even test the bootloader?);
@@ -43,4 +44,5 @@ package() {
 }
 sha512sums="
 9a55ebe30bfe2e232593edb2eddd7b6078980d2339131f2975e0a85545630b8d386c4af021bab488d4e098f1fb2d78b1059eea51e987490a3e1dfebd4ea11cf0  lk2nd-0.3.3.tar.gz
+e4d2e116966485aca746bec5bf6ab9855514dc70dfb94ce3cdc9def01c5b36eeddc33e77bdbcfb8f6bb89bb0277fd6dd3e6f8066475dcfc5b5fcdec567af754b  o2.patch
 "
