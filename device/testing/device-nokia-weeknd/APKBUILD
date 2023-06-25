@@ -1,0 +1,71 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-nokia-weeknd
+pkgdesc="Nokia 2780 Flip"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="GPL-2.0-only"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-msm8917
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8909
+	"
+subpackages="
+	$pkgname-modem
+	$pkgname-nonfree-firmware:nonfree_firmware
+	"
+makedepends="devicepkg-dev mipi-dbi-cmd"
+_panel="nokia,weeknd-st7789vx2-yihua-panel"
+_panel2="nokia,weeknd-gc9104-v2-panel"
+source="
+	$_panel.txt
+	$_panel2.txt
+	00-nokia-weeknd-display.files
+	deviceinfo
+	"
+
+build() {
+	devicepkg_build $startdir $pkgname
+	mkdir -p "$builddir"
+	mipi-dbi-cmd "$builddir"/"$_panel".bin \
+			"$srcdir"/"$_panel".txt
+	mipi-dbi-cmd "$builddir"/"$_panel2".bin \
+			"$srcdir"/"$_panel2".txt
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	# Package display init sequence
+	install -Dm644 "$builddir"/"$_panel".bin -t \
+			"$pkgdir"/lib/firmware/
+	install -Dm644 "$builddir"/"$_panel2".bin -t \
+			"$pkgdir"/lib/firmware/
+	install -Dm644 "$srcdir"/00-nokia-weeknd-display.files -t \
+			"$pkgdir"/usr/share/mkinitfs/files/
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
+	depends="
+		firmware-qcom-adreno-a300
+		msm-firmware-loader
+		firmware-nokia-weeknd-wcnss-nv
+	"
+	mkdir "$subpkgdir"
+}
+
+modem() {
+	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+ef1456f2fb7da41af4f98f0004f6f69ae0a051b641d3a9a3d6057708d1aca682437c04c58954d3982be471c8973cff7a12ebe359d2f003071110ce5f5dc4b601  nokia,weeknd-st7789vx2-yihua-panel.txt
+bdcff520b74e6247d9737554fcf9b4811d608495feba336345655e8fc41acf502b53bb14d380401c6e4ad1b143417e85d59ad2510f79b7888b4b2f8bd677a1fb  nokia,weeknd-gc9104-v2-panel.txt
+27c61aa53ce688fd8fbec632656842a94647a5438c0bf9769b5cd003742eacfe0f4d1bd30f5a5f255dd2cef863312f10a62b2b959192bf2ac4e575f812b94ec4  00-nokia-weeknd-display.files
+f970defefe76eddfa3fbc1911e34f403ad726392aaa4681e6028b9b4e6878d526c09cbb9ca353234865f44d3d350f2cc407f5cb5c849d9f471fd4fe5f7f98a62  deviceinfo
+"
