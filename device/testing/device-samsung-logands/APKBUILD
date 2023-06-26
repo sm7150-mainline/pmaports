@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-logands
+pkgdesc="Samsung Galaxy Ace 3 Duos"
+pkgver=3.4.5
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-samsung-logands
+	mkbootimg
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+231a4ff31c4c3fd8182f81647e3d8e7fa07c51cecfdb01a506d8511f2c63a627c9c1b85f4198341479a806891040177fd9de14691645b14c8debad2fd2ef111c  deviceinfo
+"
