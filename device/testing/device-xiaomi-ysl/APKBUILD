@@ -1,0 +1,38 @@
+# Maintainer: Barnabas Czeman <trabarni@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-ysl
+pkgdesc="Xiaomi Redmi S2/Y2"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="postmarketos-base mkbootimg soc-qcom-msm8916 linux-postmarketos-qcom-msm8953"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-modem"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware, also needed for osk-sdl"
+	depends="linux-firmware-qcom firmware-xiaomi-ysl"
+	mkdir "$subpkgdir"
+}
+
+modem() {
+	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+76d782638cb6dbad57a1d54884ae1436d78f30ef46589ad2a22c5861a5c827ec2376bbbb7b8d5049690bbb168e1bbec25a32604c936dba27561ddb8fce401bf9  deviceinfo
+"
