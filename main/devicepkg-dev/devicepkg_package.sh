@@ -33,9 +33,14 @@ if [ -f "$srcdir/initfs-hook.sh" ]; then
 		"$pkgdir/usr/share/mkinitfs/hooks/00-$pkgname.sh"
 fi
 
+# All the installation paths for the modules conflict with those from
+# devicepkg_subpackage_kernel. See comment there for details
 if [ -f "$srcdir/modules" ]; then
 	install -Dm644 "$srcdir/modules" \
 		"$pkgdir/usr/share/mkinitfs/modules/00-$pkgname.modules"
+	mkdir -p "$pkgdir/usr/share/mkinitfs/files"
+	echo "/usr/share/mkinitfs/modules/00-$pkgname.modules:/lib/modules/initramfs.load" \
+	     > "$pkgdir/usr/share/mkinitfs/files/00-$pkgname-modules.files"
 fi
 
 if [ -f "$srcdir/modules-load.conf" ]; then
