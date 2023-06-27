@@ -3,8 +3,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-beryllium
 pkgdesc="Xiaomi Poco F1"
-pkgver=8
-pkgrel=1
+pkgver=9
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -21,12 +21,10 @@ subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-kernel-tianma:kernel_tianma
 	$pkgname-kernel-ebbg:kernel_ebbg
-	$pkgname-phosh
 "
 
 source="
 	deviceinfo
-	phoc.ini
 	q6voiced.conf
 "
 
@@ -59,14 +57,7 @@ kernel_ebbg() {
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
-phosh() {
-	install_if="$pkgname=$pkgver-r$pkgrel phosh"
-	install -Dm644 "$srcdir"/phoc.ini \
-		"$subpkgdir"/etc/phosh/phoc.ini
-}
-
 sha512sums="
-399e430a7340755c39680e436141dc141b38669791664bfb6d902bf4994516305fdf3e0e088717f60dc24faf64e0993c8695572f1afb7875a46548f494fdb54d  deviceinfo
-e2e417169345c86a5dd34ac0afac4b2b983a755f4c7ba5698c385a01f96b9bd2c3ace1ce5a0569c121675e8b87e88e1cf5c648e995d9c50cba66e52bbc83753c  phoc.ini
+9a0048d9ee571e821ccaf190942e7db900ae0f636dd5d30bcf4211ed57f25988adc017ef353c205d55f73d75aa48b6f67b59d84b56a6a00448a94ae137bdb00a  deviceinfo
 3a4a9322839d4b3ef9d79668a37840a9f444954759ae3c512e694051d2f9a2573db42ad6c4c1a5c75eeb861232a27ba1a8cef9b503decd54ead25a96e3dd6f98  q6voiced.conf
 "

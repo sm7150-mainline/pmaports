@@ -3,8 +3,8 @@
 
 pkgname=device-oneplus-enchilada
 pkgdesc="OnePlus 6"
-pkgver=9
-pkgrel=1
+pkgver=10
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -21,10 +21,9 @@ depends="
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
-	phoc.ini
 	q6voiced.conf
 "
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -43,14 +42,7 @@ nonfree_firmware() {
 	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
-phosh() {
-	install_if="$pkgname=$pkgver-r$pkgrel phosh"
-	install -Dm644 "$srcdir"/phoc.ini \
-		"$subpkgdir"/etc/phosh/phoc.ini
-}
-
 sha512sums="
-6dd8948f6c23b35c60aa82c4db40b3c2aa766aa2cc53c84d86028f54cc2303201a80d70fe8830cd746f01a8ea2459f55ebbc2412c2e222a7e9e9e1649d9505a5  deviceinfo
-65f74d29ab318b23f7ac8923a3661f2c4130049273a8c6be234ed2c8e00810b6a1254b54cf0932e42850a6d48f821dcd038900fbb836feeddfab2759afffae38  phoc.ini
+5a1771d1c2c70ae18e1ae11fe94617c5899995c3848c38f359232d587c076f36fb159bd654cfea0510a343e44c50b39d20148e650b1cbb3629d6fdc371ad8dc5  deviceinfo
 fe9871c325a38c0cadc9631870801ec15ab9f5b786ee854325b93eb3d23e7d8b1ac4f1075572ffcd225d8ec514dec09b986972ddff12a89260c0218af6de7887  q6voiced.conf
 "
