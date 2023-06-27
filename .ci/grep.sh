@@ -45,3 +45,10 @@ if grep --exclude='source_deviceinfo' -qEr 'source /etc/deviceinfo|\. /etc/devic
 	grep --color=always --exclude='rootfs-usr-share-misc-source_deviceinfo' -Er 'source /etc/deviceinfo|\. /etc/deviceinfo' -- *
 	exit 1
 fi
+
+# Removed deviceinfo variable
+if grep -qr 'deviceinfo_modules_initfs' -- *; then
+	echo 'ERROR: deviceinfo_modules_initfs variable has been removed. Use "modules-initfs" file instead.'
+	grep --color=always -r 'deviceinfo_modules_initfs' -- *
+	exit 1
+fi
