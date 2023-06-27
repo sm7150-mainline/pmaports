@@ -59,6 +59,15 @@ setup_firmware_path() {
 	echo -n /lib/firmware/postmarketos >$SYS
 }
 
+# shellcheck disable=SC3043
+load_modules() {
+	local file="$1"
+	local modules="$2"
+	[ -f "$file" ] && modules="$modules $(cat "$file")"
+	# shellcheck disable=SC2086
+	modprobe -a $modules
+}
+
 setup_mdev() {
 	# Start mdev daemon
 	mdev -d

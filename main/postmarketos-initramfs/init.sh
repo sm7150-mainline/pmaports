@@ -15,8 +15,8 @@ mount_proc_sys_dev
 create_device_nodes
 setup_log
 setup_firmware_path
-# shellcheck disable=SC2154,SC2086
-[ -d /lib/modules ] && modprobe -a ${deviceinfo_modules_initfs} usb_f_rndis
+# shellcheck disable=SC2154
+load_modules /lib/modules/initramfs.load "$deviceinfo_modules_initfs usb_f_rndis"
 
 setup_mdev
 setup_dynamic_partitions "${deviceinfo_super_partitions:=}"
