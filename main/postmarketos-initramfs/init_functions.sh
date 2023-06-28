@@ -2,6 +2,8 @@
 # This file will be in /init_functions.sh inside the initramfs.
 ROOT_PARTITION_UNLOCKED=0
 ROOT_PARTITION_RESIZED=0
+PMOS_BOOT=""
+PMOS_ROOT=""
 
 # Redirect stdout and stderr to logfile
 setup_log() {
@@ -144,6 +146,8 @@ mount_subpartitions() {
 }
 
 find_root_partition() {
+	[ -n "$PMOS_ROOT" ] && echo "$PMOS_ROOT" && return
+
 	# The partition layout is one of the following:
 	# a) boot, root partitions on sdcard
 	# b) boot, root partition on the "system" partition (which has its
@@ -157,13 +161,20 @@ find_root_partition() {
 	# shellcheck disable=SC2013
 	if [ "$ROOT_PARTITION_UNLOCKED" = 0 ]; then
 		for x in $(cat /proc/cmdline); do
-			[ "$x" = "${x#pmos_root_uuid=}" ] && continue
-			DEVICE="$(findfs UUID="${x#pmos_root_uuid=}")"
-		done
-
-		for x in $(cat /proc/cmdline); do
-			[ "$x" = "${x#pmos_root=}" ] && continue
-			DEVICE="${x#pmos_root=}"
+			if ! [ "$x" = "${x#pmos_root_uuid=}" ]; then
+				path="$(findfs UUID="${x#pmos_root_uuid=}")"
+				if [ -n "$path" ]; then
+					PMOS_ROOT="$path"
+					break
+				fi
+			fi
+			if ! [ "$x" = "${x#pmos_root=}" ]; then
+				path="${x#pmos_root=}"
+				if [ -e "$path" ]; then
+					PMOS_ROOT="$path"
+					break
+				fi
+			fi
 		done
 
 		# On-device installer: before postmarketOS is installed,
@@ -174,61 +185,75 @@ find_root_partition() {
 		# p2: (reserved space) <--- pmos_root
 		# p3: pmOS_install
 		# Details: https://postmarketos.org/on-device-installer
-		if [ -n "$DEVICE" ]; then
-			next="$(echo "$DEVICE" | sed 's/2$/3/')"
+		if [ -n "$PMOS_ROOT" ]; then
+			next="$(echo "$PMOS_ROOT" | sed 's/2$/3/')"
 
 			# If the next partition is labeled pmOS_install (and
 			# not pmOS_deleteme), then postmarketOS is not
 			# installed yet.
 			if blkid | grep "$next" | grep -q pmOS_install; then
-				DEVICE="$next"
+				PMOS_ROOT="$next"
 			fi
 		fi
 	fi
 
-	# Try partitions in /dev/mapper and /dev/dm-* first
-	if [ -z "$DEVICE" ]; then
-		for id in pmOS_install pmOS_root crypto_LUKS; do
-			for path in /dev/mapper /dev/dm; do
-				DEVICE="$(blkid | grep "$path" | grep "$id" \
-					| cut -d ":" -f 1 | head -n 1)"
-				[ -z "$DEVICE" ] || break 2
-			done
+	if [ -z "$PMOS_ROOT" ]; then
+		for id in pmOS_install pmOS_root; do
+			PMOS_ROOT="$(findfs LABEL="$id")"
+			[ -n "$PMOS_ROOT" ] && break
 		done
 	fi
 
-	# Then try all devices
-	if [ -z "$DEVICE" ]; then
-		for id in pmOS_install pmOS_root crypto_LUKS; do
-			DEVICE="$(blkid | grep "$id" | cut -d ":" -f 1 \
-				| head -n 1)"
-			[ -z "$DEVICE" ] || break
-		done
+	# Search for luks partition.
+	# Note: This should always be after the filesystem search, since this
+	# function may be called after the luks partition is unlocked and we don't
+	# want to keep returning the luks partition if a valid root filesystem
+	# exists
+	if [ -z "$PMOS_ROOT" ]; then
+		PMOS_ROOT="$(blkid | grep "crypto_LUKS" | cut -d ":" -f 1 | head -n 1)"
 	fi
-	echo "$DEVICE"
+
+	echo "$PMOS_ROOT"
 }
 
 find_boot_partition() {
+	[ -n "$PMOS_BOOT" ] && echo "$PMOS_BOOT" && return
+
+	# First check for pmos_boot_uuid on the cmdline
+	# this should be set on all new installs.
 	# shellcheck disable=SC2013
 	for x in $(cat /proc/cmdline); do
-		[ "$x" = "${x#pmos_boot_uuid=}" ] && continue
-		findfs UUID="${x#pmos_boot_uuid=}"
-		return
+		if ! [ "$x" = "${x#pmos_boot_uuid=}" ]; then
+			# For the UUID, we validate if findfs returns a path
+			path="$(findfs UUID="${x#pmos_boot_uuid=}")"
+			if [ -n "$path" ]; then
+				PMOS_BOOT="$path"
+				break
+			fi
+		elif ! [ "$x" = "${x#pmos_boot=}" ]; then
+			# If the boot partition is specified explicitly
+			# then we need to check if it's a valid path, and
+			# fall back if not...
+			path="${x#pmos_boot=}"
+			if [ -e "$path" ]; then
+				PMOS_BOOT="$path"
+				break
+			fi
+		fi
 	done
 
-	# shellcheck disable=SC2013
-	for x in $(cat /proc/cmdline); do
-		[ "$x" = "${x#pmos_boot=}" ] && continue
-		echo "${x#pmos_boot=}"
-		return
-	done
+	# Finally fall back to findfs by label
+	if [ -z "$PMOS_BOOT" ]; then
+		# * "pmOS_i_boot" installer boot partition (fits 11 chars for fat32)
+		# * "pmOS_inst_boot" old installer boot partition (backwards compat)
+		# * "pmOS_boot" boot partition after installation
+		for p in pmOS_i_boot pmOS_inst_boot pmOS_boot; do
+			PMOS_BOOT="$(findfs LABEL="$p")"
+			[ -n "$PMOS_BOOT" ] && break
+		done
+	fi
 
-	# * "pmOS_i_boot" installer boot partition (fits 11 chars for fat32)
-	# * "pmOS_inst_boot" old installer boot partition (backwards compat)
-	# * "pmOS_boot" boot partition after installation
-	findfs LABEL="pmOS_i_boot" \
-		|| findfs LABEL="pmOS_inst_boot" \
-		|| findfs LABEL="pmOS_boot"
+	echo "$PMOS_BOOT"
 }
 
 get_partition_type() {
@@ -336,7 +361,7 @@ resize_root_partition() {
 	# that the partition is stored as a subpartition inside another one.
 	# In this case we want to resize it to use all the unused space of the
 	# external partition.
-	if [ -z "${partition##"/dev/mapper/"*}" ]; then
+	if [ -z "${partition##"/dev/mapper/"*}" ] || [ -z "${partition##"/dev/dm-"*}" ]; then
 		# Get physical device
 		partition_dev=$(dmsetup deps -o blkdevname "$partition" | \
 			awk -F "[()]" '{print "/dev/"$2}')
