@@ -630,7 +630,7 @@ show_splash() {
 	# shellcheck disable=SC2154,SC2059
 	/usr/bin/pbsplash -s /usr/share/pbsplash/pmos-logo-text.svg \
 		-b "Linux $(uname -r) | $deviceinfo_codename" \
-		-m "$(printf "$1")" &
+		-m "$(printf "$1")" >/dev/null &
 }
 
 hide_splash() {
