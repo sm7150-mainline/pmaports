@@ -2,15 +2,15 @@
 # Co-Maintainer: Joel Selvaraj <joelselvaraj.oss@gmail.com>
 pkgname=soc-qcom-sdm845
 pkgdesc="Common package for Qualcomm SDM845 devices"
-pkgver=16
+pkgver=17
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
 options="!check !archcheck !tracedeps"
-# kmod is needed to support compressed kernel modules
 depends="
 	swclock-offset
+	kmod
 "
 replaces="upower"
 subpackages="
@@ -25,6 +25,7 @@ subpackages="
 
 _ucm_commit="9ed12836b269764c4a853411d38ccb6abb70b383"
 source="
+	10-initramfs-sdm845.files
 	51-qcom-sdm845.lua
 	90-feedbackd-pmi8998.rules
 	UPower.conf
@@ -43,6 +44,9 @@ package() {
 	# Shutdown when battery is critical instead of sleep
 	install -Dm644 "$srcdir"/UPower.conf \
 		"$pkgdir"/etc/UPower/UPower.conf
+
+	install -Dm644 "$srcdir"/10-initramfs-sdm845.files \
+		-t "$pkgdir"/usr/share/mkinitfs/files/
 }
 
 modem() {
@@ -124,6 +128,7 @@ wireplumber() {
 }
 
 sha512sums="
+56845726c5e7b685953f96c381404181ad9b70ea7dbfe5a3d963fb6f15821addaead43a65c9b140cb938c2d45173cfb5421816bd36024fd7e1b8555e0b32622f  10-initramfs-sdm845.files
 a2eed80c1aa6bc2225aacd95888dbda7f13171008bf6433e1152be7b5148d03cad7bc1de081c64a3131e9fac12f75984f22be92e0f6162d524ce4c2db3bb82ba  51-qcom-sdm845.lua
 4f2c22a3a3fc7d380e200ad977578107d81f0e7ade7918e03bdb15b60a564e8db5f47e13cce22f636d38fd3722696bb46076b8872dae0ca2d8a3838522a1f025  90-feedbackd-pmi8998.rules
 9d455b56558d453d501a1ad869ffa79f9952ed43485a9847d506db6a78bfcd9f9c9d855660ee1d368eb74f4429385ec166addc30d802261c75562e785fe84c52  UPower.conf
