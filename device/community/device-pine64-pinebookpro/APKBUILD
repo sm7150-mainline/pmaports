@@ -3,7 +3,7 @@
 pkgname=device-pine64-pinebookpro
 pkgdesc="PINE64 Pinebook Pro"
 pkgver=16
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -18,8 +18,13 @@ depends="
 	iw
 	"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-install="$pkgname.post-install $pkgname.post-upgrade"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-elogind"
+install="
+	$pkgname.post-install
+	$pkgname.post-upgrade
+	$pkgname-elogind.post-install
+	$pkgname-elogind.post-upgrade
+"
 source="
 	deviceinfo
 	nvme-powersave.initd
@@ -39,9 +44,12 @@ package() {
 
 	install -D -m755 "$srcdir"/wlan-powersave-off.start \
 		"$pkgdir"/etc/local.d/wlan-powersave-off.start
+}
 
+elogind() {
+	install_if="$pkgname=$pkgver-r$pkgrel elogind"
 	install -D -m644 "$srcdir"/enable-s2idle.conf \
-		"$pkgdir"/usr/lib/elogind/sleep.conf.d/enable-s2idle.conf
+		"$subpkgdir"/usr/lib/elogind/sleep.conf.d/enable-s2idle.conf
 }
 
 nonfree_firmware() {
