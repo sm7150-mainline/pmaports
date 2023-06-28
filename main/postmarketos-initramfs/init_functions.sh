@@ -145,6 +145,19 @@ mount_subpartitions() {
 	done
 }
 
+# Rewrite /dev/dm-X paths to /dev/mapper/...
+pretty_dm_path() {
+	dm="$1"
+	n="${dm#/dev/dm-}"
+
+	# If the substitution didn't do anything, then we're done
+	[ "$n" = "$dm" ] && echo "$dm" && return
+
+	# Get the name of the device mapper device
+	name="/dev/mapper/$(cat "/sys/class/block/dm-${n}/dm/name")"
+	echo "$name"
+}
+
 find_root_partition() {
 	[ -n "$PMOS_ROOT" ] && echo "$PMOS_ROOT" && return
 
@@ -213,6 +226,7 @@ find_root_partition() {
 		PMOS_ROOT="$(blkid | grep "crypto_LUKS" | cut -d ":" -f 1 | head -n 1)"
 	fi
 
+	PMOS_ROOT=$(pretty_dm_path "$PMOS_ROOT")
 	echo "$PMOS_ROOT"
 }
 
@@ -253,6 +267,7 @@ find_boot_partition() {
 		done
 	fi
 
+	PMOS_BOOT=$(pretty_dm_path "$PMOS_BOOT")
 	echo "$PMOS_BOOT"
 }
 
