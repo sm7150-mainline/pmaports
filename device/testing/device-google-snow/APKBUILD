@@ -2,7 +2,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-snow
 pkgdesc="Samsung Chromebook"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -10,8 +10,10 @@ arch="armv7"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf
+	depthcharge-tools
+	linux-postmarketos-exynos5
 	postmarketos-base
-	u-boot-snow
+	postmarketos-update-depthcharge-kernel
 "
 makedepends="devicepkg-dev"
 source="
@@ -27,8 +29,6 @@ source="
 "
 subpackages="
 	$pkgname-i3wm
-	$pkgname-kernel-rev4:kernel_rev4
-	$pkgname-kernel-rev5:kernel_rev5
 	$pkgname-mpv-wayland:mpv_wayland
 	$pkgname-mpv-xorg:mpv_xorg
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -59,20 +59,6 @@ i3wm() {
 		"$subpkgdir"/etc/X11/xorg.conf.d/90-tap-to-click.conf
 }
 
-# Kernel subpackages to copy correct DTB
-
-kernel_rev4() {
-	pkgdesc="Google Snow Rev 4"
-	depends="linux-postmarketos-exynos5"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_rev5() {
-	pkgdesc="Google Snow Rev 5"
-	depends="linux-postmarketos-exynos5"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 mpv_wayland() {
 	# Looks like wayland libs are installed with some x11 UIs too, so match wlroots here
 	install_if="$pkgname=$pkgver-r$pkgrel mpv wlroots"
@@ -101,7 +87,7 @@ sway() {
 }
 
 sha512sums="
-6bdd7571b754757369bf202837613de1461e3f7c3acafe80074f2d3923358f524abf7781f850271ede1fd6c9fbd3665008d647b919c8a7b8ae2fbf6ff648ae8d  deviceinfo
+b0a0d7b0cfaa13541efab6b34253bab5ae879b2dfec2a3f2c998ad4f5b8724bd21598ed5ffedb50ca0b53ea9d5795ac8b629fe025e9f93d65752a5b12a34e8d3  deviceinfo
 e53ca475830930ecfc1fd537702e850e2abcb66fbed521cb6c3a2918d762649254bd0244ec93a47b20dfc593ec3afc9bdebdec1759a7bc96dcbe4800f40893da  90-tap-to-click.conf
 c5fdd5a39a41044343d937a1ad31cc6bb893f19a329beb4ce09249064cac066d643c84ffcbfcd794113c228c5a56e28c82812092751546b49ab31142dc8245b1  mali.conf
 8a8f593694528a9323ef4a0aff7e9c6ad45608957eb042d425663f682885c2f95eb01db4fe87b7c43a90de48f3e5f8b10cab4b13c547b5b0d31b924fcb083cad  HiFi.conf
