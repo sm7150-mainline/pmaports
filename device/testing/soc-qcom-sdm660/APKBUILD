@@ -1,0 +1,40 @@
+# Maintainer: Max Buchholz <max.buchholz@gmx.de>
+pkgname=soc-qcom-sdm660
+pkgdesc="Common package for Qualcomm SDM630/636/660 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !archcheck !tracedeps pmb:cross-native"
+subpackages="
+	$pkgname-rproc
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+rproc() {
+	pkgdesc="Modem and Wifi services and configuration"
+	depends="
+		msm-modem
+		pd-mapper
+		pd-mapper-openrc
+		tqftpserv
+		tqftpserv-openrc
+	"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware() {
+	pkgdesc="Non-free firmware for GPU and Bluetooth"
+	depends="
+		linux-firmware-qca
+		linux-firmware-qcom
+	"
+	mkdir "$subpkgdir"
+}
+
