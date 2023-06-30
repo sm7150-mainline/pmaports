@@ -64,3 +64,6 @@ else
 	echo "No tty attached, looping forever."
 	pmos_loop_forever
 fi
+
+# Show "Loading" splash again when continuing
+show_splash "Loading..."
