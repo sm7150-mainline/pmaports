@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-a6lte
 pkgdesc="Samsung Galaxy A6 2018"
-pkgver=0.4
+pkgver=0.5
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -10,7 +10,6 @@ options="!check !archcheck"
 depends="
 	alsa-utils
 	mkbootimg
-	msm-fb-refresher
 	postmarketos-base
 	samsungipcd
 	util-linux
@@ -64,13 +63,13 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Working: display, touchscreen, wifi, audio, cellular"
-	depends="linux-samsung-a6lte pipewire pipewire-pulse"
+	depends="linux-samsung-a6lte msm-fb-refresher pipewire pipewire-pulse"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 kernel_mainline() {
 	pkgdesc="Close-to-mainline WIP (display and touchscreen works)"
-	depends="linux-postmarketos-exynos7870"
+	depends="linux-postmarketos-exynos7870 mesa-dri-simpledrm"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 

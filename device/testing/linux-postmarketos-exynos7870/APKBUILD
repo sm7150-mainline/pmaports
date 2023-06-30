@@ -1,7 +1,7 @@
 # Kernel config based on defconfig
 
 pkgname=linux-postmarketos-exynos7870
-pkgver=6.2.1
+pkgver=6.3.9
 pkgrel=0
 pkgdesc="Close-to-mainline kernel for Samsung Galaxy A6 2018"
 arch="aarch64"
@@ -21,7 +21,7 @@ makedepends="
 "
 
 _patches_repo="https://gitlab.com/sleirsgoevy/a6lte-mainline"
-_patches_repo_commit="58a5a02739abf77adf62902c141d0383f7de7172"
+_patches_repo_commit="a3d286c155a70e8075d611cffe17c579360b5d9b"
 _config="config-$_flavor.aarch64"
 # Source
 source="
@@ -46,6 +46,7 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 
 	# Build out-of-tree devicetrees
+	rm -f "$srcdir/"a6lte-mainline-*/*-minimal-dts.dts
 	for i in "$srcdir/"a6lte-mainline-*/*.dts; do
 		scripts/dtc/dtc "$i" -o "$_outdir/arch/$_carch/boot/dts/$(basename -s .dts "$i").dtb"
 	done
@@ -77,7 +78,7 @@ package() {
 }
 
 sha512sums="
-d7e11f86b5daf09b9764fc710e3b49e2a2b5b4cd1c74ca3f009d396337f8c20cd3969d1c334bdf0e992acdd1d5c650474a11dddf473f3846e86c1a1649085ce4  linux-6.2.1.tar.gz
-4407a2606acc3a35019a45ed1c371543765ee89c865b80ba65791eff191f1401fd49cc7cfade385ffbb19b9dc9b7fb7d78751e796653be3c15b779db99d336a5  config-exynos7870.aarch64
-1819881ee8de1b2fc04dfb288bf131ad5998f6cf40d27ae523049a30b01a8edfd26df6970186b725a7ace03bf9bab28bbc26876b4932931259059d63df088de9  patches-58a5a02739abf77adf62902c141d0383f7de7172.tar.gz
+e5f98f9e60b3020f5177585e0c7812932afc06f788d572c122eb1cc3343f876a4cc8d99f06a7834aa8f8821b4340b9c475c15d07f5322e11d25622813306bf50  linux-6.3.9.tar.gz
+867187f7dab4a103b6cf015f7d231a1ea930646e8176c8b9a5f70b95d5fa793fa1321cfdd52d8b19e64a2f91c6d2f2c6e07228b59b454096566b318f17f33959  config-exynos7870.aarch64
+9e50e192402671ac003a4f1725b62cd4f3ad97909fdfb2f60f89498659b5f94850ccec7348d9fb32eee053f5a08657c17d1390229215671d9069107e52cec4cf  patches-a3d286c155a70e8075d611cffe17c579360b5d9b.tar.gz
 "
