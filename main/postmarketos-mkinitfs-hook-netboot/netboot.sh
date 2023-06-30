@@ -28,4 +28,7 @@ done
 
 echo "Connected to $NBD_IP!"
 
+# Show "Loading" splash again when continuing
+show_splash "Loading..."
+
 mount_subpartitions
