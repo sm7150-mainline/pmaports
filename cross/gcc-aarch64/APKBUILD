@@ -34,7 +34,7 @@ _pkgsnap="${pkgver##*_git}"
 [ "$CHOST" != "$CTARGET" ] && _target="-$CTARGET_ARCH" || _target=""
 
 pkgname=gcc-aarch64
-pkgrel=1
+pkgrel=2
 pkgdesc="Stage2 cross-compiler for aarch64"
 url="https://gcc.gnu.org"
 arch="x86_64"
@@ -423,7 +423,7 @@ build() {
 
 package() {
 	cd "$_builddir"
-	make DESTDIR="$pkgdir" install
+	make -j1 DESTDIR="$pkgdir" install
 
 	ln -s gcc "$pkgdir"/usr/bin/cc
 
