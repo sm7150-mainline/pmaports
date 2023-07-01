@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
-pkgver=10
-pkgrel=1
+pkgver=11
+pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -40,15 +40,16 @@ replaces="
 replaces_priority=100  # leave plenty for alpine
 
 _source644="
-	etc/NetworkManager/conf.d/hostname-mode.conf
-	etc/NetworkManager/conf.d/use-dnsmasq.conf
-	etc/NetworkManager/conf.d/tethering.conf
 	etc/chrony/chrony.conf
+	etc/elogind/logind.conf
 	etc/conf.d/bluetooth
 	etc/conf.d/openrc-settingsd
 	etc/conf.d/tinydm
 	etc/conf.d/wpa_supplicant
-	etc/elogind/logind.conf
+	etc/NetworkManager/conf.d/hostname-mode.conf
+	etc/NetworkManager/conf.d/random-mac.conf
+	etc/NetworkManager/conf.d/tethering.conf
+	etc/NetworkManager/conf.d/use-dnsmasq.conf
 	etc/pulse/default.pa.d/postmarketos.pa
 	etc/skel/.profile
 	etc/sleep-inhibitor.conf
@@ -159,10 +160,11 @@ networkmanager() {
 		networkmanager-wwan
 		networkmanager-dnsmasq"
 	amove etc/NetworkManager/conf.d/hostname-mode.conf
-	amove etc/NetworkManager/dispatcher.d/85-tethering
-	amove usr/lib/NetworkManager/system-connections/USB_Networking.nmconnection
 	amove etc/NetworkManager/conf.d/use-dnsmasq.conf
+	amove etc/NetworkManager/conf.d/random-mac.conf
+	amove etc/NetworkManager/dispatcher.d/85-tethering
 	amove etc/NetworkManager/dispatcher.d/99-dns-filter.sh
+	amove usr/lib/NetworkManager/system-connections/USB_Networking.nmconnection
 }
 
 _default_camera() {
@@ -176,6 +178,7 @@ sha512sums="
 3c9ae7415f4891bee8595166ed6a42cb577a837f741c6b5409d193558626348b41516888a01d0c4895282c5f4e9a1ff838c19712888750b2ef68429bb4b42ee3  rootfs-etc-NetworkManager-conf.d-hostname-mode.conf
 900554534191fa0797064d35350934cdd8af59f30f0ae7d8ec63c2e11c44a16c643d3024b6543940488cd590fec1d392548bcaacc3be88cddff90f69b17ece07  rootfs-etc-NetworkManager-conf.d-use-dnsmasq.conf
 6507eb31cdd694a7db0280246433118a650bf5d99fbe639f967ae2d95945429a7e03ca6feb5bb6e7b9fb14fcec21e13e51209a79edd0041e77b5bf76b129ed6f  rootfs-etc-NetworkManager-conf.d-tethering.conf
+d4b4c4fed2dee7266f6a87ae266691377593014943e2953e4cd87a59f3110f25bfb5f3f866cc843519f628695e4df7602bfdcd3d79f2c2cd6e8256535c33b038  rootfs-etc-NetworkManager-conf.d-random-mac.conf
 e5d049db1d82c510bab9246208b51b8ec2711d008d67792fc10d4c0b65ed4dece7b5ae3c3dd28a8539d177b6849c1f921cb9fef3d2c7bee0355451f7b4757ec6  rootfs-etc-chrony-chrony.conf
 b841282b96110ec59a7aa539db0737327b09549d55c78dc4b2c3b28b4a6ad1facf015b3175cb6d3a38f13e47aa6314ef3dc1514a4e60dd653a97409ec54ba706  rootfs-etc-conf.d-bluetooth
 49fb494b659fe0149a93eafe109609acce6a470bb8acea160638d07e0e4b11af2544f34549d5ef2deb2914a7ef13d0d470b04ad62981f14f96999af02a5f24cf  rootfs-etc-conf.d-openrc-settingsd
