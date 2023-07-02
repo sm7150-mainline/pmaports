@@ -2,7 +2,7 @@
 # Co-Maintainer: Segfault <awarnecke002@hotmail.com>
 pkgname=linux-google-nyan
 pkgver=6.1.27
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline kernel fork for Google Nyan Chromebooks"
 arch="armv7"
 _carch="arm"
@@ -60,9 +60,6 @@ package() {
 		INSTALL_MOD_STRIP=1 \
 		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
-
-	# Prevent kernel self-decompression from overwriting initramfs
-	truncate -s 10M "$pkgdir"/boot/vmlinuz
 
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
