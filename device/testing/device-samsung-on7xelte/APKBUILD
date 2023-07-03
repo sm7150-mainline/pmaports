@@ -1,0 +1,46 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-on7xelte
+pkgdesc="Samsung Galaxy J7 Prime"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-samsung-on7xelte
+	mkbootimg
+	msm-fb-refresher
+	postmarketos-base
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-lightdm"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	lightdm.conf
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Proprietary Firmware blobs"
+	depends="firmware-samsung-on7xelte"
+	mkdir "$subpkgdir"
+}
+
+lightdm() {
+	install_if="$pkgname=$pkgver-r$pkgrel lightdm"
+	install -Dm644 lightdm.conf \
+		"$subpkgdir"/etc/lightdm/lightdm.conf.d/00-on7xelte.conf
+}
+
+sha512sums="
+ce87c75f3b16ed56aea5577d9b1da96b90a22d8778639db80636fd5d9ee0f3633c814ae3280542385f6c7ce4fbd0eafbd4c98776aa5e657f4331b8e0b2fadff2  deviceinfo
+baee319b6d2f49a15680b0f322ec3e398a071d73fbf7713d14f26a1d027f8950457a482ac3f019605af3dfcf25bbb33ebaa0ffde181f7f96d911d56251c81eef  lightdm.conf
+"
