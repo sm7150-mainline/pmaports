@@ -2,7 +2,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-vince
 pkgdesc="Xiaomi Redmi 5 Plus"
-pkgver=7
+pkgver=8
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -13,6 +13,7 @@ depends="
 	lk2nd-msm8953
 	mkbootimg
 	postmarketos-base
+	soc-qcom-msm8916
 "
 makedepends="devicepkg-dev"
 subpackages="
@@ -24,6 +25,8 @@ source="
 	deviceinfo
 	fb.modes
 	pointercal
+	ucm2/xiaomi-vince.conf
+	ucm2/HiFi.conf
 "
 
 build() {
@@ -35,6 +38,11 @@ package() {
 	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
 	install -Dm644 "$srcdir"/pointercal "$pkgdir"/etc/pointercal
 	install -Dm644 "$srcdir"/30-gpu-firmware.files "$pkgdir"/usr/share/mkinitfs/files/30-gpu-firmware.files
+
+	# Alsa usecase manager config
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/xiaomi-vince \
+		"$srcdir"/xiaomi-vince.conf \
+		"$srcdir"/HiFi.conf
 }
 
 nonfree_firmware() {
@@ -54,4 +62,6 @@ sha512sums="
 cf1f1707b53853dbe4e5401ae28593b1ef4386c3f6da2cd22fcbe3cb6bafc0cb5ecaf5a286a088aff776136ad06642bb3738186cde118ffcb324f6f32a23bec3  deviceinfo
 9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
 4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
+09077bd18de123008a0e13c6c45c3690d3a79b9c5da6f7045af9c7aefa5002883c6fe6ea7c813a0f58766ca2e48b9a340edb74bc02cdb1896fdd2e5484e9b21d  xiaomi-vince.conf
+fb8b369272e88206fdc71f169930c39d732e7df841ae10de8b708f04ee772f8cb9c9e7e9de9a3eb09abe6007f85c86197cb723fac43971df0535fe24d66d3fce  HiFi.conf
 "
