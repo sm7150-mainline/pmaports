@@ -1,0 +1,54 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: qcom_apq8064_defconfig
+
+_flavor="postmarketos-qcom-msm8960"
+pkgname=linux-$_flavor
+pkgver=6.5_rc2
+pkgrel=0
+pkgdesc="Mainline kernel fork for Qualcomm APQ8064/MSM8960 devices"
+arch="armv7"
+_carch="arm"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="bison flex openssl-dev perl gmp-dev mpc1-dev mpfr-dev findutils postmarketos-installkernel"
+
+# Source
+_repository="linux"
+_config="config-$_flavor.$arch"
+_tag="fdf0eaf11452d72945af31804e2a1048ee1b574c"
+source="
+	$pkgname-$_tag.tar.gz::https://github.com/torvalds/$_repository/archive/$_tag.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_tag"
+
+prepare() {
+	default_prepare
+	cp -v "$srcdir"/$_config .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+893bdb7364040b08b74e0775419d0d827f0d2a03d82df359cc8d8d2f1a7d6a7d2c47eb39922c44d5d895857ad4a0b4ac4fdfa32519fc1f2df4c1f880b933f5e9  linux-postmarketos-qcom-msm8960-fdf0eaf11452d72945af31804e2a1048ee1b574c.tar.gz
+de1c730d050896ca15bbb6d87708c60342f940c04111ae327714652b6229c76eee5e7ba8bde0b19c4ce29554e720af5fd13795987448aabb57886cf7c09962d7  config-postmarketos-qcom-msm8960.armv7
+"
