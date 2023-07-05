@@ -5,14 +5,12 @@ pkgdesc="LD_PRELOADable library to emulate AF_QIPCRTR socket on devices with onl
 url="https://github.com/scintill/libqipcrtr4msmipc"
 arch="armhf armv7 aarch64"
 license="GPL-3.0-or-later"
-_tag="v${pkgver}"
+_tag="v$pkgver"
 makedepends="msmipc-dev"
-source="$pkgname-$_tag.tar.gz::https://github.com/scintill/libqipcrtr4msmipc/archive/${_tag}.tar.gz"
+source="$pkgname-$_tag.tar.gz::https://github.com/scintill/libqipcrtr4msmipc/archive/$_tag.tar.gz"
 options="!check"
-builddir="$srcdir/libqipcrtr4msmipc-$pkgver"
 
 build() {
-	cd "$builddir"
 	make C_INCLUDE_PATH=/usr/src/msmipc-dev/include
 }
 
