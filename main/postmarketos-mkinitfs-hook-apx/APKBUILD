@@ -1,0 +1,24 @@
+# Documentation: https://wiki.postmarketos.org/wiki/Nvidia_Tegra#APX
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=postmarketos-mkinitfs-hook-apx
+pkgver=1
+pkgrel=0
+pkgdesc="Enter APX on boot for NVIDIA Tegra devices"
+url="https://postmarketos.org"
+depends="postmarketos-mkinitfs devmem2"
+source="00-apx.sh 00-apx.files"
+arch="armv7"
+license="GPL-2.0-or-later"
+options="!check"
+
+package() {
+	install -Dm644 "$srcdir"/00-apx.sh \
+		"$pkgdir"/usr/share/mkinitfs/hooks/00-apx.sh
+	install -Dm644 "$srcdir"/00-apx.files \
+		"$pkgdir"/usr/share/mkinitfs/files/00-apx.files
+}
+
+sha512sums="
+9dba7ac8266ed3bd74895a7f1d0353d3a01e6b63c78e9eb6bf33a23a4a86fef647858e2069e7d82f3dac4e9b3f4d7b6239373018212f0dd6dc01ad9f15e18d2a  00-apx.sh
+3fbe0463aa08e7a1ed8141c2d1d84e0e2ced53dc9b0d3a06dbca4a302bf5d96bc1a2e5c9a9600efc19b57c178326f4f0194a8839bb50de3192d8f19cc92fb980  00-apx.files
+"
