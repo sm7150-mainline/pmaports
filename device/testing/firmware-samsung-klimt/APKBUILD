@@ -1,16 +1,19 @@
 pkgname=firmware-samsung-klimt
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware for Samsung klimtwifi and klimtlte"
 url="https://github.com/exynos5420/android_vendor_samsung_klimt-common"
 arch="armv7"
 license="proprietary"
 options="!check !strip !archcheck !spdx !tracedeps pmb:cross-native"
+subpackages="
+	$pkgname-downstream:downstream
+	$pkgname-mainline:mainline
+	"
 
 # Source
 _klimt_commit="cedd082ae12290218c2c33ffd31bbecc713b7cd9"
 _klimt_url="https://github.com/exynos5420/android_vendor_samsung_klimt-common/raw/$_klimt_commit"
-
 _klimt_wifi_files="
 	bcmdhd_apsta.bin
 	bcmdhd_ibss.bin
@@ -26,12 +29,27 @@ for _i in $_klimt_wifi_files; do
 done
 
 package() {
+	mkdir -p "$pkgdir"
+}
+
+downstream() {
+	pkgdesc="Firmware for Samsung klimt* when using downstream kernel"
+	install_if="device-samsung-klimtlte-kernel-downstream"
+	mkdir -p "$subpkgdir"
 	# Wifi
 	local file
 	for file in $_klimt_wifi_files; do
 		 install -Dm644 "$srcdir/$pkgname-$_klimt_commit-$file" \
-			"$pkgdir/lib/firmware/postmarketos/$file"
+			"$subpkgdir/lib/firmware/postmarketos/$file"
 	done
+}
+
+mainline() {
+	pkgdesc="Firmware for Samsung klimt* when using mainline kernel"
+	install_if="device-samsung-klimtlte-kernel-mainline"
+	# linux-firmware-other contains s5p-mfc-v7.fw
+	depends="linux-firmware-other"
+	mkdir -p "$subpkgdir"
 }
 
 sha512sums="4449d14eafe81afe2b3a8f81b00af1fd36e493cfde8892d83a9853b9ee9fc8551970b363f7e73d4a98640a043856e1374deabea5ec06dc46e86312d6e3687d35  firmware-samsung-klimt-cedd082ae12290218c2c33ffd31bbecc713b7cd9-bcmdhd_apsta.bin
