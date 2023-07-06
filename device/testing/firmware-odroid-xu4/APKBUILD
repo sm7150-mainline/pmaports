@@ -2,12 +2,14 @@
 
 pkgname=firmware-odroid-xu4
 pkgver=2020.01
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for ODROID XU4"
 url="https://github.com/hardkernel/u-boot"
 arch="armv7"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
+# depend on linux-firmware-other for s5p-mfc-v8.fw
+depends="linux-firmware-other"
 source="xu4-bl1.bin.hardkernel::https://github.com/hardkernel/u-boot/raw/u-boot_v$pkgver/board/hardkernel/odroid-xu3/bl1.bin.hardkernel
 	xu4-bl2.bin.hardkernel::https://github.com/hardkernel/u-boot/raw/u-boot_v$pkgver/board/hardkernel/odroid-xu3/bl2.bin.hardkernel.1mb_uboot
 	xu4-tzsw.bin.hardkernel::https://github.com/hardkernel/u-boot/raw/u-boot_v$pkgver/board/hardkernel/odroid-xu3/tzsw.bin.hardkernel
