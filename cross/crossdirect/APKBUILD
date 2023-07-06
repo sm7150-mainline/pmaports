@@ -16,14 +16,14 @@
 # version is implemented as simple shell wrappers.
 
 pkgname=crossdirect
-pkgver=4
-pkgrel=3
+pkgver=5
+pkgrel=0
 pkgdesc="Wrappers to launch native cross compilers in foreign chroots"
 url="https://postmarketOS.org"
 arch="all"
 license="MIT"
 options="!check"
-source="crossdirect.c rustc.sh rust-qemu-linker.sh"
+source="cargo.sh crossdirect.c rustc.sh rust-qemu-linker.sh"
 
 build() {
 	cd "$srcdir"
@@ -40,9 +40,6 @@ build() {
 			-Werror \
 			-DHOSTSPEC="\"$_hostspec\"" \
 			crossdirect.c
-
-		# rustc
-		sed "s/@ARCH@/$_arch/g" rustc.sh >rustc-"$_arch"
 	done
 }
 
@@ -51,9 +48,11 @@ package() {
 	_archs="x86_64 armhf armv7 aarch64"
 	_bins="c++ cc cpp g++ gcc clang clang++"
 
-	# Rust: qemu-linker
+	# Rust wrappers
 	install -Dm755 "$srcdir/rust-qemu-linker.sh" \
 		"$pkgdir/usr/lib/crossdirect/rust-qemu-linker"
+	install -Dm755 "$srcdir/cargo.sh" "$pkgdir/usr/lib/crossdirect/cargo.sh"
+	install -Dm755 "$srcdir/rustc.sh" "$pkgdir/usr/lib/crossdirect/rustc.sh"
 
 	# Iterate over architectures
 	for _arch in $_archs; do
@@ -73,10 +72,13 @@ package() {
 			ln -s "crossdirect-$_arch" "$_hostspec-$_bin"
 		done
 
-		# Rust: arch-specific rustc wrapper
-		install -Dm755 "$srcdir/rustc-$_arch" "$_bindir/rustc"
+		ln -s ../cargo.sh cargo
+		ln -s ../rustc.sh rustc
 	done
 }
-sha512sums="500107e5aff8b34e74b54982ebcd447fc41bc8283956d506561b031a055cb30ec12698047c2604918b4b6d8560fe03db427a63dff2b83c907e8494b7f5233f29  crossdirect.c
-6be16ba88720e628a3ecc8fa53f8e7a21d2af268b0509745d989139874d6b94b640bfcff09575eaa19073810be6ef91169c1f83e94f5cf8e6819f2670d9408de  rustc.sh
-ea9bf8db3810d03d0a7395057f3d6e57f7127d87c55deaedc171c255288f5f3cc6fbcc680a5a1b92786cf573875d5dc22521173799fe2639acc97d0715ff905b  rust-qemu-linker.sh"
+sha512sums="
+0f4b48f250425dc57f63955fc8b38477d23db793bee367c3fbe03c3d2a559ba576434d07518310db4cae9d90d501af4051b80038b10fae94b980e537fc9374ad  cargo.sh
+500107e5aff8b34e74b54982ebcd447fc41bc8283956d506561b031a055cb30ec12698047c2604918b4b6d8560fe03db427a63dff2b83c907e8494b7f5233f29  crossdirect.c
+2c41410a9ef2dab31403545e55e2464f2ee4e7056ffbcd3bc5810d582311801496b88d55307f17ce6acf766e9c867d30d05f2b0d8d46bf77a5e8f0495d6bc24e  rustc.sh
+ea9bf8db3810d03d0a7395057f3d6e57f7127d87c55deaedc171c255288f5f3cc6fbcc680a5a1b92786cf573875d5dc22521173799fe2639acc97d0715ff905b  rust-qemu-linker.sh
+"
