@@ -3,7 +3,7 @@
 # Kernel config based on: arch/arm/configs/exynos_defconfig
 
 pkgname=linux-postmarketos-exynos4
-pkgver=6.3.5
+pkgver=6.4.2
 pkgrel=0
 pkgdesc="Mainline kernel fork for Samsung Exynos4 devices"
 arch="armv7"
@@ -36,7 +36,8 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.0};;
 	*.*)	_kernver=$pkgver;;
 esac
-_tag="v${pkgver//_/-}-exynos4"
+#_tag="v${pkgver//_/-}-exynos4"
+_tag="742d0579779979e732046f17db28e43c9861cce9"
 source="
 	$pkgname-$_tag.tar.bz2::$url/-/archive/$_tag/linux-$_tag.tar.bz2
 	$_config
@@ -79,8 +80,8 @@ package() {
 }
 
 sha512sums="
-da9ee80c6762caf09d11da30be2493bbc66cce4b30e49c2bfc30754ea4773298b89acc63d7fc64584a8fe65ecba15331e6d7b0ce7e75416d022411a17e570366  linux-postmarketos-exynos4-v6.3.5-exynos4.tar.bz2
-a1f542cb2bf2e058adf0dbf606d1f22008e1faf8d2832b769aa21b050c0cd9d9217e09b8ddd49bb6a79dbb6237716321df6635eeb5dbc49becd1dc173bc46888  config-postmarketos-exynos4.armv7
+2bd3c86191254f3d7753b5492a15bab5005c53954ffb182fcf7dd13395481638d535bc0e983e98535bd301db9eeb724866486d11b66ec3f4cbd464df7b17159c  linux-postmarketos-exynos4-742d0579779979e732046f17db28e43c9861cce9.tar.bz2
+b313bfb8deacfa48af10c0d0a3d7fca996ca68af7542471080ca46f53d7562a0893383e5779b611b590e63d76d7eec9c134c620dfe522409d4200a01ac367bcd  config-postmarketos-exynos4.armv7
 aaff0332b90e1f9f62de1128cace934717336e54ab09de46477369fa808302482d97334e43a85ee8597c1bcab64d3484750103559fea2ce8cd51776156bf7591  initramfs.list
 09f1f214a24300696809727a7b04378887c06ca6f40803ca51a12bf2176a360b2eb8632139d6a0722094e05cb2038bdb04018a1e3d33fc2697674552ade03bee  init
 "
