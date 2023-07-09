@@ -2,38 +2,29 @@
 # Maintainer: Miles Alan <m@milesalan.com>
 pkgname=postmarketos-ui-sxmo-de-dwm
 pkgver=1.14.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Simple Mobile: Mobile environment based on SXMO and running on dwm"
 url="http://sr.ht/~mil/Sxmo"
 arch="noarch !armhf"
 license="MIT"
 depends="
-	sxmo-common
+	postmarketos-base-ui
+	postmarketos-base-ui-networkmanager
 
-	autocutsel
-	dunst
-	feh
-	svkbd
-	sxiv
-	sxmo-dmenu
-	sxmo-dwm
-	sxmo-st
-	unclutter-xfixes
-	xcalib
-	xclip
-	xdotool
-	xdpyinfo
-	xinput
-	xprintidle
-	xprop
-	xrandr
-	xrdb
-	xsel
-	xset
-	xsetroot
-	xwininfo
+	sxmo-utils-dwm
+	sxmo-utils-audio-bluetooth
+
+	sxmo-utils-openrc
+	tinydm-openrc
+	modemmanager-openrc
+	networkmanager-openrc
+	bluez-openrc
 	"
-install="$pkgname.post-install"
+install="
+	$pkgname.post-install
+	$pkgname.post-upgrade
+	$pkgname.pre-deinstall
+	"
 _pmb_recommends="
 	w3m
 	sfeed
