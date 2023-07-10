@@ -2,7 +2,7 @@
 # Maintainer: Newbyte <newbyte@postmarketos.org>
 pkgname=postmarketos-ui-phosh
 pkgver=22.2
-pkgrel=3
+pkgrel=4
 pkgdesc="(Wayland) Mobile UI developed for the Librem 5"
 url="https://puri.sm"
 arch="noarch !armhf"
@@ -18,6 +18,8 @@ depends="
 	gnome-keyring
 	phosh
 	postmarketos-base-ui-gnome
+	postmarketos-base-ui-qt-tweaks
+	postmarketos-base-ui-qt-wayland
 	tinydm
 	tinydm-openrc
 	udiskie
@@ -50,13 +52,10 @@ _pmb_recommends="
 	ttyescape
 	"
 _pmb_groups="feedbackd"
-subpackages="$pkgname-qt_tweaks"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	01_postmarketos-ui-phosh.gschema.override
 	mimeapps.list
-	phosh-qt-mobile-controls.sh
-	phosh-qt-wayland.sh
 	udiskie.desktop
 	"
 options="!check pmb:gpu-accel"
@@ -70,18 +69,8 @@ package() {
 		"$pkgdir"/etc/xdg/autostart/udiskie.desktop
 }
 
-qt_tweaks() {
-	install_if="$pkgname=$pkgver-r$pkgrel qt5-qtbase"
-	depends="qt5-qtwayland"
-	install -Dm755 -t "$subpkgdir"/etc/profile.d/ \
-		"$srcdir"/phosh-qt-mobile-controls.sh \
-		"$srcdir"/phosh-qt-wayland.sh
-}
-
 sha512sums="
 bfdef6d89015c34cbb9cf67f623f8d51f0b2d9665bca447c434ac14031ad13e8a5fe6fc63bdf52957bc6fd5404f2fe1321df8f5f2a9b945a2df09c741a2c672b  01_postmarketos-ui-phosh.gschema.override
 d58379d4dcbcc8df68e20c4a2f45dc320db5e9c383b8ffe2f3ba3815ebff46e8c1c32d18195800ac8b37adfab23ef4f985be2bf5da7ed3f10d15c5e3915c2fd3  mimeapps.list
-bf8db527c49fa724e640a90269ba2648a2555f5867b2adbfbd88d1f685261f757339757c09ee08f590c76de4bd3d0c73a47dea9bd340644dd4707e76152cefd1  phosh-qt-mobile-controls.sh
-6e193eca3961a78d47b4656892eae34d019d9317a255a201f5ea61e3300caff04c526a27cd98d0edc072b36e3eaf3a1768f4cd27c5e2be8b19c167d535c820a6  phosh-qt-wayland.sh
 53f5c565b4ca8a12f12b63ec84a0194ef530703565d123203d41582a35a54d66afaf3a676df158ae0effe327dcfc1c6496a082ce9dbe803b2547417c3c3fad6e  udiskie.desktop
 "
