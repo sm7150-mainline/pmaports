@@ -1,0 +1,42 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-oak
+pkgdesc="Google Oak Chromebooks"
+pkgver=4
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-utils
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt8173
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+# provides and replaces to switch old installations to this package
+provides="google-elm=$pkgver-r$pkgrel google-hana=$pkgver-r$pkgrel"
+replaces="google-elm google-hana"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT and GPU firmware"
+	depends="linux-firmware-mrvl linux-firmware-mediatek firmware-powervr-gx6250"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+7c405573ea9978ef2c8bdeac512b252051edda13b4596447a5b72d1e66b1294e2d08a0edd9dc940e59728aea66467153d99e551992c971dab77c93178883994f  deviceinfo
+"
