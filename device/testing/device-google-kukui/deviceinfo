@@ -1,0 +1,35 @@
+# Reference: <https://postmarketos.org/deviceinfo>
+# Please use double quotes only. You can source this file in shell
+# scripts.
+
+deviceinfo_format_version="0"
+deviceinfo_name="Google Kukui Chromebook"
+deviceinfo_manufacturer="Google"
+deviceinfo_codename="google-kukui"
+deviceinfo_year="2020"
+deviceinfo_dtb="mediatek/mt8183-kukui*"
+deviceinfo_modules_initfs="atmel-mxt-ts cros-ec-keyb elan-i2c elants-i2c gpu-sched hid-generic hid-multitouch i2c-hid-of i2c-hid-of-goodix i2-hid-of sbs-battery"
+deviceinfo_arch="aarch64"
+
+# Device related
+# chassis does not make sense here, will probably be removed (pmb#2255)
+deviceinfo_chassis="convertible"
+deviceinfo_keyboard="true"
+deviceinfo_external_storage="true"
+deviceinfo_gpu_accelerated="true"
+
+# Bootloader related
+deviceinfo_kernel_cmdline="console=null"
+deviceinfo_flash_method="none"
+deviceinfo_cgpt_kpart="/boot/vmlinuz.kpart"
+deviceinfo_cgpt_kpart_start="8192"
+deviceinfo_cgpt_kpart_size="65536"
+# We are supposed to use "kukui" board here, but lazor dts does
+# not include kukui compatible which results in loading a wrong
+# dtb. "mt8183" board may result in including dtbs that are for
+# mt8183 but not related to Chrome OS devices which would increase
+# image size. This doesn't happen for us because we provide only 
+# dtbs from deviceinfo_dtb variable and nothing more, so use "mt8183"
+# board here.
+deviceinfo_depthcharge_board="mt8183"
+deviceinfo_generate_depthcharge_image="true"

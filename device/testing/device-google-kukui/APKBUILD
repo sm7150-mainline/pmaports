@@ -1,0 +1,77 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-kukui
+pkgdesc="Google Kukui Chromebooks"
+pkgver=6
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-kukui
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt8183>=6.1.28-r0
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+	soc-mediatek-mt8183
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+# provides and replaces to switch old installations to this package
+provides="
+	device-google-burnet=$pkgver-r$pkgrel
+	device-google-cerise=$pkgver-r$pkgrel
+	device-google-cozmo=$pkgver-r$pkgrel
+	device-google-damu=$pkgver-r$pkgrel
+	device-google-fennel=$pkgver-r$pkgrel
+	device-google-fennel14=$pkgver-r$pkgrel
+	device-google-juniper=$pkgver-r$pkgrel
+	device-google-kakadu=$pkgver-r$pkgrel
+	device-google-kappa=$pkgver-r$pkgrel
+	device-google-katsu=$pkgver-r$pkgrel
+	device-google-kenzo=$pkgver-r$pkgrel
+	device-google-kodama=$pkgver-r$pkgrel
+	device-google-krane=$pkgver-r$pkgrel
+	device-google-makomo=$pkgver-r$pkgrel
+	device-google-stern=$pkgver-r$pkgrel
+	device-google-willow=$pkgver-r$pkgrel
+"
+replaces="
+	device-google-burnet
+	device-google-cerise
+	device-google-cozmo
+	device-google-damu
+	device-google-fennel
+	device-google-fennel14
+	device-google-juniper
+	device-google-kakadu
+	device-google-kappa
+	device-google-katsu
+	device-google-kenzo
+	device-google-kodama
+	device-google-krane
+	device-google-makomo
+	device-google-stern
+	device-google-willow
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-ath10k linux-firmware-qca linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+6f05b924cb8f51a5432581443b34415b3ac8b3621c7ce27bae7fbd94039c4ba45c21e49bd92ea532fcb771909fa2ef6291cc84e7c158a38071f86e0b65af1638  deviceinfo
+"
