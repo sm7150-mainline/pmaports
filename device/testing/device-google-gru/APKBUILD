@@ -1,0 +1,56 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-gru
+pkgdesc="Google Gru Chromebooks"
+pkgver=5
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-google-gru
+	depthcharge-tools
+	eudev-hwids>=3.2.12-r0
+	linux-postmarketos-rockchip
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+# provides and replaces to switch old installations to this package
+provides="
+	device-google-dru=$pkgver-r$pkgrel
+	device-google-druwl=$pkgver-r$pkgrel
+	device-google-dumo=$pkgver-r$pkgrel
+	device-google-kevin=$pkgver-r$pkgrel
+	device-google-bob=$pkgver-r$pkgrel
+"
+replaces="
+	device-google-dru
+	device-google-druwl
+	device-google-dumo
+	device-google-kevin
+	device-google-bob
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT and DP firmware"
+	depends="linux-firmware-ath10k linux-firmware-mrvl linux-firmware-rockchip"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="
+092b8907008aa4b06cbd350ddb1914cf53b002ad6c377c4f7cd89f734320e0c93090a2d257b4f4dab77ecd27b36b256feb0326caa7fdfde926a8513d3d4f04f8  deviceinfo
+"
