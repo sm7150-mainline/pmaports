@@ -1,0 +1,48 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-trogdor
+pkgdesc="Google Trogdor Chromebooks"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	depthcharge-tools
+	eudev-hwids
+	linux-postmarketos-qcom-sc7180
+	postmarketos-base
+	postmarketos-update-depthcharge-kernel
+	soc-qcom-sc7180
+"
+makedepends="devicepkg-dev"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT, Modem, GPU, Venus firmware"
+	depends="
+		linux-firmware-qcom
+		linux-firmware-qca
+		linux-firmware-ath10k
+		firmware-google-trogdor
+		soc-qcom-sc7180-nonfree-firmware
+		msm-cros-efs-loader
+	"
+	mkdir "$subpkgdir"
+}
+
+
+sha512sums="
+3c8c835274e39fcd76ac21ad551ef8bd171f60ab83f9846d6d96d2a5190e00e07ed9ee5a532b96a8cd09d11b5ed9c389c4b3e5c7862290fa4257f1060c47d6df  deviceinfo
+"
