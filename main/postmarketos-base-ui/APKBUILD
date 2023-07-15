@@ -1,6 +1,6 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
-pkgver=11
+pkgver=12
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
@@ -46,23 +46,23 @@ _source644="
 	etc/conf.d/openrc-settingsd
 	etc/conf.d/tinydm
 	etc/conf.d/wpa_supplicant
-	etc/NetworkManager/conf.d/hostname-mode.conf
-	etc/NetworkManager/conf.d/random-mac.conf
-	etc/NetworkManager/conf.d/tethering.conf
-	etc/NetworkManager/conf.d/use-dnsmasq.conf
 	etc/pulse/default.pa.d/postmarketos.pa
 	etc/skel/.profile
 	etc/sleep-inhibitor.conf
 	etc/X11/Xwrapper.config
+	usr/lib/NetworkManager/conf.d/50-hostname-mode.conf
+	usr/lib/NetworkManager/conf.d/50-random-mac.conf
+	usr/lib/NetworkManager/conf.d/50-tethering.conf
+	usr/lib/NetworkManager/conf.d/50-use-dnsmasq.conf
 	"
 _source600="
 	usr/lib/NetworkManager/system-connections/USB_Networking.nmconnection
 "
 _source755="
-	etc/NetworkManager/dispatcher.d/99-dns-filter.sh
-	etc/NetworkManager/dispatcher.d/85-tethering
 	etc/tinydm.d/env-wayland.d/50-firefox-wayland.sh
 	etc/tinydm.d/env-wayland.d/50-sdl-wayland.sh
+	usr/lib/NetworkManager/dispatcher.d/50-dns-filter.sh
+	usr/lib/NetworkManager/dispatcher.d/50-tethering.sh
 	"
 
 # Avoid filename based checksum conflicts by including the whole path.
@@ -159,11 +159,12 @@ networkmanager() {
 		networkmanager-wifi
 		networkmanager-wwan
 		networkmanager-dnsmasq"
-	amove etc/NetworkManager/conf.d/hostname-mode.conf
-	amove etc/NetworkManager/conf.d/use-dnsmasq.conf
-	amove etc/NetworkManager/conf.d/random-mac.conf
-	amove etc/NetworkManager/dispatcher.d/85-tethering
-	amove etc/NetworkManager/dispatcher.d/99-dns-filter.sh
+	amove usr/lib/NetworkManager/conf.d/50-hostname-mode.conf
+	amove usr/lib/NetworkManager/conf.d/50-random-mac.conf
+	amove usr/lib/NetworkManager/conf.d/50-tethering.conf
+	amove usr/lib/NetworkManager/conf.d/50-use-dnsmasq.conf
+	amove usr/lib/NetworkManager/dispatcher.d/50-dns-filter.sh
+	amove usr/lib/NetworkManager/dispatcher.d/50-tethering.sh
 	amove usr/lib/NetworkManager/system-connections/USB_Networking.nmconnection
 }
 
@@ -175,10 +176,6 @@ _default_camera() {
 
 
 sha512sums="
-3c9ae7415f4891bee8595166ed6a42cb577a837f741c6b5409d193558626348b41516888a01d0c4895282c5f4e9a1ff838c19712888750b2ef68429bb4b42ee3  rootfs-etc-NetworkManager-conf.d-hostname-mode.conf
-900554534191fa0797064d35350934cdd8af59f30f0ae7d8ec63c2e11c44a16c643d3024b6543940488cd590fec1d392548bcaacc3be88cddff90f69b17ece07  rootfs-etc-NetworkManager-conf.d-use-dnsmasq.conf
-6507eb31cdd694a7db0280246433118a650bf5d99fbe639f967ae2d95945429a7e03ca6feb5bb6e7b9fb14fcec21e13e51209a79edd0041e77b5bf76b129ed6f  rootfs-etc-NetworkManager-conf.d-tethering.conf
-d4b4c4fed2dee7266f6a87ae266691377593014943e2953e4cd87a59f3110f25bfb5f3f866cc843519f628695e4df7602bfdcd3d79f2c2cd6e8256535c33b038  rootfs-etc-NetworkManager-conf.d-random-mac.conf
 e5d049db1d82c510bab9246208b51b8ec2711d008d67792fc10d4c0b65ed4dece7b5ae3c3dd28a8539d177b6849c1f921cb9fef3d2c7bee0355451f7b4757ec6  rootfs-etc-chrony-chrony.conf
 b841282b96110ec59a7aa539db0737327b09549d55c78dc4b2c3b28b4a6ad1facf015b3175cb6d3a38f13e47aa6314ef3dc1514a4e60dd653a97409ec54ba706  rootfs-etc-conf.d-bluetooth
 49fb494b659fe0149a93eafe109609acce6a470bb8acea160638d07e0e4b11af2544f34549d5ef2deb2914a7ef13d0d470b04ad62981f14f96999af02a5f24cf  rootfs-etc-conf.d-openrc-settingsd
@@ -189,9 +186,13 @@ fe0651904c1f40ffa67d83daca190af199f63247e53642a59a1e1147cd06776fcf20b7b2fcc53737
 90b30cbea660ef6cd4c0461b6935de0cd63a84a1a40edb24348a83044c97935b974bd8bafda9cd558e92d3eb69e22c5ccf55483b80f839e24f0eb57ae2df6fe3  rootfs-etc-skel-.profile
 6b9c7bb73213187eb9ca8a94109b2b816f50c1158c90fec2e92b373864280d67741589e5bfbab8810945f031d2f4b535aad78a72e46e52ea50be5b85324da381  rootfs-etc-sleep-inhibitor.conf
 cac604e25c46e695dd30bd5a10cfd2d69595fcc3bc290096ac94b76b10834d591ea6576afb79c46b5da492a1dbf8660cf87b6110cd39937e15237bc74fa7a5c6  rootfs-etc-X11-Xwrapper.config
+3c9ae7415f4891bee8595166ed6a42cb577a837f741c6b5409d193558626348b41516888a01d0c4895282c5f4e9a1ff838c19712888750b2ef68429bb4b42ee3  rootfs-usr-lib-NetworkManager-conf.d-50-hostname-mode.conf
+900554534191fa0797064d35350934cdd8af59f30f0ae7d8ec63c2e11c44a16c643d3024b6543940488cd590fec1d392548bcaacc3be88cddff90f69b17ece07  rootfs-usr-lib-NetworkManager-conf.d-50-use-dnsmasq.conf
+6507eb31cdd694a7db0280246433118a650bf5d99fbe639f967ae2d95945429a7e03ca6feb5bb6e7b9fb14fcec21e13e51209a79edd0041e77b5bf76b129ed6f  rootfs-usr-lib-NetworkManager-conf.d-50-tethering.conf
+d4b4c4fed2dee7266f6a87ae266691377593014943e2953e4cd87a59f3110f25bfb5f3f866cc843519f628695e4df7602bfdcd3d79f2c2cd6e8256535c33b038  rootfs-usr-lib-NetworkManager-conf.d-50-random-mac.conf
 1b8add60574ec4644197cb93263c0653325c2e88e03673de918be5fb3280c7b81e8e97dce498850a07f2f3307771c44f3c876922e5cbd5207523ede31816296f  rootfs-usr-lib-NetworkManager-system-connections-USB_Networking.nmconnection
-52d58729cbf3cd0318de633e8a8da74c7af246025a8c5746d5e7c854bdabbf27fa07d8558ffec92a30491cdb687fe4414de5adcddd7da5be3510f918fba463a2  rootfs-etc-NetworkManager-dispatcher.d-99-dns-filter.sh
-b344a64619aac5295342c597087ecf0614d4dfa0f7afd51f71dd2e9abc473ab9d08b22b3c075729e2f5e69f4e0e601ed3a9b76886c805650e02d6cc4643a7280  rootfs-etc-NetworkManager-dispatcher.d-85-tethering
+52d58729cbf3cd0318de633e8a8da74c7af246025a8c5746d5e7c854bdabbf27fa07d8558ffec92a30491cdb687fe4414de5adcddd7da5be3510f918fba463a2  rootfs-usr-lib-NetworkManager-dispatcher.d-50-dns-filter.sh
+b344a64619aac5295342c597087ecf0614d4dfa0f7afd51f71dd2e9abc473ab9d08b22b3c075729e2f5e69f4e0e601ed3a9b76886c805650e02d6cc4643a7280  rootfs-usr-lib-NetworkManager-dispatcher.d-50-tethering.sh
 d1ddd43489e6016e3ffd716027ed2bae4a2ab5f213118bdbcb96750e267ab7c0367cd0e0e386300aa5550352653144f5caeddd790621fe0879f83ca1995bb65c  rootfs-etc-tinydm.d-env-wayland.d-50-firefox-wayland.sh
 ecaa57d033a119a53a6574c27636b7c89d659d75ea48a973a6a4ff6f90e5d07202529fd489bfc9dfc7430f5b60f40612f6d5c06f7fab47e681b0a3112a874058  rootfs-etc-tinydm.d-env-wayland.d-50-sdl-wayland.sh
 "

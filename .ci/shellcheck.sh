@@ -17,8 +17,8 @@ sh_files="
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
 	./main/osk-sdl/unlock.sh
 	./main/postmarketos-base/rootfs-usr-lib-firmwareload.sh
-	./main/postmarketos-base-ui/rootfs-etc-NetworkManager-dispatcher.d-99-dns-filter.sh
-	./main/postmarketos-base-ui/rootfs-etc-NetworkManager-dispatcher.d-85-tethering
+	./main/postmarketos-base-ui/rootfs-usr-lib-NetworkManager-dispatcher.d-50-dns-filter.sh
+	./main/postmarketos-base-ui/rootfs-usr-lib-NetworkManager-dispatcher.d-50-tethering.sh
 	./main/postmarketos-installkernel/installkernel-pmos
 	./main/postmarketos-initramfs/init.sh
 	./main/postmarketos-initramfs/init_functions.sh
