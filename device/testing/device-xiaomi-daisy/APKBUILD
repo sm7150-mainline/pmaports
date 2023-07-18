@@ -2,27 +2,21 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-daisy
 pkgdesc="Xiaomi Mi A2 Lite"
-pkgver=4
+pkgver=5
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg"
+depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8953"
 makedepends="devicepkg-dev"
 subpackages="
 		$pkgname-nonfree-firmware:nonfree_firmware
-		$pkgname-kernel-downstream:kernel_downstream
-		$pkgname-kernel-mainline:kernel_mainline
-		$pkgname-phosh
 		$pkgname-modem
 		"
 source="
 	deviceinfo
-	fb.modes
-	pointercal
 	30-gpu-firmware.files
-	phoc.ini
 	"
 
 build() {
@@ -31,8 +25,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm0644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
-	install -Dm0644 "$srcdir"/pointercal "$pkgdir"/etc/pointercal
 	install -Dm0644 "$srcdir"/30-gpu-firmware.files "$pkgdir"/usr/share/mkinitfs/files/30-gpu-firmware.files
 }
 
@@ -42,35 +34,13 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-kernel_downstream() {
-	pkgdesc="Downstream kernel"
-	depends="linux-xiaomi-daisy"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline() {
-	pkgdesc="Mainline kernel"
-	depends="linux-postmarketos-qcom-msm8953"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 modem() {
 	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
 	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
 	mkdir "$subpkgdir"
 }
 
-phosh() {
-	install_if="$pkgname=$pkgver-r$pkgrel phosh"
-	mkdir "$subpkgdir"
-	install -Dm644 "$srcdir"/phoc.ini \
-		"$subpkgdir"/etc/phosh/phoc.ini
-}
-
 sha512sums="
-788f712bae9468366eeffc46d20a5ceccbe35034dc7946d6662d1e52075819954a1daad14aab7ba6b12af3e6b410ffebf7ed73768c4a0ccc3f817c49b826581f  deviceinfo
-9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
-4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
+790152582c48be0a2b0f1be8b928da679e089abefebfccf771d03cf8dab74b3a7b3e5f2d7f89a1817767265ae7c4c94475c6258cb0ae7b3b0f9cbc04965dfb51  deviceinfo
 302c0bec754bb79ef561c1a8d4ff34ba52b904c853bce6a15a79ba7b5b7a3d02c1c75bbe86d59be7b608a6dc744dd3e3c638eaa4539c53d20fa55fa5ea397d74  30-gpu-firmware.files
-38409d4ce48db4624539dbfd695d3c6e1596a29fd7c3004a41368b28cba646495d05360420ad728f82c63d6ddeeca71d09944df06ebaca120aedd9cc2b436eb3  phoc.ini
 "
