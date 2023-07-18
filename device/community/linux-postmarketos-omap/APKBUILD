@@ -4,8 +4,6 @@
 
 pkgname=linux-postmarketos-omap
 pkgver=6.4.3
-# _pkgver used to handle rc-* versions since pkgver doesnt take alphabets
-_pkgver=6.4.3
 pkgrel=0
 pkgdesc="Mainline kernel fork for OMAP devices"
 arch="armv7"
@@ -18,14 +16,12 @@ _carch="arm"
 _flavor="postmarketos-omap"
 _config="config-$_flavor.armv7"
 
-
+_kernver=$pkgver
 case $pkgver in
-	*.*rc*) _kernver=$_pkgver
-		_rc=1;;
+	*.*rc*)	_rc=1;;
 	*.*.0) _kernver=${pkgver%.0};;
-	*.*.*) _kernver=$pkgver;;
-	*.*) _kernver=$pkgver;;
 esac
+
 if [ $_rc ]
 then
 	_kernsrc="https://git.kernel.org/torvalds/t/linux-$_kernver.tar.gz"
@@ -45,7 +41,7 @@ source="
 	0008-hsi-ssi_port-force-pio-path.patch
 	0009-n900-dts-volume-keys.patch
 "
-builddir="$srcdir/linux-$_pkgver"
+builddir="$srcdir/linux-$pkgver"
 replaces="linux-samsung-espresso3g linux-nokia-n900"
 
 prepare() {
