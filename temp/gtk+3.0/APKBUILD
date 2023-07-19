@@ -1,9 +1,9 @@
-# Forked from Alpine to apply Purism's patches for responsivness
+# Forked from Alpine to apply Purism's patches for mobile usage
 pkgname=gtk+3.0
-pkgver=9999_git20210602
-pkgrel=4
-# pureos/byzantium branch
-_commit="f05e4021ed82bfbabf566398d0511b6745a5745e"
+pkgver=9999_git20230719
+pkgrel=0
+# pureos/latest branch
+_commit="084b40f29656945e4c12428a8e9a4d5310c0e56d"
 pkgdesc="The GTK+ Toolkit (v3)"
 url="https://www.gtk.org/"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.post-deinstall"
@@ -59,9 +59,6 @@ checkdepends="
 	gdk-pixbuf
 	"
 source="https://source.puri.sm/Librem5/gtk/-/archive/$_commit/gtk-$_commit.tar.gz
-	0001-Avoid-diagnostics-for-gcc-11-false-positive-out-of-b.patch
-	0001-gtkimagedefinition-Check-array-bounds.patch
-	0002-gtkimagedefinition-Extend-commit-b38266c0.patch
 	"
 
 builddir="$srcdir/gtk-$_commit"
@@ -75,10 +72,7 @@ prepare() {
 
 	# Prevent unexpected downgrade: 3.90.99 is higher than Alpine's version
 	# (pma#694), but still passes the libportal check (pma#841)
-	for _ver in gtk_minor_version gtk_micro_version gtk_interface_age; do
-		sed -i "s/m4_define(\[$_ver\], \[.*\])/m4_define([$_ver], [90])/g" configure.ac
-	done
-	sed -i "s/        version: '.*',/        version: '3.90.99',/g" meson.build
+	sed -i "s/        version: '3.*',/        version: '3.90.99',/g" meson.build
 	sed -i "s/^gtk_interface_age = .*/gtk_interface_age = 90/g" meson.build
 }
 
@@ -139,8 +133,5 @@ doc() {
 }
 
 sha512sums="
-942d2e24bdb4e9fea7fc5bbd3d41ab203b69f6352566f43164e59842d49163e37d638858032cf2322b9b4c279c8c9a07a63d58fa7ec8554f3194c17ae3185fd7  gtk-f05e4021ed82bfbabf566398d0511b6745a5745e.tar.gz
-346514bb7c1853afcbeff4a5a25a2b9800e135e44271e48cdf400dc607dadd41af57d89ee4f4e24aedc358292d9c45db931dbbd84dae6a10886d8ae633ca8434  0001-Avoid-diagnostics-for-gcc-11-false-positive-out-of-b.patch
-8dc58f1b5d702e193018899350baadda54a9edf16a88f5afb1fa8bdff3f3e9e923b838a59bf17c672c768d8f67aceafcb41047547dbdc67d3f9b27829aa5e089  0001-gtkimagedefinition-Check-array-bounds.patch
-25ef673787fd236199980e3eadc6731771d0486ef0ddced92ca654eabe0180a7b445b86354fe4198839b6729dd50bd0c528f38d5411802dd13af72e7843ea493  0002-gtkimagedefinition-Extend-commit-b38266c0.patch
+8b9d14b4038a5e58b772bd2996adc6501fd025e5cf7973ef9fb8df2e1fea0bf7f9d4d71e3daa93418faf7759e35a390fe5d2a78a0a4c5829891955a615f41ea2  gtk-084b40f29656945e4c12428a8e9a4d5310c0e56d.tar.gz
 "
