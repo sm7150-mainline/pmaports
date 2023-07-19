@@ -3,7 +3,7 @@
 
 pkgname=device-xiaomi-tissot
 pkgdesc="Xiaomi Mi A1"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,8 +11,8 @@ arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base mkbootimg soc-qcom-msm8916 linux-postmarketos-qcom-msm8953"
 makedepends="devicepkg-dev"
-source="deviceinfo phoc.ini"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-modem $pkgname-phosh"
+source="deviceinfo"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-modem"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -34,13 +34,6 @@ modem() {
 	mkdir "$subpkgdir"
 }
 
-phosh() {
-	install_if="$pkgname=$pkgver-r$pkgrel phosh"
-	install -Dm644 "$srcdir"/phoc.ini -t \
-		"$subpkgdir"/etc/phosh
-}
-
 sha512sums="
 c2046a426a7268f777ecaa1add81727170da80bc027ad2a5ab5eec9a134dee91b0f6e64c2f38747f153676e991b7332e8b0c95daed961435c9e8ed8acb1d09d6  deviceinfo
-38409d4ce48db4624539dbfd695d3c6e1596a29fd7c3004a41368b28cba646495d05360420ad728f82c63d6ddeeca71d09944df06ebaca120aedd9cc2b436eb3  phoc.ini
 "
