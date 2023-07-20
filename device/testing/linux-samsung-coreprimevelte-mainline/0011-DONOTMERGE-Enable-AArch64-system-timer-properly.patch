@@ -1,0 +1,49 @@
+From 171f19c6d38ba40dc49971ac0036eb7de2b40d33 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
+Date: Sun, 4 Sep 2022 17:20:43 +0200
+Subject: [PATCH] DONOTMERGE: Enable AArch64 system timer properly
+
+With this, an initramfs can be reached.
+
+Long-term, this will be moved someplace such as U-Boot.
+---
+ drivers/clk/mmp/clk-of-pxa1908.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/drivers/clk/mmp/clk-of-pxa1908.c b/drivers/clk/mmp/clk-of-pxa1908.c
+index 520440cb082c..b75facde3f3f 100644
+--- a/drivers/clk/mmp/clk-of-pxa1908.c
++++ b/drivers/clk/mmp/clk-of-pxa1908.c
+@@ -12,6 +12,7 @@
+ 
+ #define APMU_CLK_GATE_CTRL	0x40
+ #define MPMU_UART_PLL		0x14
++#define APBC_COUNTER_CLK_SEL	0x64
+ 
+ #define APBC_UART0		0x0
+ #define APBC_UART1		0x4
+@@ -256,6 +257,21 @@ static void __init pxa1908_apbc_clk_init(struct device_node *np)
+ 	mmp_clk_init(np, &pxa_unit->unit, PXA1908_APBC_NR_CLKS);
+ 
+ 	pxa1908_apb_periph_clk_init(pxa_unit);
++
++	/* Assign a 26MHz clock to the ARM architected timer. */
++	int tmp = readl(pxa_unit->apbc_base + APBC_COUNTER_CLK_SEL);
++	if ((tmp >> 16) == 0x319) {
++		writel(tmp | 1, pxa_unit->apbc_base + APBC_COUNTER_CLK_SEL);
++	}
++
++	/* Enable the ARM architected timer. */
++	void __iomem *cnt_base = ioremap(0xd4101000, 0x1000);
++	if (!cnt_base)
++		pr_err("failed to map cnt register\n");
++	else {
++		writel(BIT(0) | BIT(1), cnt_base);
++		iounmap(cnt_base);
++	}
+ }
+ CLK_OF_DECLARE(pxa1908_apbc, "marvell,pxa1908-apbc", pxa1908_apbc_clk_init);
+ 
+-- 
+2.41.0
+

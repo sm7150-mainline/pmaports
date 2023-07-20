@@ -1,0 +1,41 @@
+From 2752ad57729b4b4f769c6014b81fdc3f6c416ba6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
+Date: Fri, 21 Jul 2023 22:37:49 +0200
+Subject: [PATCH] arm64: Kconfig.platforms: Add config for Marvell PXA1908
+ platform
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add ARCH_MMP configuration option for Marvell PXA1908 SoC.
+
+Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
+---
+ arch/arm64/Kconfig.platforms | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 6069120199bb..b417cae42c84 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -89,6 +89,17 @@ config ARCH_BERLIN
+ 	help
+ 	  This enables support for Marvell Berlin SoC Family
+ 
++config ARCH_MMP
++	bool "Marvell MMP SoC Family"
++	select ARM_GIC
++	select ARM_ARCH_TIMER
++	select ARM_SMMU
++	select MMP_PDMA
++	select PINCTRL_SINGLE
++	help
++	  This enables support for Marvell MMP SoC family, currently
++	  supporting PXA1908 aka IAP140.
++
+ config ARCH_BITMAIN
+ 	bool "Bitmain SoC Platforms"
+ 	help
+-- 
+2.41.0
+

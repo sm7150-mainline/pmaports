@@ -2,14 +2,18 @@
 pkgname=device-samsung-coreprimevelte
 pkgdesc="Samsung Galaxy Core Prime LTE"
 pkgver=0.1
-pkgrel=8
+pkgrel=9
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-samsung-coreprimevelte mkbootimg u-boot-tools pxa-mkbootimg"
+depends="postmarketos-base mkbootimg u-boot-tools pxa-mkbootimg"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 source="deviceinfo 90-coreprimevelte.conf"
 
 build() {
@@ -18,7 +22,19 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-samsung-coreprimevelte"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 	install -Dm444 $startdir/90-coreprimevelte.conf $pkgdir/etc/sysctl.d/90-coreprimevelte.conf
+}
+
+kernel_mainline() {
+	pkgdesc="Mainline kernel (for development only)"
+	depends="linux-samsung-coreprimevelte-mainline"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
@@ -28,6 +44,6 @@ nonfree_firmware() {
 }
 
 sha512sums="
-39a9f0afb2d709983634e14ce7a05fcc4cd631f2e5b31aa971aaba452e11c37d2aba91ae971e33ebaffbd6432da6e3a2c4bbcdbf8708830fb34907e1af4be732  deviceinfo
+9d8f140567e3345cd4608bbcf97392eef3da63119ee37a5c8d171aaae5a47f11ec8b36d7926e745936108d42f0ed287845606298ae8898ef87c29d496a7dcadf  deviceinfo
 4854cc57b86e1199dbc165110514e672dabf45044fe9f7ebbde5b2b24768fb5497273b5f38612cf2dfeffc9bf0648c725114b4fa01165bf7fb02f7d741ee5806  90-coreprimevelte.conf
 "

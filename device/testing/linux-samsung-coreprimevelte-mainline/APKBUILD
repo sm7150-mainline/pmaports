@@ -1,0 +1,80 @@
+# Maintainer: Duje Mihanović <duje.mihanovic@skole.hr>
+
+_flavor=samsung-coreprimevelte-mainline
+pkgname=linux-$_flavor
+pkgver=6.5_rc4
+pkgrel=0
+pkgdesc="Samsung Galaxy Core Prime VE LTE mainline kernel"
+arch="aarch64"
+_carch="arm64"
+url="https://github.com/torvalds/linux"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-nftables
+pmb:kconfigcheck-zram"
+makedepends="bash bc bison devicepkg-dev findutils flex gmp-dev mpc1-dev
+mpfr-dev openssl-dev perl postmarketos-installkernel pxa-mkbootimg dtc"
+
+# Source
+_tag="${pkgver//_/-}"
+_config="config-$_flavor.$arch"
+source="
+	linux-$_tag.tar.gz::$url/archive/refs/tags/v$_tag.tar.gz
+	$_config
+	0001-tty-serial-8250-Define-earlycon-for-mrvl-mmp-uart.patch
+	0002-gpio-pxa-disable-pinctrl-calls-for-MMP_GPIO.patch
+	0003-clk-mmp-Switch-to-use-struct-u32_fract-instead-of-cu.patch
+	0004-dt-bindings-clock-Add-Marvell-PXA1908-clock-bindings.patch
+	0005-clk-mmp-Add-Marvell-PXA1908-clock-driver.patch
+	0006-dt-bindings-marvell-Document-PXA1908-SoC.patch
+	0007-arm64-Kconfig.platforms-Add-config-for-Marvell-PXA19.patch
+	0008-arm64-dts-Add-DTS-for-Marvell-PXA1908-and-samsung-co.patch
+	0009-MAINTAINERS-add-myself-as-Marvell-PXA1908-maintainer.patch
+	0010-DONOTMERGE-Add-pxa-rev-id-to-board-dts.patch
+	0011-DONOTMERGE-Enable-AArch64-system-timer-properly.patch
+"
+
+builddir="$srcdir/linux-$_tag"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" "$builddir"/.config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+
+	install -D include/config/kernel.release \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	pxa1908-dtbTool -p scripts/dtc/ -o arch/$_carch/boot/dt.img arch/$_carch/boot/dts/marvell/
+	install -Dm644 arch/$_carch/boot/dt.img "$pkgdir"/boot/dt.img
+}
+
+sha512sums="
+f30138f99c65bb4d96ed3b59e0fc741a1364601632c6dbec9ffec999d20f41b8eaa8d2636eee440ea8c61fe12d5971bbb3a1d0e540165b974c4e3f03d11f829e  linux-6.5-rc4.tar.gz
+67bef68d9f89c6b713e75785899d889013cf07ba648a10db1a4b613070ac0ea293520d215158e0c1dd4a27695d6072e62943ad105bc7782f853c032533b258c2  config-samsung-coreprimevelte-mainline.aarch64
+0b091733e12dd68d5286751e1cc8673211adb679f05b97f276956badc199b287c0325fad9ada455e7e00bbfcd1ce1a854e669fbe2644f33de1997bfb8d2a2ce1  0001-tty-serial-8250-Define-earlycon-for-mrvl-mmp-uart.patch
+e4b1519678367799022b0543449dbd2f6ebed0c6cd23cf246b27242d77201a9a728e9feb48cb35874522918236d8e6809b22ae2cb269722deea72302c6ad0b9a  0002-gpio-pxa-disable-pinctrl-calls-for-MMP_GPIO.patch
+6a71af9fdfd9cdded2ef798ec1b54149acc0152014d708ea3e59b9254aeff7f9bcec4c8dcefe36f3299dcf65867bf50ac8487ccf1d4fbb6522da61406a971baa  0003-clk-mmp-Switch-to-use-struct-u32_fract-instead-of-cu.patch
+8b41a273f21c2c7dfdaaebeac60d0b95ff3e3ac152d30254250cf479a8b0483ae974737e33e1e8c60a16aa0da9fb8fec450383f010dbd67b7416e1f761d97dbd  0004-dt-bindings-clock-Add-Marvell-PXA1908-clock-bindings.patch
+741b27c644128b655bc9b1bc25ae9d7a7e6e6b1e26300b597eb8a787e8e23c4584eb1cacd0528c7e5b0531b794a8eab2080d4404348dfc305c99703e55bbcdb0  0005-clk-mmp-Add-Marvell-PXA1908-clock-driver.patch
+cd120ad2ee70a86c6de367b446e2e2cf4bc44ccb6c660978a72e27c55237be0e7eecb61310162c44461afbf66e378beac4e6429b9aed7b9a3c47db6180122430  0006-dt-bindings-marvell-Document-PXA1908-SoC.patch
+b06e721b18490512a35d22af0c266f084835b85f29fc2b84e9e3cd4ac7e30f7bcd7454295cc51c14679f6a9cd640323be6f2544541649c795ea287858dd28a48  0007-arm64-Kconfig.platforms-Add-config-for-Marvell-PXA19.patch
+00fbda0b7e26bec4664fd391b8dd57fed315cd254f28287a85e6174f14a08274204f5441bdd1a32ba8a8855dd5ad139081a4e65718387d75481759276f9bd7ec  0008-arm64-dts-Add-DTS-for-Marvell-PXA1908-and-samsung-co.patch
+be476ac6ea0bf11c7415ac8849ad796c51041b96c93a744015a613e561a0dcdfb65642abeee3674639387c7276fcb8b83dda1f8c20e3461c14f198c410bb96ee  0009-MAINTAINERS-add-myself-as-Marvell-PXA1908-maintainer.patch
+1ba1bb05696364f3790e68c37ba75e3b83ae7f13e11ca0f52e03036da29c6e9caed93b7cbb675ff82b2e2ec337a5c416b863abe2cba7d5ae9be68ad74c798d86  0010-DONOTMERGE-Add-pxa-rev-id-to-board-dts.patch
+cab9434b485c63077b22ba65c7ca160e413bc10a60e971a76c84f1df21140a2475b406a4c4c8c7e97c0292795b2a2786035663a8632e7915d2c69031d5255197  0011-DONOTMERGE-Enable-AArch64-system-timer-properly.patch
+"
