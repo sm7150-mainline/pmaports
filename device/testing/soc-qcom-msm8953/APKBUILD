@@ -1,0 +1,32 @@
+pkgname=soc-qcom-msm8953
+pkgdesc="Common package for Qualcomm MSM8953 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !archcheck !tracedeps pmb:cross-native"
+depends="$pkgname-ucm swclock-offset"
+subpackages="
+	$pkgname-ucm
+"
+
+_ucm_commit="9c5cc571fe2539e413ba41344c74ba7f91718d76"
+source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8953-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz"
+
+package() {
+	mkdir -p $pkgdir
+}
+
+ucm() {
+	provides="alsa-ucm-conf"
+	provider_priority=1
+
+	cd "$srcdir/alsa-ucm-conf-$_ucm_commit"
+	mkdir -p "$subpkgdir"/usr/share/alsa
+	cp -r ucm2 "$subpkgdir"/usr/share/alsa
+}
+
+sha512sums="
+91515a91b00891a8beea4611888dbd15316093c751cd82d8e53d04cbbc3e691d93725208a49177a788bb1929fefe3534af2a816013eb4bbfd71ffeca0c825814  soc-qcom-msm8953-9c5cc571fe2539e413ba41344c74ba7f91718d76.tar.gz
+"
