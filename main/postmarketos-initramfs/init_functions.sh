@@ -387,22 +387,24 @@ resize_root_partition() {
 			parted -f -s "$partition_dev" resizepart 2 100%
 			kpartx -afs "$partition_dev"
 			ROOT_PARTITION_RESIZED=1
+		else
+			echo "Not resizing root partition ($partition): no free space left"
 		fi
-	fi
 
 	# Resize the root partition (non-subpartitions). Usually we do not want
 	# this, except for QEMU devices and non-android devices (e.g.
 	# PinePhone). For them, it is fine to use the whole storage device and
 	# so we pass PMOS_FORCE_PARTITION_RESIZE as kernel parameter.
-	if grep -q PMOS_FORCE_PARTITION_RESIZE /proc/cmdline; then
+	elif grep -q PMOS_FORCE_PARTITION_RESIZE /proc/cmdline; then
 		partition_dev="$(echo "$partition" | sed -E 's/p?2$//')"
 		if has_unallocated_space "$partition_dev"; then
 			echo "Resize root partition ($partition)"
 			parted -f -s "$partition_dev" resizepart 2 100%
 			partprobe
 			ROOT_PARTITION_RESIZED=1
+		else
+			echo "Not resizing root partition ($partition): no free space left"
 		fi
-	fi
 
 	# Resize the root partition (non-subpartitions) on Chrome OS devices.
 	# Match $deviceinfo_cgpt_kpart not being empty instead of cmdline
@@ -410,14 +412,19 @@ resize_root_partition() {
 	# partitioning methods. This also resizes third partition instead of
 	# second, because these devices have an additional kernel partition
 	# at the start.
-	if [ -n "$deviceinfo_cgpt_kpart" ]; then
+	elif [ -n "$deviceinfo_cgpt_kpart" ]; then
 		partition_dev="$(echo "$partition" | sed -E 's/p?3$//')"
 		if has_unallocated_space "$partition_dev"; then
 			echo "Resize root partition ($partition)"
 			parted -f -s "$partition_dev" resizepart 3 100%
 			partprobe
 			ROOT_PARTITION_RESIZED=1
+		else
+			echo "Not resizing root partition ($partition): no free space left"
 		fi
+
+	else
+		echo "Unable to resize root partition: failed to find qualifying partition"
 	fi
 }
 
