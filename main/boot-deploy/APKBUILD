@@ -1,6 +1,6 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=boot-deploy
-pkgver=0.9.1
+pkgver=0.10.0
 pkgrel=0
 pkgdesc="tool for finalizing and deploying boot related files"
 url="https://gitlab.com/postmarketos/boot-deploy"
@@ -10,7 +10,10 @@ source="
 	os-customization
 	https://gitlab.com/postmarketOS/boot-deploy/-/archive/$pkgver/boot-deploy-$pkgver.tar.gz
 	"
-options="!check"
+
+check() {
+	./test_boot_deploy_functions.sh
+}
 
 package() {
 	install -Dm755 boot-deploy "$pkgdir"/sbin/boot-deploy
@@ -25,5 +28,5 @@ package() {
 }
 sha512sums="
 a243975b9850d9933e0f917f7eb38fc4a76ea658c3dcc56f035f60ee6c62d6740c1107143b8210bdc0231d4c9b6b2003e458120985604eb09649322d359ae89f  os-customization
-2e043ae87db33147b17a95fdaf990ad3d3d17b060f0611cf9985f90bad3745cfc3d15ea59b85abdc3cc268724784f0c40f487d4b17f63b290776ed2d83beab01  boot-deploy-0.9.1.tar.gz
+65a25955008c618d58b1383df9cad32cfa2b8ea58ae5bdfa888dce92e6af4f15a79447e3af06a3095e48bdf5d6eca62ba300c3107bcb7f51ca8c251b5c5e15b9  boot-deploy-0.10.0.tar.gz
 "
