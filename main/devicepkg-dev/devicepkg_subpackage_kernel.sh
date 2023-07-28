@@ -28,8 +28,8 @@ kernel=$(echo "$subpkgname" | sed -n "s/.*-kernel-\(.*\)/\1/p" | tr - _)
 # a modules.$kernel file, it should instead be more than one modules.$kernel
 # files, with different $kernel values. The conflict between the package and
 # the subpackage aims to prevent the unsupported situation to slip through.
-if [ -f "$srcdir/modules.$kernel" ]; then
-	install -Dm644 "$srcdir/modules.$kernel" \
+if [ -f "$srcdir/modules-initfs.$kernel" ]; then
+	install -Dm644 "$srcdir/modules-initfs.$kernel" \
 		"$subpkgdir/usr/share/mkinitfs/modules/00-$pkgname.modules"
 	mkdir -p "$subpkgdir/usr/share/mkinitfs/files"
 	echo "/usr/share/mkinitfs/modules/00-$pkgname.modules:/lib/modules/initramfs.load" \
