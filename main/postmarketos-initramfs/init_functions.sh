@@ -436,29 +436,37 @@ resize_root_filesystem() {
 
 mount_root_partition() {
 	partition="$(find_root_partition)"
-	echo "Mount root partition ($partition) to /sysroot (read-only)"
+	rootfsopts=""
+
+	# shellcheck disable=SC2013
+	for x in $(cat /proc/cmdline); do
+		[ "$x" = "${x#pmos_rootfsopts=}" ] && continue
+		# Prepend a comma because this will be appended to "ro" below
+		rootfsopts=",${x#pmos_rootfsopts=}"
+	done
+
+	echo "Mount root partition ($partition) to /sysroot (read-only) with options ${rootfsopts#,}"
 	type="$(get_partition_type "$partition")"
-	case "$type" in
-		ext4)
-			echo "Detected ext4 filesystem"
-			modprobe ext4
-			mount -t ext4 -o ro "$partition" /sysroot
-			;;
-		f2fs)
-			echo "Detected f2fs filesystem"
-			modprobe f2fs
-			mount -t f2fs -o ro "$partition" /sysroot
-			;;
-		btrfs)
-			echo "Detected btrfs filesystem"
-			modprobe btrfs
-			mount -t btrfs -o ro "$partition" /sysroot
-			;;
-		*)	echo "WARNING: Detected unsupported '$type' filesystem ($partition)." ;;
-	esac
-	if ! [ -e /sysroot/usr ]; then
+	echo "Detected $type filesystem"
+
+	if ! { [ "$type" = "ext4" ] || [ "$type" = "f2fs" ] || [ "$type" = "btrfs" ]; } then
+		echo "ERROR: Detected unsupported '$type' filesystem ($partition)."
+		show_splash "ERROR: unsupported '$type' filesystem ($partition)\\nhttps://postmarketos.org/troubleshooting"
+		loop_forever
+	fi
+
+	if ! modprobe "$type"; then
+		echo "INFO: unable to load module '$type' - maybe it's built in"
+	fi
+	if ! mount -t "$type" -o ro"$rootfsopts" "$partition" /sysroot; then
 		echo "ERROR: unable to mount root partition!"
 		show_splash "ERROR: unable to mount root partition\\nhttps://postmarketos.org/troubleshooting"
+		loop_forever
+	fi
+
+	if ! [ -e /sysroot/usr ]; then
+		echo "ERROR: root partition appeared to mount but does not contain a root filesystem!"
+		show_splash "ERROR: root partition does not contain a root filesystem\\nhttps://postmarketos.org/troubleshooting"
 		loop_forever
 	fi
 }
