@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # A workaround for missing cursor issue
 
