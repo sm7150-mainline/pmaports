@@ -3,7 +3,7 @@
 pkgname=device-cutiepi-tablet
 pkgdesc="CutiePi Tablet"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -12,7 +12,9 @@ depends="postmarketos-base raspberrypi-bootloader linux-rpi4"
 makedepends="devicepkg-dev dtc"
 install="$pkgname.post-install $pkgname.post-upgrade"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo
+source="
+	deviceinfo
+	modules-initfs
 	mpu6050-i2c5-overlay.dts
 	backlight.rules
 	config.txt
@@ -51,7 +53,8 @@ nonfree_firmware() {
 
 
 sha512sums="
-6e7b92616b8cf8bc4752ab8dd48fa48c9b9c80cbd616b9e9ee9223eac8dcdcf1d5b2a6c4cc1ceb6d04ebe03702141735aa62109546226fc5de50d37ca5920c07  deviceinfo
+2ee0abff944ef734b18f919f6285e468b5a8171399ed55cad1c5f5b436a59f89b4e25e1e6a5f8cef3f9ca44832e23f66f8273756808078e791f28ab02abaa95e  deviceinfo
+e3515cf9f41807917eac1f7663e0131bd18783824facf15f2bb0381635bf6d9a0c334f3786b6fb76d01469de6449878c871f8b747f45e9e3cee77699905cf319  modules-initfs
 afc9f83be2b4d089fa1e2c17f7fcfe7f5131233c5f3ff7bca1d95e080416088c5d2f65b7146021fca6eec492ad67961d1fb5ee58b02fb9ddfa7b5b2a586e238d  mpu6050-i2c5-overlay.dts
 9fbf1e8fcad332980b345b1a5eb0b92e752e6f5490027084f5d5713dc113ea20c71932a44ec5a0e077798fee99e52b8db13c8bb2cd263f4d39bfe9d27ca51b2d  backlight.rules
 26d14d996561ef29de965bdcd9e2ee93192e76c7ab08c805f71bab550d7c938248ca72c744c78f351791d3312751f60ed74b21ce3e16515ceff2a03e0f8e8c01  config.txt

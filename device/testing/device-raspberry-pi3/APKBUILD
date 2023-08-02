@@ -2,7 +2,7 @@
 pkgname=device-raspberry-pi3
 pkgdesc="Raspberry Pi 3B/3B+"
 pkgver=0.2
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -11,7 +11,7 @@ depends="postmarketos-base raspberrypi-bootloader linux-rpi bluetooth-raspberry-
 makedepends="devicepkg-dev"
 install="$pkgname.post-install $pkgname.post-upgrade"
 subpackages="$pkgname-weston"
-source="deviceinfo config.txt usercfg.txt cmdline.txt 95-vchiq-permissions.rules weston.ini networkmanager.conf"
+source="deviceinfo modules-initfs config.txt usercfg.txt cmdline.txt 95-vchiq-permissions.rules weston.ini networkmanager.conf"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -35,7 +35,8 @@ weston() {
 }
 
 sha512sums="
-1a735f34b5c8a6c1c860b84aef095ce675a287c2601405134f9f374fb6e88083265f9032655d3513ca83d0ddb6a169dadf8bceddfdec12a9c1bed3c9b67f8926  deviceinfo
+dc77ec14629e3821544fd660b4353dd0c104b7320508d71c7f87afc85263b35ae716964cfda114a3db07a9799f03443a6db874411aba1f3b06dd3eaa33d60500  deviceinfo
+e3515cf9f41807917eac1f7663e0131bd18783824facf15f2bb0381635bf6d9a0c334f3786b6fb76d01469de6449878c871f8b747f45e9e3cee77699905cf319  modules-initfs
 ba195d9345fa4f4aee38cbc945b02f5bf13bd7e255124de006b4d04bc78c846c8c6b85268816f8a846d09a680e27d303006be89dd34de353f8cd8384c0fdbda3  config.txt
 a8e57535523d0f78e9d2ac1ac31b097a1a25468e3c910290647a60c862e631a4b4de94a5f6e4de999e1b9f70e67653a886967200856287dbc819b9f3ac16c548  usercfg.txt
 ae3de0b8fec07d3a283dc3c06bf8678eec1e65c9faf0b7f4fdc9fb92751e324d1f8e2fb224dbbf561b7e5a6fb34769bfa1657858375f74b101a130d78e0737e2  cmdline.txt

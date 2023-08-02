@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-sony-sirius
 pkgver=2
-pkgrel=0
+pkgrel=1
 pkgdesc="Sony Xperia Z2 device package"
 url="https://postmarketos.org"
 arch="armv7"
@@ -15,6 +15,7 @@ makedepends="devicepkg-dev"
 subpackages="$pkgname-weston $pkgname-x11 $pkgname-nonfree-firmware:nonfree_firmware"
 source="
 	deviceinfo
+	modules-initfs
 	weston.ini
 	99-touch.rules
 	modules-load.conf
@@ -55,7 +56,9 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-sha512sums="27ea6b5aac4bf701d334acccf3479349f234cd7536063441ed249a354f1dd1a2c4874a6f398550236bec20d610e702d62dceed6b249857759546f723d67a2f76  deviceinfo
+sha512sums="
+3e856f1832ea0e2836545d3e6c1765134c9117d41e7b12ff5d43282aef6c295f02f812629f78c695483a5dd8c1287bf6bad0b4ee16c19e86ddcaa42e0f449acb  deviceinfo
+a6580d63105978aac1ee13098bdee1d98528dba671889199ba79264c40750807fecd3d526471fb77abd55fa0fec21c8fea1d0fd6d4fb5afd2b306bc98ef1a0d7  modules-initfs
 de794566118f1744d068a94e6a75b61d43f6749a4b0871a5270fa7a2048164d609c71fcffa61845c2a7dd4cb5fbeb72c0e4f8b73b382f36d6ff0bcc9b8a5ae25  weston.ini
 ec5e26e60a77e74befabf5cc3f85a2636ce07261e725c0a051999d321ddec056f307001ba659c91e403770ac99d38b3160fd46e235c467fefc03d0901452314d  99-touch.rules
 35a5dbd90eef6c567822f1a805c6adf620bb9c6c9c2e1755407409c2fab044baa40dda9e526c45108b4a2bbf43e0ad67e3dd90c35f6a6c6e29ec5930f2d1c4a7  modules-load.conf
