@@ -1,7 +1,8 @@
 pkgname=firmware-huawei-kiwi
 pkgver=1
-pkgrel=1
-pkgdesc="Firmware for Huawei Honor 5X"
+pkgrel=2
+_name="Huawei Honor 5X / GR5 (2016)"
+pkgdesc="Firmware for $_name"
 url="https://git.sr.ht/~bo41/firmware-huawei-kiwi"
 subpackages="$pkgname-venus $pkgname-wcnss-nv:wcnss_nv"
 arch="aarch64"
@@ -25,7 +26,7 @@ package() {
 }
 
 venus() {
-	pkgdesc="Huawei Honor 5X video firmware"
+	pkgdesc="$_name video firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
 	# file contents, so it is fine to install venus.mbn to venus.mdt
@@ -33,7 +34,7 @@ venus() {
 }
 
 wcnss_nv() {
-	pkgdesc="Huawei Honor 5X WiFi/BT firmware configuration"
+	pkgdesc="$_name WiFi/BT firmware configuration"
 	install -Dm644 "$builddir"/WCNSS_qcom_wlan_nv.bin -t "$subpkgdir/$_fwdir"/wlan/prima
 }
 
