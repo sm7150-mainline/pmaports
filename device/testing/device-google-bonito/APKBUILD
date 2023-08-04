@@ -1,0 +1,70 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-google-bonito
+pkgdesc="Google Pixel 3a XL"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-qcom-sdm670
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sdm845
+	soc-qcom-sdm845-qbootctl
+"
+makedepends="devicepkg-dev"
+source="
+	90-feedbackd-drv2624.rules
+	deviceinfo
+	modules-initfs
+	q6voiced.conf
+"
+subpackages="
+	$pkgname-kernel-sdc:kernel_sdc
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/90-feedbackd-drv2624.rules \
+		-t "$pkgdir"/usr/lib/udev/rules.d
+}
+
+kernel_sdc() {
+	pkgdesc="Kernel for devices with the Samsung panel"
+	depends="linux-postmarketos-qcom-sdm670"
+
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Proprietary firmware blobs for the Google Pixel 3a XL"
+	depends="
+		firmware-google-sargo
+		linux-firmware-ath10k
+		linux-firmware-qca
+		linux-firmware-qcom
+		soc-qcom-sdm845-modem
+		soc-qcom-sdm845-nonfree-firmware
+	"
+
+	# The q6voiced configuration can only be used if the ADSP is brought up
+	# via non-free firmware.
+	install -Dm644 "$srcdir"/q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
+}
+
+sha512sums="
+016d398155f2344417f5e5649a361719ba6e53e593c501b5df39114cdd284302b9bf8686a39817aee0c08fec95b3ab613c181d6cc9596299aaf7fd05dbe0c3dd  90-feedbackd-drv2624.rules
+a6860945d4c75b698a9fadfd0f42355a601c064f62bcf197061ba97be46d23727cac1df355a238042ce9c9017e0ddf458f23a858aad60bebe672ba495cc6c4ad  deviceinfo
+1eb5f138619f499fab31ea64f63ee9f8984f195528708ec6a01ddc533c74cfb71d1442b97905ae15db24b8faac259fa3e89db357ca9c747ce3ee598c2d681639  modules-initfs
+7f599f086dba97ac39ce98798969bc8e9c26dd3b062bb8f95852182df52814b70d49b701e27b43abeb3639b16ba053e416c14cf75e0bf4a9f2fe7c01fb0ac41c  q6voiced.conf
+"
