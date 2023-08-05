@@ -6,8 +6,8 @@
 
 _flavor="postmarketos-qcom-sm8150"
 pkgname=linux-$_flavor
-pkgver=5.17.0
-pkgrel=1
+pkgver=6.4
+pkgrel=0
 pkgdesc="Mainline Kernel fork for SM8150 devices"
 arch="aarch64"
 _carch="arm64"
@@ -24,18 +24,19 @@ makedepends="
 	openssl-dev
 	perl
 	postmarketos-installkernel
+	xz
 "
 
 _repo="linux"
 _config="config-$_flavor.$arch"
-_tag="v5.17.0-sm8150"
+_commit="93f303701cafa17135d8ee563ffdc39f319783f1"
 
 # Source
 source="
-	$_repo-$_tag.tar.bz2::https://gitlab.com/sm8150-mainline/linux/-/archive/$_tag/linux-$_tag.tar.bz2
+	$_repo-$_tag.tar.bz2::https://gitlab.com/sm8150-mainline/linux/-/archive/$_commit/linux-$_commit.tar.bz2
 	$_config
 "
-builddir="$srcdir/$_repo-$_tag"
+builddir="$srcdir/$_repo-$_commit"
 
 prepare() {
 	default_prepare
@@ -63,6 +64,6 @@ package() {
 }
 
 sha512sums="
-0cfcec980668ecdc1646c6398807367525058eb762d0410bb9443632febaa3f1c8d3164d165da20e6638fb625443aab5c37635bc0d347df685ce8e65308b752e  linux-v5.17.0-sm8150.tar.bz2
-71013301cb4432dad555600fddfee1fc86ecfca7fe9569ae35930c54a02a8b4cd70afa0e79fd0e5e9d64956dc888e9873cce1efd1cbb743095f877fd0940aac1  config-postmarketos-qcom-sm8150.aarch64
+fde637d245fa55525763d509caeb038005b419ddddfb28bd5087826c3b38e88126cacee048cdef191c2df67cb421cda19ad125ecaa83e0668de0d848a3f38318  linux-.tar.bz2
+d4cebfea2a6230b3293db13853d8b5c5b5434fc7e18e112570fa79702d3d667963017b6d7a0d90d1b437865f177c42ac95d5c8f0e5f1733d4a5f5414f07e3e0f  config-postmarketos-qcom-sm8150.aarch64
 "
