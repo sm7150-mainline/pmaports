@@ -3,3 +3,24 @@
 # Otherwise it will enable services, as listed in that file. And we don't want
 # this to happen during upgrade, especially not automatically enabling the sshd
 # service! (build.postmarketos.org#85)
+
+# Fixup old pmOS installations that run setup-timezone without "-i" option
+# and those later installations that run with it, but have missing
+# https://gitlab.alpinelinux.org/alpine/alpine-conf/-/merge_requests/157
+# See https://gitlab.com/postmarketOS/pmaports/-/issues/2168 for context
+# This is probably safe to remove after a couple of releases of the alpine-conf
+# fix having been merged
+[ -L /etc/localtime ] || exit 0
+localtime="$(readlink /etc/localtime)"
+restart="yes"
+case "$localtime" in
+    //usr/share/zoneinfo/*) localtime=${localtime#/*} ;;
+    //etc/zoneinfo*) localtime="/usr/share/zoneinfo/${localtime#//etc/zoneinfo/*}" ;;
+    /etc/zoneinfo/*) localtime="/usr/share/zoneinfo/${localtime#/etc/zoneinfo/*}" ;;
+    *) restart="no" ;;
+esac
+ln -sf "$localtime" /etc/localtime
+rm -rf /etc/zoneinfo
+[ "$restart" = "yes" ] && service -qq openrc-settingsd restart
+
+exit 0
