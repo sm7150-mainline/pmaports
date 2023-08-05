@@ -2,8 +2,8 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=9.1.1
-pkgrel=1
+pkgver=9.1.2
+pkgrel=0
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
@@ -29,7 +29,6 @@ source="
 	device-nokia-n900.start
 	deviceinfo
 	modules-initfs
-	i3wm/conky.conf
 	i3wm/i3blocks.conf
 	i3wm/i3wm.conf
 	i3wm/protip_shell.sh
@@ -143,7 +142,7 @@ xkeyboard_config() {
 
 i3wm() {
 	install_if="$pkgname postmarketos-ui-i3wm"
-	depends="unclutter-xfixes conky feh pm-utils i3blocks"
+	depends="unclutter-xfixes feh pm-utils i3blocks"
 	install -D -m644 "$srcdir"/i3wm.conf \
 		"$subpkgdir"/etc/skel/.config/i3/config
 	install -D -m644 "$srcdir"/i3blocks.conf \
@@ -158,8 +157,6 @@ i3wm() {
 		"$subpkgdir"/etc/skel/.config/i3blocks/wifi
 	install -D -m755 "$srcdir"/protip_shell.sh \
 		"$subpkgdir"/etc/skel/.protip_shell.sh
-	install -D -m644 "$srcdir"/conky.conf \
-		"$subpkgdir"/etc/skel/.config/conky/conky.conf
 	install -D -m440 "$srcdir"/10-noroot-suspend \
 		"$subpkgdir"/etc/sudoers.d/10-noroot-suspend
 }
@@ -185,9 +182,8 @@ ac2f8a50280f7d5f8c5ce3ab50d00f1a4c8c1415890347542c684b6e24874a23d57a8f48c62451c4
 e6bbac8de1a198ba716f44ade76606e1e0adcc574156b855ac41be5eb5308389d3277fd89cc34b119fbc33d9801ab9f79a6ff213392596bff40bc17e931c05ef  device-nokia-n900.start
 2463008d270ed09342f15b51f24ea455bd884021f95397991b85616b6840a6608d91cd1fc43186094f5c3d1bd25e88c16aa9ead07b018aea3d93cd2359bba0b1  deviceinfo
 f90dcdd310595adf9e00f1eb1032461bd1666fff21eb18615f8e9ef48fff4f872abd3ca7c765fab50957b056a30330e49b5d1e399fc8690f4f9735ccc0eec145  modules-initfs
-16c31bf28b9dcc256821b153de199bd27decc76e4bde63130c1d1556a63cf2cafb64c4d4df42e00690564fce801c5216e8e97e4262a546440fd4bc2e14eaae1c  conky.conf
 826a3790b49324c1e61c75b6c0ffc043a2a1d7c13a8c554fb5eae4977af47a1ca93d70ef8c783d712b953b70e18ae58fa4c6a49bf97263398a01a0c4f91ebc8f  i3blocks.conf
-7e8a92b828a3cb823b8df0c67ff3cb72d220f2fdc4557a613ad051baaf7e6e3d0865cdfb5eadff7f4b04302ac650bc485863e26f4d54485d5a1c2389ac0793e3  i3wm.conf
+40a4df0249e8631c1b4dc4ae580e93885f51cb9a1abe44e35ef6719a84e284df2e0e4c320733d830a7aaa5c4166a30048690027f269ffdffdf052c88fd9cd7dc  i3wm.conf
 0b80af9fd1f36e6bc06bdfdf48352897234ac7457210649016665da8570a5a64b8a0841b4fbeb64fd7054a5246a64718cf4412f8a53024ce39b28a80984972d8  protip_shell.sh
 2ae4771eda9b151de3b47dc4e3081eb86b92fc04c4be4b4fbb98c28016762d24008e935bbba8f95ea0732019f615ee43f5d93dacb21bdc3471e505a07a684e26  battery-bq27200
 d9ef88c714e9fce8822f63b7a9d7fc3e1ed472c8c876b44ba524d44efea322839f13ddd2fa652420608427ecf7279bfaac302c9b67667f32796ca21da332164d  calendar
