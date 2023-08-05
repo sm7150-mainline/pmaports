@@ -1,0 +1,63 @@
+# Maintainer: Arseniy Velikanov <adomerlee@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-vayu
+pkgdesc="Xiaomi POCO X3 Pro"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm8150
+	mkbootimg
+	postmarketos-base
+	make-dynpart-mappings
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	phoc.ini
+"
+
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
+	depends="
+		firmware-xiaomi-vayu-adreno
+		firmware-xiaomi-vayu-adsp
+		firmware-xiaomi-vayu-cdsp
+		firmware-xiaomi-vayu-touchscreen
+		firmware-xiaomi-vayu-wlan
+		firmware-xiaomi-vayu-modem
+		firmware-xiaomi-vayu-ath10k
+		msm-modem
+		pd-mapper
+		tqftpserv
+		"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		"$subpkgdir"/etc/phosh/phoc.ini
+}
+
+sha512sums="
+a1b8f23248a60a6435d40209342d8409fc348d6986e7322152944dfc1b4b6c363ef2d05d096f3be4b1548f53e9bf1f09ece81697ee02cbc6f90b937c823bcb0b  deviceinfo
+eef80842915acfa8d8bcbd9ac9fcb057ad912d582e4a78b8ddd9774ef688971d2878b83f4a54adaa1d613dce8645a85ffb25e8a98c55e32a91dfe73002e91fe0  phoc.ini
+"
