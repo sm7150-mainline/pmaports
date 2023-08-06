@@ -2,7 +2,7 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=9.1.2
+pkgver=9.1.3
 pkgrel=0
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
@@ -49,6 +49,7 @@ source="
 	udev/10-nokia-modem.rules
 	udev/90-touchscreen-dev.rules
 	x11-keymap
+	xdefaults
 	xorg.conf
 "
 options="!check !archcheck"
@@ -142,7 +143,7 @@ xkeyboard_config() {
 
 i3wm() {
 	install_if="$pkgname postmarketos-ui-i3wm"
-	depends="unclutter-xfixes feh pm-utils i3blocks"
+	depends="unclutter-xfixes feh pm-utils i3blocks rxvt-unicode"
 	install -D -m644 "$srcdir"/i3wm.conf \
 		"$subpkgdir"/etc/skel/.config/i3/config
 	install -D -m644 "$srcdir"/i3blocks.conf \
@@ -159,6 +160,8 @@ i3wm() {
 		"$subpkgdir"/etc/skel/.protip_shell.sh
 	install -D -m440 "$srcdir"/10-noroot-suspend \
 		"$subpkgdir"/etc/sudoers.d/10-noroot-suspend
+	install -D -m644 "$srcdir"/xdefaults \
+		"$subpkgdir"/etc/skel/.Xdefaults
 }
 
 nonfree_firmware() {
@@ -183,7 +186,7 @@ e6bbac8de1a198ba716f44ade76606e1e0adcc574156b855ac41be5eb5308389d3277fd89cc34b11
 2463008d270ed09342f15b51f24ea455bd884021f95397991b85616b6840a6608d91cd1fc43186094f5c3d1bd25e88c16aa9ead07b018aea3d93cd2359bba0b1  deviceinfo
 f90dcdd310595adf9e00f1eb1032461bd1666fff21eb18615f8e9ef48fff4f872abd3ca7c765fab50957b056a30330e49b5d1e399fc8690f4f9735ccc0eec145  modules-initfs
 826a3790b49324c1e61c75b6c0ffc043a2a1d7c13a8c554fb5eae4977af47a1ca93d70ef8c783d712b953b70e18ae58fa4c6a49bf97263398a01a0c4f91ebc8f  i3blocks.conf
-40a4df0249e8631c1b4dc4ae580e93885f51cb9a1abe44e35ef6719a84e284df2e0e4c320733d830a7aaa5c4166a30048690027f269ffdffdf052c88fd9cd7dc  i3wm.conf
+bc30690e667b7d9e1dc8eba3d214164c84eca39551872683d050cae106b207db058b6aae10c21f2dc855c83a0b82665167805865980071b4d50a4c205f14777d  i3wm.conf
 0b80af9fd1f36e6bc06bdfdf48352897234ac7457210649016665da8570a5a64b8a0841b4fbeb64fd7054a5246a64718cf4412f8a53024ce39b28a80984972d8  protip_shell.sh
 2ae4771eda9b151de3b47dc4e3081eb86b92fc04c4be4b4fbb98c28016762d24008e935bbba8f95ea0732019f615ee43f5d93dacb21bdc3471e505a07a684e26  battery-bq27200
 d9ef88c714e9fce8822f63b7a9d7fc3e1ed472c8c876b44ba524d44efea322839f13ddd2fa652420608427ecf7279bfaac302c9b67667f32796ca21da332164d  calendar
@@ -202,5 +205,6 @@ b50e7f37ffb1fa0bb782b117a4e8bcfdb722b6127c3e5d643e90cd901a1f4e65e77a0773ed418673
 9e72035c88632d12895534e5aa5746f2c130c7dcdafa8702748d62b71ed0e1b5911b6e1f07f9b9e39b6072bbb662f66aead585baa1dcacb7d8c8953ca89b6762  10-nokia-modem.rules
 c6012aef28b096141b924fced226ec99fb93eb53b69c064a8887d8fecdf8dc08a3ba3db399e18d88374c6ef4c59013a30699c7e4d76e5cb771040582573a0527  90-touchscreen-dev.rules
 737d9e57e219a0220c5b1943375f325309323344fdf06973546c7d88ed9aec857657abd6b7861669873574f865e1c99719d411e0564dbfebe028f9e77d308491  x11-keymap
+2b14c74c07f1bf068795845927b4f23eb7e60dab381e1f646db49b88d24eb43ac04a626db87d4467cf95f2e3948908e90f29d3ed834001b3b5f71fd95a79a761  xdefaults
 a91f98daa60efa2beb2ff6b405097f92edca5f1bbb9e7675499139be52ca2570712f8f06f9032ef29f636f99c8f8da8b992f746eab6424aac04260c16158bcc2  xorg.conf
 "
