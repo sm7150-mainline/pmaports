@@ -1,3 +1,6 @@
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
+# https://wiki.postmarketos.org/wiki/Pmbootstrap:_Cross_Compiling
+#
 # Wrapper for the "crossdirect" compilation method.
 # pmbootstrap mounts the native chroot in the foreign arch (e.g. armhf) chroot
 # as /native. This package gets installed into the native chroot, and creates
@@ -16,7 +19,7 @@
 # version is implemented as simple shell wrappers.
 
 pkgname=crossdirect
-pkgver=5
+pkgver=5.1.0
 pkgrel=0
 pkgdesc="Wrappers to launch native cross compilers in foreign chroots"
 url="https://postmarketOS.org"
@@ -76,9 +79,10 @@ package() {
 		ln -s ../rustc.sh rustc
 	done
 }
+
 sha512sums="
 0f4b48f250425dc57f63955fc8b38477d23db793bee367c3fbe03c3d2a559ba576434d07518310db4cae9d90d501af4051b80038b10fae94b980e537fc9374ad  cargo.sh
 500107e5aff8b34e74b54982ebcd447fc41bc8283956d506561b031a055cb30ec12698047c2604918b4b6d8560fe03db427a63dff2b83c907e8494b7f5233f29  crossdirect.c
-2c41410a9ef2dab31403545e55e2464f2ee4e7056ffbcd3bc5810d582311801496b88d55307f17ce6acf766e9c867d30d05f2b0d8d46bf77a5e8f0495d6bc24e  rustc.sh
+de2aa6929bbff5db9132673e667f4525b333d062cb1f7a0597dd924de9e5c7215a9f8e2e6263b6fb5ace06f2c4b64f4ebfd0ede9b78add07c2cd08ec8613e98f  rustc.sh
 ea9bf8db3810d03d0a7395057f3d6e57f7127d87c55deaedc171c255288f5f3cc6fbcc680a5a1b92786cf573875d5dc22521173799fe2639acc97d0715ff905b  rust-qemu-linker.sh
 "
