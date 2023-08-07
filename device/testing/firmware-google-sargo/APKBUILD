@@ -1,14 +1,18 @@
 # Maintainer: Richard Acayan <mailingradian@gmail.com>
 pkgname=firmware-google-sargo
 pkgver=220505.008
-pkgrel=3
+pkgrel=4
 pkgdesc="Proprietary firmware blobs from the Google Pixel 3a factory image"
 url="https://github.com/TheMuppets/proprietary_vendor_google_sargo"
 arch="aarch64"
 license="proprietary"
 makedepends="pil-squasher"
 _commit="c631f0f2aa24ea60cfb505d327cd4ae56ca27f16"
-source="https://github.com/TheMuppets/proprietary_vendor_google_sargo/archive/$_commit.tar.gz"
+_modemfw_commit="34bbe2c27f35537f13747c9eba67ece6ae141806"
+source="
+	https://github.com/TheMuppets/proprietary_vendor_google_sargo/archive/$_commit.tar.gz
+	https://gitlab.com/flamingradian/firmware-google-sargo-modem/-/archive/$_modemfw_commit/firmware-google-sargo-modem-$_modemfw_commit.tar.gz
+"
 builddir="$srcdir/proprietary_vendor_google_sargo-$_commit"
 options="!check !archcheck !strip !tracedeps pmb:cross-native"
 
@@ -18,6 +22,8 @@ build() {
 }
 
 package() {
+	_modemfw_dir="$srcdir"/firmware-google-sargo-modem-"$_modemfw_commit"
+
 	install -Dm644 "$builddir"/a615_zap.mbn \
 		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/a615_zap.mbn
 	install -Dm644 "$builddir"/ipa_fws.mbn \
@@ -30,13 +36,21 @@ package() {
 	install -Dm644 "$builddir"/proprietary/vendor/firmware/adspua.jsn \
 		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/adspua.jsn
 	install -Dm644 "$builddir"/proprietary/vendor/firmware/modemuw.jsn \
-		       "$pkgdir"/lib/firmware/postmarketos/modemuw.jsn
+		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/modemuw.jsn
 	install -Dm644 "$builddir"/proprietary/vendor/firmware/venus.mbn \
 		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/venus.mbn
 	install -Dm644 "$builddir"/proprietary/vendor/firmware/wlanmdsp.mbn \
-		       "$pkgdir"/lib/firmware/postmarketos/wlanmdsp.mbn
+		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/wlanmdsp.mbn
+
+	install -Dm644 "$_modemfw_dir"/modemfw/mba.mbn \
+		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/mba.mbn
+	install -Dm644 "$_modemfw_dir"/modemfw/modem.mbn \
+		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/modem.mbn
+	install -Dm644 "$_modemfw_dir"/modemfw/modemr.jsn \
+		       "$pkgdir"/lib/firmware/qcom/sdm670/sargo/modemr.jsn
 }
 
 sha512sums="
 fbbb852405bd521efa4add32136b25f5d07b0671953b05ec66f7b04b6de483269b1e57500f1a723b6b00abb7b9b405e01d14552c686c5c6ffbdb4d0c14f98af0  c631f0f2aa24ea60cfb505d327cd4ae56ca27f16.tar.gz
+53a71c7d51d6277375076dcf7d89c2189ba67272238a8efa89f712238c2474ee777c3b0d749e8e28eeaa8e6bfbbd6eb56949481029d5ca3505cac321ce8963ef  firmware-google-sargo-modem-34bbe2c27f35537f13747c9eba67ece6ae141806.tar.gz
 "
