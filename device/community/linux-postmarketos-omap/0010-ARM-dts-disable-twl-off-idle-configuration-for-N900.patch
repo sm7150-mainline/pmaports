@@ -1,17 +1,20 @@
-From 31f6c1e43a1287747861b812d850b656deb92f5f Mon Sep 17 00:00:00 2001
+From 3653ae0bb94f6166fb0091c39ab1f30d8542c46d Mon Sep 17 00:00:00 2001
 From: "Sicelo A. Mhlongo" <absicsz@gmail.com>
-Date: Tue, 8 Aug 2023 21:52:14 +0200
+Date: Wed, 9 Aug 2023 21:35:12 +0200
 Subject: [PATCH] ARM: dts: disable twl off-idle configuration for N900
 
-This is a restore of commit d937678ab625b0f6 (:ARM: dts: Revert enabling of twl
-configuration for n900"), and partially reverts daebabd57864744 ("mfd:
-twl4030-power: Fix PM idle pin configuration to not conflict with regulators").
+Disable idling features of the TWL4030 in Nokia N900, while keeping basic power
+reset features (reboot, poweroff).
+
+Related upstream linux commits:
+  d937678ab625b0f6 (:ARM: dts: Revert enabling of twl configuration for n900")
+  daebabd57864744 ("mfd: twl4030-power: Fix PM idle pin configuration to not conflict with regulators").
 ---
  arch/arm/boot/dts/omap3-n900.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/omap3-n900.dts b/arch/arm/boot/dts/omap3-n900.dts
-index f9f9eca0c56c..2f0b24897afd 100644
+index f9f9eca0c56c..31fd8177fbb1 100644
 --- a/arch/arm/boot/dts/omap3-n900.dts
 +++ b/arch/arm/boot/dts/omap3-n900.dts
 @@ -508,7 +508,7 @@ twl_audio: audio {
@@ -19,7 +22,7 @@ index f9f9eca0c56c..2f0b24897afd 100644
  
  	twl_power: power {
 -		compatible = "ti,twl4030-power-n900", "ti,twl4030-power-idle-osc-off";
-+		compatible = "ti,twl4030-power-n900";
++		compatible = "ti,twl4030-power-n900", "ti,twl4030-power";
  		ti,use_poweroff;
  	};
  };
