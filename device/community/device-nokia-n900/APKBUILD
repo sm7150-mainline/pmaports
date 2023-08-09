@@ -2,7 +2,7 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=9.1.5
+pkgver=9.1.6
 pkgrel=0
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
@@ -41,6 +41,8 @@ source="
 	keymaps/rx51_it.map
 	keymaps/rx51_us.map
 	lock.sh
+	modem-load.conf
+	modem-opts.conf
 	modules.blocklist
 	n900-wlan-data.initd
 	pointercal
@@ -115,7 +117,11 @@ package() {
 	install -D -m644 "$srcdir"/keymaps/rx51_se.bmap.gz \
 		"$pkgdir"/usr/share/bkeymaps/se/rx51_se.bmap.gz
 
-	# Module blocklist
+	# Kernel module management
+	install -D -m644 "$srcdir"/modem-load.conf \
+		"$pkgdir"/etc/modules-load.d/10-nokia-modem.conf
+	install -D -m644 "$srcdir"/modem-opts.conf \
+		"$pkgdir"/etc/modprobe.d/nokia-modem.conf
 	install -D -m644 "$srcdir"/modules.blocklist \
 		"$pkgdir"/etc/modprobe.d/n900-module-blocklist.conf
 
@@ -194,7 +200,9 @@ dc585e11bf4e06e36c5c62bcc024eaacecc30437d9da5257df14be05e247a2f2bc208874be3058ed
 082a5166e38296b097e873b0b4aeaf007e594d3bf4470c74e91ee3efedcf28ad25cd55c23dd63e460339898ae08e77e111b0e1092fa5e661db90bb40732103a1  rx51_it.map
 e440ed7a3070c17e003b86b72dbe6d8194d01b577ca8dd56dd066f216b6dda32bb965c780950f1789a66f7c948290016b048da9f1cf63aba9e11d7e7fd6873ba  rx51_us.map
 caf9f4c45d11c28e1a6681255fafe5a286b0c417737fac1ca0ee37d3f82fd65c1712f5180375d7813fa308dfdca91d96876b5ce5b05b55ac14cfc31303b1ea5f  lock.sh
-b76958bcba6e704bdf06194998f05bc5c86c0678329438b784bd77eaac9cab352aadc912bda8f3780406ff50fd3e05f6d32d021c49987285d1c0dc05ad5e73c4  modules.blocklist
+157b27feebcfddf800a1ffd8c6e369d2b58e5db25b1a44b4443dada8d9fe74abb91d036b9f0e97769bbafbdc72020b5637313682c6932fe7b0bddb9ebebbad42  modem-load.conf
+695feac7f69a0ec8c5e007cdb651adcc3492f1c6236e7fd183edec2a5e25cb957d3ace630ea5fdb87fd703e35ac368f1d097c2f881ecb52c9cfd433564db2a6c  modem-opts.conf
+72b1554929843990a7665fdf1e45f7ef304fc45d3fa3b1082dcb9dd6cb9d3e9f6799659a8e2fdbd24a809319654543d1c20a0528856002c3de319d5546e2af8b  modules.blocklist
 b50e7f37ffb1fa0bb782b117a4e8bcfdb722b6127c3e5d643e90cd901a1f4e65e77a0773ed418673c8195595347482be0c8096f5a723e840315ad61ccd043b66  n900-wlan-data.initd
 143c21f0b18a016d37cb44178e9daea09f128a90769b48353c03c3f245cb9b1f7e773b9ccee084973fc78ddd7a18c2642e54888a85bda7c7daecddc9a8c62eff  pointercal
 239a54ae5c5effb53ccf4d658652c0462da57604b16b77a63627a17caa171caf82e3d1769f9c5afea8756415acbbf3b73db9b57715fce6c70ea3f29e5c6ac84a  uboot-script.cmd
