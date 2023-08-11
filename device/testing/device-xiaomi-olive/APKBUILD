@@ -2,7 +2,7 @@
 pkgname=device-xiaomi-olive
 pkgdesc="Xiaomi Redmi 8"
 pkgver=0.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -16,6 +16,7 @@ makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	etc-lightdm-lightdm.conf
+	10-unl0kr.conf
 "
 
 subpackages="
@@ -29,6 +30,10 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/10-unl0kr.conf \
+		"$pkgdir"/etc/unl0kr.conf.d/10-unl0kr.conf
+
 }
 
 nonfree_firmware() {
@@ -51,4 +56,5 @@ fix_lightdm() {
 sha512sums="
 9eb972182d4cdc5af52250dc89b96a3a3611c8cf3de5ca9979647ac282f3f55b8663b2270badccb164ed2b941f747b8221730d9882ec2991fb8196bae3e32b61  deviceinfo
 861270c6bc0b2a3e6cd389c21c8c895e62de8cf8bec6fcf23c178f8cbaae855d62b0ee98692671ab4f518d84cb43dd0b2fe46f5a609f65af6a6c06e0fdbb6d0c  etc-lightdm-lightdm.conf
+f700af3145b79d1ef9edfb22982899b25cabfb212f9620dcbd3a2e6f44b5ad591e0a66056c6fcd66c3fde89a2b5f551e8a8fe2e65cf0e2a48adec57c027d7825  10-unl0kr.conf
 "
