@@ -18,10 +18,10 @@ setup_firmware_path
 # shellcheck disable=SC2154
 load_modules /lib/modules/initramfs.load "usb_f_rndis"
 
-setup_mdev
-setup_dynamic_partitions "${deviceinfo_super_partitions:=}"
 setup_framebuffer
 show_splash "Loading..."
+setup_mdev
+setup_dynamic_partitions "${deviceinfo_super_partitions:=}"
 mount_subpartitions
 run_hooks /hooks
 
