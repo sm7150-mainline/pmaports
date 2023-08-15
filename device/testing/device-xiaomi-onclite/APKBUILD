@@ -1,0 +1,46 @@
+# Maintainer: Barnabas Czeman <trabarni@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-xiaomi-onclite
+pkgdesc="Xiaomi Redmi 7"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-msm8953
+	lk2nd-msm8953
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8953
+"
+makedepends="devicepkg-dev"
+source="deviceinfo modules-initfs"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-modem"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware, also needed for osk-sdl"
+	depends="msm-firmware-loader firmware-xiaomi-onclite"
+	mkdir "$subpkgdir"
+}
+
+modem() {
+	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+f034295150acd176b9e9afe1936778d977cc220a9980e2081df3de7aa6705b2b0e86eaacdc84290b204729d5e3b8c23da71c41fc8a972519a8a0aa4e41d3599d  deviceinfo
+c937f5fd7f11cccd7629d306b46a7f3aa3503c8eaaa3280b0f5a97473f6f430ba822110ada34a8eb95e798604916ba7e1170cb2217bbff72b0f738b02aa3f412  modules-initfs
+"
