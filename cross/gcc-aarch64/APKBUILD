@@ -34,7 +34,7 @@ _pkgsnap="${pkgver##*_git}"
 [ "$CHOST" != "$CTARGET" ] && _target="-$CTARGET_ARCH" || _target=""
 
 pkgname=gcc-aarch64
-pkgrel=1
+pkgrel=2
 pkgdesc="Stage2 cross-compiler for aarch64"
 url="https://gcc.gnu.org"
 arch="x86_64"
@@ -428,6 +428,7 @@ package() {
 	make -j1 DESTDIR="$pkgdir" install
 
 	ln -s gcc "$pkgdir"/usr/bin/cc
+	ln -s ${CTARGET}-gcc "$pkgdir"/usr/bin/${CTARGET}-cc
 
 	if $LANG_JIT; then
 		make -C "$_builddir"/libgccjit-build/gcc DESTDIR="$pkgdir" jit.install-common
