@@ -1,8 +1,8 @@
 # Maintainer: Alexander Martinz <amartinz@shiftphones.com>
 
 pkgname=firmware-shift-sdm845
-pkgver=0.3
-pkgrel=1
+pkgver=0.4
+pkgrel=0
 pkgdesc="Firmware for SHIFT sdm845 devices"
 url="https://gitlab.com/sdm845-mainline/firmware-shift-sdm845"
 arch="aarch64"
@@ -14,10 +14,12 @@ license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
 
 _version="ce9d27bf03624cceeaa8e7466f2e6dc731f2ba5e"
+_board2_commit="fc750b3f1bda29c08cfe9329eb781c0ae3608456"
 
 source="$pkgname.tar.gz::$url/-/archive/$_version/$pkgname-$_version.tar.gz
 	firmware.files
-	30-gpu-firmware.files"
+	30-gpu-firmware.files
+	board-2.bin::https://gitlab.com/dylanvanassche/ath10k-firmware/-/raw/$_board2_commit/linux-firmware/board-2.bin"
 subpackages="
 	$pkgname-initramfs:firmware_initramfs"
 
@@ -28,6 +30,10 @@ package() {
 		echo $_i
 		install -Dm644 $_i "$pkgdir/$_i"
 	done < "$srcdir/firmware.files"
+
+	# Install board-2.bin until upstream
+	install -Dm644 "$srcdir"/board-2.bin \
+		"$pkgdir"/lib/firmware/postmarketos/ath10k/WCN3990/hw1.0/board-2.bin
 }
 
 firmware_initramfs() {
@@ -42,6 +48,7 @@ firmware_initramfs() {
 
 sha512sums="
 86c3813a9f43e8f5f5e0df1215e37090011d6c468aad1a23f944a202e9fa740240869ed7b0b11ad032d35afaee72e903e24ca8d0e1de2f992902692f8c5983f8  firmware-shift-sdm845.tar.gz
-0b547cd027a9760cf16d80e63ebfb89282cff260bd07cc0bfea364513be7a5a32202a5f0aedbeb52dc5ca8087595a2842442a59f77dc7c9bcf5f154e905ceb15  firmware.files
+2f1087a2133d5dbdaad94927be9e88acdceb6873eab731b76b295b5248e5a91c3e9e6498b4400fc7219ba378ca4362448b882ccd87d2e73ae5fbf0fd613277ba  firmware.files
 8695a37da5578fdae506f373131ce9481be3db1a86f329c19893e7360b9cb0fadd47b0b1318b2e74702c5e76a9be022f58610940ad17becab49788689f6ca3f8  30-gpu-firmware.files
+a8eaab63f467553a65789a316d6f58cc15b0ad9bf3f698e6dbe51efa841db7f62a69d0c24b69da4f36de4a01dc29b723911d9cf17f925d3ce1170cbfa6b16029  board-2.bin
 "
