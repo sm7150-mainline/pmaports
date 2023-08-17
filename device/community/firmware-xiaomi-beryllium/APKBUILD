@@ -1,8 +1,8 @@
 # Maintainer: Joel Selvaraj <joelselvaraj.oss@gmail.com>
 
 pkgname=firmware-xiaomi-beryllium
-pkgver=6
-pkgrel=1
+pkgver=7
+pkgrel=0
 pkgdesc="Firmware for Xiaomi Poco F1"
 url="https://gitlab.com/sdm845-mainline/firmware-xiaomi-beryllium"
 arch="aarch64"
@@ -11,9 +11,11 @@ license="proprietary"
 options="!strip !check !archcheck !tracedeps pmb:cross-native"
 
 _commit="b4937f06a796cd30b8ddecd6cf7ed416eecc06a0"
+_board2_commit="fc750b3f1bda29c08cfe9329eb781c0ae3608456"
 
 source="$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
-firmware.files"
+	firmware.files
+	board-2.bin::https://gitlab.com/dylanvanassche/ath10k-firmware/-/raw/$_board2_commit/linux-firmware/board-2.bin"
 
 package() {
 	cd "$srcdir/$pkgname-$_commit/"
@@ -22,9 +24,14 @@ package() {
 		echo $_i
 		install -Dm644 $_i "$pkgdir/$_i"
 	done < "$srcdir/firmware.files"
+
+	# Install board-2.bin until upstream
+	install -Dm644 "$srcdir"/board-2.bin \
+		"$pkgdir"/lib/firmware/postmarketos/ath10k/WCN3990/hw1.0/board-2.bin
 }
 
 sha512sums="
 41fdd771fe73e31bdce6088fdeb7686205f61b9888612fa83ac914e4bb524d22bba63894376a671d3acb19e90316a3d2eafdfb5425360ba53e41a38b9fd753ae  firmware-xiaomi-beryllium.tar.gz
 db32c8df77632e763c1ca3e80cee1ee2528c4986c944511c726add6e13fca6552ae63f6d436800439b7e615fd0c09f234888a68e4a6ff6663afe3dc593d6a7b0  firmware.files
+a8eaab63f467553a65789a316d6f58cc15b0ad9bf3f698e6dbe51efa841db7f62a69d0c24b69da4f36de4a01dc29b723911d9cf17f925d3ce1170cbfa6b16029  board-2.bin
 "
