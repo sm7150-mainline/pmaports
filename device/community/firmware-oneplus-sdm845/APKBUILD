@@ -1,8 +1,8 @@
 # Maintainer: Caleb Connolly <caleb@connolly.tech>
 
 pkgname=firmware-oneplus-sdm845
-pkgver=7
-pkgrel=1
+pkgver=8
+pkgrel=0
 pkgdesc="Firmware for OnePlus 6 / 6T"
 url="https://gitlab.com/sdm845-mainline/firmware-oneplus-sdm845"
 arch="aarch64"
@@ -11,10 +11,13 @@ license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
 
 _version="895bb1c8dd0695635df354bbd713740af48e47ce"
+_board2_commit="fc750b3f1bda29c08cfe9329eb781c0ae3608456"
 
 source="$pkgname.tar.gz::$url/-/archive/$_version/$pkgname-$_version.tar.gz
 	firmware.files
-	30-gpu-firmware.files"
+	30-gpu-firmware.files
+	board-2.bin::https://gitlab.com/dylanvanassche/ath10k-firmware/-/raw/$_board2_commit/linux-firmware/board-2.bin
+	"
 subpackages="
 	$pkgname-initramfs:firmware_initramfs"
 
@@ -23,6 +26,10 @@ package() {
 	while IFS="" read -r _i || [ -n "$_i" ]; do
 		install -Dm644 "$_i" "$pkgdir/$_i"
 	done < "$srcdir/firmware.files"
+
+	# Install board-2.bin until upstream
+	install -Dm644 "$srcdir"/board-2.bin \
+		"$pkgdir"/lib/firmware/postmarketos/ath10k/WCN3990/hw1.0/board-2.bin
 }
 
 firmware_initramfs() {
@@ -37,6 +44,7 @@ firmware_initramfs() {
 
 sha512sums="
 59091452f1d6363fab0474ebc2738ec8fca6903c64837c3b6228eefb2030b0b4d5f0694770ddadf81f59f2ace4fad548459ad7a6604498aaa08a9064fb1dc736  firmware-oneplus-sdm845.tar.gz
-d2295ba3346ded12e88bb1b27958418cb14ab6bb8f2c23e73a66168f53eac0cc8a10e4be28181724e92ff75ef8608c4483641e24bfd9f05c4ff7b351179ba784  firmware.files
+f7a850f76eb5c757d4c7329b8e2040aadc62d9d5d7a6c21752f0fe1afb2343f9630738ede4b3c45cf1eba305e35923dd7f011e9fb6a68e97f3d25564b5c29306  firmware.files
 bc6c329bf6bb9622320ab610f4f5fb944129e276855a4cf5646cb29a553f4c47cd9a4ef4305cbcd94a991471bc109b8f615cefd6871be99bf6a457fe0fa5aa19  30-gpu-firmware.files
+a8eaab63f467553a65789a316d6f58cc15b0ad9bf3f698e6dbe51efa841db7f62a69d0c24b69da4f36de4a01dc29b723911d9cf17f925d3ce1170cbfa6b16029  board-2.bin
 "
