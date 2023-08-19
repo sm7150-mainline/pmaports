@@ -1,8 +1,8 @@
 # Maintainer: Teemu Ikonen <tpikonen@mailbox.org>
 # Forked from Alpine to apply patches for adaptive transient window handling
 pkgname=gtk4.0
-pkgver=9999.4.10.4
-_pkgver=4.10.4
+pkgver=9999.4.12.0
+_pkgver=4.12.0
 pkgrel=0
 pkgdesc="The GTK Toolkit (v4)"
 url="https://www.gtk.org/"
@@ -62,6 +62,7 @@ source="
 	https://download.gnome.org/sources/gtk/${_pkgver%.*}/gtk-${_pkgver}.tar.xz
 	0001-window-Maximize-resizable-transient-windows-on-small.patch
 	0002-windowcontrols-Force-close-buttons-for-transient-win.patch
+	6250.patch
 	"
 builddir="$srcdir/gtk-${_pkgver}"
 
@@ -74,7 +75,7 @@ prepare() {
 build() {
 	CFLAGS="$CFLAGS -O2" \
 	abuild-meson \
-		-Dgtk_doc=true \
+		-Ddocumentation=true \
 		-Dintrospection=enabled \
 		-Dbroadway-backend=true \
 		-Dman-pages=true \
@@ -133,7 +134,8 @@ lang() {
 }
 
 sha512sums="
-0c5db3af72227977e11fea3adddec1321b82bcace3c3d10a7c914b8d98b0bdb7994084c0a9e883b24815038bf4a0efe1eb1c4ff79e6838e83cadb6ddf2a1239f  gtk-4.10.4.tar.xz
-e7b1e11207ea56c4173210d9a92f4a7b5ab41323b55366a69fd7e333d13c09aa872ec5ef1e1527fda068f0fbe91b1b9ba933fe9a8b0961efa5f32eaba2c7482b  0001-window-Maximize-resizable-transient-windows-on-small.patch
-d2f09af3965eee592602819be6ed9240b6467f6409ca9ab892a757760af504ac4a7551ff89389659e2602a6e12489080dadc444c9d7e0665e7038dc4b409a68a  0002-windowcontrols-Force-close-buttons-for-transient-win.patch
+a69f82e1f021b1eb68e8723bc9003bfca0b5939fd3cc7cda87d7dde0b3e37bb39d9594cb93a73f54bd1cff1b63a1c459d1217e8df794c67fda50bf0b9b732826  gtk-4.12.0.tar.xz
+85ced777c23111f502f8a7d49902c65b113f51c1156490c08de2d8f9cb4a5e85c4a3eec0f043c0fa9d9ff44d6b9ab44c4c2865ecd06c3979a3f2558b287c35fd  0001-window-Maximize-resizable-transient-windows-on-small.patch
+559f362a918f0f60dfd621daa489f16a61ea9ddd9ad0ef7ad043ceebe1013b8f2fce2f5c3c27597bfc801f2703867095909f16e2b9088e0bf374f36667e25abe  0002-windowcontrols-Force-close-buttons-for-transient-win.patch
+7e76f23b4ae63a470651934db3935395b70f69ba0d73f3698549bf3abaa4df867336b2a24a52e337bffc608b433ee193c6ffc6df9d8b4205aadaa888c5d059f5  6250.patch
 "
