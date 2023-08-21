@@ -12,7 +12,7 @@ show_splash "WARNING: debug-shell is active\\nhttps://postmarketos.org/debug-she
 echo "Create 'pmos_continue_boot' script"
 {
 	echo "#!/bin/sh"
-	echo "pkill -f pmos_shell"
+	echo "pkill -9 -f pmos_shell"
 	echo "pkill -f pmos_loop_forever"
 	echo "pkill -f telnetd.*:${TELNET_PORT}"
 } >/usr/bin/pmos_continue_boot
@@ -59,13 +59,7 @@ echo "This is a security hole! Only use it for debugging, and"
 echo "uninstall the debug-shell hook afterwards!"
 echo "---"
 
-if tty -s; then
-	echo "Exit the shell to continue booting:"
-	pmos_shell
-else
-	echo "No tty attached, looping forever."
-	pmos_loop_forever
-fi
+pmos_shell
 
 # Show "Loading" splash again when continuing
 show_splash "Loading..."
