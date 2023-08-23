@@ -13,7 +13,6 @@ export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 
 # Mount everything, set up logging, modules, mdev
 mount_proc_sys_dev
-create_device_nodes
 setup_log
 setup_firmware_path
 # shellcheck disable=SC2154

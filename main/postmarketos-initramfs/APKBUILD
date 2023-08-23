@@ -33,6 +33,7 @@ source="
 	init.sh
 	init_functions.sh
 	unudhcpd.conf
+	mdev.conf
 	"
 arch="noarch"
 license="GPL-2.0-or-later"
@@ -62,6 +63,9 @@ package() {
 	install -Dm644 "$srcdir"/00-initramfs-extra-base.files \
 		-t "$pkgdir"/usr/share/mkinitfs/files-extra/
 	mkdir -p "$pkgdir"/etc/mkinitfs/files-extra
+
+	install -Dm644 "$srcdir"/mdev.conf \
+		-t "$pkgdir"/usr/share/initramfs/
 
 	mkdir -p "$pkgdir"/usr/share/mkinitfs/hooks
 	mkdir -p "$pkgdir"/usr/share/mkinitfs/hooks-extra

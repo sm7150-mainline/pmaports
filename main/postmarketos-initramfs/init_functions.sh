@@ -36,12 +36,6 @@ mount_proc_sys_dev() {
 	mount -t devpts devpts /dev/pts
 }
 
-create_device_nodes() {
-	mknod -m 666 /dev/null c 1 3
-	mknod -m 644 /dev/random c 1 8
-	mknod -m 644 /dev/urandom c 1 9
-}
-
 setup_firmware_path() {
 	# Add the postmarketOS-specific path to the firmware search paths.
 	# This should be sufficient on kernel 3.10+, before that we need
@@ -110,16 +104,19 @@ setup_dynamic_partitions() {
 }
 
 mount_subpartitions() {
-	# Do not create subpartition mappings if pmOS_boot
-	# already exists (e.g. installed on an sdcard)
-	[ -n "$(find_boot_partition)" ] && return
+	try_parts="/dev/disk/by-partlabel/userdata /dev/disk/by-partlabel/system* /dev/mapper/system*"
+	android_parts=""
+	for x in $try_parts; do
+		[ -e "$x" ] && android_parts="$android_parts $x"
+	done
+
 	attempt_start=$(get_uptime_seconds)
 	wait_seconds=10
 	echo "Trying to mount subpartitions for $wait_seconds seconds..."
 	while [ -z "$(find_boot_partition)" ]; do
-		partitions="$(grep -v "loop\|ram" < /proc/diskstats |\
+		partitions="$android_parts $(grep -v "loop\|ram" < /proc/diskstats |\
 			sed 's/\(\s\+[0-9]\+\)\+\s\+//;s/ .*//;s/^/\/dev\//')"
-		echo "$partitions" | while read -r partition; do
+		for partition in $partitions; do
 			case "$(kpartx -l "$partition" 2>/dev/null | wc -l)" in
 				2)
 					echo "Mount subpartitions of $partition"
