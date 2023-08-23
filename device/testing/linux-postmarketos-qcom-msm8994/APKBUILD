@@ -3,8 +3,8 @@
 
 _flavor="postmarketos-qcom-msm8994"
 pkgname=linux-$_flavor
-pkgver=6.3_rc5
-pkgrel=1
+pkgver=6.6_rc3
+pkgrel=0
 pkgdesc="Mainline kernel for Qualcomm MSM8994/MSM8992 devices"
 arch="aarch64"
 _carch="arm64"
@@ -28,9 +28,8 @@ _tag=${pkgver//_/-}
 source="
 	https://git.kernel.org/torvalds/t/linux-$_tag.tar.gz
 	config-$_flavor.$arch
-	0001-arm64-dts-msm8994-angler-Fix-cont_splash_mem-mapping.patch
-	0002-arm64-dts-msm8994-angler-removed-clash-with-smem_reg.patch
-	0003-arm64-dts-qcom-msm8994-huawei-angler-Add-regulators.patch
+	0001-arm64-dts-qcom-msm8994-huawei-angler-Add-regulators.patch
+	0002-arm64-dts-qcom-msm8992-lg-h815.patch
 "
 builddir="$srcdir/linux-${_tag#v}"
 
@@ -60,9 +59,8 @@ package() {
 }
 
 sha512sums="
-84f8b612268a2f6d47e35afc06865db3a779c7877ab2fde8a70e219093c113fb82d10cddf042f2600522659d7f86c5daa1ee622a72baeaba74de55b374093221  linux-6.3-rc5.tar.gz
-9b896642fb33669c387b6707fef50c9e680f0a290916a1a619a72b8c4c3f7dc0f0b1f63e7c5bc998e3862bd47e5a1e9411c4ea92fc49907de1250c1eab17fa4e  config-postmarketos-qcom-msm8994.aarch64
-29573678c82723821e3522a649158137dfc49e61b78c6319a4c6bc97cfe0d98fdc994d2271934beb223da11bd0cdb085bf5422454287575c28ed06c47ea63f68  0001-arm64-dts-msm8994-angler-Fix-cont_splash_mem-mapping.patch
-ca46f96560b14044b88791e04e49b7cff59f1217a5e7e8f56092f624c24707b30edfc3d862098599a784a8695558a1b67ff964789188f26518a1496377de7632  0002-arm64-dts-msm8994-angler-removed-clash-with-smem_reg.patch
-4dc3de184eac5cfb593a308278e3a5ab27f5e94b5dec8b288c053070f788fdb8d8fad8628b5a996701eacc11b1015999b99f8d279b207e214dd0e63f97cfb4d6  0003-arm64-dts-qcom-msm8994-huawei-angler-Add-regulators.patch
+59dfaf0d49d898c0f00019364845271f58ad4401f7f2a6fe3e2b3718a29a5e183a356b5400f4936967bc215471dbe87278ec5c3ab6e9e52643d7e869233b3833  linux-6.6-rc3.tar.gz
+c22a124924834c109f48bebed108d9d748c5c16313ac2a80c61cb4f048d2e1397686c69892d6a24b8572dfcb99f3b79fc3014efba94b07ed78ba644f8efcf256  config-postmarketos-qcom-msm8994.aarch64
+4dc3de184eac5cfb593a308278e3a5ab27f5e94b5dec8b288c053070f788fdb8d8fad8628b5a996701eacc11b1015999b99f8d279b207e214dd0e63f97cfb4d6  0001-arm64-dts-qcom-msm8994-huawei-angler-Add-regulators.patch
+ccb27539814382dcaea29e294c2c2ca931496f27643ce87c3cd76c3fecd5babe4a4504bd174df33e2e0c034cafbae5a4c98ed50abfa317455c5667e98fe753a3  0002-arm64-dts-qcom-msm8992-lg-h815.patch
 "
