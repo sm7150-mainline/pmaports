@@ -429,6 +429,7 @@ resize_root_partition() {
 }
 
 unlock_root_partition() {
+	command -v cryptsetup >/dev/null || return
 	partition="$(find_root_partition)"
 	if cryptsetup isLuks "$partition"; then
 		# Make sure the splash doesn't interfere
