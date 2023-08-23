@@ -2,8 +2,8 @@
 # Maintainer: Richard Acayan <mailingradian@gmail.com>
 pkgname=device-google-sargo
 pkgdesc="Google Pixel 3a"
-pkgver=0.4
-pkgrel=3
+pkgver=0.5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -19,7 +19,7 @@ depends="
 	soc-qcom-sdm845-qbootctl
 "
 makedepends="devicepkg-dev"
-source="deviceinfo modules-initfs"
+source="90-feedbackd-drv2624.rules deviceinfo modules-initfs"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -28,6 +28,9 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/90-feedbackd-drv2624.rules \
+		-t "$pkgdir"/usr/lib/udev/rules.d
 }
 
 nonfree_firmware() {
@@ -40,6 +43,7 @@ nonfree_firmware() {
 }
 
 sha512sums="
+016d398155f2344417f5e5649a361719ba6e53e593c501b5df39114cdd284302b9bf8686a39817aee0c08fec95b3ab613c181d6cc9596299aaf7fd05dbe0c3dd  90-feedbackd-drv2624.rules
 278861ee21b41628aa4c1abafa4b77bf3501fa0f520d247b5feff9084e9bf77b768a66ee67e5fcb43085fd6f4c91ad97362ae0139618c34e1cb27dd7fa2a706b  deviceinfo
 1eb5f138619f499fab31ea64f63ee9f8984f195528708ec6a01ddc533c74cfb71d1442b97905ae15db24b8faac259fa3e89db357ca9c747ce3ee598c2d681639  modules-initfs
 "
