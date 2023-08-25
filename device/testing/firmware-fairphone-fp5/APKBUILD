@@ -1,0 +1,89 @@
+pkgname=firmware-fairphone-fp5
+pkgver=20230822
+pkgrel=0
+pkgdesc="Firmware for Fairphone 5"
+subpackages="
+	$pkgname-adsp
+	$pkgname-bluetooth
+	$pkgname-cdsp
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-venus
+	$pkgname-wpss
+	"
+url="https://github.com/FairBlobs/FP5-firmware"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="35845c6719f6394da1499a0ed3b5f20f372bdaec"
+source="https://github.com/FairBlobs/FP5-firmware/archive/$_commit/FP5-firmware-$_commit.tar.gz"
+builddir="$srcdir/FP5-firmware-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adsp() {
+	pkgdesc="Fairphone 5 adsp firmware"
+
+	install -Dm644 "$builddir"/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	install -Dm644 "$builddir"/battmgr.jsn -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+}
+
+bluetooth() {
+	pkgdesc="Fairphone 5 bluetooth firmware"
+
+	install -Dm644 "$builddir"/msbtfw11.mbn -t \
+		"$subpkgdir/lib/firmware/qca/"
+	install -Dm644 "$builddir"/msnv11.bin -t \
+		"$subpkgdir/lib/firmware/qca/"
+}
+
+cdsp() {
+	pkgdesc="Fairphone 5 cdsp firmware"
+
+	install -Dm644 "$builddir"/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+}
+
+ipa() {
+	pkgdesc="Fairphone 5 ipa firmware"
+
+	cd "$builddir"
+	for i in yupik_ipa_fws.*; do
+		install -Dm644 $i \
+			"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/${i/yupik_/}"
+	done
+}
+
+modem() {
+	pkgdesc="Fairphone 5 modem firmware"
+
+	# cp because of the modem_pr directory
+	mkdir -p "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	cp -r "$builddir"/modem* \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	find "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/" \
+		-type f -exec chmod 0644 {} \;
+}
+
+venus() {
+	pkgdesc="Fairphone 5 venus firmware"
+
+	install -Dm644 "$builddir"/vpu20_1v.mbn \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/venus.mbn"
+}
+
+wpss() {
+	pkgdesc="Fairphone 5 wpss firmware"
+
+	install -Dm644 "$builddir"/wpss* -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+}
+
+sha512sums="
+562d245bee3a946e951ede7c30d0f6aecd8faa19a5a45dabf44904032ad3bb234bd96b68ef2553832b821aaf99d6ed4db72bb4d01daa75bba4cfc75c9722b046  FP5-firmware-35845c6719f6394da1499a0ed3b5f20f372bdaec.tar.gz
+"

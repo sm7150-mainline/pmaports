@@ -1,0 +1,66 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-fairphone-fp5
+pkgdesc="Fairphone 5"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sc7280
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	swclock-offset
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	gtk.css
+	modules-initfs
+"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for Modem, WiFi, etc."
+	depends="
+		firmware-fairphone-fp5-adsp
+		firmware-fairphone-fp5-bluetooth
+		firmware-fairphone-fp5-cdsp
+		firmware-fairphone-fp5-ipa
+		firmware-fairphone-fp5-modem
+		firmware-fairphone-fp5-venus
+		firmware-fairphone-fp5-wpss
+		linux-firmware-ath11k
+		msm-modem
+		pd-mapper
+		tqftpserv
+		"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel phosh"
+	install -Dm644 "$srcdir"/gtk.css \
+		"$subpkgdir"/etc/skel/.config/gtk-3.0/gtk.css
+}
+
+sha512sums="
+f955819529664bad2a97ed7eb99e21a4a235c66b83366a48107312e8566d54399b936906d50274e65fd4ba32c4c2baaad632fdaee8e673371559c12354c68cde  deviceinfo
+71cd1ffa1ae56874a0751ef9eb91f4bccbe2009c1287b2116f3c09e99e70e436ed3d3ef27684dd318c8ff140cdccd7428580788659b7c6b2a3d8df6948149171  gtk.css
+c535c211a6d594605e0e2af3536e457b4b6a4b833f26efda4dbd514597d080393a621338c274173f4633eadefc0c2ae830f7ceaa4cbe56a1e6715ff825af18f1  modules-initfs
+"
