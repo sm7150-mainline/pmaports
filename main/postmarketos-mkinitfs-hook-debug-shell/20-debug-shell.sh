@@ -40,7 +40,9 @@ echo "Start the telnet daemon"
 	echo "sh"
 } >/telnet_connect.sh
 chmod +x /telnet_connect.sh
-telnetd -b "${IP}:${TELNET_PORT}" -l /telnet_connect.sh
+
+host_ip="${unudhcpd_host_ip:-172.16.42.1}"
+telnetd -b "${host_ip}:${TELNET_PORT}" -l /telnet_connect.sh
 
 # mount pstore, if possible
 if [ -d /sys/fs/pstore ]; then
@@ -52,7 +54,7 @@ mount -t debugfs none /sys/kernel/debug || true
 ln -s /sys/kernel/debug /d
 
 echo "---"
-echo "WARNING: debug-shell is active on ${IP}:${TELNET_PORT}."
+echo "WARNING: debug-shell is active on ${host_ip}:${TELNET_PORT}."
 echo "This is a security hole! Only use it for debugging, and"
 echo "uninstall the debug-shell hook afterwards!"
 echo "---"
