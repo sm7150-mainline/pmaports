@@ -55,15 +55,14 @@ disable_tethering() {
 	nmcli connection modify "$con_uuid" ipv6.method "link-local"
 	nmcli connection modify "$con_uuid" connection.autoconnect "true"
 
-	# If unudhpcd is not running, start it and configure it similar to initfs
-	if [ ! "$(pidof unudhcpd)" ]; then
-		(unudhcpd -i "$interface" -s "$host_ip" -c "$client_ip") &
-		logger -t nm-tethering "unudhcpd started"
+	# Restart unudhpcd and configure it similar to initfs
+	killall unudhpcd || true
+	(unudhcpd -i "$interface" -s "$host_ip" -c "$client_ip") &
+	logger -t nm-tethering "unudhcpd started"
 
-		reactivate_gadget
-		logger -t nm-tethering "USB tethering disabled"
-	fi
-
+	# Reactivate gadget to apply changes
+	reactivate_gadget
+	logger -t nm-tethering "USB tethering disabled"
 }
 
 # USB tethering
@@ -83,14 +82,12 @@ enable_tethering() {
 	fi
 
 	# Kill unudhcpd if needed
-	if [ "$(pidof unudhcpd)" ]; then
-		killall unudhcpd
-		logger -t nm-tethering "unudhcpd stopped"
+	killall unudhcpd || true
+	logger -t nm-tethering "unudhcpd stopped"
 
-		reactivate_gadget
-		logger -t nm-tethering "USB tethering enabled"
-	fi
-
+	# Reactivate gadget to apply changes
+	reactivate_gadget
+	logger -t nm-tethering "USB tethering enabled"
 }
 
 # Handle dispatcher events for tethering
