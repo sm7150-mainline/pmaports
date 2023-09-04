@@ -1,8 +1,8 @@
 # Forked from Alpine to apply mobile adaptivity patches
 
 pkgname=mutter-mobile
-pkgver=44_git20230405
-pkgrel=1
+pkgver=45_git20230908
+pkgrel=0
 pkgdesc="clutter-based window manager and compositor"
 url="https://wiki.gnome.org/Projects/Mutter/"
 # ricsv64: doesn't build currently:
@@ -53,6 +53,7 @@ makedepends="
 	libxrandr-dev
 	libxrender-dev
 	libxtst-dev
+	libei-dev
 	mesa-dev
 	meson
 	pango-dev
@@ -65,12 +66,13 @@ makedepends="
 options="!check" # Can't be run with release builds
 provides="mutter=$pkgver-r$pkgrel"
 subpackages="$pkgname-dbg $pkgname-dev $pkgname-doc $pkgname-lang $pkgname-schemas::noarch"
-_commit="780aadd4ed77ca6a8312acb3ab13decdb5b6d569"
-source="mutter-$_commit.tar.gz::https://gitlab.gnome.org/verdre/mutter/-/archive/$_commit/mutter-$_commit.tar.gz
+_commit="0f08f5aba4c9b5ac34b2d5711182d50b719d838e"
+source="mobile-mutter-$_commit.tar.gz::https://gitlab.gnome.org/verdre/mobile-mutter/-/archive/$_commit/mobile-mutter-$_commit.tar.gz
 	fixudev-req.patch
 	pcversion.patch
+	version.patch
 	"
-builddir="$srcdir/mutter-$_commit"
+builddir="$srcdir/mobile-mutter-$_commit"
 
 prepare() {
 	default_prepare
@@ -113,7 +115,8 @@ package() {
 }
 
 sha512sums="
-74f795fe187244c892eee97010c524e6b27651ed42e4cc68ff387e4ccbe65a6947a87eb7f633862996251f4aa023422e3e7088e70d8ecb8056dd9ff67d52131a  mutter-780aadd4ed77ca6a8312acb3ab13decdb5b6d569.tar.gz
+715c3efbbf416a11ae0a723184d1e018d3679c876bc419f110da1200f9dad3b7719255ac81cca301cff55e16ba36578bc9906805599ff009faeebf9455f5bcb1  mobile-mutter-0f08f5aba4c9b5ac34b2d5711182d50b719d838e.tar.gz
 6f21171bbd0ad0fc67cbaf5fb1478b22b482a9ae33b9328cc51a5dd31bcf7d95cd41e6cbbac21d3d8801cc064a62a64ae38ed7d0501ab605b861058c32f3bc30  fixudev-req.patch
-bb46a4692aaff0c9e6092d1ba80d19b336035e983f0f20a437a586757bc2530860f50fbd46b09f73e88f0dd80ea7188d1df467b8f762918717785e618b6e9c4b  pcversion.patch
+b0f2fc36b6eeb7b49aed4a689c1a8d982d22f0b9d246c4c47ae950d5b06c5fe900ac5b0640a2d25ec97042a83138c51e87d878f74dc016774205cfc8bbf06f00  pcversion.patch
+a9a82e945081480ae7ce59098aa3e46c87f5ea97481bd4c4933b3ef0a1757492ecb6e8453e8a2f74fb42edd51d39f76aaf9ef45ad8c52008acd6bbcbec219f83  version.patch
 "
