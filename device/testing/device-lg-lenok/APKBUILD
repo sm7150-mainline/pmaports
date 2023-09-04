@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-lg-lenok
 pkgdesc="LG G Watch R"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -24,6 +24,7 @@ source="
 	fb_fix.sh
 	initfs-hook.sh
 	machine.conf
+	modules-initfs.mainline
 	"
 
 build() {
@@ -61,14 +62,15 @@ kernel_mainline() {
 
 nonfree_firmware() {
 	pkgdesc="Firmware for WiFi, ADSP, etc."
-	depends="firmware-lg-lenok-adsp firmware-lg-lenok-wifi"
+	depends="firmware-lg-lenok-adsp firmware-lg-lenok-wifi firmware-qcom-adreno-a330"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
 a36ba9017df3b4be233783096c303abafa873dcdf50f6357b82f3c5526fd161a1914dafe143377cb5982955108b987890638b51911d0dd339172554e39a82d9f  90-android-touch-dev.rules
-a494222a0d2c0b89f8826815c6f762d97d5f7dcf504c4940b6365e59b9c8c4fdeebb101d54b604aab8ae6f16ec05b22189eb545982ac117773cfdfa7c79a3ba7  deviceinfo
+259ee3aeb023d811aba1cfea23011c683cd7f062ed2bf841a1cf68850b035b49dcc91d846e1ddaaf48eeeeb3ef900ebe426212d3b6c0af349c33bd1cde544fe1  deviceinfo
 1fc5a7609d8f79f74f29d55ce492dc6b77bb247da1b79abc1361e5e9072b5283816cef02c4cc283300031d708733c5fdbed94f539ae1c16b1dca96bf4d512234  fb_fix.sh
 d29105805adcd79d4f73c2f2c4483a2c627dc7b70acb77f43d085742ef930407c9b1423f7020c34f38e8a09f40cadd991b9acae23e936c90d6a4c0900250da22  initfs-hook.sh
 81cf2c20d2efa0f71f18116efeda11ae4f18fee96ba998dc4d6a36205626dce496cb36711af5c4e3215578b174942e721290cfcff8db6fb1c998b90b7345244d  machine.conf
+36b66e90934e267238384c36b4e41b6b796e9df99892fd18ba416098fd66f48911c34a7f7585b1c472b09047e7a149f4d937a732140f8292f3d043b1e4ba9c87  modules-initfs.mainline
 "
