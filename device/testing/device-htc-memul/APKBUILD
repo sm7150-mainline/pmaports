@@ -1,17 +1,27 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-htc-memul
 pkgdesc="HTC One Mini 2"
-pkgver=0.1
-pkgrel=8
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-htc-memul mkbootimg"
+depends="
+	mkbootimg
+	postmarketos-base
+	"
 makedepends="devicepkg-dev"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo
-	initfs-hook.sh"
+subpackages="
+	$pkgname-kernel-downstream:kernel_downstream
+	$pkgname-kernel-mainline:kernel_mainline
+	$pkgname-nonfree-firmware:nonfree_firmware
+	"
+source="
+	deviceinfo
+	initfs-hook.sh
+	modules-initfs.mainline
+	"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -21,6 +31,21 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_downstream() {
+	pkgdesc="Downstream kernel"
+	depends="linux-htc-memul"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+
+	amove etc/udev/rules.d/90-$pkgname.rules
+	amove usr/share/mkinitfs/hooks/00-$pkgname.sh
+}
+
+kernel_mainline() {
+	pkgdesc="Close to mainline kernel"
+	depends="linux-postmarketos-qcom-msm8226"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 nonfree_firmware() {
 	pkgdesc="Firmware for WiFi, etc."
 	depends="firmware-htc-memul-wcnss wcnss-wlan"
@@ -28,6 +53,7 @@ nonfree_firmware() {
 }
 
 sha512sums="
-e37873e774fc221c068f0bd960ffeb2ec7ee03ad5d3a09f331afe18d1931e712d4c8ccfed0ccae9405a40a070ce82aa77b0545fdbb06513a97ac588d4712ab79  deviceinfo
+e9126be42f77466b0823327e4c2fc84caf48ff34e970b08c1427c48e5531a2a627b698bde0d9db838a949cbccdd20fa394327a699051ebea3abae9dc91ee6367  deviceinfo
 765abaad5fda0dfda5e62e1e48414d3eea822198f39d0792171a04d73f86f6273a6e562afab430cbfcdd084412568a0ad03d012e9c40c5564f5cd1b9c0f181eb  initfs-hook.sh
+9ebe6ca9e371b5091e4e47ecbe3ec0c72d055e4bc2281880119eb0dee4c56b71f20f7d3cf1f1cb62e6814604e745fb17bbbfcfed2fec42398871e50b17685533  modules-initfs.mainline
 "
