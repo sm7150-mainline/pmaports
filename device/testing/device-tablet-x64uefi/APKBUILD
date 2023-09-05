@@ -2,7 +2,7 @@
 pkgname=device-tablet-x64uefi
 pkgdesc="Various tablets with atom CPU"
 pkgver=0.4
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -70,8 +70,8 @@ package() {
 }
 
 libva() {
-	install_if="$pkgname libva"
-	depends="intel-media-driver libva-intel-driver"
+	install_if="$pkgname=$pkgver-r$pkgrel libva"
+	depends="intel-media-driver libva-intel-driver mesa-va-gallium"
 	mkdir "$subpkgdir"
 }
 

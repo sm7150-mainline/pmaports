@@ -2,7 +2,7 @@
 pkgname=device-tablet-x86uefi
 pkgdesc="Various tablets with atom CPU"
 pkgver=7
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -10,19 +10,21 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf
 	grub-x86
-	libva-intel-driver
 	linux-lts
 	postmarketos-base
 	sof-firmware
 	"
 makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-libva
+	$pkgname-nonfree-firmware:nonfree_firmware
+	"
 source="
 	ath6kl.conf
 	deviceinfo
 	modules-initfs
 	grub.cfg
 	"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -36,6 +38,12 @@ package() {
 
 	install -Dm644 "$srcdir"/ath6kl.conf \
 		-t "$pkgdir"/lib/modprobe.d/
+}
+
+libva() {
+	install_if="$pkgname=$pkgver-r$pkgrel libva"
+	depends="intel-media-driver libva-intel-driver mesa-va-gallium"
+	mkdir "$subpkgdir"
 }
 
 nonfree_firmware() {
