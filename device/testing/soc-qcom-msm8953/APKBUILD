@@ -1,6 +1,7 @@
+# Maintainer: Barnabas Czeman <trabarni@gmail.com>
 pkgname=soc-qcom-msm8953
 pkgdesc="Common package for Qualcomm MSM8953 devices"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -11,11 +12,15 @@ subpackages="
 	$pkgname-ucm
 "
 
-_ucm_commit="7fcc09eaf22fa7ea483fca2bc6a2a39c32491d8a"
-source="$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8953-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz"
+_ucm_commit="01b9629916bd51e47481b97a29a0078bb6a72aec"
+source="
+	$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8953-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz
+	90-feedbackd-pm8xxx-vib.rules
+"
 
 package() {
-	mkdir -p $pkgdir
+	install -Dm644 "$srcdir"/90-feedbackd-pm8xxx-vib.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/90-feedbackd-pm8xxx-vib.rules
 }
 
 ucm() {
@@ -28,5 +33,6 @@ ucm() {
 }
 
 sha512sums="
-fa020ff6c9050fcf76449434a011cbdbc5627ed68d62391c4676c35a42ea478267195956cfb71904ad94b5b14bd92886a061a2f0fcdf7946f4b696d19e0b4777  soc-qcom-msm8953-7fcc09eaf22fa7ea483fca2bc6a2a39c32491d8a.tar.gz
+03423f1247eafeb46f2c5e8e1c7bf29b3f6302d10f8acf8be962e34ecf1d6d812acf9d15147f47397a00d1661052aa45276155bc40ce9a8734076497d8b75142  soc-qcom-msm8953-01b9629916bd51e47481b97a29a0078bb6a72aec.tar.gz
+90fca4a3291a2c84c0b20e41308c4698374ba896e9365ca80dbfd0c0c4f7dc08317f3dd865a3c7f6707c81b02f5bb24136d1172253d2e4fdd50039bbbf02a178  90-feedbackd-pm8xxx-vib.rules
 "
