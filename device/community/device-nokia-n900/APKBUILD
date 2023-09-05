@@ -2,8 +2,8 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=9.2.1
-pkgrel=1
+pkgver=10
+pkgrel=0
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
 arch="armv7"
@@ -39,6 +39,7 @@ source="
 	keymaps/rx51_ch.map
 	keymaps/rx51_fise.map
 	keymaps/rx51_it.map
+	keymaps/rx51_ptes.map
 	keymaps/rx51_us.map
 	lock.sh
 	modem-load.conf
@@ -59,18 +60,12 @@ options="!check !archcheck"
 build() {
 	devicepkg_build $startdir $pkgname
 	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir"/uboot-script.cmd "$srcdir"/boot.scr
-	mkdir "$srcdir"/keymaps
-	loadkeys -b "$srcdir"/rx51_us.map > "$srcdir"/keymaps/rx51_us.bmap
-	gzip "$srcdir"/keymaps/rx51_us.bmap
-	loadkeys -b "$srcdir"/rx51_ch.map > "$srcdir"/keymaps/rx51_ch.bmap
-	gzip "$srcdir"/keymaps/rx51_ch.bmap
-	loadkeys -b "$srcdir"/rx51_it.map > "$srcdir"/keymaps/rx51_it.bmap
-	gzip "$srcdir"/keymaps/rx51_it.bmap
-	# Finnish and Swedish use the same mapping
-	loadkeys -b "$srcdir"/rx51_fise.map > "$srcdir"/keymaps/rx51_fi.bmap
-	gzip "$srcdir"/keymaps/rx51_fi.bmap
-	loadkeys -b "$srcdir"/rx51_fise.map > "$srcdir"/keymaps/rx51_se.bmap
-	gzip "$srcdir"/keymaps/rx51_se.bmap
+	cd "$srcdir"
+	mkdir keymaps
+	for i in ../keymaps/*.map; do
+		loadkeys -b $i > keymaps/"${i%.*}.bmap"
+		gzip keymaps/"${i%.*}.bmap"
+	done
 	return 0
 }
 
@@ -113,10 +108,14 @@ package() {
 		"$pkgdir"/usr/share/bkeymaps/ch/rx51_ch.bmap.gz
 	install -D -m644 "$srcdir"/keymaps/rx51_it.bmap.gz \
 		"$pkgdir"/usr/share/bkeymaps/it/rx51_it.bmap.gz
-	install -D -m644 "$srcdir"/keymaps/rx51_fi.bmap.gz \
+	install -D -m644 "$srcdir"/keymaps/rx51_fise.bmap.gz \
 		"$pkgdir"/usr/share/bkeymaps/fi/rx51_fi.bmap.gz
-	install -D -m644 "$srcdir"/keymaps/rx51_se.bmap.gz \
+	install -D -m644 "$srcdir"/keymaps/rx51_fise.bmap.gz \
 		"$pkgdir"/usr/share/bkeymaps/se/rx51_se.bmap.gz
+	install -D -m644 "$srcdir"/keymaps/rx51_ptes.bmap.gz \
+		"$pkgdir"/usr/share/bkeymaps/pt/rx51_pt.bmap.gz
+	install -D -m644 "$srcdir"/keymaps/rx51_ptes.bmap.gz \
+		"$pkgdir"/usr/share/bkeymaps/es/rx51_es.bmap.gz
 
 	# Kernel module management
 	install -D -m644 "$srcdir"/modem-load.conf \
@@ -206,6 +205,7 @@ d7f79fa0887110b85dfb676bd426fa76764fbbb8093df89184552838ddb703b62500f61d7cfa8dec
 dc585e11bf4e06e36c5c62bcc024eaacecc30437d9da5257df14be05e247a2f2bc208874be3058edc6f87cc2877da2ecafd2f627d9b465d4fd24475fc21fdc71  rx51_ch.map
 0a3e58a3a81c463937caf508a76461b4cc43f593f0817a52b6581fdd132cc894c0960fe7b950b6e6bfac1fad15cd9dd230c103fcf08a30b44ef7d8fbe31cea28  rx51_fise.map
 082a5166e38296b097e873b0b4aeaf007e594d3bf4470c74e91ee3efedcf28ad25cd55c23dd63e460339898ae08e77e111b0e1092fa5e661db90bb40732103a1  rx51_it.map
+6e4e8b10a41d0957968736f5d780f14c7070b03913d80859cb07180e9cec9a36bbc9c639748765e48962772640974f5491627520cc36bd3d6c9d01748f9ddaff  rx51_ptes.map
 e440ed7a3070c17e003b86b72dbe6d8194d01b577ca8dd56dd066f216b6dda32bb965c780950f1789a66f7c948290016b048da9f1cf63aba9e11d7e7fd6873ba  rx51_us.map
 caf9f4c45d11c28e1a6681255fafe5a286b0c417737fac1ca0ee37d3f82fd65c1712f5180375d7813fa308dfdca91d96876b5ce5b05b55ac14cfc31303b1ea5f  lock.sh
 157b27feebcfddf800a1ffd8c6e369d2b58e5db25b1a44b4443dada8d9fe74abb91d036b9f0e97769bbafbdc72020b5637313682c6932fe7b0bddb9ebebbad42  modem-load.conf
@@ -217,7 +217,7 @@ b50e7f37ffb1fa0bb782b117a4e8bcfdb722b6127c3e5d643e90cd901a1f4e65e77a0773ed418673
 9e72035c88632d12895534e5aa5746f2c130c7dcdafa8702748d62b71ed0e1b5911b6e1f07f9b9e39b6072bbb662f66aead585baa1dcacb7d8c8953ca89b6762  10-nokia-modem.rules
 c6012aef28b096141b924fced226ec99fb93eb53b69c064a8887d8fecdf8dc08a3ba3db399e18d88374c6ef4c59013a30699c7e4d76e5cb771040582573a0527  90-touchscreen-dev.rules
 d46adf47194c02b434cb46751003e67ee008d60978458e69b1f59dc709a7135a70f542918c29e359ba8308bdeda58a21e8efa446d06625511af05403db90e455  upower.conf
-737d9e57e219a0220c5b1943375f325309323344fdf06973546c7d88ed9aec857657abd6b7861669873574f865e1c99719d411e0564dbfebe028f9e77d308491  x11-keymap
+c7837e6688f09c7d650ac7479b8881d4bad709480a71a1dea8b5bba4f4215d6b48a3aebd3f58923bbd48813559478d4ef137dcc9838d321722e141f0aa6a6085  x11-keymap
 19694204f2f370a4132762ac1888eaf5736939bba2f12ec2bccd18dde0645cdb621dda3a0772d2ef6d26a65d14e39a628e0d23321fe3064777ad2b76ce45ed2d  xdefaults
 a91f98daa60efa2beb2ff6b405097f92edca5f1bbb9e7675499139be52ca2570712f8f06f9032ef29f636f99c8f8da8b992f746eab6424aac04260c16158bcc2  xorg.conf
 "
