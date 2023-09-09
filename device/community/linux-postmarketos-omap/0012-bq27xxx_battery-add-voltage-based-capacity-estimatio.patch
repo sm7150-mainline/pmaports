@@ -1,0 +1,65 @@
+From 456b5d133e026811fd735096ff3884823279879c Mon Sep 17 00:00:00 2001
+From: "Sicelo A. Mhlongo" <absicsz@gmail.com>
+Date: Mon, 11 Sep 2023 11:14:56 +0200
+Subject: [PATCH] bq27xxx_battery: add voltage-based capacity estimation
+
+Use battery voltage to approximate the battery capacity, if the fuel gauge does
+not have valid data.
+
+Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
+---
+ drivers/power/supply/bq27xxx_battery.c | 28 ++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/power/supply/bq27xxx_battery.c b/drivers/power/supply/bq27xxx_battery.c
+index 0789061ae9a0..9476caed0ef4 100644
+--- a/drivers/power/supply/bq27xxx_battery.c
++++ b/drivers/power/supply/bq27xxx_battery.c
+@@ -1017,6 +1017,8 @@ static struct {
+ 
+ static DEFINE_MUTEX(bq27xxx_list_lock);
+ static LIST_HEAD(bq27xxx_battery_devices);
++static int bq27xxx_battery_voltage(struct bq27xxx_device_info *di,
++				   union power_supply_propval *val);
+ 
+ #define BQ27XXX_MSLEEP(i) usleep_range((i)*1000, (i)*1000+500)
+ 
+@@ -1857,11 +1859,33 @@ static void bq27xxx_battery_update_unlocked(struct bq27xxx_device_info *di)
+ 		 * that userspace, such as upower, can readily react to the true battery low
+ 		 * state (EDV1 set) whether or not the reported SoC value is reliable.
+ 		 */
+-		if (cache.flags & BQ27000_FLAG_EDV1)
++		if (cache.flags & BQ27000_FLAG_EDV1) {
+ 			cache.capacity = 1;
+-		else
++		} else {
+ 			cache.capacity = bq27xxx_battery_read_soc(di);
+ 
++			/* Use voltage to estimate capacity if valid data is not available in the
++			 * fuel gauge.
++			 */
++			if ((cache.capacity == 0) &&
++			     bq27xxx_battery_capacity_inaccurate(di, cache.flags)) {
++				union power_supply_propval bqval;
++				bq27xxx_battery_voltage(di, &bqval);
++				if (bqval.intval > 4000000)
++					cache.capacity = 90;
++				else if (bqval.intval > 3840000)
++					cache.capacity = 80;
++				else if (bqval.intval > 3680000)
++					cache.capacity = 50;
++				else if (bqval.intval > 3550000)
++					cache.capacity = 30;
++				else if (bqval.intval > 3450000)
++					cache.capacity = 20;
++				else
++					cache.capacity = 10;
++			}
++		}
++
+ 		if (di->regs[BQ27XXX_REG_AE] != INVALID_REG_ADDR)
+ 			cache.energy = bq27xxx_battery_read_energy(di);
+ 		di->cache.flags = cache.flags;
+-- 
+2.40.1
+

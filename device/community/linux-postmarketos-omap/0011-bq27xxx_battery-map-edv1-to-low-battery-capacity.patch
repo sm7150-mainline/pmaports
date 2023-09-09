@@ -1,0 +1,42 @@
+From 350df21c4f01137e3d29f445e36aeb6c82b85e34 Mon Sep 17 00:00:00 2001
+From: "Sicelo A. Mhlongo" <absicsz@gmail.com>
+Date: Mon, 11 Sep 2023 10:34:54 +0200
+Subject: [PATCH 1/2] bq27xxx_battery: map edv1 to low battery capacity
+
+EDV1 is the most reliable indicator for battery low state on the N900/bq27200,
+and the driver already exposes it in the POWER_SUPPLY_PROP_CAPACITY_LEVEL (Low)
+and POWER_SUPPLY_PROP_HEALTH (Dead) properties. However, most userspace,
+including upower, does not use these properties for decision-making. Map EDV1
+state to very low battery capacity to force userspace to act on EDV1.
+
+Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
+---
+ drivers/power/supply/bq27xxx_battery.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/power/supply/bq27xxx_battery.c b/drivers/power/supply/bq27xxx_battery.c
+index 4296600e8912..0789061ae9a0 100644
+--- a/drivers/power/supply/bq27xxx_battery.c
++++ b/drivers/power/supply/bq27xxx_battery.c
+@@ -1851,7 +1851,17 @@ static void bq27xxx_battery_update_unlocked(struct bq27xxx_device_info *di)
+ 			cache.time_to_full = bq27xxx_battery_read_time(di, BQ27XXX_REG_TTF);
+ 
+ 		cache.charge_full = bq27xxx_battery_read_fcc(di);
+-		cache.capacity = bq27xxx_battery_read_soc(di);
++
++		/* HACK: If EDV1 flag is set, force capacity to report 1%, even though
++		 * SEDV1 actually represents about 6.25%, per datasheet. This is to ensure
++		 * that userspace, such as upower, can readily react to the true battery low
++		 * state (EDV1 set) whether or not the reported SoC value is reliable.
++		 */
++		if (cache.flags & BQ27000_FLAG_EDV1)
++			cache.capacity = 1;
++		else
++			cache.capacity = bq27xxx_battery_read_soc(di);
++
+ 		if (di->regs[BQ27XXX_REG_AE] != INVALID_REG_ADDR)
+ 			cache.energy = bq27xxx_battery_read_energy(di);
+ 		di->cache.flags = cache.flags;
+-- 
+2.40.1
+
