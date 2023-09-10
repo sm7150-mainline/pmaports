@@ -1,36 +1,25 @@
+# Maintainer: Alejandro Tafalla <alikates@dnyon.com>
 pkgname=firmware-xiaomi-daisy
-pkgver=1
-pkgrel=1
+pkgver=2
+pkgrel=0
 pkgdesc="Firmware files for Xiaomi Mi A2 Lite"
 url="https://postmarketos.org"
 arch="aarch64"
 license="proprietary"
-depends="wcnss-wlan"
 _repository="firmware-xiaomi-daisy"
 _commit="9ae200b57743088f83a6f2b02a6b7ce4596a77d6"
 source="$pkgname-$_commit.tar.gz::https://github.com/alikates/firmware-xiaomi-daisy/archive/$_commit.tar.gz"
 options="!strip !check !archcheck !spdx !tracedeps pmb:cross-native"
-builddir="$srcdir/firmware-xiaomi-daisy-$_commit"
+builddir="$srcdir/firmware-xiaomi-daisy-$_commit/gpu"
 
-_fwdir="/lib/firmware/postmarketos"
+_fwdir="/lib/firmware"
 
 package() {
-	echo $source
-
-	# Modem firmware
-	install -Dm0644 modem/mba.mbn -t "$pkgdir/$_fwdir"
-	install -Dm0644 modem/modem.* -t "$pkgdir/$_fwdir"
-
-	# ADSP firmware
-	install -Dm0644 adsp/adsp.* -t "$pkgdir/$_fwdir"
-
-	# GPU and video acceleration firmwares
-	install -Dm0644 gpu/a5* -t "$pkgdir/$_fwdir"
-	install -Dm0644 gpu/venus.* -t "$pkgdir/$_fwdir"
-
-	# Wifi/BT firmware
-	install -Dm0644 wcnss/WCNSS_qcom_wlan_nv.bin -t "$pkgdir/$_fwdir"/wlan/prima
-	install -Dm0644 wcnss/wcnss.* -t "$pkgdir/$_fwdir"
+	# GPU firmwares
+	install -Dm644 a506_zap.b02 -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a506_zap.mdt -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a530_pfp.fw -t "$pkgdir/$_fwdir/qcom"
+	install -Dm644 a530_pm4.fw -t "$pkgdir/$_fwdir/qcom"
 }
 
 sha512sums="

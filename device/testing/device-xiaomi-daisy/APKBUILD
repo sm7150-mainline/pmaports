@@ -1,24 +1,28 @@
-# Maintainer: Alikates <alikates@dnyon.com>
+# Maintainer: Alejandro Tafalla <alikates@dnyon.com>
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-daisy
 pkgdesc="Xiaomi Mi A2 Lite"
-pkgver=6
-pkgrel=4
+pkgver=7
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8953 linux-postmarketos-qcom-msm8953 lk2nd-msm8953"
+depends="
+	linux-postmarketos-qcom-msm8953
+	lk2nd-msm8953
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8953
+"
 makedepends="devicepkg-dev"
 subpackages="
-		$pkgname-nonfree-firmware:nonfree_firmware
-		$pkgname-modem
-		"
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
 source="
 	deviceinfo
 	modules-initfs
-	30-gpu-firmware.files
-	"
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -26,23 +30,21 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm0644 "$srcdir"/30-gpu-firmware.files "$pkgdir"/usr/share/mkinitfs/files/30-gpu-firmware.files
 }
 
 nonfree_firmware() {
-	pkgdesc="Wi-Fi, ADSP Firmware"
-	depends="firmware-xiaomi-daisy"
-	mkdir "$subpkgdir"
-}
-
-modem() {
-	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
-	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware"
+	depends="
+		firmware-xiaomi-daisy
+		msm-firmware-loader
+		qbootctl
+		soc-qcom-msm8953-initramfs
+		soc-qcom-msm8953-modem
+	"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
 8c5980c1da9e5bc91f11bb8056ac9a225cb84a90a42a964dc0dc2966220c105683081055fdcb1caa8c198019d8373d8c5fe27155429c17814d34075d5f961aa4  deviceinfo
-cb1729cae5703aaf3aee069af5f3440b84d0958f4c3a9c5c027d4e6b62ca0792d2e09cbb9afb86e00e192cc29de41ebdc8365c09a1656867941acff098e07fb8  modules-initfs
-302c0bec754bb79ef561c1a8d4ff34ba52b904c853bce6a15a79ba7b5b7a3d02c1c75bbe86d59be7b608a6dc744dd3e3c638eaa4539c53d20fa55fa5ea397d74  30-gpu-firmware.files
+0a1d769e4e60aca37dc71bdde9e6befbe74c09d775e19788d18a07e06546cbddd46efc876df0a89073f0819c9cc66e319f398772dec75f537ec5b82aa3032002  modules-initfs
 "
