@@ -1,0 +1,51 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+# Co-Maintainer: David Heidelberg <david@ixit.cz>
+# Co-Maintainer: Maxim Schwalm <maxim.schwalm@gmail.com>
+# Co-Maintainer: Raffaele Tranquillini <raffaele.tranquillini@gmail.com>
+
+pkgname=device-nvidia-tegra-armv7
+pkgdesc="NVIDIA Tegra ARMv7"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	libvdpau-tegra
+	linux-postmarketos-grate
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo modules-initfs"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-x11
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware files for Tegra devices supported by GRATE project"
+	depends="firmware-nvidia-tegra-armv7"
+	mkdir "$subpkgdir"
+}
+
+x11() {
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
+	depends="xf86-video-opentegra"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+c10ccac99172735315dff76f098a37d7f96d505480c3afd0e4299a9dd131eefdcddade60c6bb0db9c2519e5d860ff9e389733a6e648b19c2198c26c3377d011e  deviceinfo
+8ea2030fb0c1ae181778b86dc36ed71a904dd51e1fb08114c2a124a693fc7b464cfbb14efa8422db716fb9a647afa367df094abcc14f1ccc51af8b9063de8847  modules-initfs
+"
