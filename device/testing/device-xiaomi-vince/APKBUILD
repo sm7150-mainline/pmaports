@@ -2,8 +2,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-vince
 pkgdesc="Xiaomi Redmi 5 Plus"
-pkgver=9
-pkgrel=1
+pkgver=10
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -16,16 +16,10 @@ depends="
 	soc-qcom-msm8953
 "
 makedepends="devicepkg-dev"
-subpackages="
-	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-modem
-"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
-	30-gpu-firmware.files
 	deviceinfo
 	modules-initfs
-	fb.modes
-	pointercal
 "
 
 build() {
@@ -34,27 +28,20 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
-	install -Dm644 "$srcdir"/pointercal "$pkgdir"/etc/pointercal
-	install -Dm644 "$srcdir"/30-gpu-firmware.files "$pkgdir"/usr/share/mkinitfs/files/30-gpu-firmware.files
 }
 
 nonfree_firmware() {
-	pkgdesc="Wi-Fi, ADSP Firmware"
-	depends="firmware-xiaomi-vince"
-	mkdir "$subpkgdir"
-}
-
-modem() {
-	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
-	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware"
+	depends="
+		firmware-xiaomi-vince
+		msm-firmware-loader
+		soc-qcom-msm8953-initramfs
+		soc-qcom-msm8953-modem
+	"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-0e8ee21fb65fa2d2f6b27e8d8e18ac8d0347d134002de3bd2fc8262b255edc55f3e2f976daf0a362f418e9213962616fecb90b40576effd1d5d5d09d2a45564d  30-gpu-firmware.files
-0dd56d5303324daa04477a788ed3cc44eb3d32afccde11e94153715204a7f80ee9fe90970dcf256a4d7999541c27bc4c8b3ab1a5ad6c70dd88eadfe478a5399b  deviceinfo
-68a077d9dce986dd82d4f875a83a0a26a9b0d274d9576d7632378241bf2b0373a8ef897b210d05e5227910d3e56ca1e7f179f08b35ff5b33229d455915932635  modules-initfs
-9b888f3a4ef3ed3c0b2e9c6a6e8a6c686909c530c3d95be797b47b4eb9deb55d64190b7a3736e44139630bfff5e295625a855052923369fdd37889060a3220ca  fb.modes
-4fa63c184f00033fbae2e4b140c9655061b3b662e337f7bdf5f8e26f7b57d6c66ad01fc93da05ce7d330f0f05bb0d36cc9b356ebfc7eb4200be4d4cc03afc975  pointercal
+b39437cc3b8cfa2b6aed96bc540404e7623b2a101737708f0f32ed41ec33aa56cc51d267ddfd834e81d3bbc901f4ab82664f3c54ac8281277364a656e22ef421  deviceinfo
+c88f31d2b4554d1e26d6df68eed2329b08d57e3e11ac2da2076308ba429648b0462a36380e6dd6895a5a60d68fd377d9a2769014957d531d7767d47e24d52fd2  modules-initfs
 "

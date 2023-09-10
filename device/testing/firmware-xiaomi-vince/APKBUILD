@@ -1,49 +1,23 @@
 # Maintainer: m0rf30 <morf3089@gmail.com>
 pkgname=firmware-xiaomi-vince
-pkgver=3
+pkgver=4
 pkgrel=0
 _commit="9acb58a25d66314700eeea15c69c4571154f19cc"
 pkgdesc="Firmware files for Xiaomi Redmi 5 Plus"
 url="https://postmarketos.org"
 arch="aarch64"
 license="proprietary"
-depends="wcnss-wlan adsp-audio"
 source="vince-fw-$_commit.tar.gz::https://github.com/M0Rf30/postmarketos-vendor-xiaomi-vince/archive/$_commit.tar.gz"
 options="!strip !check !archcheck !spdx !tracedeps pmb:cross-native"
-
-_fwdir="/lib/firmware/postmarketos"
+builddir="$srcdir/postmarketos-vendor-xiaomi-vince-$_commit/gpu"
+_fwdir="/lib/firmware"
 
 package() {
-	cd "$srcdir/postmarketos-vendor-xiaomi-vince-$_commit"
-
-	# ADSP firmware
-	install -Dm0644 adsp/adsp.* -t "$pkgdir/$_fwdir"
-
-	# Camera firmware
-	install -Dm0644 camera/*.fw -t "$pkgdir/$_fwdir"
-
-	# Fingerprint firmware
-	install -Dm0644 fingerprint/goodix_firmware.bin -t "$pkgdir/$_fwdir"
-
-	# GPU and video acceleration firmwares
-	install -Dm0644 gpu/a530* -t "$pkgdir/$_fwdir/../qcom"
-	install -Dm0644 gpu/a506_zap.* -t "$pkgdir/$_fwdir"
-
-	install -Dm0644 venus/venus.* -t "$pkgdir/$_fwdir"
-
-	# Modem firmware
-	install -Dm0644 modem/mba.mbn -t "$pkgdir/$_fwdir"
-	install -Dm0644 modem/modem.* -t "$pkgdir/$_fwdir"
-
-	# Speaker Amp firmware
-	install -Dm0644 speakeramp/*.bin -t "$pkgdir/$_fwdir"
-
-	# Touchscreen firmware
-	install -Dm0644 touchscreen/novatek_ts_fw.bin -t "$pkgdir/$_fwdir"
-
-	# Wifi/BT firmware
-	install -Dm0644 wcnss/wcnss.* -t "$pkgdir/$_fwdir"
-	cp -r wlan "$pkgdir/$_fwdir"
+	# GPU firmwares
+	install -Dm644 a506_zap.b02 -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a506_zap.mdt -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a530_pfp.fw -t "$pkgdir/$_fwdir/qcom"
+	install -Dm644 a530_pm4.fw -t "$pkgdir/$_fwdir/qcom"
 }
 
 sha512sums="
