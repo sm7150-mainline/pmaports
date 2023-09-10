@@ -1,6 +1,6 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-config-nftables
-pkgver=0.15
+pkgver=0.16
 pkgrel=0
 pkgdesc="nftables firewall configuration for postmarketOS"
 url="https://gitlab.com/postmarketos"
@@ -18,6 +18,7 @@ subpackages="
 	$pkgname-upnp-client:upnp_client
 	$pkgname-vlc-chromecast:vlc_chromecast
 	$pkgname-vncserver:vncserver
+	$pkgname-wifi-display:wifi_display
 "
 source="
 	rules/00_log_all.nft
@@ -32,6 +33,7 @@ source="
 	rules/51_moshserver.nft
 	rules/51_hotspot.nft
 	rules/51_usb_inet.nft
+	rules/51_wifi_display.nft
 	rules/60_usb.nft
 	rules/99_drop_log.nft
 	networkmanager.conf
@@ -116,6 +118,13 @@ vncserver() {
 	amove etc/nftables.d/50_vncserver.nft
 }
 
+wifi_display() {
+	depends="$pkgname"
+	description="Enables networking for peer-to-peer Wi-Fi Displays (Miracast)"
+
+	amove etc/nftables.d/51_wifi_display.nft
+}
+
 networkmanager() {
 	depends="$pkgname"
 	description="Enables nftables backend in NetworkManager"
@@ -128,7 +137,7 @@ networkmanager() {
 sha512sums="
 166d77bcccc85a3db24af85010d07241cf193bccd79064863fbf9da7be4426364e9f9a9e0668c2c8018ada470d0fda30fe8eba24d24a2d4150af1d78af31b9b7  00_log_all.nft
 10b3ab4d1f98a669e88fb2113a3880c4bf410d68859fe6a3efe8d638e3060af4a829485aed8c8da226c7fb7a53bab1bc90a659cb8fad9ccd226d808dbba94caf  01_wwan.nft
-d5a7c7fc47924acfafee42d731e6a0109d83af6278053128deecbf3cf40e37447cb649360ee9ebddd2a5ea276888314b63ce7ef828708b5bf7dd1bface7fbc62  10_dhcp.nft
+ae6a8ac03d4643004f5ce9279083bc12a215ceb2ee66993a26ab5620bb1aab347541eb1729b38cc7ec9d232de07e0176bc59475669741dfa2588c9e1ec4a4958  10_dhcp.nft
 597bf66783379691962f4b87a29e6219d5f87ef17d49b261c7b1eebe54561deafce4be77de3b39252c10b7b4452ac5b55870dd30605d7d0f074d27b06d1dfa6d  50_mdns.nft
 136a95d2f21d2935dcd85d4c40d597fbddffb31126dbcbc78f1b286454b7623cf16f6059dea6040d35e8f14d8ac79e292cc51bd6675afedc6953a6793315c786  50_ssh.nft
 5779bbcc55e411ec4da58e4e7eaaa6918cdcea5b8818cd72ab93be2d1108f020861457dbd8079a60b0912f84d05eb7b42274cc9a0577f66e8322f3596b89b411  50_upnp_client.nft
@@ -138,6 +147,7 @@ c688e768c709ad17685641a6ba543f84e8466080356712073e06108fc1707109f590be45b8a0aca8
 59d93d0006aadb6f699836895119cf49a2fbbc1159cad4ab98868610cd6796da7fe792e7c845df93303a4cfa77658e0687b6726a8b0bcf613563f1a33d5588ab  51_moshserver.nft
 1ce70bb71c9008b6c727a2c26d11467be3b5a0cb9815a8bb0790150c7958457b22b110e35ba974973b9579d44bd14219985d85597c954b5fa8cf77bf206c959b  51_hotspot.nft
 ea7d8a652808ba6ae92de6dfc9f7d57415e411a04db3a41d1480f254b3a3a574558dbee2e7259e5d527527a11ca3aace7bb9edc7e023b0f4f67afceefeeb9e88  51_usb_inet.nft
+c243534219eca3ea31504eef9ea88f8c2e00f2340e9dec3d381459a84a09a7390c8327eac43ae38155f6d7a059327cb26be63451a1ba280664fc1da81b27f7be  51_wifi_display.nft
 0e86974602622c03f0b34acd048e3a31157c0226ab4b5ec093a19696af3fc9637ed84cecf0d190941e4bd3afeb0c76a37245fa850abef46778cd1235ad8106df  60_usb.nft
 1532899534d7432a7708620cf1053ab80635fffe038a2352eb890c35fba4247c3b9ab3d0b028da1be765e5feb9b5a5b3a8107f4aa79f790d17930d38535a2288  99_drop_log.nft
 ea738469e68b8a8038f301b0cb901cd305445321ee24c4b4025365b4b95d5c61113a5bb24ab4efaa73eda23c2e06984d3e58395584fcb8887cf1595ea99542da  networkmanager.conf
