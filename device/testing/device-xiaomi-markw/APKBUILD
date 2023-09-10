@@ -1,8 +1,9 @@
+# Maintainer: Victor Pavlov (vipaoL) <vipaolmail@gmail.com>
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-markw
 pkgdesc="Xiaomi Redmi 4 Prime"
-pkgver=1.0
-pkgrel=4
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -28,10 +29,16 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="WiFi, Bluetooth, Modem, Display and GPU Firmware"
-	depends="firmware-xiaomi-markw"
+	depends="
+		firmware-xiaomi-markw
+		msm-firmware-loader
+		soc-qcom-msm8953-initramfs
+		soc-qcom-msm8953-modem
+	"
 	mkdir "$subpkgdir"
 }
+
 sha512sums="
 0d393f07e551058781a67c096b1ad7f252c78e801a2da8752f893f4ea7c24f7aa65bc69f9c80c7be53e615269a7028eb151e7bc3fe79f0c260a4d28e97f10e7d  deviceinfo
-44efe9884cf2af88efd4bfbb68536977eac9cc04e5d270b9fc38d308f0181161fc968456ab2ca9b82996aa3cc5bff33dae590048c35fdbafdcef273bc5269613  modules-initfs
+a99cfed9b2b5afed33127874706841fc6e85dd0e663c5d924c8d22ec0c93f86c72d22943dcf1af5f7a840915c13e713583d359ffbefae812c95e3a5824d492e8  modules-initfs
 "
