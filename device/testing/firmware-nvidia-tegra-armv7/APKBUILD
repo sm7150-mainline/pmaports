@@ -1,0 +1,156 @@
+# Maintainer: Svyatoslav Ryhel <clamor95@gmail.com>
+# Co-Maintainer: Ion Agorria
+# Co-Maintainer: Anton Bambura <jenneron@protonmail.com>
+# Co-Maintainer: Maxim Schwalm <maxim.schwalm@gmail.com>
+
+pkgname=firmware-nvidia-tegra-armv7
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware files for Tegra devices supported by GRATE project"
+url="https://gitlab.com/grate-driver/linux-firmware"
+arch="armv7"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+
+# source
+_commit="6a565acab07fa4bb27f10e33201e6da3d282ea92"
+_url="https://gitlab.com/grate-driver/linux-firmware"
+source="
+	$pkgname-$_commit-BCM4334B0.asus,p1801-t.hcd::$_url/-/raw/$_commit/brcm/BCM43241B0.asus,p1801-t.hcd
+	$pkgname-$_commit-BCM4329B1.acer,picasso.hcd::$_url/-/raw/$_commit/brcm/BCM4329B1.acer,picasso.hcd
+	$pkgname-$_commit-BCM4329B1.asus,tf201.hcd::$_url/-/raw/$_commit/brcm/BCM4329B1.asus,tf201.hcd
+	$pkgname-$_commit-BCM4330B1.asus,tf700t.hcd::$_url/-/raw/$_commit/brcm/BCM4330B1.asus,tf700t.hcd
+	$pkgname-$_commit-BCM4330B1.asus,grouper.hcd::$_url/-/raw/$_commit/brcm/BCM4330B1.asus,grouper.hcd
+	$pkgname-$_commit-BCM4330B1.lge,p895.hcd::$_url/-/raw/$_commit/brcm/BCM4330B1.lge,p895.hcd
+	$pkgname-$_commit-BCM43341B0.asus,tf701t.hcd::$_url/-/raw/$_commit/brcm/BCM43341B0.asus,tf701t.hcd
+
+	$pkgname-$_commit-brcmfmac43241b0-sdio.asus,p1801-t.txt::$_url/-/raw/$_commit/brcm/brcmfmac43241b0-sdio.asus%2Cp1801-t.txt
+	$pkgname-$_commit-brcmfmac4329-sdio.acer,picasso.txt::$_url/-/raw/$_commit/brcm/brcmfmac4329-sdio.acer%2Cpicasso.txt
+	$pkgname-$_commit-brcmfmac4329-sdio.asus,tf201.txt::$_url/-/raw/$_commit/brcm/brcmfmac4329-sdio.asus%2Ctf201.txt
+	$pkgname-$_commit-brcmfmac4329-sdio.asus,tf300t.txt::$_url/-/raw/$_commit/brcm/brcmfmac4329-sdio.asus%2Ctf300t.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.asus,tf600t.txt::$_url/-/raw/$_commit/brcm/brcmfmac4330-sdio.asus%2Ctf600t.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.asus,tf700t.txt::$_url/-/raw/$_commit/brcm/brcmfmac4330-sdio.asus%2Ctf700t.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.lge,p880.txt::$_url/-/raw/$_commit/brcm/brcmfmac4330-sdio.lge%2Cp880.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.lge,p895.txt::$_url/-/raw/$_commit/brcm/brcmfmac4330-sdio.lge%2Cp895.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.asus,grouper.txt::$_url/-/raw/$_commit/brcm/brcmfmac4330-sdio.asus%2Cgrouper.txt
+	$pkgname-$_commit-brcmfmac4330-sdio.ouya,ouya.txt::$_url/-/raw/$_commit/brcm/brcmfmac4330-sdio.ouya%2Couya.txt
+	$pkgname-$_commit-brcmfmac43340-sdio.asus,tf701t.txt::$_url/-/raw/$_commit/brcm/brcmfmac43340-sdio.asus%2Ctf701t.txt
+
+	$pkgname-$_commit-brcmfmac43241b0-sdio.asus,p1801-t.bin::$_url/-/raw/$_commit/brcm/brcmfmac43241b0-sdio.asus%2Cp1801-t.bin
+	$pkgname-$_commit-brcmfmac4329-sdio.bin::$_url/-/raw/$_commit/brcm/brcmfmac4329-sdio.bin
+	$pkgname-$_commit-brcmfmac4330-sdio.bin::$_url/-/raw/$_commit/brcm/brcmfmac4330-sdio.bin
+	$pkgname-$_commit-brcmfmac43340-sdio.bin::$_url/-/raw/$_commit/cypress/cyfmac43340-sdio.bin
+"
+
+package() {
+	# Bluetooth
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4334B0.asus,p1801-t.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4334B0.asus,p1801-t.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4329B1.acer,picasso.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4329B1.acer,picasso.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4329B1.asus,tf201.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4329B1.asus,tf201.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4330B1.asus,tf700t.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4330B1.asus,tf700t.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4330B1.asus,grouper.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4330B1.asus,grouper.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM4330B1.lge,p895.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM4330B1.lge,p895.hcd
+	install -D -m644 "$srcdir"/$pkgname-$_commit-BCM43341B0.asus,tf701t.hcd \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/BCM43341B0.asus,tf701t.hcd
+
+	# Wi-Fi NVRAM
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac43241b0-sdio.asus,p1801-t.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac43241b0-sdio.asus,p1801-t.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4329-sdio.acer,picasso.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4329-sdio.acer,picasso.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4329-sdio.asus,tf201.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4329-sdio.asus,tf201.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4329-sdio.asus,tf300t.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4329-sdio.asus,tf300t.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.asus,tf600t.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.asus,tf600t.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.asus,tf700t.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.asus,tf700t.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.asus,grouper.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.asus,grouper.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.lge,p880.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.lge,p880.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.lge,p895.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.lge,p895.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.ouya,ouya.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.ouya,ouya.txt
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac43340-sdio.asus,tf701t.txt \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac43340-sdio.asus,tf701t.txt
+
+	# Wi-Fi SDIO
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac43241b0-sdio.asus,p1801-t.bin \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac43241b0-sdio.asus,p1801-t.bin
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4329-sdio.bin \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4329-sdio.bin
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac4330-sdio.bin \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac4330-sdio.bin
+	install -D -m644 "$srcdir"/$pkgname-$_commit-brcmfmac43340-sdio.bin \
+		"$pkgdir"/lib/firmware/postmarketos/brcm/brcmfmac43340-sdio.asus,tf701t.bin
+
+	# Symbolic links
+	cd "$pkgdir"/lib/firmware/postmarketos/brcm
+	ln -s BCM4329B1.asus,tf201.hcd BCM4329B1.asus,tf101.hcd
+	ln -s BCM4329B1.asus,tf201.hcd BCM4329B1.asus,tf101g.hcd
+	ln -s BCM4329B1.asus,tf201.hcd BCM4329B1.asus,sl101.hcd
+	ln -s BCM4329B1.asus,tf201.hcd BCM4329B1.asus,tf300t.hcd
+	ln -s BCM4329B1.asus,tf201.hcd BCM4329B1.asus,tf300tg.hcd
+	ln -s BCM4329B1.asus,tf201.hcd BCM4329B1.asus,tf300tl.hcd
+	ln -s BCM4330B1.asus,tf700t.hcd BCM4330B1.lge,p880.hcd
+	ln -s BCM4330B1.asus,tf700t.hcd BCM4330B1.pegatron,chagall.hcd
+	ln -s BCM4330B1.asus,grouper.hcd BCM4330B1.asus,tilapia.hcd
+	ln -s BCM4330B1.asus,grouper.hcd BCM4330B1.ouya,ouya.hcd
+
+	ln -s brcmfmac4329-sdio.asus,tf201.txt brcmfmac4329-sdio.asus,tf101.txt
+	ln -s brcmfmac4329-sdio.asus,tf201.txt brcmfmac4329-sdio.asus,tf101g.txt
+	ln -s brcmfmac4329-sdio.asus,tf201.txt brcmfmac4329-sdio.asus,sl101.txt
+	ln -s brcmfmac4329-sdio.asus,tf300t.txt brcmfmac4329-sdio.asus,tf300tg.txt
+	ln -s brcmfmac4329-sdio.asus,tf300t.txt brcmfmac4329-sdio.asus,tf300tl.txt
+	ln -s brcmfmac4330-sdio.asus,tf700t.txt brcmfmac4330-sdio.pegatron,chagall.txt
+	ln -s brcmfmac4330-sdio.asus,grouper.txt brcmfmac4330-sdio.asus,tilapia.txt
+
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.acer,picasso.bin
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.asus,tf101.bin
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.asus,tf101g.bin
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.asus,sl101.bin
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.asus,tf201.bin
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.asus,tf300t.bin
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.asus,tf300tg.bin
+	ln -s brcmfmac4329-sdio.bin brcmfmac4329-sdio.asus,tf300tl.bin
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.asus,tf600t.bin
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.asus,tf700t.bin
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.pegatron,chagall.bin
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.asus,grouper.bin
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.asus,tilapia.bin
+	ln -s brcmfmac4330-sdio.bin brcmfmac4330-sdio.ouya,ouya.bin
+}
+
+sha512sums="
+8ddec8d7696e92feb267fc51f516890de75b8c1eb886a7689bd7452e5cb451d06b3f7f1dcab886d40ab96a909083f7cddb7a5e0b5c0becb9cdf30ee47a8031a6  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-BCM4334B0.asus,p1801-t.hcd
+6b784310335c9d9b06a5fa3308109f5f72d5a39eee8c83183f981834f75d94c20f94cd9816d2fef3fbd4b25dd69c7349ca069ee421523b810560805452cf55e5  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-BCM4329B1.acer,picasso.hcd
+26534cbef298d7594ed6d8a58380ed3b1593a195aaa2c9e5108dce82dbaec4da922f49217342397d405131d827873dca1c78ab2e73c4bae0901b2c77ff56f9b2  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-BCM4329B1.asus,tf201.hcd
+b61cc86466a028e9160d1f2c7a3303fbb3a7dbcb2a6766b0afd9ef1fc9e25410d75f1e315638d0de8306ce23f3561c084542ad1c9e5eb11e9d07a3ba85dfec3d  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-BCM4330B1.asus,tf700t.hcd
+b9d9ce76bc945cca3f299d5a34ba71e66bebe6c010852945940553093e83b52d7c1e2e2c705b47fe3ac17ae541c0ed84df1ec3e5854c1acbad02da020ab91272  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-BCM4330B1.asus,grouper.hcd
+73abab98cef09965bcf9b2c175f70ef1aa0d86fb122a661663ae2c6cfd4900c69163a19bafe29e039b0bdac63cb31bf15305f67392bfca6004dff03f18fb14cb  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-BCM4330B1.lge,p895.hcd
+e5a3d3c7adfe16989d358e3bea1b76826d4bc2545a874187414e61894b1c1b4f3ed92e4fd619e3934dda35bd9507eb32ab28c2305737d16ff2320ae7ccfede51  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-BCM43341B0.asus,tf701t.hcd
+e9a5396f64c68bca79f2f5786355d9f07517f09305c501251e93689d0d84d0685cda8fa1dfee97a4335489a42d5558eaf866b7741f5fbd290f31863b145d2a56  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac43241b0-sdio.asus,p1801-t.txt
+c3888fd5135ddaf06ca78eb00ec65227ad84b5cbef3d67eedbc6ce44b33fe02ad7ffc02d0435b3f2c9fbbe9ddc7d3254221ff3689b78f0620d67e618fccb17b5  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4329-sdio.acer,picasso.txt
+4037e1af433a4805b2cb24c770f3b3009fe5fe224de11174ed1075dd3dc527b108e5d20cd9a3527b7b981c32c52e07027b15c53eb9bf8e37e82b66126081b665  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4329-sdio.asus,tf201.txt
+655f2bda94ca1c9ff26fba4c2eb69121fed461325dfd14342262240d5833d063839311bd0b8e2efffbab9b19a0852c5ab57b267c97e8a0205f810a2259840159  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4329-sdio.asus,tf300t.txt
+74a1e55b5e4bf29d3f2885851f37d7dc8def9b31e8c54d0cad3ad347fd745d5ced9042f9b6915c0e3f641fa69253ad5088ab6319aad8f2e49bc44f4fa0e50c05  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4330-sdio.asus,tf600t.txt
+42a14c5d671a6e515ee59ebce97ee6d0e35beb7374d3c774639c74e6dcc5d31a31c714e21e1846dbf74d455e8627a67a26eeb414b78f2c0e77d40677c610dcb7  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4330-sdio.asus,tf700t.txt
+b5089bf3f6d357d53252f8e39e8a7dac2762e0770343ec2073cce7892ca321e173d5c06bc11f632e3339b7b04a561cb39fbc0669b93e923ddd2b1f34302db1a0  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4330-sdio.lge,p880.txt
+078f86536b8cc6dd8d7177befcdb7e53a1b5e85276a73deb44912992550eb3e6fe8e487aa8d6c482ae1fb3168ba446568bfaa203270101b083e6642d24a4d62e  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4330-sdio.lge,p895.txt
+42a14c5d671a6e515ee59ebce97ee6d0e35beb7374d3c774639c74e6dcc5d31a31c714e21e1846dbf74d455e8627a67a26eeb414b78f2c0e77d40677c610dcb7  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4330-sdio.asus,grouper.txt
+84de1a63dc4f9c8036dfd8b900ebf6507e254cf7bc06b8ec51d3409f5eb4f4e1a8d4cc805cb35782dd09cfb3b7a6cfb57ba3e4f1857acba426e09fa2d7bf8cea  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4330-sdio.ouya,ouya.txt
+c755ba46da40902566f20fba8bc131e5a7733dcb32be524b754cdb57d8835d62b15848ebc26c3136471400995fd9127e9d67530867847faacfc408fc6be35356  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac43340-sdio.asus,tf701t.txt
+37645e7d8d077f7fc4f585a30993826d3bf7be2c0cd7ebb8ce8ee36282c662822129125980e9728ee2bbbd352d1c1eb7504a2676820a270be28115cc7c9de77b  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac43241b0-sdio.asus,p1801-t.bin
+6461661f837072f40ed262b4c777846e9dd1f1ad4913b92ddc2c8fd7db4bcba791da7aedb0d716f6dbb61d26438463f53a9df6795df229059d17ada9213af3f3  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4329-sdio.bin
+cff6264623d2f4d7f430d43d810d059ac599cc8484c2681aa3c5c1a4aaf12cb040f67786d4e100177138f224b865337df61477d35f0f64004903b34da15f2076  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac4330-sdio.bin
+2be59587da05fb0bbd1facf3d5f1dc4e647f3c662378ca424a5897467a080dc17f9c2fd2568361980d512b57d2c5db54497d850a61b65295a4357d6b0c7b6b70  firmware-nvidia-tegra-armv7-6a565acab07fa4bb27f10e33201e6da3d282ea92-brcmfmac43340-sdio.bin
+"
