@@ -1,0 +1,70 @@
+# Maintainer: Konrad Dybcio <konradybcio@kernel.org>
+pkgname=linux-lenovo-21bx
+pkgver=6.6
+pkgrel=0
+pkgdesc="Lenovo ThinkPad X13s kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="lenovo-21bx"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip
+	!check
+	!tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-community
+	pmb:kconfigcheck-uefi
+	"
+makedepends="
+	bash
+	bison
+	findutils
+	flex
+	openssl-dev
+	perl
+"
+
+# Source
+_repository="linux"
+_commit="b0ec1511f2485329be05d8a5fc3e57a8f0896513" # wip/sc8280xp-v6.6
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/jhovold/$_repository/archive/$_commit.tar.gz
+	$_config
+	0001-drm-panel-edp-Add-timings-for-BOE-NV133WUM-N63.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+}
+
+package() {
+	install -Dm644 "$builddir/arch/$_carch/boot/vmlinuz.efi" \
+		"$pkgdir/boot/vmlinuz"
+
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot/ \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+93f5e274f2c40a4cd87a921201116a8ab3ffb6ff8110dc73a6cbb7707b447d76a11bc89c17456fb9cf1c1e386c918777af61fa1690dfa6e171dbe2713b8ef606  linux-lenovo-21bx-b0ec1511f2485329be05d8a5fc3e57a8f0896513.tar.gz
+c3d62e8c0450f5f9ca313af5492fffef73422457414f231aee2c6a1a0f31b65a2dc19046df4a8a316e4fab8f2dfdfc6724987f7c374a49908059999886238204  config-lenovo-21bx.aarch64
+fac2fc6cd033c30d1abea6ac77c173945f77e7c3db9e547b6e2a68969e731d4d69f6093fbc3a0b7068dddffe224692edb7175a953bc28f9449b8018c91835d31  0001-drm-panel-edp-Add-timings-for-BOE-NV133WUM-N63.patch
+"
