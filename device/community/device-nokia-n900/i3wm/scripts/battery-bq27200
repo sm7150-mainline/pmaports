@@ -1,37 +1,14 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+upower_batt="/org/freedesktop/UPower/devices/battery_bq27200_0"
+upower_data=$(upower -i "$upower_batt" 2> /dev/null)
+capacity=$(echo "$upower_data" | awk '/percentage/ {print $NF}')
+state=$(echo "$upower_data" | awk '/state/ {print $NF}')
+echo "$capacity"
+echo "$capacity"
 
-# i3status wrapper for displaying correct battery status on N900/bq27200
-#
-# Author:
-# - Sicelo A. Mhlongo <absicsz@gmail.com> (2018)
-# - Martijn Braam <martijn@brixit.nl> (2019, updated for i3blocks)
-# Based on i3status/contrib/net-speed.sh by
-#
-# - Moritz Warning <moritzwarning@web.de> (2016)
-# - Zhong Jianxin <azuwis@gmail.com> (2014)
-#
-# See file LICENSE in the i3status root directory for license information.
-#
-
-battery_path="/sys/class/power_supply/bq27200-0/"
-
-read capacity < "${battery_path}capacity"
-read chg_full < "${battery_path}charge_full"
-read voltage < "${battery_path}voltage_now"
-read disch_rate < "${battery_path}current_now"
-
-if [[ "x$capacity" == "x" ]]; then
-	notification="$(( ( chg_full / 1000 ) ))mAh -- $(( ( voltage / 1000 ) ))mV @ $(( ( disch_rate / -1000 ) ))mA"
+if [ "$state" = "charging" ] || [ "$state" = "fully-charged" ]; then
+        echo "#0099FF"
 else
-	notification="$capacity%/$(( ( chg_full / 1000 ) ))mAh -- $(( ( voltage / 1000 ) ))mV @ $(( ( disch_rate / -1000 ) ))mA"
+        echo "#FFFFFF"
 fi
-
-echo $notification
-echo $notification
-
-if [[ $disch_rate -gt 1 ]]; then
-	echo "#FFFFFF"
-else
-	echo "#0099FF"
-fi
-
