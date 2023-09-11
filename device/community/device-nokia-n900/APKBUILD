@@ -2,7 +2,7 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=9.1.9
+pkgver=9.1.10
 pkgrel=0
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
@@ -49,6 +49,7 @@ source="
 	uboot-script.cmd
 	udev/10-nokia-modem.rules
 	udev/90-touchscreen-dev.rules
+	upower.conf
 	x11-keymap
 	xdefaults
 	xorg.conf
@@ -167,6 +168,13 @@ i3wm() {
 		"$subpkgdir"/etc/skel/.Xdefaults
 }
 
+upower() {
+	install_if="$pkgname upower"
+	replaces="upower"
+	install -Dm644 "$srcdir"/upower.conf \
+		"$subpkgdir"/etc/UPower/UPower.conf
+}
+
 nonfree_firmware() {
 	pkgdesc="Wifi firmware"
 	depends="linux-firmware-ti-connectivity wl1251-cal"
@@ -208,6 +216,7 @@ b50e7f37ffb1fa0bb782b117a4e8bcfdb722b6127c3e5d643e90cd901a1f4e65e77a0773ed418673
 239a54ae5c5effb53ccf4d658652c0462da57604b16b77a63627a17caa171caf82e3d1769f9c5afea8756415acbbf3b73db9b57715fce6c70ea3f29e5c6ac84a  uboot-script.cmd
 9e72035c88632d12895534e5aa5746f2c130c7dcdafa8702748d62b71ed0e1b5911b6e1f07f9b9e39b6072bbb662f66aead585baa1dcacb7d8c8953ca89b6762  10-nokia-modem.rules
 c6012aef28b096141b924fced226ec99fb93eb53b69c064a8887d8fecdf8dc08a3ba3db399e18d88374c6ef4c59013a30699c7e4d76e5cb771040582573a0527  90-touchscreen-dev.rules
+d46adf47194c02b434cb46751003e67ee008d60978458e69b1f59dc709a7135a70f542918c29e359ba8308bdeda58a21e8efa446d06625511af05403db90e455  upower.conf
 737d9e57e219a0220c5b1943375f325309323344fdf06973546c7d88ed9aec857657abd6b7861669873574f865e1c99719d411e0564dbfebe028f9e77d308491  x11-keymap
 19694204f2f370a4132762ac1888eaf5736939bba2f12ec2bccd18dde0645cdb621dda3a0772d2ef6d26a65d14e39a628e0d23321fe3064777ad2b76ce45ed2d  xdefaults
 a91f98daa60efa2beb2ff6b405097f92edca5f1bbb9e7675499139be52ca2570712f8f06f9032ef29f636f99c8f8da8b992f746eab6424aac04260c16158bcc2  xorg.conf
