@@ -1,0 +1,93 @@
+pkgname=firmware-xiaomi-davinci
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Mi 9T / Redmi K20"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-gpu
+	$pkgname-initramfs
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-touchscreen
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-xiaomi-davinci"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="33217ab17ae918306541243951c6e808cdbb945d"
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	30-initramfs-firmware.files"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adsp() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 adsp firmware"
+
+	install -Dm644 "$builddir"/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 cdsp firmware"
+
+	install -Dm644 "$builddir"/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+}
+
+gpu() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 gpu firmware"
+
+	install -Dm644 "$builddir"/a61* -t \
+		"$subpkgdir/lib/firmware/qcom"
+}
+
+initramfs() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 firmware to be included in the initramfs"
+
+	install -Dm644 "$srcdir/30-initramfs-firmware.files" \
+		"$subpkgdir/usr/share/mkinitfs/files/30-initramfs-firmware.files"
+}
+
+ipa() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 ipa firmware"
+
+	install -Dm644 "$builddir"/ipa_fws.* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+}
+
+modem() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 modem firmware"
+
+	# cp because of the modem_pr directory
+	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	cp -r "$builddir"/modem* \
+		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	find "$subpkgdir/lib/firmware/qcom/sm7150/davinci" \
+		-type f -exec chmod 0644 {} \;
+}
+
+
+touchscreen() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 touchscreen firmware"
+
+	install -Dm644 "$builddir"/goodix_cfg_group.bin -t \
+		"$subpkgdir/lib/firmware"
+}
+
+wlan() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 wlan firmware"
+
+	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+}
+
+sha512sums="
+82e7011a76edee0ac8c599f5392161f7c9009a0c926e26567f361f263c3eb340abd8624c4aff62f8553853e2ca4d41c0afe140c67f1ae7e2452bd5b82f495e6d  firmware-xiaomi-davinci-33217ab17ae918306541243951c6e808cdbb945d.tar.gz
+58f5646fecca7ebbb105bc658138b8372127c4d455bd16746cb48c09f329a6e1d325d853dbb4edc8b3f7b56ab18c01776bcc413a89fcbe083909d3f6e029ed7b  30-initramfs-firmware.files
+"
