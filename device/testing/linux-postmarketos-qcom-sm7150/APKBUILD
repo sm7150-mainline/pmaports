@@ -1,10 +1,10 @@
-# Maintainer: David Wronek <w.david0@protonmail.com>
-# Co-Maintainer: Danila Tikhonov <JIaxyga@protonmail.com>
+# Maintainer: Danila Tikhonov <danila@jiaxyga.com>
+# Co-Maintainer: David Wronek <davidwronek@gmail.com>
 
 _flavor="postmarketos-qcom-sm7150"
 pkgname=linux-$_flavor
-pkgver=6.2.0
-pkgrel=1
+pkgver=6.6.1
+pkgrel=0
 pkgdesc="Mainline Kernel fork for SM7150 devices"
 arch="aarch64"
 _carch="arm64"
@@ -16,16 +16,14 @@ options="!strip !check !tracedeps
 	"
 makedepends="bison findutils flex installkernel openssl-dev perl"
 
-_repo="linux"
-_config="config-$_flavor.$arch"
-_commit="106298cb0d89286b8ea78de606967d02cdc81dc5"
+_tag="$pkgver-r$pkgrel"
 
 # Source
 source="
-	$_repo-$_commit.tar.gz::https://github.com/sm7150-mainline/$_repo/archive/$_commit/$_repo-$_commit.tar.gz
-	$_config
+	$pkgname-v$_tag.tar.gz::$url/archive/v$_tag.tar.gz
+	config-$_flavor.$arch
 "
-builddir="$srcdir/$_repo-$_commit"
+builddir="$srcdir/linux-$_tag"
 
 prepare() {
 	default_prepare
@@ -54,6 +52,6 @@ package() {
 
 
 sha512sums="
-1dcd8a6180874465cc5f61a9a1d8a196fceb67a50fa39077547b5bb7fd6d2fc803764e3bcbc3b1d4806dfdf3d5eb1c5f19e665cb9684eb333672bf3aef98b618  linux-106298cb0d89286b8ea78de606967d02cdc81dc5.tar.gz
-44b0a2ca1481e832e08f1e6998cb2a9b297b2774252d08ac4a12a2ff59a4c9750d997fb7abef34e6c3c912288f1332a731e77075aadfc3b0320570e6c82ac04a  config-postmarketos-qcom-sm7150.aarch64
+b77cf09c086cf0f2ef12d3593849c320fd2005a2fdd0d9e5c1e2121c6fb7979c49bb5fd7d09ff8cffbd7400ebf329d5fb1f592e5456bc0ccf70b629e958eed08  linux-postmarketos-qcom-sm7150-v6.6.1-r0.tar.gz
+293b4a84f4ea0774e552faf41c53232245995948183df10ba0e90834b1057210e1706832b60bf8a639024e840f8ac7ea173829faae00a71b64bbb28cf81d202c  config-postmarketos-qcom-sm7150.aarch64
 "
