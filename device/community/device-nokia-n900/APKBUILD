@@ -2,7 +2,7 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 # Co-Maintainer: Danct12 <danct12@disroot.org>
 pkgname=device-nokia-n900
-pkgver=9.2
+pkgver=9.2.1
 pkgrel=0
 pkgdesc="Nokia N900"
 url="https://postmarketos.org"
@@ -130,7 +130,7 @@ package() {
 }
 
 x11() {
-	install_if="$pkgname xorg-server"
+	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
 	depends="xset xinput"
 	install -D -m644 "$srcdir"/40-xkb.conf \
 		"$subpkgdir"/etc/X11/xorg.conf.d/40-xkb.conf
@@ -148,7 +148,7 @@ xkeyboard_config() {
 }
 
 i3wm() {
-	install_if="$pkgname postmarketos-ui-i3wm"
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-i3wm"
 	depends="unclutter-xfixes feh i3blocks rxvt-unicode upower"
 	install -D -m644 "$srcdir"/i3wm.conf \
 		"$subpkgdir"/etc/skel/.config/i3/config
@@ -169,7 +169,7 @@ i3wm() {
 }
 
 upower() {
-	install_if="$pkgname upower"
+	install_if="$pkgname=$pkgver-r$pkgrel upower"
 	replaces="upower"
 	install -Dm644 "$srcdir"/upower.conf \
 		"$subpkgdir"/etc/UPower/UPower.conf
