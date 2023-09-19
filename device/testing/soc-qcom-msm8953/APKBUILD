@@ -9,6 +9,7 @@ arch="aarch64"
 options="!check !archcheck !tracedeps pmb:cross-native"
 depends="$pkgname-ucm swclock-offset"
 subpackages="
+	$pkgname-initramfs
 	$pkgname-modem
 	$pkgname-ucm
 "
@@ -18,6 +19,7 @@ source="
 	$pkgname-$_ucm_commit.tar.gz::https://github.com/msm8953-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz
 	90-feedbackd-pm8xxx-vib.rules
 	q6voiced.conf
+	00-firmware.files
 "
 
 package() {
@@ -32,6 +34,10 @@ ucm() {
 	cd "$srcdir/alsa-ucm-conf-$_ucm_commit"
 	mkdir -p "$subpkgdir"/usr/share/alsa
 	cp -r ucm2 "$subpkgdir"/usr/share/alsa
+}
+
+initramfs() {
+	install -Dm644 "$srcdir"/00-firmware.files -t "$subpkgdir"/usr/share/mkinitfs/files
 }
 
 modem() {
@@ -51,4 +57,5 @@ sha512sums="
 03423f1247eafeb46f2c5e8e1c7bf29b3f6302d10f8acf8be962e34ecf1d6d812acf9d15147f47397a00d1661052aa45276155bc40ce9a8734076497d8b75142  soc-qcom-msm8953-01b9629916bd51e47481b97a29a0078bb6a72aec.tar.gz
 90fca4a3291a2c84c0b20e41308c4698374ba896e9365ca80dbfd0c0c4f7dc08317f3dd865a3c7f6707c81b02f5bb24136d1172253d2e4fdd50039bbbf02a178  90-feedbackd-pm8xxx-vib.rules
 3a4a9322839d4b3ef9d79668a37840a9f444954759ae3c512e694051d2f9a2573db42ad6c4c1a5c75eeb861232a27ba1a8cef9b503decd54ead25a96e3dd6f98  q6voiced.conf
+23cff3b1796fc61fb494cf6ad7e25ca968dd6eb55ccd17d303c354d7a1638b25d7f152feb973b130d74cfcea2cb6aed45dfe3843ae491ffad1440fcf35389284  00-firmware.files
 "
