@@ -3,9 +3,9 @@
 # Co-Maintainer: Alistair Francis <alistair@alistair23.me>
 # Co-Maintainer: Newbyte <newbyte@postmarketos.org>
 pkgname=device-purism-librem5
-pkgver=1.50
-pkgrel=2
-_confver=61
+pkgver=1.51
+pkgrel=0
+_confver=64
 _purismrel=1
 # <librem5-base ver>.<purism release>
 _purismver=${_confver}pureos$_purismrel
@@ -16,6 +16,7 @@ arch="aarch64"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf
+	bluez
 	gnss-share
 	i2c-tools
 	iw
@@ -30,8 +31,6 @@ builddir=$srcdir/librem5-base-pureos-$_confver
 source="
 	https://source.puri.sm/Librem5/librem5-base/-/archive/pureos/$_purismver/librem5-base-pureos-$_purismver.tar.gz
 	00-mesa.sh
-	70-wifi-pm.rules
-	77-mm-broadmobi-port-types.rules
 	deviceinfo
 	modules-initfs
 	flash_script.lst
@@ -43,10 +42,13 @@ source="
 	xorg.conf
 	70-librem5-xwayland-accel.sh
 	0001-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
-	l5-ship-mode.initd
+	l5-brcm-bt-enable.initd
 	l5-lockdown-support.initd
-	0003-fix-ship-mode-linux-6.3.patch
+	l5-ship-mode.initd
 	modemmanager.conf
+	udev/70-brcm-bluetooth.rules
+	udev/70-wifi-pm.rules
+	udev/77-mm-broadmobi-port-types.rules
 "
 subpackages="
 	$pkgname-camera
@@ -142,9 +144,15 @@ package() {
 		install -Dm644 "$f" \
 			"$pkgdir"/usr/lib/udev/rules.d/85-"$(basename ${f//librem5-base-defaults./}).rules"
 	done
+	for f in "$srcdir"/*.rules; do
+		# rename the udev rules, dropping the default prefix and (arbitrarily...) using "85-"
+		install -Dm644 "$f" \
+			"$pkgdir"/usr/lib/udev/rules.d/"$(basename $f)"
+	done
 
-	# Wifi / PM
-	install -Dm644 "$srcdir"/70-wifi-pm.rules -t "$pkgdir"/usr/lib/udev/rules.d/
+	# Bluetooth (Sparklan)
+	install -Dm755 "$srcdir"/l5-brcm-bt-enable.initd \
+		"$pkgdir"/etc/init.d/l5-brcm-bt-enable
 
 	# install audio config files from Purism
 	install -Dm644 "$builddir"/default/audio/ucm2/simple-card/Librem\ 5.conf \
@@ -185,10 +193,8 @@ nonfree_firmware() {
 }
 
 sha512sums="
-8ec49aa14c2d47dbf2beacd4612e0c3a5aa19a309e8152468314251b30ff633298dd5235f529e92ddb7219c835ebab9934553b68bf6c364726881144443801ca  librem5-base-pureos-61pureos1.tar.gz
+46bff1208af87c9b6b2c61daaeeb95c3ff30617dce548a5877ea279ff9ced5338caaa32827bfbd98f3cb7c92d3535c27224c55bf1c03bf82f99e8ca53fe4cf6c  librem5-base-pureos-64pureos1.tar.gz
 2e72d9a084ecd6c96cafbbd8fda461ae8b2ebd14ffda601d9f36d73f08f04088213de17da078293ddd958d4c76d33148c7af6e252eb0709f6934855a55578509  00-mesa.sh
-8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
-00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
 703d12826464eb2bdb6bf4a7d10adb73b37564d3792794523b252f0f7cb66184add150a6938580cc33615281d1c0abd7ff158ae2143b89fa28c0cd3dc367e5ff  deviceinfo
 138ed85e6509e4611bf21a0061c312e6c2ce60f722ee9e4565d19c5f025301d4df3fa321343524219a54b20c5288dc6ed1b058ac66f4d608af22eb5bc83e84c6  modules-initfs
 ccb47fd421c5e35a8def8e6fb61dad99e42cf542690068a68f90c257e41d33f45f1069db0a8d89372d9029681812957033995639a6a8a5e3eed48019325e0f4d  flash_script.lst
@@ -200,8 +206,11 @@ a0740e405781ec6ef765fdc9f5700c95adbb241c45c97b9384ba68cdece662cb216ca5918640042f
 1cbc65cf2cb8fad4b0332d012a0256a266205b9b64371f5c0dae09dbb7f1e45b254e8c43993b896097e9d7035a72d547d9bce1ab2133addc56a5abdb80b44616  xorg.conf
 fad386071fc45f9880a94cc8004fabd5d98b3e6a12606c98d8e72e0208f22ab54f03b921f5967a959782507e2bff67d2fa92e46d8cd242011a3afcdbda529279  70-librem5-xwayland-accel.sh
 b45749fcddfd65a302b502bcabfa5828d1b63e45d844fd50e44009a756b919db20fe9526102947c0f0dfcdffe4a037e5050fe1b24fb915933ce0837f49759378  0001-udev-cameras-use-correct-path-for-modprobe-on-Alpine.patch
-c723764d507ccd4b04aa5ce79b1d1ebc131873cdc37a943cb0f92b8a08a3c69eb9e0d31fcd4589fd8c40a9676bae9897e4f12ec2ebe4db8214ac85669ef35a53  l5-ship-mode.initd
+d9ebb7acddce8005909505b245140913ea3096a3ab8658ecbe2bf905953ba51aed4188b1d006d4d5bfd10c5e0ebca0150fec67d8c6d156d105021e9e4598b878  l5-brcm-bt-enable.initd
 f4b314d553655f7975445ac0a33099923e20dabb082c07e2cf6a78e4118c143d777dd4ad2c09cbc388600bdefe8deb3073fbd15b238772ddf09c66ac46415590  l5-lockdown-support.initd
-a075f3952dfdd4bcadc055f853b6d5206c5db4efcacfa27541653fd5a7daef6e753d6c7ed74fd1aad2a40837450fdac76fa04a61829e08bd938cc3548cbe8390  0003-fix-ship-mode-linux-6.3.patch
+c723764d507ccd4b04aa5ce79b1d1ebc131873cdc37a943cb0f92b8a08a3c69eb9e0d31fcd4589fd8c40a9676bae9897e4f12ec2ebe4db8214ac85669ef35a53  l5-ship-mode.initd
 e089b0c4320c8cb5a6bd1e85f12b6afb24d035958f2bdc7a8ed2cee5b0f379e6fdfad876d8d22c03c9cb0576b4aa7c20c3e9986ba8147500add6d93b44e5f266  modemmanager.conf
+b7f5ecd0fefe8a122ed20e7ac21a23a65e007f62a7343c7178712955ed580f5473ca923cedb9f86cd10ecb13a76ab50c91a2f7b8b2fd456ee8420aeca75f3fec  70-brcm-bluetooth.rules
+8b6fa7b12c15f439c561901f3ffe24a1ef2a0c343401c0a79281060854ab29e08a1fb5e7adae8684b12aa9f535ed99e2dad993dce9724822cb0fbf2497dd86e5  70-wifi-pm.rules
+00355d9ad085a77e157f3c62eb4f1bcac2823d3b341e34d1128edbfb1444fba83e8eacd263ea61da9f6d853f1328ab7fbe5ea63bd08c8a1bc9b8eaf44ae1f1c6  77-mm-broadmobi-port-types.rules
 "
