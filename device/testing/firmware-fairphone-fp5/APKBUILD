@@ -1,8 +1,9 @@
 pkgname=firmware-fairphone-fp5
 pkgver=20230822
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for Fairphone 5"
 subpackages="
+	$pkgname-adreno
 	$pkgname-adsp
 	$pkgname-bluetooth
 	$pkgname-cdsp
@@ -22,6 +23,13 @@ builddir="$srcdir/FP5-firmware-$_commit"
 package() {
 	# parent package is empty
 	mkdir -p "$pkgdir"
+}
+
+adreno() {
+	pkgdesc="Fairphone 5 adreno firmware"
+
+	install -Dm644 "$builddir"/a660_zap.* -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
 }
 
 adsp() {
