@@ -1,0 +1,37 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-gtowifi
+pkgdesc="Samsung Galaxy Tab A 8.0 2019"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-samsung-gtowifi
+	msm-fb-refresher
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi firmware"
+	depends="firmware-samsung-gtowifi-wifi"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+34934f61db9cc4d05c5a8538bbe78955d98a804aed9c072e5a4aa2a36fa17ec4466e88c7fb4a3fa97a9a225a3b5d17b4770dc58e2e47feec7d3d5fe23d454b9e  deviceinfo
+"
