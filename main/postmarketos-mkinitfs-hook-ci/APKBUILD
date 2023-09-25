@@ -1,0 +1,25 @@
+# Maintainer: Caleb Connolly <caleb@connolly.tech>
+pkgname=postmarketos-mkinitfs-hook-ci
+pkgver=0.1.0
+pkgrel=0
+pkgdesc="Hook for doing automated CI tests in the initramfs"
+url="https://postmarketos.org"
+source="
+	05-ci.sh
+	05-ci.files
+"
+arch="noarch"
+license="GPL2"
+options="!check"
+
+package() {
+	install -Dm755 "$srcdir"/05-ci.sh \
+		"$pkgdir"/usr/share/mkinitfs/hooks/05-ci.sh
+	install -Dm644 "$srcdir"/05-ci.files \
+		"$pkgdir"/usr/share/mkinitfs/files/05-ci.files
+}
+
+sha512sums="
+43f9d9a35a57845eb36893a3f20d8ff5f20b93b1c22c7c6e3959b07a41b3c5fe2f9941612620cf006a0018b53edae5fdc7ed3006befc6908c19a5617f322dea3  05-ci.sh
+35457ab221acd485ebde84fccac2187f36a074554c5f73828f2031f1e8e92ab7b3d46e654f0d7c62c0aa483c1d7f0dc901422fe0398ae0eae6995a2ae539a4af  05-ci.files
+"
