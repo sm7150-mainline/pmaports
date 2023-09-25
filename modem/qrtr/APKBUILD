@@ -2,17 +2,19 @@
 pkgname=qrtr
 pkgver=0.3_git20201207
 _commit="9dc7a88548c27983e06465d3fbba2ba27d4bc050"
-pkgrel=0
+pkgrel=1
 pkgdesc="Userspace reference for net/qrtr in the Linux kernel"
 url="https://github.com/andersson/qrtr"
 arch="all"
 license="BSD-3-Clause"
 depends_dev="linux-headers"
 makedepends="$depends_dev"
-subpackages="$pkgname-doc $pkgname-dev $pkgname-libs $pkgname-openrc"
+subpackages="$pkgname-doc $pkgname-dev $pkgname-libs $pkgname-openrc $pkgname-pmtest"
 source="
 	qrtr-$_commit.tar.gz::https://github.com/andersson/qrtr/archive/$_commit.tar.gz
 	qrtr-ns.initd
+	lookup-test.files
+	lookup-test.sh
 "
 builddir="$srcdir/qrtr-$_commit"
 options="!check"
@@ -29,7 +31,19 @@ package() {
 	install -Dm755 "$srcdir"/qrtr-ns.initd "$pkgdir"/etc/init.d/qrtr-ns
 }
 
+pmtest() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-mkinitfs-hook-ci"
+
+	install -Dm755 "$srcdir"/lookup-test.sh \
+		"$subpkgdir"/usr/libexec/pmos-tests-initramfs/10-qrtr-lookup.sh
+
+	install -Dm644 "$srcdir"/lookup-test.files \
+		"$subpkgdir"/usr/share/mkinitfs/files/10-qrtr-lookup.files
+}
+
 sha512sums="
 d3dd93983382a105372665dd1e1abb944adace37fabab0980dec3dded175586e37dc0da480d21be5876921274f4420bdf032bd5cc0e86ab951e3ec704ec396e0  qrtr-9dc7a88548c27983e06465d3fbba2ba27d4bc050.tar.gz
 68c27e5c1c70ffdec0498cd4746208dd571e392ba030cf1a52f4a05394a57e399cf7437a1f27631dd288c7771fb656946aa27d7aec5b23d41fe13c5199ae390a  qrtr-ns.initd
+00b26c284b2765ddc46cf4b9eb4013e09ae96dfa4a9ac1c49f608a735579bbb442cda2a116417131c5dec234aca224bac824a2167f280990a04c90bc3065a51d  lookup-test.files
+6daecca1be580176cc275a07e87086151fe2426a4f032264a305a5deb49d888acd29e05e6efbabb1693cd5ebdfb62a7543138d2149c9a1154d1451b3d854dfdc  lookup-test.sh
 "
