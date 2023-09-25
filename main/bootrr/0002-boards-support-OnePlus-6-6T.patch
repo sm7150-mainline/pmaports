@@ -1,0 +1,396 @@
+From 624169ad57f6880c96349e1a67ef2c103528ec54 Mon Sep 17 00:00:00 2001
+From: Caleb Connolly <caleb.connolly@linaro.org>
+Date: Mon, 25 Sep 2023 14:53:18 +0100
+Subject: [PATCH 2/2] boards: support OnePlus 6/6T
+
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ boards/oneplus,enchilada |   6 +
+ boards/oneplus,fajita    |   2 +
+ boards/oneplus,oneplus6  | 352 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 360 insertions(+)
+ create mode 100755 boards/oneplus,enchilada
+ create mode 100755 boards/oneplus,fajita
+ create mode 100644 boards/oneplus,oneplus6
+
+diff --git a/boards/oneplus,enchilada b/boards/oneplus,enchilada
+new file mode 100755
+index 000000000000..48b828e3bc47
+--- /dev/null
++++ b/boards/oneplus,enchilada
+@@ -0,0 +1,6 @@
++#!/bin/sh
++
++source $(dirname $0)/oneplus,oneplus6
++
++assert_driver_present max98927-driver-present max98927
++assert_device_present 4-003a-probed max98927 4-003a
+diff --git a/boards/oneplus,fajita b/boards/oneplus,fajita
+new file mode 100755
+index 000000000000..a8a55c412d12
+--- /dev/null
++++ b/boards/oneplus,fajita
+@@ -0,0 +1,2 @@
++source $(dirname $0)/oneplus,oneplus6
++
+diff --git a/boards/oneplus,oneplus6 b/boards/oneplus,oneplus6
+new file mode 100644
+index 000000000000..1c66bb979e07
+--- /dev/null
++++ b/boards/oneplus,oneplus6
+@@ -0,0 +1,352 @@
++assert_cpufreq_enabled cpufreq-enabled 7
++assert_cpuidle_enabled cpuidle-enabled 7
++assert_driver_present coresight-dynamic-funnel-driver-present coresight-dynamic-funnel
++assert_device_present 6043000.funnel-probed coresight-dynamic-funnel 6043000.funnel
++assert_device_present 6041000.funnel-probed coresight-dynamic-funnel 6041000.funnel
++assert_device_present 7800000.funnel-probed coresight-dynamic-funnel 7800000.funnel
++assert_device_present 7810000.funnel-probed coresight-dynamic-funnel 7810000.funnel
++assert_device_present 6045000.funnel-probed coresight-dynamic-funnel 6045000.funnel
++
++assert_driver_present coresight-dynamic-replicator-driver-present coresight-dynamic-replicator
++assert_device_present 6046000.replicator-probed coresight-dynamic-replicator 6046000.replicator
++
++assert_driver_present coresight-stm-driver-present coresight-stm
++assert_device_present 6002000.stm-probed coresight-stm 6002000.stm
++
++assert_driver_present coresight-tmc-driver-present coresight-tmc
++assert_device_present 6048000.etr-probed coresight-tmc 6048000.etr
++assert_device_present 6047000.etf-probed coresight-tmc 6047000.etf
++
++assert_driver_present bq27xxx-battery-driver-present bq27xxx-battery
++assert_device_present 10-0055-probed bq27xxx-battery 10-0055
++
++assert_driver_present rmi4_i2c-driver-present rmi4_i2c
++assert_device_present 12-0020-probed rmi4_i2c 12-0020
++
++assert_driver_present panel-oneplus6-driver-present panel-oneplus6
++assert_device_present ae94000.dsi.0-probed panel-oneplus6 ae94000.dsi.0
++
++assert_driver_present adreno-driver-present adreno
++assert_device_present 5000000.gpu-probed adreno 5000000.gpu
++
++assert_driver_present alarmtimer-driver-present alarmtimer
++assert_device_present alarmtimer.0.auto-probed alarmtimer alarmtimer.0.auto
++
++assert_driver_present arm-smmu-driver-present arm-smmu
++assert_device_present 5040000.iommu-probed arm-smmu 5040000.iommu
++assert_device_present 15000000.iommu-probed arm-smmu 15000000.iommu
++
++assert_driver_present armv8-pmu-driver-present armv8-pmu
++assert_device_present pmu-probed armv8-pmu pmu
++
++assert_driver_present ath10k_snoc-driver-present ath10k_snoc
++assert_device_present 18800000.wifi-probed ath10k_snoc 18800000.wifi
++
++assert_driver_present bam-dma-engine-driver-present bam-dma-engine
++assert_device_present 17184000.dma-controller-probed bam-dma-engine 17184000.dma-controller
++assert_device_present 1dc4000.dma-controller-probed bam-dma-engine 1dc4000.dma-controller
++
++assert_driver_present bcm_voter-driver-present bcm_voter
++assert_device_present 179c0000.rsc:bcm-voter-probed bcm_voter 179c0000.rsc:bcm-voter
++
++assert_driver_present clk-rpmh-driver-present clk-rpmh
++assert_device_present 179c0000.rsc:clock-controller-probed clk-rpmh 179c0000.rsc:clock-controller
++
++assert_driver_present cmd-db-driver-present cmd-db
++assert_device_present 85fe0000.aop-cmd-db-mem-probed cmd-db 85fe0000.aop-cmd-db-mem
++
++assert_driver_present disp_cc-sdm845-driver-present disp_cc-sdm845
++assert_device_present af00000.clock-controller-probed disp_cc-sdm845 af00000.clock-controller
++
++assert_driver_present dwc3-driver-present dwc3
++assert_device_present a600000.usb-probed dwc3 a600000.usb
++
++assert_driver_present dwc3-qcom-driver-present dwc3-qcom
++assert_device_present a6f8800.usb-probed dwc3-qcom a6f8800.usb
++
++assert_driver_present gcc-sdm845-driver-present gcc-sdm845
++assert_device_present 100000.clock-controller-probed gcc-sdm845 100000.clock-controller
++
++assert_driver_present geni_i2c-driver-present geni_i2c
++assert_device_present 890000.i2c-probed geni_i2c 890000.i2c
++assert_device_present a88000.i2c-probed geni_i2c a88000.i2c
++assert_device_present a90000.i2c-probed geni_i2c a90000.i2c
++
++assert_driver_present geni_se_qup-driver-present geni_se_qup
++assert_device_present ac0000.geniqup-probed geni_se_qup ac0000.geniqup
++assert_device_present 8c0000.geniqup-probed geni_se_qup 8c0000.geniqup
++
++assert_driver_present gpio-keys-driver-present gpio-keys
++assert_device_present gpio-hall-sensor-probed gpio-keys gpio-hall-sensor
++assert_device_present gpio-keys-probed gpio-keys gpio-keys
++assert_device_present alert-slider-probed gpio-keys alert-slider
++
++assert_driver_present leds-qcom-flash-driver-present leds-qcom-flash
++assert_device_present c440000.spmi:pmic@3:led-controller@d300-probed leds-qcom-flash c440000.spmi:pmic@3:led-controller@d300
++
++assert_driver_present msm-mdss-driver-present msm-mdss
++assert_device_present ae00000.display-subsystem-probed msm-mdss ae00000.display-subsystem
++
++assert_driver_present msm_dpu-driver-present msm_dpu
++assert_device_present ae01000.disp�ay-controller-probed msm_dpu ae01000.display-controller
++
++assert_driver_present msm_dsi-driver-present msm_dsi
++assert_device_present ae94000.dsi-probed msm_dsi ae94000.dsi
++
++assert_driver_present msm_dsi_phy-driver-present msm_dsi_phy
++assert_device_present ae94400.phy-probed msm_dsi_phy ae94400.phy
++
++assert_driver_present osm-l3-driver-present osm-l3
++assert_device_present 17d41000.interconnect-probed osm-l3 17d41000.interconnect
++
++assert_driver_present pm8916-pon-driver-present pm8916-pon
++assert_device_present c440000.spmi:pmic@0:pon@800-probed pm8916-pon c440000.spmi:pmic@0:pon@800
++
++assert_driver_present pm8941-pwrkey-driver-present pm8941-pwrkey
++assert_device_present c440000.spmi:pmic@0:pon@800:pwrkey-probed pm8941-pwrkey c440000.spmi:pmic@0:pon@800:pwrkey
++
++assert_driver_present psci-cpuidle-driver-present psci-cpuidle
++assert_device_present psci-cpuidle-probed psci-cpuidle psci-cpuidle
++
++assert_driver_present psci-cpuidle-domain-driver-present psci-cpuidle-domain
++assert_device_present psci-probed psci-cpuidle-domain psci
++
++assert_driver_present qcom,fastrpc-cb-driver-present qcom,fastrpc-cb
++assert_device_present remoteproc-adsp:glink-edge:fastrpc:compute-cb@4-probed qcom,fastrpc-cb remoteproc-adsp:glink-edge:fastrpc:compute-cb@4
++assert_device_present remoteproc-adsp:glink-edge:fastrpc:compute-cb@3-probed qcom,fastrpc-cb remoteproc-adsp:glink-edge:fastrpc:compute-cb@3
++
++assert_driver_present qcom,qfprom-driver-present qcom,qfprom
++assert_device_present 784000.qfprom-probed qcom,qfprom 784000.qfprom
++
++assert_driver_present qcom,slim-ngd-driver-present qcom,slim-ngd
++assert_device_present qcom,slim-ngd.1-probed qcom,slim-ngd qcom,slim-ngd.1
++
++assert_driver_present qcom,slim-ngd-ctrl-driver-present qcom,slim-ngd-ctrl
++assert_device_present 171c0000.slim-ngd-probed qcom,slim-ngd-ctrl 171c0000.slim-ngd
++
++assert_driver_present qcom-bwmon-driver-present qcom-bwmon
++assert_device_present 1436400.pmu-probed qcom-bwmon 1436400.pmu
++assert_device_present 114a000.pmu-probed qcom-bwmon 114a000.pmu
++
++assert_driver_present qcom-cpufreq-hw-driver-present qcom-cpufreq-hw
++assert_device_present 17d43000.cpufreq-probed qcom-cpufreq-hw 17d43000.cpufreq
++
++assert_driver_present qcom-lab-ibb-regulator-driver-present qcom-lab-ibb-regulator
++assert_device_present c440000.spmi:pmic@3:labibb-probed qcom-lab-ibb-regulator c440000.spmi:pmic@3:labibb
++
++assert_driver_present qcom-llcc-driver-present qcom-llcc
++assert_device_present 1100000.system-cache-controller-probed qcom-llcc 1100000.system-cache-controller
++
++assert_driver_present qcom-lmh-driver-present qcom-lmh
++assert_device_present 17d70800.lmh-probed qcom-lmh 17d70800.lmh
++assert_device_present 17d78800.lmh-probed qcom-lmh 17d78800.lmh
++
++assert_driver_present qcom-pmi8998!pm660-charger-driver-present qcom-pmi8998!pm660-charger
++assert_device_present c440000.spmi:pmic@2:charger@1000-probed qcom-pmi8998!pm660-charger c440000.spmi:pmic@2:charger@1000
++
++assert_driver_present qcom-q6v5-mss-driver-present qcom-q6v5-mss
++assert_device_present 4080000.remoteproc-probed qcom-q6v5-mss 4080000.remoteproc
++
++assert_driver_present qcom-qmp-ufs-phy-driver-present qcom-qmp-ufs-phy
++assert_device_present 1d87000.phy-probed qcom-qmp-ufs-phy 1d87000.phy
++
++assert_driver_present qcom-qusb2-phy-driver-present qcom-qusb2-phy
++assert_device_present 88e2000.phy-probed qcom-qusb2-phy 88e2000.phy
++
++assert_driver_present qcom-rpmh-regulator-driver-present qcom-rpmh-regulator
++assert_device_present 179c0000.rsc:regulators-1-probed qcom-rpmh-regulator 179c0000.rsc:regulators-1
++assert_device_present 179c0000.rsc:regulators-2-probed qcom-rpmh-regulator 179c0000.rsc:regulators-2
++assert_device_present 179c0000.rsc:regulators-0-probed qcom-rpmh-regulator 179c0000.rsc:regulators-0
++
++assert_driver_present qcom-rpmhpd-driver-present qcom-rpmhpd
++assert_device_present 179c0000.rsc:power-controller-probed qcom-rpmhpd 179c0000.rsc:power-controller
++
++assert_driver_present qcom-smem-driver-present qcom-smem
++assert_device_present 86000000.smem-probed qcom-smem 86000000.smem
++
++assert_driver_present qcom-socinfo-driver-present qcom-socinfo
++assert_device_present qcom-socinfo-probed qcom-socinfo qcom-socinfo
++
++assert_driver_present qcom-soundwire-driver-present qcom-soundwire
++assert_device_present wcd934x-soundwire.3.auto-probed qcom-soundwire wcd934x-soundwire.3.auto
++
++assert_driver_present qcom-spmi-adc5-driver-present qcom-spmi-adc5
++assert_device_present c440000.spmi:pmic@0:adc@3100-probed qcom-spmi-adc5 c440000.spmi:pmic@0:adc@3100
++
++assert_driver_present qcom-spmi-gpio-driver-present qcom-spmi-gpio
++assert_device_present c440000.spmi:pmic@0:gpio@c000-probed qcom-spmi-gpio c440000.spmi:pmic@0:gpio@c000
++assert_device_present c440000.spmi:pmic@2:gpio@c000-probed qcom-spmi-gpio c440000.spmi:pmic@2:gpio@c000
++
++assert_driver_present qcom-spmi-lpg-driver-present qcom-spmi-lpg
++assert_device_present c440000.spmi:pmic@3:pwm-probed qcom-spmi-lpg c440000.spmi:pmic@3:pwm
++
++assert_driver_present qcom-spmi-rradc-driver-present qcom-spmi-rradc
++assert_device_present c440000.spmi:pmic@2:adc@4500-probed qcom-spmi-rradc c440000.spmi:pmic@2:adc@4500
++
++assert_driver_present qcom-tsens-driver-present qcom-tsens
++assert_device_present c265000.thermal-sensor-probed qcom-tsens c265000.thermal-sensor
++assert_device_present c263000.thermal-sensor-probed qcom-tsens c263000.thermal-sensor
++
++assert_driver_present qcom_aoss_qmp-driver-present qcom_aoss_qmp
++assert_device_present c300000.power-management-probed qcom_aoss_qmp c300000.power-management
++
++assert_driver_present qcom_aoss_reset-driver-present qcom_aoss_reset
++assert_device_present c2a0000.reset-controller-probed qcom_aoss_reset c2a0000.reset-controller
++
++assert_driver_present qcom_apcs_ipc-driver-present qcom_apcs_ipc
++assert_device_present 17990000.mailbox-probed qcom_apcs_ipc 17990000.mailbox
++
++assert_driver_present qcom_geni_serial-driver-present qcom_geni_serial
++assert_device_present 898000.serial-probed qcom_geni_serial 898000.serial
++assert_device_present a84000.serial-probed qcom_geni_serial a84000.serial
++
++assert_driver_present qcom_hwspinlock-driver-present qcom_hwspinlock
++assert_device_present 1f40000.hwlock-probed qcom_hwspinlock 1f40000.hwlock
++
++assert_driver_present qcom_pdc-driver-present qcom_pdc
++assert_device_present b220000.interrupt-controller-probed qcom_pdc b220000.interrupt-controller
++
++assert_driver_present qcom_pdc_reset-driver-present qcom_pdc_reset
++assert_device_present b2e0000.reset-controller-probed qcom_pdc_reset b2e0000.reset-controller
++
++assert_driver_present qcom_q6v5_pas-driver-present qcom_q6v5_pas
++assert_device_present remoteproc-cdsp-probed qcom_q6v5_pas remoteproc-cdsp
++assert_device_present 5c00000.remoteproc-probed qcom_q6v5_pas 5c00000.remoteproc
++assert_device_present remoteproc-adsp-probed qcom_q6v5_pas remoteproc-adsp
++
++assert_driver_present qcom_rmtfs_mem-driver-present qcom_rmtfs_mem
++assert_device_present f5b01000.rmtfs-mem-probed qcom_rmtfs_mem f5b01000.rmtfs-mem
++
++assert_driver_present qcom_rng-driver-present qcom_rng
++assert_device_present 793000.rng-probed qcom_rng 793000.rng
++
++assert_driver_present qcom_scm-driver-present qcom_scm
++assert_device_present firmware:scm-probed qcom_scm firmware:scm
++
++assert_driver_present qcom_smp2p-driver-present qcom_smp2p
++assert_device_present smp2p-mpss-probed qcom_smp2p smp2p-mpss
++assert_device_present smp2p-slpi-probed qcom_smp2p smp2p-slpi
++assert_device_present smp2p-lpass-probed qcom_smp2p smp2p-lpass
++assert_device_present smp2p-cdsp-probed qcom_smp2p smp2p-cdsp
++
++assert_driver_present qcom_stats-driver-present qcom_stats
++assert_device_present c3f0000.sram-probed qcom_stats c3f0000.sram
++
++assert_driver_present qcom_wdt-driver-present qcom_wdt
++assert_device_present 17980000.watchdog-probed qcom_wdt 17980000.watchdog
++
++assert_driver_present qcrypto-driver-present qcrypto
++assert_device_present 1dfa000.crypto-probed qcrypto 1dfa000.crypto
++
++assert_driver_present qnoc-sdm845-driver-present qnoc-sdm845
++assert_device_present 1500000.interconnect-probed qnoc-sdm845 1500000.interconnect
++assert_device_present 1380000.interconnect-probed qnoc-sdm845 1380000.intercon�ect
++assert_device_present 1620000.interconnect-probed qnoc-sdm845 1620000.interconnect
++assert_device_present 17900000.interconnect-probed qnoc-sdm845 17900000.interconnect
++assert_device_present 16e0000.interconnect-probed qnoc-sdm845 16e0000.interconnect
++assert_device_present 1740000.interconnect-probed qnoc-sdm845 1740000.interconnect
++assert_device_present 1700000.interconnect-probed qnoc-sdm845 1700000.interconnect
++assert_device_present 14e0000.interconnect-probed qnoc-sdm845 14e0000.interconnect
++
++assert_driver_present ramoops-driver-present ramoops
++assert_device_present ac300000.ramoops-probed ramoops ac300000.ramoops
++
++assert_driver_present reg-dummy-driver-present reg-dummy
++assert_device_present reg-dummy-probed reg-dummy reg-dummy
++
++assert_driver_present reg-fixed-voltage-driver-present reg-fixed-voltage
++assert_device_present vph-pwr-regulator-probed reg-fixed-voltage vph-pwr-regulator
++assert_device_present ts-1p8-regulator-probed reg-fixed-voltage ts-1p8-regulator
++assert_device_present pm8998-smps4-probed reg-fixed-voltage pm8998-smps4
++
++assert_driver_present rpmh-driver-present rpmh
++assert_device_present 179c0000.rsc-probed rpmh 179c0000.rsc
++
++assert_driver_present rtc-pm8xxx-driver-present rtc-pm8xxx
++assert_device_present c440000.spmi:pmic@0:rtc@6000-probed rtc-pm8xxx c440000.spmi:pmic@0:rtc@6000
++
++assert_driver_present sdm845-camcc-driver-present sdm845-camcc
++assert_device_present ad00000.clock-controller-probed sdm845-camcc ad00000.clock-controller
++
++assert_driver_present sdm845-gpucc-driver-present sdm845-gpucc
++assert_device_present 5090000.clock-controller-probed sdm845-gpucc 5090000.clock-controller
++
++assert_driver_present sdm845-pinctrl-driver-present sdm845-pinctrl
++assert_device_present 3400000.pinctrl-probed sdm845-pinctrl 3400000.pinctrl
++
++assert_driver_present sdm845-videocc-driver-present sdm845-videocc
++assert_device_present ab00000.clock-controller-probed sdm845-videocc ab00000.clock-controller
++
++assert_driver_present serial8250-driver-present serial8250
++assert_device_present serial8250-probed serial8250 serial8250
++
++assert_driver_present simple-pm-bus-driver-present simple-pm-bus
++assert_device_present soc@0-probed simple-pm-bus soc@0
++
++assert_driver_present snd-soc-dummy-driver-present snd-soc-dummy
++assert_device_present snd-soc-dummy-probed snd-soc-dummy snd-soc-dummy
++
++assert_driver_present spmi-temp-alarm-driver-present spmi-temp-alarm
++assert_device_present c440000.spmi:pmic@0:temp-alarm@2400-probed spmi-temp-alarm c440000.spmi:pmic@0:temp-alarm@2400
++
++assert_driver_present spmi_pmic_arb-driver-present spmi_pmic_arb
++assert_device_present c440000.spmi-probed spmi_pmic_arb c440000.spmi
++
++assert_driver_present ufshcd-qcom-driver-present ufshcd-qcom
++assert_device_present 1d84000.ufshc-probed ufshcd-qcom 1d84000.ufshc
++
++assert_driver_present wcd934x-codec-driver-present wcd934x-codec
++assert_device_present wcd934x-codec.1.auto-probed wcd934x-codec wcd934x-codec.1.auto
++
++assert_driver_present wcd934x-gpio-driver-present wcd934x-gpio
++assert_device_present wcd934x-gpio.2.auto-probed wcd934x-gpio wcd934x-gpio.2.auto
++
++assert_driver_present rmi4_f01-driver-present rmi4_f01
++assert_device_present rmi4-00.fn01-probed rmi4_f01 rmi4-00.fn01
++
++assert_driver_present rmi4_f12-driver-present rmi4_f12
++assert_device_present rmi4-00.fn12-probed rmi4_f12 rmi4-00.fn12
++
++assert_driver_present rmi4_f55-driver-present rmi4_f55
++assert_device_present rmi4-00.fn55-probed rmi4_f55 rmi4-00.fn55
++
++assert_driver_present rmi4_physical-driver-present rmi4_physical
++assert_device_present rmi4-00-probed rmi4_physical rmi4-00
++
++assert_driver_present qcom,apr-driver-present qcom,apr
++assert_device_present remoteproc-adsp:glink-edge.apr_audio_svc.-1.-1-probed qcom,apr remoteproc-adsp:glink-edge.apr_audio_svc.-1.-1
++
++assert_driver_present qcom,fastrpc-driver-present qcom,fastrpc
++assert_device_present remoteproc-ad�p:glink-edge.fastrpcglink-apps-dsp.-1.-1-probed qcom,fastrpc remoteproc-adsp:glink-edge.fastrpcglink-apps-dsp.-1.-1
++
++assert_driver_present qcom_glink_ssr-driver-present qcom_glink_ssr
++assert_device_present remoteproc-adsp:glink-edge.glink_ssr.-1.-1-probed qcom_glink_ssr remoteproc-adsp:glink-edge.glink_ssr.-1.-1
++
++assert_driver_present qcom_smd_qrtr-driver-present qcom_smd_qrtr
++assert_device_present remoteproc-adsp:glink-edge.IPCRTR.-1.-1-probed qcom_smd_qrtr remoteproc-adsp:glink-edge.IPCRTR.-1.-1
++
++assert_driver_present rpmsg_ctrl-driver-present rpmsg_ctrl
++assert_device_present remoteproc-adsp:glink-edge.rpmsg_ctrl.0.0-probed rpmsg_ctrl remoteproc-adsp:glink-edge.rpmsg_ctrl.0.0
++
++assert_driver_present sd-driver-present sd
++assert_device_present 0:0:0:5-probed sd 0:0:0:5
++assert_device_present 0:0:0:3-probed sd 0:0:0:3
++assert_device_present 0:0:0:1-probed sd 0:0:0:1
++assert_device_present 0:0:0:4-probed sd 0:0:0:4
++assert_device_present 0:0:0:2-probed sd 0:0:0:2
++assert_device_present 0:0:0:0-probed sd 0:0:0:0
++
++assert_driver_present ufs_device_wlun-driver-present ufs_device_wlun
++assert_device_present 0:0:0:49488-probed ufs_device_wlun 0:0:0:49488
++
++assert_driver_present hci_uart_qca-driver-present hci_uart_qca
++assert_device_present serial0-0-probed hci_uart_qca serial0-0
++
++assert_driver_present wcd934x-slim-driver-present wcd934x-slim
++assert_device_present 217:250:1:0-probed wcd934x-slim 217:250:1:0
++
++assert_driver_present pmic-spmi-driver-present pmic-spmi
++assert_device_present 0-03-probed pmic-spmi 0-03
++assert_device_present 0-01-probed pmic-spmi 0-01
++assert_device_present 0-02-probed pmic-spmi 0-02
++assert_device_present 0-00-probed pmic-spmi 0-00
+-- 
+2.42.0
+

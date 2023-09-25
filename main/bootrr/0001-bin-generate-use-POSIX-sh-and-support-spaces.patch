@@ -1,0 +1,106 @@
+From 15802fb2456736b46a25622244d1080a87320d3c Mon Sep 17 00:00:00 2001
+From: Caleb Connolly <caleb.connolly@linaro.org>
+Date: Fri, 5 May 2023 20:55:23 +0100
+Subject: [PATCH 1/2] bin: generate: use POSIX sh and support spaces
+
+Handles drivers with spaces in their names, and simplify slightly by
+using globbing to unwrap the bus for loop.
+
+It's necessary to add the final '*' in the "for driver in" loop in
+bootrr-generate-template on POSIX sh.
+
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ bin/bootrr-generate-template  | 30 +++++++++++++++---------------
+ helpers/assert_device_present |  4 ++--
+ helpers/assert_driver_present |  2 +-
+ helpers/bootrr                |  2 +-
+ 4 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/bin/bootrr-generate-template b/bin/bootrr-generate-template
+index 67c337a9aacb..42866dc5982d 100755
+--- a/bin/bootrr-generate-template
++++ b/bin/bootrr-generate-template
+@@ -16,25 +16,25 @@ if [ -f /sys/devices/system/cpu/cpuidle/current_driver ]; then
+ fi
+ 
+ # Find drivers with bound devices
+-for bus in $(ls /sys/bus) ; do
+-	for driver in $(ls /sys/bus/${bus}/drivers) ; do
+-		devs=$(find /sys/bus/${bus}/drivers/${driver} -type l |
+-			grep -v module$)
+-		if [ "${devs}" = "" ]; then
+-			continue
+-		fi
++for driver_path in /sys/bus/*/drivers/* ; do
++	devs=$(find "$driver_path" -type l -printf "\"%p\" " |
++		grep -v module$)
++	if [ "${devs}" = "" ]; then
++		continue
++	fi
+ 
+-		# Check for the driver
+-		echo assert_driver_present ${driver}-driver-present ${driver}
++	driver="$(basename "$driver_path")"
+ 
+-		# Check for each instance of the driver
+-		for dev in ${devs} ; do
+-			d=$(cd ${dev} ; pwd -P | sed s,.*/,,)
+-			echo assert_device_present ${d}-probed ${driver} ${d}
+-		done
++	# Check for the driver
++	echo assert_driver_present \"${driver}-driver-present\" \"${driver}\"
+ 
+-		echo
++	# Check for each instance of the driver
++	find "$driver_path" -type l | grep -v module$ | while read -r dev ; do
++		d=$(cd ${dev} ; pwd -P | sed s,.*/,,)
++		echo assert_device_present ${d}-probed \"${driver}\" ${d}
+ 	done
++
++	echo
+ done
+ 
+ # Sound card display names are symbolic links to their numbered
+diff --git a/helpers/assert_device_present b/helpers/assert_device_present
+index 57151c117d90..acfd1a2bc59d 100755
+--- a/helpers/assert_device_present
++++ b/helpers/assert_device_present
+@@ -12,7 +12,7 @@ if [ -z "${TEST_CASE_ID}" -o -z "${DRIVER}" -o -z "${DEVICE}" ]; then
+ 	exit 1
+ fi
+ 
+-timeout ${TIMEOUT} [ -d /sys/bus/*/drivers/${DRIVER} ] || test_report_exit blocked
+-timeout ${TIMEOUT} [ -L /sys/bus/*/drivers/${DRIVER}/${DEVICE} ] || test_report_exit fail
++timeout ${TIMEOUT} [ -d /sys/bus/*/drivers/"${DRIVER}" ] || test_report_exit blocked
++timeout ${TIMEOUT} [ -L /sys/bus/*/drivers/"${DRIVER}"/"${DEVICE}" ] || test_report_exit fail
+ 
+ test_report_exit pass
+diff --git a/helpers/assert_driver_present b/helpers/assert_driver_present
+index b7c48199d8f9..2927bffe6ea2 100755
+--- a/helpers/assert_driver_present
++++ b/helpers/assert_driver_present
+@@ -11,6 +11,6 @@ if [ -z "${TEST_CASE_ID}" -o -z "${DRIVER}" ]; then
+ 	exit 1
+ fi
+ 
+-timeout ${TIMEOUT} [ -d /sys/bus/*/drivers/${DRIVER} ] || test_report_exit fail
++timeout ${TIMEOUT} [ -d /sys/bus/*/drivers/"${DRIVER}" ] || test_report_exit fail
+ 
+ test_report_exit pass
+diff --git a/helpers/bootrr b/helpers/bootrr
+index f5768543681f..f5aad59db0ac 100644
+--- a/helpers/bootrr
++++ b/helpers/bootrr
+@@ -4,7 +4,7 @@ test_report_exit() {
+ 	TEST_RESULT=$1
+ 	command -v lava-test-case
+ 	if [ "$?" -eq 0 ]; then
+-		lava-test-case ${TEST_CASE_ID} --result ${TEST_RESULT}
++		lava-test-case "${TEST_CASE_ID}" --result ${TEST_RESULT}
+ 	else
+ 		echo "<LAVA_SIGNAL_TESTCASE TEST_CASE_ID=${TEST_CASE_ID} RESULT=${TEST_RESULT}>"
+ 	fi
+-- 
+2.42.0
+
