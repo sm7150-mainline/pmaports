@@ -1,0 +1,43 @@
+# Reference: https://postmarketos.org/uipkg
+# Maintainer: Affe Null <affenull2345@gmail.com>
+pkgname=postmarketos-ui-bananui
+pkgver=1
+pkgrel=0
+pkgdesc="(Wayland) Keypad controlled UI for feature phones"
+url="https://git.abscue.de/obp/bananui"
+arch="noarch"
+license="GPL-3.0-or-later"
+depends="
+	bananui-clock
+	bananui-shell
+	dnsmasq
+	pam-rundir
+	postmarketos-base-ui
+	postmarketos-base-ui-networkmanager
+	pulseaudio
+	seatd
+	seatd-openrc
+	tinydm
+	tinydm-openrc
+	wroomd
+	wroomd-openrc
+	xdg-user-dirs
+	xwayland
+	"
+_pmb_recommends="
+	bananui-demos
+	foot
+	"
+_pmb_groups="
+	feedbackd
+	rtc
+	seat
+	wroomd
+	"
+install="$pkgname.post-install $pkgname.post-upgrade"
+options="!check"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
