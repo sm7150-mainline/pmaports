@@ -1,7 +1,11 @@
 #!/bin/sh
 # shellcheck disable=SC1091
 
+IN_CI="false"
+
 [ -e /hooks/10-verbose-initfs.sh ] && set -x
+
+[ -e /hooks/05-ci.sh ] && IN_CI="true"
 
 [ -e /etc/unudhcpd.conf ] && . /etc/unudhcpd.conf
 . ./init_functions.sh
@@ -15,15 +19,26 @@ export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 mount_proc_sys_dev
 setup_log
 setup_firmware_path
-# shellcheck disable=SC2154
-load_modules /lib/modules/initramfs.load "usb_f_rndis"
 
-setup_framebuffer
-show_splash "Loading..."
-setup_mdev
-setup_dynamic_partitions "${deviceinfo_super_partitions:=}"
-mount_subpartitions
+if [ "$IN_CI" = "false" ]; then
+	# shellcheck disable=SC2154
+	load_modules /lib/modules/initramfs.load "usb_f_rndis"
+	setup_framebuffer
+	show_splash "Loading..."
+	setup_mdev
+	setup_dynamic_partitions "${deviceinfo_super_partitions:=}"
+	mount_subpartitions
+else
+	# loads all modules
+	setup_udev
+fi
 run_hooks /hooks
+
+if [ "$IN_CI" = "true" ]; then
+	echo "PMOS: CI tests done, disabling console and looping forever"
+	dmesg -n 1
+	loop_forever
+fi
 
 # Always run dhcp daemon/usb networking for now (later this should only
 # be enabled, when having the debug-shell hook installed for debugging,
