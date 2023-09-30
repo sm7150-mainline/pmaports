@@ -1,18 +1,25 @@
-# Maintainer: Danila Tikhonov (JIaxyga) <JIaxyga@protonmail.com>
+# Maintainer: Danila Tikhonov (JIaxyga) <danila@jiaxyga.com>
+# Co-Maintainer: Barnabas Czeman <trabarni@gmail.com>
 # Reference: <https://postmarketos.org/devicepkg>
 
 pkgname=device-xiaomi-tissot
 pkgdesc="Xiaomi Mi A1"
-pkgver=4
-pkgrel=4
+pkgver=5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8953 linux-postmarketos-qcom-msm8953 lk2nd-msm8953"
+depends="
+	linux-postmarketos-qcom-msm8953
+	lk2nd-msm8953
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8953
+"
 makedepends="devicepkg-dev"
 source="deviceinfo modules-initfs"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-modem"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -23,18 +30,18 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware, also needed for osk-sdl"
-	depends="firmware-xiaomi-tissot"
-	mkdir "$subpkgdir"
-}
-
-modem() {
-	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
-	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware"
+	depends="
+		firmware-xiaomi-tissot
+		msm-firmware-loader
+		qbootctl
+		soc-qcom-msm8953-initramfs
+		soc-qcom-msm8953-modem
+	"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-2349246ddbe547acfd9630245e27f9acbf04b91739378864fa5f6f1be3646c88c46021e744dc893d038874ae1908f63d43ed1b235bbff2ea1982f1f2ecaee180  deviceinfo
-7a18ef4ec2d4b424a120f45b5451d6d7f81e58fa7c163a21354b5a3b18c6894126b79f4134270bd6d7a3275167831ac5b4f551697af4b59f61d20388e010ba1d  modules-initfs
+e94d5aeae51c697d4483dc1d7a5eb4980a37ad3dec693ddd8f7b829ed5583a200254b393d0337b3180e36289cb4eba60a6667bd3cf08d2c994a03ac3092d22df  deviceinfo
+f2ada69f818d5f8af2f2abbf556384f41584c175fadca5ea07ddb4a006648de11999153b27079236304ec1cf52c2bed0291501a363b55236631edf62c6b7e9a3  modules-initfs
 "

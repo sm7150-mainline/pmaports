@@ -1,38 +1,29 @@
-# Maintainer: Danila Tikhonov (JIaxyga) <JIaxyga@protonmail.com>
+# Maintainer: Danila Tikhonov (JIaxyga) <danila@jiaxyga.com>
+# Co-Maintainer: Barnabas Czeman <trabarni@gmail.com>
 
 pkgname=firmware-xiaomi-tissot
-pkgver=1
-pkgrel=3
+pkgver=2
+pkgrel=0
 pkgdesc="Firmware files for Xiaomi Mi A1"
 url="https://gitlab.com/jiaxyga/firmware-xiaomi-tissot"
 arch="aarch64"
-depends="linux-firmware-qcom firmware-xiaomi-tissot-initramfs"
 license="proprietary"
 options="!strip !check !archcheck !spdx !tracedeps pmb:cross-native"
 
 _commit="bf686895224cae33c2130932b4a5914fea415287"
 
-source="$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
-	firmware.files
-	30-gpu-firmware.files"
-subpackages="$pkgname-initramfs:firmware_initramfs"
+source="$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit/lib/firmware/postmarketos"
+_fwdir="/lib/firmware"
 
 package() {
-	cd "$srcdir/$pkgname-$_commit/"
-	while IFS="" read -r _i || [ -n "$_i" ]; do
-		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
-		install -Dm644 $_i "$pkgdir/$_i"
-	done < "$srcdir/firmware.files"
-}
-
-firmware_initramfs() {
-	mkdir "$subpkgdir"
-	install -Dm644 "$srcdir"/30-gpu-firmware.files -t \
-		"$subpkgdir"/usr/share/mkinitfs/files
+	# GPU firmwares
+	install -Dm644 a506_zap.b02 -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a506_zap.mdt -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a530_pfp.fw -t "$pkgdir/$_fwdir/qcom"
+	install -Dm644 a530_pm4.fw -t "$pkgdir/$_fwdir/qcom"
 }
 
 sha512sums="
-e82c953fd1a1a665bcfcfc4eaab95fe8a017f1804e4bc66f6449cfeb21137f2ebcc0f8abab9ef9975c438d9836d68974b417bbe58c128b06cec605abecfad008  firmware-xiaomi-tissot.tar.gz
-d43fae933bb12e3879588e96f604be0534be5455bb9edbea3c9cf96bcffbce44abae27de3f40a118536254ca85faeb0fecf390f8f6ae60ca9d06887ac32a7462  firmware.files
-302c0bec754bb79ef561c1a8d4ff34ba52b904c853bce6a15a79ba7b5b7a3d02c1c75bbe86d59be7b608a6dc744dd3e3c638eaa4539c53d20fa55fa5ea397d74  30-gpu-firmware.files
+e82c953fd1a1a665bcfcfc4eaab95fe8a017f1804e4bc66f6449cfeb21137f2ebcc0f8abab9ef9975c438d9836d68974b417bbe58c128b06cec605abecfad008  firmware-xiaomi-tissot-bf686895224cae33c2130932b4a5914fea415287.tar.gz
 "
