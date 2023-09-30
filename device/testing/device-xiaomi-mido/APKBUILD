@@ -1,17 +1,23 @@
+# Maintainer: Barnabas Czeman <trabarni@gmail.com>
 pkgname=device-xiaomi-mido
 pkgdesc="Xiaomi Redmi Note 4X"
-pkgver=3
-pkgrel=4
+pkgver=4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8953 linux-postmarketos-qcom-msm8953 lk2nd-msm8953"
+depends="
+	linux-postmarketos-qcom-msm8953
+	lk2nd-msm8953
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8953
+"
 makedepends="devicepkg-dev"
 source="deviceinfo modules-initfs"
-subpackages="
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
 build() {
 	devicepkg_build $startdir $pkgname
 }
@@ -22,11 +28,17 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="Proprietary firmware"
-	depends="linux-firmware-qcom firmware-xiaomi-mido"
+	depends="
+		firmware-xiaomi-mido
+		linux-firmware-qcom
+		msm-firmware-loader
+		soc-qcom-msm8953-initramfs
+		soc-qcom-msm8953-modem
+	"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
 cdca8edd4ccb13c0198493dcf14e43a2acf8eaddc1dcfba6eb895485b172c7315ab389011fdf9bb54b68a4fb82c31d9a7b50caa566d1aa992a347facb49758b4  deviceinfo
-261ec93707743390e0db7bdc33099fa145b479a3c5c45b8aa25e555a649ddacb63b1ed2c2524b71b876dc2f2540eca47392d6670c314c858ba6b3266274d4a42  modules-initfs
+9654cd063b4698fca513f3bd527bfa5f26c3ac371b67c8efbffc9fdd5b69d2ea2c587646bded4a9dcf091208f034c44cd12bae351597d68026e24335d78b9a1f  modules-initfs
 "
