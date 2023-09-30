@@ -2,16 +2,22 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-ysl
 pkgdesc="Xiaomi Redmi S2/Y2"
-pkgver=1
-pkgrel=5
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg soc-qcom-msm8953 linux-postmarketos-qcom-msm8953 lk2nd-msm8953"
+depends="
+	linux-postmarketos-qcom-msm8953
+	lk2nd-msm8953
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8953
+"
 makedepends="devicepkg-dev"
 source="deviceinfo modules-initfs"
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-modem"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -22,18 +28,17 @@ package() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware, also needed for osk-sdl"
-	depends="msm-firmware-loader firmware-xiaomi-ysl"
-	mkdir "$subpkgdir"
-}
-
-modem() {
-	depends="qrtr rmtfs rmtfs-openrc msm-modem-uim-selection"
-	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware"
+	pkgdesc="Modem, WiFi, BT, ADSP, Venus and GPU Firmware"
+	depends="
+		firmware-xiaomi-ysl
+		msm-firmware-loader
+		soc-qcom-msm8953-initramfs
+		soc-qcom-msm8953-modem
+	"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-22192de042c4e6bbdc79a3dc6244358387df653fdb6996e5f703d804c72331fe4465cff0531ecb3ec70728070955955f59658ac8ca1d0ac22c5839be9d842d2b  deviceinfo
-38069a10a275779c2acffcccb6426192c520cacdbe21329933f589be08184c9fb87b18b1bd90ccae6ddaccdacfe6473e5c7521bc959ba4f330bfbfeafc467c01  modules-initfs
+b80c6f67c97d4ed3292a4f68fefea75e2944125232a1862c2088e3806f37a43043e193341d7d81abd59ad2fea9d696af04ae576acdc21a6125e925570cbaafa7  deviceinfo
+e273b7848a6ccc479668e8670092fe9062a3485093b3581dfb12a6085ee89f6784ea5c0040e1f8353f636b9f25d7921079074b97437405d256bfcc2d17a17388  modules-initfs
 "

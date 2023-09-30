@@ -1,37 +1,28 @@
 # Maintainer: Barnabas Czeman <trabarni@gmail.com>
 pkgname=firmware-xiaomi-ysl
-pkgver=2
-pkgrel=1
+pkgver=3
+pkgrel=0
 pkgdesc="Firmware files for Xiaomi Redmi S2/Y2"
 url="https://gitlab.com/barni2000/$pkgname"
 arch="aarch64"
-depends="firmware-xiaomi-ysl-initramfs"
 license="proprietary"
 options="!strip !check !archcheck !spdx !tracedeps pmb:cross-native"
 
 _commit="ccfd274b825aec2d80e834b16499a6d9ba96c3f5"
 
-source="$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
-	firmware.files
-	30-gpu-firmware.files"
-subpackages="$pkgname-initramfs:firmware_initramfs"
+source="$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit/lib/firmware/postmarketos"
+
+_fwdir="/lib/firmware"
 
 package() {
-	cd "$srcdir/$pkgname-$_commit/"
-	while IFS="" read -r _i || [ -n "$_i" ]; do
-		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
-		install -Dm644 $_i "$pkgdir/$_i"
-	done < "$srcdir/firmware.files"
-}
-
-firmware_initramfs() {
-	mkdir "$subpkgdir"
-	install -Dm644 "$srcdir"/30-gpu-firmware.files -t \
-		"$subpkgdir"/usr/share/mkinitfs/files
+	# GPU Firmware files
+	install -Dm644 a506_zap.b02 -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a506_zap.mdt -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a530_pfp.fw -t "$pkgdir/$_fwdir/qcom"
+	install -Dm644 a530_pm4.fw -t "$pkgdir/$_fwdir/qcom"
 }
 
 sha512sums="
-cd2d84dac3660fe554cba6d6d2ac0c6c7468cfd37bc443400ee1c2bc4a2ed3cb3e7120a413d7bed3c0bad2b5acb234599dd5a0f2e42f6696779c07c3e5c3c575  firmware-xiaomi-ysl.tar.gz
-ee34a50ff58f3a829e37194c5ce60c89d4dce7734a271af1944ecd5232e9f9df0cbf0dbcca8ea2ef094b63cca7d0f2c4431e0a17ebe2533b62a25ac59d370274  firmware.files
-302c0bec754bb79ef561c1a8d4ff34ba52b904c853bce6a15a79ba7b5b7a3d02c1c75bbe86d59be7b608a6dc744dd3e3c638eaa4539c53d20fa55fa5ea397d74  30-gpu-firmware.files
+cd2d84dac3660fe554cba6d6d2ac0c6c7468cfd37bc443400ee1c2bc4a2ed3cb3e7120a413d7bed3c0bad2b5acb234599dd5a0f2e42f6696779c07c3e5c3c575  firmware-xiaomi-ysl-ccfd274b825aec2d80e834b16499a6d9ba96c3f5.tar.gz
 "
