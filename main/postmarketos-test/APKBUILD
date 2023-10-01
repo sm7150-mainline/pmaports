@@ -1,0 +1,56 @@
+# Maintainer: Caleb Connolly <caleb@connolly.tech>
+pkgname=postmarketos-test
+pkgver=0.1.0
+pkgrel=0
+pkgdesc="Common test utilities for postmarketOS"
+url="https://postmarketos.org"
+arch="noarch"
+license="GPL2"
+depends="devicepkg-utils"
+source="
+	initramfs-test-suspend.sh
+"
+options="!check"
+
+# Tests that are common to all devices
+# TODO: more tests
+# maybe test cpu frequency scaling, thermals under load, etc.
+subpackages="
+	$pkgname-suspend:_test
+	$pkgname-shell
+"
+
+package() {
+	mkdir -p $pkgdir
+}
+
+_test() {
+	# no install_if here, these tests are generic but should be enabled
+	# on a per-device basis. Depend on the relevant test in your devices
+	# pmtest subpackage
+	depends="postmarketos-mkinitfs-hook-ci"
+
+	_testname=${subpkgname#postmarketos-test-}
+
+	# Install the test script for both initramfs and rootfs
+	for _type in initramfs rootfs; do
+		_script="$srcdir/$_type-test-$_testname.sh"
+
+		if [ -f "$_script" ]; then
+			install -Dm755 "$_script" \
+				"$subpkgdir"/usr/libexec/pmos-tests-"$_type"/90-"$_testname".sh
+		fi
+	done
+}
+
+# Installs a "test" which just runs a shell on the console for debugging
+shell() {
+	depends="postmarketos-mkinitfs-hook-ci"
+	mkdir -p "$subpkgdir"/usr/libexec/pmos-tests-initramfs
+	echo -e "#!/bin/sh\n\nexec sh" > "$subpkgdir"/usr/libexec/pmos-tests-initramfs/99-sh
+	chmod +x "$subpkgdir"/usr/libexec/pmos-tests-initramfs/99-sh
+}
+
+sha512sums="
+73d75e067f6bb99dab219e0154514841462dc171644756dcdfcb2daa039bd3052d61f35996608499fb0958042cc817ba0ac8196410c68e9133c2670d4cf36529  initramfs-test-suspend.sh
+"
