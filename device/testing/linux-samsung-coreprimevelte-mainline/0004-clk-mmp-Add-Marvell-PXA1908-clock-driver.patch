@@ -1,4 +1,4 @@
-From 3db77bd6640b6b160e90b9228af922a5f647f069 Mon Sep 17 00:00:00 2001
+From 1117ce7ed0c45226667e5df8a74865b610e22856 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
 Date: Fri, 21 Jul 2023 22:37:46 +0200
 Subject: [PATCH] clk: mmp: Add Marvell PXA1908 clock driver
@@ -13,26 +13,26 @@ and APMU.
 Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
 ---
  drivers/clk/mmp/Makefile         |   2 +-
- drivers/clk/mmp/clk-of-pxa1908.c | 323 +++++++++++++++++++++++++++++++
- 2 files changed, 324 insertions(+), 1 deletion(-)
+ drivers/clk/mmp/clk-of-pxa1908.c | 328 +++++++++++++++++++++++++++++++
+ 2 files changed, 329 insertions(+), 1 deletion(-)
  create mode 100644 drivers/clk/mmp/clk-of-pxa1908.c
 
 diff --git a/drivers/clk/mmp/Makefile b/drivers/clk/mmp/Makefile
-index cbcc2f8430a2..feacddb28fc4 100644
+index 441bf83080a1..69f9c3afde83 100644
 --- a/drivers/clk/mmp/Makefile
 +++ b/drivers/clk/mmp/Makefile
-@@ -15,4 +15,4 @@ obj-$(CONFIG_CPU_PXA168) += clk-pxa168.o
- obj-$(CONFIG_CPU_PXA910) += clk-pxa910.o
- obj-$(CONFIG_CPU_MMP2) += clk-mmp2.o
+@@ -11,4 +11,4 @@ obj-$(CONFIG_MACH_MMP_DT) += clk-of-pxa168.o clk-of-pxa910.o
+ obj-$(CONFIG_COMMON_CLK_MMP2) += clk-of-mmp2.o clk-pll.o pwr-island.o
+ obj-$(CONFIG_COMMON_CLK_MMP2_AUDIO) += clk-audio.o
  
 -obj-y += clk-of-pxa1928.o
 +obj-$(CONFIG_ARCH_MMP) += clk-of-pxa1928.o clk-of-pxa1908.o
 diff --git a/drivers/clk/mmp/clk-of-pxa1908.c b/drivers/clk/mmp/clk-of-pxa1908.c
 new file mode 100644
-index 000000000000..520440cb082c
+index 000000000000..753dd031b147
 --- /dev/null
 +++ b/drivers/clk/mmp/clk-of-pxa1908.c
-@@ -0,0 +1,323 @@
+@@ -0,0 +1,328 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +#include <linux/bits.h>
 +#include <linux/clk-provider.h>
@@ -86,6 +86,11 @@ index 000000000000..520440cb082c
 +#define APMU_GC2D		0xf4
 +#define APMU_TRACE		0x108
 +#define APMU_DVC_DFC_DEBUG	0x140
++
++#define MPMU_NR_CLKS		39
++#define APBC_NR_CLKS		19
++#define APBCP_NR_CLKS		4
++#define APMU_NR_CLKS		17
 +
 +struct pxa1908_clk_unit {
 +	struct mmp_clk_unit unit;
@@ -288,7 +293,7 @@ index 000000000000..520440cb082c
 +		return;
 +	}
 +
-+	mmp_clk_init(np, &pxa_unit->unit, PXA1908_APBC_NR_CLKS);
++	mmp_clk_init(np, &pxa_unit->unit, APBC_NR_CLKS);
 +
 +	pxa1908_apb_periph_clk_init(pxa_unit);
 +}
@@ -309,7 +314,7 @@ index 000000000000..520440cb082c
 +		return;
 +	}
 +
-+	mmp_clk_init(np, &pxa_unit->unit, PXA1908_APBCP_NR_CLKS);
++	mmp_clk_init(np, &pxa_unit->unit, APBCP_NR_CLKS);
 +
 +	pxa1908_apb_p_periph_clk_init(pxa_unit);
 +}
@@ -330,7 +335,7 @@ index 000000000000..520440cb082c
 +		return;
 +	}
 +
-+	mmp_clk_init(np, &pxa_unit->unit, PXA1908_MPMU_NR_CLKS);
++	mmp_clk_init(np, &pxa_unit->unit, MPMU_NR_CLKS);
 +
 +	pxa1908_pll_init(pxa_unit);
 +}
@@ -351,11 +356,11 @@ index 000000000000..520440cb082c
 +		return;
 +	}
 +
-+	mmp_clk_init(np, &pxa_unit->unit, PXA1908_APMU_NR_CLKS);
++	mmp_clk_init(np, &pxa_unit->unit, APMU_NR_CLKS);
 +
 +	pxa1908_axi_periph_clk_init(pxa_unit);
 +}
 +CLK_OF_DECLARE(pxa1908_apmu, "marvell,pxa1908-apmu", pxa1908_apmu_clk_init);
 -- 
-2.41.0
+2.42.0
 

@@ -1,0 +1,220 @@
+From db98663bffbf33a89cc3286abb4f5c7844e78f79 Mon Sep 17 00:00:00 2001
+From: Karel Balej <balejk@matfyz.cz>
+Date: Mon, 14 Aug 2023 18:02:03 +0200
+Subject: [PATCH] DONOTMERGE: fix 88pm88x build
+
+---
+ drivers/mfd/88pm880-table.c | 26 +++++++++++++-------------
+ drivers/mfd/88pm886-table.c | 34 +++++++++++++++++-----------------
+ drivers/mfd/88pm88x-core.c  | 10 +++++-----
+ drivers/mfd/88pm88x-i2c.c   |  6 ++----
+ drivers/mfd/88pm88x-irq.c   |  3 +--
+ include/linux/mfd/88pm88x.h |  1 +
+ 6 files changed, 39 insertions(+), 41 deletions(-)
+
+diff --git a/drivers/mfd/88pm880-table.c b/drivers/mfd/88pm880-table.c
+index 28ca86028905..03a19eb63632 100644
+--- a/drivers/mfd/88pm880-table.c
++++ b/drivers/mfd/88pm880-table.c
+@@ -96,28 +96,28 @@ struct pmic_cell_info pm880_cell_info = {
+ 	.cell_nr = ARRAY_SIZE(pm880_cell_devs),
+ };
+ 
+-static const struct reg_default pm880_base_patch[] = {
+-	{PM88X_WDOG, 0x1},	 /* disable watchdog */
+-	{PM88X_AON_CTRL2, 0x2a},  /* output 32kHZ from XO */
+-	{PM88X_BK_OSC_CTRL1, 0x0f}, /* OSC_FREERUN = 1, to lock FLL */
+-	{PM88X_LOWPOWER2, 0x20}, /* XO_LJ = 1, enable low jitter for 32kHZ */
++static const struct reg_sequence pm880_base_patch[] = {
++	REG_SEQ0(PM88X_WDOG, 0x1),	 /* disable watchdog */
++	REG_SEQ0(PM88X_AON_CTRL2, 0x2a),  /* output 32kHZ from XO */
++	REG_SEQ0(PM88X_BK_OSC_CTRL1, 0x0f), /* OSC_FREERUN = 1, to lock FLL */
++	REG_SEQ0(PM88X_LOWPOWER2, 0x20), /* XO_LJ = 1, enable low jitter for 32kHZ */
+ 	/* enable LPM for internal reference group in sleep */
+-	{PM88X_LOWPOWER4, 0xc0},
+-	{PM88X_BK_OSC_CTRL3, 0xc0}, /* set the duty cycle of charger DC/DC to max */
++	REG_SEQ0(PM88X_LOWPOWER4, 0xc0),
++	REG_SEQ0(PM88X_BK_OSC_CTRL3, 0xc0), /* set the duty cycle of charger DC/DC to max */
+ };
+ 
+-static const struct reg_default pm880_power_patch[] = {
++static const struct reg_sequence pm880_power_patch[] = {
+ };
+ 
+-static const struct reg_default pm880_gpadc_patch[] = {
+-	{PM88X_GPADC_CONFIG6, 0x03}, /* enable non-stop mode */
++static const struct reg_sequence pm880_gpadc_patch[] = {
++	REG_SEQ0(PM88X_GPADC_CONFIG6, 0x03), /* enable non-stop mode */
+ };
+ 
+-static const struct reg_default pm880_battery_patch[] = {
+-	{PM88X_CHGBK_CONFIG6, 0xe1},
++static const struct reg_sequence pm880_battery_patch[] = {
++	REG_SEQ0(PM88X_CHGBK_CONFIG6, 0xe1),
+ };
+ 
+-static const struct reg_default pm880_test_patch[] = {
++static const struct reg_sequence pm880_test_patch[] = {
+ };
+ 
+ /* 88pm880 chip itself related */
+diff --git a/drivers/mfd/88pm886-table.c b/drivers/mfd/88pm886-table.c
+index 897ee82a30c7..7558420ff3c5 100644
+--- a/drivers/mfd/88pm886-table.c
++++ b/drivers/mfd/88pm886-table.c
+@@ -92,32 +92,32 @@ struct pmic_cell_info pm886_cell_info = {
+ 	.cell_nr = ARRAY_SIZE(pm886_cell_devs),
+ };
+ 
+-static const struct reg_default pm886_base_patch[] = {
+-	{PM88X_WDOG, 0x1},	 /* disable watchdog */
+-	{PM88X_GPIO_CTRL1, 0x40}, /* gpio1: dvc    , gpio0: input   */
+-	{PM88X_GPIO_CTRL2, 0x00}, /*               , gpio2: input   */
+-	{PM88X_GPIO_CTRL3, 0x44}, /* dvc2          , dvc1           */
+-	{PM88X_GPIO_CTRL4, 0x00}, /* gpio5v_1:input, gpio5v_2: input*/
+-	{PM88X_AON_CTRL2, 0x2a},  /* output 32kHZ from XO */
+-	{PM88X_BK_OSC_CTRL1, 0x0f}, /* OSC_FREERUN = 1, to lock FLL */
+-	{PM88X_LOWPOWER2, 0x20}, /* XO_LJ = 1, enable low jitter for 32kHZ */
++static const struct reg_sequence pm886_base_patch[] = {
++	REG_SEQ0(PM88X_WDOG, 0x1),	 /* disable watchdog */
++	REG_SEQ0(PM88X_GPIO_CTRL1, 0x40), /* gpio1: dvc    , gpio0: input   */
++	REG_SEQ0(PM88X_GPIO_CTRL2, 0x00), /*               , gpio2: input   */
++	REG_SEQ0(PM88X_GPIO_CTRL3, 0x44), /* dvc2          , dvc1           */
++	REG_SEQ0(PM88X_GPIO_CTRL4, 0x00), /* gpio5v_1:input, gpio5v_2: input*/
++	REG_SEQ0(PM88X_AON_CTRL2, 0x2a),  /* output 32kHZ from XO */
++	REG_SEQ0(PM88X_BK_OSC_CTRL1, 0x0f), /* OSC_FREERUN = 1, to lock FLL */
++	REG_SEQ0(PM88X_LOWPOWER2, 0x20), /* XO_LJ = 1, enable low jitter for 32kHZ */
+ 	/* enable LPM for internal reference group in sleep */
+-	{PM88X_LOWPOWER4, 0xc0},
+-	{PM88X_BK_OSC_CTRL3, 0xc0}, /* set the duty cycle of charger DC/DC to max */
++	REG_SEQ0(PM88X_LOWPOWER4, 0xc0),
++	REG_SEQ0(PM88X_BK_OSC_CTRL3, 0xc0), /* set the duty cycle of charger DC/DC to max */
+ };
+ 
+-static const struct reg_default pm886_power_patch[] = {
++static const struct reg_sequence pm886_power_patch[] = {
+ };
+ 
+-static const struct reg_default pm886_gpadc_patch[] = {
+-	{PM88X_GPADC_CONFIG6, 0x03}, /* enable non-stop mode */
++static const struct reg_sequence pm886_gpadc_patch[] = {
++	REG_SEQ0(PM88X_GPADC_CONFIG6, 0x03), /* enable non-stop mode */
+ };
+ 
+-static const struct reg_default pm886_battery_patch[] = {
+-	{PM88X_CHGBK_CONFIG6, 0xe1},
++static const struct reg_sequence pm886_battery_patch[] = {
++	REG_SEQ0(PM88X_CHGBK_CONFIG6, 0xe1),
+ };
+ 
+-static const struct reg_default pm886_test_patch[] = {
++static const struct reg_sequence pm886_test_patch[] = {
+ };
+ 
+ /* 88pm886 chip itself related */
+diff --git a/drivers/mfd/88pm88x-core.c b/drivers/mfd/88pm88x-core.c
+index 343e0a0f3f8b..04409a2b0356 100644
+--- a/drivers/mfd/88pm88x-core.c
++++ b/drivers/mfd/88pm88x-core.c
+@@ -342,7 +342,7 @@ int pm88x_init_pages(struct pm88x_chip *chip)
+ 	}
+ 
+ 	/* power page */
+-	chip->power_page = i2c_new_dummy(client->adapter, chip->power_page_addr);
++	chip->power_page = i2c_new_dummy_device(client->adapter, chip->power_page_addr);
+ 	if (!chip->power_page) {
+ 		dev_err(chip->dev, "Failed to new power_page: %d\n", ret);
+ 		ret = -ENODEV;
+@@ -357,7 +357,7 @@ int pm88x_init_pages(struct pm88x_chip *chip)
+ 	}
+ 
+ 	/* gpadc page */
+-	chip->gpadc_page = i2c_new_dummy(client->adapter, chip->gpadc_page_addr);
++	chip->gpadc_page = i2c_new_dummy_device(client->adapter, chip->gpadc_page_addr);
+ 	if (!chip->gpadc_page) {
+ 		dev_err(chip->dev, "Failed to new gpadc_page: %d\n", ret);
+ 		ret = -ENODEV;
+@@ -372,7 +372,7 @@ int pm88x_init_pages(struct pm88x_chip *chip)
+ 	}
+ 
+ 	/* battery page */
+-	chip->battery_page = i2c_new_dummy(client->adapter, chip->battery_page_addr);
++	chip->battery_page = i2c_new_dummy_device(client->adapter, chip->battery_page_addr);
+ 	if (!chip->battery_page) {
+ 		dev_err(chip->dev, "Failed to new gpadc_page: %d\n", ret);
+ 		ret = -ENODEV;
+@@ -387,7 +387,7 @@ int pm88x_init_pages(struct pm88x_chip *chip)
+ 	}
+ 
+ 	/* test page */
+-	chip->test_page = i2c_new_dummy(client->adapter, chip->test_page_addr);
++	chip->test_page = i2c_new_dummy_device(client->adapter, chip->test_page_addr);
+ 	if (!chip->test_page) {
+ 		dev_err(chip->dev, "Failed to new test_page: %d\n", ret);
+ 		ret = -ENODEV;
+@@ -416,7 +416,7 @@ int pm88x_init_pages(struct pm88x_chip *chip)
+ 		chip->ldo_regmap = chip->power_regmap;
+ 
+ 		/* buck page */
+-		chip->buck_page = i2c_new_dummy(client->adapter,
++		chip->buck_page = i2c_new_dummy_device(client->adapter,
+ 						chip->buck_page_addr);
+ 		if (!chip->buck_page) {
+ 			dev_err(chip->dev, "Failed to new buck_page: %d\n", ret);
+diff --git a/drivers/mfd/88pm88x-i2c.c b/drivers/mfd/88pm88x-i2c.c
+index 36842ed02e9a..7650014d9c90 100644
+--- a/drivers/mfd/88pm88x-i2c.c
++++ b/drivers/mfd/88pm88x-i2c.c
+@@ -22,8 +22,7 @@
+ #include <linux/mfd/88pm880.h>
+ #include <linux/mfd/88pm88x.h>
+ 
+-static int pm88x_i2c_probe(struct i2c_client *client,
+-		       const struct i2c_device_id *id)
++static int pm88x_i2c_probe(struct i2c_client *client)
+ {
+ 	struct pm88x_chip *chip;
+ 	struct device_node *node = client->dev.of_node;
+@@ -104,11 +103,10 @@ static int pm88x_i2c_probe(struct i2c_client *client,
+ 	return ret;
+ }
+ 
+-static int pm88x_i2c_remove(struct i2c_client *i2c)
++static void pm88x_i2c_remove(struct i2c_client *i2c)
+ {
+ 	struct pm88x_chip *chip = dev_get_drvdata(&i2c->dev);
+ 	pm88x_dev_exit(chip);
+-	return 0;
+ }
+ 
+ static const struct i2c_device_id pm88x_i2c_id[] = {
+diff --git a/drivers/mfd/88pm88x-irq.c b/drivers/mfd/88pm88x-irq.c
+index 0126df0231b8..ea9f6636e700 100644
+--- a/drivers/mfd/88pm88x-irq.c
++++ b/drivers/mfd/88pm88x-irq.c
+@@ -131,9 +131,8 @@ struct regmap_irq_chip pm88x_irq_chip = {
+ 
+ 	.num_regs = 4,
+ 	.status_base = PM88X_INT_STATUS1,
+-	.mask_base = PM88X_INT_ENA_1,
++	.unmask_base = PM88X_INT_ENA_1,
+ 	.ack_base = PM88X_INT_STATUS1,
+-	.mask_invert = 1,
+ };
+ 
+ int pm88x_irq_init(struct pm88x_chip *chip)
+diff --git a/include/linux/mfd/88pm88x.h b/include/linux/mfd/88pm88x.h
+index efa2fe621ccd..91a84b551d15 100644
+--- a/include/linux/mfd/88pm88x.h
++++ b/include/linux/mfd/88pm88x.h
+@@ -20,6 +20,7 @@
+ #include <linux/regmap.h>
+ #include <linux/atomic.h>
+ #include <linux/reboot.h>
++#include <linux/mod_devicetable.h>
+ #include "88pm88x-reg.h"
+ #include "88pm886-reg.h"
+ 
+-- 
+2.42.0
+

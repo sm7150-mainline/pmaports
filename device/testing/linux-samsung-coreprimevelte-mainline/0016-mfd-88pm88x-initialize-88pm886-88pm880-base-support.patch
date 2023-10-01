@@ -1,0 +1,2063 @@
+From 40b741f0e4148ef59e83df3a14613d91a3a2a2d8 Mon Sep 17 00:00:00 2001
+From: Yi Zhang <yizhang@marvell.com>
+Date: Fri, 12 Jun 2015 16:43:21 +0800
+Subject: [PATCH] mfd: 88pm88x: initialize 88pm886/88pm880 base support
+
+88pm886 and 88pm880 are combo PMIC chip, which integrates
+regulator, onkey, rtc, gpadc, charger, fuelgauge function;
+
+this patch add the basic support for them, adding related resource, such as
+interrupt, preparing for the client-device driver
+
+Signed-off-by: Yi Zhang <yizhang@marvell.com>
+---
+ drivers/mfd/88pm880-table.c     | 173 ++++++++++
+ drivers/mfd/88pm886-table.c     | 173 ++++++++++
+ drivers/mfd/88pm88x-core.c      | 584 ++++++++++++++++++++++++++++++++
+ drivers/mfd/88pm88x-i2c.c       | 167 +++++++++
+ drivers/mfd/88pm88x-irq.c       | 171 ++++++++++
+ drivers/mfd/88pm88x.h           |  51 +++
+ drivers/mfd/Kconfig             |  12 +
+ drivers/mfd/Makefile            |   3 +
+ include/linux/mfd/88pm880-reg.h |  98 ++++++
+ include/linux/mfd/88pm880.h     |  59 ++++
+ include/linux/mfd/88pm886-reg.h |  59 ++++
+ include/linux/mfd/88pm886.h     |  55 +++
+ include/linux/mfd/88pm88x-reg.h | 118 +++++++
+ include/linux/mfd/88pm88x.h     | 202 +++++++++++
+ 14 files changed, 1925 insertions(+)
+ create mode 100644 drivers/mfd/88pm880-table.c
+ create mode 100644 drivers/mfd/88pm886-table.c
+ create mode 100644 drivers/mfd/88pm88x-core.c
+ create mode 100644 drivers/mfd/88pm88x-i2c.c
+ create mode 100644 drivers/mfd/88pm88x-irq.c
+ create mode 100644 drivers/mfd/88pm88x.h
+ create mode 100644 include/linux/mfd/88pm880-reg.h
+ create mode 100644 include/linux/mfd/88pm880.h
+ create mode 100644 include/linux/mfd/88pm886-reg.h
+ create mode 100644 include/linux/mfd/88pm886.h
+ create mode 100644 include/linux/mfd/88pm88x-reg.h
+ create mode 100644 include/linux/mfd/88pm88x.h
+
+diff --git a/drivers/mfd/88pm880-table.c b/drivers/mfd/88pm880-table.c
+new file mode 100644
+index 000000000000..28ca86028905
+--- /dev/null
++++ b/drivers/mfd/88pm880-table.c
+@@ -0,0 +1,173 @@
++/*
++ * Marvell 88PM880 specific setting
++ *
++ * Copyright (C) 2015 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/device.h>
++#include <linux/mfd/88pm88x.h>
++#include <linux/mfd/88pm880.h>
++#include <linux/mfd/88pm880-reg.h>
++#include <linux/mfd/88pm88x-reg.h>
++
++#include "88pm88x.h"
++
++#define PM880_BUCK_NAME		"88pm880-buck"
++#define PM880_LDO_NAME		"88pm880-ldo"
++
++const struct regmap_config pm880_base_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm880_power_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm880_gpadc_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm880_battery_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm880_test_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++static const struct resource buck_resources[] = {
++	{
++	.name = PM880_BUCK_NAME,
++	},
++};
++
++static const struct resource ldo_resources[] = {
++	{
++	.name = PM880_LDO_NAME,
++	},
++};
++
++const struct mfd_cell pm880_cell_devs[] = {
++	CELL_DEV(PM880_BUCK_NAME, buck_resources, "marvell,88pm880-buck1a", 0),
++	CELL_DEV(PM880_BUCK_NAME, buck_resources, "marvell,88pm880-buck2", 1),
++	CELL_DEV(PM880_BUCK_NAME, buck_resources, "marvell,88pm880-buck3", 2),
++	CELL_DEV(PM880_BUCK_NAME, buck_resources, "marvell,88pm880-buck4", 3),
++	CELL_DEV(PM880_BUCK_NAME, buck_resources, "marvell,88pm880-buck5", 4),
++	CELL_DEV(PM880_BUCK_NAME, buck_resources, "marvell,88pm880-buck6", 5),
++	CELL_DEV(PM880_BUCK_NAME, buck_resources, "marvell,88pm880-buck7", 6),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo1", 7),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo2", 8),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo3", 9),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo4", 10),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo5", 11),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo6", 12),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo7", 13),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo8", 14),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo9", 15),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo10", 16),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo11", 17),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo12", 18),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo13", 19),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo14", 20),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo15", 21),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo16", 22),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo17", 23),
++	CELL_DEV(PM880_LDO_NAME, ldo_resources, "marvell,88pm880-ldo18", 24),
++};
++
++struct pmic_cell_info pm880_cell_info = {
++	.cells   = pm880_cell_devs,
++	.cell_nr = ARRAY_SIZE(pm880_cell_devs),
++};
++
++static const struct reg_default pm880_base_patch[] = {
++	{PM88X_WDOG, 0x1},	 /* disable watchdog */
++	{PM88X_AON_CTRL2, 0x2a},  /* output 32kHZ from XO */
++	{PM88X_BK_OSC_CTRL1, 0x0f}, /* OSC_FREERUN = 1, to lock FLL */
++	{PM88X_LOWPOWER2, 0x20}, /* XO_LJ = 1, enable low jitter for 32kHZ */
++	/* enable LPM for internal reference group in sleep */
++	{PM88X_LOWPOWER4, 0xc0},
++	{PM88X_BK_OSC_CTRL3, 0xc0}, /* set the duty cycle of charger DC/DC to max */
++};
++
++static const struct reg_default pm880_power_patch[] = {
++};
++
++static const struct reg_default pm880_gpadc_patch[] = {
++	{PM88X_GPADC_CONFIG6, 0x03}, /* enable non-stop mode */
++};
++
++static const struct reg_default pm880_battery_patch[] = {
++	{PM88X_CHGBK_CONFIG6, 0xe1},
++};
++
++static const struct reg_default pm880_test_patch[] = {
++};
++
++/* 88pm880 chip itself related */
++int pm880_apply_patch(struct pm88x_chip *chip)
++{
++	int ret, size;
++
++	if (!chip || !chip->base_regmap || !chip->power_regmap ||
++	    !chip->gpadc_regmap || !chip->battery_regmap ||
++	    !chip->test_regmap)
++		return -EINVAL;
++
++	size = ARRAY_SIZE(pm880_base_patch);
++	if (size == 0)
++		goto power;
++	ret = regmap_register_patch(chip->base_regmap, pm880_base_patch, size);
++	if (ret < 0)
++		return ret;
++
++power:
++	size = ARRAY_SIZE(pm880_power_patch);
++	if (size == 0)
++		goto gpadc;
++	ret = regmap_register_patch(chip->power_regmap, pm880_power_patch, size);
++	if (ret < 0)
++		return ret;
++
++gpadc:
++	size = ARRAY_SIZE(pm880_gpadc_patch);
++	if (size == 0)
++		goto battery;
++	ret = regmap_register_patch(chip->gpadc_regmap, pm880_gpadc_patch, size);
++	if (ret < 0)
++		return ret;
++battery:
++	size = ARRAY_SIZE(pm880_battery_patch);
++	if (size == 0)
++		goto test;
++	ret = regmap_register_patch(chip->battery_regmap, pm880_battery_patch, size);
++	if (ret < 0)
++		return ret;
++
++test:
++	size = ARRAY_SIZE(pm880_test_patch);
++	if (size == 0)
++		goto out;
++	ret = regmap_register_patch(chip->test_regmap, pm880_test_patch, size);
++	if (ret < 0)
++		return ret;
++out:
++	return 0;
++}
++EXPORT_SYMBOL_GPL(pm880_apply_patch);
+diff --git a/drivers/mfd/88pm886-table.c b/drivers/mfd/88pm886-table.c
+new file mode 100644
+index 000000000000..897ee82a30c7
+--- /dev/null
++++ b/drivers/mfd/88pm886-table.c
+@@ -0,0 +1,173 @@
++/*
++ * Marvell 88PM886 specific setting
++ *
++ * Copyright (C) 2015 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/device.h>
++#include <linux/mfd/88pm88x.h>
++#include <linux/mfd/88pm886.h>
++#include <linux/mfd/88pm886-reg.h>
++#include <linux/mfd/88pm88x-reg.h>
++
++#include "88pm88x.h"
++
++#define PM886_BUCK_NAME		"88pm886-buck"
++#define PM886_LDO_NAME		"88pm886-ldo"
++
++const struct regmap_config pm886_base_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm886_power_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm886_gpadc_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm886_battery_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++const struct regmap_config pm886_test_i2c_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xfe,
++};
++
++static const struct resource buck_resources[] = {
++	{
++	.name = PM886_BUCK_NAME,
++	},
++};
++
++static const struct resource ldo_resources[] = {
++	{
++	.name = PM886_LDO_NAME,
++	},
++};
++
++const struct mfd_cell pm886_cell_devs[] = {
++	CELL_DEV(PM886_BUCK_NAME, buck_resources, "marvell,88pm886-buck1", 0),
++	CELL_DEV(PM886_BUCK_NAME, buck_resources, "marvell,88pm886-buck2", 1),
++	CELL_DEV(PM886_BUCK_NAME, buck_resources, "marvell,88pm886-buck3", 2),
++	CELL_DEV(PM886_BUCK_NAME, buck_resources, "marvell,88pm886-buck4", 3),
++	CELL_DEV(PM886_BUCK_NAME, buck_resources, "marvell,88pm886-buck5", 4),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo1", 5),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo2", 6),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo3", 7),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo4", 8),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo5", 9),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo6", 10),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo7", 11),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo8", 12),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo9", 13),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo10", 14),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo11", 15),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo12", 16),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo13", 17),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo14", 18),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo15", 19),
++	CELL_DEV(PM886_LDO_NAME, ldo_resources, "marvell,88pm886-ldo16", 20),
++};
++
++struct pmic_cell_info pm886_cell_info = {
++	.cells   = pm886_cell_devs,
++	.cell_nr = ARRAY_SIZE(pm886_cell_devs),
++};
++
++static const struct reg_default pm886_base_patch[] = {
++	{PM88X_WDOG, 0x1},	 /* disable watchdog */
++	{PM88X_GPIO_CTRL1, 0x40}, /* gpio1: dvc    , gpio0: input   */
++	{PM88X_GPIO_CTRL2, 0x00}, /*               , gpio2: input   */
++	{PM88X_GPIO_CTRL3, 0x44}, /* dvc2          , dvc1           */
++	{PM88X_GPIO_CTRL4, 0x00}, /* gpio5v_1:input, gpio5v_2: input*/
++	{PM88X_AON_CTRL2, 0x2a},  /* output 32kHZ from XO */
++	{PM88X_BK_OSC_CTRL1, 0x0f}, /* OSC_FREERUN = 1, to lock FLL */
++	{PM88X_LOWPOWER2, 0x20}, /* XO_LJ = 1, enable low jitter for 32kHZ */
++	/* enable LPM for internal reference group in sleep */
++	{PM88X_LOWPOWER4, 0xc0},
++	{PM88X_BK_OSC_CTRL3, 0xc0}, /* set the duty cycle of charger DC/DC to max */
++};
++
++static const struct reg_default pm886_power_patch[] = {
++};
++
++static const struct reg_default pm886_gpadc_patch[] = {
++	{PM88X_GPADC_CONFIG6, 0x03}, /* enable non-stop mode */
++};
++
++static const struct reg_default pm886_battery_patch[] = {
++	{PM88X_CHGBK_CONFIG6, 0xe1},
++};
++
++static const struct reg_default pm886_test_patch[] = {
++};
++
++/* 88pm886 chip itself related */
++int pm886_apply_patch(struct pm88x_chip *chip)
++{
++	int ret, size;
++
++	if (!chip || !chip->base_regmap || !chip->power_regmap ||
++	    !chip->gpadc_regmap || !chip->battery_regmap ||
++	    !chip->test_regmap)
++		return -EINVAL;
++
++	size = ARRAY_SIZE(pm886_base_patch);
++	if (size == 0)
++		goto power;
++	ret = regmap_register_patch(chip->base_regmap, pm886_base_patch, size);
++	if (ret < 0)
++		return ret;
++
++power:
++	size = ARRAY_SIZE(pm886_power_patch);
++	if (size == 0)
++		goto gpadc;
++	ret = regmap_register_patch(chip->power_regmap, pm886_power_patch, size);
++	if (ret < 0)
++		return ret;
++
++gpadc:
++	size = ARRAY_SIZE(pm886_gpadc_patch);
++	if (size == 0)
++		goto battery;
++	ret = regmap_register_patch(chip->gpadc_regmap, pm886_gpadc_patch, size);
++	if (ret < 0)
++		return ret;
++battery:
++	size = ARRAY_SIZE(pm886_battery_patch);
++	if (size == 0)
++		goto test;
++	ret = regmap_register_patch(chip->battery_regmap, pm886_battery_patch, size);
++	if (ret < 0)
++		return ret;
++
++test:
++	size = ARRAY_SIZE(pm886_test_patch);
++	if (size == 0)
++		goto out;
++	ret = regmap_register_patch(chip->test_regmap, pm886_test_patch, size);
++	if (ret < 0)
++		return ret;
++out:
++	return 0;
++}
++EXPORT_SYMBOL_GPL(pm886_apply_patch);
+diff --git a/drivers/mfd/88pm88x-core.c b/drivers/mfd/88pm88x-core.c
+new file mode 100644
+index 000000000000..343e0a0f3f8b
+--- /dev/null
++++ b/drivers/mfd/88pm88x-core.c
+@@ -0,0 +1,584 @@
++/*
++ * Base driver for Marvell 88PM886/88PM880 PMIC
++ *
++ * Copyright (C) 2015 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/irq.h>
++#include <linux/interrupt.h>
++#include <linux/irqdomain.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/slab.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/88pm88x.h>
++#include <linux/mfd/88pm886.h>
++#include <linux/mfd/88pm880.h>
++#include <linux/regulator/machine.h>
++
++#include "88pm88x.h"
++
++#define PM88X_POWER_UP_LOG		(0x17)
++#define PM88X_POWER_DOWN_LOG1		(0xe5)
++#define PM88X_POWER_DOWN_LOG2		(0xe6)
++#define PM88X_SW_PDOWN			(1 << 5)
++
++static const struct resource onkey_resources[] = {
++	CELL_IRQ_RESOURCE(PM88X_ONKEY_NAME, PM88X_IRQ_ONKEY),
++};
++
++static const struct resource rtc_resources[] = {
++	CELL_IRQ_RESOURCE(PM88X_RTC_NAME, PM88X_IRQ_RTC),
++};
++
++static const struct resource charger_resources[] = {
++	CELL_IRQ_RESOURCE("88pm88x-chg-fail", PM88X_IRQ_CHG_FAIL),
++	CELL_IRQ_RESOURCE("88pm88x-chg-done", PM88X_IRQ_CHG_DONE),
++	CELL_IRQ_RESOURCE("88pm88x-chg-good", PM88X_IRQ_CHG_GOOD),
++};
++
++static const struct resource battery_resources[] = {
++	CELL_IRQ_RESOURCE("88pm88x-bat-cc", PM88X_IRQ_CC),
++	CELL_IRQ_RESOURCE("88pm88x-bat-volt", PM88X_IRQ_VBAT),
++	CELL_IRQ_RESOURCE("88pm88x-bat-detect", PM88X_IRQ_BAT_DET),
++};
++
++static const struct resource headset_resources[] = {
++	CELL_IRQ_RESOURCE("88pm88x-headset-det", PM88X_IRQ_HS_DET),
++	CELL_IRQ_RESOURCE("88pm88x-mic-det", PM88X_IRQ_MIC_DET),
++};
++
++static const struct resource vbus_resources[] = {
++	CELL_IRQ_RESOURCE("88pm88x-vbus-det", PM88X_IRQ_VBUS),
++	CELL_IRQ_RESOURCE("88pm88x-gpadc0", PM88X_IRQ_GPADC0),
++	CELL_IRQ_RESOURCE("88pm88x-gpadc1", PM88X_IRQ_GPADC1),
++	CELL_IRQ_RESOURCE("88pm88x-gpadc2", PM88X_IRQ_GPADC2),
++	CELL_IRQ_RESOURCE("88pm88x-gpadc3", PM88X_IRQ_GPADC3),
++	CELL_IRQ_RESOURCE("88pm88x-otg-fail", PM88X_IRQ_OTG_FAIL),
++};
++
++static const struct resource leds_resources[] = {
++	CELL_IRQ_RESOURCE("88pm88x-cfd-fail", PM88X_IRQ_CFD_FAIL),
++};
++
++static const struct resource dvc_resources[] = {
++	{
++	.name = PM88X_DVC_NAME,
++	},
++};
++
++static const struct resource rgb_resources[] = {
++	{
++	.name = PM88X_RGB_NAME,
++	},
++};
++
++static const struct resource gpadc_resources[] = {
++	{
++	.name = PM88X_GPADC_NAME,
++	},
++};
++
++static const struct mfd_cell common_cell_devs[] = {
++	CELL_DEV(PM88X_RTC_NAME, rtc_resources, "marvell,88pm88x-rtc", -1),
++	CELL_DEV(PM88X_ONKEY_NAME, onkey_resources, "marvell,88pm88x-onkey", -1),
++	CELL_DEV(PM88X_CHARGER_NAME, charger_resources, "marvell,88pm88x-charger", -1),
++	CELL_DEV(PM88X_BATTERY_NAME, battery_resources, "marvell,88pm88x-battery", -1),
++	CELL_DEV(PM88X_HEADSET_NAME, headset_resources, "marvell,88pm88x-headset", -1),
++	CELL_DEV(PM88X_VBUS_NAME, vbus_resources, "marvell,88pm88x-vbus", -1),
++	CELL_DEV(PM88X_CFD_NAME, leds_resources, "marvell,88pm88x-leds", PM88X_FLASH_LED),
++	CELL_DEV(PM88X_CFD_NAME, leds_resources, "marvell,88pm88x-leds", PM88X_TORCH_LED),
++	CELL_DEV(PM88X_DVC_NAME, dvc_resources, "marvell,88pm88x-dvc", -1),
++	CELL_DEV(PM88X_RGB_NAME, rgb_resources, "marvell,88pm88x-rgb0", PM88X_RGB_LED0),
++	CELL_DEV(PM88X_RGB_NAME, rgb_resources, "marvell,88pm88x-rgb1", PM88X_RGB_LED1),
++	CELL_DEV(PM88X_RGB_NAME, rgb_resources, "marvell,88pm88x-rgb2", PM88X_RGB_LED2),
++	CELL_DEV(PM88X_GPADC_NAME, gpadc_resources, "marvell,88pm88x-gpadc", -1),
++};
++
++const struct of_device_id pm88x_of_match[] = {
++	{ .compatible = "marvell,88pm886", .data = (void *)PM886 },
++	{ .compatible = "marvell,88pm880", .data = (void *)PM880 },
++	{},
++};
++
++struct pm88x_chip *pm88x_init_chip(struct i2c_client *client)
++{
++	struct pm88x_chip *chip;
++
++	chip = devm_kzalloc(&client->dev, sizeof(struct pm88x_chip), GFP_KERNEL);
++	if (!chip)
++		return ERR_PTR(-ENOMEM);
++
++	chip->client = client;
++	chip->irq = client->irq;
++	chip->dev = &client->dev;
++	chip->ldo_page_addr = client->addr + 1;
++	chip->power_page_addr = client->addr + 1;
++	chip->gpadc_page_addr = client->addr + 2;
++	chip->battery_page_addr = client->addr + 3;
++	chip->buck_page_addr = client->addr + 4;
++	chip->test_page_addr = client->addr + 7;
++
++	dev_set_drvdata(chip->dev, chip);
++	i2c_set_clientdata(chip->client, chip);
++
++	device_init_wakeup(&client->dev, 1);
++
++	return chip;
++}
++
++int pm88x_parse_dt(struct device_node *np, struct pm88x_chip *chip)
++{
++	if (!chip)
++		return -EINVAL;
++
++	chip->irq_mode =
++		!of_property_read_bool(np, "marvell,88pm88x-irq-write-clear");
++
++	return 0;
++}
++
++
++static void parse_powerup_down_log(struct pm88x_chip *chip)
++{
++	int powerup, powerdown1, powerdown2, bit;
++	int powerup_bits, powerdown1_bits, powerdown2_bits;
++	static const char * const powerup_name[] = {
++		"ONKEY_WAKEUP	",
++		"CHG_WAKEUP	",
++		"EXTON_WAKEUP	",
++		"SMPL_WAKEUP	",
++		"ALARM_WAKEUP	",
++		"FAULT_WAKEUP	",
++		"BAT_WAKEUP	",
++		"WLCHG_WAKEUP	",
++	};
++	static const char * const powerdown1_name[] = {
++		"OVER_TEMP ",
++		"UV_VANA5  ",
++		"SW_PDOWN  ",
++		"FL_ALARM  ",
++		"WD        ",
++		"LONG_ONKEY",
++		"OV_VSYS   ",
++		"RTC_RESET "
++	};
++	static const char * const powerdown2_name[] = {
++		"HYB_DONE   ",
++		"UV_VBAT    ",
++		"HW_RESET2  ",
++		"PGOOD_PDOWN",
++		"LONKEY_RTC ",
++		"HW_RESET1  ",
++	};
++
++	regmap_read(chip->base_regmap, PM88X_POWER_UP_LOG, &powerup);
++	regmap_read(chip->base_regmap, PM88X_POWER_DOWN_LOG1, &powerdown1);
++	regmap_read(chip->base_regmap, PM88X_POWER_DOWN_LOG2, &powerdown2);
++
++	/*
++	 * mask reserved bits
++	 *
++	 * note: HYB_DONE and HW_RESET1 are kept,
++	 *       but should not be considered as power down events
++	 */
++	switch (chip->type) {
++	case PM886:
++		powerup &= 0x7f;
++		powerdown2 &= 0x1f;
++		powerup_bits = 7;
++		powerdown1_bits = 8;
++		powerdown2_bits = 5;
++		break;
++	case PM880:
++		powerdown2 &= 0x3f;
++		powerup_bits = 8;
++		powerdown1_bits = 8;
++		powerdown2_bits = 6;
++		break;
++	default:
++		return;
++	}
++
++	/* keep globals for external usage */
++	chip->powerup = powerup;
++	chip->powerdown1 = powerdown1;
++	chip->powerdown2 = powerdown2;
++
++	/* power up log */
++	dev_info(chip->dev, "powerup log 0x%x: 0x%x\n",
++		 PM88X_POWER_UP_LOG, powerup);
++	dev_info(chip->dev, " ----------------------------\n");
++	dev_info(chip->dev, "|  name(power up) |  status  |\n");
++	dev_info(chip->dev, "|-----------------|----------|\n");
++	for (bit = 0; bit < powerup_bits; bit++)
++		dev_info(chip->dev, "|  %s  |    %x     |\n",
++			powerup_name[bit], (powerup >> bit) & 1);
++	dev_info(chip->dev, " ----------------------------\n");
++
++	/* power down log1 */
++	dev_info(chip->dev, "PowerDW Log1 0x%x: 0x%x\n",
++		PM88X_POWER_DOWN_LOG1, powerdown1);
++	dev_info(chip->dev, " -------------------------------\n");
++	dev_info(chip->dev, "| name(power down1)  |  status  |\n");
++	dev_info(chip->dev, "|--------------------|----------|\n");
++	for (bit = 0; bit < powerdown1_bits; bit++)
++		dev_info(chip->dev, "|    %s      |    %x     |\n",
++			powerdown1_name[bit], (powerdown1 >> bit) & 1);
++	dev_info(chip->dev, " -------------------------------\n");
++
++	/* power down log2 */
++	dev_info(chip->dev, "PowerDW Log2 0x%x: 0x%x\n",
++		PM88X_POWER_DOWN_LOG2, powerdown2);
++	dev_info(chip->dev, " -------------------------------\n");
++	dev_info(chip->dev, "|  name(power down2) |  status  |\n");
++	dev_info(chip->dev, "|--------------------|----------|\n");
++	for (bit = 0; bit < powerdown2_bits; bit++)
++		dev_info(chip->dev, "|    %s     |    %x     |\n",
++			powerdown2_name[bit], (powerdown2 >> bit) & 1);
++	dev_info(chip->dev, " -------------------------------\n");
++
++	/* write to clear power down log */
++	regmap_write(chip->base_regmap, PM88X_POWER_DOWN_LOG1, 0xff);
++	regmap_write(chip->base_regmap, PM88X_POWER_DOWN_LOG2, 0xff);
++}
++
++static const char *chip_stepping_to_string(unsigned int id)
++{
++	switch (id) {
++	case 0xa1:
++		return "88pm886 A1";
++	case 0xb1:
++		return "88pm880 A1";
++	default:
++		return "Unknown";
++	}
++}
++
++int pm88x_post_init_chip(struct pm88x_chip *chip)
++{
++	int ret;
++	unsigned int val;
++
++	if (!chip || !chip->base_regmap || !chip->power_regmap ||
++	    !chip->gpadc_regmap || !chip->battery_regmap)
++		return -EINVAL;
++
++	/* save chip stepping */
++	ret = regmap_read(chip->base_regmap, PM88X_ID_REG, &val);
++	if (ret < 0) {
++		dev_err(chip->dev, "Failed to read chip ID: %d\n", ret);
++		return ret;
++	}
++	chip->chip_id = val;
++
++	dev_info(chip->dev, "PM88X chip ID = 0x%x(%s)\n", val,
++			chip_stepping_to_string(chip->chip_id));
++
++	/* read before alarm wake up bit before initialize interrupt */
++	ret = regmap_read(chip->base_regmap, PM88X_RTC_ALARM_CTRL1, &val);
++	if (ret < 0) {
++		dev_err(chip->dev, "Failed to read RTC register: %d\n", ret);
++		return ret;
++	}
++	chip->rtc_wakeup = !!(val & PM88X_ALARM_WAKEUP);
++
++	parse_powerup_down_log(chip);
++
++	return 0;
++}
++
++int pm88x_init_pages(struct pm88x_chip *chip)
++{
++	struct i2c_client *client = chip->client;
++	const struct regmap_config *base_regmap_config;
++	const struct regmap_config *power_regmap_config;
++	const struct regmap_config *gpadc_regmap_config;
++	const struct regmap_config *battery_regmap_config;
++	const struct regmap_config *test_regmap_config;
++	int ret = 0;
++
++	if (!chip || !chip->power_page_addr ||
++	    !chip->gpadc_page_addr || !chip->battery_page_addr)
++		return -ENODEV;
++
++	chip->type = pm88x_of_get_type(&client->dev);
++	switch (chip->type) {
++	case PM886:
++		base_regmap_config = &pm886_base_i2c_regmap;
++		power_regmap_config = &pm886_power_i2c_regmap;
++		gpadc_regmap_config = &pm886_gpadc_i2c_regmap;
++		battery_regmap_config = &pm886_battery_i2c_regmap;
++		test_regmap_config = &pm886_test_i2c_regmap;
++		break;
++	case PM880:
++		base_regmap_config = &pm880_base_i2c_regmap;
++		power_regmap_config = &pm880_power_i2c_regmap;
++		gpadc_regmap_config = &pm880_gpadc_i2c_regmap;
++		battery_regmap_config = &pm880_battery_i2c_regmap;
++		test_regmap_config = &pm880_test_i2c_regmap;
++		break;
++	default:
++		return -ENODEV;
++	}
++
++	/* base page */
++	chip->base_regmap = devm_regmap_init_i2c(client, base_regmap_config);
++	if (IS_ERR(chip->base_regmap)) {
++		dev_err(chip->dev, "Failed to init base_regmap: %d\n", ret);
++		ret = PTR_ERR(chip->base_regmap);
++		goto out;
++	}
++
++	/* power page */
++	chip->power_page = i2c_new_dummy(client->adapter, chip->power_page_addr);
++	if (!chip->power_page) {
++		dev_err(chip->dev, "Failed to new power_page: %d\n", ret);
++		ret = -ENODEV;
++		goto out;
++	}
++	chip->power_regmap = devm_regmap_init_i2c(chip->power_page,
++						  power_regmap_config);
++	if (IS_ERR(chip->power_regmap)) {
++		dev_err(chip->dev, "Failed to init power_regmap: %d\n", ret);
++		ret = PTR_ERR(chip->power_regmap);
++		goto out;
++	}
++
++	/* gpadc page */
++	chip->gpadc_page = i2c_new_dummy(client->adapter, chip->gpadc_page_addr);
++	if (!chip->gpadc_page) {
++		dev_err(chip->dev, "Failed to new gpadc_page: %d\n", ret);
++		ret = -ENODEV;
++		goto out;
++	}
++	chip->gpadc_regmap = devm_regmap_init_i2c(chip->gpadc_page,
++						  gpadc_regmap_config);
++	if (IS_ERR(chip->gpadc_regmap)) {
++		dev_err(chip->dev, "Failed to init gpadc_regmap: %d\n", ret);
++		ret = PTR_ERR(chip->gpadc_regmap);
++		goto out;
++	}
++
++	/* battery page */
++	chip->battery_page = i2c_new_dummy(client->adapter, chip->battery_page_addr);
++	if (!chip->battery_page) {
++		dev_err(chip->dev, "Failed to new gpadc_page: %d\n", ret);
++		ret = -ENODEV;
++		goto out;
++	}
++	chip->battery_regmap = devm_regmap_init_i2c(chip->battery_page,
++						  battery_regmap_config);
++	if (IS_ERR(chip->battery_regmap)) {
++		dev_err(chip->dev, "Failed to init battery_regmap: %d\n", ret);
++		ret = PTR_ERR(chip->battery_regmap);
++		goto out;
++	}
++
++	/* test page */
++	chip->test_page = i2c_new_dummy(client->adapter, chip->test_page_addr);
++	if (!chip->test_page) {
++		dev_err(chip->dev, "Failed to new test_page: %d\n", ret);
++		ret = -ENODEV;
++		goto out;
++	}
++	chip->test_regmap = devm_regmap_init_i2c(chip->test_page,
++						 test_regmap_config);
++	if (IS_ERR(chip->test_regmap)) {
++		dev_err(chip->dev, "Failed to init test_regmap: %d\n", ret);
++		ret = PTR_ERR(chip->test_regmap);
++		goto out;
++	}
++
++	chip->type = pm88x_of_get_type(&client->dev);
++	switch (chip->type) {
++	case PM886:
++		/* ldo page */
++		chip->ldo_page = chip->power_page;
++		chip->ldo_regmap = chip->power_regmap;
++		/* buck page */
++		chip->buck_regmap = chip->power_regmap;
++		break;
++	case PM880:
++		/* ldo page */
++		chip->ldo_page = chip->power_page;
++		chip->ldo_regmap = chip->power_regmap;
++
++		/* buck page */
++		chip->buck_page = i2c_new_dummy(client->adapter,
++						chip->buck_page_addr);
++		if (!chip->buck_page) {
++			dev_err(chip->dev, "Failed to new buck_page: %d\n", ret);
++			ret = -ENODEV;
++			goto out;
++		}
++		chip->buck_regmap = devm_regmap_init_i2c(chip->buck_page,
++							 power_regmap_config);
++		if (IS_ERR(chip->buck_regmap)) {
++			dev_err(chip->dev, "Failed to init buck_regmap: %d\n", ret);
++			ret = PTR_ERR(chip->buck_regmap);
++			goto out;
++		}
++
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++out:
++	return ret;
++}
++
++void pm800_exit_pages(struct pm88x_chip *chip)
++{
++	if (!chip)
++		return;
++
++	if (chip->ldo_page)
++		i2c_unregister_device(chip->ldo_page);
++	if (chip->gpadc_page)
++		i2c_unregister_device(chip->gpadc_page);
++	if (chip->test_page)
++		i2c_unregister_device(chip->test_page);
++	/* no need to unregister ldo_page */
++	switch (chip->type) {
++	case PM886:
++		break;
++	case PM880:
++		if (chip->buck_page)
++			i2c_unregister_device(chip->buck_page);
++		break;
++	default:
++		break;
++	}
++}
++
++int pm88x_init_subdev(struct pm88x_chip *chip)
++{
++	int ret;
++	if (!chip)
++		return -EINVAL;
++
++	ret = mfd_add_devices(chip->dev, 0, common_cell_devs,
++			      ARRAY_SIZE(common_cell_devs), NULL, 0,
++			      regmap_irq_get_domain(chip->irq_data));
++	if (ret < 0)
++		return ret;
++
++	switch (chip->type) {
++	case PM886:
++		ret = mfd_add_devices(chip->dev, 0, pm886_cell_info.cells,
++				      pm886_cell_info.cell_nr, NULL, 0,
++				      regmap_irq_get_domain(chip->irq_data));
++		break;
++	case PM880:
++		ret = mfd_add_devices(chip->dev, 0, pm880_cell_info.cells,
++				      pm880_cell_info.cell_nr, NULL, 0,
++				      regmap_irq_get_domain(chip->irq_data));
++		break;
++	default:
++		break;
++	}
++	return ret;
++}
++
++static int (*apply_to_chip)(struct pm88x_chip *chip);
++/* PMIC chip itself related */
++int pm88x_apply_patch(struct pm88x_chip *chip)
++{
++	if (!chip || !chip->client)
++		return -EINVAL;
++
++	chip->type = pm88x_of_get_type(&chip->client->dev);
++	switch (chip->type) {
++	case PM886:
++		apply_to_chip = pm886_apply_patch;
++		break;
++	case PM880:
++		apply_to_chip = pm880_apply_patch;
++		break;
++	default:
++		break;
++	}
++	if (apply_to_chip)
++		apply_to_chip(chip);
++	return 0;
++}
++
++int pm88x_stepping_fixup(struct pm88x_chip *chip)
++{
++	if (!chip || !chip->client)
++		return -EINVAL;
++
++	chip->type = pm88x_of_get_type(&chip->client->dev);
++	switch (chip->type) {
++	case PM886:
++	case PM880:
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++int pm88x_apply_board_fixup(struct pm88x_chip *chip, struct device_node *np)
++{
++	/* add board design specific setting, parsed via device tree */
++	return 0;
++}
++
++long pm88x_of_get_type(struct device *dev)
++{
++	const struct of_device_id *id = of_match_device(pm88x_of_match, dev);
++
++	if (id)
++		return (long)id->data;
++	else
++		return 0;
++}
++
++void pm88x_dev_exit(struct pm88x_chip *chip)
++{
++	mfd_remove_devices(chip->dev);
++	pm88x_irq_exit(chip);
++}
++
++void pm88x_power_off(void)
++{
++	pr_info("powers off the system.");
++	/* TODO: implement later */
++
++	for (;;)
++		cpu_relax();
++}
++
++int pm88x_reboot_notifier_callback(struct notifier_block *this,
++				   unsigned long code, void *unused)
++{
++	struct pm88x_chip *chip =
++		container_of(this, struct pm88x_chip, reboot_notifier);
++
++	switch (code) {
++	case SYS_HALT:
++	case SYS_POWER_OFF:
++		dev_info(chip->dev, "system is down.\n");
++		break;
++	case SYS_RESTART:
++	default:
++		dev_info(chip->dev, "system will reboot.\n");
++		break;
++	}
++
++	return 0;
++}
+diff --git a/drivers/mfd/88pm88x-i2c.c b/drivers/mfd/88pm88x-i2c.c
+new file mode 100644
+index 000000000000..36842ed02e9a
+--- /dev/null
++++ b/drivers/mfd/88pm88x-i2c.c
+@@ -0,0 +1,167 @@
++/*
++ * 88pm88x-i2c.c  --  88pm88x i2c bus interface
++ *
++ * Copyright (C) 2015 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
++#include <linux/slab.h>
++#include <linux/of.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/88pm886.h>
++#include <linux/mfd/88pm880.h>
++#include <linux/mfd/88pm88x.h>
++
++static int pm88x_i2c_probe(struct i2c_client *client,
++		       const struct i2c_device_id *id)
++{
++	struct pm88x_chip *chip;
++	struct device_node *node = client->dev.of_node;
++	int ret = 0;
++
++	chip = pm88x_init_chip(client);
++	if (IS_ERR(chip)) {
++		ret = PTR_ERR(chip);
++		dev_err(chip->dev, "initialize 88pm88x chip fails!\n");
++		goto err;
++	}
++
++	ret = pm88x_parse_dt(node, chip);
++	if (ret < 0) {
++		dev_err(chip->dev, "parse dt fails!\n");
++		goto err;
++	}
++
++	ret = pm88x_init_pages(chip);
++	if (ret) {
++		dev_err(chip->dev, "initialize 88pm88x pages fails!\n");
++		goto err;
++	}
++
++	ret = pm88x_post_init_chip(chip);
++	if (ret) {
++		dev_err(chip->dev, "post initialize 88pm88x fails!\n");
++		goto err;
++	}
++
++	ret = pm88x_irq_init(chip);
++	if (ret) {
++		dev_err(chip->dev, "initialize 88pm88x interrupt fails!\n");
++		goto err_init_irq;
++	}
++
++	ret = pm88x_init_subdev(chip);
++	if (ret) {
++		dev_err(chip->dev, "initialize 88pm88x sub-device fails\n");
++		goto err_init_subdev;
++	}
++
++	/* patch for PMIC chip itself */
++	ret = pm88x_apply_patch(chip);
++	if (ret) {
++		dev_err(chip->dev, "apply 88pm88x register patch fails\n");
++		goto err_apply_patch;
++	}
++
++	/* fixup according PMIC stepping */
++	ret = pm88x_stepping_fixup(chip);
++	if (ret) {
++		dev_err(chip->dev, "fixup according to chip stepping\n");
++		goto err_apply_patch;
++	}
++
++	/* patch for board configuration */
++	ret = pm88x_apply_board_fixup(chip, node);
++	if (ret) {
++		dev_err(chip->dev, "apply 88pm88x register for board fails\n");
++		goto err_apply_patch;
++	}
++
++	pm_power_off = pm88x_power_off;
++
++	chip->reboot_notifier.notifier_call = pm88x_reboot_notifier_callback;
++	register_reboot_notifier(&(chip->reboot_notifier));
++
++	return 0;
++
++err_apply_patch:
++	mfd_remove_devices(chip->dev);
++err_init_subdev:
++	regmap_del_irq_chip(chip->irq, chip->irq_data);
++err_init_irq:
++	pm800_exit_pages(chip);
++err:
++	return ret;
++}
++
++static int pm88x_i2c_remove(struct i2c_client *i2c)
++{
++	struct pm88x_chip *chip = dev_get_drvdata(&i2c->dev);
++	pm88x_dev_exit(chip);
++	return 0;
++}
++
++static const struct i2c_device_id pm88x_i2c_id[] = {
++	{ "88pm886", PM886 },
++	{ "88pm880", PM880 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, pm88x_i2c_id);
++
++static int pm88x_i2c_suspend(struct device *dev)
++{
++	return 0;
++}
++
++static int pm88x_i2c_resume(struct device *dev)
++{
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(pm88x_pm_ops, pm88x_i2c_suspend, pm88x_i2c_resume);
++
++static struct i2c_driver pm88x_i2c_driver = {
++	.driver = {
++		.name	= "88pm88x",
++		.owner	= THIS_MODULE,
++		.pm	= &pm88x_pm_ops,
++		.of_match_table	= of_match_ptr(pm88x_of_match),
++	},
++	.probe		= pm88x_i2c_probe,
++	.remove		= pm88x_i2c_remove,
++	.id_table	= pm88x_i2c_id,
++};
++
++static int __init pm88x_i2c_init(void)
++{
++	int ret;
++
++	ret = i2c_add_driver(&pm88x_i2c_driver);
++	if (ret != 0) {
++		pr_err("88pm88x I2C registration failed %d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++subsys_initcall(pm88x_i2c_init);
++
++static void __exit pm88x_i2c_exit(void)
++{
++	i2c_del_driver(&pm88x_i2c_driver);
++}
++module_exit(pm88x_i2c_exit);
++
++MODULE_DESCRIPTION("88pm88x I2C bus interface");
++MODULE_AUTHOR("Yi Zhang<yizhang@marvell.com>");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/mfd/88pm88x-irq.c b/drivers/mfd/88pm88x-irq.c
+new file mode 100644
+index 000000000000..0126df0231b8
+--- /dev/null
++++ b/drivers/mfd/88pm88x-irq.c
+@@ -0,0 +1,171 @@
++/*
++ * 88pm886 interrupt support
++ *
++ * Copyright (C) 2015 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/delay.h>
++#include <linux/gpio.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/irqdomain.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
++#include <linux/slab.h>
++#include <linux/mfd/88pm88x.h>
++#include <linux/mfd/88pm886.h>
++#include <linux/mfd/88pm880.h>
++
++/* interrupt status registers */
++#define PM88X_INT_STATUS1		(0x05)
++
++#define PM88X_INT_ENA_1			(0x0a)
++#define PM88X_ONKEY_INT_ENA1		(1 << 0)
++#define PM88X_EXTON_INT_ENA1		(1 << 1)
++#define PM88X_CHG_INT_ENA1		(1 << 2)
++#define PM88X_BAT_INT_ENA1		(1 << 3)
++#define PM88X_RTC_INT_ENA1		(1 << 4)
++#define PM88X_CLASSD_INT_ENA1		(1 << 5)
++#define PM88X_XO_INT_ENA1		(1 << 6)
++#define PM88X_GPIO_INT_ENA1		(1 << 7)
++
++#define PM88X_INT_ENA_2			(0x0b)
++#define PM88X_VBAT_INT_ENA2		(1 << 0)
++#define PM88X_RSVED1_INT_ENA2		(1 << 1)
++#define PM88X_VBUS_INT_ENA2		(1 << 2)
++#define PM88X_ITEMP_INT_ENA2		(1 << 3)
++#define PM88X_BUCK_PGOOD_INT_ENA2	(1 << 4)
++#define PM88X_LDO_PGOOD_INT_ENA2	(1 << 5)
++#define PM88X_RSVED6_INT_ENA2		(1 << 6)
++#define PM88X_RSVED7_INT_ENA2		(1 << 7)
++
++#define PM88X_INT_ENA_3			(0x0c)
++#define PM88X_GPADC0_INT_ENA3		(1 << 0)
++#define PM88X_GPADC1_INT_ENA3		(1 << 1)
++#define PM88X_GPADC2_INT_ENA3		(1 << 2)
++#define PM88X_GPADC3_INT_ENA3		(1 << 3)
++#define PM88X_MIC_INT_ENA3		(1 << 4)
++#define PM88X_HS_INT_ENA3		(1 << 5)
++#define PM88X_GND_INT_ENA3		(1 << 6)
++#define PM88X_RSVED7_INT_ENA3		(1 << 7)
++
++#define PM88X_INT_ENA_4			(0x0d)
++#define PM88X_CHG_FAIL_INT_ENA4		(1 << 0)
++#define PM88X_CHG_DONE_INT_ENA4		(1 << 1)
++#define PM88X_RSVED2_INT_ENA4		(1 << 2)
++#define PM88X_OTG_FAIL_INT_ENA4		(1 << 3)
++#define PM88X_RSVED4_INT_ENA4		(1 << 4)
++#define PM88X_CHG_ILIM_INT_ENA4		(1 << 5)
++#define PM88X_CC_INT_ENA4		(1 << 6)
++#define PM88X_RSVED7_INT_ENA4		(1 << 7)
++
++#define PM88X_MISC_CONFIG2		(0x15)
++#define PM88X_INV_INT			(1 << 0)
++#define PM88X_INT_CLEAR			(1 << 1)
++#define PM88X_INT_RC			(0 << 1)
++#define PM88X_INT_WC			(1 << 1)
++#define PM88X_INT_MASK_MODE		(1 << 2)
++
++static const struct regmap_irq pm88x_irqs[] = {
++	/* INT0 */
++	[PM88X_IRQ_ONKEY] = {.reg_offset = 0, .mask = PM88X_ONKEY_INT_ENA1,},
++	[PM88X_IRQ_EXTON] = {.reg_offset = 0, .mask = PM88X_EXTON_INT_ENA1,},
++	[PM88X_IRQ_CHG_GOOD] = {.reg_offset = 0, .mask = PM88X_CHG_INT_ENA1,},
++	[PM88X_IRQ_BAT_DET] = {.reg_offset = 0, .mask = PM88X_BAT_INT_ENA1,},
++	[PM88X_IRQ_RTC] = {.reg_offset = 0, .mask = PM88X_RTC_INT_ENA1,},
++	[PM88X_IRQ_CLASSD] = { .reg_offset = 0, .mask = PM88X_CLASSD_INT_ENA1,},
++	[PM88X_IRQ_XO] = {.reg_offset = 0, .mask = PM88X_XO_INT_ENA1,},
++	[PM88X_IRQ_GPIO] = {.reg_offset = 0, .mask = PM88X_GPIO_INT_ENA1,},
++
++	/* INT1 */
++	[PM88X_IRQ_VBAT] = {.reg_offset = 1, .mask = PM88X_VBAT_INT_ENA2,},
++	[PM88X_IRQ_VBUS] = {.reg_offset = 1, .mask = PM88X_VBUS_INT_ENA2,},
++	[PM88X_IRQ_ITEMP] = {.reg_offset = 1, .mask = PM88X_ITEMP_INT_ENA2,},
++	[PM88X_IRQ_BUCK_PGOOD] = {
++		.reg_offset = 1,
++		.mask = PM88X_BUCK_PGOOD_INT_ENA2,
++	},
++	[PM88X_IRQ_LDO_PGOOD] = {
++		.reg_offset = 1,
++		.mask = PM88X_LDO_PGOOD_INT_ENA2,
++	},
++	/* INT2 */
++	[PM88X_IRQ_GPADC0] = {.reg_offset = 2, .mask = PM88X_GPADC0_INT_ENA3,},
++	[PM88X_IRQ_GPADC1] = {.reg_offset = 2, .mask = PM88X_GPADC1_INT_ENA3,},
++	[PM88X_IRQ_GPADC2] = {.reg_offset = 2, .mask = PM88X_GPADC2_INT_ENA3,},
++	[PM88X_IRQ_GPADC3] = {.reg_offset = 2, .mask = PM88X_GPADC3_INT_ENA3,},
++	[PM88X_IRQ_MIC_DET] = {.reg_offset = 2, .mask = PM88X_MIC_INT_ENA3,},
++	[PM88X_IRQ_HS_DET] = {.reg_offset = 2, .mask = PM88X_HS_INT_ENA3,},
++	[PM88X_IRQ_GND_DET] = {.reg_offset = 2, .mask = PM88X_GND_INT_ENA3,},
++
++	/* INT3 */
++	[PM88X_IRQ_CHG_FAIL] = {
++		.reg_offset = 3,
++		.mask = PM88X_CHG_FAIL_INT_ENA4,
++	},
++	[PM88X_IRQ_CHG_DONE] = {
++		.reg_offset = 3,
++		.mask = PM88X_CHG_DONE_INT_ENA4,
++	},
++	[PM88X_IRQ_OTG_FAIL] = {
++		.reg_offset = 3,
++		.mask = PM88X_OTG_FAIL_INT_ENA4,
++	},
++	[PM88X_IRQ_CHG_ILIM] = {
++		.reg_offset = 3,
++		.mask = PM88X_CHG_ILIM_INT_ENA4,
++	},
++	[PM88X_IRQ_CC] = {.reg_offset = 3, .mask = PM88X_CC_INT_ENA4,},
++};
++
++struct regmap_irq_chip pm88x_irq_chip = {
++	.name = "88pm88x",
++	.irqs = pm88x_irqs,
++	.num_irqs = ARRAY_SIZE(pm88x_irqs),
++
++	.num_regs = 4,
++	.status_base = PM88X_INT_STATUS1,
++	.mask_base = PM88X_INT_ENA_1,
++	.ack_base = PM88X_INT_STATUS1,
++	.mask_invert = 1,
++};
++
++int pm88x_irq_init(struct pm88x_chip *chip)
++{
++	int mask, data, ret;
++	struct regmap *map;
++
++	if (!chip || !chip->base_regmap || !chip->irq) {
++		pr_err("cannot initialize interrupt!\n");
++		return -EINVAL;
++	}
++	map = chip->base_regmap;
++
++	/*
++	 * irq_mode defines the way of clearing interrupt.
++	 * it's read-clear by default.
++	 */
++	mask = PM88X_INV_INT | PM88X_INT_CLEAR | PM88X_INT_MASK_MODE;
++	data = (chip->irq_mode) ? PM88X_INT_WC : PM88X_INT_RC;
++	ret = regmap_update_bits(map, PM88X_MISC_CONFIG2, mask, data);
++	if (ret < 0) {
++		dev_err(chip->dev, "cannot set interrupt mode!\n");
++		return ret;
++	}
++
++	ret = regmap_add_irq_chip(map, chip->irq, IRQF_ONESHOT, -1,
++				  &pm88x_irq_chip, &chip->irq_data);
++	return ret;
++}
++
++int pm88x_irq_exit(struct pm88x_chip *chip)
++{
++	regmap_del_irq_chip(chip->irq, chip->irq_data);
++	return 0;
++}
+diff --git a/drivers/mfd/88pm88x.h b/drivers/mfd/88pm88x.h
+new file mode 100644
+index 000000000000..a85a48662197
+--- /dev/null
++++ b/drivers/mfd/88pm88x.h
+@@ -0,0 +1,51 @@
++#ifndef _MFD_88PM88X_H
++#define _MFD_88PM88X_H
++
++#include <linux/kernel.h>
++#include <linux/of.h>
++#include <linux/regmap.h>
++#include <linux/mfd/core.h>
++
++struct pmic_cell_info {
++	const struct mfd_cell *cells;
++	int		cell_nr;
++};
++
++#define CELL_IRQ_RESOURCE(_name, _irq) { \
++	.name = _name, \
++	.start = _irq, .end = _irq, \
++	.flags = IORESOURCE_IRQ, \
++	}
++#define CELL_DEV(_name, _r, _compatible, _id) { \
++	.name = _name, \
++	.of_compatible = _compatible, \
++	.num_resources = ARRAY_SIZE(_r), \
++	.resources = _r, \
++	.id = _id, \
++	}
++
++/* 88pm886 */
++extern const struct regmap_config pm886_base_i2c_regmap;
++extern const struct regmap_config pm886_power_i2c_regmap;
++extern const struct regmap_config pm886_gpadc_i2c_regmap;
++extern const struct regmap_config pm886_battery_i2c_regmap;
++extern const struct regmap_config pm886_test_i2c_regmap;
++
++extern const struct mfd_cell pm886_cell_devs[];
++extern struct pmic_cell_info pm886_cell_info;
++
++int pm886_apply_patch(struct pm88x_chip *chip);
++
++/* 88pm880 */
++extern const struct regmap_config pm880_base_i2c_regmap;
++extern const struct regmap_config pm880_power_i2c_regmap;
++extern const struct regmap_config pm880_gpadc_i2c_regmap;
++extern const struct regmap_config pm880_battery_i2c_regmap;
++extern const struct regmap_config pm880_test_i2c_regmap;
++
++extern const struct mfd_cell pm880_cell_devs[];
++extern struct pmic_cell_info pm880_cell_info;
++
++int pm880_apply_patch(struct pm88x_chip *chip);
++
++#endif
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index aea95745c73f..b80377b829e6 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -758,6 +758,18 @@ config MFD_KEMPLD
+ 	  This driver can also be built as a module. If so, the module
+ 	  will be called kempld-core.
+ 
++config MFD_88PM88X
++	tristate "Marvell 88PM886/880 PMIC"
++	depends on I2C=y
++	select REGMAP_I2C
++	select MFD_CORE
++	help
++	  This supports for Marvell 88PM88X Series Power Management IC:
++	  88pm886 and 88pm880;
++	  This includes the I2C driver, the interrupt resource distribution
++	  and the core APIs, for individual sub-device as voltage regulators,
++	  RTC, charger, fuelgauge, etc, select under the corresponding menus.
++
+ config MFD_88PM800
+ 	tristate "Marvell 88PM800"
+ 	depends on I2C
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index c66f07edcd0e..576bad9e9b59 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -8,6 +8,9 @@ obj-$(CONFIG_MFD_88PM860X)	+= 88pm860x.o
+ obj-$(CONFIG_MFD_88PM800)	+= 88pm800.o 88pm80x.o
+ obj-$(CONFIG_MFD_88PM805)	+= 88pm805.o 88pm80x.o
+ obj-$(CONFIG_MFD_ACT8945A)	+= act8945a.o
++88pm88x-objs			:= 88pm88x-core.o 88pm88x-i2c.o 88pm88x-irq.o 88pm886-table.o 88pm880-table.o
++obj-$(CONFIG_MFD_88PM88X)	+= 88pm88x.o
++
+ obj-$(CONFIG_MFD_SM501)		+= sm501.o
+ obj-$(CONFIG_ARCH_BCM2835)	+= bcm2835-pm.o
+ obj-$(CONFIG_MFD_BCM590XX)	+= bcm590xx.o
+diff --git a/include/linux/mfd/88pm880-reg.h b/include/linux/mfd/88pm880-reg.h
+new file mode 100644
+index 000000000000..fdf23158bb37
+--- /dev/null
++++ b/include/linux/mfd/88pm880-reg.h
+@@ -0,0 +1,98 @@
++/*
++ * Marvell 88PM880 registers
++ *
++ * Copyright (C) 2014 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __LINUX_MFD_88PM880_REG_H
++#define __LINUX_MFD_88PM880_REG_H
++
++#define PM880_BUCK1_VOUT	(0x28)
++
++#define PM880_BUCK1A_VOUT	(0x28) /* voltage 0 */
++#define PM880_BUCK1A_1_VOUT	(0x29)
++#define PM880_BUCK1A_2_VOUT	(0x2a)
++#define PM880_BUCK1A_3_VOUT	(0x2b)
++#define PM880_BUCK1A_4_VOUT	(0x2c)
++#define PM880_BUCK1A_5_VOUT	(0x2d)
++#define PM880_BUCK1A_6_VOUT	(0x2e)
++#define PM880_BUCK1A_7_VOUT	(0x2f)
++#define PM880_BUCK1A_8_VOUT	(0x30)
++#define PM880_BUCK1A_9_VOUT	(0x31)
++#define PM880_BUCK1A_10_VOUT	(0x32)
++#define PM880_BUCK1A_11_VOUT	(0x33)
++#define PM880_BUCK1A_12_VOUT	(0x34)
++#define PM880_BUCK1A_13_VOUT	(0x35)
++#define PM880_BUCK1A_14_VOUT	(0x36)
++#define PM880_BUCK1A_15_VOUT	(0x37)
++
++#define PM880_BUCK1B_VOUT	(0x40)
++#define PM880_BUCK1B_1_VOUT	(0x41)
++#define PM880_BUCK1B_2_VOUT	(0x42)
++#define PM880_BUCK1B_3_VOUT	(0x43)
++#define PM880_BUCK1B_4_VOUT	(0x44)
++#define PM880_BUCK1B_5_VOUT	(0x45)
++#define PM880_BUCK1B_6_VOUT	(0x46)
++#define PM880_BUCK1B_7_VOUT	(0x47)
++#define PM880_BUCK1B_8_VOUT	(0x48)
++#define PM880_BUCK1B_9_VOUT	(0x49)
++#define PM880_BUCK1B_10_VOUT	(0x4a)
++#define PM880_BUCK1B_11_VOUT	(0x4b)
++#define PM880_BUCK1B_12_VOUT	(0x4c)
++#define PM880_BUCK1B_13_VOUT	(0x4d)
++#define PM880_BUCK1B_14_VOUT	(0x4e)
++#define PM880_BUCK1B_15_VOUT	(0x4f)
++
++/* buck7 has dvc function */
++#define PM880_BUCK7_VOUT	(0xb8) /* voltage 0 */
++#define PM880_BUCK7_1_VOUT	(0xb9)
++#define PM880_BUCK7_2_VOUT	(0xba)
++#define PM880_BUCK7_3_VOUT	(0xbb)
++
++/*
++ * buck sleep mode control registers:
++ * 00-disable,
++ * 01/10-sleep voltage,
++ * 11-active voltage
++ */
++#define PM880_BUCK1A_SLP_CTRL	(0x27)
++#define PM880_BUCK1B_SLP_CTRL	(0x3c)
++#define PM880_BUCK2_SLP_CTRL	(0x54)
++#define PM880_BUCK3_SLP_CTRL	(0x6c)
++/* TODO: there are 7 controls bit for buck4~7 */
++#define PM880_BUCK4_SLP_CTRL	(0x84)
++#define PM880_BUCK5_SLP_CTRL	(0x94)
++#define PM880_BUCK6_SLP_CTRL	(0xa4)
++#define PM880_BUCK7_SLP_CTRL	(0xb4)
++
++/*
++ * ldo sleep mode control registers:
++ * 00-disable,
++ * 01/10-sleep voltage,
++ * 11-active voltage
++ */
++#define PM880_LDO1_SLP_CTRL	(0x21)
++#define PM880_LDO2_SLP_CTRL	(0x27)
++#define PM880_LDO3_SLP_CTRL	(0x2d)
++#define PM880_LDO4_SLP_CTRL	(0x33)
++#define PM880_LDO5_SLP_CTRL	(0x39)
++#define PM880_LDO6_SLP_CTRL	(0x3f)
++#define PM880_LDO7_SLP_CTRL	(0x45)
++#define PM880_LDO8_SLP_CTRL	(0x4b)
++#define PM880_LDO9_SLP_CTRL	(0x51)
++#define PM880_LDO10_SLP_CTRL	(0x57)
++#define PM880_LDO11_SLP_CTRL	(0x5d)
++#define PM880_LDO12_SLP_CTRL	(0x63)
++#define PM880_LDO13_SLP_CTRL	(0x69)
++#define PM880_LDO14_SLP_CTRL	(0x6f)
++#define PM880_LDO15_SLP_CTRL	(0x75)
++#define PM880_LDO16_SLP_CTRL	(0x7b)
++#define PM880_LDO17_SLP_CTRL	(0x81)
++#define PM880_LDO18_SLP_CTRL	(0x87)
++
++#endif /*__LINUX_MFD_88PM880_REG_H */
+diff --git a/include/linux/mfd/88pm880.h b/include/linux/mfd/88pm880.h
+new file mode 100644
+index 000000000000..94b9e063918a
+--- /dev/null
++++ b/include/linux/mfd/88pm880.h
+@@ -0,0 +1,59 @@
++/*
++ * Marvell 88PM880 Interface
++ *
++ * Copyright (C) 2015 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * 88pm880 specific configuration: at present it's regulators and dvc part
++ */
++
++#ifndef __LINUX_MFD_88PM880_H
++#define __LINUX_MFD_88PM880_H
++
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/regmap.h>
++#include <linux/atomic.h>
++#include <linux/reboot.h>
++#include "88pm880-reg.h"
++
++enum {
++	PM880_ID_BUCK1A = 0,
++	PM880_ID_BUCK2,
++	PM880_ID_BUCK3,
++	PM880_ID_BUCK4,
++	PM880_ID_BUCK5,
++	PM880_ID_BUCK6,
++	PM880_ID_BUCK7,
++
++	PM880_ID_BUCK_MAX = 7,
++};
++
++enum {
++	PM880_ID_LDO1 = 0,
++	PM880_ID_LDO2,
++	PM880_ID_LDO3,
++	PM880_ID_LDO4,
++	PM880_ID_LDO5,
++	PM880_ID_LDO6,
++	PM880_ID_LDO7,
++	PM880_ID_LDO8,
++	PM880_ID_LDO9,
++	PM880_ID_LDO10,
++	PM880_ID_LDO11,
++	PM880_ID_LDO12,
++	PM880_ID_LDO13,
++	PM880_ID_LDO14 = 13,
++	PM880_ID_LDO15,
++	PM880_ID_LDO16 = 15,
++
++	PM880_ID_LDO17 = 16,
++	PM880_ID_LDO18 = 17,
++
++	PM880_ID_LDO_MAX = 18,
++};
++#endif /* __LINUX_MFD_88PM880_H */
+diff --git a/include/linux/mfd/88pm886-reg.h b/include/linux/mfd/88pm886-reg.h
+new file mode 100644
+index 000000000000..38a7ecdf8a5b
+--- /dev/null
++++ b/include/linux/mfd/88pm886-reg.h
+@@ -0,0 +1,59 @@
++/*
++ * Marvell 88PM886 registers
++ *
++ * Copyright (C) 2014 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __LINUX_MFD_88PM886_REG_H
++#define __LINUX_MFD_88PM886_REG_H
++
++#define PM886_BUCK1_VOUT	(0xa5)
++#define PM886_BUCK1_1_VOUT	(0xa6)
++#define PM886_BUCK1_2_VOUT	(0xa7)
++#define PM886_BUCK1_3_VOUT	(0xa8)
++#define PM886_BUCK1_4_VOUT	(0x9a)
++#define PM886_BUCK1_5_VOUT	(0x9b)
++#define PM886_BUCK1_6_VOUT	(0x9c)
++#define PM886_BUCK1_7_VOUT	(0x9d)
++
++/*
++ * buck sleep mode control registers:
++ * 00-disable,
++ * 01/10-sleep voltage,
++ * 11-active voltage
++ */
++#define PM886_BUCK1_SLP_CTRL	(0xa2)
++#define PM886_BUCK2_SLP_CTRL	(0xb0)
++#define PM886_BUCK3_SLP_CTRL	(0xbe)
++#define PM886_BUCK4_SLP_CTRL	(0xcc)
++#define PM886_BUCK5_SLP_CTRL	(0xda)
++
++/*
++ * ldo sleep mode control registers:
++ * 00-disable,
++ * 01/10-sleep voltage,
++ * 11-active voltage
++ */
++#define PM886_LDO1_SLP_CTRL	(0x21)
++#define PM886_LDO2_SLP_CTRL	(0x27)
++#define PM886_LDO3_SLP_CTRL	(0x2d)
++#define PM886_LDO4_SLP_CTRL	(0x33)
++#define PM886_LDO5_SLP_CTRL	(0x39)
++#define PM886_LDO6_SLP_CTRL	(0x3f)
++#define PM886_LDO7_SLP_CTRL	(0x45)
++#define PM886_LDO8_SLP_CTRL	(0x4b)
++#define PM886_LDO9_SLP_CTRL	(0x51)
++#define PM886_LDO10_SLP_CTRL	(0x57)
++#define PM886_LDO11_SLP_CTRL	(0x5d)
++#define PM886_LDO12_SLP_CTRL	(0x63)
++#define PM886_LDO13_SLP_CTRL	(0x69)
++#define PM886_LDO14_SLP_CTRL	(0x6f)
++#define PM886_LDO15_SLP_CTRL	(0x75)
++#define PM886_LDO16_SLP_CTRL	(0x7b)
++
++#endif
+diff --git a/include/linux/mfd/88pm886.h b/include/linux/mfd/88pm886.h
+new file mode 100644
+index 000000000000..939040647702
+--- /dev/null
++++ b/include/linux/mfd/88pm886.h
+@@ -0,0 +1,55 @@
++/*
++ * Marvell 88PM886 Interface
++ *
++ * Copyright (C) 2015 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * 88pm886 specific configuration: at present it's regulators and dvc part
++ */
++
++#ifndef __LINUX_MFD_88PM886_H
++#define __LINUX_MFD_88PM886_H
++
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/regmap.h>
++#include <linux/atomic.h>
++#include <linux/reboot.h>
++#include "88pm886-reg.h"
++
++enum {
++	PM886_ID_BUCK1 = 0,
++	PM886_ID_BUCK2,
++	PM886_ID_BUCK3,
++	PM886_ID_BUCK4,
++	PM886_ID_BUCK5,
++
++	PM886_ID_BUCK_MAX = 5,
++};
++
++enum {
++	PM886_ID_LDO1 = 0,
++	PM886_ID_LDO2,
++	PM886_ID_LDO3,
++	PM886_ID_LDO4,
++	PM886_ID_LDO5,
++	PM886_ID_LDO6,
++	PM886_ID_LDO7,
++	PM886_ID_LDO8,
++	PM886_ID_LDO9,
++	PM886_ID_LDO10,
++	PM886_ID_LDO11,
++	PM886_ID_LDO12,
++	PM886_ID_LDO13,
++	PM886_ID_LDO14,
++	PM886_ID_LDO15,
++	PM886_ID_LDO16 = 15,
++
++	PM886_ID_LDO_MAX = 16,
++};
++
++#endif /* __LINUX_MFD_88PM886_H */
+diff --git a/include/linux/mfd/88pm88x-reg.h b/include/linux/mfd/88pm88x-reg.h
+new file mode 100644
+index 000000000000..d767b3153a14
+--- /dev/null
++++ b/include/linux/mfd/88pm88x-reg.h
+@@ -0,0 +1,118 @@
++/*
++ * Marvell 88PM88X registers
++ *
++ * Copyright (C) 2014 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __LINUX_MFD_88PM88X_REG_H
++#define __LINUX_MFD_88PM88X_REG_H
++/*
++ * This file is just used for the common registers,
++ * which are shared by sub-clients
++ */
++
++/*--base page:--------------------------------------------------------------*/
++#define PM88X_ID_REG			(0x0)
++
++#define PM88X_STATUS1			(0x1)
++#define PM88X_CHG_DET			(1 << 2)
++#define PM88X_BAT_DET			(1 << 3)
++
++#define PM88X_MISC_CONFIG1		(0x14)
++#define PM88X_LONKEY_RST		(1 << 3)
++
++#define PM88X_WDOG			(0x1d)
++
++#define PM88X_LOWPOWER2			(0x21)
++#define PM88X_LOWPOWER4			(0x23)
++
++/* clk control register */
++#define PM88X_CLK_CTRL1			(0x25)
++
++/* gpio */
++#define PM88X_GPIO_CTRL1		(0x30)
++#define PM88X_GPIO0_VAL_MSK		(0x1 << 0)
++#define PM88X_GPIO0_MODE_MSK		(0x7 << 1)
++#define PM88X_GPIO1_VAL_MSK		(0x1 << 4)
++#define PM88X_GPIO1_MODE_MSK		(0x7 << 5)
++#define PM88X_GPIO1_SET_DVC		(0x2 << 5)
++
++#define PM88X_GPIO_CTRL2		(0x31)
++#define PM88X_GPIO2_VAL_MSK		(0x1 << 0)
++#define PM88X_GPIO2_MODE_MSK		(0x7 << 1)
++
++#define PM88X_GPIO_CTRL3		(0x32)
++
++#define PM88X_GPIO_CTRL4		(0x33)
++#define PM88X_GPIO5V_1_VAL_MSK		(0x1 << 0)
++#define PM88X_GPIO5V_1_MODE_MSK		(0x7 << 1)
++#define PM88X_GPIO5V_2_VAL_MSK		(0x1 << 4)
++#define PM88X_GPIO5V_2_MODE_MSK		(0x7 << 5)
++
++#define PM88X_BK_OSC_CTRL1		(0x50)
++#define PM88X_BK_OSC_CTRL3		(0x52)
++
++#define PM88X_RTC_ALARM_CTRL1		(0xd0)
++#define PM88X_ALARM_WAKEUP		(1 << 4)
++#define PM88X_USE_XO			(1 << 7)
++
++#define PM88X_AON_CTRL2			(0xe2)
++#define PM88X_AON_CTRL3			(0xe3)
++#define PM88X_AON_CTRL4			(0xe4)
++#define PM88X_AON_CTRL7			(0xe7)
++
++/* 0xea, 0xeb, 0xec, 0xed are reserved by RTC */
++#define PM88X_RTC_SPARE5		(0xee)
++#define PM88X_RTC_SPARE6		(0xef)
++/*-------------------------------------------------------------------------*/
++
++/*--power page:------------------------------------------------------------*/
++
++/*-------------------------------------------------------------------------*/
++
++/*--gpadc page:------------------------------------------------------------*/
++
++#define PM88X_GPADC_CONFIG1		(0x1)
++
++#define PM88X_GPADC_CONFIG2		(0x2)
++#define PM88X_GPADC0_MEAS_EN		(1 << 2)
++#define PM88X_GPADC1_MEAS_EN		(1 << 3)
++#define PM88X_GPADC2_MEAS_EN		(1 << 4)
++#define PM88X_GPADC3_MEAS_EN		(1 << 5)
++
++#define PM88X_GPADC_CONFIG3		(0x3)
++
++#define PM88X_GPADC_CONFIG6		(0x6)
++#define PM88X_GPADC_CONFIG8		(0x8)
++
++#define PM88X_GPADC0_LOW_TH		(0x20)
++#define PM88X_GPADC1_LOW_TH		(0x21)
++#define PM88X_GPADC2_LOW_TH		(0x22)
++#define PM88X_GPADC3_LOW_TH		(0x23)
++
++#define PM88X_GPADC0_UPP_TH		(0x30)
++#define PM88X_GPADC1_UPP_TH		(0x31)
++#define PM88X_GPADC2_UPP_TH		(0x32)
++#define PM88X_GPADC3_UPP_TH		(0x33)
++
++#define PM88X_VBUS_MEAS1		(0x4A)
++#define PM88X_GPADC0_MEAS1		(0x54)
++#define PM88X_GPADC1_MEAS1		(0x56)
++#define PM88X_GPADC2_MEAS1		(0x58)
++#define PM88X_GPADC3_MEAS1		(0x5A)
++
++
++/*--charger page:------------------------------------------------------------*/
++#define PM88X_CHG_CONFIG1		(0x28)
++#define PM88X_CHGBK_CONFIG6		(0x50)
++/*-------------------------------------------------------------------------*/
++
++/*--test page:-------------------------------------------------------------*/
++
++/*-------------------------------------------------------------------------*/
++#endif
+diff --git a/include/linux/mfd/88pm88x.h b/include/linux/mfd/88pm88x.h
+new file mode 100644
+index 000000000000..efa2fe621ccd
+--- /dev/null
++++ b/include/linux/mfd/88pm88x.h
+@@ -0,0 +1,202 @@
++/*
++ * Marvell 88PM88X PMIC Common Interface
++ *
++ * Copyright (C) 2014 Marvell International Ltd.
++ *  Yi Zhang <yizhang@marvell.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ *
++ * This file configures the common part of the 88pm88x series PMIC
++ */
++
++#ifndef __LINUX_MFD_88PM88X_H
++#define __LINUX_MFD_88PM88X_H
++
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/regmap.h>
++#include <linux/atomic.h>
++#include <linux/reboot.h>
++#include "88pm88x-reg.h"
++#include "88pm886-reg.h"
++
++#define PM88X_RTC_NAME		"88pm88x-rtc"
++#define PM88X_ONKEY_NAME	"88pm88x-onkey"
++#define PM88X_CHARGER_NAME	"88pm88x-charger"
++#define PM88X_BATTERY_NAME	"88pm88x-battery"
++#define PM88X_HEADSET_NAME	"88pm88x-headset"
++#define PM88X_VBUS_NAME		"88pm88x-vbus"
++#define PM88X_CFD_NAME		"88pm88x-leds"
++#define PM88X_RGB_NAME		"88pm88x-rgb"
++#define PM88X_GPADC_NAME	"88pm88x-gpadc"
++#define PM88X_DVC_NAME		"88pm88x-dvc"
++
++enum pm88x_type {
++	PM886 = 1,
++	PM880 = 2,
++};
++
++enum pm88x_pages {
++	PM88X_BASE_PAGE = 0,
++	PM88X_LDO_PAGE,
++	PM88X_GPADC_PAGE,
++	PM88X_BATTERY_PAGE,
++	PM88X_BUCK_PAGE = 4,
++	PM88X_TEST_PAGE = 7,
++};
++
++enum pm88x_gpadc {
++	PM88X_NO_GPADC = -1,
++	PM88X_GPADC0 = 0,
++	PM88X_GPADC1,
++	PM88X_GPADC2,
++	PM88X_GPADC3,
++};
++
++/* interrupt number */
++enum pm88x_irq_number {
++	PM88X_IRQ_ONKEY,	/* EN1b0 *//* 0 */
++	PM88X_IRQ_EXTON,	/* EN1b1 */
++	PM88X_IRQ_CHG_GOOD,	/* EN1b2 */
++	PM88X_IRQ_BAT_DET,	/* EN1b3 */
++	PM88X_IRQ_RTC,		/* EN1b4 */
++	PM88X_IRQ_CLASSD,	/* EN1b5 *//* 5 */
++	PM88X_IRQ_XO,		/* EN1b6 */
++	PM88X_IRQ_GPIO,		/* EN1b7 */
++
++	PM88X_IRQ_VBAT,		/* EN2b0 *//* 8 */
++				/* EN2b1 */
++	PM88X_IRQ_VBUS,		/* EN2b2 */
++	PM88X_IRQ_ITEMP,	/* EN2b3 *//* 10 */
++	PM88X_IRQ_BUCK_PGOOD,	/* EN2b4 */
++	PM88X_IRQ_LDO_PGOOD,	/* EN2b5 */
++
++	PM88X_IRQ_GPADC0,	/* EN3b0 */
++	PM88X_IRQ_GPADC1,	/* EN3b1 */
++	PM88X_IRQ_GPADC2,	/* EN3b2 *//* 15 */
++	PM88X_IRQ_GPADC3,	/* EN3b3 */
++	PM88X_IRQ_MIC_DET,	/* EN3b4 */
++	PM88X_IRQ_HS_DET,	/* EN3b5 */
++	PM88X_IRQ_GND_DET,	/* EN3b6 */
++
++	PM88X_IRQ_CHG_FAIL,	/* EN4b0 *//* 20 */
++	PM88X_IRQ_CHG_DONE,	/* EN4b1 */
++				/* EN4b2 */
++	PM88X_IRQ_CFD_FAIL,	/* EN4b3 */
++	PM88X_IRQ_OTG_FAIL,	/* EN4b4 */
++	PM88X_IRQ_CHG_ILIM,	/* EN4b5 *//* 25 */
++				/* EN4b6 */
++	PM88X_IRQ_CC,		/* EN4b7 *//* 27 */
++
++	PM88X_MAX_IRQ,			   /* 28 */
++};
++
++/* 3 rgb led indicators */
++enum {
++	PM88X_RGB_LED0,
++	PM88X_RGB_LED1,
++	PM88X_RGB_LED2,
++};
++
++/* camera flash/torch */
++enum {
++	PM88X_NO_LED = -1,
++	PM88X_FLASH_LED = 0,
++	PM88X_TORCH_LED,
++};
++
++struct pm88x_dvc_ops {
++	void (*level_to_reg)(u8 level);
++};
++
++struct pm88x_buck1_dvc_desc {
++	u8 current_reg;
++	int max_level;
++	int uV_step1;
++	int uV_step2;
++	int min_uV;
++	int mid_uV;
++	int max_uV;
++	int mid_reg_val;
++};
++
++struct pm88x_dvc {
++	struct device *dev;
++	struct pm88x_chip *chip;
++	struct pm88x_dvc_ops ops;
++	struct pm88x_buck1_dvc_desc desc;
++};
++
++struct pm88x_chip {
++	struct i2c_client *client;
++	struct device *dev;
++
++	struct i2c_client *ldo_page;	/* chip client for ldo page */
++	struct i2c_client *power_page;	/* chip client for power page */
++	struct i2c_client *gpadc_page;	/* chip client for gpadc page */
++	struct i2c_client *battery_page;/* chip client for battery page */
++	struct i2c_client *buck_page;	/* chip client for buck page */
++	struct i2c_client *test_page;	/* chip client for test page */
++
++	struct regmap *base_regmap;
++	struct regmap *ldo_regmap;
++	struct regmap *power_regmap;
++	struct regmap *gpadc_regmap;
++	struct regmap *battery_regmap;
++	struct regmap *buck_regmap;
++	struct regmap *test_regmap;
++	struct regmap *codec_regmap;
++
++	unsigned short ldo_page_addr;	/* ldo page I2C address */
++	unsigned short power_page_addr;	/* power page I2C address */
++	unsigned short gpadc_page_addr;	/* gpadc page I2C address */
++	unsigned short battery_page_addr;/* battery page I2C address */
++	unsigned short buck_page_addr;	/* buck page I2C address */
++	unsigned short test_page_addr;	/* test page I2C address */
++
++	unsigned int chip_id;
++	long type;			/* specific chip */
++	int irq;
++
++	int irq_mode;			/* write/read clear */
++	struct regmap_irq_chip_data *irq_data;
++
++	bool rtc_wakeup;		/* is it powered up by expired alarm? */
++	u8 powerdown1;			/* save power down reason */
++	u8 powerdown2;
++	u8 powerup;			/* the reason of power on */
++
++	struct notifier_block reboot_notifier;
++	struct pm88x_dvc *dvc;
++};
++
++extern struct regmap_irq_chip pm88x_irq_chip;
++extern const struct of_device_id pm88x_of_match[];
++
++struct pm88x_chip *pm88x_init_chip(struct i2c_client *client);
++int pm88x_parse_dt(struct device_node *np, struct pm88x_chip *chip);
++
++int pm88x_init_pages(struct pm88x_chip *chip);
++int pm88x_post_init_chip(struct pm88x_chip *chip);
++void pm800_exit_pages(struct pm88x_chip *chip);
++
++int pm88x_init_subdev(struct pm88x_chip *chip);
++long pm88x_of_get_type(struct device *dev);
++void pm88x_dev_exit(struct pm88x_chip *chip);
++
++int pm88x_irq_init(struct pm88x_chip *chip);
++int pm88x_irq_exit(struct pm88x_chip *chip);
++int pm88x_apply_patch(struct pm88x_chip *chip);
++int pm88x_stepping_fixup(struct pm88x_chip *chip);
++int pm88x_apply_board_fixup(struct pm88x_chip *chip, struct device_node *np);
++
++struct pm88x_chip *pm88x_get_chip(void);
++void pm88x_set_chip(struct pm88x_chip *chip);
++void pm88x_power_off(void);
++int pm88x_reboot_notifier_callback(struct notifier_block *nb,
++				   unsigned long code, void *unused);
++
++#endif /* __LINUX_MFD_88PM88X_H */
+-- 
+2.42.0
+

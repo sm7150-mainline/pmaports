@@ -1,0 +1,35 @@
+From bdb5e1cd9435a942465d4e195a70b3b475eda6aa Mon Sep 17 00:00:00 2001
+From: Karel Balej <balejk@matfyz.cz>
+Date: Mon, 25 Sep 2023 22:41:24 +0200
+Subject: [PATCH] arm64: dts: add touchscreen bindings for
+ samsung,coreprimevelte
+
+Signed-off-by: Karel Balej <balejk@matfyz.cz>
+---
+ .../dts/marvell/pxa1908-samsung-coreprimevelte.dts     | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts b/arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts
+index 04fb0566ed2b..bd69358fd069 100644
+--- a/arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts
++++ b/arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts
+@@ -309,6 +309,16 @@ &twsi2 {
+ 
+ &twsi3 {
+ 	status = "okay";
++
++	touchscreen@50 {
++		compatible = "imagis,ist3032c";
++		reg = <0x50>;
++		interrupt-parent = <&gpio>;
++		interrupts = <72 IRQ_TYPE_EDGE_FALLING>;
++		vdd-supply = <&ldo2>;
++		touchscreen-size-x = <480>;
++		touchscreen-size-y = <800>;
++	};
+ };
+ 
+ &usb {
+-- 
+2.42.0
+

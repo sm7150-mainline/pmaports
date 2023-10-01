@@ -1,4 +1,4 @@
-From 303c2b86cd5ebd0764e3768335883f0cd2e9fe04 Mon Sep 17 00:00:00 2001
+From 9495e512486a63d11baa2db46154cff4962f9f67 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
 Date: Fri, 21 Jul 2023 22:37:47 +0200
 Subject: [PATCH] dt-bindings: clock: Add Marvell PXA1908 clock bindings
@@ -9,20 +9,21 @@ Content-Transfer-Encoding: 8bit
 Add dt bindings and documentation for the Marvell PXA1908 clock
 controller.
 
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
 ---
- .../bindings/clock/marvell,pxa1908.yaml       | 47 ++++++++++
- include/dt-bindings/clock/marvell,pxa1908.h   | 92 +++++++++++++++++++
- 2 files changed, 139 insertions(+)
+ .../bindings/clock/marvell,pxa1908.yaml       | 48 ++++++++++
+ include/dt-bindings/clock/marvell,pxa1908.h   | 88 +++++++++++++++++++
+ 2 files changed, 136 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/clock/marvell,pxa1908.yaml
  create mode 100644 include/dt-bindings/clock/marvell,pxa1908.h
 
 diff --git a/Documentation/devicetree/bindings/clock/marvell,pxa1908.yaml b/Documentation/devicetree/bindings/clock/marvell,pxa1908.yaml
 new file mode 100644
-index 000000000000..a5af7992b1b6
+index 000000000000..4e78933232b6
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/clock/marvell,pxa1908.yaml
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,48 @@
 +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 +%YAML 1.2
 +---
@@ -49,6 +50,7 @@ index 000000000000..a5af7992b1b6
 +      - marvell,pxa1908-apbcp
 +      - marvell,pxa1908-mpmu
 +      - marvell,pxa1908-apmu
++
 +  reg:
 +    maxItems: 1
 +
@@ -72,11 +74,11 @@ index 000000000000..a5af7992b1b6
 +    };
 diff --git a/include/dt-bindings/clock/marvell,pxa1908.h b/include/dt-bindings/clock/marvell,pxa1908.h
 new file mode 100644
-index 000000000000..a4b035928137
+index 000000000000..fb15b0d0cd4c
 --- /dev/null
 +++ b/include/dt-bindings/clock/marvell,pxa1908.h
-@@ -0,0 +1,92 @@
-+/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
+@@ -0,0 +1,88 @@
++/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
 +#ifndef __DTS_MARVELL_PXA1908_CLOCK_H
 +#define __DTS_MARVELL_PXA1908_CLOCK_H
 +
@@ -106,20 +108,19 @@ index 000000000000..a4b035928137
 +#define PXA1908_CLK_PLL1_832_GATE	23
 +#define PXA1908_CLK_PLL1_1248_GATE	24
 +#define PXA1908_CLK_PLL1_D2_GATE	25
-+#define PXA1908_CLK_PLL1_499_EN 	26
++#define PXA1908_CLK_PLL1_499_EN		26
 +#define PXA1908_CLK_PLL2VCO		27
 +#define PXA1908_CLK_PLL2		28
 +#define PXA1908_CLK_PLL2P		29
-+#define PXA1908_CLK_PLL2VCODIV3 	30
++#define PXA1908_CLK_PLL2VCODIV3		30
 +#define PXA1908_CLK_PLL3VCO		31
 +#define PXA1908_CLK_PLL3		32
 +#define PXA1908_CLK_PLL3P		33
-+#define PXA1908_CLK_PLL3VCODIV3 	34
++#define PXA1908_CLK_PLL3VCODIV3		34
 +#define PXA1908_CLK_PLL4VCO		35
 +#define PXA1908_CLK_PLL4		36
 +#define PXA1908_CLK_PLL4P		37
-+#define PXA1908_CLK_PLL4VCODIV3 	38
-+#define PXA1908_MPMU_NR_CLKS		38
++#define PXA1908_CLK_PLL4VCODIV3		38
 +
 +/* apb (apbc) peripherals */
 +#define PXA1908_CLK_UART0		1
@@ -132,42 +133,39 @@ index 000000000000..a4b035928137
 +#define PXA1908_CLK_SSP0		8
 +#define PXA1908_CLK_SSP1		9
 +#define PXA1908_CLK_IPC_RST		10
-+#define PXA1908_CLK_RTC 		11
++#define PXA1908_CLK_RTC			11
 +#define PXA1908_CLK_TWSI0		12
-+#define PXA1908_CLK_KPC 		13
++#define PXA1908_CLK_KPC			13
 +#define PXA1908_CLK_SWJTAG		14
 +#define PXA1908_CLK_SSP2		15
 +#define PXA1908_CLK_TWSI1		16
 +#define PXA1908_CLK_THERMAL		17
 +#define PXA1908_CLK_TWSI3		18
-+#define PXA1908_APBC_NR_CLKS		50
 +
 +/* apb (apbcp) peripherals */
 +#define PXA1908_CLK_UART2		1
 +#define PXA1908_CLK_TWSI2		2
 +#define PXA1908_CLK_AICER		3
-+#define PXA1908_APBCP_NR_CLKS		50
 +
 +/* axi (apmu) peripherals */
 +#define PXA1908_CLK_CCIC1		1
-+#define PXA1908_CLK_ISP 		2
++#define PXA1908_CLK_ISP			2
 +#define PXA1908_CLK_DSI1		3
 +#define PXA1908_CLK_DISP1		4
 +#define PXA1908_CLK_CCIC0		5
 +#define PXA1908_CLK_SDH0		6
 +#define PXA1908_CLK_SDH1		7
-+#define PXA1908_CLK_USB 		8
++#define PXA1908_CLK_USB			8
 +#define PXA1908_CLK_NF			9
 +#define PXA1908_CLK_CORE_DEBUG		10
-+#define PXA1908_CLK_VPU 		11
++#define PXA1908_CLK_VPU			11
 +#define PXA1908_CLK_GC			12
 +#define PXA1908_CLK_SDH2		13
 +#define PXA1908_CLK_GC2D		14
 +#define PXA1908_CLK_TRACE		15
 +#define PXA1908_CLK_DVC_DFC_DEBUG	16
-+#define PXA1908_APMU_NR_CLKS		50
 +
 +#endif
 -- 
-2.41.0
+2.42.0
 

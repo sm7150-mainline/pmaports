@@ -1,4 +1,4 @@
-From d53f28d1c946a99a5968f429219530655e95ff88 Mon Sep 17 00:00:00 2001
+From b5eaf20ed25d51d8523ce83e678ff9fab740c8be Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
 Date: Fri, 21 Jul 2023 22:37:45 +0200
 Subject: [PATCH] gpio: pxa: disable pinctrl calls for MMP_GPIO
@@ -10,17 +10,19 @@ Similarly to PXA3xx and MMP2, pinctrl-single isn't capable of setting
 pin direction on MMP either.
 
 Fixes: a770d946371e ("gpio: pxa: add pin control gpio direction and request")
-Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
 Reviewed-by: Andy Shevchenko <andy@kernel.org>
+Acked-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
 ---
  drivers/gpio/gpio-pxa.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/gpio/gpio-pxa.c b/drivers/gpio/gpio-pxa.c
-index a1630ed4b741..d92650aecb06 100644
+index 7e9f7a32d3ee..cae9661862fe 100644
 --- a/drivers/gpio/gpio-pxa.c
 +++ b/drivers/gpio/gpio-pxa.c
-@@ -238,6 +238,7 @@ static bool pxa_gpio_has_pinctrl(void)
+@@ -237,6 +237,7 @@ static bool pxa_gpio_has_pinctrl(void)
  	switch (gpio_type) {
  	case PXA3XX_GPIO:
  	case MMP2_GPIO:
@@ -29,5 +31,5 @@ index a1630ed4b741..d92650aecb06 100644
  
  	default:
 -- 
-2.41.0
+2.42.0
 

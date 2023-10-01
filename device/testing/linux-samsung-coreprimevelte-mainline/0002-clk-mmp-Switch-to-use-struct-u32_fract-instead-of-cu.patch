@@ -1,4 +1,4 @@
-From ef90e6f6bdd88eb6700a1605b5ebd4a8aaeb98c2 Mon Sep 17 00:00:00 2001
+From 6510dc5474cbfb92f7aedf981fa3831f43886906 Mon Sep 17 00:00:00 2001
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Date: Mon, 24 Jul 2023 12:48:38 +0300
 Subject: [PATCH] clk: mmp: Switch to use struct u32_fract instead of custom
@@ -15,15 +15,12 @@ Tested-by: Duje Mihanović <duje.mihanovic@skole.hr>
 Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
 ---
  drivers/clk/mmp/clk-frac.c       | 57 ++++++++++++++++----------------
- drivers/clk/mmp/clk-mmp2.c       |  6 ++--
  drivers/clk/mmp/clk-of-mmp2.c    | 26 +++++++--------
  drivers/clk/mmp/clk-of-pxa168.c  |  4 +--
  drivers/clk/mmp/clk-of-pxa1928.c |  6 ++--
  drivers/clk/mmp/clk-of-pxa910.c  |  4 +--
- drivers/clk/mmp/clk-pxa168.c     |  4 +--
- drivers/clk/mmp/clk-pxa910.c     |  4 +--
  drivers/clk/mmp/clk.h            | 10 ++----
- 9 files changed, 58 insertions(+), 63 deletions(-)
+ 6 files changed, 51 insertions(+), 56 deletions(-)
 
 diff --git a/drivers/clk/mmp/clk-frac.c b/drivers/clk/mmp/clk-frac.c
 index 1b90867b60c4..6556f6ada2e8 100644
@@ -167,28 +164,11 @@ index 1b90867b60c4..6556f6ada2e8 100644
  {
  	struct mmp_clk_factor *factor;
  	struct clk_init_data init;
-diff --git a/drivers/clk/mmp/clk-mmp2.c b/drivers/clk/mmp/clk-mmp2.c
-index aabacfa10158..ab7dde7e7a44 100644
---- a/drivers/clk/mmp/clk-mmp2.c
-+++ b/drivers/clk/mmp/clk-mmp2.c
-@@ -59,9 +59,9 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
- 	.den_shift = 0,
- };
- 
--static struct mmp_clk_factor_tbl uart_factor_tbl[] = {
--	{.num = 8125, .den = 1536},	/*14.745MHZ */
--	{.num = 3521, .den = 689},	/*19.23MHZ */
-+static struct u32_fract uart_factor_tbl[] = {
-+	{ .numerator = 8125, .denominator = 1536 },	/* 14.745MHZ */
-+	{ .numerator = 3521, .denominator =  689 },	/* 19.23MHZ */
- };
- 
- static const char *uart_parent[] = {"uart_pll", "vctcxo"};
 diff --git a/drivers/clk/mmp/clk-of-mmp2.c b/drivers/clk/mmp/clk-of-mmp2.c
-index bcf60f43aa13..d771b3e5fb2d 100644
+index eaad36ee323d..a4f15cee630e 100644
 --- a/drivers/clk/mmp/clk-of-mmp2.c
 +++ b/drivers/clk/mmp/clk-of-mmp2.c
-@@ -141,9 +141,9 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
+@@ -143,9 +143,9 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
  	.den_shift = 0,
  };
  
@@ -201,7 +181,7 @@ index bcf60f43aa13..d771b3e5fb2d 100644
  };
  
  static struct mmp_clk_factor_masks i2s_factor_masks = {
-@@ -155,16 +155,16 @@ static struct mmp_clk_factor_masks i2s_factor_masks = {
+@@ -157,16 +157,16 @@ static struct mmp_clk_factor_masks i2s_factor_masks = {
  	.enable_mask = 0xd0000000,
  };
  
@@ -229,10 +209,10 @@ index bcf60f43aa13..d771b3e5fb2d 100644
  
  static DEFINE_SPINLOCK(acgr_lock);
 diff --git a/drivers/clk/mmp/clk-of-pxa168.c b/drivers/clk/mmp/clk-of-pxa168.c
-index 130d1a723879..17cb5c622c31 100644
+index fb0df64cf053..ab5f83e77305 100644
 --- a/drivers/clk/mmp/clk-of-pxa168.c
 +++ b/drivers/clk/mmp/clk-of-pxa168.c
-@@ -104,8 +104,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
+@@ -106,8 +106,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
  	.den_shift = 0,
  };
  
@@ -244,10 +224,10 @@ index 130d1a723879..17cb5c622c31 100644
  
  static void pxa168_pll_init(struct pxa168_clk_unit *pxa_unit)
 diff --git a/drivers/clk/mmp/clk-of-pxa1928.c b/drivers/clk/mmp/clk-of-pxa1928.c
-index 2508a0d795f8..675d695c5f7d 100644
+index 9def4b5f10e9..ebb6e278eda3 100644
 --- a/drivers/clk/mmp/clk-of-pxa1928.c
 +++ b/drivers/clk/mmp/clk-of-pxa1928.c
-@@ -58,9 +58,9 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
+@@ -61,9 +61,9 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
  	.den_shift = 0,
  };
  
@@ -261,10 +241,10 @@ index 2508a0d795f8..675d695c5f7d 100644
  
  static void pxa1928_pll_init(struct pxa1928_clk_unit *pxa_unit)
 diff --git a/drivers/clk/mmp/clk-of-pxa910.c b/drivers/clk/mmp/clk-of-pxa910.c
-index 4d15bac987eb..f5b0b7b278c0 100644
+index 7a38c424782e..fe65e7bdb411 100644
 --- a/drivers/clk/mmp/clk-of-pxa910.c
 +++ b/drivers/clk/mmp/clk-of-pxa910.c
-@@ -84,8 +84,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
+@@ -86,8 +86,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
  	.den_shift = 0,
  };
  
@@ -275,36 +255,6 @@ index 4d15bac987eb..f5b0b7b278c0 100644
  };
  
  static void pxa910_pll_init(struct pxa910_clk_unit *pxa_unit)
-diff --git a/drivers/clk/mmp/clk-pxa168.c b/drivers/clk/mmp/clk-pxa168.c
-index 8a9b8fb3a465..2ea88945bffd 100644
---- a/drivers/clk/mmp/clk-pxa168.c
-+++ b/drivers/clk/mmp/clk-pxa168.c
-@@ -52,8 +52,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
- 	.den_shift = 0,
- };
- 
--static struct mmp_clk_factor_tbl uart_factor_tbl[] = {
--	{.num = 8125, .den = 1536},	/*14.745MHZ */
-+static struct u32_fract uart_factor_tbl[] = {
-+	{ .numerator = 8125, .denominator = 1536 },	/* 14.745MHZ */
- };
- 
- static const char *uart_parent[] = {"pll1_3_16", "uart_pll"};
-diff --git a/drivers/clk/mmp/clk-pxa910.c b/drivers/clk/mmp/clk-pxa910.c
-index 9fcd76316d7e..e29b0fd6f423 100644
---- a/drivers/clk/mmp/clk-pxa910.c
-+++ b/drivers/clk/mmp/clk-pxa910.c
-@@ -50,8 +50,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
- 	.den_shift = 0,
- };
- 
--static struct mmp_clk_factor_tbl uart_factor_tbl[] = {
--	{.num = 8125, .den = 1536},	/*14.745MHZ */
-+static struct u32_fract uart_factor_tbl[] = {
-+	{ .numerator = 8125, .denominator = 1536 },	/* 14.745MHZ */
- };
- 
- static const char *uart_parent[] = {"pll1_3_16", "uart_pll"};
 diff --git a/drivers/clk/mmp/clk.h b/drivers/clk/mmp/clk.h
 index 55ac05379781..c83cec169ddc 100644
 --- a/drivers/clk/mmp/clk.h
@@ -345,5 +295,5 @@ index 55ac05379781..c83cec169ddc 100644
  
  /* Clock type "mix" */
 -- 
-2.41.0
+2.42.0
 

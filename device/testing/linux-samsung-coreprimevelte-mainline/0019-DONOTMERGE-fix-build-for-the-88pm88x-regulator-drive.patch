@@ -1,0 +1,208 @@
+From f613c321a4e37bce1603f1b2e8ffac01c7c0fb25 Mon Sep 17 00:00:00 2001
+From: Karel Balej <balejk@matfyz.cz>
+Date: Sun, 24 Sep 2023 13:01:20 +0200
+Subject: [PATCH] DONOTMERGE: fix build for the 88pm88x regulator driver
+
+---
+ drivers/regulator/88pm88x-buck.c | 10 +++++-----
+ drivers/regulator/88pm88x-ldo.c  |  2 +-
+ drivers/regulator/88pm88x-vr.c   | 12 ++++++------
+ include/linux/mfd/88pm880.h      | 10 ++++++++++
+ include/linux/mfd/88pm886.h      |  4 ++++
+ include/linux/mfd/88pm88x.h      | 20 +++++++++++++-------
+ 6 files changed, 39 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/regulator/88pm88x-buck.c b/drivers/regulator/88pm88x-buck.c
+index 7546e0fb9d87..1e0c29bfdce1 100644
+--- a/drivers/regulator/88pm88x-buck.c
++++ b/drivers/regulator/88pm88x-buck.c
+@@ -119,7 +119,7 @@
+  * from 0x00 to 0x4F: step is 12.5mV, range is from 0.6V to 1.6V
+  * from 0x50 to 0x3F step is 50mV, range is from 1.6V to 1.8V
+  */
+-static const struct regulator_linear_range buck_volt_range1[] = {
++static const struct linear_range buck_volt_range1[] = {
+ 	REGULATOR_LINEAR_RANGE(600000, 0, 0x4f, 12500),
+ 	REGULATOR_LINEAR_RANGE(1600000, 0x50, 0x54, 50000),
+ };
+@@ -129,7 +129,7 @@ static const struct regulator_linear_range buck_volt_range1[] = {
+  * from 0x00 to 0x4F VOUT step is 12.5mV, range is from 0.6V to 1.6V
+  * from 0x50 to 0x72 step is 50mV, range is from 1.6V to  3.3V
+  */
+-static const struct regulator_linear_range buck_volt_range2[] = {
++static const struct linear_range buck_volt_range2[] = {
+ 	REGULATOR_LINEAR_RANGE(600000, 0, 0x4f, 12500),
+ 	REGULATOR_LINEAR_RANGE(1600000, 0x50, 0x72, 50000),
+ };
+@@ -394,7 +394,7 @@ static const struct of_device_id pm88x_bucks_of_match[] = {
+  */
+ static int pm88x_get_vbuck_vol(unsigned int val, struct pm88x_buck_info *info)
+ {
+-	const struct regulator_linear_range *range;
++	const struct linear_range *range;
+ 	int i, volt = -EINVAL;
+ 
+ 	/* get the voltage via the register value */
+@@ -404,7 +404,7 @@ static int pm88x_get_vbuck_vol(unsigned int val, struct pm88x_buck_info *info)
+ 			return -EINVAL;
+ 
+ 		if (val >= range->min_sel && val <= range->max_sel) {
+-			volt = (val - range->min_sel) * range->uV_step + range->min_uV;
++			volt = (val - range->min_sel) * range->step + range->min;
+ 			break;
+ 		}
+ 	}
+@@ -634,7 +634,7 @@ static int pm88x_buck_probe(struct platform_device *pdev)
+ 	if (match) {
+ 		const_info = match->data;
+ 		init_data = of_get_regulator_init_data(&pdev->dev,
+-						       pdev->dev.of_node);
++						       pdev->dev.of_node, &const_info->desc);
+ 	} else {
+ 		dev_err(&pdev->dev, "parse dts fails!\n");
+ 		return -EINVAL;
+diff --git a/drivers/regulator/88pm88x-ldo.c b/drivers/regulator/88pm88x-ldo.c
+index d2bf731e2dcc..2d3d14f4f78f 100644
+--- a/drivers/regulator/88pm88x-ldo.c
++++ b/drivers/regulator/88pm88x-ldo.c
+@@ -646,7 +646,7 @@ static int pm88x_ldo_probe(struct platform_device *pdev)
+ 	if (match) {
+ 		const_info = match->data;
+ 		init_data = of_get_regulator_init_data(&pdev->dev,
+-						       pdev->dev.of_node);
++						       pdev->dev.of_node, &const_info->desc);
+ 	} else {
+ 		dev_err(&pdev->dev, "parse dts fails!\n");
+ 		return -EINVAL;
+diff --git a/drivers/regulator/88pm88x-vr.c b/drivers/regulator/88pm88x-vr.c
+index 2175859b8727..dacac878eaa2 100644
+--- a/drivers/regulator/88pm88x-vr.c
++++ b/drivers/regulator/88pm88x-vr.c
+@@ -128,12 +128,12 @@
+ #define PM880_BUCK_AUDIO_OF_MATCH(comp, label) \
+ 	PM88X_BUCK_AUDIO_OF_MATCH(pm880, PM880_ID, comp, label)
+ 
+-static const struct regulator_linear_range buck_slp_volt_range1[] = {
++static const struct linear_range buck_slp_volt_range1[] = {
+ 	REGULATOR_LINEAR_RANGE(600000, 0, 0x4f, 12500),
+ 	REGULATOR_LINEAR_RANGE(1600000, 0x50, 0x54, 50000),
+ };
+ 
+-static const struct regulator_linear_range buck_audio_volt_range1[] = {
++static const struct linear_range buck_audio_volt_range1[] = {
+ 	REGULATOR_LINEAR_RANGE(600000, 0, 0x54, 12500),
+ };
+ 
+@@ -364,9 +364,9 @@ static int of_get_legacy_init_data(struct device *dev,
+  * to a real voltage value (in uV) according to the voltage table.
+  */
+ static int pm88x_get_vvr_vol(unsigned int val, unsigned int n_linear_ranges,
+-			     const struct regulator_linear_range *ranges)
++			     const struct linear_range *ranges)
+ {
+-	const struct regulator_linear_range *range;
++	const struct linear_range *range;
+ 	int i, volt = -EINVAL;
+ 
+ 	/* get the voltage via the register value */
+@@ -376,7 +376,7 @@ static int pm88x_get_vvr_vol(unsigned int val, unsigned int n_linear_ranges,
+ 			return -EINVAL;
+ 
+ 		if (val >= range->min_sel && val <= range->max_sel) {
+-			volt = (val - range->min_sel) * range->uV_step + range->min_uV;
++			volt = (val - range->min_sel) * range->step + range->min;
+ 			break;
+ 		}
+ 	}
+@@ -584,7 +584,7 @@ static int pm88x_virtual_regulator_probe(struct platform_device *pdev)
+ 	if (match) {
+ 		const_info = match->data;
+ 		init_data = of_get_regulator_init_data(&pdev->dev,
+-						       pdev->dev.of_node);
++						       pdev->dev.of_node, &const_info->desc);
+ 		ret = of_get_legacy_init_data(&pdev->dev, &init_data);
+ 		if (ret < 0)
+ 			return ret;
+diff --git a/include/linux/mfd/88pm880.h b/include/linux/mfd/88pm880.h
+index 94b9e063918a..3952f8d29c32 100644
+--- a/include/linux/mfd/88pm880.h
++++ b/include/linux/mfd/88pm880.h
+@@ -33,6 +33,16 @@ enum {
+ 	PM880_ID_BUCK_MAX = 7,
+ };
+ 
++enum {
++	PM880_ID_BUCK1A_SLP = 0,
++	PM880_ID_BUCK1B_SLP,
++};
++
++enum {
++	PM880_ID_BUCK1A_AUDIO = 0,
++	PM880_ID_BUCK1B_AUDIO,
++};
++
+ enum {
+ 	PM880_ID_LDO1 = 0,
+ 	PM880_ID_LDO2,
+diff --git a/include/linux/mfd/88pm886.h b/include/linux/mfd/88pm886.h
+index 939040647702..9db077be1f79 100644
+--- a/include/linux/mfd/88pm886.h
++++ b/include/linux/mfd/88pm886.h
+@@ -52,4 +52,8 @@ enum {
+ 	PM886_ID_LDO_MAX = 16,
+ };
+ 
++enum {
++	PM886_ID_BUCK1_SLP = 0,
++};
++
+ #endif /* __LINUX_MFD_88PM886_H */
+diff --git a/include/linux/mfd/88pm88x.h b/include/linux/mfd/88pm88x.h
+index 91a84b551d15..ceffd976d3b7 100644
+--- a/include/linux/mfd/88pm88x.h
++++ b/include/linux/mfd/88pm88x.h
+@@ -32,14 +32,27 @@
+ #define PM88X_VBUS_NAME		"88pm88x-vbus"
+ #define PM88X_CFD_NAME		"88pm88x-leds"
+ #define PM88X_RGB_NAME		"88pm88x-rgb"
++#define PM88X_DEBUGFS_NAME	"88pm88x-debugfs"
+ #define PM88X_GPADC_NAME	"88pm88x-gpadc"
++#define PM88X_HWMON_NAME	"88pm88x-hwmon"
+ #define PM88X_DVC_NAME		"88pm88x-dvc"
++#define PM88X_VIRTUAL_REGULATOR_NAME "88pm88x-vr"
+ 
+ enum pm88x_type {
+ 	PM886 = 1,
+ 	PM880 = 2,
+ };
+ 
++enum {
++	PM88X_ID_VOTG = 0,
++};
++
++enum {
++	PM88X_RGB_LED0,
++	PM88X_RGB_LED1,
++	PM88X_RGB_LED2,
++};
++
+ enum pm88x_pages {
+ 	PM88X_BASE_PAGE = 0,
+ 	PM88X_LDO_PAGE,
+@@ -95,13 +108,6 @@ enum pm88x_irq_number {
+ 	PM88X_MAX_IRQ,			   /* 28 */
+ };
+ 
+-/* 3 rgb led indicators */
+-enum {
+-	PM88X_RGB_LED0,
+-	PM88X_RGB_LED1,
+-	PM88X_RGB_LED2,
+-};
+-
+ /* camera flash/torch */
+ enum {
+ 	PM88X_NO_LED = -1,
+-- 
+2.42.0
+

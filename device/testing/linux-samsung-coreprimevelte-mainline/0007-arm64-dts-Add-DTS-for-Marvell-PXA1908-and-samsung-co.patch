@@ -1,4 +1,4 @@
-From bcd581ae175ab72d3ffa81386e11837923fb4328 Mon Sep 17 00:00:00 2001
+From ba77704a60653c40ccdbe59511cbfb6dfa8f9465 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
 Date: Fri, 21 Jul 2023 22:37:50 +0200
 Subject: [PATCH] arm64: dts: Add DTS for Marvell PXA1908 and
@@ -13,9 +13,9 @@ Edition LTE, a smartphone based on said SoC.
 Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
 ---
  arch/arm64/boot/dts/marvell/Makefile          |   3 +
- .../pxa1908-samsung-coreprimevelte.dts        | 332 ++++++++++++++++++
- arch/arm64/boot/dts/marvell/pxa1908.dtsi      | 292 +++++++++++++++
- 3 files changed, 627 insertions(+)
+ .../pxa1908-samsung-coreprimevelte.dts        | 333 ++++++++++++++++++
+ arch/arm64/boot/dts/marvell/pxa1908.dtsi      | 295 ++++++++++++++++
+ 3 files changed, 631 insertions(+)
  create mode 100644 arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts
  create mode 100644 arch/arm64/boot/dts/marvell/pxa1908.dtsi
 
@@ -32,10 +32,10 @@ index 79ac09b58a89..263be6ec7567 100644
 +dtb-$(CONFIG_ARCH_MMP) += pxa1908-samsung-coreprimevelte.dtb
 diff --git a/arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts b/arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts
 new file mode 100644
-index 000000000000..59e5d6f15dd2
+index 000000000000..e3c863d517a8
 --- /dev/null
 +++ b/arch/arm64/boot/dts/marvell/pxa1908-samsung-coreprimevelte.dts
-@@ -0,0 +1,332 @@
+@@ -0,0 +1,333 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +#include "pxa1908.dtsi"
 +#include <dt-bindings/gpio/gpio.h>
@@ -362,6 +362,7 @@ index 000000000000..59e5d6f15dd2
 +};
 +
 +&sdh0 {
++	pinctrl-names = "default";
 +	pinctrl-0 = <&sdh0_pins_1 &sdh0_pins_2 &sdh0_pins_3>;
 +	cd-gpios = <&gpio 11 0>;
 +	cd-inverted;
@@ -370,10 +371,10 @@ index 000000000000..59e5d6f15dd2
 +};
 diff --git a/arch/arm64/boot/dts/marvell/pxa1908.dtsi b/arch/arm64/boot/dts/marvell/pxa1908.dtsi
 new file mode 100644
-index 000000000000..59b3e609bb24
+index 000000000000..cc322b9a0e9e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/marvell/pxa1908.dtsi
-@@ -0,0 +1,292 @@
+@@ -0,0 +1,295 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/dts-v1/;
 +
@@ -452,7 +453,10 @@ index 000000000000..59b3e609bb24
 +		gic: interrupt-controller@d1df9000 {
 +			compatible = "arm,gic-400";
 +			reg = <0 0xd1df9000 0 0x1000>,
-+				<0 0xd1dfa000 0 0x2000>;
++				<0 0xd1dfa000 0 0x2000>,
++				/* The subsequent registers are guesses. */
++				<0 0xd1dfc000 0 0x2000>,
++				<0 0xd1dfe000 0 0x2000>;
 +			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
 +			interrupt-controller;
 +			#interrupt-cells = <3>;
@@ -667,5 +671,5 @@ index 000000000000..59b3e609bb24
 +	};
 +};
 -- 
-2.41.0
+2.42.0
 
