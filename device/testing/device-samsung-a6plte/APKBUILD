@@ -2,8 +2,8 @@
 
 pkgname=device-samsung-a6plte
 pkgdesc="Samsung Galaxy A6+ (2018)"
-pkgver=1
-pkgrel=4
+pkgver=1.1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -38,7 +38,10 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="WiFi, Bluetooth, ADSP, Venus and GPU Firmware"
-	depends="firmware-samsung-a6plte linux-firmware-qcom"
+	depends="
+		firmware-samsung-a6plte
+		linux-firmware-qcom
+		msm-firmware-loader"
 	mkdir "$subpkgdir"
 
 	install -Dm644 "$srcdir/30-gpu-firmware.files" -t \
@@ -52,7 +55,7 @@ phosh() {
 }
 
 sha512sums="
-302c0bec754bb79ef561c1a8d4ff34ba52b904c853bce6a15a79ba7b5b7a3d02c1c75bbe86d59be7b608a6dc744dd3e3c638eaa4539c53d20fa55fa5ea397d74  30-gpu-firmware.files
+d087fb8b9c1cec66bd6f88680402afed3a642e55014e86a525a8177274cbda768622683108670476cb742cacea7a82a97df94e0469a9126e85d163685aeba421  30-gpu-firmware.files
 0be6ff0e24d1184f316deb27cd3642d9f6dc74ae90ad7c0fcdfc32722471db0a72643bd59aae1b3a5e717f6c710898e44d87192b9268614328235de452ca952e  deviceinfo
 c23c2f882a78e8f3ddc1be9f04bed1977885ff403e4c7211255846208f3053373d5ac413bd9d0d3d5330de045a645c14c4bdb031714f2f6efe64495d6800a96d  modules-initfs
 bea40516cf51b4ad0609cc21ca56c19eb9cb2b1be45cddf486264d9c526469f1abad313a95a4f938ccbd0c023d08884aefe8d850746a97075999de11b4a2ff4c  gpu-nobin.sh
