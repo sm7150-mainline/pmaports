@@ -2,7 +2,7 @@
 
 pkgname=firmware-oneplus-sdm845
 pkgver=8
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for OnePlus 6 / 6T"
 url="https://gitlab.com/sdm845-mainline/firmware-oneplus-sdm845"
 arch="aarch64"
@@ -17,9 +17,12 @@ source="$pkgname.tar.gz::$url/-/archive/$_version/$pkgname-$_version.tar.gz
 	firmware.files
 	30-gpu-firmware.files
 	board-2.bin::https://gitlab.com/dylanvanassche/ath10k-firmware/-/raw/$_board2_commit/linux-firmware/board-2.bin
+	30-oneplus-sdm845-firmware-ci.files
 	"
 subpackages="
-	$pkgname-initramfs:firmware_initramfs"
+	$pkgname-initramfs:firmware_initramfs
+	$pkgname-pmtest
+"
 
 package() {
 	cd "$srcdir/$pkgname-$_version/"
@@ -42,9 +45,17 @@ firmware_initramfs() {
 		"$subpkgdir/usr/share/mkinitfs/files/30-gpu-firmware.files"
 }
 
+pmtest() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-mkinitfs-hook-ci"
+
+	install -Dm644 "$srcdir/30-oneplus-sdm845-firmware-ci.files" \
+		"$subpkgdir/usr/share/mkinitfs/files/30-oneplus-sdm845-firmware-ci.files"
+}
+
 sha512sums="
 59091452f1d6363fab0474ebc2738ec8fca6903c64837c3b6228eefb2030b0b4d5f0694770ddadf81f59f2ace4fad548459ad7a6604498aaa08a9064fb1dc736  firmware-oneplus-sdm845.tar.gz
 f7a850f76eb5c757d4c7329b8e2040aadc62d9d5d7a6c21752f0fe1afb2343f9630738ede4b3c45cf1eba305e35923dd7f011e9fb6a68e97f3d25564b5c29306  firmware.files
 bc6c329bf6bb9622320ab610f4f5fb944129e276855a4cf5646cb29a553f4c47cd9a4ef4305cbcd94a991471bc109b8f615cefd6871be99bf6a457fe0fa5aa19  30-gpu-firmware.files
 a8eaab63f467553a65789a316d6f58cc15b0ad9bf3f698e6dbe51efa841db7f62a69d0c24b69da4f36de4a01dc29b723911d9cf17f925d3ce1170cbfa6b16029  board-2.bin
+d6a81ab4697e763eebf2b428e8a63dbdd0a44743691d9277e9d3c7de26dbcbddaea1928a6cfa5509f8f41506d8812022f200ec47f87d28e05af77302683ffcf4  30-oneplus-sdm845-firmware-ci.files
 "
