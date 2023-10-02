@@ -3,7 +3,7 @@
 
 pkgname=device-oneplus-enchilada
 pkgdesc="OnePlus 6"
-pkgver=11
+pkgver=12
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -25,7 +25,7 @@ source="
 	modules-initfs
 	q6voiced.conf
 "
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-pmtest"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -45,6 +45,14 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 
 	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
+}
+
+pmtest() {
+	depends="bootrr qrtr firmware-oneplus-sdm845 unl0kr"
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-mkinitfs-hook-ci"
+	install="$subpkgname.post-install"
+
+	devicepkg_pmtest_post_install "ttyMSM0,115200" > "$subpkgname.post-install"
 }
 
 sha512sums="

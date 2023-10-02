@@ -5,7 +5,7 @@
 pkgname=device-shift-axolotl
 pkgdesc="SHIFT6mq"
 pkgver=12
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -21,13 +21,16 @@ depends="
 	soc-qcom-sdm845-qbootctl
 	fwupd>=1.8.6
 "
-makedepends="devicepkg-dev"
+makedepends="devicepkg-dev postmarketos-test"
 source="
 	deviceinfo
 	modules-initfs
 	q6voiced.conf
 "
-subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-pmtest
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -44,6 +47,14 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 
 	install -Dm644 q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
+}
+
+pmtest() {
+	depends="bootrr qrtr firmware-shift-sdm845 unl0kr"
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-mkinitfs-hook-ci"
+	install="$subpkgname.post-install"
+
+	devicepkg_pmtest_post_install "ttyMSM0,115200" > "$subpkgname.post-install"
 }
 
 sha512sums="
