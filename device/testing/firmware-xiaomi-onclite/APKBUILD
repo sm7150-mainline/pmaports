@@ -1,36 +1,27 @@
 # Maintainer: Barnabas Czeman <trabarni@gmail.com>
 pkgname=firmware-xiaomi-onclite
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware files for Xiaomi Redmi 7"
 url="https://gitlab.com/barni2000/$pkgname"
 arch="aarch64"
-depends="firmware-xiaomi-onclite-initramfs"
 license="proprietary"
 options="!strip !check !archcheck !spdx !tracedeps pmb:cross-native"
 
 _commit="5ab4968ab12acb60a5e165008fdf25345e80c309"
 
-source="$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
-	30-gpu-firmware.files"
-subpackages="$pkgname-initramfs:firmware_initramfs"
+source="$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
-_fwdir="/lib/firmware/postmarketos"
+_fwdir="/lib/firmware"
 
 package() {
-	install -Dm644 a506_zap.b02 -t "$pkgdir/$_fwdir"
-	install -Dm644 a506_zap.mdt -t "$pkgdir/$_fwdir"
-	install -Dm644 a530_pfp.fw -t "$pkgdir/$_fwdir"
-	install -Dm644 a530_pm4.fw -t "$pkgdir/$_fwdir"
-}
-
-firmware_initramfs() {
-	install -Dm644 "$srcdir"/30-gpu-firmware.files -t \
-		"$subpkgdir"/usr/share/mkinitfs/files
+	install -Dm644 a506_zap.b02 -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a506_zap.mdt -t "$pkgdir/$_fwdir/postmarketos"
+	install -Dm644 a530_pfp.fw -t "$pkgdir/$_fwdir/qcom"
+	install -Dm644 a530_pm4.fw -t "$pkgdir/$_fwdir/qcom"
 }
 
 sha512sums="
 e95cf73b4a2e13c8ea3296670177372f5e3c07f40e73806546f7c28a12a3ba5a3b735994dcaeacb8da59f5e3561ab6b061cedd77757cf58686907d32b1a7162a  firmware-xiaomi-onclite-5ab4968ab12acb60a5e165008fdf25345e80c309.tar.gz
-0e7daa7d3fb216b4949e103a6a58af614b6dd6839acd5e638a2cd6b4caf703fa0d19b2dfb997f69a097e3653c31da22fa1a289fbf911b6ecb1f3b1a901ef33d3  30-gpu-firmware.files
 "
