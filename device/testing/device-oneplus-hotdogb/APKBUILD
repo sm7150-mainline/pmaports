@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-oneplus-hotdogb
+pkgdesc="OnePlus 7T"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm8150
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+047e6e9a072bcbbef2ac8be7813784d1e1776495734df3e0c3b116cb599908cb970dd3f98089298032eeb7870013cd4521d7be71e65b67f02e8d436238581d2b  deviceinfo
+"
