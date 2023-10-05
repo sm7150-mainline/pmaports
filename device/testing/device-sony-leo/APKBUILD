@@ -2,8 +2,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-sony-leo
 pkgdesc="Sony Xperia Z3"
-pkgver=0.3
-pkgrel=2
+pkgver=0.4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -44,7 +44,15 @@ kernel_mainline() {
 
 nonfree_firmware() {
 	pkgdesc="Wifi/GPU firmware"
-	depends="linux-firmware-brcm linux-firmware-cypress firmware-qcom-adreno-a330"
+	depends="
+		firmware-sony-leo-adsp
+		firmware-sony-leo-modem
+		firmware-sony-leo-wifi
+		msm-modem
+		ta-service
+		ta-service-openrc
+		"
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 }
 
