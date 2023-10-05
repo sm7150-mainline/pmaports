@@ -3,7 +3,7 @@
 pkgname=device-google-sargo
 pkgdesc="Google Pixel 3a"
 pkgver=0.6
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -50,8 +50,9 @@ nonfree_firmware() {
 		soc-qcom-sdm845-nonfree-firmware
 	"
 
-	# Create an empty sub-package directory because this sub-package is empty
-	mkdir "$subpkgdir"
+	# The q6voiced configuration can only be used if the ADSP is brought up
+	# via non-free firmware.
+	install -Dm644 "$srcdir"/q6voiced.conf "$subpkgdir"/etc/conf.d/q6voiced
 }
 
 sha512sums="
