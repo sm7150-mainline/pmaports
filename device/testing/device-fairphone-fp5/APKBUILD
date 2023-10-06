@@ -1,21 +1,26 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-fairphone-fp5
 pkgdesc="Fairphone 5"
-pkgver=0.2
-pkgrel=1
+pkgver=0.3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
+	bootmac
 	linux-postmarketos-qcom-sc7280
 	make-dynpart-mappings
+	mesa-vulkan-freedreno
 	mkbootimg
 	postmarketos-base
 	postmarketos-update-kernel
+	qbootctl
+	qbootctl-openrc
 	swclock-offset
 "
 makedepends="devicepkg-dev"
+install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	deviceinfo
 	gtk.css
@@ -37,6 +42,7 @@ package() {
 nonfree_firmware() {
 	pkgdesc="Firmware for Modem, WiFi, etc."
 	depends="
+		firmware-fairphone-fp5-adreno
 		firmware-fairphone-fp5-adsp
 		firmware-fairphone-fp5-bluetooth
 		firmware-fairphone-fp5-cdsp
@@ -44,6 +50,7 @@ nonfree_firmware() {
 		firmware-fairphone-fp5-modem
 		firmware-fairphone-fp5-venus
 		firmware-fairphone-fp5-wpss
+		firmware-qcom-adreno-a660
 		linux-firmware-ath11k
 		msm-modem
 		pd-mapper
@@ -62,5 +69,5 @@ phosh() {
 sha512sums="
 c7cdcaf8e9a07ca8c1e01f527b4151f27b7bac0800b9b0fe0bfa09890ebbd0152ead81b78852be25cd5ccb14ea3777aca0e786d72c586e39e6c2b2731e9661bc  deviceinfo
 71cd1ffa1ae56874a0751ef9eb91f4bccbe2009c1287b2116f3c09e99e70e436ed3d3ef27684dd318c8ff140cdccd7428580788659b7c6b2a3d8df6948149171  gtk.css
-c535c211a6d594605e0e2af3536e457b4b6a4b833f26efda4dbd514597d080393a621338c274173f4633eadefc0c2ae830f7ceaa4cbe56a1e6715ff825af18f1  modules-initfs
+165ae7e1dbb5fb709e2f7b457dafa5df5b755c1199ea0f011b7e519ab49bc676ddeff92a3152629125e66d3dbbe5a70384364191000a1fdf860977e2ed43de54  modules-initfs
 "
