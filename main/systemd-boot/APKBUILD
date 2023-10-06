@@ -1,0 +1,118 @@
+# Contributor: Clayton Craft <clayton@craftyguy.net>
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+#
+# Notes:
+# - Builds / packages *only* the EFI boot manager and stub loader, and any
+#   useful apps for managing those things.
+# - The goal with the systemd patch and this package is *NOT* to create the
+#   fastest build possible (e.g. by hacking up meson a bunch).
+# - The goal is to create the smallest diff from upstream so that rebasing
+#   this is as easy as possible.
+# - If you can figure out how to have both, great!!! Otherwise, installing
+#   some extra build-time junk and waiting for a long meson configure step
+#   is an acceptable price to pay for not having to rebase a bunch of stuff.
+#
+pkgname=systemd-boot
+pkgver=254
+pkgrel=0
+pkgdesc="systemd's EFI boot manager and stub"
+url="https://systemd.io/"
+# TODO:
+# armv7: untested
+# riscv64: untested
+# x86: untested (and unnecessary?)
+arch="x86_64 aarch64"
+license="GPL-2.0-only"
+# Some of these are just to satisfy systemd's meson config, and aren't actually
+# used for building the boot manager or stub...
+makedepends="
+	bash
+	coreutils
+	gperf
+	meson
+	py3-elftools
+	py3-jinja2
+"
+source="
+	systemd-$pkgver.tar.gz::https://github.com/systemd/systemd/archive/refs/tags/v$pkgver.tar.gz
+	0001-meson-minimal-configure-for-building-systemd-boot.patch
+	0002-fix-wchar-for-compiling-on-musl.patch
+	cross-x86.meson
+	"
+options="!check"  # no tests
+subpackages="ukify"
+# TODO: cross-native fails on, e.g. aarch64, elf2efi gets an "unknown section
+# with name '' " ...
+# Maybe because meson thinks(?) the linker doesn't support norelro? It does
+# when building the default way!
+# Using meson cross files is a lot faster! But the whole thing is pretty small,
+# so, meh.
+# options="!check pmb:cross-native"  # no tests
+builddir="$srcdir/systemd-$pkgver"
+
+case "$CARCH" in
+	# TODO: This doesn't work locally, pmboostrap's depends parser doesn't
+	# evaluate/consider shell stuff...
+	x86_64)
+		makedepends="$makedepends gcc-x86 musl-dev-x86"
+		;;
+esac
+
+build() {
+	abuild-meson  \
+		-Dsbat-distro="postmarketOS" \
+		-Dsbat-distro-pkgname="$pkgname" \
+		-Dsbat-distro-summary="postmarketOS" \
+		-Dsbat-distro-url="postmarketos.org" \
+		-Dsbat-distro-version="$pkgver" \
+		. output
+	meson compile -C output systemd-boot
+
+	# Some x86_64 systems have 32-bit EFI, so cross compile the bootloader for
+	# 32-bit when building for this CARCH
+	# TODO: this should use systemd/meson.build's ability to cross-compile
+	# (setting meson "efi_arch_alt"). The check for that currently fails
+	# because the linker can't find the i586/32-bit stuff. Setting
+	# LIBRARY_PATH=/usr/lib/gcc/i586-alpine-linux-musl didn't work.
+	if [ "$CARCH" == "x86_64" ]; then
+		abuild-meson \
+			-Dsbat-distro="postmarketOS" \
+			-Dsbat-distro-pkgname="$pkgname" \
+			-Dsbat-distro-summary="postmarketOS" \
+			-Dsbat-distro-url="postmarketos.org" \
+			-Dsbat-distro-version="$pkgver" \
+			--cross-file "$srcdir"/cross-x86.meson \
+			. output.32
+		meson compile -C output.32 systemd-boot
+	fi
+}
+
+package() {
+	mkdir -p "$pkgdir"/usr/lib/systemd/boot/efi
+
+	mv output/src/boot/efi/linux*.efi.stub \
+		"$pkgdir"/usr/lib/systemd/boot/efi/
+	mv output/src/boot/efi/systemd*.efi \
+		"$pkgdir"/usr/lib/systemd/boot/efi/
+
+	if [ "$CARCH" == "x86_64" ]; then
+		mv output.32/src/boot/efi/linux*.efi.stub \
+			"$pkgdir"/usr/lib/systemd/boot/efi/
+		mv output.32/src/boot/efi/systemd*.efi \
+			"$pkgdir"/usr/lib/systemd/boot/efi/
+	fi
+}
+
+ukify() {
+	depends="binutils py3-pefile"
+
+	install -Dm755 "$builddir"/src/ukify/ukify.py \
+		"$subpkgdir"/usr/bin/ukify
+}
+
+sha512sums="
+84b4d16980fe2e64d5c3c95b9b4fbaad1076f368f493fdd745cbafbe7ce825293384f5fa0b6360ba8188da23c4575e87402fb666a3b71f84ff8b323aba0c07ff  systemd-254.tar.gz
+e97835fa20b99ae8553b2140a14ed7da14de1e18e98f39718edba64b960a92cc9edcbf89b16bdd6c20ac1566a9c5b9e6203898e104c0312e1aae9b300b116c27  0001-meson-minimal-configure-for-building-systemd-boot.patch
+c666b42f37a5710138ebc880c5defa8b5d0645ff78eb1ec685068d7219626af285a64bee78bb9460e31de1ca293c6c051a59a97e58b4335ad2c85a7424518763  0002-fix-wchar-for-compiling-on-musl.patch
+ad54e2c7e7a21bfa9b5f9e8db1b6af6a6d78a3e5dfe2dafcec77488f6224865ab4d4c8a8c8ee1c54c99d1741361e9fb3a51e5d36bcbc7a1c3fdcc4d0c1672132  cross-x86.meson
+"

@@ -1,0 +1,67 @@
+From b96192f20a670c902279f905792333f556c0284e Mon Sep 17 00:00:00 2001
+From: Clayton Craft <clayton@craftyguy.net>
+Date: Fri, 6 Oct 2023 11:51:21 -0700
+Subject: [PATCH 1/2] meson: minimal configure for building systemd-boot
+
+Notes:
+    - toggling all ENABLED_* things off saves a ton of configure
+      time
+    - Removing capability.h, so that cross compiling doesn't fail
+      because that header isn't installed
+    - Set libcap and libmount to required=false, they aren't needed for
+      building the bootloader, and they complicate cross compilation
+---
+ meson.build | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 395eca1943..a227b1cef4 100644
+--- a/meson.build
++++ b/meson.build
+@@ -775,9 +775,6 @@ conf.set('GPERF_LEN_TYPE', gperf_len_type,
+ 
+ ############################################################
+ 
+-if not cc.has_header('sys/capability.h')
+-        error('POSIX caps headers not found')
+-endif
+ foreach header : ['crypt.h',
+                   'linux/memfd.h',
+                   'linux/vm_sockets.h',
+@@ -1065,7 +1062,7 @@ if not libcrypt.found()
+         # fallback to use find_library() if libcrypt is provided by glibc, e.g. for LibreELEC.
+         libcrypt = cc.find_library('crypt')
+ endif
+-libcap = dependency('libcap')
++libcap = dependency('threads', required : false)
+ 
+ # On some architectures, libatomic is required. But on some installations,
+ # it is found, but actual linking fails. So let's try to use it opportunistically.
+@@ -1179,7 +1176,7 @@ else
+ endif
+ 
+ libmount = dependency('mount',
+-                      version : fuzzer_build ? '>= 0' : '>= 2.30')
++                      version : fuzzer_build ? '>= 0' : '>= 2.30', required : false)
+ 
+ want_libfdisk = get_option('fdisk')
+ if want_libfdisk != 'false' and not skip_deps
+@@ -2164,6 +2161,15 @@ else
+ endif
+ conf.set10('ENABLE_UKIFY', want_ukify)
+ 
++foreach key : conf.keys()
++        if key.startswith('ENABLE_')
++                conf.set10(key, false)
++        endif
++endforeach
++
++conf.set10('ENABLE_EFI', true)
++conf.set10('ENABLE_BOOTLOADER', true)
++
+ ############################################################
+ 
+ elf2efi_lds = project_source_root / 'tools/elf2efi.lds'
+-- 
+2.40.1
+
