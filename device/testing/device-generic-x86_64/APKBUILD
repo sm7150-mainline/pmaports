@@ -1,0 +1,83 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-generic-x86_64
+# note: this could also support legacy boot in the future, e.g. with syslinux!
+pkgdesc="Generic x86_64 system, with EFI"
+pkgver=8
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="x86_64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	postmarketos-base
+	sof-firmware
+	systemd-boot
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+subpackages="
+	$pkgname-kernel-edge:kernel_edge
+	$pkgname-kernel-lts:kernel_lts
+	$pkgname-libva
+	$pkgname-mesa
+	$pkgname-vulkan
+	"
+provides="device-tablet-x64uefi=$pkgver-r$pkgrel device-tablet-x86uefi=$pkgver-r$pkgrel"
+replaces="device-tablet-x64uefi device-tablet-x86uefi"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+libva() {
+	install_if="$pkgname=$pkgver-r$pkgrel libva"
+	provides="device-tablet-x64uefi-libva=$pkgver-r$pkgrel device-tablet-x86uefi-libva=$pkgver-r$pkgrel"
+	replaces="device-tablet-x64uefi-libva device-tablet-x86uefi-libva"
+	depends="intel-media-driver libva-intel-driver mesa-va-gallium"
+	mkdir "$subpkgdir"
+}
+
+mesa() {
+	install_if="$pkgname=$pkgver-r$pkgrel mesa-gl"
+	provides="device-tablet-x64uefi-mesa=$pkgver-r$pkgrel device-tablet-x86uefi-mesa=$pkgver-r$pkgrel"
+	replaces="device-tablet-x64uefi-mesa device-tablet-x86uefi-mesa"
+	depends="mesa-dri-gallium"
+	mkdir "$subpkgdir"
+}
+
+kernel_edge() {
+	pkgdesc="Alpine Edge kernel"
+	provides="device-tablet-x64uefi-kernel-edge=$pkgver-r$pkgrel device-tablet-x86uefi-kernel-edge=$pkgver-r$pkgrel"
+	replaces="device-tablet-x64uefi-kernel-edge device-tablet-x86uefi-kernel-edge"
+	depends="linux-edge"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_lts() {
+	pkgdesc="Alpine LTS kernel"
+	provides="device-tablet-x64uefi-kernel-lts=$pkgver-r$pkgrel device-tablet-x86uefi-kernel-lts=$pkgver-r$pkgrel"
+	replaces="device-tablet-x64uefi-kernel-lts device-tablet-x86uefi-kernel-lts"
+	depends="linux-lts"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+vulkan() {
+	install_if="$pkgname=$pkgver-r$pkgrel vulkan-loader"
+	provides="device-tablet-x64uefi-vulkan=$pkgver-r$pkgrel device-tablet-x86uefi-vulkan=$pkgver-r$pkgrel"
+	replaces="device-tablet-x64uefi-vulkan device-tablet-x86uefi-vulkan"
+	depends="mesa-vulkan-ati mesa-vulkan-intel mesa-vulkan-swrast"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+33f0450413c7b364390fdc715578b41389bced5ff69f04a2128155f5ad828ed0e1cc17a20b610eccf4bd99560e21be91e362faaa72e9decad4623f8669e8ab7a  deviceinfo
+d65ca12564ef032507c19359643794a14579fd1d065777f9042d40d38aad4d40d99c10aae9a3acd7799f4ad95651b6ca9d83335501d08869dc391f3050df4d1f  modules-initfs
+"
