@@ -48,8 +48,13 @@ downstream() {
 
 mainline() {
 	pkgdesc="Firmware for Samsung chagall* when using mainline kernel"
-	depends="linux-firmware-s5p-mfc"
+	depends="linux-firmware-s5p-mfc linux-firmware-brcm"
 	mkdir -p "$subpkgdir"
+
+	install -Dm644 "$srcdir/$pkgname-$_chagall_commit"-nvram_net.txt_4354_a1 \
+		"$subpkgdir"/lib/firmware/brcm/brcmfmac4354-sdio.samsung,chagall-wifi.txt
+	ln -s brcmfmac4354-sdio.samsung,chagall-wifi.txt \
+		"$subpkgdir"/lib/firmware/brcm/brcmfmac4354-sdio.samsung,chagall-lte.txt
 }
 
 sha512sums="
