@@ -20,6 +20,8 @@ subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-downstream:nonfree_firmware_downstream
+	$pkgname-nonfree-firmware-mainline:nonfree_firmware_mainline
 "
 
 build() {
@@ -47,8 +49,21 @@ kernel_mainline() {
 }
 
 nonfree_firmware() {
-	pkgdesc="Non-free firmware for the Samsung Galaxy Tab S"
-	depends="firmware-samsung-chagall"
+	pkgdesc="Non-free firmware for the Samsung Galaxy Tab S 10.5"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_downstream() {
+	pkgdesc="Non-free firmware for chagallwifi when using downstream kernel"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware=$pkgver-r$pkgrel $pkgname-kernel-downstream"
+	depends="firmware-samsung-chagall-downstream>=3.0-r0"
+	mkdir "$subpkgdir"
+}
+
+nonfree_firmware_mainline() {
+	pkgdesc="Non-free firmware for chagallwifi when using mainline kernel"
+	install_if="$pkgname=$pkgver-r$pkgrel $pkgname-nonfree-firmware=$pkgver-r$pkgrel $pkgname-kernel-mainline"
+	depends="firmware-samsung-chagall-mainline>=3.0-r0"
 	mkdir "$subpkgdir"
 }
 

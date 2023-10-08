@@ -1,5 +1,5 @@
 pkgname=firmware-samsung-chagall
-pkgver=2.1
+pkgver=3.0
 pkgrel=0
 pkgdesc="Firmware for Samsung chagallwifi and chagalllte"
 url="https://github.com/TheMuppets/proprietary_vendor_samsung"
@@ -26,7 +26,6 @@ package() {
 
 downstream() {
 	pkgdesc="Firmware for Samsung chagall* when using downstream kernel"
-	install_if="device-samsung-chgallwifi-kernel-downstream"
 	depends="firmware-samsung-exynos5420-downstream"
 	mkdir -p "$subpkgdir"
 	# Wifi
@@ -39,7 +38,6 @@ downstream() {
 
 mainline() {
 	pkgdesc="Firmware for Samsung chagall* when using mainline kernel"
-	install_if="device-samsung-chagallwifi-kernel-mainline"
 	depends="linux-firmware-s5p-mfc"
 	mkdir -p "$subpkgdir"
 }
