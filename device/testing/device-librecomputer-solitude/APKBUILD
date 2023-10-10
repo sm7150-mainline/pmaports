@@ -1,0 +1,40 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Newbyte <newbyte@postmarketos.org>
+pkgname=device-librecomputer-solitude
+pkgdesc="Libre Computer AML-S905D3-CC"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-amlogic
+	postmarketos-base
+	soc-amlogic-s905
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+	"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="vdec firmware"
+	depends="linux-firmware-meson"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+8349aa8a457c8effe4606e6e5030f910319436b3a99b024bb73c10c1de8a453348fd3b1859082850132348e30f9f33001d102b85ded2ea7afc23cea0e983d9a5  deviceinfo
+52948c2884a6f6384e12b7a598f70878526d0d3293c214425170145231144ec7de805c038641741a4a5d75b50e554f6a3fa3769784a674217ed032f9b6a233c8  modules-initfs
+"
