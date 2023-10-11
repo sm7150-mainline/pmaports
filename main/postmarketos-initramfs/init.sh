@@ -10,6 +10,9 @@ IN_CI="false"
 [ -e /etc/unudhcpd.conf ] && . /etc/unudhcpd.conf
 . ./init_functions.sh
 . /usr/share/misc/source_deviceinfo
+[ -e /etc/os-release ] && . /etc/os-release
+# provide a default for os-release's VERSION in case the file doesn't exist
+VERSION="${VERSION:-unknown}"
 
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 /bin/busybox --install -s
