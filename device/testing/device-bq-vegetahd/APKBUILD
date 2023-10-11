@@ -1,0 +1,33 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-bq-vegetahd
+pkgdesc="BQ Aquaris E5 HD"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-bq-vegetahd
+	mkbootimg
+	postmarketos-base
+	mtk-mkimage
+"
+makedepends="
+	devicepkg-dev
+"
+source="
+	deviceinfo
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+575bca5e9012f045096a99e0c1ef617dde0002201856cecf37ebb222acfdd5b7d912e42b115e6ff80dfdeac7ad9d3e6d24a91d0c780cc8e5cd9a7c4a458a4dea  deviceinfo
+"
