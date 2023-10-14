@@ -6,7 +6,7 @@
 _flavor="postmarketos-qcom-sdm845"
 pkgname=linux-$_flavor
 pkgver=6.5.5
-pkgrel=0
+pkgrel=1
 pkgdesc="Mainline Kernel fork for SDM845 devices"
 arch="aarch64"
 _carch="arm64"
@@ -39,8 +39,19 @@ build() {
 }
 
 package() {
-	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
-		"$pkgdir/boot/vmlinuz"
+	if [ -e "$builddir/arch/$_carch/boot/vmlinuz.efi" ]; then
+		# ZBOOT EFI decompressor for EFI booting
+		install -Dm644 "$builddir/arch/$_carch/boot/vmlinuz.efi" \
+			"$pkgdir/boot/linux.efi"
+
+		# Old GZIP'd kernel image for boot.img compatibility
+		install -Dm644 "$builddir/arch/$_carch/boot/vmlinuz" \
+			"$pkgdir/boot/vmlinuz"
+	else
+		echo "WARNING: CONFIG_ZBOOT not enabled!"
+		install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+			"$pkgdir/boot/vmlinuz"
+	fi
 
 	make modules_install dtbs_install \
 		ARCH="$_carch" \
