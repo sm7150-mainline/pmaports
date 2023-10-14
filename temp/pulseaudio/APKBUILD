@@ -3,13 +3,12 @@
 pkgname=pulseaudio
 pkgver=9999_git20220621
 _pkgver=16.1
-pkgrel=0
+pkgrel=1
 pkgdesc="featureful, general-purpose sound server"
 provider_priority=10
 url="https://www.freedesktop.org/wiki/Software/PulseAudio/"
 arch="all"
 license="LGPL-2.1-or-later"
-options="!check"
 makedepends="
 	meson
 	tdb-dev
@@ -31,7 +30,7 @@ makedepends="
 	sbc-dev
 	fftw-dev
 	jack-dev
-	openssl1.1-compat-dev
+	openssl-dev>3
 	speexdsp-dev
 	eudev-dev
 	libcap-dev
@@ -92,18 +91,10 @@ source="https://freedesktop.org/software/pulseaudio/releases/pulseaudio-$_pkgver
 	0025-bluetooth-support-ATD-number.patch
 	0026-bluetooth-strip-additional-out-of-spec-r-n-chars.patch
 	link-libintl.patch
+	remove-once-test.patch
 	$pkgname.initd
 	$pkgname.confd
 	"
-
-case "$CARCH" in
-	aarch64|armv7|armhf|x86|ppc64le)
-		options="$options !check" # once-test fails, all others pass
-		;;
-	s390x)
-		options="$options !check" # mix-test fails, all others pass
-		;;
-esac
 
 case "$CARCH" in
 	x86|x86_64|aarch64)
@@ -124,9 +115,10 @@ prepare() {
 
 build() {
 	abuild-meson \
+		-Db_lto=true \
 		-Dgcov=false \
 		-Dman=true \
-		-Dtests=true \
+		-Dtests="$(want_check && echo true || echo false)" \
 		-Dsystem_user=pulse \
 		-Dsystem_group=pulse \
 		-Ddatabase=tdb \
@@ -157,11 +149,12 @@ build() {
 		-Ddoxygen=false \
 		-Dstream-restore-clear-old-devices=true \
 		. output
-	meson compile ${JOBS:+-j ${JOBS}} -C output
+	meson compile -C output
 }
 
 check() {
-	meson test --no-rebuild -v -C output
+	XDG_RUNTIME_DIR="$(mktemp -d)" \
+	meson test --no-rebuild --print-errorlogs -C output
 }
 
 package() {
@@ -220,7 +213,6 @@ bluez() {
 alsa() {
 	pkgdesc="Pulseaudio ALSA support"
 	install_if="$pkgname=$pkgver-r$pkgrel alsa-lib"
-	provider_priority=10  # highest (other provider is pipewire-pulse)
 
 	amove usr/lib/pulseaudio/modules/*alsa*.so
 }
@@ -229,6 +221,7 @@ utils() {
 	pkgdesc="Pulseaudio utilities"
 
 	amove usr/bin/pa*
+	amove usr/bin/start-pulseaudio-x11
 }
 
 jack() {
@@ -283,6 +276,7 @@ a39cbab500be77e88a7b8dd615ce7e1a2f8d678b19fe823552bb5d1279e2ae06aac3c353e03e10d6
 3eec77a1b39dbab93a4284de433946b70d6b9f972e62b02f076cb4a45b1f288e32ae05d8d557ed13ef21eded407951f9c0f48c78bdac9d47f318d2c7b288e10c  0025-bluetooth-support-ATD-number.patch
 76b486095b1f2bb5d23837ed8f08d5ac7533e7c9621b2534c85b39a932663ffcf86b7fefaba1f2abc6aa7a95660c658cbcdeef20427b8ebb6e05cf532ee48731  0026-bluetooth-strip-additional-out-of-spec-r-n-chars.patch
 2c31c5bc592e748248215f8f62f85687cfec230b05f65441e6dafa5fa77d4967e97636209b2011a4501ed1337ecd880b264baa175586fc85183a980846cb8146  link-libintl.patch
-34fe54ece5df60ce63a7955cd828a2716670fef71f40960698ae5518fdaf9cd599f4d8f8852e2c88d715600a9ad06a38984415e5eb320071012e5eb6e5c1b8b1  pulseaudio.initd
+c1223cf42538d91f31dbcb1a167537a1d3b6e8a3bf1b454cdebf95c25ca6f3b444848e9d546f092988851f71fe2c9dd9c4a781a58795e2f57d98563963a4630a  remove-once-test.patch
+d3a95453361d4b12e2d4df73a72bbdc9343e2a46e8f5f3aac07b3cb1f9e016fd89816745f485468d144911900a2b38741a371f91cf08285c4b4988e4403d91a0  pulseaudio.initd
 75b54581591519d63a3362b155c0f9b0501a60763ab394693a456c44d0216138cf3a40bdd0f7442028663bc045e9ffee286f8f8eaf2ee3bb17379b43615fee0e  pulseaudio.confd
 "
