@@ -181,14 +181,19 @@ find_root_partition() {
 					break
 				fi
 			fi
-			if ! [ "$x" = "${x#pmos_root=}" ]; then
-				path="${x#pmos_root=}"
-				if [ -e "$path" ]; then
-					PMOS_ROOT="$path"
-					break
-				fi
-			fi
 		done
+
+		if [ -z "$PMOS_ROOT" ]; then
+			for x in $(cat /proc/cmdline); do
+				if ! [ "$x" = "${x#pmos_root=}" ]; then
+					path="${x#pmos_root=}"
+					if [ -e "$path" ]; then
+						PMOS_ROOT="$path"
+						break
+					fi
+				fi
+			done
+		fi
 
 		# On-device installer: before postmarketOS is installed,
 		# we want to use the installer partition as root. It is the
@@ -244,17 +249,24 @@ find_boot_partition() {
 				PMOS_BOOT="$path"
 				break
 			fi
-		elif ! [ "$x" = "${x#pmos_boot=}" ]; then
-			# If the boot partition is specified explicitly
-			# then we need to check if it's a valid path, and
-			# fall back if not...
-			path="${x#pmos_boot=}"
-			if [ -e "$path" ]; then
-				PMOS_BOOT="$path"
-				break
-			fi
 		fi
 	done
+
+	if [ -z "$PMOS_BOOT" ]; then
+		# shellcheck disable=SC2013
+		for x in $(cat /proc/cmdline); do
+			if ! [ "$x" = "${x#pmos_boot=}" ]; then
+				# If the boot partition is specified explicitly
+				# then we need to check if it's a valid path, and
+				# fall back if not...
+				path="${x#pmos_boot=}"
+				if [ -e "$path" ]; then
+					PMOS_BOOT="$path"
+					break
+				fi
+			fi
+		done
+	fi
 
 	# Finally fall back to findfs by label
 	if [ -z "$PMOS_BOOT" ]; then
