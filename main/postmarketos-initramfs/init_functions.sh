@@ -175,7 +175,7 @@ find_root_partition() {
 	if [ "$ROOT_PARTITION_UNLOCKED" = 0 ]; then
 		for x in $(cat /proc/cmdline); do
 			if ! [ "$x" = "${x#pmos_root_uuid=}" ]; then
-				path="$(findfs UUID="${x#pmos_root_uuid=}")"
+				path="$(blkid --uuid "${x#pmos_root_uuid=}")"
 				if [ -n "$path" ]; then
 					PMOS_ROOT="$path"
 					break
@@ -217,7 +217,7 @@ find_root_partition() {
 
 	if [ -z "$PMOS_ROOT" ]; then
 		for id in pmOS_install pmOS_root; do
-			PMOS_ROOT="$(findfs LABEL="$id")"
+			PMOS_ROOT="$(blkid --label "$id")"
 			[ -n "$PMOS_ROOT" ] && break
 		done
 	fi
@@ -243,8 +243,8 @@ find_boot_partition() {
 	# shellcheck disable=SC2013
 	for x in $(cat /proc/cmdline); do
 		if ! [ "$x" = "${x#pmos_boot_uuid=}" ]; then
-			# For the UUID, we validate if findfs returns a path
-			path="$(findfs UUID="${x#pmos_boot_uuid=}")"
+			# Check if there is a partition with a matching UUID
+			path="$(blkid --uuid "${x#pmos_boot_uuid=}")"
 			if [ -n "$path" ]; then
 				PMOS_BOOT="$path"
 				break
@@ -268,13 +268,13 @@ find_boot_partition() {
 		done
 	fi
 
-	# Finally fall back to findfs by label
+	# Finally fall back to searching by label
 	if [ -z "$PMOS_BOOT" ]; then
 		# * "pmOS_i_boot" installer boot partition (fits 11 chars for fat32)
 		# * "pmOS_inst_boot" old installer boot partition (backwards compat)
 		# * "pmOS_boot" boot partition after installation
 		for p in pmOS_i_boot pmOS_inst_boot pmOS_boot; do
-			PMOS_BOOT="$(findfs LABEL="$p")"
+			PMOS_BOOT="$(blkid --label "$p")"
 			[ -n "$PMOS_BOOT" ] && break
 		done
 	fi
@@ -379,7 +379,7 @@ resize_root_partition() {
 	partition=$(find_root_partition)
 
 	# Do not resize the installer partition
-	if blkid "$partition" | grep -q pmOS_install; then
+	if [ "$(blkid --label pmOS_install)" = "$partition" ]; then
 		echo "Resize root partition: skipped (on-device installer)"
 		return
 	fi
