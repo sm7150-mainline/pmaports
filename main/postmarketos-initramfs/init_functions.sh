@@ -57,7 +57,7 @@ setup_firmware_path() {
 load_modules() {
 	local file="$1"
 	local modules="$2"
-	[ -f "$file" ] && modules="$modules $(cat "$file")"
+	[ -f "$file" ] && modules="$modules $(grep -v ^\# "$file")"
 	# shellcheck disable=SC2086
 	modprobe -a $modules
 }
