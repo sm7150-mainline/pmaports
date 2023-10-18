@@ -1,6 +1,6 @@
 pkgname=firmware-samsung-cprime
 pkgver=1
-pkgrel=0
+pkgrel=1
 _name="Samsung Galaxy Core Prime"
 pkgdesc="Firmware for $_name"
 url="https://postmarketos.org"
@@ -12,8 +12,7 @@ source="$pkgname-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/2vBcF82
 
 _fwdir="/lib/firmware/postmarketos"
 
-unpack() {
-	default_unpack
+build() {
 	base64 -d $pkgname-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
 }
 

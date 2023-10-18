@@ -1,6 +1,6 @@
 pkgname=firmware-samsung-j5x
 pkgver=1
-pkgrel=0
+pkgrel=1
 _name="Samsung Galaxy J5 (2016)"
 pkgdesc="Firmware for $_name"
 url="https://postmarketos.org"
@@ -12,8 +12,7 @@ source="$pkgname-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/pL9nwXm
 
 _fwdir="/lib/firmware/postmarketos"
 
-unpack() {
-	default_unpack
+build() {
 	base64 -d $pkgname-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
 }
 

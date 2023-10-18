@@ -1,6 +1,6 @@
 pkgname=firmware-ark-peach
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for ARK Benefit A3"
 url="https://postmarketos.org"
 subpackages="$pkgname-wcnss-nv:wcnss_nv"
@@ -11,8 +11,7 @@ source="$pkgname-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/F2zDaaq
 
 _fwdir="/lib/firmware/postmarketos"
 
-unpack() {
-	default_unpack
+build() {
 	base64 -d $pkgname-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
 }
 

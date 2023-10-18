@@ -1,6 +1,6 @@
 pkgname=firmware-xiaomi-wt88047
 pkgver=9.2.5.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Firmware for Xiaomi Redmi 2"
 url="https://androidfilehost.com/?w=files&flid=303434"
 subpackages="$pkgname-wcnss-nv:wcnss_nv"
@@ -11,8 +11,7 @@ source="wt88047-WCNSS_qcom_wlan_nv.bin.base64::https://pastebin.com/raw/bntm8Z7m
 
 _fwdir="/lib/firmware/postmarketos"
 
-unpack() {
-	default_unpack
+build() {
 	base64 -d wt88047-WCNSS_qcom_wlan_nv.bin.base64 > WCNSS_qcom_wlan_nv.bin
 }
 
