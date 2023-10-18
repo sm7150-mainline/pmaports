@@ -561,6 +561,23 @@ setup_usb_network_android() {
 	echo "1" >"$SYS/enable"
 }
 
+
+setup_usb_configfs_udc() {
+	# Check if there's an USB Device Controller
+	local _udc_dev
+	_udc_dev=$(ls /sys/class/udc)
+	if [ -z "$_udc_dev" ]; then
+		echo "  No USB Device Controller available"
+		return
+	fi
+
+	# Remove any existing UDC to avoid "write error: Resource busy" when setting UDC again
+	echo "" > /config/usb_gadget/g1/UDC || echo "  Couldn't write to clear UDC"
+	# Link the gadget instance to an USB Device Controller. This activates the gadget.
+	# See also: https://github.com/postmarketOS/pmbootstrap/issues/338
+	echo "$_udc_dev" > /config/usb_gadget/g1/UDC || echo "  Couldn't write new UDC"
+}
+
 setup_usb_network_configfs() {
 	# See: https://www.kernel.org/doc/Documentation/usb/gadget_configfs.txt
 	CONFIGFS=/config/usb_gadget
@@ -607,16 +624,7 @@ setup_usb_network_configfs() {
 	ln -s $CONFIGFS/g1/functions/"$usb_network_function" $CONFIGFS/g1/configs/c.1 \
 		|| echo "  Couldn't symlink $usb_network_function"
 
-	# Check if there's an USB Device Controller
-	if [ -z "$(ls /sys/class/udc)" ]; then
-		echo "  No USB Device Controller available"
-		return
-	fi
-
-	# Link the gadget instance to an USB Device Controller. This activates the gadget.
-	# See also: https://github.com/postmarketOS/pmbootstrap/issues/338
-	# shellcheck disable=SC2005
-	echo "$(ls /sys/class/udc)" > $CONFIGFS/g1/UDC || echo "  Couldn't write UDC"
+	setup_usb_configfs_udc
 }
 
 setup_usb_network() {
