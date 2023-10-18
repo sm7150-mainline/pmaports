@@ -1,10 +1,10 @@
 pkgname=postmarketos-mkinitfs-hook-debug-shell
-pkgver=0.4.7
+pkgver=0.5.0
 pkgrel=0
 pkgdesc="Root shell in the initramfs (security hole, for debugging only)"
 url="https://postmarketos.org"
 depends="postmarketos-mkinitfs devicepkg-utils fbdebug evtest linuxconsoletools reboot-mode libinput libinput-tools"
-source="20-debug-shell.sh 20-debug-shell.files"
+source="20-debug-shell.sh 20-debug-shell.files setup_usb_storage.sh"
 arch="noarch"
 license="GPL2"
 options="!check"
@@ -14,9 +14,12 @@ package() {
 		"$pkgdir"/usr/share/mkinitfs/hooks/20-debug-shell.sh
 	install -Dm644 "$srcdir"/20-debug-shell.files \
 		"$pkgdir"/usr/share/mkinitfs/files/20-debug-shell.files
+	install -Dm755 "$srcdir"/setup_usb_storage.sh \
+		"$pkgdir"/usr/libexec/postmarketos-mkinitfs/setup_usb_storage.sh
 }
 
 sha512sums="
-42ef2f0a1089bba9cbe094b346b68df62b9499de0e6193e4d19bc0c491b2bc2ae14399908fd1371dd9111261fca0df4526f7dc13e7c861834b01fc03a3ed5fc4  20-debug-shell.sh
-845d2eb6ab72c5c1472d65305241ca21dbc26784684e9ae99a180a255f8f7f62123b363d73c642df1f9687106340078311a68a76c123f16829b941bff9151735  20-debug-shell.files
+0750a33f3b68fd6f751bdcf3c59656ec8c8af60e13c25b13394937134d4cbeaacd237b5d92e2a978319f705781f39712c71673367cec52b584f666af50b6f952  20-debug-shell.sh
+a739bc47d905d189edb26d9ebfd062023720fefdaab27207471c16d53a9c12ea8b81092a1047d8f2300e42ba500bdf6c5a3343aca55aab5bf8e84d68eb5680ab  20-debug-shell.files
+75d485c2e9f352cfd717b7a92753a9dfc4a72526a44bcbb784eacb4ef9011072b3ffa1c42a317c0940598cc076fb6c61676c440e5b188378b19ca08d882c1338  setup_usb_storage.sh
 "

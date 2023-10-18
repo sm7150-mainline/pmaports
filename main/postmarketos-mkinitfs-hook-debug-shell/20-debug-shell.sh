@@ -12,6 +12,8 @@ show_splash "WARNING: debug-shell is active\\nhttps://postmarketos.org/debug-she
 echo "Create 'pmos_continue_boot' script"
 {
 	echo "#!/bin/sh"
+	#Disable any active usb mass storage
+	echo "if [ -d /config/usb_gadget/g1/functions/mass_storage.0 ]; then setup_usb_storage; fi"
 	echo "pkill -9 -f pmos_shell"
 	echo "pkill -f pmos_loop_forever"
 	echo "pkill -f telnetd.*:${TELNET_PORT}"
@@ -57,6 +59,7 @@ echo "---"
 echo "WARNING: debug-shell is active on ${host_ip}:${TELNET_PORT}."
 echo "This is a security hole! Only use it for debugging, and"
 echo "uninstall the debug-shell hook afterwards!"
+echo "You can expose storage devices using 'setup_usb_storage /dev/DEVICE'"
 echo "---"
 
 pmos_shell
