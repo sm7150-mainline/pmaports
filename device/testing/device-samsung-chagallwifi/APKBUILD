@@ -3,8 +3,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-chagallwifi
 pkgdesc="Samsung Galaxy Tab S 10.5"
-pkgver=1.2
-pkgrel=1
+pkgver=1.3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -32,7 +32,11 @@ package() {
 
 kernel_downstream() {
 	pkgdesc="Display and wifi works (see device table for details)"
-	depends="linux-samsung-chagallwifi msm-fb-refresher"
+	depends="
+		linux-samsung-chagallwifi
+		msm-fb-refresher
+		postmarketos-base-downstream
+	"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
