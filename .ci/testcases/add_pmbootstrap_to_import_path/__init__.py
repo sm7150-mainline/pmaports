@@ -7,7 +7,7 @@ import sys
 import os
 import importlib
 import importlib.util
-from distutils.sysconfig import get_python_lib
+from site import getsitepackages
 
 
 def path_pmbootstrap():
@@ -28,9 +28,10 @@ def path_pmbootstrap():
     if os.path.exists(dir + "/pmb/__init__.py"):
         return dir
 
-    dir = get_python_lib()
-    if os.path.exists(dir + "/pmb/__init__.py"):
-        return dir
+    directories = getsitepackages()
+    for directory in directories:
+        if os.path.exists(directory + "/pmb/__init__.py"):
+            return directory
 
     # Symlink not set up properly
     print("ERROR: 'pmbootstrap' is not a symlink to pmbootstrap.py")
