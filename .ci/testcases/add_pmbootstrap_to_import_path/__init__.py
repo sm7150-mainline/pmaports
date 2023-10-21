@@ -24,9 +24,9 @@ def path_pmbootstrap():
         sys.exit(1)
 
     # Resolve the symlink and verify the folder
-    dir = os.path.dirname(os.path.realpath(bin))
-    if os.path.exists(dir + "/pmb/__init__.py"):
-        return dir
+    directory = os.path.dirname(os.path.realpath(bin))
+    if os.path.exists(directory + "/pmb/__init__.py"):
+        return directory
 
     directories = getsitepackages()
     for directory in directories:
