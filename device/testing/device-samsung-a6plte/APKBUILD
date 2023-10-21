@@ -2,7 +2,7 @@
 
 pkgname=device-samsung-a6plte
 pkgdesc="Samsung Galaxy A6+ (2018)"
-pkgver=1.2
+pkgver=1.3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -18,7 +18,6 @@ depends="
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-phosh"
 source="
-	30-gpu-firmware.files
 	deviceinfo
 	modules-initfs
 	gpu-nobin.sh
@@ -43,9 +42,6 @@ nonfree_firmware() {
 		linux-firmware-qcom
 		msm-firmware-loader"
 	mkdir "$subpkgdir"
-
-	install -Dm644 "$srcdir/30-gpu-firmware.files" -t \
-		"$subpkgdir/usr/share/mkinitfs/files"
 }
 
 phosh() {
@@ -55,7 +51,6 @@ phosh() {
 }
 
 sha512sums="
-d087fb8b9c1cec66bd6f88680402afed3a642e55014e86a525a8177274cbda768622683108670476cb742cacea7a82a97df94e0469a9126e85d163685aeba421  30-gpu-firmware.files
 5cf251bd1e6826235a11648cd761206ba425afb801d6ee9a4529ed519cc79494edfbadac64b81c03785c0a5c70d224c3f997e1921d9a586681834807b680867a  deviceinfo
 5ab0eec4dc3126b73c1b48846fd43375c22734eeef2573a08fee320f7d688eeade4c48396317d8a6f75a5f31f477ba5485800ca8af2e32571cbb3b428a6eb665  modules-initfs
 bea40516cf51b4ad0609cc21ca56c19eb9cb2b1be45cddf486264d9c526469f1abad313a95a4f938ccbd0c023d08884aefe8d850746a97075999de11b4a2ff4c  gpu-nobin.sh
