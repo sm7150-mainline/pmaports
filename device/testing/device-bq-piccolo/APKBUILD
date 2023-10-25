@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-bq-piccolo
 pkgdesc="BQ Aquaris M5"
-pkgver=4
-pkgrel=3
+pkgver=5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -10,7 +10,7 @@ options="!check !archcheck"
 depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 	 soc-qcom-msm8939 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
-source="deviceinfo modules-initfs phoc.ini pointercal"
+source="deviceinfo modules-initfs phoc.ini"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-phosh
@@ -23,7 +23,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -D -m644 "$srcdir"/pointercal "$pkgdir"/etc/pointercal
 }
 
 nonfree_firmware() {
@@ -43,5 +42,4 @@ sha512sums="
 d62fd741c073d469914635551184348d8f126903fc8cec5013e896bbbe66270b5b1a398447cafe51a08f42dc4cf0ab58ba8a0d69cd9555fb8a12204ed4eac28c  deviceinfo
 d7ba0b86dc573d0d57591399ec71c76169730b169546d1692910c3e04913100f8bfa534100dab8d5ad302d2a539fb64b040a6fb26979f41c8e7b76b596427afd  modules-initfs
 08a84d731ab0b33b8ec21001331e9c2261a039d3f137eb8bd2f580abea5cfb78706d95443b3e34f9ea3c73e15bcc75038a830402adc7e05636c03e9ce3581eb7  phoc.ini
-07785092e30dcaca238e7b54ba4df7ad11ea69bec39180129448c7900a07d60171ec79386c3d1eb9bece4b63cd0c5dd8309e5ce4a668f7035733c2c00e84d537  pointercal
 "
