@@ -1,0 +1,51 @@
+From 847a31aa8d6c76e966cb5eceaa57b02e651e2cfc Mon Sep 17 00:00:00 2001
+From: Clayton Craft <clayton@craftyguy.net>
+Date: Fri, 27 Oct 2023 12:50:50 -0700
+Subject: [PATCH] boot: load device tree even if no original config exists
+
+Firmware may not have loaded a devicetree, for example if the device
+shipped with windows and exclusively supports ACPI.
+We should always load the specified devicetree regardless of firmware
+state to enable booting on platforms where Linux only supports DT.
+
+Fixes #24059
+
+Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+ src/boot/efi/devicetree.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/src/boot/efi/devicetree.c b/src/boot/efi/devicetree.c
+index 3916bca946..ef599bd7bc 100644
+--- a/src/boot/efi/devicetree.c
++++ b/src/boot/efi/devicetree.c
+@@ -72,8 +72,6 @@ EFI_STATUS devicetree_install(struct devicetree_state *state, EFI_FILE *root_dir
+         assert(name);
+ 
+         state->orig = find_configuration_table(MAKE_GUID_PTR(EFI_DTB_TABLE));
+-        if (!state->orig)
+-                return EFI_UNSUPPORTED;
+ 
+         err = root_dir->Open(root_dir, &handle, name, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY);
+         if (err != EFI_SUCCESS)
+@@ -113,8 +111,6 @@ EFI_STATUS devicetree_install_from_memory(
+         assert(dtb_buffer && dtb_length > 0);
+ 
+         state->orig = find_configuration_table(MAKE_GUID_PTR(EFI_DTB_TABLE));
+-        if (!state->orig)
+-                return EFI_UNSUPPORTED;
+ 
+         err = devicetree_allocate(state, dtb_length);
+         if (err != EFI_SUCCESS)
+@@ -133,7 +129,7 @@ EFI_STATUS devicetree_install_from_memory(
+ void devicetree_cleanup(struct devicetree_state *state) {
+         EFI_STATUS err;
+ 
+-        if (!state->pages)
++        if (!state->pages || !state->orig)
+                 return;
+ 
+         err = BS->InstallConfigurationTable(MAKE_GUID_PTR(EFI_DTB_TABLE), state->orig);
+-- 
+2.40.1
+
