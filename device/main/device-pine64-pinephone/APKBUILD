@@ -2,8 +2,8 @@
 # Maintainer: Arnav Singh <me@arnavion.dev>
 # Co-Maintainer: Jan Jasper de Kroon <jajadekroon@gmail.com>
 pkgname=device-pine64-pinephone
-pkgver=0.46
-pkgrel=5
+pkgver=0.47
+pkgrel=0
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -27,7 +27,6 @@ depends="
 	atinout
 	eg25-manager
 	eg25-manager-openrc
-	gpsd
 	iw
 	linux-postmarketos-allwinner>=5.14
 	mesa-egl
@@ -51,8 +50,6 @@ source="
 	UPower.conf
 	deviceinfo
 	modules-initfs
-	gpsd_device-hook.sh
-	gpsd_pinephone.initd
 	hwtest.ini
 	kirigami-lowpower.sh
 	kxkbrc
@@ -130,11 +127,6 @@ package() {
 	install -Dm644 "$srcdir"/hwtest.ini \
 		"$pkgdir"/usr/share/hwtest.ini
 
-	# GPS
-	install -Dm755 "$srcdir"/gpsd_pinephone.initd \
-		"$pkgdir"/etc/init.d/gpsd_pinephone
-	install -Dm755 "$srcdir"/gpsd_device-hook.sh \
-		"$pkgdir"/etc/gpsd/device-hook
 	install -D -m644 "$srcdir"/10-pinephone-proximity.rules \
 		"$pkgdir"/usr/lib/udev/rules.d/10-pinephone-proximity.rules
 	install -Dm644 "$srcdir"/60-flashlight.rules -t "$pkgdir"/usr/lib/udev/rules.d/
@@ -256,8 +248,6 @@ bac664c504d9a3adc6e3d25f24ac63cf7c449a82374544a5b56c259dc25af580897b9dc992865ac8
 ed0e03f7e1c0348c06be9a7922414469245604ce813bbf0c8910ef211cb993bbb0d0d4615c9c961d50712415f85d6b73e0cf02780ac784666aac56e4889341e4  UPower.conf
 87751806329118272bc887691a0d5b588fa7a601fb048594785032a661b7e48a86c9d97f8bfa99edf247051a81799f2e628e5bf7c129cf2919c2abf0c146e031  deviceinfo
 218d1361622418a0f79bd661a601baf586aec3995cf32304399b47664caf92bac006466ae1e59afa90f6ab4b9ed6acd16147a696fffd0dcab2492e2428ecc0b0  modules-initfs
-348a1c4b82ffb8d2535b9a659f20d1ebd9a34a6eb8ead1016012c680de6cca401e1883319b2c0206063eb316f0dec274877fb66ee28869592ebea1f10b7b11da  gpsd_device-hook.sh
-1017fc3f325227da58c77abdc59e9735288d91a7ccc63ec784fe0241c523786b617a11ce8045dab2a74ca12a7dd70aaa334af91836418db1e96a3266fecaa4fd  gpsd_pinephone.initd
 3dd6d612c381cb0002049d1974d8fb5aa5a53a1eb4d6bcbf62eb2ad52cfdc45f0f6ad24a699716d3513b0371aa1316f25dc72afc10d7176cc3b99d0965c3f030  hwtest.ini
 6bc22b369b2d9058b702ac7a7862abaefaf8179b43491868bdb008d181b59104f1ded89db1da51a810e1ccdc803a579b924a438674283a65afc3a9c4d2894caf  kirigami-lowpower.sh
 03d547ece68445579352d0419bf16a43ca1c567c1b0b14a977982cc8adddd34f1f8e8691465f1420091a5d33fa50daaefcee404d9d4b89e7598c4ad43a72469e  kxkbrc
