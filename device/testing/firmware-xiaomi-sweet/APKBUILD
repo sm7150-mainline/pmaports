@@ -1,0 +1,120 @@
+pkgname=firmware-xiaomi-sweet
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Redmi Note 10 Pro"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-gpu
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-sensors
+	$pkgname-venus
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-xiaomi-sweet"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="576efdece91dc8f7a869509e55a6229b3d5f797b"
+source="
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	adsp.files
+	cdsp.files
+	gpu.files
+	hexagonrpcd.confd
+	ipa.files
+	modem.files
+	sensors.files
+	venus.files
+	wlan.files
+"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+# Helper method for installing firmware files from a text file
+install_files() {
+	cd "$builddir"
+
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$subpkgdir/$_i"
+	done < "$srcdir/$1"
+}
+
+adsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro adsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "adsp.files"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro cdsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "cdsp.files"
+}
+
+gpu() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro gpu firmware"
+
+	mkdir "$subpkgdir"
+	install_files "gpu.files"
+}
+
+ipa() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro ipa firmware"
+
+	mkdir "$subpkgdir"
+	install_files "ipa.files"
+}
+
+modem() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro modem firmware"
+
+	mkdir "$subpkgdir"
+	install_files "modem.files"
+}
+
+sensors() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro sensors firmware"
+	replaces="hexagonrpcd-openrc"
+
+	mkdir "$subpkgdir"
+	install_files "sensors.files"
+
+	install -Dm644 "$srcdir"/hexagonrpcd.confd "$subpkgdir"/etc/conf.d/hexagonrpcd-adsp-sensorspd
+}
+
+venus() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro venus firmware"
+
+	mkdir "$subpkgdir"
+	install_files "venus.files"
+}
+
+wlan() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro wlan firmware"
+
+	mkdir "$subpkgdir"
+	install_files "wlan.files"
+}
+
+sha512sums="
+3d4f2ec877c37ea910d1406acb8ae20e1b272a6d474196f4ce6310ad8ccd0cbf9284011136f08e69bb2a6047bdefda1468c8f88f2263a9aeda2bdd643bbf94e8  firmware-xiaomi-sweet-576efdece91dc8f7a869509e55a6229b3d5f797b.tar.gz
+73405f4a7f727a89d54b3f23edf838321d489f0dba96cd39946bdb75443d78357474c432dac49c308fb878d6b77dbab25fc1eefa92454e4605dfd0daa2b175ec  adsp.files
+dc0adead3084ea3462baff2833b2d7781d38f1ac053e975272d72fceed409483e2373b9ff0f814205fd866cbe4eca131643fe89a9388886246e26d567b0a6580  cdsp.files
+2663879c2ee1be37fa380a166e71d73969a6b4ccdc39bc24697d57414c0e0c4dfab6678f6ac709a9ec81f56d3f4ab6c65a8120acd11c634dc770608986b323e7  gpu.files
+e9bf6a2fc21f5c25fe6d83c62ea57cc06c0059c1cb192697dac2598c4c11c026cd35206b98790cf6a582aa2fee903eb34f78a8369935ca85dd7d78ed40a790e1  hexagonrpcd.confd
+8ff120ef4e1de24060ceeb5ff7556a3136b1a64fe030982ce329fd74b8ca25125e83294d035f9dbd3760c9376ea62d86551604fc53c34b7126f12820a92fff6e  ipa.files
+f5f83aacf3ed137aa5042758944eb4c02f85c26e279d46ec4e055eb349b864c68b391404d4c019a6c162a1cf84530df58cf6771d44c09d134d727cabc2c73ef1  modem.files
+bd9ae29336f65ee2f22ec749aafc0cba7014b89132da014c3cfb10fd53e9cb73a1b31d6d2463c2215a587f2639aa1ca571f60c5700e2e96f4ddeda483cfae0bc  sensors.files
+cd08ad83ccadf51b825598c3501aa9454cb62ea0193fbe20df5dc29d5198e2bdae6b0a0caa4b16135f3279b09f54a35eb5f084f51e74fa882912bef016661853  venus.files
+906f695a603834b18b248bcc16746c45b7bb5f57e9e36179578cbf9599bcfb3c3ac5f4dc8d8f05ba34512001341cc0e2ca7651c4ca56d48e2cbac288f352b3af  wlan.files
+"
