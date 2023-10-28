@@ -1,0 +1,63 @@
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-xiaomi-sweet
+pkgdesc="Xiaomi Redmi Note 10 Pro"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
+	depends="
+		firmware-xiaomi-sweet-adsp
+		firmware-xiaomi-sweet-cdsp
+		firmware-xiaomi-sweet-gpu
+		firmware-xiaomi-sweet-initramfs
+		firmware-xiaomi-sweet-ipa
+		firmware-xiaomi-sweet-modem
+		firmware-xiaomi-sweet-touchscreen
+		firmware-xiaomi-sweet-wlan
+		linux-firmware-ath10k
+		linux-firmware-qca
+		linux-firmware-qcom
+		msm-modem
+		msm-modem-uim-selection
+		pd-mapper
+		tqftpserv
+		"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+b0916b85821434201c114ea95d55381226b427d4350953010ea650f4b858ac2a4759ed176f82b7a1679420f81150cb594730c362a7571b3063e242541d21fb64  deviceinfo
+474485963fb4ff97982894be2e024de09e6b3e7b324aceebde0480200998cfa92d68415752d59802bb63aebf7f2a343415d281938f2e308e5066ba08f3d79606  modules-initfs
+"

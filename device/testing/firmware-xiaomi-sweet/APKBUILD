@@ -1,0 +1,93 @@
+pkgname=firmware-xiaomi-sweet
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Redmi Note 10 Pro"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-gpu
+	$pkgname-initramfs
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-touchscreen
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-xiaomi-sweet"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="978704832b9a3bd75a009141f5d86f6b5f4f26ac"
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	30-initramfs-firmware.files"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro adsp firmware"
+
+	install -Dm644 "$builddir"/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro cdsp firmware"
+
+	install -Dm644 "$builddir"/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+gpu() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro gpu firmware"
+
+	install -Dm644 "$builddir"/a61* -t \
+		"$subpkgdir/lib/firmware/qcom"
+}
+
+initramfs() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro firmware to be included in the initramfs"
+
+	install -Dm644 "$srcdir/30-initramfs-firmware.files" \
+		"$subpkgdir/usr/share/mkinitfs/files/30-initramfs-firmware.files"
+}
+
+ipa() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro ipa firmware"
+
+	install -Dm644 "$builddir"/ipa_fws.* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+modem() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro modem firmware"
+
+	# cp because of the modem_pr directory
+	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+	cp -r "$builddir"/modem* \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+	find "$subpkgdir/lib/firmware/qcom/sm7150/sweet" \
+		-type f -exec chmod 0644 {} \;
+}
+
+
+touchscreen() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro touchscreen firmware"
+
+	install -Dm644 "$builddir"/goodix_cfg_group.bin -t \
+		"$subpkgdir/lib/firmware"
+}
+
+wlan() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro wlan firmware"
+
+	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+sha512sums="
+339f7fc40773a17e6819e061b4236fe1d7287cefd0811fb5109a81574bed465e8633a1edbb070e7fa4efdb14026a6cfafe502eb10983162fc325990bc1d20793  firmware-xiaomi-sweet-978704832b9a3bd75a009141f5d86f6b5f4f26ac.tar.gz
+58f5646fecca7ebbb105bc658138b8372127c4d455bd16746cb48c09f329a6e1d325d853dbb4edc8b3f7b56ab18c01776bcc413a89fcbe083909d3f6e029ed7b  30-initramfs-firmware.files
+"
