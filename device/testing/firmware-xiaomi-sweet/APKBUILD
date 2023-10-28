@@ -1,0 +1,115 @@
+pkgname=firmware-xiaomi-sweet
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Redmi Note 10 Pro"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-gpu
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-sensors
+	$pkgname-venus
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-xiaomi-sweet"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="369000b7aa75c6b0601d7089ffb45770c80cbcfc"
+source="
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	adsp.files
+	cdsp.files
+	gpu.files
+	ipa.files
+	modem.files
+	sensors.files
+	venus.files
+	wlan.files
+"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+# Helper method for installing firmware files from a text file
+install_files() {
+	cd "$builddir"
+
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$subpkgdir/$_i"
+	done < "$srcdir/$1"
+}
+
+adsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro adsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "adsp.files"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro cdsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "cdsp.files"
+}
+
+gpu() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro gpu firmware"
+
+	mkdir "$subpkgdir"
+	install_files "gpu.files"
+}
+
+ipa() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro ipa firmware"
+
+	mkdir "$subpkgdir"
+	install_files "ipa.files"
+}
+
+modem() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro modem firmware"
+
+	mkdir "$subpkgdir"
+	install_files "modem.files"
+}
+
+sensors() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro sensors firmware"
+
+	mkdir "$subpkgdir"
+	install_files "sensors.files"
+}
+
+venus() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro venus firmware"
+
+	mkdir "$subpkgdir"
+	install_files "venus.files"
+}
+
+wlan() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro wlan firmware"
+
+	mkdir "$subpkgdir"
+	install_files "wlan.files"
+}
+
+sha512sums="
+555699469041b503e128b59ae35527567b4ff62efbfef88152747770cda36f22f4f94755a78d390f53c14ea306be79dcc8dbe939400cd9c890f3de8f21ac3781  firmware-xiaomi-sweet-369000b7aa75c6b0601d7089ffb45770c80cbcfc.tar.gz
+73405f4a7f727a89d54b3f23edf838321d489f0dba96cd39946bdb75443d78357474c432dac49c308fb878d6b77dbab25fc1eefa92454e4605dfd0daa2b175ec  adsp.files
+dc0adead3084ea3462baff2833b2d7781d38f1ac053e975272d72fceed409483e2373b9ff0f814205fd866cbe4eca131643fe89a9388886246e26d567b0a6580  cdsp.files
+e97705130ab94858b4de27c7577f1ba32fb54e9ce40aec70d89525233c615c438f10100787eb5c6da8084179bb05e0b045e7a6a86978c15fd8243d924060f8d0  gpu.files
+8ff120ef4e1de24060ceeb5ff7556a3136b1a64fe030982ce329fd74b8ca25125e83294d035f9dbd3760c9376ea62d86551604fc53c34b7126f12820a92fff6e  ipa.files
+f5f83aacf3ed137aa5042758944eb4c02f85c26e279d46ec4e055eb349b864c68b391404d4c019a6c162a1cf84530df58cf6771d44c09d134d727cabc2c73ef1  modem.files
+5d93a2475ec194fc51a9cd20c1bf8ff6076191682619c1af17e59b01c5d286c190429852ff7ebc6c25dceb9212ee13ee38ae8c801094cbe91edc2e07134208b8  sensors.files
+cd08ad83ccadf51b825598c3501aa9454cb62ea0193fbe20df5dc29d5198e2bdae6b0a0caa4b16135f3279b09f54a35eb5f084f51e74fa882912bef016661853  venus.files
+906f695a603834b18b248bcc16746c45b7bb5f57e9e36179578cbf9599bcfb3c3ac5f4dc8d8f05ba34512001341cc0e2ca7651c4ca56d48e2cbac288f352b3af  wlan.files
+"
