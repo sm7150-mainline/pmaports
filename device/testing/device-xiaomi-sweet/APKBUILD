@@ -1,0 +1,46 @@
+# Maintainer: Jens Reidel <adrian@travitia.xyz>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-xiaomi-sweet
+pkgdesc="Xiaomi Redmi Note 10 Pro"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	firmware-xiaomi-sweet-adsp
+	firmware-xiaomi-sweet-cdsp
+	firmware-xiaomi-sweet-gpu
+	firmware-xiaomi-sweet-ipa
+	firmware-xiaomi-sweet-modem
+	firmware-xiaomi-sweet-sensors
+	firmware-xiaomi-sweet-venus
+	firmware-xiaomi-sweet-wlan
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	soc-qcom-sm7150
+	soc-qcom-sm7150-libssc-180-degrees
+	soc-qcom-sm7150-nonfree-firmware
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+cd771597e976838bb1e9fcbf14d1cf5080a7e1fb19d7d09c2e3ad1e326a248e550ed234edfe31de7f08d3d43e96b874445f127bfdf07598bc65173794e1f142d  deviceinfo
+76e809f183bd82fa243a57a118005c37a9936c0012734c45b11b697a723c7c57824d725840713cda89c89837a1fcc42c7c88ca086c40383cf8ce0a023ec965e6  modules-initfs
+"
