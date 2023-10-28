@@ -1,0 +1,74 @@
+pkgname=firmware-xiaomi-sweet
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Redmi Note 10 Pro"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-venus
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-xiaomi-sweet"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="cdd8f9cc9fb0d7dab478a2469dc6bf0dbc65155e"
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro adsp firmware"
+
+	install -Dm644 "$builddir"/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro cdsp firmware"
+
+	install -Dm644 "$builddir"/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+ipa() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro ipa firmware"
+
+	install -Dm644 "$builddir"/ipa_fws.* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+modem() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro modem firmware"
+
+	# cp because of the modem_pr directory
+	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+	cp -r "$builddir"/modem* \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+	find "$subpkgdir/lib/firmware/qcom/sm7150/sweet" \
+		-type f -exec chmod 0644 {} \;
+}
+
+venus() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro venus firmware"
+
+	install -Dm644 "$builddir"/venus.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+wlan() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro wlan firmware"
+
+	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
+}
+
+sha512sums="
+b916f8761cf3e3390bdc4131125a65b808c9e46b6c5937196d8ab7c76ddc8f0923ba4f311cf11ba2ba0b41fd6d877282eeda66f5f787a4f4e0a2247390f6545f  firmware-xiaomi-sweet-cdd8f9cc9fb0d7dab478a2469dc6bf0dbc65155e.tar.gz
+"
