@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Newbyte <newbyte@postmarketos.org>
 pkgname=postmarketos-ui-gnome-mobile
-pkgver=1
-pkgrel=4
+pkgver=2
+pkgrel=0
 pkgdesc="(Wayland) Gnome Shell patched to adapt better to phones (Experimental)"
 url="https://gnome.org/"
 arch="noarch !armhf !riscv64" # gnome-shell / riscv64: mutter-mobile
@@ -19,14 +19,15 @@ depends="
 	gnome-online-accounts
 	gnome-online-miners
 	gnome-remote-desktop
-	gnome-shell-mobile
 	gnome-shell-extensions
+	gnome-shell-mobile
 	gnome-user-docs
 	gsettings-desktop-schemas
 	gvfs
 	networkmanager-elogind
 	pinentry-gnome
 	polkit-gnome
+	postmarketos-artwork-wallpapers-gnome
 	postmarketos-base-ui-gnome
 	tracker
 	udisks2
@@ -58,14 +59,21 @@ _pmb_recommends="
 	xdg-user-dirs
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
-source="firefox-wayland.sh"
+source="
+	20_pmOS-wallpaper-gnome-mobile.gschema.override
+	firefox-wayland.sh
+	"
 options="!check"
 
 package() {
 	install -Dm755 \
 		"$srcdir"/firefox-wayland.sh \
 		-t "$pkgdir"/etc/profile.d/
+
+	install -Dm644 -t "$pkgdir"/usr/share/glib-2.0/schemas \
+		"$srcdir"/20_pmOS-wallpaper-gnome-mobile.gschema.override
 }
 sha512sums="
+f96f0b57f197d911810e3f3786ffbcc0c6bfae71037e9fc97825f5bb2ea3b7fe149271f991454b240b8d1a596d998dcf410ab6ce9a46c5e2d17cee6d03b867a2  20_pmOS-wallpaper-gnome-mobile.gschema.override
 0d9ec58be7dc354e181989c7f08e7d4dd93fefd06a99e784b87fe898479dd47a40dfa9689c6a63ebdc04bf87883a270686aec27f7cc34cb21ec0f370a4afe2d8  firefox-wayland.sh
 "
