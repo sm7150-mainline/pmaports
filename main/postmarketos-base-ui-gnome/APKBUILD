@@ -1,5 +1,6 @@
+# Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-base-ui-gnome
-pkgver=2
+pkgver=3
 pkgrel=0
 pkgdesc="Meta package for shared configuration for GNOME-based UIs"
 url="https://postmarketos.org"
@@ -16,7 +17,6 @@ depends="
 	modemmanager
 	modemmanager-openrc
 	polkit-elogind
-	postmarketos-artwork-wallpapers-gnome
 	postmarketos-base-ui
 	postmarketos-base-ui-networkmanager
 	power-profiles-daemon
@@ -28,13 +28,25 @@ depends="
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
 	00_postmarketos-base-ui-gnome.gschema.override
+	10_pmOS-wallpaper.gschema.override
 	"
 options="!check"
+subpackages="$pkgname-wallpaper-pmos:wallpaper_pmos"
 
 package() {
 	install -Dm644 -t "$pkgdir"/usr/share/glib-2.0/schemas \
-		"$srcdir"/00_postmarketos-base-ui-gnome.gschema.override
+		"$srcdir"/*.override
 }
+
+# GNOME and Phosh depend on this package to set the pmOS wallpaper. GNOME
+# Mobile has a custom wallpaper because it directly draws icons and text on it
+# and it would be hard to read with the default wallpaper.
+wallpaper_pmos() {
+	depends="postmarketos-artwork-wallpapers"
+	amove usr/share/glib-2.0/schemas/10_pmOS-wallpaper.gschema.override
+}
+
 sha512sums="
-ae957d40023cd5de6a0cee8388d92973318a97708ed7d6c00b7c5fc5d4170d04bdae89c045d2c67c6da060ba1d44ed93279fa8851a6e12e2430f9249f8f12e31  00_postmarketos-base-ui-gnome.gschema.override
+1f68138876f2270943c88fd6f914f156692397a840f4945564cce0ed6e5d56943661fee025e0e4e0881b5df18a4f5f290086eb67be945e59abd5fe4c71cf5e67  00_postmarketos-base-ui-gnome.gschema.override
+f44d4e2544d44119ed1ab9fb454a20d1fc050925a029ce10df4d7c20da3d1f461b018cdd6129272e38e50179d1e5ff71b72d3cc4dbce28113fe1b3561a2e84b5  10_pmOS-wallpaper.gschema.override
 "
