@@ -2,12 +2,13 @@
 
 _flavor=samsung-coreprimevelte-mainline
 pkgname=linux-$_flavor
-pkgver=6.6_rc3
+pkgver=6.6_rc7
 pkgrel=0
 pkgdesc="Samsung Galaxy Core Prime VE LTE mainline kernel"
 arch="aarch64"
 _carch="arm64"
-url="https://github.com/torvalds/linux"
+url="https://gitlab.com/LegoLivesMatter/linux"
+_commit="176815956535335881bcc0f880355b12683d5560"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-nftables
 pmb:kconfigcheck-zram"
@@ -15,35 +16,12 @@ makedepends="bash bc bison devicepkg-dev findutils flex gmp-dev mpc1-dev
 mpfr-dev openssl-dev perl postmarketos-installkernel pxa-mkbootimg dtc"
 
 # Source
-_tag="${pkgver//_/-}"
 _config="config-$_flavor.$arch"
 source="
-	linux-$_tag.tar.gz::$url/archive/refs/tags/v$_tag.tar.gz
+	$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/linux-$_commit.tar.gz
 	$_config
-	0001-gpio-pxa-disable-pinctrl-calls-for-MMP_GPIO.patch
-	0002-clk-mmp-Switch-to-use-struct-u32_fract-instead-of-cu.patch
-	0003-dt-bindings-clock-Add-Marvell-PXA1908-clock-bindings.patch
-	0004-clk-mmp-Add-Marvell-PXA1908-clock-driver.patch
-	0005-dt-bindings-marvell-Document-PXA1908-SoC.patch
-	0006-arm64-Kconfig.platforms-Add-config-for-Marvell-PXA19.patch
-	0007-arm64-dts-Add-DTS-for-Marvell-PXA1908-and-samsung-co.patch
-	0008-MAINTAINERS-add-myself-as-Marvell-PXA1908-maintainer.patch
-	0009-DONOTMERGE-Enable-AArch64-system-timer-properly.patch
-	0010-DONOTMERGE-Add-pxa-rev-id-to-board-dts.patch
-	0011-input-generalize-the-Imagis-touchscreen-driver.patch
-	0012-Documentation-imagis-document-IST3032C-support.patch
-	0013-input-Imagis-add-support-for-IST3032C-touchscreen.patch
-	0014-arm64-dts-add-touchscreen-bindings-for-samsung-corep.patch
-	0015-mfd-add-Marvell-88pm88x-description.patch
-	0016-mfd-88pm88x-initialize-88pm886-88pm880-base-support.patch
-	0017-DONOTMERGE-fix-88pm88x-build.patch
-	0018-DONOTMERGE-add-downstream-regulator-driver.patch
-	0019-DONOTMERGE-fix-build-for-the-88pm88x-regulator-drive.patch
-	0020-DONOTMERGE-add-88pm88x-DT-bindings.patch
-	0021-set-touchscreen-VDD-regulator-to-3.1V.patch
 "
-
-builddir="$srcdir/linux-$_tag"
+builddir="$srcdir/linux-$_commit"
 
 prepare() {
 	default_prepare
@@ -74,27 +52,6 @@ package() {
 }
 
 sha512sums="
-59dfaf0d49d898c0f00019364845271f58ad4401f7f2a6fe3e2b3718a29a5e183a356b5400f4936967bc215471dbe87278ec5c3ab6e9e52643d7e869233b3833  linux-6.6-rc3.tar.gz
-e2b61e3c9de6f15db3cf6ea116f9466755c783d40c7085ab01fb4f6ae02e813524b137ad6f0fd2c0624457559778c32f8b22031238ab4353702cd15c33bf4a16  config-samsung-coreprimevelte-mainline.aarch64
-0069e76bf9695da6a944e43aff6b21c928d3816765eee483135cc523b19668fa8a3da547565a55b39adcd9f01e125b48e22f1eafb78cbb4d97b39f8c3bd8f80a  0001-gpio-pxa-disable-pinctrl-calls-for-MMP_GPIO.patch
-2ef0a47ba941202c3ed61063c781ae73dcb2b05ab229c4863c610f809716bd9159cae58468fcd1559913fcba6f2de4f940df58104687cfebb631fe2ee5cd7e33  0002-clk-mmp-Switch-to-use-struct-u32_fract-instead-of-cu.patch
-841d1df7e18e58893c82f5a0a48e06d82954721b1392b9c36ef555150ef3d82fa7d3b33c1b30ebf7b1cf55a6fcc9e3f032667bc30f664176e046d6f9756da238  0003-dt-bindings-clock-Add-Marvell-PXA1908-clock-bindings.patch
-b0e5e538ab7837351a8c2feb32a6c6f81cb8f37edafd4ea68ed3a74c6d6b27745a54b4bd1b8839bb4f84daa5635cbbf62453cc1f17c59216e562442bc1833eb2  0004-clk-mmp-Add-Marvell-PXA1908-clock-driver.patch
-22472dfd020364bf32e7e9d350f91ea07761e4f8c291cfde37e5c8d334a88290565320b167264d1a5f51a257702d7c41cafb6d0ae15baf37a32defee21170fe8  0005-dt-bindings-marvell-Document-PXA1908-SoC.patch
-84ab5f554ae9d8a41d1baa9743c9f066e0ac7c3183d9ab53ab8225c381ff5e19cce73f4ec1a567f6a8b9ba962318bd323f1f117bb553cf3ef628b572bb7fd585  0006-arm64-Kconfig.platforms-Add-config-for-Marvell-PXA19.patch
-7305a9275ba74718932f5bb409d0d1b3eb029ecc620c3878b58091994f6da400203c58ce535f877bd4d06f86d9cdc1e8512cef073e4d1118fa8ccb54f254129c  0007-arm64-dts-Add-DTS-for-Marvell-PXA1908-and-samsung-co.patch
-16588e84d9650d405b2cf23edc0648de29b4b74869648e29c84a83ebda776a5ba2c6b97039a9d73c1c5683040ad77b470ea73fd9fe151a2d333a47b54bac34b6  0008-MAINTAINERS-add-myself-as-Marvell-PXA1908-maintainer.patch
-fc5cd8a5de0c4c7e177673535de98377059ac2a905492c095bb1b292447a97acc0df681970cdfd327a0e39ff9c95955d258095965513555cd310a0d58fa0b272  0009-DONOTMERGE-Enable-AArch64-system-timer-properly.patch
-d73005b5581d5e0b5a7c73b5f67be209a0032f605955775e83737c0250aeb13157e97bfe93f7a9ec77c49f040478b15bde9ca715b4c5fa2f3f900f5c1c83ec0c  0010-DONOTMERGE-Add-pxa-rev-id-to-board-dts.patch
-39ceaf8cada08dcc5e43b97dfc56e4370308c78faa01ce8f8ccaf955c26717ea783014f5b6e3263d07d5f1bb8997206209cd97ca67918d6f8747f27d35feeaf5  0011-input-generalize-the-Imagis-touchscreen-driver.patch
-7a2c2b5251a9cc0687c6e9cde4079532d75ae9dc76bad96acae95879b031560fe63568b359948fe08a6a224c1c0a3c8a96766f89bb9aabce5fc4c3b531449930  0012-Documentation-imagis-document-IST3032C-support.patch
-0bd27a665556a329dc8c009ba37cc10395c570a150380317ad103984da9d53240b3221c0f471113783d56863e0afa6e1dc2ed9f152f9c9be339f9d75763d106b  0013-input-Imagis-add-support-for-IST3032C-touchscreen.patch
-631682ed29640028cb8de8278578140a9538a954e5bcf22614fd513caebfe33bc280e06b08f784bb8c9414c4e2b0ac5672a8df19ef1526af58f9d0d25070668a  0014-arm64-dts-add-touchscreen-bindings-for-samsung-corep.patch
-b70b301d33b3703543e097aecfd4dc2c428039d58ed99b5977927bb2857cb9d8038d9bfe16effc857aa2a8a520498b13e5ebfbf0340b0f1140f97815bbf6adcd  0015-mfd-add-Marvell-88pm88x-description.patch
-b4bbc5f90f10335129e1e6ff23895a5bce05fa7d7e943d0f57ec5889e56572847e756a4d44b0a0c4fc18e78fbb0a4b0f8b6ffa58421f6147d75d069741d7175e  0016-mfd-88pm88x-initialize-88pm886-88pm880-base-support.patch
-e2a1c8dbbe96b5c4df48273c82f7974d06d009e39c0602e4daafb3b920cb825ad65f8378ecaac53f0730eb0a3aaf303ffd0edd20a5d19806e605b651a94a8549  0017-DONOTMERGE-fix-88pm88x-build.patch
-0db0c7c0919470cc8e3ea13a6eb9b992562a023b67ffb1445a203bcf65f8658ae4771b23af27b8e21c4da133a863db80186a7cd382027c56c89024947bcb6a9a  0018-DONOTMERGE-add-downstream-regulator-driver.patch
-c65a7ab9e3dd5bf44358ef9963d31224abe5d1d47d74c796fe30b478d13bbef78db54b3ede9875751399d12667b8ea7c6392d7e5a3ee2ffc35f8c223db8565e1  0019-DONOTMERGE-fix-build-for-the-88pm88x-regulator-drive.patch
-0db204bc989a0db2f2da1fd6f7a8190219abda36da7d8e45363cdf1563816b3036306a36e563661774279a7fd2976808df149320e19c377a05ec8ff65442de79  0020-DONOTMERGE-add-88pm88x-DT-bindings.patch
-68badc34bf07c63785f9a34bbf9e2cf02c419fafae299d7ab3b0eb17cb1dd5da703308720ba987b6cc7cb8db17f893f59fc6710daec1a3e0dba96d36aa5756bb  0021-set-touchscreen-VDD-regulator-to-3.1V.patch
+d1ad86165230b9a21d5744af169f353c00028172b57758da58d00130e2ca58befe68f08e86ff23f4355bad104439b4d37d6a042bb504154f0671f106f469c6e7  linux-samsung-coreprimevelte-mainline-176815956535335881bcc0f880355b12683d5560.tar.gz
+cd5331fe6fde288c029a46bb87c971dc0d12a9f82b639c2946dc202488a79c645fdb601aa8694aa48b57c34362d9dbceca9d1b952c794b5d5f613a489f637a8b  config-samsung-coreprimevelte-mainline.aarch64
 "
