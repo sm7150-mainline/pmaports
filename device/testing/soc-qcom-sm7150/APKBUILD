@@ -1,0 +1,58 @@
+# Maintainer: Danila Tikhonov <danila@jiaxyga.com>
+pkgname=soc-qcom-sm7150
+pkgdesc="Common package for Qualcomm SM7150 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+depends="
+	swclock-offset
+"
+subpackages="
+	$pkgname-gpufw
+	$pkgname-initramfs
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+_gpufw_commit="bad0fd43728e8e2efd92e4b13f270bb27aa68272"
+source="
+	$pkgname-$_gpufw_commit.tar.gz::https://github.com/sm7150-mainline/firmware-adreno-gpu/archive/$_gpufw_commit.tar.gz
+	30-initramfs-firmware.files
+	soc-qcom-sm7150-nonfree-firmware.post-install
+"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+gpufw() {
+	pkgdesc="Adreno GPU ZAP firmware"
+	# We will get all other Adreno GPU FWs from linux-firmware-qcom
+
+	install -Dm644 "$srcdir/firmware-adreno-gpu-$_gpufw_commit"/a615_zap.mbn -t \
+		"$subpkgdir"/lib/firmware/qcom
+}
+
+initramfs() {
+	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t \
+		"$subpkgdir"/usr/share/mkinitfs/files
+}
+
+nonfree_firmware() {
+	depends="
+		pd-mapper
+		pd-mapper-openrc
+		tqftpserv
+		tqftpserv-openrc
+		msm-modem"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+sha512sums="
+93a57ec896c35537587190e2da7c6e97025e8df90603b6bc5309d24404bf96cdf54187ebd53c6006d5772adf152a09e0e7c1b3481f5cfe48a0b6f1bfc8c0ac1a  soc-qcom-sm7150-bad0fd43728e8e2efd92e4b13f270bb27aa68272.tar.gz
+389a4716a9f92871cb0ded771f27480a6657f26f6e5a6db7908e7cb26a36d5dcf60e3bfcbdb86c1a31d643016817798a5ca776e4cf564515336125a483cd07f5  30-initramfs-firmware.files
+5abdf51e4c7ce188f0bd7ccd9741dbd472ec1469e2f7b5074dde97a8f4171c3bb117cf838615c0f1870f5d89708aa6541fde097e47020c8bbacde5e00f1cca97  soc-qcom-sm7150-nonfree-firmware.post-install
+"
