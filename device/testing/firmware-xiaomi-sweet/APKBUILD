@@ -10,6 +10,7 @@ subpackages="
 	$pkgname-ipa
 	$pkgname-modem
 	$pkgname-touchscreen
+	$pkgname-venus
 	$pkgname-wlan
 	"
 url="https://github.com/sm7150-mainline/firmware-xiaomi-sweet"
@@ -78,6 +79,13 @@ touchscreen() {
 
 	install -Dm644 "$builddir"/goodix_cfg_group.bin -t \
 		"$subpkgdir/lib/firmware"
+}
+
+venus() {
+	pkgdesc="Xiaomi Redmi Note 10 Pro venus firmware"
+
+	install -Dm644 "$builddir"/venus.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/sweet"
 }
 
 wlan() {
