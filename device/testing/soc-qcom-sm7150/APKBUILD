@@ -1,0 +1,107 @@
+# Maintainer: Danila Tikhonov <danila@jiaxyga.com>
+# Co-Maintainer: Jens Reidel <adrian@travitia.xyz>
+
+pkgname=soc-qcom-sm7150
+pkgdesc="Common package for Qualcomm SM7150 devices"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="BSD-3-Clause"
+arch="aarch64"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+depends="
+	swclock-offset
+"
+subpackages="
+	$pkgname-aw8695-feedbackd-rules:aw8695_feedbackd_rules
+	$pkgname-gpufw
+	$pkgname-initramfs
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-phosh
+	$pkgname-spmi-vibrator-feedbackd-rules:spmi_vibrator_feedbackd_rules
+	$pkgname-unl0kr-msmdrmfb-quirk:unl0kr_msmdrmfb_quirk
+"
+
+_gpufw_commit="bad0fd43728e8e2efd92e4b13f270bb27aa68272"
+source="
+	$pkgname-$_gpufw_commit.tar.gz::https://github.com/sm7150-mainline/firmware-adreno-gpu/archive/$_gpufw_commit.tar.gz
+	10-unl0kr.conf
+	30-initramfs-firmware.files
+	90-feedbackd-aw8695.rules
+	90-feedbackd-pm6150.rules
+	phoc.ini
+	soc-qcom-sm7150-nonfree-firmware.post-install
+"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+aw8695_feedbackd_rules() {
+	pkgdesc="feedbackd rules for the aw8695 vibrator"
+
+	install -Dm644 "$srcdir"/90-feedbackd-aw8695.rules \
+		"$subpkgdir"/usr/lib/udev/rules.d/90-feedbackd-aw8695.rules
+}
+
+
+gpufw() {
+	pkgdesc="Adreno GPU ZAP firmware"
+	# We will get all other Adreno GPU FWs from linux-firmware-qcom
+
+	install -Dm644 "$srcdir/firmware-adreno-gpu-$_gpufw_commit"/a615_zap.mbn -t \
+		"$subpkgdir"/lib/firmware/qcom
+}
+
+initramfs() {
+	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t \
+		"$subpkgdir"/usr/share/mkinitfs/files
+}
+
+nonfree_firmware() {
+	depends="
+		linux-firmware-ath10k
+		linux-firmware-qca
+		linux-firmware-qcom
+		pd-mapper
+		pd-mapper-openrc
+		$pkgname-gpufw
+		$pkgname-initramfs
+		tqftpserv
+		tqftpserv-openrc
+		msm-modem
+		msm-modem-uim-selection"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	# Use this subpkg only for DSC panels that still use SimpleFB
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		-t "$subpkgdir"/etc/phosh
+}
+
+spmi_vibrator_feedbackd_rules() {
+	pkgdesc="feedbackd rules for the pm6150 SPMI vibrator"
+
+	install -Dm644 "$srcdir"/90-feedbackd-pm6150.rules \
+		"$subpkgdir"/usr/lib/udev/rules.d/90-feedbackd-pm6150.rules
+}
+
+unl0kr_msmdrmfb_quirk() {
+	# When msmdrmfb gets disabled (aka dsc panel drivers work) in kernel, this can be removed
+	install -Dm644 "$srcdir"/10-unl0kr.conf \
+		"$subpkgdir"/etc/unl0kr.conf.d/10-unl0kr.conf
+}
+
+sha512sums="
+93a57ec896c35537587190e2da7c6e97025e8df90603b6bc5309d24404bf96cdf54187ebd53c6006d5772adf152a09e0e7c1b3481f5cfe48a0b6f1bfc8c0ac1a  soc-qcom-sm7150-bad0fd43728e8e2efd92e4b13f270bb27aa68272.tar.gz
+f700af3145b79d1ef9edfb22982899b25cabfb212f9620dcbd3a2e6f44b5ad591e0a66056c6fcd66c3fde89a2b5f551e8a8fe2e65cf0e2a48adec57c027d7825  10-unl0kr.conf
+389a4716a9f92871cb0ded771f27480a6657f26f6e5a6db7908e7cb26a36d5dcf60e3bfcbdb86c1a31d643016817798a5ca776e4cf564515336125a483cd07f5  30-initramfs-firmware.files
+2974ccc172bf1299daeb0bc746879b3a1db1fbc3a2b163a02a6554fed6ed9f733144bcf976cd2441c5664d496dcce3ae943f4314c653470dc07dda0de5ad632b  90-feedbackd-aw8695.rules
+90fca4a3291a2c84c0b20e41308c4698374ba896e9365ca80dbfd0c0c4f7dc08317f3dd865a3c7f6707c81b02f5bb24136d1172253d2e4fdd50039bbbf02a178  90-feedbackd-pm6150.rules
+bfe9425ef2f3e3693de4746d630c12fb5a9b8ed297c31d3a6e955097d5f68a5916e14b0ce64dc5cbc5f59734669547d34e8390314d3f2d8ed854cf9dd083479a  phoc.ini
+5abdf51e4c7ce188f0bd7ccd9741dbd472ec1469e2f7b5074dde97a8f4171c3bb117cf838615c0f1870f5d89708aa6541fde097e47020c8bbacde5e00f1cca97  soc-qcom-sm7150-nonfree-firmware.post-install
+"
