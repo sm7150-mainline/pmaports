@@ -2,56 +2,28 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-samsung-w767
 pkgdesc="Samsung Galaxy Book S"
-pkgver=1
-pkgrel=2
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
-options="!check !archcheck pmb:strict"
+options="!check !archcheck"
 depends="
 	linux-postmarketos-qcom-sc8180x
 	postmarketos-base
 	soc-qcom-sc8180x
+	systemd-boot
 "
-makedepends="devicepkg-dev grub grub-efi"
+makedepends="devicepkg-dev"
 source="deviceinfo modules-initfs"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
-
-	grub-mkimage \
-		--prefix="/grub" \
-		--output="bootaa64.efi" \
-		--format="arm64-efi" \
-		--compression="xz" \
-		\
-		all_video \
-		cat \
-		configfile \
-		disk \
-		echo \
-		efi_gop \
-		fat \
-		gzio \
-		help \
-		iso9660 \
-		linux \
-		ls \
-		normal \
-		part_gpt \
-		part_msdos \
-		search \
-		search_label \
-		test \
-		true
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/bootaa64.efi \
-		-t "$pkgdir"/boot/EFI/Boot
 }
 
 nonfree_firmware() {
@@ -62,6 +34,6 @@ nonfree_firmware() {
 
 
 sha512sums="
-987d17a927eb8bda1cf26bf7be76f90053636a246635af5b94a8e969edc067fd2d8e8050d2925ef703c0b66d2563a9c2a0ba72347d2137ff87f71238fcf465a0  deviceinfo
+d39ff6d4c5eba60c556e55b2897a4f4669e816f5d73e8eec3b65cb73de4fe7756df9878744f2cc72c3ee8b1c4f0275192d05dc3ce1973b17ccf7bcf28f20eaab  deviceinfo
 23ade4e4526fa1445240219d227f34a445a3298b63c15fca751eea7c5ba0306ce3a76e4ddee341f9aa6f0e02a7f9d3d0ebb4dda0aec8ae0585dd8f6de7483c85  modules-initfs
 "
