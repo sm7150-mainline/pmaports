@@ -1,5 +1,5 @@
 pkgname=firmware-xiaomi-surya
-pkgver=1
+pkgver=1.1
 pkgrel=0
 pkgdesc="Firmware for Xiaomi POCO X3 NFC"
 subpackages="
@@ -14,7 +14,7 @@ url="https://github.com/sm7150-mainline/firmware-xiaomi-surya"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="47ee12fa953d87d10f61f67b51addd8e26d17899"
+_commit="3d76e775502966ac4aa9d6e563a71d7442152f1b"
 source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -58,8 +58,15 @@ modem() {
 touchscreen() {
 	pkgdesc="Xiaomi POCO X3 NFC touchscreen firmware"
 
-	install -Dm644 "$builddir"/novatek_ts_huaxing_fw.bin -t \
+	install -Dm644 "$builddir"/novatek_ts_*_fw.bin -t \
 		"$subpkgdir/lib/firmware"
+}
+
+venus() {
+	pkgdesc="Xiaomi POCO X3 NFC venus firmware"
+
+	install -Dm644 "$builddir"/venus.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
 }
 
 wlan() {
@@ -70,5 +77,5 @@ wlan() {
 }
 
 sha512sums="
-cb540920f977a519e696009c62dbc70c12587d0523c57b5e0fa44432e391dadbc8b08d269ef4ab06f420a892dc98fd42900b8745b683824b91b86b4b483526b0  firmware-xiaomi-surya-47ee12fa953d87d10f61f67b51addd8e26d17899.tar.gz
+769bcbabc12919f2fd8b9f6c4f23a236ba1835eb4cedef9072652321ee145995eff4f8b7b34a7875de9d26b9cdd9e7ccbcc1063cbc8eeb2b3ca3fbe3d0affad5  firmware-xiaomi-surya-3d76e775502966ac4aa9d6e563a71d7442152f1b.tar.gz
 "
