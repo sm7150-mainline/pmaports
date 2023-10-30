@@ -828,6 +828,8 @@ CONFIG_LOCK_MM_AND_FIND_VMA=y
 # end of Memory Management options
 
 CONFIG_NET=y
+CONFIG_NET_INGRESS=y
+CONFIG_NET_EGRESS=y
 
 #
 # Networking options
@@ -876,7 +878,55 @@ CONFIG_DEFAULT_TCP_CONG="cubic"
 # CONFIG_NETWORK_SECMARK is not set
 CONFIG_NET_PTP_CLASSIFY=y
 # CONFIG_NETWORK_PHY_TIMESTAMPING is not set
-# CONFIG_NETFILTER is not set
+CONFIG_NETFILTER=y
+CONFIG_NETFILTER_ADVANCED=y
+
+#
+# Core Netfilter Configuration
+#
+CONFIG_NETFILTER_INGRESS=y
+CONFIG_NETFILTER_EGRESS=y
+CONFIG_NETFILTER_NETLINK=m
+# CONFIG_NETFILTER_NETLINK_HOOK is not set
+# CONFIG_NETFILTER_NETLINK_ACCT is not set
+# CONFIG_NETFILTER_NETLINK_QUEUE is not set
+# CONFIG_NETFILTER_NETLINK_LOG is not set
+# CONFIG_NETFILTER_NETLINK_OSF is not set
+# CONFIG_NF_CONNTRACK is not set
+# CONFIG_NF_LOG_SYSLOG is not set
+CONFIG_NF_TABLES=m
+# CONFIG_NF_TABLES_NETDEV is not set
+# CONFIG_NFT_NUMGEN is not set
+# CONFIG_NFT_LOG is not set
+# CONFIG_NFT_LIMIT is not set
+# CONFIG_NFT_TUNNEL is not set
+# CONFIG_NFT_QUOTA is not set
+# CONFIG_NFT_REJECT is not set
+# CONFIG_NFT_HASH is not set
+# CONFIG_NFT_SOCKET is not set
+# CONFIG_NFT_OSF is not set
+# CONFIG_NFT_TPROXY is not set
+# CONFIG_NETFILTER_XTABLES is not set
+# end of Core Netfilter Configuration
+
+# CONFIG_IP_SET is not set
+# CONFIG_IP_VS is not set
+
+#
+# IP: Netfilter Configuration
+#
+# CONFIG_NF_SOCKET_IPV4 is not set
+# CONFIG_NF_TPROXY_IPV4 is not set
+# CONFIG_NF_TABLES_IPV4 is not set
+# CONFIG_NF_TABLES_ARP is not set
+# CONFIG_NF_DUP_IPV4 is not set
+# CONFIG_NF_LOG_ARP is not set
+# CONFIG_NF_LOG_IPV4 is not set
+# CONFIG_NF_REJECT_IPV4 is not set
+# CONFIG_IP_NF_IPTABLES is not set
+# CONFIG_IP_NF_ARPTABLES is not set
+# end of IP: Netfilter Configuration
+
 # CONFIG_BPFILTER is not set
 # CONFIG_IP_DCCP is not set
 # CONFIG_IP_SCTP is not set
@@ -6857,7 +6907,7 @@ CONFIG_CRC32_SLICEBY8=y
 # CONFIG_CRC64 is not set
 # CONFIG_CRC4 is not set
 # CONFIG_CRC7 is not set
-# CONFIG_LIBCRC32C is not set
+CONFIG_LIBCRC32C=m
 CONFIG_CRC8=y
 CONFIG_XXHASH=y
 # CONFIG_RANDOM32_SELFTEST is not set
