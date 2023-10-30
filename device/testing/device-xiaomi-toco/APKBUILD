@@ -1,0 +1,55 @@
+# Maintainer: Jens Reidel <adrian@travitia.xyz>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-xiaomi-toco
+pkgdesc="Xiaomi Mi Note 10 Lite"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sm7150
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
+	depends="
+		firmware-xiaomi-toco-adsp
+		firmware-xiaomi-toco-cdsp
+		firmware-xiaomi-toco-ipa
+		firmware-xiaomi-toco-modem
+		firmware-xiaomi-toco-venus
+		firmware-xiaomi-toco-wlan
+		soc-qcom-sm7150-nonfree-firmware
+		"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+aba70f837dcb794406d5dfa577826bce80aa895660474292d5322efcea6052f2a1ea7414db426912e969fbeb645f73a5b2df5a0f287d5e1e40813bd2515c3e69  deviceinfo
+474485963fb4ff97982894be2e024de09e6b3e7b324aceebde0480200998cfa92d68415752d59802bb63aebf7f2a343415d281938f2e308e5066ba08f3d79606  modules-initfs
+"
