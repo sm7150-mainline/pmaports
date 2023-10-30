@@ -1,6 +1,6 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=linux-postmarketos-qcom-sc8180x
-pkgver=6.1.8
+pkgver=6.6.0
 pkgrel=0
 pkgdesc="Mainline Kernel fork for Snadpragon 8cx 1st generation devices"
 arch="aarch64"
@@ -14,7 +14,7 @@ options="!strip !check !tracedeps
 	pmb:kconfigcheck-uefi"
 makedepends="bash bison findutils flex installkernel openssl-dev perl"
 
-_commit="3cff4dd06e16e2b62c824feb6393bd9a678d1b4f"
+_commit="27c30b32783351f6ca31c619cbf42697e7208f3d"
 _config="config-$_flavor.$arch"
 # Source
 source="
@@ -35,7 +35,7 @@ build() {
 }
 
 package() {
-	install -Dm644 "$builddir/arch/$_carch/boot/Image.gz" \
+	install -Dm644 "$builddir/arch/$_carch/boot/vmlinuz.efi" \
 		"$pkgdir/boot/vmlinuz"
 
 	make modules_install dtbs_install \
@@ -51,6 +51,6 @@ package() {
 }
 
 sha512sums="
-d2947452d389261d59ad128b1d91b031f4d08269accd6d369ae4672a1ac053958beaf6b2566a98cb158c1d91b981984dbc325218d7b3820c4a683173a7442099  linux-3cff4dd06e16e2b62c824feb6393bd9a678d1b4f.tar.gz
-a5ac6fd11030e61e607d22d26e6cb665cd383da288caf6fe120823fa9339b7c8e8efe230ddffaaf70cca434c83bca7f5071573c2b82c141aa61214293389dc02  config-postmarketos-qcom-sc8180x.aarch64
+71a29d0e2dfc33ee264cba21b0af1bcf45b2b75a7152a7dd961d325af4e8abf076cb801d181527d65dceef173cadb2b6db3b0b8bdd1cd4afeb38ffce9a452c09  linux-27c30b32783351f6ca31c619cbf42697e7208f3d.tar.gz
+3cd762d63e98eb20fe4d66cdabce9992a748f85d6e768540fbd162598e2020acabfe6db8a9b47c3c0b91868c7a366fc0120121b57e1eb53bed1e880dce0f5d06  config-postmarketos-qcom-sc8180x.aarch64
 "
