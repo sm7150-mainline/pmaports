@@ -1,0 +1,66 @@
+# Maintainer: David Wronek <w.david0@protonmail.com>
+# Co-Maintainer: Danila Tikhonov <JIaxyga@protonmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-xiaomi-toco
+pkgdesc="Xiaomi Mi Note 10 Lite"
+pkgver=1.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	phoc.ini
+"
+
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for Modem, WiFi, etc."
+	depends="
+		firmware-xiaomi-toco-adsp
+		firmware-xiaomi-toco-cdsp
+		firmware-xiaomi-toco-ipa
+		firmware-xiaomi-toco-modem
+		firmware-xiaomi-toco-wlan
+		linux-firmware-ath10k
+		linux-firmware-qca
+		msm-modem
+		msm-modem-uim-selection
+		pd-mapper
+		tqftpserv
+		"
+	install="$subpkgname.post-install"
+	mkdir "$subpkgdir"
+}
+
+phosh() {
+	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
+	install -Dm644 "$srcdir"/phoc.ini \
+		-t "$subpkgdir"/etc/phosh
+}
+
+sha512sums="
+913ce9cc9437ae641131d08591171659978f9a1cda861bdb86c74630c69c7eb169bad9c10df6d3cd0fd60bc4975ea35ce7a2d6b2e8a569ac9678646940039cb5  deviceinfo
+9b306b47e8fcbf3bbc1401bb183fe0a1a1c59ac4afdabb2cf7f5c9e39f478841f74401a29df3572466efa5624a57809ee5e46d2342c5b0e42d86e2460b641d76  phoc.ini
+"
