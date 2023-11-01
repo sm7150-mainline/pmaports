@@ -1,7 +1,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=soc-qcom-sc7180
 pkgdesc="Common package for Qualcomm Snapdragon 7cx devices"
-pkgver=1
+pkgver=1.1
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -11,9 +11,13 @@ subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-vulkan
 "
+source="00-sc7180-nonstrict-iommu.sh"
 
 package() {
 	mkdir -p "$pkgdir"
+
+	install -Dm755 "$srcdir"/00-sc7180-nonstrict-iommu.sh \
+		-t "$pkgdir"/usr/share/mkinitfs/hooks
 }
 
 nonfree_firmware() {
@@ -30,3 +34,6 @@ vulkan() {
 	mkdir "$subpkgdir"
 }
 
+sha512sums="
+8d76fc3ed580e5950bcb8561c08bf56c52b8693605dee04f174a49154e270b5ac6d4303bc00499864f30c352e9a0c06c449253e0b8ba974e3d85554f306c84fc  00-sc7180-nonstrict-iommu.sh
+"
