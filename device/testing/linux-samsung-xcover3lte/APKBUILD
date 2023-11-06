@@ -3,7 +3,7 @@
 
 pkgname=linux-samsung-xcover3lte
 pkgver=3.14.27
-pkgrel=0
+pkgrel=1
 pkgdesc="Samsung Galaxy Xcover 3 kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -12,13 +12,6 @@ url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="bash bc bison devicepkg-dev flex openssl-dev perl pxa-mkbootimg dtc gcc4"
-
-# Compiler: GCC 4 (doesn't boot when compiled with newer versions)
-if [ "${CC:0:5}" != "gcc4-" ]; then
-	CC="gcc4-$CC"
-	HOSTCC="gcc4-gcc"
-	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
-fi
 
 # Source
 _repository="android_kernel_samsung_xcover3lte"
@@ -35,12 +28,16 @@ source="
 	uinput-1-breaks.patch
 	uinput-2-ui_get_sysname.patch
 	uinput-3-dev-setup.patch
+	place-cpu_setup-in-text.patch
 "
 
 builddir="$srcdir/$_repository-$_commit"
 _outdir="out"
 
 prepare() {
+	CC="gcc4-$CC"
+	HOSTCC="gcc4-gcc"
+	CROSS_COMPILE="gcc4-$CROSS_COMPILE"
 	default_prepare
 	. downstreamkernel_prepare
 }
@@ -79,4 +76,5 @@ c45d985ad4ea3c216199ae92eb3d228308abc35e7d06dd9f35abc0bdb13f3dbeab3f882dee4f96b7
 47ec0cb51db35f95c870cd295d022c68cec837e3bb2f1c72f3faa49a9caf62eca9e9f64c67bb5183440d0ffd71ade45fa3daafc39b88665d2bce178c5189e74e  uinput-1-breaks.patch
 97874d0bd27b67187d0dbc54d59b21c2e841d490d9bd16ac0672d86b462747a47cd27e5e66675ff3b1ebe80cc1c955e8a481bf9b28347d0042fdd9422293b860  uinput-2-ui_get_sysname.patch
 3c32141290a8c57abf2bdb7b904503d5cca035e58beed65877d3086afeeae518a392231b8e717ece0980c4f0b60349ac46598789c1eda1826bd6321b547d8137  uinput-3-dev-setup.patch
+ef361f4729efeb6442bdd028798a3ba8f34901cbcbedc318ae0788e23e7c897897587cee82f334d2ec5d7954a73d409bd25f1742d53ba704dd2b672a5de80f26  place-cpu_setup-in-text.patch
 "
