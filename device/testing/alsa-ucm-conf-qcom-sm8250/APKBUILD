@@ -1,12 +1,10 @@
 # Maintainer: Jianhua Lu <lujianhua000@gmail.com>
-_pkgname="alsa-ucm-conf"
-_flavor="qcom-sm8250"
-pkgname=$_pkgname-$_flavor
+pkgname=alsa-ucm-conf-qcom-sm8250
 pkgver=1.0
-pkgrel=0
+pkgrel=1
 pkgdesc="ALSA Use Case Manager configuration for phones and tablets based on Qualcomm's SM8250 SoC"
 subpackages="
-	$_pkgname-xiaomi-elish:xiaomi_elish
+	alsa-ucm-conf-xiaomi-elish:xiaomi_elish
 "
 url="https://alsa-project.org"
 arch="aarch64"
@@ -16,6 +14,7 @@ source="
 	alsa-ucm-conf/elish_HiFi.conf
 "
 options="!check" # no tests
+
 package() {
 	# parent package is empty
 	mkdir -p "$pkgdir"
