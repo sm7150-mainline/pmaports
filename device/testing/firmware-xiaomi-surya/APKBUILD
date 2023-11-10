@@ -5,6 +5,7 @@ pkgdesc="Firmware for Xiaomi POCO X3 NFC"
 subpackages="
 	$pkgname-adsp
 	$pkgname-cdsp
+	$pkgname-initramfs
 	$pkgname-ipa
 	$pkgname-modem
 	$pkgname-touchscreen
@@ -15,7 +16,10 @@ arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
 _commit="3d76e775502966ac4aa9d6e563a71d7442152f1b"
-source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz"
+source="
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	30-touchscreen-firmware.files
+"
 builddir="$srcdir/$pkgname-$_commit"
 
 package() {
@@ -35,6 +39,13 @@ cdsp() {
 
 	install -Dm644 "$builddir"/cdsp* -t \
 		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
+}
+
+initramfs() {
+	pkgdesc="Xiaomi POCO X3 NFC firmware to be included in the initramfs"
+
+	install -Dm644 "$srcdir/30-touchscreen-firmware.files" \
+		"$subpkgdir/usr/share/mkinitfs/files/30-touchscreen-firmware.files"
 }
 
 ipa() {
@@ -78,4 +89,5 @@ wlan() {
 
 sha512sums="
 769bcbabc12919f2fd8b9f6c4f23a236ba1835eb4cedef9072652321ee145995eff4f8b7b34a7875de9d26b9cdd9e7ccbcc1063cbc8eeb2b3ca3fbe3d0affad5  firmware-xiaomi-surya-3d76e775502966ac4aa9d6e563a71d7442152f1b.tar.gz
+da17c49b62a6320a868e34c5ebbbfdecbf80eed714e8a87daacfc5eb8a1d3dd171e13af0d1f7a8ccb6ebf0a6d859a1c3b8173bbe791ce78fadd7b6d1579ec472  30-touchscreen-firmware.files
 "
