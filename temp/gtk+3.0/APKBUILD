@@ -1,9 +1,9 @@
 # Forked from Alpine to apply Purism's patches for mobile usage
 pkgname=gtk+3.0
-pkgver=9999_git20230719
-pkgrel=1
+pkgver=9999_git20231113
+pkgrel=0
 # pureos/latest branch
-_commit="084b40f29656945e4c12428a8e9a4d5310c0e56d"
+_commit="724e289ee0d8b9296722c256994825ae5f6235cc"
 pkgdesc="The GTK+ Toolkit (v3)"
 url="https://www.gtk.org/"
 install="$pkgname.post-install $pkgname.post-upgrade $pkgname.post-deinstall"
@@ -59,7 +59,7 @@ checkdepends="
 	gdk-pixbuf
 	"
 source="https://source.puri.sm/Librem5/gtk/-/archive/$_commit/gtk-$_commit.tar.gz
-	gdk-wayland-Track-last-touch-serial-on-seat.patch
+	0001-Port-file-chooser-to-phones.patch
 	"
 
 builddir="$srcdir/gtk-$_commit"
@@ -67,9 +67,47 @@ builddir="$srcdir/gtk-$_commit"
 prepare() {
 	default_prepare
 
-	# Purism patches
-	grep "\.patch$" debian/patches/series \
-		| xargs -I {} -t -r -n1 patch -p1 -i debian/patches/{}
+	# Hand-picked Purism and Debian patches
+	xargs -I {} -t -r -n1 patch -p1 -i debian/patches/{} << EOF
+selection-Use-the-right-mime-type.patch
+Update-Hebrew-translation.patch
+Update-Galician-translation.patch
+016_no_offscreen_widgets_grabbing.patch
+017_no_offscreen_device_grabbing.patch
+060_ignore-random-icons.patch
+pureos/adaptive/libhandy/Add-GtkHdyViewSwitcherButton.patch
+pureos/adaptive/libhandy/Add-GtkHdyViewSwitcher.patch
+pureos/adaptive/libhandy/Add-GtkHdyViewSwitcherBar.patch
+pureos/adaptive/libhandy/Add-GtkHdyAnimation.patch
+pureos/adaptive/libhandy/Add-GtkHdySqueezer.patch
+pureos/adaptive/libhandy/Add-GtkHdyViewSwitcherTitle.patch
+pureos/adaptive/libhandy/Add-GtkHdyShadowHelper.patch
+pureos/adaptive/libhandy/Add-GtkHdyNavigationDirection.patch
+pureos/adaptive/libhandy/Add-GtkHdySwipeable-and-GtkHdySwipeTracker.patch
+pureos/adaptive/libhandy/Add-GtkHdyClamp.patch
+pureos/adaptive/libhandy/Add-GtkHdyFlap.patch
+pureos/adaptive/libhandy/theme-Add-libhandy-styles.patch
+pureos/adaptive/libhandy/Add-padding-for-HdyViewSwitcherTitle.patch
+pureos/adaptive/libhandy/hdy-flap-Use-natural-size-for-folding-instead-of-minimum.patch
+pureos/adaptive/Add-org.gtk.Settings.Purism.patch
+pureos/adaptive/gtkprivate-Add-an-API-to-check-if-phone.patch
+pureos/adaptive/aboutdialog-Port-to-phones.patch
+pureos/adaptive/Add-the-view-sidebar-symbolic-icon.patch
+pureos/adaptive/messagedialog-Set-orientation-based-on-device.patch
+pureos/adaptive/dialog-Maximize-resizable-dialogs-on-phones.patch
+pureos/adaptive/window-Maximize-resizable-pseudo-dialogs-on-mobile.patch
+pureos/adaptive/headerbar-Use-a-back-button-in-dialogs-on-mobile.patch
+pureos/adaptive/infobar-Move-the-action-area-below-on-the-phone.patch
+pureos/adaptive/Reduce-the-font-chooser-minimum-size.patch
+pureos/adaptive/printunixdialog-Adapt-for-phones.patch
+pureos/adaptive/window-Disable-window-dragging-on-phones.patch
+pureos/adaptive/librem5-Make-GtkShortcutsWindow-adaptive.patch
+pureos/adaptive/scrolledwindow-Set-deceleration-value-based-on-the-device.patch
+pureos/events-Compress-touch-update-events.patch
+reftest_compare_surfaces-Report-how-much-the-images-diffe.patch
+reftests-Allow-minor-differences-to-be-tolerated.patch
+pureos/gdk-wayland-Track-last-touch-serial-on-seat.patch
+EOF
 
 	# Prevent unexpected downgrade: 3.90.99 is higher than Alpine's version
 	# (pma#694), but still passes the libportal check (pma#841)
@@ -134,6 +172,6 @@ doc() {
 }
 
 sha512sums="
-8b9d14b4038a5e58b772bd2996adc6501fd025e5cf7973ef9fb8df2e1fea0bf7f9d4d71e3daa93418faf7759e35a390fe5d2a78a0a4c5829891955a615f41ea2  gtk-084b40f29656945e4c12428a8e9a4d5310c0e56d.tar.gz
-4b8ecb3f1adb833fe4006d690c31d0d930687abc28f6033e6304c235227b6e86f6abaa2c7d015677d3fdecc628fa7d7d3927b48cfceec9ad144827274a176762  gdk-wayland-Track-last-touch-serial-on-seat.patch
+d62c9133e27d02c4252e1e175a316849417c4726ba03f80dac9686dcf4dd984823dd45b45bafd2049f4a1e3fd74a61982ac8733bfe9456eb7c0a9f5c7beef1bf  gtk-724e289ee0d8b9296722c256994825ae5f6235cc.tar.gz
+6160b4feb366714d609b8ceae62ed8065b000a89a62563180d54c47f22a506d7f5dd85a1bb3e00625ff9f2d5091093adf7b5325b0e5b205cb59aa247f2e17902  0001-Port-file-chooser-to-phones.patch
 "
