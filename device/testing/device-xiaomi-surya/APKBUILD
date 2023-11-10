@@ -16,11 +16,13 @@ depends="
 	mkbootimg
 	postmarketos-base
 	postmarketos-update-kernel
+	soc-qcom-sm7150
+	soc-qcom-sm7150-aw8695-feedbackd-rules
+	soc-qcom-sm7150-phosh
 "
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
-	phoc.ini
 "
 
 subpackages="
@@ -44,24 +46,11 @@ nonfree_firmware() {
 		firmware-xiaomi-surya-modem
 		firmware-xiaomi-surya-touchscreen
 		firmware-xiaomi-surya-wlan
-		linux-firmware-ath10k
-		linux-firmware-qca
-		msm-modem
-		msm-modem-uim-selection
-		pd-mapper
-		tqftpserv
+		soc-qcom-sm7150-nonfree-firmware
 		"
-	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
-}
-
-phosh() {
-	install_if="$pkgname=$pkgver-r$pkgrel postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/phoc.ini \
-		-t "$subpkgdir"/etc/phosh
 }
 
 sha512sums="
 8fb0c1f3dbad1003b108bd7748a839f002c9c8caa3125148fb8818f5df540da81615428cbc5dfc28738d38460f3f1b4ec977c9f194447c0bc508bcd6a42f4276  deviceinfo
-9b306b47e8fcbf3bbc1401bb183fe0a1a1c59ac4afdabb2cf7f5c9e39f478841f74401a29df3572466efa5624a57809ee5e46d2342c5b0e42d86e2460b641d76  phoc.ini
 "
