@@ -69,10 +69,11 @@ generate_machine_info()
 {
 	# shellcheck disable=SC2154
 	{
+		local model="${deviceinfo_name#"${deviceinfo_manufacturer}" *}"
 		echo "PRETTY_HOSTNAME=\"$deviceinfo_name\""
 		echo "CHASSIS=\"$deviceinfo_chassis\""
 		echo "HARDWARE_VENDOR=\"$deviceinfo_manufacturer\""
-		echo "HARDWARE_MODEL=\"$deviceinfo_name\""
+		echo "HARDWARE_MODEL=\"$model\""
 	} > "$srcdir/machine-info"
 }
 
