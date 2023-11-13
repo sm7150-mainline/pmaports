@@ -1,6 +1,6 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=firmware-motorola-osprey
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc="Firmware for Motorola Moto G 2015"
 url="https://github.com/pmsourcedump/firmware-motorola-osprey"
@@ -32,8 +32,9 @@ wcnss() {
 	pkgdesc="Motorola Moto G 2015 WiFi/BT firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install wcnss.mbn to wcnss.mdt
-	install -Dm644 "$builddir"/wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mdt
+	# file contents, so it is fine to link wcnss.mbn to wcnss.mdt
+	install -Dm644 "$builddir"/wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mbn
+	ln -s wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mdt
 }
 
 wcnss_nv() {
@@ -45,8 +46,10 @@ venus() {
 	pkgdesc="Motorola Moto G 2015 video firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
+	# file contents, so it is fine to link venus.mbn to venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
 }
 
 sha512sums="

@@ -1,5 +1,5 @@
 pkgname=firmware-lenovo-a6020
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware for Lenovo Vibe K5"
 url="https://github.com/ArrowOS-Devices/android_vendor_lenovo_A6020"
@@ -30,8 +30,10 @@ venus() {
 	pkgdesc="Lenovo Vibe K5 video firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
+	# file contents, so it is fine to link venus.mbn to venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
 }
 
 wcnss_nv() {

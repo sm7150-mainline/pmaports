@@ -1,6 +1,6 @@
 pkgname=firmware-motorola-harpia
-pkgver=3
-pkgrel=1
+pkgver=4
+pkgrel=0
 pkgdesc="Firmware for Motorola Moto G4 Play"
 url="https://github.com/Sorixelle/vendor_motorola_harpia"
 subpackages="$pkgname-wcnss-nv:wcnss_nv $pkgname-venus"
@@ -34,8 +34,10 @@ venus() {
 	pkgdesc="Motorola Moto G4 Play video firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
+	# file contents, so it is fine to link venus.mbn to venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
 }
 
 sha512sums="56a7f815bea3d20a5ef0241ae109ac3823c6ac433e2a05389035b7005c7966d7a0a7719dbf5a562c6cf53c18cebd6893d31d27a6efc1a50c307565f873b1aa54  firmware-motorola-harpia-a81be710b0ff4ee7e5fd1962184dcd882cc13efc.tar.gz"

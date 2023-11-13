@@ -1,5 +1,5 @@
 pkgname=firmware-asus-z010d
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc="Firmware for Asus Zenfone Max ZC550KL"
 url="https://gitlab.com/camillathechicken/firmware-max"
@@ -36,8 +36,10 @@ venus() {
 	pkgdesc="Asus Zenfone Max ZC550KL video firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
+	# file contents, so it is fine to link venus.mbn to venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
 }
 
 sha512sums="870c4835de86aac68f29249d6f1545dc8b9ccdb4c3a19ed19eb3429c5d0ab40ed3ffceba36bf54b69a9e3ca2170fde66b2e357a8686580865bfa38e8b99e0cd6  firmware-asus-z010d-v0.1.tar.gz"

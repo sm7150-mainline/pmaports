@@ -1,6 +1,6 @@
 pkgname=firmware-bq-picmt
-pkgver=3
-pkgrel=1
+pkgver=4
+pkgrel=0
 _commit="04cced17ab21d84ea6145e58f0b12fd67ef640d0"
 pkgdesc="Firmware for BQ Aquaris X5"
 url="https://github.com/JonnyMe/picmt-firmware"
@@ -27,7 +27,8 @@ package() {
 
 modem() {
 	pkgdesc="BQ Aquaris X5 modem firmware"
-	install -Dm644 "$srcdir"/modem.mbn "$subpkgdir/$_fwdir"/modem.mdt
+	install -Dm644 "$srcdir"/modem.mbn "$subpkgdir/$_fwdir"/modem.mbn
+	ln -s modem.mbn "$subpkgdir/$_fwdir"/modem.mdt
 	install -Dm644 "$srcdir"/mba.mbn "$subpkgdir/$_fwdir"/mba.mbn
 }
 
@@ -37,14 +38,17 @@ venus() {
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
 	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$srcdir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$srcdir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
 }
 
 wcnss() {
 	pkgdesc="BQ Aquaris X5 WiFi/BT firmware"
 	provides="firmware-qcom-msm8916-wcnss=$pkgver-r$pkgrel"
 
-	install -Dm644 "$srcdir"/wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mdt
+	install -Dm644 "$srcdir"/wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mbn
+	ln -s wcnss.mbn "$subpkgdir/$_fwdir"/wcnss.mdt
 }
 
 wcnss_nv() {

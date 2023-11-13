@@ -1,6 +1,6 @@
 pkgname=firmware-qcom-db410c-wcnss
 pkgver=1034.2.1
-pkgrel=3
+pkgrel=4
 pkgdesc="DragonBoard 410c WiFi/BT firmware"
 url="https://releases.linaro.org/96boards/dragonboard410c/qualcomm/firmware/"
 subpackages="$pkgname-doc"
@@ -40,6 +40,7 @@ package() {
 
 	# Still link to old location in case this is installed on other devices
 	mkdir -p "$pkgdir"/lib/firmware/postmarketos
+	ln -s "$_fwdir"/apq8016/wcnss.mbn "$pkgdir"/lib/firmware/postmarketos/wcnss.mbn
 	ln -s "$_fwdir"/apq8016/wcnss.mbn "$pkgdir"/lib/firmware/postmarketos/wcnss.mdt
 }
 

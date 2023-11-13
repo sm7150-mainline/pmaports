@@ -1,5 +1,5 @@
 pkgname=firmware-wileyfox-crackling
-pkgver=4
+pkgver=5
 pkgrel=0
 pkgdesc="Firmware for Wileyfox Swift"
 url="https://rizzotherat.gitlab.io/firmware/"
@@ -26,8 +26,10 @@ venus() {
 	pkgdesc="Wileyfox Swift video firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$srcdir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
+	# file contents, so it is fine to link venus.mbn to venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$srcdir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
 }
 
 wcnss_nv() {

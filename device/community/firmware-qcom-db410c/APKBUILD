@@ -1,6 +1,6 @@
 pkgname=firmware-qcom-db410c
 pkgver=1036.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for DragonBoard 410c"
 url="https://releases.linaro.org/96boards/dragonboard410c/qualcomm/firmware/"
 subpackages="
@@ -62,8 +62,10 @@ venus() {
 	provider_priority=100
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$builddir"/venus.mbn "$subpkgdir/$_fwdir"/venus-1.8/venus.mdt
+	# file contents, so it is fine to link venus.mbn to venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$builddir"/venus.mbn "$subpkgdir/$_fwdir"/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/venus-1.8/venus.mdt
 }
 
 sha512sums="

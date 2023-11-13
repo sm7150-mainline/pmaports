@@ -1,5 +1,5 @@
 pkgname=firmware-alcatel-idol347
-pkgver=3
+pkgver=4
 pkgrel=0
 pkgdesc="Firmware for Alcatel OneTouch Idol 3 (4.7)"
 url="https://github.com/vknecht/"
@@ -29,8 +29,10 @@ venus() {
 	pkgdesc="Alcatel OneTouch Idol 3 (4.7) video firmware"
 
 	# Linux detects squashed (.mbn) vs non-squashed (.mdt + .b*) based on
-	# file contents, so it is fine to install venus.mbn to venus.mdt
-	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
+	# file contents, so it is fine to link venus.mbn to venus.mdt
+	# Older kernels look for venus.mdt, newer ones directly for venus.mbn
+	install -Dm644 "$builddir"/venus2.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mbn
+	ln -s venus.mbn "$subpkgdir/$_fwdir"/qcom/venus-1.8/venus.mdt
 }
 
 wcnss_nv() {
