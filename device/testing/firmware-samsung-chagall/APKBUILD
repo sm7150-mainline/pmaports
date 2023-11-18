@@ -1,6 +1,6 @@
 pkgname=firmware-samsung-chagall
-pkgver=2
-pkgrel=1
+pkgver=2.1
+pkgrel=0
 pkgdesc="Firmware for Samsung chagallwifi and chagalllte"
 url="https://github.com/TheMuppets/proprietary_vendor_samsung"
 arch="armv7"
@@ -27,6 +27,7 @@ package() {
 downstream() {
 	pkgdesc="Firmware for Samsung chagall* when using downstream kernel"
 	install_if="device-samsung-chgallwifi-kernel-downstream"
+	depends="firmware-samsung-exynos5420-downstream"
 	mkdir -p "$subpkgdir"
 	# Wifi
 	local file
@@ -43,5 +44,7 @@ mainline() {
 	mkdir -p "$subpkgdir"
 }
 
-sha512sums="1666a13ee4eed31b9c320acd0f48d770a4343fe37da02527e191c5d50f083b20c902c4519f10c256c173315a5315cbe2c7f605e4b7fda1e327243e3fe4a782b6  firmware-samsung-chagall-06294e9dd7dd1a7edd3ae1e03634c8bae1358ff7-bcmdhd_sta.bin
-25b603bee8759c93b82efbb99d4cddbb3d7e4ad8604515891b7c38cbd6ba09ce386bdea6d4b81b720d3a0e7534299824fcb5c8861b38d0f70aeb5c7eaa439dad  firmware-samsung-chagall-06294e9dd7dd1a7edd3ae1e03634c8bae1358ff7-nvram_net.txt_4354_a1"
+sha512sums="
+1666a13ee4eed31b9c320acd0f48d770a4343fe37da02527e191c5d50f083b20c902c4519f10c256c173315a5315cbe2c7f605e4b7fda1e327243e3fe4a782b6  firmware-samsung-chagall-06294e9dd7dd1a7edd3ae1e03634c8bae1358ff7-bcmdhd_sta.bin
+25b603bee8759c93b82efbb99d4cddbb3d7e4ad8604515891b7c38cbd6ba09ce386bdea6d4b81b720d3a0e7534299824fcb5c8861b38d0f70aeb5c7eaa439dad  firmware-samsung-chagall-06294e9dd7dd1a7edd3ae1e03634c8bae1358ff7-nvram_net.txt_4354_a1
+"
