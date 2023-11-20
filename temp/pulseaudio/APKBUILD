@@ -3,7 +3,7 @@
 pkgname=pulseaudio
 pkgver=9999_git20220621
 _pkgver=16.1
-pkgrel=1
+pkgrel=2
 pkgdesc="featureful, general-purpose sound server"
 provider_priority=10
 url="https://www.freedesktop.org/wiki/Software/PulseAudio/"
@@ -115,8 +115,10 @@ prepare() {
 }
 
 build() {
+	# See pma#2368
+	_lto_enable="false"
 	abuild-meson \
-		-Db_lto=true \
+		-Db_lto="$_lto_enable" \
 		-Dgcov=false \
 		-Dman=true \
 		-Dtests="$(want_check && echo true || echo false)" \
