@@ -2,7 +2,7 @@
 # Maintainer: Luca Weiss <luca@z3ntu.xyz>
 pkgname=device-fairphone-fp5
 pkgdesc="Fairphone 5"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -26,6 +26,8 @@ source="
 	deviceinfo
 	gtk.css
 	modules-initfs
+	ucm/HiFi.conf
+	ucm/fp5.conf
 	"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -38,6 +40,14 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	# ALSA Use Case Manager configuration
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/Fairphone/fp5 \
+		"$srcdir"/HiFi.conf \
+		"$srcdir"/fp5.conf
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/sm8250
+	ln -s /usr/share/alsa/ucm2/Fairphone/fp5/fp5.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/sm8250/Fairphone\ 5.conf
 }
 
 nonfree_firmware() {
@@ -72,4 +82,6 @@ sha512sums="
 63cbf700191cb22f699dd9bedb3f349bb03d4fe8eaac782689936bf8cfff8b5ef33e94072ca110e707470a4dcb4b863720997b1b8b668843334758fd08698da7  deviceinfo
 71cd1ffa1ae56874a0751ef9eb91f4bccbe2009c1287b2116f3c09e99e70e436ed3d3ef27684dd318c8ff140cdccd7428580788659b7c6b2a3d8df6948149171  gtk.css
 165ae7e1dbb5fb709e2f7b457dafa5df5b755c1199ea0f011b7e519ab49bc676ddeff92a3152629125e66d3dbbe5a70384364191000a1fdf860977e2ed43de54  modules-initfs
+f39b6e5de6d9bfefc841e887b92bb5a92d02d1de46fd376ca83871b7a9cf0da5297d7201457b2bb12c302887bb0a9d328604ff910ebda8022ac71ad120b11a3c  HiFi.conf
+fb510ca806fb76174576218f5cb4d799e05757b3e351eec32b1406bcf22540cf27888f30e3737f016d43e3c38dea8d7418c194e12c9879df9c756d4d80ceae99  fp5.conf
 "
