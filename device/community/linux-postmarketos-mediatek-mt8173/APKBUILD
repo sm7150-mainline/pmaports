@@ -1,7 +1,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=linux-postmarketos-mediatek-mt8173
-pkgver=6.4.4
-pkgrel=1
+pkgver=6.6.2
+pkgrel=0
 pkgdesc="Mainline kernel fork for Mediatek MT8173 devices"
 arch="aarch64"
 _carch="arm64"
@@ -32,13 +32,11 @@ case $pkgver in
 	*.*.*)	_kernver=${pkgver%.0};;
 	*.*)	_kernver=$pkgver;;
 esac
-# fix-panel.patch is applied in 6.5-rc1, remove it when upgrading to 6.5+
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${pkgver//_/-}.tar.xz
 	$_config
 	fix-mmc1-speed.patch
 	fix-mmc-order.patch
-	fix-panel.patch
 	fix-spi-nor-max-frequency.patch
 "
 builddir="$srcdir/linux-${_kernver//_/-}"
@@ -69,10 +67,9 @@ package() {
 }
 
 sha512sums="
-975752237ef7f1e0ed1dd912b9c864aea5003fee406502988105204c61ce867c93fd7e23c720361191641933bf083ff9798b448e1b2c4809338d4a6548fbf942  linux-6.4.4.tar.xz
-2266d3c0500fcf50ee980ac9254e56d1c2948e05142ea6d4341798fa4ded80b2832ae43c91abac7eb2e3d3e784993bbdfdd56fefe83cbe9f7c050eb763859167  config-postmarketos-mediatek-mt8173.aarch64
+8c4b1213912190a17c8f54f92dd4eb38e7641b637c9a0b440f2bcd6988d1e22aa2f7d06c4c942d851cc918143e0fc56cfe9821938d7a1c96030595da4d88b487  linux-6.6.2.tar.xz
+fed803fabde5416cb44c893d044f6e2498a882c1ff8265e51cf0e92cdbf0cc6a72bcbc8360c8b6bef45618f171263ef502565594cee3783fc097dc9646105ed3  config-postmarketos-mediatek-mt8173.aarch64
 4b499c1fbf53631cffd6fa7299643dc744e0e2187f71804664b02f05296162b42e3f76aa0d8c688cecb43a8bcd41ec92991c98287951292260237b828dcca710  fix-mmc1-speed.patch
 c86f8dfc32165a32381d45a4c8b6811ebf43f01b5d8a48fbe227cf5084cfefe24b32264c1c150cb49115db4759a2d21ad48b37dcaac78367d226e9cc2a5ba849  fix-mmc-order.patch
-049351564d3a1e85bc4c06b3d8ccfb0e4f36c77038a759bb1f629e5f74eee998e773a26966adaacb188e104e5771d59ba83c71186c66fcf8887a58aaeae6bc8b  fix-panel.patch
 caf48ac0f77661153ee94c7de4931baca135a69a97e93f01ad8f276b4a9944e077d7214c117450943cca07990c773661f79718cb0c2ff7c5789c93d37afb26de  fix-spi-nor-max-frequency.patch
 "
