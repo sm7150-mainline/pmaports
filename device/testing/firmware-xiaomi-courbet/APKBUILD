@@ -1,0 +1,66 @@
+pkgname=firmware-xiaomi-courbet
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Mi 11 Lite 4G"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-modem
+	$pkgname-venus
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-xiaomi-courbet"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="100886a9b3e448afdeb89de412254ff0bdadc889"
+source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+adsp() {
+	pkgdesc="Xiaomi Mi 11 Lite 4G adsp firmware"
+
+	install -Dm644 "$builddir"/adsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/courbet"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi Mi 11 Lite 4G cdsp firmware"
+
+	install -Dm644 "$builddir"/cdsp* -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/courbet"
+}
+
+modem() {
+	pkgdesc="Xiaomi Mi 11 Lite 4G modem firmware"
+
+	# cp because of the modem_pr directory
+	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/courbet"
+	cp -r "$builddir"/modem* \
+		"$subpkgdir/lib/firmware/qcom/sm7150/courbet"
+	find "$subpkgdir/lib/firmware/qcom/sm7150/courbet" \
+		-type f -exec chmod 0644 {} \;
+}
+
+venus() {
+	pkgdesc="Xiaomi Mi 11 Lite 4G venus firmware"
+
+	install -Dm644 "$builddir"/venus.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/courbet"
+}
+
+wlan() {
+	pkgdesc="Xiaomi Mi 11 Lite 4G wlan firmware"
+
+	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/sm7150/courbet"
+}
+
+sha512sums="
+6df2329763bae0524612db4ef29fa43abc94011c47ce1dab4a791e9d43ac04f66d15a7f40ca23f36d147908d0d7c1e221a63df972a98972d79577e6ee145b5bf  firmware-xiaomi-courbet-100886a9b3e448afdeb89de412254ff0bdadc889.tar.gz
+"
