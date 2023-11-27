@@ -1,0 +1,52 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-courbet
+pkgdesc="Xiaomi Mi 11 Lite 4G"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sm7150
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
+	depends="
+		firmware-xiaomi-courbet-adsp
+		firmware-xiaomi-courbet-cdsp
+		firmware-xiaomi-courbet-modem
+		firmware-xiaomi-courbet-venus
+		firmware-xiaomi-courbet-wlan
+		soc-qcom-sm7150-nonfree-firmware
+		"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+63c34618135c039c82a4c3255722a0c2175e2123c8092f05c21017445ec03d0aee50ac5ef08410c1b98299486d14e05750b3d52a975db2f6c2f57c2ec5fbe87f  deviceinfo
+e70bae17df23dcaaaea0e2d3616556f04baa23f8ee1357785c0f539bf97282d8ddff53953e155b72689bb73beb38c2da3d08de2a61e866684edfa10a6593885d  modules-initfs
+"
