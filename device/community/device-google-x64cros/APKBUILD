@@ -3,7 +3,7 @@
 # Co-Maintainer: Alper Nebi Yasak <alpernebiyasak@gmail.com>
 pkgname=device-google-x64cros
 pkgdesc="Google Chromebooks with x64 CPU"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -36,7 +36,7 @@ package() {
 }
 
 libva() {
-	install_if="$pkgname libva"
+	install_if="$pkgname=$pkgver-r$pkgrel libva"
 	depends="intel-media-driver libva-intel-driver"
 	mkdir "$subpkgdir"
 }
@@ -54,12 +54,12 @@ kernel_lts() {
 }
 
 vulkan() {
-	install_if="$pkgname vulkan-loader"
+	install_if="$pkgname=$pkgver-r$pkgrel vulkan-loader"
 	depends="mesa-vulkan-intel"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-d7ffced5a9dcfaa6473966174f23ebcecade38def8c309dc8f7637b8f0de71a0ca1b6e8952dd09020ea1b1ee0a960b6a283bbe3cd20801ad6776abf9a813401d  deviceinfo
+9260fe8df64e284f137f77844562d2f08e28d72d36a50772b0216cd7d68eeb41d0cdb650d0f0d1ad04c3906991aba0561c36813a2beb62cedf16f616c9ccedb9  deviceinfo
 9606a2f61bfd9e0a2ea04fbe45e25093b702fd5b5cccf9f4f50768ee3b501251d8d3e1605485e5ec8f485b4bff7e44fe20d488f80736837654a9951391a97789  modules-initfs
 "
