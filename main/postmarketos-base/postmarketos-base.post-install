@@ -10,7 +10,7 @@ rc-update add udev-postmount default
 for service in devfs dmesg; do
 	rc-update -q add $service sysinit
 done
-for service in hwclock modules sysctl hostname bootmisc logbookd; do
+for service in hwclock modules sysctl hostname bootmisc logbookd tmpfs; do
 	rc-update -q add $service boot
 done
 for service in sshd swapfile local zram-init; do
@@ -28,4 +28,3 @@ touch /run/openrc/shutdowntime
 touch /etc/apk/interactive
 
 exit 0
-

@@ -1,6 +1,6 @@
 pkgname=postmarketos-base
-pkgver=31
-pkgrel=1
+pkgver=32
+pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -47,7 +47,6 @@ _source440="
 	etc/doas.d/10-postmarketos.conf
 	"
 _source644="
-	etc/conf.d/bootmisc
 	etc/conf.d/swapfile
 	etc/conf.d/zram-init
 	etc/conf.d/syslog
@@ -66,6 +65,7 @@ _source644="
 _source755="
 	etc/init.d/deferred-initcalls
 	etc/init.d/swapfile
+	etc/init.d/tmpfs
 	sbin/swapfile
 	usr/lib/firmwareload.sh
 	"
@@ -128,7 +128,6 @@ nofde() {
 sha512sums="
 e529f5cef1f31481b577f99b8917704f2cfefb963d98bf40a14b017938e55a00134d2033f81d2cb0b8489c5e9b4a92fdc0a788013f1adb4cd46d9580c9988186  rootfs-etc-sudoers
 9591c9cb2194fa1092505159c9eb3d899bec95b6dbd9a0222be62098db012da113a125e40d70373d60af9880dfa489bdbe12b6b897bdef5613e023800fb6ee1b  rootfs-etc-doas.d-10-postmarketos.conf
-a5c6bfaf6ee41f9623f463b64dab95924453d7b70bdd114cc441be9fc68fb6b0e042ae3163ec357d0dd6db93767232224b8c03df29f2cadf3ac2c6e2c998784f  rootfs-etc-conf.d-bootmisc
 e0d2d48b82a03239a4c0a00acaf83e00d397c23a8d7c71053d4e2a383357c22dcedef9e81b0e12a1d7514e1fdbe0bb3eb82613d18b29034a7ce5447f13c84a53  rootfs-etc-conf.d-swapfile
 4bc9f9c62d2cb75c1e562e070bc5260c9bc2b0abe6941b7cebd9b5a649342cb4121a0713153d3c246d0a284a50fd335638c9738778698a08fcaed7058b69efb9  rootfs-etc-conf.d-zram-init
 e4576c58c35f80bedddb1e89e186f37d31a186d3e9eb046581b8c5d7b7d435e18924539e851d3e67dc0ede80f9d44d16bd9ef52e73350d3f13224edc31d73a34  rootfs-etc-conf.d-syslog
@@ -145,6 +144,7 @@ f5c6913040a0448c346fdd0b5dbea865a3ac92ac1a21646d32753e6521642a27b061c314f10a14b6
 d89a7e4b9d601431c62c11f83c9c72fdb90384d9100ee5fc4aff25dda0836fd3bf9e48c0536615be791374459eb8fbaf36d27358d4402ce768a9b9a32bed4f93  rootfs-usr-share-mkinitfs-files-postmarketos-base.files
 3c049c5e6fbe3079ac333f416cbaf5d3890a7941b79d68741bfc861ee94358fba6d8b72614fe99ab84563f9208613037c6702a7d0fc5a6dfa9d0518b5a13b0cb  rootfs-etc-init.d-deferred-initcalls
 f5cc0f1265955d2646e5f099dd4b5d4c287945bfc18c16044db57670d456f55c678fc11cc59e6dab3fa340832ce869d516302a3a35c13518539ed0cedca51819  rootfs-etc-init.d-swapfile
+0cd9a0b8490028d854b65d0648aaf84e4703921b8b7797517dd65ffaa1ec9e225487007dcccd42c249a9f2470e5adacf95760536c9508138b14de7252de38473  rootfs-etc-init.d-tmpfs
 23df2632e8ef372dccd6b9abac61441dd0ee447ccc7428fba495e28f1b697ebc415f7580dbb9a39d22d162a175d7264b47bdf9f66552347e35d9d0bb7828647d  rootfs-sbin-swapfile
 72c73bd67bfe2a659c469781e4def038a9b2482e014c0304150fbc25c5325fc7a36b288de76447837741bb9a828eb1db6df0d33b41cf67c7a25bb27b03777b1f  rootfs-usr-lib-firmwareload.sh
 "
