@@ -3,12 +3,12 @@
 
 _flavor="postmarketos-qcom-sm8350"
 pkgname=linux-$_flavor
-pkgver=5.16.0_rc1
-pkgrel=1
+pkgver=6.7
+pkgrel=0
 pkgdesc="Mainline kernel fork for SM8350"
 arch="aarch64"
 _carch="arm64"
-url="https://github.com/ElRoberto538/linux"
+url="https://gitlab.com/sm8350-mainline/linux"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps
 	pmb:cross-native
@@ -24,16 +24,16 @@ makedepends="
 	perl
 "
 
-_commit="a0b805589392f9766c1a75bdf1e4eead6611a5ff"
+_commit="ffb1b0db511df03829fa0c9682f2412c0db7f717"
 _config="config-$_flavor.$arch"
 
 # Source
 source="
-	$pkgname-$_commit.tar.gz::https://github.com/ElRoberto538/linux/archive/$_commit.tar.gz
+	$pkgname-$_commit.tar.gz::https://gitlab.com/sm8350-mainline/linux/-/archive/$_commit.tar.gz
 	$_config
 "
 builddir="$srcdir/linux-$_commit"
-_outdir="out"
+#_outdir=".output"
 
 prepare() {
 	default_prepare
@@ -59,12 +59,13 @@ package() {
 		INSTALL_MOD_STRIP=1 \
 		INSTALL_DTBS_PATH="$pkgdir/boot/dtbs"
 	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
-
+	#cp -r "$builddir"/arch/arm64/boot/dts/qcom \
+	#	"$pkgdir"/boot/qcom
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
 sha512sums="
-12fd1f38033b646fcc59ae785c710aad289cdecb2295bec7f73aac46af4dc88eaee95d72f922c5313cba65c80f01c5d0a154c037e7859d893fa345ff56c0fe18  linux-postmarketos-qcom-sm8350-a0b805589392f9766c1a75bdf1e4eead6611a5ff.tar.gz
-73b0fd441631ff6180a21c2082b707211116a9c032b85659d2d1261bc1f284472527f9f34adc87afabc676f5e544d3c3b4c2bb762351411dd0b3485d138c86b1  config-postmarketos-qcom-sm8350.aarch64
+69e66fcf50d336709aa8957a7a9f493dc3ba24e8ed806ba1aca7f324ccc4dc89ad83f574b2b052c2a1ed329f4a5f6b377449629e92ce5440495b22e2e4d41ff2  linux-postmarketos-qcom-sm8350-ffb1b0db511df03829fa0c9682f2412c0db7f717.tar.gz
+11d36df575f82c8fe1f2836414bbada2da57a4374baa7ba62d71225662ad7b254352e3cf5b931dcad903e42705b0e0d2789550f39770ed287164daa2fabf26a9  config-postmarketos-qcom-sm8350.aarch64
 "
