@@ -1,0 +1,81 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+pkgname=linux-linksys-jamaica
+pkgver=5.4.164
+pkgrel=0
+pkgdesc="Linksys EA9350 V3 kernel fork"
+arch="armv7"
+_carch="arm"
+_flavor="linksys-jamaica"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	dtbtool-exynos
+	flex
+	openssl-dev
+	perl
+	linux-headers
+	xz
+	gcc6
+"
+
+# Compiler: GCC 6 (cant be compiled with newer versions)
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
+
+# Source
+_commit="d5fcb18e5420670c8734c6a659873e73adab6dac"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://git.codelinaro.org/clo/qsdk/oss/kernel/linux-ipq-5.4/-/archive/$_commit/linux-$_commit.tar.gz
+	$_config
+	linux5.4-ARM-8933-1-replace-Sun-Solaris-style-flag-on-section.patch
+	001-fix-build.patch
+	601-netfilter-br_netfilter-Don-t-invoke-iptables-by-defa.patch
+	412_ipq5018-pwm-leds.patch
+	add-linksys-jamaica-support.patch
+"
+builddir="$srcdir/linux-ipq-5.4-$_commit"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$arch" .config
+}
+
+build() {
+	unset LDFLAGS
+	# V=1: workaround for pma#1990
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" V=1
+}
+
+package() {
+	install -Dm644 "$builddir/arch/$_carch/boot/zImage" \
+		"$pkgdir/boot/vmlinuz"
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot/ \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+a3040cd9c89fe1704957acf1da7d986810b60d2a337baaa4307fc434c9dfd8821a714c4b6aa0ba1c5f7ed10374806418558323532d65df3e1c403592c9813511  linux-linksys-jamaica-d5fcb18e5420670c8734c6a659873e73adab6dac.tar.gz
+df3fb2f10df0d1fc25e708e2c8d8518d71310939357de1882ecb269fff7c3f0a3612c7192a9535632e4b9dfb87741d09d146555c4c37523a4b0f07d47f6b668d  config-linksys-jamaica.armv7
+ee80928d83189a6b71f853c97551326e3ac74167dee3bda0ae85a034278ca69403bbfbbd9dfaf9f77426e46d7260e4fda8e8900649f1b6355bac62a8cda83776  linux5.4-ARM-8933-1-replace-Sun-Solaris-style-flag-on-section.patch
+f4fcc19216ac758ba0ba10f3c003d0d06270501d7294f1cf8bf2d7dea1341de9d7b5b7151660399049cbce9648d0ae4c14ece624866f9dd4c2b42cff4227fe14  001-fix-build.patch
+0343e7791d9b58d96d40314f73adce0e47ce15439ed383e757a7e3d565a04dd75785ccdb49621584a21f23f94edf96b725ec9814a37763b45c533e08a2226ebf  601-netfilter-br_netfilter-Don-t-invoke-iptables-by-defa.patch
+7083d8573872ce2c0111b7ebddedb27890a0e98d4565c64c036fd3756aaf8a832315c626b793d7f9f94ac93384f52526a2dc3e2fac713557136e873fdbff9dcc  412_ipq5018-pwm-leds.patch
+3c3cf15abcb135aa2faceaf813c1a2e6dd5f836ae52cfd54a6ac99dc5c745ac91138a8e08234c91e6a4f5362c9d2e3301b0e997848c8a6f8f4c757c897133d86  add-linksys-jamaica-support.patch
+"

@@ -1,0 +1,45 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-linksys-jamaica
+pkgdesc="Linksys EA9350 V3"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	dtc
+	linux-linksys-jamaica
+	postmarketos-base
+	u-boot-tools
+"
+makedepends="devicepkg-dev"
+source="
+	boot-image.its
+	initfs-hook.sh
+	deviceinfo
+"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	mkdir -p "$pkgdir/usr/share/u-boot/jamaica"
+	install -D -m644 "$srcdir/boot-image.its" \
+		"$pkgdir/usr/share/u-boot/jamaica"
+}
+
+nonfree_firmware() {
+	pkgdesc="Linksys EA9350 firmware"
+	depends="firmware-linksys-jamaica"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+c5c0f00a3da2e75b3670444e47ff6893597e7afb3ebc24abf90debc608e72d6cd1071c9435ffc7d64e44ec574c35862286662d882150ddaa33c6ea65181385ad  boot-image.its
+a172a3d613fd55b95f54b891f58a3f4f6289873a861f3c21186bcc5d85166a124960e578f475f419188c5ae7b084a16a7b8a1176e1f150c5ba65f1f554d29227  deviceinfo
+401f734389592e11fc9e6bb215f8fd708d27028a68bb770ddd5697a65df38552dd57c94a1edd95e0954e5458a80291895f1aa47dd21fe3e558dfb16aa49d21f8  initfs-hook.sh
+"
