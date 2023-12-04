@@ -13,9 +13,8 @@ srcdir="$startdir/src"
 pkgdir="$startdir/pkg/$pkgname"
 subpkgdir="$startdir/pkg/$subpkgname"
 
-if [ -e "$pkgdir/usr/share/deviceinfo/$pkgname" ]; then
-	rm -v "$pkgdir/usr/share/deviceinfo/$pkgname"
-fi
+rm -fv "$pkgdir/usr/share/deviceinfo/$pkgname"
+rm -fv "$pkgdir/usr/share/deviceinfo/deviceinfo"
 
 deviceinfo="$subpkgdir/usr/share/deviceinfo/$subpkgname"
 install -Dm644 "$srcdir/deviceinfo" \
