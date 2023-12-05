@@ -23,4 +23,7 @@ ln -sf "$localtime" /etc/localtime
 rm -rf /etc/zoneinfo
 [ "$restart" = "yes" ] && service -qq openrc-settingsd restart
 
+# To turn zram-init into a no-op, set: deviceinfo_zram_swap_pct="0"
+rc-update -q add zram-init default
+
 exit 0
