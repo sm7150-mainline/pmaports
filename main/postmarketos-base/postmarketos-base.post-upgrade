@@ -4,6 +4,18 @@
 # this to happen during upgrade, especially not automatically enabling the sshd
 # service! (build.postmarketos.org#85)
 
+# The old version of the package is passed in as the second argument
+OLD_VER="$(echo $2 | cut -d "-" -f 1)"
+
+# postmarketos-base version 30 moves us from openrc-syslog to logbookd
+# so enable the logbookd service if we're upgrading from an older version.
+# If we're upgrading from a newer version, then we're already using logbookd
+# and the user may have disabled the service, so don't re-enable it.
+if [ $OLD_VER -lt 30 ]; then
+    echo "## postmarketos-base migrating to logbookd ##"
+    rc-update add logbookd boot
+fi
+
 # Fixup old pmOS installations that run setup-timezone without "-i" option
 # and those later installations that run with it, but have missing
 # https://gitlab.alpinelinux.org/alpine/alpine-conf/-/merge_requests/157
