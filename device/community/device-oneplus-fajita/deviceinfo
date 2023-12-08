@@ -18,7 +18,9 @@ deviceinfo_screen_height="2340"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
-deviceinfo_kernel_cmdline="console=null"
+# FIXME: Console enabled to workaround a race condition with display initialisation
+# See https://gitlab.freedesktop.org/drm/msm/-/issues/46
+deviceinfo_kernel_cmdline="console=ttyMSM0,115200"
 deviceinfo_generate_bootimg="true"
 deviceinfo_bootimg_qcdt="false"
 deviceinfo_bootimg_dtb_second="false"
