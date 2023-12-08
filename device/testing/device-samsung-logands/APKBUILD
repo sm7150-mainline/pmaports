@@ -1,8 +1,9 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: AppleCross <ijiki16@freeuni.edu.ge>
 pkgname=device-samsung-logands
 pkgdesc="Samsung Galaxy Ace 3 Duos"
-pkgver=3.4.5
-pkgrel=1
+pkgver=3.5.0
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -11,10 +12,17 @@ depends="
 	linux-samsung-logands
 	mkbootimg
 	postmarketos-base
+	postmarketos-base-downstream
 	msm-fb-refresher
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+source="
+	deviceinfo
+	modules-load.conf
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -24,6 +32,13 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+nonfree_firmware() {
+	pkgdesc="WiFi firmware"
+	depends="firmware-samsung-logands"
+	mkdir "$subpkgdir"
+}
+
 sha512sums="
-231a4ff31c4c3fd8182f81647e3d8e7fa07c51cecfdb01a506d8511f2c63a627c9c1b85f4198341479a806891040177fd9de14691645b14c8debad2fd2ef111c  deviceinfo
+56e035a7185c241c03c6b9a3669b45cb8695e98d3f3b7f6a3a3aa02d35e2fb4b8dbc7d7884f0413113bd3a31c386aaa6fa3d366d043b059652fb6e7a281e4574  deviceinfo
+d7ab8040186524169440cb8264757943d47015f1ebfa1decc416d8bda7c2de8cfebef1b714421f86f37e23b6004482d6cb9b7f1ca83da9a73d11e5fd38b105f7  modules-load.conf
 "
