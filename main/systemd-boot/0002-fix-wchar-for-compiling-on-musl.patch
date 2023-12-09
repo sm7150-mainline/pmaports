@@ -1,18 +1,18 @@
-From 1435bd3583935bd010b391c2436bfedb4bf31f63 Mon Sep 17 00:00:00 2001
+From 3153e2edb2b97117284e046b9cb9b846569b77df Mon Sep 17 00:00:00 2001
 From: Clayton Craft <clayton@craftyguy.net>
 Date: Fri, 6 Oct 2023 08:30:52 -0700
 Subject: [PATCH 2/2] fix wchar for compiling on musl
 
 ---
  src/boot/efi/efi-string.c | 10 +++++-----
- src/boot/efi/efi.h        |  5 ++---
- 2 files changed, 7 insertions(+), 8 deletions(-)
+ src/boot/efi/efi.h        |  5 +----
+ 2 files changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/src/boot/efi/efi-string.c b/src/boot/efi/efi-string.c
-index 4400591255..f630f628f8 100644
+index 4144c0d497..40e8d1f3b0 100644
 --- a/src/boot/efi/efi-string.c
 +++ b/src/boot/efi/efi-string.c
-@@ -480,7 +480,7 @@ typedef struct {
+@@ -569,7 +569,7 @@ typedef struct {
          bool have_field_width;
  
          const char *str;
@@ -21,7 +21,7 @@ index 4400591255..f630f628f8 100644
  
          /* For numbers. */
          bool is_signed;
-@@ -541,7 +541,7 @@ static bool push_str(FormatContext *ctx, SpecifierContext *sp) {
+@@ -630,7 +630,7 @@ static bool push_str(FormatContext *ctx, SpecifierContext *sp) {
                  push_padding(ctx, ' ', sp->padded_len);
  
          /* In userspace unit tests we cannot just memcpy() the wide string. */
@@ -29,8 +29,8 @@ index 4400591255..f630f628f8 100644
 +        if (sp->wstr && sizeof(uint16_t) == sizeof(char16_t)) {
                  memcpy(ctx->buf + ctx->n, sp->wstr, sp->len * sizeof(*sp->wstr));
                  ctx->n += sp->len;
-         } else
-@@ -633,7 +633,7 @@ static bool handle_format_specifier(FormatContext *ctx, SpecifierContext *sp) {
+         } else {
+@@ -724,7 +724,7 @@ static bool handle_format_specifier(FormatContext *ctx, SpecifierContext *sp) {
           * int in vararg functions, which is why we fetch only ints for any such types. The compiler would
           * otherwise warn about fetching smaller types. */
          assert_cc(sizeof(int) == 4);
@@ -39,7 +39,7 @@ index 4400591255..f630f628f8 100644
          assert_cc(sizeof(intmax_t) <= sizeof(long long));
  
          assert(ctx);
-@@ -728,13 +728,13 @@ static bool handle_format_specifier(FormatContext *ctx, SpecifierContext *sp) {
+@@ -819,13 +819,13 @@ static bool handle_format_specifier(FormatContext *ctx, SpecifierContext *sp) {
                  return push_str(ctx, sp);
  
          case 'c':
@@ -56,7 +56,7 @@ index 4400591255..f630f628f8 100644
                  } else {
                          sp->str = va_arg(ctx->ap, const char *) ?: "(null)";
 diff --git a/src/boot/efi/efi.h b/src/boot/efi/efi.h
-index 5c34668383..a0b48e7a96 100644
+index fbc5d10565..23ccdc5dd5 100644
 --- a/src/boot/efi/efi.h
 +++ b/src/boot/efi/efi.h
 @@ -10,7 +10,7 @@
@@ -68,16 +68,23 @@ index 5c34668383..a0b48e7a96 100644
  typedef __CHAR16_TYPE__ char16_t;
  typedef __CHAR32_TYPE__ char32_t;
  
-@@ -21,7 +21,7 @@ assert_cc(sizeof(uint8_t) == 1);
+@@ -22,7 +22,6 @@ assert_cc(sizeof(uint8_t) == 1);
  assert_cc(sizeof(uint16_t) == 2);
  assert_cc(sizeof(uint32_t) == 4);
  assert_cc(sizeof(uint64_t) == 8);
 -assert_cc(sizeof(wchar_t) == 2);
-+assert_cc(sizeof(uint16_t) == 2);
  assert_cc(sizeof(char16_t) == 2);
  assert_cc(sizeof(char32_t) == 4);
  assert_cc(sizeof(size_t) == sizeof(void *));
-@@ -32,7 +32,6 @@ assert_cc(sizeof(size_t) == sizeof(uintptr_t));
+@@ -32,7 +31,6 @@ assert_cc(alignof(uint8_t) == 1);
+ assert_cc(alignof(uint16_t) == 2);
+ assert_cc(alignof(uint32_t) == 4);
+ assert_cc(alignof(uint64_t) == 8);
+-assert_cc(alignof(wchar_t) == 2);
+ assert_cc(alignof(char16_t) == 2);
+ assert_cc(alignof(char32_t) == 4);
+ 
+@@ -41,7 +39,6 @@ assert_cc(alignof(char32_t) == 4);
  #  endif
  #else
  #  include <uchar.h>
@@ -86,5 +93,5 @@ index 5c34668383..a0b48e7a96 100644
  
  /* We use size_t/ssize_t to represent UEFI UINTN/INTN. */
 -- 
-2.40.1
+2.43.0
 

@@ -13,8 +13,8 @@
 #   is an acceptable price to pay for not having to rebase a bunch of stuff.
 #
 pkgname=systemd-boot
-pkgver=254
-pkgrel=1
+pkgver=255
+pkgrel=0
 pkgdesc="systemd's EFI boot manager and stub"
 url="https://systemd.io/"
 # TODO:
@@ -35,7 +35,6 @@ makedepends="
 "
 source="
 	systemd-$pkgver.tar.gz::https://github.com/systemd/systemd/archive/refs/tags/v$pkgver.tar.gz
-	0001-boot-load-device-tree-even-if-no-original-config-exi.patch
 	0001-meson-minimal-configure-for-building-systemd-boot.patch
 	0002-fix-wchar-for-compiling-on-musl.patch
 	cross-x86.meson
@@ -112,9 +111,8 @@ ukify() {
 }
 
 sha512sums="
-84b4d16980fe2e64d5c3c95b9b4fbaad1076f368f493fdd745cbafbe7ce825293384f5fa0b6360ba8188da23c4575e87402fb666a3b71f84ff8b323aba0c07ff  systemd-254.tar.gz
-8ffd9c340568989b32217c9b7db8425d44b2a2116cac9c0e6d1ca5ace921810d01eef9ac8030a460fb7ad54ed2b779355fd861201a32ddd51f768242a3012140  0001-boot-load-device-tree-even-if-no-original-config-exi.patch
-e97835fa20b99ae8553b2140a14ed7da14de1e18e98f39718edba64b960a92cc9edcbf89b16bdd6c20ac1566a9c5b9e6203898e104c0312e1aae9b300b116c27  0001-meson-minimal-configure-for-building-systemd-boot.patch
-c666b42f37a5710138ebc880c5defa8b5d0645ff78eb1ec685068d7219626af285a64bee78bb9460e31de1ca293c6c051a59a97e58b4335ad2c85a7424518763  0002-fix-wchar-for-compiling-on-musl.patch
+51728de604c2169d8643718ac72acb8f70f613cfcca9e9abb7dac519f291fa26a16d48f24cae6897356319096cfe8f4d9377743e7870127374f98d432e0c557c  systemd-255.tar.gz
+f68d60956d689711b2790ff0cb41ec2ff0560915f1891183cbe93850e4e9f82878d9ecdc4e6a8c9fa5251a699bad629bff4c1d2f90c5e8f6b0fb162dd149b0e4  0001-meson-minimal-configure-for-building-systemd-boot.patch
+1470afad196b4a7a98f7d640956d834dfe2dfa829731211a09757785c456599b8cefcc6121c8f466c11b7cb668248e2f2d5d305f025f16c07f958f1465ee21e2  0002-fix-wchar-for-compiling-on-musl.patch
 ad54e2c7e7a21bfa9b5f9e8db1b6af6a6d78a3e5dfe2dafcec77488f6224865ab4d4c8a8c8ee1c54c99d1741361e9fb3a51e5d36bcbc7a1c3fdcc4d0c1672132  cross-x86.meson
 "
