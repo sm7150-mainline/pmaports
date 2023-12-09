@@ -1,12 +1,12 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-artwork
-pkgver=3
-pkgrel=1
+pkgver=4
+pkgrel=0
 pkgdesc="Meta package for the postmarketOS artwork"
 url="https://postmarketos.org/"
 arch="noarch"
 license="CC-BY-SA-4.0"
-_hash="cebafc36eeb73bf135cd977dc6dc490f72876007"
+_hash="9657eb69b2918e83bf0eb06170cc173b84727cb5"
 source="postmarketos-artwork-$_hash.tar.gz::https://gitlab.com/postmarketOS/artwork/-/archive/$_hash/artwork-$_hash.tar.gz"
 subpackages="
 	$pkgname-wallpapers
@@ -27,6 +27,8 @@ wallpapers() {
 	mkdir -p "$subpkgdir"/usr/share/wallpapers/
 	install -Dm644 "$builddir"/wallpapers/logo/pmos-grass-square.jpg \
 		"$subpkgdir"/usr/share/wallpapers/postmarketos.jpg
+	install -Dm644 "$builddir"/wallpapers/logo/pmos-grass.xml \
+		"$subpkgdir"/usr/share/gnome-background-properties/postmarketos-grass.xml
 }
 
 wallpapers_extra() {
@@ -52,6 +54,8 @@ wallpapers_gnome() {
 		"$subpkgdir"/usr/share/wallpapers/postmarketos-gnome-light.jpg
 	install -Dm644 "$builddir"/wallpapers/gnome/pmos-dark.jpg \
 		"$subpkgdir"/usr/share/wallpapers/postmarketos-gnome-dark.jpg
+	install -Dm644 "$builddir"/wallpapers/gnome/pmos.xml \
+		"$subpkgdir"/usr/share/gnome-background-properties/postmarketos-gnome.xml
 }
 
 icons() {
@@ -74,5 +78,5 @@ sounds() {
 }
 
 sha512sums="
-f05e7e4c54d295dddd3799f728bbfd7773ecb5677ffb053350096415066533dffd1ddc4188ecf970f0fc3312fcc6cac92dadca54a7139e1bed8224157e963f13  postmarketos-artwork-cebafc36eeb73bf135cd977dc6dc490f72876007.tar.gz
+17cc39e6ed3e95d9e50c257d9fced448d10f872dc69e0913f2295b1ac679ac3d8d0d5a7aba7b4f99500adedbdc0565944f2d8201ec966568d0db1d16bfffbaa0  postmarketos-artwork-9657eb69b2918e83bf0eb06170cc173b84727cb5.tar.gz
 "
