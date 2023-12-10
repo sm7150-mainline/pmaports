@@ -5,15 +5,23 @@
 # service! (build.postmarketos.org#85)
 
 # The old version of the package is passed in as the second argument
-OLD_VER="$(echo $2 | cut -d "-" -f 1)"
+OLD_VER="$2"
+NEW_VER="$1"
+old_ver_less() {
+    [ "$OLD_VER" != "$1" -a "$(echo -e "$1\n$OLD_VER" | sort -V | head -n1)" = "$OLD_VER" ]
+}
 
-# postmarketos-base version 30 moves us from openrc-syslog to logbookd
-# so enable the logbookd service if we're upgrading from an older version.
-# If we're upgrading from a newer version, then we're already using logbookd
-# and the user may have disabled the service, so don't re-enable it.
-if [ $OLD_VER -lt 30 ]; then
+# postmarketos-base version 30 moved us to logbookd but we forgot to disable
+# syslog... The easiest way to solve this is to just do the upgrade again, sorry
+# to anyone who manually disabled logbookd again...
+if old_ver_less "31-r1"; then
     echo "## postmarketos-base migrating to logbookd ##"
+    echo "## The initial upgrade didn't disable syslog, we're doing that now ##"
+    echo "## If you want to keep using syslog, undo the following changes ##"
+    set -x
     rc-update add logbookd boot
+    rc-update del syslog boot
+    set +x
 fi
 
 # Fixup old pmOS installations that run setup-timezone without "-i" option
