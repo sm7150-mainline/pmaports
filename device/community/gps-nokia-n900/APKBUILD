@@ -1,15 +1,14 @@
 # Maintainer: Sicelo <absicsz@gmail.com>
 pkgname=gps-nokia-n900
-pkgver=0.0
-pkgrel=3
+pkgver=0.3.1
+pkgrel=0
 pkgdesc="GPS support for Nokia N900"
-url="https://gitlab.com/postmarketOS/gps-nokia-n900"
+url="https://github.com/maemo-leste/gps-nokia-n900"
 arch="armv7"
 license="GPL-3.0-only"
 makedepends="linux-headers"
-source="$pkgname-$pkgver.tar.gz::https://gitlab.com/postmarketOS/gps-nokia-n900/-/archive/v$pkgver/gps-nokia-n900-v$pkgver.tar.gz"
+source="$pkgname-$pkgver.tar.gz::https://github.com/maemo-leste/gps-nokia-n900/archive/refs/tags/$pkgver.tar.gz"
 options="!check"
-builddir="$srcdir/$pkgname-v$pkgver"
 
 build() {
 	make
@@ -19,4 +18,6 @@ package() {
 	install -D -m755 "$builddir"/gps-nokia-n900 -t "$pkgdir"/usr/bin/
 }
 
-sha512sums="6699a19c4c0bc942d404ce4c4689932872400d7f41ac80c02df9d71f56a3e657e17e674aa0d4faf3eb33a87cb0e8b420d8aa86b27896b39c021900229511ea3a  gps-nokia-n900-0.0.tar.gz"
+sha512sums="
+02e16cfd37f675298df9c340f5f8f6408d919744d22490336609cb101896c7b3bfe255f33601c12b4267588540fc42f9d14ff1a83eca1b50a5814a9173627006  gps-nokia-n900-0.3.1.tar.gz
+"
