@@ -1,6 +1,6 @@
 pkgname=firmware-fairphone-fp5
-pkgver=20230822
-pkgrel=1
+pkgver=20231122
+pkgrel=0
 pkgdesc="Firmware for Fairphone 5"
 subpackages="
 	$pkgname-adreno
@@ -15,10 +15,17 @@ subpackages="
 url="https://github.com/FairBlobs/FP5-firmware"
 arch="aarch64"
 license="proprietary"
+makedepends="pil-squasher"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="35845c6719f6394da1499a0ed3b5f20f372bdaec"
+_commit="3f529aecb4a9c61299c5f93d1137c6870daf93d3"
 source="https://github.com/FairBlobs/FP5-firmware/archive/$_commit/FP5-firmware-$_commit.tar.gz"
 builddir="$srcdir/FP5-firmware-$_commit"
+
+build() {
+	for i in *.mdt; do
+		pil-squasher "$(basename "$i" .mdt)".mbn "$i"
+	done
+}
 
 package() {
 	# parent package is empty
@@ -28,14 +35,18 @@ package() {
 adreno() {
 	pkgdesc="Fairphone 5 adreno firmware"
 
-	install -Dm644 "$builddir"/a660_zap.* -t \
+	install -Dm644 "$builddir"/a660_zap.mbn -t \
 		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	ln -s a660_zap.mbn "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/a660_zap.mdt"
 }
 
 adsp() {
 	pkgdesc="Fairphone 5 adsp firmware"
 
-	install -Dm644 "$builddir"/adsp* -t \
+	install -Dm644 "$builddir"/adsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	ln -s adsp.mbn "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/adsp.mdt"
+	install -Dm644 "$builddir"/adsp*.jsn -t \
 		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
 	install -Dm644 "$builddir"/battmgr.jsn -t \
 		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
@@ -53,7 +64,10 @@ bluetooth() {
 cdsp() {
 	pkgdesc="Fairphone 5 cdsp firmware"
 
-	install -Dm644 "$builddir"/cdsp* -t \
+	install -Dm644 "$builddir"/cdsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	ln -s cdsp.mbn "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/cdsp.mdt"
+	install -Dm644 "$builddir"/cdsp*.jsn -t \
 		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
 }
 
@@ -61,18 +75,21 @@ ipa() {
 	pkgdesc="Fairphone 5 ipa firmware"
 
 	cd "$builddir"
-	for i in yupik_ipa_fws.*; do
-		install -Dm644 $i \
-			"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/${i/yupik_/}"
-	done
+	install -Dm644 "$builddir"/yupik_ipa_fws.mbn \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/ipa_fws.mbn"
+	ln -s ipa_fws.mbn "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/ipa_fws.mdt"
 }
 
 modem() {
 	pkgdesc="Fairphone 5 modem firmware"
 
-	# cp because of the modem_pr directory
-	mkdir -p "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
-	cp -r "$builddir"/modem* \
+	install -Dm644 "$builddir"/modem.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	ln -s modem.mbn "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/modem.mdt"
+	install -Dm644 "$builddir"/modem*.jsn -t \
+		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+
+	cp -r "$builddir"/modem_pr/ \
 		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
 	find "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/" \
 		-type f -exec chmod 0644 {} \;
@@ -88,10 +105,11 @@ venus() {
 wpss() {
 	pkgdesc="Fairphone 5 wpss firmware"
 
-	install -Dm644 "$builddir"/wpss* -t \
+	install -Dm644 "$builddir"/wpss.mbn -t \
 		"$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/"
+	ln -s wpss.mbn "$subpkgdir/lib/firmware/qcom/qcm6490/fairphone5/wpss.mdt"
 }
 
 sha512sums="
-562d245bee3a946e951ede7c30d0f6aecd8faa19a5a45dabf44904032ad3bb234bd96b68ef2553832b821aaf99d6ed4db72bb4d01daa75bba4cfc75c9722b046  FP5-firmware-35845c6719f6394da1499a0ed3b5f20f372bdaec.tar.gz
+a1f52a30858b85784298fc0da239ab764a53123670ee3c2fdda3ee760d9ad34a1122d6c4601ae6fa38aa93918ed9e53b4e46eaf8eb2c5f86590be836a199ee32  FP5-firmware-3f529aecb4a9c61299c5f93d1137c6870daf93d3.tar.gz
 "
