@@ -1,0 +1,30 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-samsung-gta7litewifi
+pkgdesc="Samsung Galaxy Tab A7 Lite"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-samsung-gta7litewifi
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+2008c6bf8567f72f0dd8bc93d807fe9857a1ea16ebb3f26f5a886fa6b487379579e373adb537cc28439ce39c6a88dc89be8ffbb22d168c977b6bbaf7ae579d34  deviceinfo
+"
