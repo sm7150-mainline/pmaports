@@ -2,9 +2,9 @@
 
 _flavor="postmarketos-qcom-sm6350"
 pkgname=linux-$_flavor
-pkgver=6.4.2
-pkgrel=1
-pkgdesc="Mainline Kernel fork for SM6350 devices"
+pkgver=6.6.7
+pkgrel=0
+pkgdesc="Mainline Kernel fork for SM6350/SM7225 devices"
 arch="aarch64"
 _carch="arm64"
 url="https://github.com/z3ntu/linux"
@@ -17,14 +17,14 @@ makedepends="bash bison findutils flex installkernel openssl-dev perl"
 
 _repo="linux"
 _config="config-$_flavor.$arch"
-_commit="f33e98821f41bc160a6985355c4a2d1dc5223afa"
+_tag="v$pkgver-sm6350"
 
 # Source
 source="
-	$_repo-$_commit.tar.gz::https://github.com/z3ntu/$_repo/archive/$_commit/$_repo-$_commit.tar.gz
+	https://github.com/z3ntu/$_repo/archive/$_tag/$_repo-$_tag.tar.gz
 	$_config
 "
-builddir="$srcdir/$_repo-$_commit"
+builddir="$srcdir/$_repo-$pkgver-sm6350"
 
 prepare() {
 	default_prepare
@@ -54,6 +54,6 @@ package() {
 }
 
 sha512sums="
-310907bca81377fd4753cf9365ffa5e7eeef13fb0d14c99487f14a8284a717fcf70aa360c7612aa6970498f7241f4606d1ebcef0b3f2477d147b51af983a92ac  linux-f33e98821f41bc160a6985355c4a2d1dc5223afa.tar.gz
-5999fbbc61d789b639a530105298b31308b31886143317bb033634b58f10151676518949f18318d63bbf188f52958be5df4fa7dbd1ab204431a50464870897f6  config-postmarketos-qcom-sm6350.aarch64
+8578c42bf70700808f8d95cbe294cee5df391cf149f33f87f09aaae649ff128d48d3501dd958345c6205cb91836b2b969118197ac4ca35bd9d55b78522e53d5f  linux-v6.6.7-sm6350.tar.gz
+cbea50bf65de74e12a507b6402f598329412ca7c15257307a7c5a4acd65a22e088a49ba792317f942dadc1a5ed1cf9bd6b6ce7a04c63a2a900d7a92584a2f367  config-postmarketos-qcom-sm6350.aarch64
 "
