@@ -7,20 +7,26 @@ PMOS_ROOT=""
 
 # Redirect stdout and stderr to logfile
 setup_log() {
-	# Bail out if PMOS_NO_OUTPUT_REDIRECT is set
+	local log_to_console=""
+
+	grep -q PMOS_NO_OUTPUT_REDIRECT /proc/cmdline && log_to_console="true"
+
 	echo "### postmarketOS initramfs ###"
-	grep -q PMOS_NO_OUTPUT_REDIRECT /proc/cmdline && return
 
-	# Print a message about what is going on to the normal output
-	echo "NOTE: All output from the initramfs gets redirected to:"
-	echo "/pmOS_init.log"
-	echo "If you want to disable this behavior (e.g. because you're"
-	echo "debugging over serial), please add this to your kernel"
-	echo "command line: PMOS_NO_OUTPUT_REDIRECT"
+	if [ -z "$log_to_console" ]; then
+		echo "Add PMOS_NO_OUTPUT_REDIRECT to your kernel command line"
+		echo "to enable initramfs logging to console (e.g. for serial)."
+	fi
 
-	# Start redirect, print the first line again
+	# Start redirect
 	exec >/pmOS_init.log 2>&1
 	echo "### postmarketOS initramfs ###"
+
+	# Pipe logs to console if PMOS_NO_OUTPUT_REDIRECT is set
+	if [ -n "$log_to_console" ]; then
+		tail -f /pmOS_init.log > /dev/console &
+		return
+	fi
 }
 
 mount_proc_sys_dev() {
