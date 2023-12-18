@@ -15,7 +15,7 @@ echo "Create 'pmos_continue_boot' script"
 	#Disable any active usb mass storage
 	echo "if [ -d /config/usb_gadget/g1/functions/mass_storage.0 ]; then setup_usb_storage; fi"
 	echo "pkill -9 -f pmos_shell"
-	echo "pkill -f pmos_loop_forever"
+	echo "pkill -f pmos_fail_halt_boot"
 	echo "pkill -f telnetd.*:${TELNET_PORT}"
 } >/usr/bin/pmos_continue_boot
 chmod +x /usr/bin/pmos_continue_boot
@@ -27,13 +27,13 @@ echo "Create 'pmos_shell' script"
 } >/usr/bin/pmos_shell
 chmod +x /usr/bin/pmos_shell
 
-echo "Create 'pmos_loop_forever' script"
+echo "Create 'pmos_fail_halt_boot' script"
 {
 	echo "#!/bin/sh"
 	echo '. /init_functions.sh'
-	echo "loop_forever"
-} >/usr/bin/pmos_loop_forever
-chmod +x /usr/bin/pmos_loop_forever
+	echo "fail_halt_boot"
+} >/usr/bin/pmos_fail_halt_boot
+chmod +x /usr/bin/pmos_fail_halt_boot
 
 echo "Start the telnet daemon"
 {

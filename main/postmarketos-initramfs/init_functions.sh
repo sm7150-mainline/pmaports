@@ -304,7 +304,7 @@ mount_boot_partition() {
 	if [ -z "$partition" ]; then
 		echo "ERROR: boot partition not found!"
 		show_splash "ERROR: Boot partition not found\\nhttps://postmarketos.org/troubleshooting"
-		loop_forever
+		fail_halt_boot
 	fi
 
 	if [ "$2" = "rw" ]; then
@@ -341,7 +341,7 @@ extract_initramfs_extra() {
 	if [ ! -e "$initramfs_extra" ]; then
 		echo "ERROR: initramfs-extra not found!"
 		show_splash "ERROR: initramfs-extra not found\\nhttps://postmarketos.org/troubleshooting"
-		loop_forever
+		fail_halt_boot
 	fi
 	echo "Extract $initramfs_extra"
 	# uncompressed:
@@ -513,7 +513,7 @@ mount_root_partition() {
 	if ! { [ "$type" = "ext4" ] || [ "$type" = "f2fs" ] || [ "$type" = "btrfs" ]; } then
 		echo "ERROR: Detected unsupported '$type' filesystem ($partition)."
 		show_splash "ERROR: unsupported '$type' filesystem ($partition)\\nhttps://postmarketos.org/troubleshooting"
-		loop_forever
+		fail_halt_boot
 	fi
 
 	if ! modprobe "$type"; then
@@ -522,13 +522,13 @@ mount_root_partition() {
 	if ! mount -t "$type" -o ro"$rootfsopts" "$partition" /sysroot; then
 		echo "ERROR: unable to mount root partition!"
 		show_splash "ERROR: unable to mount root partition\\nhttps://postmarketos.org/troubleshooting"
-		loop_forever
+		fail_halt_boot
 	fi
 
 	if ! [ -e /sysroot/usr ]; then
 		echo "ERROR: root partition appeared to mount but does not contain a root filesystem!"
 		show_splash "ERROR: root partition does not contain a root filesystem\\nhttps://postmarketos.org/troubleshooting"
-		loop_forever
+		fail_halt_boot
 	fi
 }
 
@@ -584,9 +584,11 @@ setup_usb_configfs_udc() {
 	echo "$_udc_dev" > /config/usb_gadget/g1/UDC || echo "  Couldn't write new UDC"
 }
 
+# $1: if set, skip writing to the UDC
 setup_usb_network_configfs() {
 	# See: https://www.kernel.org/doc/Documentation/usb/gadget_configfs.txt
 	CONFIGFS=/config/usb_gadget
+	local skip_udc="$1"
 
 	if ! [ -e "$CONFIGFS" ]; then
 		echo "  /config/usb_gadget does not exist, skipping configfs usb gadget"
@@ -638,7 +640,11 @@ setup_usb_network_configfs() {
 	ln -s $CONFIGFS/g1/functions/"$usb_network_function" $CONFIGFS/g1/configs/c.1 \
 		|| echo "  Couldn't symlink $usb_network_function"
 
-	setup_usb_configfs_udc
+	# If an argument was supplied then skip writing to the UDC (only used for mass storage
+	# log recovery)
+	if [ -z "$skip_udc" ]; then
+		setup_usb_configfs_udc
+	fi
 }
 
 setup_usb_network() {
@@ -771,7 +777,98 @@ setup_bootchart2() {
 	fi
 }
 
-loop_forever() {
+mkhash() {
+	sha256sum "$1" | cut -d " " -f 1
+}
+
+# Create a small disk image and copy logs to it so they can be exposed via mass storage
+create_logs_disk() {
+	local loop_dev="$1"
+	local upload_file=""
+	echo "Creating logs disk"
+
+	fallocate -l 10M /tmp/logs.img
+	# The log device used is assumed to be $loop_dev
+	losetup -f /tmp/logs.img
+	mkfs.vfat -n "PMOS_LOGS" "$loop_dev"
+	mkdir -p /tmp/logs
+	mount "$loop_dev" /tmp/logs
+
+	# Copy logs
+	cp /pmOS_init.log /tmp/logs/pmOS_init.txt
+	dmesg > /tmp/logs/dmesg.txt
+	blkid > /tmp/logs/blkid.txt
+	cat /proc/cmdline > /tmp/logs/cmdline.txt
+	cat /proc/partitions > /tmp/logs/partitions.txt
+	# Include FDT if it exists
+	[ -e /sys/firmware/fdt ] && cp /sys/firmware/fdt /tmp/logs/fdt.dtb
+
+	# Additional info about the initramfs
+	{
+		echo "initramfs-version: $INITRAMFS_PKG_VERSION"
+		# Take hashes of the initramfs files so we can be sure they weren't modified inadvertantly
+		echo "init-hash: $(mkhash /init)"
+		echo "init-functions-hash: $(mkhash /init_functions.sh)"
+	} >> /tmp/logs/_info
+
+	# Create a tar file with all the logs. We don't include the date because on many devices
+	# (especially Qualcomm) the RTC is likely wrong.
+	upload_file="${deviceinfo_codename}-${VERSION}-$(uname -r).tar.gz"
+	# Done in a subshell to not change the working directory of init
+	(cd /tmp/logs || ( echo "Couldn't cd to /tmp/logs"; return ); tar -cv ./* | gzip -6 -c > "/tmp/$upload_file")
+	mv "/tmp/$upload_file" /tmp/logs/
+
+	# Create a README with instructions on how to report an issue
+	cat > /tmp/logs/README.txt <<-EOF
+	Something went wrong and your device did not boot properly. If this was unexpected
+	then please open a new issue by visiting
+
+	https://gitlab.com/postmarketOS/pmaports/-/issues/new
+
+	and attach the following file by dragging it onto the page:
+
+	* $upload_file
+
+	You are running postmarketOS $VERSION on kernel $(uname -r).
+	EOF
+
+	# Unmount
+	umount /tmp/logs
+}
+
+# Make logs available via mass storage gadget
+export_logs() {
+	local loop_dev=""
+	usb_mass_storage_function="mass_storage.0"
+	active_udc="$(cat /config/usb_gadget/g1/UDC)"
+
+	loop_dev="$(losetup -f)"
+
+	create_logs_disk "$loop_dev"
+
+	echo "Making logs available via mass storage"
+
+	# Set up network gadget if not already done
+	if [ -z "$active_udc" ]; then
+		setup_usb_network_configfs "skip_udc"
+	else
+		# Unset UDC
+		echo "" > /config/usb_gadget/g1/UDC
+	fi
+
+	mkdir "$CONFIGFS"/g1/functions/"$usb_mass_storage_function" || return
+
+	echo "$loop_dev" > "$CONFIGFS"/g1/functions/"$usb_mass_storage_function"/lun.0/file
+
+	ln -s "$CONFIGFS"/g1/functions/"$usb_mass_storage_function" \
+		"$CONFIGFS"/g1/configs/c.1 || return
+
+	setup_usb_configfs_udc
+}
+
+fail_halt_boot() {
+	export_logs
+	echo "Looping forever"
 	while true; do
 		sleep 1
 	done

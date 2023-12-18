@@ -17,7 +17,7 @@ modprobe nbd
 if [ ! -b /dev/nbd0 ]; then
 	echo "Failed to get /dev/nbd0, stopping."
 	show_splash "ERROR: Failed to initialise netboot\\nhttps://postmarketos.org/netboot"
-	pmos_loop_forever
+	fail_halt_boot
 fi
 
 client_ip="${unudhcpd_client_ip:-172.16.42.2}"

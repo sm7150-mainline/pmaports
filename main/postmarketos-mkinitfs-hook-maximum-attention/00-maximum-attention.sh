@@ -53,4 +53,4 @@ vibrate_loop() {
 blink_leds $(find_leds) &
 vibrate_loop $(find_vibrator) &
 
-loop_forever
+fail_halt_boot
