@@ -1,0 +1,36 @@
+From 720541f67f730e31c7b19b21b6c7eb92bfd9b6c2 Mon Sep 17 00:00:00 2001
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Fri, 16 Jun 2023 01:36:58 +0200
+Subject: [PATCH 06/17] media: venus: core: Set up secure memory ranges for
+ SC7180
+
+Not all SC7180 devices ship with ChromeOS firmware. WoA devices use
+Android-like TZ, which uses PAS for image authentication. That requires
+the predefined virtual address ranges to be passed via scm calls.
+Define them to enable Venus on non-CrOS SC7180 devices.
+
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Signed-off-by: Stanimir Varbanov <stanimir.k.varbanov@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+---
+ drivers/media/platform/qcom/venus/core.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index 990a1519f968..1d9e416e5322 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -762,6 +762,10 @@ static const struct venus_resources sc7180_res = {
+ 	.vmem_size = 0,
+ 	.vmem_addr = 0,
+ 	.dma_mask = 0xe0000000 - 1,
++	.cp_start = 0,
++	.cp_size = 0x70800000,
++	.cp_nonpixel_start = 0x1000000,
++	.cp_nonpixel_size = 0x24800000,
+ 	.fwname = "qcom/venus-5.4/venus.mdt",
+ };
+ 
+-- 
+2.43.0
+

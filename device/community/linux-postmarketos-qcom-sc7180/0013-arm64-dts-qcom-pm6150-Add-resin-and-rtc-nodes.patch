@@ -1,0 +1,54 @@
+From 389f71369f7a62199ff0af56ef9a23c1c86570e1 Mon Sep 17 00:00:00 2001
+From: David Wronek <davidwronek@gmail.com>
+Date: Thu, 24 Aug 2023 11:15:05 +0200
+Subject: [PATCH 13/17] arm64: dts: qcom: pm6150: Add resin and rtc nodes
+
+Add support for the RTC which is the same as on other PMICs and add the
+resin child node to the PM6150 PON device, both disabled by default.
+
+Signed-off-by: David Wronek <davidwronek@gmail.com>
+Tested-by: Nikita Travkin <nikita@trvn.ru>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Link: https://lore.kernel.org/r/20230824091737.75813-3-davidwronek@gmail.com
+Signed-off-by: Bjorn Andersson <andersson@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/pm6150.dtsi | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/pm6150.dtsi b/arch/arm64/boot/dts/qcom/pm6150.dtsi
+index 8a4972e6a24c..d1dccfdfb3cd 100644
+--- a/arch/arm64/boot/dts/qcom/pm6150.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm6150.dtsi
+@@ -51,6 +51,14 @@ pm6150_pwrkey: pwrkey {
+ 				bias-pull-up;
+ 				linux,code = <KEY_POWER>;
+ 			};
++
++			pm6150_resin: resin {
++				compatible = "qcom,pm8941-resin";
++				interrupts = <0x0 0x8 1 IRQ_TYPE_EDGE_BOTH>;
++				debounce = <15625>;
++				bias-pull-up;
++				status = "disabled";
++			};
+ 		};
+ 
+ 		pm6150_temp: temp-alarm@2400 {
+@@ -86,6 +94,14 @@ pm6150_adc_tm: adc-tm@3500 {
+ 			status = "disabled";
+ 		};
+ 
++		pm6150_rtc: rtc@6000 {
++			compatible = "qcom,pm8941-rtc";
++			reg = <0x6000>, <0x6100>;
++			reg-names = "rtc", "alarm";
++			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
++			status = "disabled";
++		};
++
+ 		pm6150_gpio: gpios@c000 {
+ 			compatible = "qcom,pm6150-gpio", "qcom,spmi-gpio";
+ 			reg = <0xc000>;
+-- 
+2.43.0
+

@@ -1,7 +1,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=linux-postmarketos-qcom-sc7180
 pkgver=6.1.39
-pkgrel=3
+pkgrel=4
 pkgdesc="Mainline kernel fork for Qualcomm Snapdragon 7c devices"
 arch="aarch64"
 _carch="arm64"
@@ -39,6 +39,18 @@ source="
 	0003-arm64-dts-qcom-sc7180-Don-t-enable-lpass-clocks-by-d.patch
 	0004-arm64-dts-qcom-sc7180-Drop-redundant-disable-in-mdp.patch
 	0005-arm64-dts-qcom-Add-Acer-Aspire-1.patch
+	0006-media-venus-core-Set-up-secure-memory-ranges-for-SC7.patch
+	0007-arm64-dts-qcom-sc7180-Split-up-TF-A-related-PSCI-con.patch
+	0008-remoteproc-qcom-pas-Add-sc7180-adsp.patch
+	0009-arm64-dts-qcom-sc7180-Add-tertiary-mi2s-pinctrl.patch
+	0010-arm64-dts-qcom-sc7180-Add-ADSP.patch
+	0011-ASoC-qcom-sc7180-Map-missing-jack-kcontrols.patch
+	0012-ASoC-qcom-sc7180-Add-support-for-qdsp6-baked-sound.patch
+	0013-arm64-dts-qcom-pm6150-Add-resin-and-rtc-nodes.patch
+	0014-arm64-dts-qcom-acer-aspire1-Enable-RTC.patch
+	0015-arm64-dts-qcom-acer-aspire1-Correct-audio-codec-defi.patch
+	0016-arm64-dts-qcom-acer-aspire1-Add-sound.patch
+	0017-HACK-arm64-dts-qcom-acer-aspire1-Enable-DisplayPort-.patch
 	$_config
 "
 builddir="$srcdir/linux-${_kernver//_/-}"
@@ -75,5 +87,17 @@ f1c85f9e7b2dbebba54eca7080589ee35be501854510fd54f1fb3db07b8cfb62276cb9359a40096a
 03b638baea7703227c398ba37824eeb17a96138aced4cc1e0769a265eb38788ac1fd150166a0af9e22f1364d053f20219b2b269310d01c32c4089682939021bf  0003-arm64-dts-qcom-sc7180-Don-t-enable-lpass-clocks-by-d.patch
 82761a3c53167dfb02091fb5305dca67b52872db3ecb14a42d782ba1346f046160d47a379fd88f0e3cb7ee91aa35a2eebe89304edb618df3895e2d469c9c8863  0004-arm64-dts-qcom-sc7180-Drop-redundant-disable-in-mdp.patch
 639784302e28afc562fc6d9673b12fbce49f11b5e2400ed5c460d5e157e7196092f33e1c67a1ee6bf8ad5b4dbb81f2f0263439662a1b68ea49c9201f63afe153  0005-arm64-dts-qcom-Add-Acer-Aspire-1.patch
+b09b67143e1adc26cb24954a31f3633aaf9624354ba27e69af685503a6621c6c7bad0b5b9c08535548e3e2885ccba7798542b97c4d217ab970ee504ba250595d  0006-media-venus-core-Set-up-secure-memory-ranges-for-SC7.patch
+04d746c6b5595097eec2a4bf37df06266a29080bedf7708bd54eb7b98a0b9a6d5581aef45070799b7d10ba94cd11d0ceb09486547e24bf2a597964e9e5566bc1  0007-arm64-dts-qcom-sc7180-Split-up-TF-A-related-PSCI-con.patch
+3f9c5b34f6869a9332ca8f260b385d0d7a5c4453d3fe682d864f53d44dceee9bd6bb370e75a60ce61c87b4224347f8cc8647c9d03f2bc2293d8e53ef327e2cc5  0008-remoteproc-qcom-pas-Add-sc7180-adsp.patch
+fe389611f991ba9de9e4662b2ed35a6790bbc18bb99fdc12eb281e5a4d5559ada3952a4024145007e9b8fbd3ed5fb862f56ad27f0ff36874decf24090d995f57  0009-arm64-dts-qcom-sc7180-Add-tertiary-mi2s-pinctrl.patch
+5fa7a4914ecd6e4ea47dce438cc1100f2747b082c71477859745147df801aede57ef6f1c54680a2c6ca85b61b791faa77210bd216bbe849681b2c558b6c6f152  0010-arm64-dts-qcom-sc7180-Add-ADSP.patch
+57c6f29b445ecd92f5fb1d5ca0a2783bccc1fbd3b1e51016db84370b75214fd70c832207f7c59cc00814db686d0ce03f33013138378c25aa18b8646148a296ac  0011-ASoC-qcom-sc7180-Map-missing-jack-kcontrols.patch
+08f1e646e1a387f1c5d01c954c87bdebd6fb13aa555eb3430331ffcfae0d6b61697ea4d35fb33b01bda801c92e9308f3a73ddf5b83a3074c009b2cce468f4d42  0012-ASoC-qcom-sc7180-Add-support-for-qdsp6-baked-sound.patch
+5e7dabdca52cf329b9a7fe77e6781cce07febda84592a93ea435b94e2707b6a8f3ae63a144070f5e203de4cd2608428cf9ec0c59fc2284bdd5b25bc995064264  0013-arm64-dts-qcom-pm6150-Add-resin-and-rtc-nodes.patch
+5c9d7bd7a97b704f512ea398c183778e7aba04d513f14c55dc70ba7a3677613805241f48409ec3af08f62d96c23bd197e0ead0a42c877ad91f7bc32c00b1b606  0014-arm64-dts-qcom-acer-aspire1-Enable-RTC.patch
+19441571468c89576da2087bfcfb8eaca253c67b41bd201ba123dafa33e5e6f424c9719b8fddf61cfce4d27f1b138718f200931eafc5edab5cb4da5b225ba410  0015-arm64-dts-qcom-acer-aspire1-Correct-audio-codec-defi.patch
+d6ecbd07481bf9852d330f1fbe004e0f70a45251956a37b730e4cbb3b7e3c03b34c9979749ab8857d39171382e87159cc54125fad7a0a02a33d4b502892fce9a  0016-arm64-dts-qcom-acer-aspire1-Add-sound.patch
+43cc38c2074a474a4386ab070bcc7b966527a607bc0adb345ce6d13f79b7714e46747ed2624831ae6ed48cf3b4ef387e4cc84247c3b7d13e69a7d1e64f7efe6f  0017-HACK-arm64-dts-qcom-acer-aspire1-Enable-DisplayPort-.patch
 9c664ab3d753f5ea7b65c77e026fcdb62e4f8f624941a7f64acc5960e6ef72f4616ebb7cb52dbb014884e4383ce3797dae4e2af829b80b06304158b5a7d1ea7e  config-postmarketos-qcom-sc7180.aarch64
 "

@@ -1,0 +1,32 @@
+From d3e05226627152fff5417c441407fa4a796b707b Mon Sep 17 00:00:00 2001
+From: Nikita Travkin <nikita@trvn.ru>
+Date: Thu, 7 Sep 2023 15:02:35 +0500
+Subject: [PATCH 08/17] remoteproc: qcom: pas: Add sc7180 adsp
+
+sc7180 has a dedicated ADSP similar to the one found in sm8250.
+Add it's compatible to the driver reusing the existing config so
+the devices that use the adsp can probe it.
+
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/20230907-sc7180-adsp-rproc-v3-2-6515c3fbe0a3@trvn.ru
+Signed-off-by: Bjorn Andersson <andersson@kernel.org>
+---
+ drivers/remoteproc/qcom_q6v5_pas.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+index 6afd0941e552..92aa60d81845 100644
+--- a/drivers/remoteproc/qcom_q6v5_pas.c
++++ b/drivers/remoteproc/qcom_q6v5_pas.c
+@@ -956,6 +956,7 @@ static const struct of_device_id adsp_of_match[] = {
+ 	{ .compatible = "qcom,qcs404-adsp-pas", .data = &adsp_resource_init },
+ 	{ .compatible = "qcom,qcs404-cdsp-pas", .data = &cdsp_resource_init },
+ 	{ .compatible = "qcom,qcs404-wcss-pas", .data = &wcss_resource_init },
++	{ .compatible = "qcom,sc7180-adsp-pas", .data = &sm8250_adsp_resource},
+ 	{ .compatible = "qcom,sc7180-mpss-pas", .data = &mpss_resource_init},
+ 	{ .compatible = "qcom,sc7280-mpss-pas", .data = &mpss_resource_init},
+ 	{ .compatible = "qcom,sc8180x-adsp-pas", .data = &sm8150_adsp_resource},
+-- 
+2.43.0
+
