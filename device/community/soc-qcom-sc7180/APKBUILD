@@ -1,7 +1,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=soc-qcom-sc7180
 pkgdesc="Common package for Qualcomm Snapdragon 7cx devices"
-pkgver=1.1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -9,6 +9,7 @@ arch="aarch64"
 options="!check !archcheck !tracedeps"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-woa:nonfree_firmware_woa
 	$pkgname-vulkan
 "
 source="00-sc7180-nonstrict-iommu.sh"
@@ -26,6 +27,20 @@ nonfree_firmware() {
 	install="$subpkgname.post-install $subpkgname.post-upgrade"
 	mkdir "$subpkgdir"
 }
+
+nonfree_firmware_woa() {
+	pkgdesc="Modem, WiFi firmware"
+	depends="
+		$pkgname-nonfree-firmware
+		pd-mapper
+		pd-mapper-openrc
+		tqftpserv
+		tqftpserv-openrc
+	"
+	install="$subpkgname.post-install $subpkgname.post-upgrade"
+	mkdir "$subpkgdir"
+}
+
 
 vulkan() {
 	pkgdesc="Vulkan support for freedreno"
