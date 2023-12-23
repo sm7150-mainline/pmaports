@@ -1,46 +1,34 @@
 pkgname=firmware-samsung-a6lte
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware files for Samsung Galaxy A6 (2018)"
 url="https://github.com/fw-dumps/samsung_a6lte_dump"
 arch="aarch64"
 license="proprietary"
 options="!strip !check !archcheck !spdx !tracedeps pmb:cross-native"
+depends="linux-firmware-brcm"
 
 # Source
 _commit="2ea1f7e1dfbe56d6ca085c9eb4061aca8909172c"
 builddir="$srcdir/samsung_a6lte_dump-$_commit"
 _raw_wifi_path="$url/raw/$_commit/vendor/etc/wifi"
-_install_wifi_path="/lib/firmware/postmarketos/wifi/"
+_install_wifi_path="/lib/firmware/postmarketos/wifi"
 source="
-	bcmdhd_apsta.bin_c5::$_raw_wifi_path/bcmdhd_apsta.bin_c5
-	bcmdhd_apsta.bin_c5_blob::$_raw_wifi_path/bcmdhd_apsta.bin_c5_blob
-	bcmdhd_clm.blob::$_raw_wifi_path/bcmdhd_clm.blob
-	bcmdhd_mfg.bin_c5::$_raw_wifi_path/bcmdhd_mfg.bin_c5
-	bcmdhd_mfg.bin_c5_blob::$_raw_wifi_path/bcmdhd_mfg.bin_c5_blob
-	bcmdhd_sta.bin_c5::$_raw_wifi_path/bcmdhd_sta.bin_c5
-	bcmdhd_sta.bin_c5_blob::$_raw_wifi_path/bcmdhd_sta.bin_c5_blob
 	nvram.txt_c5::$_raw_wifi_path/nvram.txt_c5
 "
 
 package() {
-	install -Dm644 "$srcdir/bcmdhd_apsta.bin_c5" "$pkgdir$_install_wifi_path/bcmdhd_apsta.bin_c5"
-	install -Dm644 "$srcdir/bcmdhd_apsta.bin_c5_blob" "$pkgdir$_install_wifi_path/bcmdhd_apsta.bin_c5_blob"
-	install -Dm644 "$srcdir/bcmdhd_clm.blob" "$pkgdir$_install_wifi_path/bcmdhd_clm.blob"
-	install -Dm644 "$srcdir/bcmdhd_mfg.bin_c5" "$pkgdir$_install_wifi_path/bcmdhd_mfg.bin_c5"
-	install -Dm644 "$srcdir/bcmdhd_mfg.bin_c5_blob" "$pkgdir$_install_wifi_path/bcmdhd_mfg.bin_c5_blob"
-	install -Dm644 "$srcdir/bcmdhd_sta.bin_c5" "$pkgdir$_install_wifi_path/bcmdhd_sta.bin_c5"
-	install -Dm644 "$srcdir/bcmdhd_sta.bin_c5_blob" "$pkgdir$_install_wifi_path/bcmdhd_sta.bin_c5_blob"
-	install -Dm644 "$srcdir/nvram.txt_c5" "$pkgdir$_install_wifi_path/nvram.txt_c5"
+	mkdir -p "$pkgdir$_install_wifi_path"
+	ln -s /lib/firmware/brcm/brcmfmac43456-sdio.bin "$pkgdir$_install_wifi_path/bcmdhd_apsta.bin_c5"
+	ln -s /lib/firmware/brcm/brcmfmac43456-sdio.bin "$pkgdir$_install_wifi_path/bcmdhd_apsta.bin_c5_blob"
+	ln -s /lib/firmware/brcm/brcmfmac43456-sdio.clm_blob "$pkgdir$_install_wifi_path/bcmdhd_clm.blob"
+	ln -s /lib/firmware/brcm/brcmfmac43456-sdio.bin "$pkgdir$_install_wifi_path/bcmdhd_mfg.bin_c5"
+	ln -s /lib/firmware/brcm/brcmfmac43456-sdio.bin "$pkgdir$_install_wifi_path/bcmdhd_mfg.bin_c5_blob"
+	ln -s /lib/firmware/brcm/brcmfmac43456-sdio.bin "$pkgdir$_install_wifi_path/bcmdhd_sta.bin_c5"
+	ln -s /lib/firmware/brcm/brcmfmac43456-sdio.bin "$pkgdir$_install_wifi_path/bcmdhd_sta.bin_c5_blob"
+	install -Dm644 "$srcdir/nvram.txt_c5" -t "$pkgdir$_install_wifi_path"
 }
 
 sha512sums="
-d808620a966fa657add0a3b0e687227fd4dbcd848bfbeb20a918c91408eda2977cfb74627253b943dc566372c7f96f84c9b2a76c3113ef1c6dd04ccf9a9124db  bcmdhd_apsta.bin_c5
-b19ddead63bffc82881b0df136df5ee05a561a3e2518f7626e9b8f954cd6e6a460e30a34a9248783d64af67b36e77b3938274efdc415de3fec17ed93683dff85  bcmdhd_apsta.bin_c5_blob
-3bdde18b343c5af11b3074faf3462d6ff26486be9c3d6a6dc752293b97e26999ff4432831ad32d2d4359c07a4de24356cd33d3d68371926e9b7e66a6b4ea7fed  bcmdhd_clm.blob
-defd3545ed144c0e85a61778ad897a9777b9a8b585c5414b32fb7e1d56a8e69a858800074ab446de5066c96f859ed2e9c0c10e94aefb3472eec162f8f3bfb48a  bcmdhd_mfg.bin_c5
-e2735f953607ecf2c56f8b577134dcbca27fcc8e5dc9dfb898d58889cd05422f59f86d8e277229ddc2569404cd72f69f13d22163448bfba77e49d8b186789d3b  bcmdhd_mfg.bin_c5_blob
-85b2b960723963f1876ca6723dba87b145b3621c201f1a356ee53cb0dfb9413b9fa69455126b86d87444cbba6dd9ac470e782c2a7b678b2525f512996df451b2  bcmdhd_sta.bin_c5
-15bd915443dab9efffd7c8a5f76101601765e83fd2945f43de56b0fb50bda1676d912a1d93bae531d7073379cf2f13289fb5d9f741694c4a0a2370f62a2a384b  bcmdhd_sta.bin_c5_blob
 b9e1e695cb01497400c0f0c3ccd0e7815a10258775bd89edda3ce89926cb1f9e4172b068553bce7120766ff673e265a9cbe54f94cca0f72496a04a216f4c9a0f  nvram.txt_c5
 "
