@@ -45,7 +45,9 @@ rm -rf /etc/zoneinfo
 
 # To turn zram-init into a no-op, set: deviceinfo_zram_swap_pct="0"
 rc-update -q add zram-init default
+# We once enabled tmpfs in default, when it needs bootmisc: pma#2473
+rc-update -qq del tmpfs default || true
 # To disable mounting /tmp as tmpfs deviceinfo_tmp_as_tmpfs_size="0"
-rc-update -q add tmpfs default
+rc-update -q add tmpfs boot
 
 exit 0
