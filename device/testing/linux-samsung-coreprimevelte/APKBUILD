@@ -2,13 +2,13 @@
 
 _flavor=samsung-coreprimevelte
 pkgname=linux-$_flavor
-pkgver=6.7_rc6
+pkgver=6.7_rc7
 pkgrel=0
 pkgdesc="Samsung Galaxy Core Prime VE LTE mainline kernel"
 arch="aarch64"
 _carch="arm64"
 url="https://gitlab.com/LegoLivesMatter/linux"
-_commit="fcbf65a4f68cab65de26bc95613785b93996db22"
+_commit="5bfc28c48fcdfecfacdbfb9d2d761b38cf85615f"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native pmb:kconfigcheck-nftables
 pmb:kconfigcheck-zram"
@@ -20,6 +20,7 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::$url/-/archive/$_commit/linux-$_commit.tar.gz
 	$_config
+	0001-usb-gadget-u_ether-Re-attach-netif-device-to-mirror-.patch
 "
 builddir="$srcdir/linux-$_commit"
 
@@ -52,6 +53,7 @@ package() {
 }
 
 sha512sums="
-5bd87f6b9582cebae24316b9ee1a62e837aaa6d342a2833b35ba6fda83f8e0519a673a8879cff171eaef76c52948ee19a4286b2badb33412b6b312be7ff67a15  linux-samsung-coreprimevelte-fcbf65a4f68cab65de26bc95613785b93996db22.tar.gz
-caa4d561713c6b1df96774aa77bae713fdc9b7a2b87272fd37b55ef1046b932fc7a9edb3b2045562741101f8b785e50e004aba01c6f26c7a375722184f2ab018  config-samsung-coreprimevelte.aarch64
+5ef16167232dac0d9e734d21a9cd504369976b129b5c5d441aec91aab506804ce5fe130fe678bf56c0849a4f4196a4aa15887d27ac71eb0ec76bf7f375442201  linux-samsung-coreprimevelte-5bfc28c48fcdfecfacdbfb9d2d761b38cf85615f.tar.gz
+3668fc46659991df20cfe2eae2d22ecc376388b1f5a38ac184be7bc55ca3fee042241ef8094758dfd897c91b491a500f67ee1135a63bc42f44fbd12e725dbf02  config-samsung-coreprimevelte.aarch64
+e56eed6e0cd447539479c12f2227ebd9e4a4c2ded055a81595e6fe5f6545b55b05c0a3790f45e4ee1354b7f79a0eddef0434bebd612f1ba8c230ea44001c84a4  0001-usb-gadget-u_ether-Re-attach-netif-device-to-mirror-.patch
 "
