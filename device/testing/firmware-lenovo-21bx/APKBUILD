@@ -1,0 +1,37 @@
+# Contributor: Clayton Craft <clayton@craftyguy.net>
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=firmware-lenovo-21bx
+pkgver=1
+pkgrel=0
+# these are renamed when new versions are released by lenovo
+_vid_filename=n3hdr20w # "Qualcomm Graphics Driver" v30.0.3851.4800
+_bt_filename=n3hww14w # "Qualcomm Bluetooth Driver" v1.0.3638.8101
+pkgdesc="Firmware for the Lenovo Thinkpad X13s (21bx)"
+url="https://pcsupport.lenovo.com/us/en/products/laptops-and-netbooks/thinkpad-x-series-laptops/thinkpad-x13s-type-21bx-21by/downloads/driver-list"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+makedepends="innoextract"
+source="
+	https://download.lenovo.com/pccbbs/mobiles/$_vid_filename.exe
+	https://download.lenovo.com/pccbbs/mobiles/$_bt_filename.exe
+	"
+
+build() {
+	innoextract -I drivers/qcvss8280.mbn "$srcdir/$_vid_filename.exe"
+	innoextract -I hpnv21.b8c "$srcdir/$_bt_filename.exe"
+}
+
+package() {
+	# video acceleration (venus)
+	_name_upper="$(echo "$_vid_filename" | tr [:lower:] [:upper:])"
+	install -Dm644 "$srcdir"/code\$GetExtractPath\$/"$_name_upper"/drivers/qcvss8280.mbn \
+		-t "$pkgdir"/lib/firmware/qcom/sc8280xp/LENOVO/21BX/
+	# bluetooth, renamed to "replace" fw from linux-firmware-qca
+	install -Dm644 "$srcdir"/code\$GetExtractPath\$/bluetooth_hsp/hpnv21.b8c \
+		"$pkgdir"/lib/firmware/postmarketos/qca/hpnv21.bin
+}
+sha512sums="
+d569333b6819024d2142f0330688a0ed3c9f3dfd5d75ab1488d42412f7c8bdb6b83d43b7fa5543fb03a071e23d28d37f86e40272d61c7a14992c4663fc1aa1e6  n3hdr20w.exe
+1a412daf6baa6cef76ccb7e169944a9bdf129154e8168f8cdcc9e7084ca86942d5d735bcf359cfe17f5a41f45145fdaa613bb7e6953bddf41104564ff74a317e  n3hww14w.exe
+"
