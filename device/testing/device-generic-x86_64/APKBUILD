@@ -1,8 +1,7 @@
-# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-generic-x86_64
-# note: this could also support legacy boot in the future, e.g. with syslinux!
 pkgdesc="Generic x86_64 system, with EFI"
-pkgver=8
+pkgver=9
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -11,7 +10,6 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf
 	postmarketos-base
-	sof-firmware
 	systemd-boot
 "
 makedepends="devicepkg-dev"
@@ -19,13 +17,16 @@ source="
 	deviceinfo
 	modules-initfs
 "
+install="$pkgname.post-install $pkgname.post-upgrade"
 subpackages="
 	$pkgname-kernel-edge:kernel_edge
 	$pkgname-kernel-lts:kernel_lts
-	$pkgname-libva
 	$pkgname-mesa
-	$pkgname-vulkan
-	"
+"
+_pmb_recommends="
+	oem-intel
+	oem-amd
+"
 provides="device-tablet-x64uefi=$pkgver-r$pkgrel device-tablet-x86uefi=$pkgver-r$pkgrel"
 replaces="device-tablet-x64uefi device-tablet-x86uefi"
 
@@ -35,14 +36,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-}
-
-libva() {
-	install_if="$pkgname=$pkgver-r$pkgrel libva"
-	provides="device-tablet-x64uefi-libva=$pkgver-r$pkgrel device-tablet-x86uefi-libva=$pkgver-r$pkgrel"
-	replaces="device-tablet-x64uefi-libva device-tablet-x86uefi-libva"
-	depends="intel-media-driver libva-intel-driver mesa-va-gallium"
-	mkdir "$subpkgdir"
 }
 
 mesa() {
@@ -67,14 +60,6 @@ kernel_lts() {
 	replaces="device-tablet-x64uefi-kernel-lts device-tablet-x86uefi-kernel-lts"
 	depends="linux-lts"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-vulkan() {
-	install_if="$pkgname=$pkgver-r$pkgrel vulkan-loader"
-	provides="device-tablet-x64uefi-vulkan=$pkgver-r$pkgrel device-tablet-x86uefi-vulkan=$pkgver-r$pkgrel"
-	replaces="device-tablet-x64uefi-vulkan device-tablet-x86uefi-vulkan"
-	depends="mesa-vulkan-ati mesa-vulkan-intel mesa-vulkan-swrast"
-	mkdir "$subpkgdir"
 }
 
 sha512sums="
