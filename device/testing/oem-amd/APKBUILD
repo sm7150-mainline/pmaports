@@ -1,0 +1,37 @@
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=oem-amd
+pkgdesc="AMD device support"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="x86_64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	amd-ucode
+"
+subpackages="
+	$pkgname-libva
+	$pkgname-vulkan
+	"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+libva() {
+	pkgdesc="libva support for AMD devices"
+	install_if="$pkgname=$pkgver-r$pkgrel libva"
+	depends="mesa-va-gallium"
+
+	mkdir "$subpkgdir"
+}
+
+vulkan() {
+	pkgdesc="vulkan support for AMD devices"
+	install_if="$pkgname=$pkgver-r$pkgrel vulkan-loader"
+	depends="mesa-vulkan-ati"
+
+	mkdir "$subpkgdir"
+}
