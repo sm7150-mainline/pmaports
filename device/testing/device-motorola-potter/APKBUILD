@@ -2,15 +2,21 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-motorola-potter
 pkgdesc="Motorola Moto G5 Plus"
-pkgver=0.3
-pkgrel=3
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-qcom-msm8953 mkbootimg lk2nd-msm8953"
+depends="
+	linux-postmarketos-qcom-msm8953
+	lk2nd-msm8953
+	mkbootimg
+	postmarketos-base
+	soc-qcom-msm8953
+"
 makedepends="devicepkg-dev"
-source="deviceinfo"
+source="deviceinfo modules-initfs"
 
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -26,10 +32,18 @@ package() {
 
 nonfree_firmware() {
 	pkgdesc="GPU/Wi-Fi/Bluetooth/Audio/Video/Modem firmware"
-	depends="firmware-motorola-potter"
+	depends="
+		firmware-motorola-potter
+		msm-firmware-loader
+		soc-qcom-msm8953-initramfs
+		soc-qcom-msm8953-modem
+		tqftpserv
+		tqftpserv-openrc
+	"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-36556104aeaa3ad3f4a299bacf94317fcd0c95f753f935a4bddf29964b3314ca1fe24b11c606d111372d0bfb4690018fdf2f2c87e7590a4828dac9891933f1a4  deviceinfo
+31f181f7115af01efa032e23d11a6e311308d3ba1bb8465e5c17bde00f4f47b3dd49755a2ff41f598275d310dcd7de5a5cd35140ad0482b36b0fe53dcd71cf66  deviceinfo
+93c77bfcde005c021ac9b671f9671923339f855e45d4fce8b2caea4748eccc08c8ec65bdfc85fef4900c974860613e8d62e6fe0ea95741ec1ab08c814148472b  modules-initfs
 "
