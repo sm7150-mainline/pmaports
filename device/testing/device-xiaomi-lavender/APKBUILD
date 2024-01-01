@@ -2,18 +2,14 @@
 # Maintainer: Alexey Min <alexey.min@gmail.com>
 pkgname=device-xiaomi-lavender
 pkgdesc="Xiaomi Redmi Note 7"
-pkgver=0.2
-pkgrel=6
+pkgver=0.3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base mkbootimg"
+depends="linux-postmarketos-qcom-sdm660 mkbootimg postmarketos-base"
 makedepends="devicepkg-dev"
-subpackages="
-	$pkgname-kernel-downstream:kernel_downstream
-	$pkgname-kernel-mainline:kernel_mainline
-"
 source="deviceinfo modules-initfs"
 
 build() {
@@ -24,19 +20,7 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-kernel_downstream() {
-	pkgdesc="LineageOS downstream kernel (recommended)"
-	depends="linux-xiaomi-lavender msm-fb-refresher"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_mainline() {
-	pkgdesc="Close to mainline; for kernel development only (most features aren't working)"
-	depends="linux-postmarketos-qcom-sdm660"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
 sha512sums="
-13b8ac10e595b9f569b33c82f99f2ee6e3acf0a4858765a663bab91bff6c318dec80112ace60ac6610983c37ba7b8615811547db37d0b10abf780fe50bc5f301  deviceinfo
+eab75a375ba212afea4c7cdc0754d3eac6b7bb1631d3d98c992c84f3520edfd4abe9861e110cb9d797faf7a516d3dd0f1558b70623391745efe920739e58e6f6  deviceinfo
 029156e04ee0f9e20cf37d6fd0f52278ecc6a029b9ca86845a5e9a7b550ed1211b62f09e5ed36083061269d4e83b648788b87bbde0fba3cd1eb68675c47b79eb  modules-initfs
 "
