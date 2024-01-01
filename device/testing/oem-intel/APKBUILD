@@ -1,0 +1,38 @@
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=oem-intel
+pkgdesc="Intel device support"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="x86_64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	intel-ucode
+	sof-firmware
+"
+subpackages="
+	$pkgname-libva
+	$pkgname-vulkan
+	"
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+libva() {
+	pkgdesc="libva support for Intel devices"
+	install_if="$pkgname=$pkgver-r$pkgrel libva"
+	depends="intel-media-driver libva-intel-driver"
+
+	mkdir "$subpkgdir"
+}
+
+vulkan() {
+	pkgdesc="vulkan support for Intel devices"
+	install_if="$pkgname=$pkgver-r$pkgrel vulkan-loader"
+	depends="mesa-vulkan-intel"
+
+	mkdir "$subpkgdir"
+}
