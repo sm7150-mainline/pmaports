@@ -2,16 +2,12 @@
 pkgname=device-ouya-ouya
 pkgver=1
 pkgdesc="Ouya"
-pkgrel=26
+pkgrel=27
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
 options="!check !archcheck"
-depends="
-	libvdpau-tegra
-	mkbootimg
-	postmarketos-base
-	"
+depends="mkbootimg postmarketos-base"
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
@@ -58,7 +54,7 @@ kernel_mainline() {
 
 x11() {
 	install_if="$pkgname xorg-server"
-	depends="xf86-video-opentegra"
+	depends="xf86-video-opentegra libvdpau-tegra"
 	mkdir "$subpkgdir"
 }
 
