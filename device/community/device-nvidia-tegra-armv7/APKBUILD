@@ -7,14 +7,13 @@
 pkgname=device-nvidia-tegra-armv7
 pkgdesc="NVIDIA Tegra ARMv7"
 pkgver=1.1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
 depends="
 	alsa-ucm-conf
-	libvdpau-tegra
 	linux-postmarketos-grate
 	postmarketos-base
 "
@@ -41,7 +40,7 @@ nonfree_firmware() {
 
 x11() {
 	install_if="$pkgname=$pkgver-r$pkgrel xorg-server"
-	depends="xf86-video-opentegra"
+	depends="xf86-video-opentegra libvdpau-tegra"
 	mkdir "$subpkgdir"
 }
 
