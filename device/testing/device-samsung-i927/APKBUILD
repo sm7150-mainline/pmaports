@@ -2,7 +2,7 @@
 pkgname=device-samsung-i927
 pkgdesc="Samsung Captivate Glide"
 pkgver=0.3
-pkgrel=15
+pkgrel=16
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -12,8 +12,7 @@ depends="postmarketos-base
 	mkbootimg
 	alsa-utils
 	setxkbmap
-	pm-utils
-	libvdpau-tegra"
+	pm-utils"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-x11"
 source="deviceinfo
@@ -66,7 +65,7 @@ nonfree_firmware() {
 
 x11() {
 	install_if="$pkgname xorg-server"
-	depends="xf86-video-opentegra"
+	depends="xf86-video-opentegra libvdpau-tegra"
 	mkdir "$subpkgdir"
 }
 
