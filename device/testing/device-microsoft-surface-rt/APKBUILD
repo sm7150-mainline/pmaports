@@ -3,7 +3,7 @@
 pkgname=device-microsoft-surface-rt
 pkgdesc="Microsoft Surface RT"
 pkgver=6
-pkgrel=6
+pkgrel=7
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -11,7 +11,6 @@ arch="armv7"
 options="!check !archcheck pmb:strict"
 depends="postmarketos-base
 	linux-postmarketos-grate
-	libvdpau-tegra
 	alsa-ucm-conf
 "
 makedepends="devicepkg-dev grub grub-efi"
@@ -68,7 +67,7 @@ nonfree_firmware() {
 
 x11() {
 	install_if="$pkgname xorg-server"
-	depends="xf86-video-opentegra"
+	depends="xf86-video-opentegra libvdpau-tegra"
 	mkdir "$subpkgdir"
 }
 
