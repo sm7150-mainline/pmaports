@@ -2,7 +2,7 @@
 pkgname=device-samsung-p4wifi
 pkgdesc="Galaxy Tab 10.1"
 pkgver=0.5
-pkgrel=6
+pkgrel=7
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -10,8 +10,7 @@ options="!check !archcheck"
 depends="postmarketos-base
 	linux-postmarketos-grate
 	mkbootimg
-	alsa-utils
-	libvdpau-tegra"
+	alsa-utils"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware $pkgname-x11"
 source="
@@ -49,7 +48,7 @@ nonfree_firmware() {
 
 x11() {
 	install_if="$pkgname xorg-server"
-	depends="xf86-video-opentegra"
+	depends="xf86-video-opentegra libvdpau-tegra"
 	mkdir "$subpkgdir"
 }
 
