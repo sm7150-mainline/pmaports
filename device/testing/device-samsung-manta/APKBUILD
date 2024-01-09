@@ -2,7 +2,7 @@
 pkgname=device-samsung-manta
 pkgdesc="Google Nexus 10"
 pkgver=1
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -33,6 +33,10 @@ package() {
 
 	install -Dm644 "$srcdir"/100-wlan-mac.rules \
 		-t "$pkgdir"/usr/lib/udev/rules.d/
+
+	mkdir -p "$pkgdir"/etc/modprobe.d
+	echo "options ds2482 active_pullup=0" \
+		> "$pkgdir"/etc/modprobe.d/ds2482.conf
 }
 
 nonfree_firmware() {
