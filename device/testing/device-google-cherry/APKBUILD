@@ -1,0 +1,41 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-cherry
+pkgdesc="Google Cherry Chromebooks"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt81xx
+	postmarketos-base
+	postmarketos-cros-common
+	postmarketos-update-depthcharge-kernel
+	soc-mediatek-mt8183
+"
+makedepends="devicepkg-dev"
+source="deviceinfo modules-initfs"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT Firmware"
+	depends="linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+75974456a94b0e1ed877b39e394366ed4d7ac18bbe6914446b383f316225d69e85d749e266bbafe011b124191ee755e0cadc5bddd736288e1c50d65cfb0309e0  deviceinfo
+bb7f9a426bfa151c53089f07fd4e874b1fb69fd8180a584b4c9824e2d5ea1e7678602d74eb641b2640b692fec73b88acc78ca26ba9c9f3b8ac8366c6fb63dd5f  modules-initfs
+"
