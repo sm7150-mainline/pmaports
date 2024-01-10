@@ -2,7 +2,7 @@
 # Maintainer: Jakko <jahau@rocketmail.com>
 pkgname=postmarketos-ui-mate
 pkgver=6
-pkgrel=3
+pkgrel=4
 pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
 url="http://mate-desktop.org/"
 arch="noarch"
@@ -48,29 +48,19 @@ source="
 options="!check"
 
 package() {
-	install -Dm644 "$srcdir"/000-system-background.gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/000-system-background.gschema.override
+	install -Dm644 -t "$pkgdir"/usr/share/glib-2.0/schemas \
+		"$srcdir"/000-system-background.gschema.override \
+		"$srcdir"/001-screensaver.gschema.override \
+		"$srcdir"/10_caja_single-click.gschema.override \
+		"$srcdir"/10_mate-terminal_colors.gschema.override \
+		"$srcdir"/10_onboard.gschema.override
 
-	install -Dm644 "$srcdir"/001-screensaver.gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/001-screensaver.gschema.override
-
-	install -Dm644 "$srcdir"/10_caja_single-click.gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/10_caja_single-click.gschema.override
-
-	install -Dm644 "$srcdir"/10_mate-terminal_colors.gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/10_mate-terminal_colors.gschema.override
-
-	install -Dm644 "$srcdir"/10_onboard.gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/10_onboard.gschema.override
+	install -Dm644 -t "$pkgdir"/etc/skel/.config/autostart \
+		"$srcdir"/onboard-autostart.desktop \
+		"$srcdir"/unclutter-xfixes.desktop
 
 	install -Dm644 "$srcdir"/61-lightdm-autologin.conf \
 		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/61-autologin.conf
-
-	install -Dm644 "$srcdir"/onboard-autostart.desktop \
-		"$pkgdir"/etc/skel/.config/autostart/onboard-autostart.desktop
-
-	install -Dm644 "$srcdir"/unclutter-xfixes.desktop \
-		"$pkgdir"/etc/skel/.config/autostart/unclutter-xfixes.desktop
 }
 
 sha512sums="
