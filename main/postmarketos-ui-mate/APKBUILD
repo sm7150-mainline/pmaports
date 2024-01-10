@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Jakko <jahau@rocketmail.com>
 pkgname=postmarketos-ui-mate
-pkgver=6
-pkgrel=4
+pkgver=7
+pkgrel=0
 pkgdesc="(X11) MATE Desktop Environment, fork of GNOME2 (stylus recommended)"
 url="http://mate-desktop.org/"
 arch="noarch"
@@ -42,6 +42,7 @@ source="
 	10_mate-terminal_colors.gschema.override
 	10_onboard.gschema.override
 	61-lightdm-autologin.conf
+	gtk.css
 	onboard-autostart.desktop
 	unclutter-xfixes.desktop
 	"
@@ -61,6 +62,9 @@ package() {
 
 	install -Dm644 "$srcdir"/61-lightdm-autologin.conf \
 		"$pkgdir"/usr/share/lightdm/lightdm.conf.d/61-autologin.conf
+
+	install -Dm644 "$srcdir"/gtk.css \
+		"$pkgdir"/etc/skel/.config/gtk-3.0/gtk.css
 }
 
 sha512sums="
@@ -68,8 +72,9 @@ b4eded3d1aba2086d53507d434da6f2d5aae24fa49c7a8619abb1d81f87898d7a6d813be777a285c
 fe6a37a1e22fbf29a8b6de3b3e137bc19becd6d80d391ad1a0c7908cb996dd9982c88ef55b84fd258a81263e37d47df5a81566ce7c337886ae4c0d7a83d640aa  001-screensaver.gschema.override
 c69d44f1c69e3880ba822a4b98bc59f4049f7b8e228bec31076b9d3fa510e8e205ecf7e3e4b7b00fb28b39a447a55126aaede7e5e5741350aff2a37172b77659  10_caja_single-click.gschema.override
 edef87a2b88a09d023dd51e8b32e2fc1cc9f5bec4a00b88b4f2adfb844ae2dc72747ef8891fc8a08652ae563fb1b914fba214c28a93e77de76b489a5fb50a96c  10_mate-terminal_colors.gschema.override
-ffcc518ff58d37de302bd101e57bf983800e45899645d476045d0a74096704333a0b513f45e6a5485fdbd80ac1caebce14a760cab6fcc6d5dde0d766ade8b58b  10_onboard.gschema.override
+114d77e6e7c11fc87244fc7c179244274c8f8711f111fcb1b9774ef6b226bd2bea01f85395da130f53670a870cfe571babd7f1c233ba85e1ef5a056ab65bd0b7  10_onboard.gschema.override
 225c4d1bccad4bdacad34958322015147077158b395b8db095b7afd47e18638044780b381124c3b82bf639af66ea565e1763c54ab9599ec13177c289e0d2a000  61-lightdm-autologin.conf
+4532cf5c4cb687947c922d75cc942f26d4a695762a6b90cf53fddab84f2185799b7ee04c95b5e2263655e68a9a111967d92062ef5eb99b4122068c8585cf43a1  gtk.css
 d598b806bf749e0fedfdaeb51aa035b3877fedf4adc123ce2e50aef20f3cc6727b520a379aa26e88f9a2fe0f1fb96c4682895bb49c6a9cf4b5a5fd963ea93747  onboard-autostart.desktop
 b626c8b27d9418df15124d6e97f5174c173863536e9c3eebfb11473d764c81e1db40cf4b7cdabe44b67a0e295d920c7a849a3e2e40dd86402de8200242c7b05a  unclutter-xfixes.desktop
 "
