@@ -1,0 +1,41 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=device-google-corsola
+pkgdesc="Google Corsola Chromebooks"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf
+	depthcharge-tools
+	linux-postmarketos-mediatek-mt81xx
+	postmarketos-base
+	postmarketos-cros-common
+	postmarketos-update-depthcharge-kernel
+	soc-mediatek-mt8183
+"
+makedepends="devicepkg-dev"
+source="deviceinfo modules-initfs"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/BT firmware"
+	depends="linux-firmware-mediatek"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+9c086f8b411a3ba742640e899de1a9d2144e078a1e5ea36c118696ff075389bfb94ba05bb50f1fd26fa053222de084aa507cbfb8ebb4bd83049fc251c4560264  deviceinfo
+56fdcaa7a610497ed1bddbbfc0850f895bcfd79173b2e7de4bcf196f69120e1b62680da2a0b74543f153cb3d2b84055e71e258e7df938913aff66dca47061d7a  modules-initfs
+"
