@@ -1,3 +1,4 @@
+From d9a65f76763df1828644d0210fe747e67ba32fb3 Mon Sep 17 00:00:00 2001
 From: Thomas Thorne <Thomas.Thorne@Net2Edge.com>
 Date: Tue, 20 Sep 2022 20:34:57 -0400
 Subject: usb: serial: option: add 'reset_resume' callback for WWAN devices
@@ -16,13 +17,17 @@ However the rest of the patch is not needed/already upstreamed.
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-index 6b69d05..f5d797d 100644
+index 72390dbf07..71a2d6d61b 100644
 --- a/drivers/usb/serial/option.c
 +++ b/drivers/usb/serial/option.c
-@@ -2244,6 +2244,7 @@ static struct usb_serial_driver option_1port_device = {
+@@ -2314,6 +2314,7 @@ static struct usb_serial_driver option_1port_device = {
  #ifdef CONFIG_PM
  	.suspend           = usb_wwan_suspend,
  	.resume            = usb_wwan_resume,
 +	.reset_resume	   = usb_wwan_resume,
  #endif
  };
+ 
+-- 
+2.43.0
+
