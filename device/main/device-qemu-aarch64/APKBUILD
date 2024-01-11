@@ -2,8 +2,8 @@
 # Maintainer: Minecrell <minecrell@minecrell.net>
 # Co-Maintainer: Daniele Debernardi <drebrez@gmail.com>
 pkgname=device-qemu-aarch64
-pkgver=3
-pkgrel=5
+pkgver=4
+pkgrel=0
 pkgdesc="Simulated device in QEMU (aarch64)"
 url="https://postmarketos.org"
 arch="aarch64"
@@ -16,14 +16,12 @@ subpackages="
 	$pkgname-kernel-edge:kernel_edge
 	$pkgname-mce
 	$pkgname-sway
-	$pkgname-weston
 	"
 
 source="
 	deviceinfo
 	modules-initfs
 	mce-display-blanking.conf
-	weston.ini
 	"
 options="!check !archcheck"
 
@@ -48,12 +46,6 @@ sway() {
 	mkdir "$subpkgdir"
 }
 
-weston() {
-	install_if="$pkgname=$pkgver-r$pkgrel weston"
-	install -Dm644 "$srcdir"/weston.ini \
-		"$subpkgdir"/etc/xdg/weston/weston.ini
-}
-
 kernel_virt() {
 	pkgdesc="Alpine Virt kernel (minimal, no audio)"
 	depends="linux-virt"
@@ -76,5 +68,4 @@ sha512sums="
 806e06840e026af6d6da506faaa2617b560eaa27d33c29da2151ebee39fadd783cfe0d30998d64b82a166a1d13830862f32eadf22a1b45465a5951bc05209904  deviceinfo
 8129439ec53e76e714b2d3dac97bbe702822d6f6642ea6b631aa26001fec85ca310fbe9eeb04c2bd849145a1137b7934c21b704524f3a98b96b7c6f71c2ca992  modules-initfs
 99d32eed6c5cda59e91516e982c5bd5165ff718133e2411a0dbba04e2057d1dfad49a75e5cc67140d0e0adcbe1383671bd2892335929b782a5b19f5472e635ad  mce-display-blanking.conf
-de794566118f1744d068a94e6a75b61d43f6749a4b0871a5270fa7a2048164d609c71fcffa61845c2a7dd4cb5fbeb72c0e4f8b73b382f36d6ff0bcc9b8a5ae25  weston.ini
 "
