@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-oneplus-bacon
-pkgver=2
-pkgrel=5
+pkgver=3
+pkgrel=0
 pkgdesc="OnePlus One"
 url="https://postmarketos.org"
 arch="armv7"
@@ -16,9 +16,8 @@ subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
 	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-weston
 "
-source="deviceinfo modules-initfs.mainline 90-android-touch-dev.rules weston.ini"
+source="deviceinfo modules-initfs.mainline 90-android-touch-dev.rules"
 options="!check !archcheck"
 
 build() {
@@ -49,15 +48,8 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-weston() {
-	install_if="$pkgname weston"
-	install -Dm644 "$srcdir"/weston.ini \
-		"$subpkgdir"/etc/xdg/weston/weston.ini
-}
-
 sha512sums="
 4daaf93f610cbc1b2a864dcb9b6488b04218f6ca9b14f579afc219e813eb22a8e4c48a2852b217cbae9c165a851a88546c8e2851cb1aa301ed636947e56cf24c  deviceinfo
 fd639faebbee2c0c2c227710678376e0d039b7d96a62103f7ba7e6304d7060023f09064918e93a125465d20d125c0334225680521a7aeae5a43d77d7360c180c  modules-initfs.mainline
 65e9ee7352b1dc39d99ea411eb0ed9c56f9975230907db5add3a1b4146cdf6f227c934052dab38a1937ed67d67585f28fb7410f10a1bec9dd5e4eb69d7253515  90-android-touch-dev.rules
-86a0c08720225e4532f797ad69307dfff66867e4a35de1aacceefc48f19721caf93f9a17a268e58f1f5a7e947f157d6984676837c2b5b835b0caf6ee9821bb5a  weston.ini
 "
