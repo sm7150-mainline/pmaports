@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 # Maintainer: David Heidelberg <david@ixit.cz>
 pkgname=device-asus-flo
-pkgver=1.1
-pkgrel=4
+pkgver=2
+pkgrel=0
 pkgdesc="Google Nexus 7 2013 (flo)"
 url="https://postmarketos.org"
 arch="armv7"
@@ -12,9 +12,8 @@ makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-kernel-downstream:kernel_downstream
 	$pkgname-kernel-mainline:kernel_mainline
-	$pkgname-weston
 	$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo 90-android-touch-dev.rules wpa_supplicant.conf pointercal weston.ini"
+source="deviceinfo 90-android-touch-dev.rules wpa_supplicant.conf pointercal"
 
 options="!check !archcheck"
 
@@ -30,12 +29,6 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -D -m644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
-}
-
-weston() {
-	install_if="$pkgname weston"
-	install -Dm644 "$srcdir"/weston.ini \
-		"$subpkgdir"/etc/xdg/weston/weston.ini
 }
 
 kernel_downstream() {
@@ -61,5 +54,4 @@ sha512sums="
 5ac89b627f52d2f1103c3329bd905cdbb906cae5bb332d52e6805d7971fbcc0faabe1fd9d2beb7c6de4e4487c05047eaa17852dbf9e114ee3c5d4b0d57d73859  90-android-touch-dev.rules
 3278921cc1617d10fdd13dfbeaf213cda0078d069e727acd8cfac10bd8ade6f373be1e22fd1e4b50ae71cd2eae09f7d6aad5de42338d9ea9f8c1a34f0b60cb69  wpa_supplicant.conf
 cf913217b41a3dde8bc2a16a5bc82013c85679de0e81db1cfc36f2409ea034fec430082ddcb207c16746453601cf8381300b049cd2fb131f1916dc7dbcc247e3  pointercal
-de794566118f1744d068a94e6a75b61d43f6749a4b0871a5270fa7a2048164d609c71fcffa61845c2a7dd4cb5fbeb72c0e4f8b73b382f36d6ff0bcc9b8a5ae25  weston.ini
 "
