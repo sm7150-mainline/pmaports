@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=oem-amd
 pkgdesc="AMD device support"
-pkgver=1
+pkgver=1.1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -15,9 +15,17 @@ subpackages="
 	$pkgname-libva
 	$pkgname-vulkan
 	"
+source="
+	00-amdgpu-firmware.files
+	00-oem-amd.modules
+"
 
 package() {
 	mkdir -p "$pkgdir"
+	install -Dm644 00-oem-amd.modules \
+		-t "$pkgdir"/usr/share/mkinitfs/modules
+	install -Dm644 00-amdgpu-firmware.files \
+		-t "$pkgdir"/usr/share/mkinitfs/files
 }
 
 libva() {
@@ -35,3 +43,7 @@ vulkan() {
 
 	mkdir "$subpkgdir"
 }
+sha512sums="
+38c53d91a60d0402d4cc5428d65e1e8c26360c481c70b34593b1812c87241c32e91904a3bd31fbfe507f7fdb8b50c909eaad8c4c3a37ca962760567329f7f6ee  00-amdgpu-firmware.files
+f56b5293f88727bb4fcceb2a347527402dd0938e96403461b1e2a6821cc00a4e680f58770addd7ba1ded20a187f91ccfd6270bc8bd28c6eae75cc075952361ca  00-oem-amd.modules
+"
