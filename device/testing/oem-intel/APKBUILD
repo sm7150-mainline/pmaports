@@ -1,19 +1,22 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=oem-intel
 pkgdesc="Intel device support"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 options="!check !archcheck"
+# linux-firmware-none prevents all of linux-firmware-* from being installed by
+# default
 depends="
 	alsa-ucm-conf
-	intel-ucode
+	linux-firmware-none
 	sof-firmware
 "
 subpackages="
 	$pkgname-libva
+	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-vulkan
 	"
 
@@ -35,4 +38,15 @@ vulkan() {
 	depends="mesa-vulkan-intel"
 
 	mkdir "$subpkgdir"
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for Intel devices"
+	depends="
+		intel-ucode
+		linux-firmware-i915
+		linux-firmware-intel
+	"
+
+	mkdir -p "$subpkgdir"
 }
