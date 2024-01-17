@@ -15,7 +15,6 @@ fi
 # Shell: shellcheck
 sh_files="
 	./main/mdss-fb-init-hack/mdss-fb-init-hack.sh
-	./main/osk-sdl/unlock.sh
 	./main/postmarketos-base/rootfs-usr-lib-firmwareload.sh
 	./main/postmarketos-base-ui/rootfs-usr-lib-NetworkManager-dispatcher.d-50-dns-filter.sh
 	./main/postmarketos-base-ui/rootfs-usr-lib-NetworkManager-dispatcher.d-50-tethering.sh
