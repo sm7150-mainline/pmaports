@@ -570,17 +570,19 @@ setup_usb_network_android() {
 
 setup_usb_configfs_udc() {
 	# Check if there's an USB Device Controller
-	local _udc_dev
-	_udc_dev=$(ls /sys/class/udc)
+	local _udc_dev="${deviceinfo_usb_network_udc:-}"
 	if [ -z "$_udc_dev" ]; then
-		echo "  No USB Device Controller available"
-		return
+		_udc_dev=$(ls /sys/class/udc)
+		if [ -z "$_udc_dev" ]; then
+			echo "  No USB Device Controller available"
+			return
+		fi
 	fi
 
 	# Remove any existing UDC to avoid "write error: Resource busy" when setting UDC again
 	echo "" > /config/usb_gadget/g1/UDC || echo "  Couldn't write to clear UDC"
 	# Link the gadget instance to an USB Device Controller. This activates the gadget.
-	# See also: https://github.com/postmarketOS/pmbootstrap/issues/338
+	# See also: https://gitlab.com/postmarketOS/pmbootstrap/issues/338
 	echo "$_udc_dev" > /config/usb_gadget/g1/UDC || echo "  Couldn't write new UDC"
 }
 
@@ -672,17 +674,26 @@ start_unudhcpd() {
 	local host_ip="${unudhcpd_host_ip:-172.16.42.1}"
 	local client_ip="${unudhcpd_client_ip:-172.16.42.2}"
 	echo "Starting unudhcpd with server ip $host_ip, client ip: $client_ip"
+
 	# Get usb interface
-	INTERFACE=""
-	ifconfig rndis0 "$host_ip" 2>/dev/null && INTERFACE=rndis0
-	if [ -z $INTERFACE ]; then
-		ifconfig usb0 "$host_ip" 2>/dev/null && INTERFACE=usb0
-	fi
-	if [ -z $INTERFACE ]; then
-		ifconfig eth0 "$host_ip" 2>/dev/null && INTERFACE=eth0
+	usb_network_function="${deviceinfo_usb_network_function:-ncm.usb0}"
+	usb_network_function_fallback="rndis.usb0"
+	INTERFACE="$(
+		cat "/config/usb_gadget/g1/functions/$usb_network_function/ifname" 2>/dev/null ||
+		cat "/config/usb_gadget/g1/functions/$usb_network_function_fallback/ifname" 2>/dev/null ||
+		echo ''
+	)"
+	if [ -n "$INTERFACE" ]; then
+		ifconfig "$INTERFACE" "$host_ip"
+	elif ifconfig rndis0 "$host_ip" 2>/dev/null; then
+		INTERFACE=rndis0
+	elif ifconfig usb0 "$host_ip" 2>/dev/null; then
+		INTERFACE=usb0
+	elif ifconfig eth0 "$host_ip" 2>/dev/null; then
+		INTERFACE=eth0
 	fi
 
-	if [ -z $INTERFACE ]; then
+	if [ -z "$INTERFACE" ]; then
 		echo "  Could not find an interface to run a dhcp server on"
 		echo "  Interfaces:"
 		ip link
