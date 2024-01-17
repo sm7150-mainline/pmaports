@@ -9,7 +9,16 @@
 # Must match with the supplied connection profile,
 # using UUID allows the user to change the connection name if they want to.
 con_uuid="83bd1823-feca-4c2b-9205-4b83dc792e1f"
-interface="usb0"
+
+. /usr/share/misc/source_deviceinfo
+
+usb_network_function="${deviceinfo_usb_network_function:-ncm.usb0}"
+usb_network_function_fallback="rndis.usb0"
+interface="$(
+	cat "/sys/kernel/config/usb_gadget/g1/functions/$usb_network_function/ifname" 2>/dev/null ||
+	cat "/sys/kernel/config/usb_gadget/g1/functions/$usb_network_function_fallback/ifname" 2>/dev/null ||
+	echo 'usb0'
+)"
 
 [ -e /etc/unudhcpd.conf ] && . /etc/unudhcpd.conf
 host_ip="${unudhcpd_host_ip:-172.16.42.1}"
