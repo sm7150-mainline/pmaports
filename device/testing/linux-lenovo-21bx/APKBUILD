@@ -2,7 +2,8 @@
 # Co-Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=linux-lenovo-21bx
 pkgver=6.7
-pkgrel=0
+pkgrel=1
+_commit="dd209a8fb4840e48ca4963bb23057f38b1066a6d"
 pkgdesc="Lenovo ThinkPad X13s kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -28,13 +29,12 @@ makedepends="
 # Source
 _repository="linux"
 _config="config-$_flavor.$arch"
-_pkgver="${pkgver/_/-}"
 source="
-	$pkgname-$pkgver.tar.gz::https://github.com/jhovold/$_repository/archive/refs/heads/wip/sc8280xp-v$_pkgver.tar.gz
+	$pkgname-$_commit.tar.gz::https://github.com/jhovold/$_repository/archive/$_commit.tar.gz
 	$_config
 	0001-drm-panel-edp-Add-timings-for-BOE-NV133WUM-N63.patch
 "
-builddir="$srcdir/$_repository-wip-sc8280xp-v$_pkgver"
+builddir="$srcdir/linux-$_commit"
 _outdir="out"
 
 prepare() {
@@ -65,7 +65,7 @@ package() {
 }
 
 sha512sums="
-72f3d36b064e49d2551d0348762bbfe9e7f587157c233c5fdfe78183f90a9836ee757d7091e12ffbfba6d5733a71066945c6cf70f2e7c70e2ae60f23830a5caf  linux-lenovo-21bx-6.7.tar.gz
+e660104c28e3f41e4f6ccdccb95be7b17077a9d230a68899e8851be05c8eba6b2473ef8a2b4fc86bed1cdf02d305d06c6acae453a3648a597ad59b4ac422ccbb  linux-lenovo-21bx-dd209a8fb4840e48ca4963bb23057f38b1066a6d.tar.gz
 02c804db63f2ff5a78155f93930174c81ac040a03f9919961c1d8f2b5b06d92b10cad35a40c5bdddf4dfd1a7e22fd813562042cf94075498e4040b31b430f3b3  config-lenovo-21bx.aarch64
 fac2fc6cd033c30d1abea6ac77c173945f77e7c3db9e547b6e2a68969e731d4d69f6093fbc3a0b7068dddffe224692edb7175a953bc28f9449b8018c91835d31  0001-drm-panel-edp-Add-timings-for-BOE-NV133WUM-N63.patch
 "
