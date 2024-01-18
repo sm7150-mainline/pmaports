@@ -36,7 +36,7 @@ wiki:
     - .ci/wiki.sh
 
 # testcases linting
-flake8:
+ruff:
   stage: lint
   <<: *only-default
   only:
@@ -46,10 +46,11 @@ flake8:
       - .ci/*
       - .ci/*/*
   before_script:
-    - apk -q add py-flake8
+    - "echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories"
+    - apk -q add ruff
   script:
     - .ci/lib/gitlab_prepare_ci.sh
-    - .ci/flake8.sh
+    - .ci/ruff.sh
 
 # shellcheck and various grep checks
 shellcheck-grep:
