@@ -1,11 +1,16 @@
 pkgname=firmware-htc-memul
 pkgver=1
-pkgrel=0
+pkgrel=1
 pkgdesc="Firmware for HTC One Mini 2"
-subpackages="$pkgname-adsp $pkgname-modem $pkgname-wcnss"
-url="https://postmarketos.org"
+subpackages="
+	$pkgname-adsp
+	$pkgname-modem
+	$pkgname-wcnss
+	"
+url="https://github.com/FairBlobs/memul-firmware"
 arch="armv7"
 license="proprietary"
+makedepends="pil-squasher"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
 
 # Sources
@@ -19,36 +24,39 @@ for _i in $_wififiles; do
 done
 builddir="$srcdir/memul-firmware-$_fw_commit"
 
+build() {
+	for i in *.mdt; do
+		pil-squasher "$(basename "$i" .mdt)".mbn "$i"
+	done
+}
+
 package() {
 	# parent package is empty
 	mkdir -p "$pkgdir"
 }
 
 adsp() {
-	pkgdesc="HTC One Mini 2 aDSP firmware"
+	pkgdesc="HTC One Mini 2 - ADSP firmware"
 
-	cd "$builddir"
-	for _i in adsp.*; do
-		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
-	done
+	install -Dm644 "$builddir"/adsp.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/msm8926/memul/"
 }
 
 modem() {
-	pkgdesc="HTC One Mini 2 modem firmware"
+	pkgdesc="HTC One Mini 2 - Modem firmware"
 
-	cd "$builddir"
-	for _i in modem.* mba.*; do
-		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
-	done
+	install -Dm644 "$builddir"/mba.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/msm8926/memul/"
+	install -Dm644 "$builddir"/modem.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/msm8926/memul/"
 }
 
 wcnss() {
-	pkgdesc="HTC One Mini 2 Wireless Connectivity Subsystem (WCNSS) firmware"
+	pkgdesc="HTC One Mini 2 - WCNSS firmware"
 
+	install -Dm644 "$builddir"/wcnss.mbn -t \
+		"$subpkgdir/lib/firmware/qcom/msm8926/memul/"
 	cd "$builddir"
-	for _i in wcnss.*; do
-		install -Dm644 $_i "$subpkgdir"/lib/firmware/postmarketos/$_i
-	done
 	for _i in $_wififiles; do
 		install -Dm644 "$srcdir/$pkgname-$_dt_commit-$_i" \
 			"$subpkgdir/lib/firmware/postmarketos/wlan/prima/$_i"
