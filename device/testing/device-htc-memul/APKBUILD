@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-htc-memul
 pkgdesc="HTC One Mini 2"
-pkgver=2
-pkgrel=2
+pkgver=3
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -49,12 +49,12 @@ kernel_mainline() {
 
 nonfree_firmware() {
 	pkgdesc="Firmware for WiFi, etc."
-	depends="firmware-htc-memul-wcnss wcnss-wlan"
+	depends="firmware-htc-memul-adsp firmware-htc-memul-modem firmware-htc-memul-wcnss firmware-qcom-adreno-a330"
 	mkdir "$subpkgdir"
 }
 
 sha512sums="
-e9126be42f77466b0823327e4c2fc84caf48ff34e970b08c1427c48e5531a2a627b698bde0d9db838a949cbccdd20fa394327a699051ebea3abae9dc91ee6367  deviceinfo
+29594cfc61a16e92a5a22cc65ee316ecb1da7a1f4493e15626cc5059a843f5e11965e02d89616784b5edb95dc5cd531ef4028610b4ee700840a58e7de1254351  deviceinfo
 765abaad5fda0dfda5e62e1e48414d3eea822198f39d0792171a04d73f86f6273a6e562afab430cbfcdd084412568a0ad03d012e9c40c5564f5cd1b9c0f181eb  initfs-hook.sh
 9ebe6ca9e371b5091e4e47ecbe3ec0c72d055e4bc2281880119eb0dee4c56b71f20f7d3cf1f1cb62e6814604e745fb17bbbfcfed2fec42398871e50b17685533  modules-initfs.mainline
 "
