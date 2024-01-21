@@ -1,0 +1,117 @@
+From c56fa600c6c94950edafa157843e1891df523084 Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca.weiss@fairphone.com>
+Date: Fri, 19 Jan 2024 14:15:34 +0100
+Subject: [PATCH 3/5] tqftpserv: handle rsize & offset options
+
+The rsize (number of bytes the client wants to receive) and offset (the
+offset in bytes from the start of file) are used on newer modems (such
+as SM7225 or QCM6490), so let's support them properly.
+
+Some examples to illustrate the usage:
+* rsize=160 seek=52: we should send 160 bytes starting at byte 52 in the
+  requested file. With blksize=7680 this is a single 160(+4) sized
+  packet.
+* rsize=313028 seek=81920: we should send in total 313028 bytes,
+  starting at byte 81920. With blksize=7680 and wsize=10 this spans
+  multiple windows of 10 packets each, that example would be packed into
+  41 packets with an ACK between every 10 windows - and a final ACK at
+  the end.
+* rsize=53760 blksize=7680: We send 7 packets of 7680 bytes each, then
+  we send 1 packet with 0 bytes of data (only 4 bytes header) and then
+  get an ACK on packet 8.
+---
+ tqftpserv.c | 39 +++++++++++++++++++++++++++++++++------
+ 1 file changed, 33 insertions(+), 6 deletions(-)
+
+diff --git a/tqftpserv.c b/tqftpserv.c
+index eed99a1..b931346 100644
+--- a/tqftpserv.c
++++ b/tqftpserv.c
+@@ -74,9 +74,10 @@ static struct list_head readers = LIST_INIT(readers);
+ static struct list_head writers = LIST_INIT(writers);
+ 
+ static ssize_t tftp_send_data(struct tftp_client *client,
+-			      unsigned int block, size_t offset)
++			      unsigned int block, size_t offset, size_t rsize)
+ {
+ 	ssize_t len;
++	size_t send_len;
+ 	char *buf;
+ 	char *p;
+ 
+@@ -98,8 +99,21 @@ static ssize_t tftp_send_data(struct tftp_client *client,
+ 
+ 	p += len;
+ 
+-	// printf("[TQFTP] Sending %zd bytes of DATA\n", p - buf);
+-	len = send(client->sock, buf, p - buf, 0);
++	/* If rsize was set, we should limit the data in the response to n bytes */
++	if (rsize != 0) {
++		/* Header (4 bytes) + data size */
++		send_len = 4 + rsize;
++		if (send_len > p - buf) {
++			printf("[TQFTP] requested data of %ld bytes but only read %ld bytes from file, rejecting\n", rsize, len);
++			free(buf);
++			return -EINVAL;
++		}
++	} else {
++		send_len = p - buf;
++	}
++
++	// printf("[TQFTP] Sending %zd bytes of DATA\n", send_len);
++	len = send(client->sock, buf, send_len, 0);
+ 
+ 	free(buf);
+ 
+@@ -336,7 +350,7 @@ static void handle_rrq(const char *buf, size_t len, struct sockaddr_qrtr *sq)
+ 			       rsize ? &rsize : NULL,
+ 			       seek ? &seek : NULL);
+ 	} else {
+-		tftp_send_data(client, 1, 0);
++		tftp_send_data(client, 1, 0, 0);
+ 	}
+ }
+ 
+@@ -418,7 +432,7 @@ static void handle_wrq(const char *buf, size_t len, struct sockaddr_qrtr *sq)
+ 			       rsize ? &rsize : NULL,
+ 			       seek ? &seek : NULL);
+ 	} else {
+-		tftp_send_data(client, 1, 0);
++		tftp_send_data(client, 1, 0, 0);
+ 	}
+ }
+ 
+@@ -463,9 +477,19 @@ static int handle_reader(struct tftp_client *client)
+ 	last = buf[2] << 8 | buf[3];
+ 	// printf("[TQFTP] Got ack for %d\n", last);
+ 
++	/* We've sent enough data for rsize already */
++	if (last * client->blksize > client->rsize)
++		return 0;
++
+ 	for (block = last; block < last + client->wsize; block++) {
++		size_t offset = client->seek + block * client->blksize;
++		size_t rsize = 0;
++		/* Check if need to limit response size based for requested rsize */
++		if (block * client->blksize + client->blksize > client->rsize)
++			rsize = client->rsize - (block * client->blksize);
++
+ 		n = tftp_send_data(client, block + 1,
+-				   block * client->blksize);
++				   offset, rsize);
+ 		if (n < 0) {
+ 			printf("[TQFTP] Sent block %d failed: %zd\n", block + 1, n);
+ 			break;
+@@ -473,6 +497,9 @@ static int handle_reader(struct tftp_client *client)
+ 		// printf("[TQFTP] Sent block %d of %zd\n", block + 1, n);
+ 		if (n == 0)
+ 			break;
++		/* We've sent enough data for rsize already */
++		if (block * client->blksize + client->blksize > client->rsize)
++			break;
+ 	}
+ 
+ 	return 1;
+-- 
+2.44.0
+

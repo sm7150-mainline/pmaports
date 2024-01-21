@@ -1,0 +1,42 @@
+From 891ed4143eada69d031360c214142c8e46222e8a Mon Sep 17 00:00:00 2001
+From: Luca Weiss <luca.weiss@fairphone.com>
+Date: Fri, 19 Jan 2024 17:09:17 +0100
+Subject: [PATCH 1/5] tqftpserv: allow sending data packet with 0-byte data
+ payload
+
+If the client requests a file that's completely empty, it makes sense to
+send a response to that request with - well - 0 bytes of data and just
+the 4-byte header.
+
+But also if the client requests for example a file of rsize=53760 and
+blksize=7680, then will send 7 full packets of data in the window, but
+afterwards we still need to send an empty packet (just the 4 bytes of
+header) to make sure the client understands that we've sent all the
+requested data. Otherwise it's going to time out and re-request the
+blocks and we're stuck in a loop.
+
+So consider pread return value of 0 to not be an error and send a
+response packet back.
+---
+ tqftpserv.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/tqftpserv.c b/tqftpserv.c
+index 4ba287c..9d1a2b3 100644
+--- a/tqftpserv.c
++++ b/tqftpserv.c
+@@ -89,9 +89,8 @@ static ssize_t tftp_send_data(struct tftp_client *client,
+ 	*p++ = block & 0xff;
+ 
+ 	len = pread(client->fd, p, client->blksize, offset);
+-	if (len <= 0) {
+-		if (len < 0)
+-			printf("[TQFTP] failed to read data\n");
++	if (len < 0) {
++		printf("[TQFTP] failed to read data\n");
+ 		free(buf);
+ 		return len;
+ 	}
+-- 
+2.44.0
+
