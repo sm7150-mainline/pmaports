@@ -24,6 +24,7 @@ depends="
 	xdg-desktop-portal-gnome
 	xdg-desktop-portal-gtk
 	xdg-user-dirs
+	xwayland
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
@@ -32,6 +33,10 @@ source="
 	"
 options="!check"
 subpackages="$pkgname-wallpaper-pmos:wallpaper_pmos"
+
+_pmb_recommends="
+	postmarketos-artwork-wallpapers-gnome
+"
 
 package() {
 	install -Dm644 -t "$pkgdir"/usr/share/glib-2.0/schemas \
