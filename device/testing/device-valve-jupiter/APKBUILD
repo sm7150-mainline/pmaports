@@ -1,8 +1,8 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-valve-jupiter
 pkgdesc="Valve Steam Deck"
-pkgver=0.3
-pkgrel=1
+pkgver=1
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -10,6 +10,7 @@ options="!check !archcheck"
 depends="
 	linux-edge
 	linux-firmware-none
+	oem-amd
 	postmarketos-base
 	systemd-boot
 	"
@@ -40,10 +41,10 @@ package() {
 nonfree_firmware() {
 	pkgdesc="Firmware for the Steam Deck"
 	depends="
-		linux-firmware-amdgpu
 		linux-firmware-cirrus
 		linux-firmware-rtl_bt
 		linux-firmware-rtw88
+		oem-amd-nonfree-firmware
 	"
 
 	mkdir -p "$subpkgdir"
