@@ -1,16 +1,28 @@
 # Maintainer: Henrik Grimler <henrik@grimler.se>
 pkgname=postmarketos-base-downstream
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Base package for devices with downstream (vendor) kernels"
 url="https://postmarketos.org"
 arch="noarch"
 license="GPL-3.0-or-later"
-subpackages="$pkgname-lightdm"
+subpackages="
+	$pkgname-disable-udev-v4l:disable_udev_v4l
+	$pkgname-lightdm
+"
 source="10-logind-check-graphical.conf"
 
 package() {
 	mkdir -p "$pkgdir"
+}
+
+disable_udev_v4l() {
+	# On some devices the kernel panics or hangs when starting
+	# udev if camera firmware is missing and/or fails to load
+	pkgdesc="Package to disable udev video4linux rules"
+	replaces="eudev"
+	mkdir -p "$subpkgdir"/lib/udev/rules.d
+	ln -s /dev/null "$subpkgdir"/lib/udev/rules.d/60-persistent-v4l.rules
 }
 
 lightdm() {
