@@ -72,4 +72,12 @@ if grep -qr $POSTMARKETOS_WALLPAPER_PATH \
 	exit_code=1
 fi
 
+OPENRC_SERVICE_FILES=$(find . -name '*.initd')
+# shellcheck disable=SC2086
+if grep -q 'before wpa_supplicant' $OPENRC_SERVICE_FILES; then
+	echo "ERROR: Please use 'before wlan' in OpenRC service files! This ensures compatibility with both wpa_supplicant and iwd."
+	grep --color=always 'before wpa_supplicant' $OPENRC_SERVICE_FILES
+	exit_code=1
+fi
+
 exit "$exit_code"
