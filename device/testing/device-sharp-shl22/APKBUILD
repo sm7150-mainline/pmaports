@@ -2,12 +2,18 @@
 pkgname=device-sharp-shl22
 pkgdesc="SHARP SHL22"
 pkgver=0.1
-pkgrel=9
+pkgrel=10
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-sharp-shl22 mkbootimg msm-fb-refresher"
+depends="
+	postmarketos-base
+	postmarketos-base-downstream-disable-udev-v4l
+	linux-sharp-shl22
+	mkbootimg
+	msm-fb-refresher
+"
 makedepends="devicepkg-dev"
 source="
 	deviceinfo
@@ -20,11 +26,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	# Disable v4l (video4linux), because without the camera firmware
-	# blobs this makes dev hang with the kernel this device uses (#1033)
-	mkdir -p "$pkgdir"/etc/udev/rules.d
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 
