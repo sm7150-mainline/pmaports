@@ -2,12 +2,20 @@
 pkgname=device-jolla-sbj
 pkgdesc="Jolla phone"
 pkgver=1
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-jolla-sbj mkbootimg msm-fb-refresher wcnss-wlan alsa-ucm-conf"
+depends="
+	postmarketos-base
+	postmarketos-base-downstream-disable-udev-v4l
+	linux-jolla-sbj
+	mkbootimg
+	msm-fb-refresher
+	wcnss-wlan
+	alsa-ucm-conf
+"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install $pkgname.post-upgrade"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
@@ -51,9 +59,6 @@ package() {
 	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/msm8930-sitar \
 		"$srcdir"/msm8930-sitar.conf \
 		"$srcdir"/HiFi.conf
-
-	# Remove v4l rules due to crashes and hangs
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 nonfree_firmware() {
