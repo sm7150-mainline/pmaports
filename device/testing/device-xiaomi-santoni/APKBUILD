@@ -4,12 +4,18 @@
 pkgname=device-xiaomi-santoni
 pkgdesc="Xiaomi Redmi 4X"
 pkgver=0.8
-pkgrel=5
+pkgrel=6
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
-depends="postmarketos-base linux-xiaomi-santoni mkbootimg msm-fb-refresher"
+depends="
+	postmarketos-base
+	postmarketos-base-downstream-disable-udev-v4l
+	linux-xiaomi-santoni
+	mkbootimg
+	msm-fb-refresher
+"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
@@ -29,12 +35,6 @@ package() {
 
 	install -Dm644 "$srcdir"/fb.modes "$pkgdir"/etc/fb.modes
 	install -Dm644 "$srcdir"/directfbrc "$pkgdir"/etc/directfbrc
-
-	# Disable v4l udev rules (video4linux), because without the camera
-	#         firmware blobs this makes udev helper hang (#1033)
-	mkdir -p "$pkgdir"/etc/udev/rules.d
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
-
 }
 
 nonfree_firmware() {
