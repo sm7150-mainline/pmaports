@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-sony-nicki
 pkgdesc="Sony Xperia M"
-pkgver=0.1
-pkgrel=14
+pkgver=0.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -21,7 +21,7 @@ build() {
 
 kernel_downstream() {
 	pkgdesc="LineageOS downstream kernel (recommended)"
-	depends="linux-sony-nicki"
+	depends="linux-sony-nicki postmarketos-base-downstream-disable-udev-v4l"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
@@ -41,10 +41,6 @@ package() {
 		"$pkgdir"/etc/fb.modes
 	install -D -m644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
-
-	#I have no idea what it does but it's included in sony-yuga and
-	#if I do same on here, segfaults stop appearing in dmesg
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 sha512sums="
