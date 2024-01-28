@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-lg-mako
-pkgver=3
-pkgrel=3
+pkgver=4
+pkgrel=0
 pkgdesc="Google Nexus 4"
 url="https://postmarketos.org"
 arch="armv7"
@@ -31,16 +31,15 @@ package() {
 		"$pkgdir"/etc/fb.modes
 	install -Dm644 "$srcdir"/wcnss-wlan \
 		"$pkgdir"/etc/conf.d/wcnss-wlan
-
-
-	# Disable v4l (video4linux), because without the camera firmware
-	# blobs this makes dev hang with the kernel this device uses (#1033)
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 kernel_downstream() {
 	pkgdesc="Downstream kernel"
-	depends="linux-lg-mako wcnss-wlan"
+	depends="
+		linux-lg-mako
+		wcnss-wlan
+		postmarketos-base-downstream-disable-udev-v4l
+	"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
