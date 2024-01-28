@@ -3,9 +3,9 @@
 _flavor=postmarketos-allwinner
 _config="config-$_flavor.$CARCH"
 pkgname=linux-$_flavor
-pkgver=6.7.0_git20240110
+pkgver=6.7.2_git20240127
 pkgrel=0
-_tag="orange-pi-6.7-20240108-1629"
+_tag="orange-pi-6.7-20240127-1717"
 pkgdesc="Kernel fork with Pine64 patches (megi's tree, slightly patched)"
 arch="aarch64 armv7"
 url="https://megous.com/git/linux/"
@@ -46,7 +46,6 @@ source="$pkgname-$_tag.tar.gz::https://codeberg.org/megi/linux/archive/$_tag.tar
 	0012-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 	0013-Revert-usb-quirks-Add-USB_QUIRK_RESET-for-Quectel-EG25G-Modem.patch
 	0014-usb-serial-option-add-reset-resume-callback-for-WWAN.patch
-	0015-usb-gadget-u_ether-Re-attach-netif-device-to-mirror.patch
 	"
 builddir="$srcdir/linux"
 
@@ -84,9 +83,9 @@ package() {
 }
 
 sha512sums="
-9134abafeda71679e8fe567e4f1e17d51c3074f4c44c336183a3c5cf946abafcd07d166b22fc64f0a40b675342ae2534d8e250d4736e5b7361ffbfac3d574e18  linux-postmarketos-allwinner-orange-pi-6.7-20240108-1629.tar.gz
-e51e5a309db0451c897e1e07b78431f45214cf616ed82d047446b8fdde6889fb1b0bd865727a46e315d5ce88a16c88fbe5e94f3a68a5eb52976a2ea0f289dd6c  config-postmarketos-allwinner.aarch64
-9048599c676af89e0ec3a6735c517b3ccc67b7c2cf9fd33a799166b95087e7739a60c7e506e6c78e55635b31fa2416db82e7aec40b05b91dbe780a9951624ff6  config-postmarketos-allwinner.armv7
+0135ca518e82c7f858a7892b87c79e875d5f3f8d3ea884a969e6f3bb7f2a1fe260058debecce286e00a96b03c297533e4edf1859095837bd664793a29aaca41b  linux-postmarketos-allwinner-orange-pi-6.7-20240127-1717.tar.gz
+71c0d95567a6682ded7ac1e67415e27ed5a0490eeebe6c3169839dd30c18365f04e581b44dc9f3d8f27416e9950de24362b0cc11ad9316ca115008ffe8cd8683  config-postmarketos-allwinner.aarch64
+5c3dd13d2bba99d476697873c24ef46dd1cc76c9b6babd0afedf6ed50f35044e9bc3ca29d7b5d3d795227878442d2c62e1eae4a27eab8d506770add4cb8ba41f  config-postmarketos-allwinner.armv7
 126e0a65e04f22f14eac1281a69000d9d5b107ed8fd1b52f37e812751f55e6c45b0240ceac61c9d95ae7f0543aaf9d96b85a8532baf59283c077b9945e615367  0001-dts-add-dontbeevil-pinephone-devkit.patch
 99edeccdee7beae5dc7337d78ba92de2f3d724b7648ede30ab040a66bdac0e38a6595e212e26011d608ccb8a92ffa9e393965f936dfead65ffe9b7eb31dfa345  0002-dts-add-pinetab-dev-old-display-panel.patch
 82c0203b02c671934d62e52311827ac1cc5b358e0843715ea2235117e4b47d6de63b29fdfc7c1adfc550cc7eb363c384de8276be1ca17da6e48916020124022d  0003-dts-pinetab-add-missing-bma223-ohci1.patch
@@ -101,5 +100,4 @@ b7c084bb32cfc18defcec77966f1944fd3b33bb48769a4c0e257709d0f3898c5e0ca2a50c39a5d45
 370e963805a4c984dc501a6a6f686cac059485a275370c5f55de0841e227c5f6652abb38ad935c8dd046014e632e70129d3f8fbeae9650fe7de6f0d10e9cdc3a  0012-arm64-dts-allwinner-orangepi-3-fix-ethernet.patch
 c766911f76d36b997582533707d7d7a089ed1272e49a79dbe75f7c1eafef0ba3f1417d6c66f25e12e56124e0cd4bb9f443d400236e252ef1c43d53def9392a87  0013-Revert-usb-quirks-Add-USB_QUIRK_RESET-for-Quectel-EG25G-Modem.patch
 382e6e8785235788101459ae47c940ec85831007c61e3f14c4e3a43abfa21b95cdaa6bdd1b7fdd6fd26944f4c629d41b9ab776e89d9a18778fbc9f6a7785444b  0014-usb-serial-option-add-reset-resume-callback-for-WWAN.patch
-3ce3bc02e4cb401f5834b9607d50fe26e0cbd7d6f5e32f1ab092660185ff01b253a759be5e6dfb46aa629dc0871f935d93746a0b55ede49f194b617dda87f766  0015-usb-gadget-u_ether-Re-attach-netif-device-to-mirror.patch
 "
