@@ -1,7 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-sony-yuga
-pkgver=3
-pkgrel=4
+pkgver=4
+pkgrel=0
 pkgdesc="Sony Xperia Z"
 url="https://postmarketos.org"
 arch="armv7"
@@ -24,15 +24,15 @@ package() {
 	devicepkg_package $startdir $pkgname
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-
-	# Disable v4l (video4linux), because without the camera firmware
-	# blobs this makes dev hang with the kernel this device uses (#1033)
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 kernel_downstream() {
 	pkgdesc="LineageOS downstream kernel (recommended)"
-	depends="linux-sony-yuga msm-fb-refresher"
+	depends="
+		linux-sony-yuga
+		msm-fb-refresher
+		postmarketos-base-downstream-disable-udev-v4l
+	"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
