@@ -1,12 +1,18 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-motorola-titan
 pkgver=2
-pkgrel=1
+pkgrel=2
 pkgdesc="Motorola Moto G 2014"
 url="https://postmarketos.org"
 arch="armv7"
 license="MIT"
-depends="postmarketos-base linux-motorola-titan mkbootimg msm-fb-refresher"
+depends="
+	postmarketos-base
+	postmarketos-base-downstream-disable-udev-v4l
+	linux-motorola-titan
+	mkbootimg
+	msm-fb-refresher
+"
 makedepends="devicepkg-dev"
 install="$pkgname.post-install"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
@@ -23,10 +29,6 @@ package() {
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
 	install -Dm644 "$srcdir"/profile.sh \
 		"$pkgdir"/etc/profile.d/00-$pkgname.sh
-
-	# Disable v4l (video4linux), because without the camera firmware
-	# blobs this makes dev hang with the kernel this device uses (#1033)
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 nonfree_firmware() {
