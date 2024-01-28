@@ -2,7 +2,7 @@
 pkgname=device-samsung-treltexx
 pkgdesc="Samsung Galaxy Note 4"
 pkgver=0.1
-pkgrel=3
+pkgrel=4
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -12,6 +12,7 @@ depends="
 	msm-fb-refresher
 	mkbootimg
 	postmarketos-base
+	postmarketos-base-downstream-disable-udev-v4l
 "
 makedepends="devicepkg-dev"
 source="deviceinfo"
@@ -22,10 +23,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	# Disable v4l udev rules, because if enabled the device will fail to boot
-	# when VIDEO_EXYNOS_FIMC_IS is enabled.
-	mkdir -p "$pkgdir"/etc/udev/rules.d
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 sha512sums="
