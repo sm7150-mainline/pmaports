@@ -2,16 +2,14 @@
 pkgname=device-samsung-zerofltexx
 pkgdesc="Samsung Galaxy S6"
 pkgver=0.1
-pkgrel=6
+pkgrel=7
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="postmarketos-base linux-samsung-zerofltexx mkbootimg msm-fb-refresher"
 makedepends="devicepkg-dev"
-source="deviceinfo
-	udev/60-persistent-v4l.rules
-	"
+source="deviceinfo"
 
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
@@ -24,9 +22,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/60-persistent-v4l.rules \
-		"$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 nonfree_firmware() {
@@ -38,5 +33,4 @@ nonfree_firmware() {
 
 sha512sums="
 03c7b1355af0836768885ee68d53f8c240a3036d37fc449b0b676be0ffe7e1f9bd036f4adeb258beb150ba65205d65526ef5b2b993c1df6f240c89b2350e8d1e  deviceinfo
-b8bf2e3ec166af6acbbfaaa2b57b053473c0b12df007090eecf7a885aee2e3cd5d982819e2ee73e2817e5266b9875dc9240389bca409d5523f3cfa8037fa7870  60-persistent-v4l.rules
 "
