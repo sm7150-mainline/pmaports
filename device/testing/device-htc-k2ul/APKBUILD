@@ -2,12 +2,18 @@
 pkgname=device-htc-k2ul
 pkgdesc="HTC One SV"
 pkgver=0.1
-pkgrel=14
+pkgrel=15
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-htc-k2ul mkbootimg msm-fb-refresher"
+depends="
+	postmarketos-base
+	postmarketos-base-downstream-disable-udev-v4l
+	linux-htc-k2ul
+	mkbootimg
+	msm-fb-refresher
+"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo initfs-hook.sh 90-android-touch-dev.rules"
@@ -21,8 +27,6 @@ package() {
 
 	install -D -m644 "$srcdir"/90-android-touch-dev.rules \
 		"$pkgdir"/etc/udev/rules.d/90-android-touch-dev.rules
-		# Remove v4l rules due to crashes and hangs
-		ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 nonfree_firmware() {
