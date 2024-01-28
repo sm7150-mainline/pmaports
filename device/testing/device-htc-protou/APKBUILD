@@ -2,12 +2,18 @@
 pkgname=device-htc-protou
 pkgdesc="HTC Desire X"
 pkgver=0.1
-pkgrel=11
+pkgrel=12
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-htc-protou mkbootimg msm-fb-refresher"
+depends="
+	postmarketos-base
+	postmarketos-base-downstream-disable-udev-v4l
+	linux-htc-protou
+	mkbootimg
+	msm-fb-refresher
+"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="deviceinfo initfs-hook.sh pointercal"
@@ -21,10 +27,6 @@ package() {
 
 	install -Dm644 "$srcdir"/pointercal \
 		"$pkgdir"/etc/pointercal
-
-	# Disable v4l (video4linux), because without the camera firmware
-	# blobs this makes udev hang with the kernel this device uses (#1033)
-	ln -s /dev/null "$pkgdir"/etc/udev/rules.d/60-persistent-v4l.rules
 }
 
 nonfree_firmware() {
