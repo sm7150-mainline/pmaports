@@ -346,20 +346,20 @@ extract_initramfs_extra() {
 
 wait_boot_partition() {
 	while [ -z "$(find_boot_partition)" ]; do
-		show_splash "ERROR: boot partition not found\\nhttps://postmarketos.org/troubleshooting"
-		echo "Could not find the boot parition."
-		echo "Maybe you need to insert the sdcard, if your device has"
-		echo "any? Trying again in one second..."
+		show_splash "ERROR: boot partition not found, retrying...\\nhttps://postmarketos.org/troubleshooting"
+		echo "Could not find the boot partition."
+		echo "If your install is on a removable disk, maybe you need to insert it?"
+		echo "Trying again..."
 		sleep 1
 	done
 }
 
 wait_root_partition() {
 	while [ -z "$(find_root_partition)" ]; do
-		show_splash "ERROR: root partition not found\\nhttps://postmarketos.org/troubleshooting"
+		show_splash "ERROR: root partition not found, retrying...\\nhttps://postmarketos.org/troubleshooting"
 		echo "Could not find the rootfs."
-		echo "Maybe you need to insert the sdcard, if your device has"
-		echo "any? Trying again in one second..."
+		echo "If your install is on a removable disk, maybe you need to insert it?"
+		echo "Trying again..."
 		sleep 1
 	done
 }
