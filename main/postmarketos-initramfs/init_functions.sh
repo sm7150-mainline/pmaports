@@ -301,11 +301,6 @@ get_partition_type() {
 # switch_root to /sysroot and have the boot partition properly mounted.
 mount_boot_partition() {
 	partition=$(find_boot_partition)
-	if [ -z "$partition" ]; then
-		echo "ERROR: boot partition not found!"
-		show_splash "ERROR: Boot partition not found\\nhttps://postmarketos.org/troubleshooting"
-		fail_halt_boot
-	fi
 
 	if [ "$2" = "rw" ]; then
 		mount_opts=""
@@ -347,6 +342,16 @@ extract_initramfs_extra() {
 	# uncompressed:
 	# cpio -di < "$initramfs_extra"
 	gzip -d -c "$initramfs_extra" | cpio -iu
+}
+
+wait_boot_partition() {
+	while [ -z "$(find_boot_partition)" ]; do
+		show_splash "ERROR: boot partition not found\\nhttps://postmarketos.org/troubleshooting"
+		echo "Could not find the boot parition."
+		echo "Maybe you need to insert the sdcard, if your device has"
+		echo "any? Trying again in one second..."
+		sleep 1
+	done
 }
 
 wait_root_partition() {

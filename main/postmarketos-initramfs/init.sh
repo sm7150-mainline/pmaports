@@ -52,6 +52,7 @@ fi
 setup_usb_network
 start_unudhcpd
 
+wait_boot_partition
 mount_boot_partition /boot
 extract_initramfs_extra /boot/initramfs-extra
 setup_udev
