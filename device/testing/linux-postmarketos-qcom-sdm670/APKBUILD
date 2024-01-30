@@ -4,7 +4,7 @@
 
 _flavor="postmarketos-qcom-sdm670"
 pkgname=linux-$_flavor
-pkgver=6.6.3
+pkgver=6.7.2
 pkgrel=0
 pkgdesc="Mainline Kernel fork for SDM670 devices"
 arch="aarch64"
@@ -22,6 +22,8 @@ _tag="sdm670-v$pkgver"
 source="
 	https://gitlab.com/sdm670-mainline/linux/-/archive/$_tag/linux-$_tag.tar.gz
 	$_config
+	0001-drm-panel-samsung-s6e3fa7-move-dsi-commands-to-disab.patch
+	0002-drm-panel-samsung-s6e3fa7-correct-disable-callback-c.patch
 "
 builddir="$srcdir/linux-$_tag"
 
@@ -55,6 +57,8 @@ package() {
 }
 
 sha512sums="
-5c07a3e7715db89f1fa9ccc4cd7f0d523526d94d1f736ff10667adbf2ac819bd90d117f5dfef0aa516e7df1eddccdb29416814d38726691b66d62ddde649b492  linux-sdm670-v6.6.3.tar.gz
-e8d442148d6547447152160eaeff9c3ab1deea22c9dc2475868e29e0333043d1c3bff22710cb04e6481f270c35e323bb291cf1bf4c04d578babfc3501a130274  config-postmarketos-qcom-sdm670.aarch64
+8d42ef069cd484dfc018e6134446654ed4727d6c1ea49b99bed1632904c281cbaf921994e04cae95718578897a8aa1d2fa3d4fcc60cadfabc53737b1f9bbd7be  linux-sdm670-v6.7.2.tar.gz
+1ea6537720e721e9ac4b4d3cc685e258c9704525ec141adfb42ccfae66b3c5c24f147ba2bcf0c9a4c3b1db0dd810447c332b7309e595bca34a3df974e9db77fd  config-postmarketos-qcom-sdm670.aarch64
+a18f6cfeb3370dd2d272e888a94318e93b6541257261558a6d1f3a76063eefa8fc77abb8691e50a577986139831fb397d50ac57f444cb57ddbfd829af6cf9799  0001-drm-panel-samsung-s6e3fa7-move-dsi-commands-to-disab.patch
+3f09da7a8d9e097c73f5d27ffffd332fa587b481b1cc09116d042abaf966bbbe87f5d13b5c83a4d7a9a04d7c5777887c29e5870e543690b60058b69c29dbbb1f  0002-drm-panel-samsung-s6e3fa7-correct-disable-callback-c.patch
 "

@@ -1,0 +1,44 @@
+From 76263439b1b1beabea800ab1edf6b322027b43dd Mon Sep 17 00:00:00 2001
+From: Richard Acayan <mailingradian@gmail.com>
+Date: Sat, 3 Feb 2024 10:35:49 -0500
+Subject: [PATCH 2/2] drm/panel: samsung-s6e3fa7: correct disable callback
+ calling conventions
+
+The disable callback is called with a `struct drm_panel` object. Accept
+this parameter and convert it to the driver data in the function.
+
+Amends: drm/panel: add samsung s6e3fa7 panel driver
+Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+---
+ drivers/gpu/drm/panel/panel-samsung-s6e3fa7.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-samsung-s6e3fa7.c b/drivers/gpu/drm/panel/panel-samsung-s6e3fa7.c
+index ba6af2364052..7d4998b6ea11 100644
+--- a/drivers/gpu/drm/panel/panel-samsung-s6e3fa7.c
++++ b/drivers/gpu/drm/panel/panel-samsung-s6e3fa7.c
+@@ -91,7 +91,7 @@ static int s6e3fa7_sdc_prepare(struct drm_panel *panel)
+ 	return 0;
+ }
+ 
+-static int s6e3fa7_sdc_disable(struct s6e3fa7_sdc *ctx)
++static int s6e3fa7_sdc_disable(struct drm_panel *panel)
+ {
+ 	struct s6e3fa7_sdc *ctx = to_s6e3fa7_sdc(panel);
+ 	struct mipi_dsi_device *dsi = ctx->dsi;
+@@ -117,12 +117,6 @@ static int s6e3fa7_sdc_disable(struct s6e3fa7_sdc *ctx)
+ static int s6e3fa7_sdc_unprepare(struct drm_panel *panel)
+ {
+ 	struct s6e3fa7_sdc *ctx = to_s6e3fa7_sdc(panel);
+-	struct device *dev = &ctx->dsi->dev;
+-	int ret;
+-
+-	ret = s6e3fa7_sdc_off(ctx);
+-	if (ret < 0)
+-		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
+ 
+ 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+ 
+-- 
+2.43.0
+
