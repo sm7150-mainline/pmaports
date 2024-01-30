@@ -254,6 +254,10 @@ find_boot_partition() {
 			if [ -n "$path" ]; then
 				PMOS_BOOT="$path"
 				break
+			else
+				# Don't fall back to anything if the given UUID wasn't
+				# found
+				return
 			fi
 		fi
 	done
@@ -269,6 +273,10 @@ find_boot_partition() {
 				if [ -e "$path" ]; then
 					PMOS_BOOT="$path"
 					break
+				else
+					# Don't fall back to anything if the given path doesn't
+					# exist
+					return
 				fi
 			fi
 		done
