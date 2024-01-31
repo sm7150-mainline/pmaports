@@ -2,13 +2,18 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-samsung-manta
 pkgdesc="Google Nexus 10"
-pkgver=2
+pkgver=3
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
 options="!check !archcheck"
-depends="postmarketos-base linux-postmarketos-exynos5 mkbootimg"
+depends="
+	linux-postmarketos-exynos5
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+"
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 source="
@@ -51,7 +56,7 @@ nonfree_firmware() {
 }
 
 sha512sums="
-56e7d9025f89431d4e5684899ef63ea88cb31b65970ac4e75c029a99b43176736c0c3a02cb5bcb38b4e335a5980bf0cf9d007e96251f96affc62efbf9740bad3  deviceinfo
+2816b1389f46255a2ece6fca9dff776ad0f6a8a7d642954da9277c9af3ae383d19866370a8fba24cf1d57eb4305e956df246ffd4ee8f45032962f478d66c2c68  deviceinfo
 fe65b8e792e5d69dfff707e7b9a415ce7c4786fbcc1ad0aba638450c8470e81b0eb3cf170bc95a38e1234e1a3a5d6a013cc06d771a6c61015fbd12c07038e918  modules-load.conf
 37a18d36e1e08ddcc605de73214dc02a9e7737f6a66b2e4be301fca816bbf3c2ba6b5ead1f12c745fd0fa019e2a8e959e4fc20386ad94ca7277d4c7d7f9fb703  100-wlan-mac.rules
 ef18bd3e5c4c8c69dce3293c9e70fa0b30820ba12cb8217346b63392db95513169c31e9bf730aac5cecea15e2cda4166b093bbf0e456055a5432e57400ecb9b1  wifi-macaddr.sh
