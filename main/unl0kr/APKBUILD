@@ -1,7 +1,7 @@
 # Maintainer: Johannes Marbach <n0-0ne+gitlab@mailbox.org>
 pkgname=unl0kr
 pkgver=2.0.3
-pkgrel=0
+pkgrel=1
 _commit_lvgl=2f294aa76c8fece98a4fa72304bc6f267ed2a228
 _commit_lv_drivers=71dbdf07c4ab808bc6f04251d58f78bb57869bf9
 _commit_squeek2lvgl=ffe1f5bf18a99756f1c0985e8ccc3d24a1f4a528
@@ -14,7 +14,6 @@ depends="
 	inih
 	libinput-libs
 	libxkbcommon
-	!osk-sdl
 	"
 makedepends="
 	eudev-dev
@@ -36,7 +35,8 @@ source="
 	30-unl0kr-test.sh
 	"
 options="!check" # No tests
-provides="postmarketos-fde-unlocker"
+# "providing" osk-sdl, since it was dropped from pmaports
+provides="postmarketos-fde-unlocker osk-sdl=$pkgver-r$pkgrel"
 provider_priority=1000
 subpackages="$pkgname-doc $pkgname-pmtest"
 
