@@ -1,0 +1,48 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Federico Amedeo Izzo <federico@izzo.pro>
+pkgname=device-clockworkpi-uconsole-cm4
+pkgdesc="Clockwork Tech ClockworkPi uConsole CM4"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-clockworkpi-uconsole-cm4
+	postmarketos-base
+	raspberrypi-bootloader
+"
+makedepends="devicepkg-dev"
+install="$pkgname.post-install $pkgname.post-upgrade"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
+source="
+	deviceinfo
+	modules-initfs
+	usercfg.txt
+	95-vchiq-permissions.rules
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+	install -Dm644 "$srcdir"/usercfg.txt "$pkgdir"/boot/usercfg.txt
+	install -Dm644 "$srcdir"/95-vchiq-permissions.rules \
+		"$pkgdir"/usr/lib/udev/rules.d/95-vchiq-permissions.rules
+}
+
+nonfree_firmware() {
+	pkgdesc="WiFi/Bluetooth firmware"
+	depends="linux-firmware-brcm"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+8239d117839d3e3603c7ab73e598059bb521b81aeec5d6f7d0ec68d00cb9912bbad9fe5a0741e41e7ec94250729042dce91a6efb412c4e30c43a9c0b0a81a5b5  deviceinfo
+bc630857d9b0b6a89b3d9ff794be1133f5d7a681f26cd826ea4315649f8bf6c0c24aafa220093cbb313aa8bd6d46d2621c7aacb62e445a2d60c87e50099b45a5  modules-initfs
+43c2aca99ee3e02f4563bc27d331fa6e4e3c540732487c5806fd7574025cabc69347b74e2cea72f9c36fde8876833126063ca808a7398c5754dd53aecd6df7bf  usercfg.txt
+7e5505cb07d5b4a81bd28443d508336b5c547356538f1c06f91ed93ad0d7d456d4f74f1d24df5a2e08c17e74f0a66607352ac4874e967e9a91dfec9522d2d58d  95-vchiq-permissions.rules
+"

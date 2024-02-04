@@ -1,0 +1,85 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/bcm2711_defconfig
+# Maintainer: Federico Amedeo Izzo <federico@izzo.pro>
+pkgname=linux-clockworkpi-uconsole-cm4
+pkgver=6.1.74
+pkgrel=0
+pkgdesc="Clockwork Tech ClockworkPi uConsole CM4 kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="clockworkpi-uconsole-cm4"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+depends="linux-firmware-brcm"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	installkernel
+	linux-firmware
+	linux-headers
+	openssl-dev
+	perl
+	xz
+"
+
+# Source
+_repository="linux"
+_commit="1cdbd99f402b76c61632d09a49b20ce90af0cc72"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/raspberrypi/$_repository/archive/$_commit.tar.gz
+	$_config
+	0001-video-backlight-Add-OCP8178-backlight-driver.patch
+	0002-drm-panel-add-clockwork-cwu50.patch
+	0003-driver-staging-add-uconsole-simple-amplifier-switch.patch
+	0004-arm-dts-overlays-add-uconsole-cm4.patch
+	0005-drivers-power-axp20x-customize-PMU.patch
+	0006-power-axp20x_battery-implement-calibration.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-$_flavor.$CARCH" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor"
+
+	local INSTALL_DTBS_PATH="$pkgdir"/boot
+
+	mkdir -p "$pkgdir"/boot
+	make modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_DTBS_PATH="$INSTALL_DTBS_PATH"
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	mv -f "$INSTALL_DTBS_PATH"/broadcom/*.dtb \
+		"$INSTALL_DTBS_PATH"
+	rmdir "$INSTALL_DTBS_PATH"/broadcom
+}
+
+sha512sums="
+880edc35f448ae2a072706efeda064a27273a25469a63c5bd7020fca1b115c13504b4d50135b97a6102a311dfa61419ce02d9f417ec673af3d1118529b015e1c  linux-clockworkpi-uconsole-cm4-1cdbd99f402b76c61632d09a49b20ce90af0cc72.tar.gz
+9578b4eb1a43bdd63c500227067b4ccaaedf29333c5bc8510404fa1015a63c9a291ab2a5262e697fec4b6a810fc03ef4d74f95fa9d93425bbbab2e00b7561399  config-clockworkpi-uconsole-cm4.aarch64
+764faf249f98ba7a2299cf318bbd8e0922ab3a283dab8331710eccf83e4cc0088b4aa27894c196a2da5a08942c42ee173ca585844fa6abe36f9402095d845287  0001-video-backlight-Add-OCP8178-backlight-driver.patch
+3b4eb2cbf11d4b094d75070bd8ab7926f495c3bfc1b1ecc3ddd4b7a5e2355120eaf1fca4e4fe1884de4249808525f5271a1a8db14f583f89b096d0000ca01eac  0002-drm-panel-add-clockwork-cwu50.patch
+523ebd73d069c7e2ee55cefdcc9d2132264148dc13dfd79606cf87868ba86136d9df3dd7f54b130440544f51bbf8822a0a3c50eec34d54c996d867e260afa28c  0003-driver-staging-add-uconsole-simple-amplifier-switch.patch
+9cf45723ede7eee7f3b6548e0e424db9403a4c863b22c4b63063370042ac1385b5b005be9e52d3e7fb8d3a6ca71c775b2f4f1ca328f8c3ad226abf88a11f0d01  0004-arm-dts-overlays-add-uconsole-cm4.patch
+46cdb2bd144168c28cabbf235f4d0e23016a89a434670e12414e26422200ee3ff692168a9506a3989f93b60aac15903f6a641685cfe7d52193bc711bc648f6a0  0005-drivers-power-axp20x-customize-PMU.patch
+f86fb6e30e64c3594b9a9dcd855e962265ea642cc72a79404ae9f939a0122543d3cf4c462cc5b19d8f37dc9558276d1747285149b3e96caf7fff2a1bdc0a5295  0006-power-axp20x_battery-implement-calibration.patch
+"

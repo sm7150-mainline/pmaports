@@ -1,0 +1,254 @@
+Original patch: https://github.com/PotatoMania/uconsole-cm3/blob/dev/PKGBUILDs/linux-uconsole-cm3-rpi64/0004-arm-dts-overlays-add-uconsole.patch
+Adapted from Raspberry Pi CM3 to Raspberry Pi CM4
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index 04a9c9a8ab90..ddd90f3f087d 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -284,6 +284,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	uart4.dtbo \
+ 	uart4-pi5.dtbo \
+ 	uart5.dtbo \
++	uconsole.dtbo \
+ 	udrc.dtbo \
+ 	ugreen-dabboard.dtbo \
+ 	upstream.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/uconsole.dts b/arch/arm/boot/dts/overlays/uconsole.dts
+new file mode 100644
+index 000000000000..bfc12f7a029b
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/uconsole.dts
+@@ -0,0 +1,233 @@
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/gpio/gpio.h>
++
++/* uConsole All In One */
++
++/ {
++	compatible = "brcm,bcm2835";
++
++	fragment@70 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c_uconsole = "/i2c@0";
++		};
++	};
++
++	fragment@71 {
++		target-path = "/__symbols__";
++		__overlay__ {
++			i2c_uconsole = "/i2c@0";
++		};
++	};
++
++	fragment@80 {
++		target-path = "/chosen";
++		__overlay__ {
++			bootargs = "snd_bcm2835.enable_headphones=1";
++		};
++	};
++
++	fragment@90 {
++        target-path = "/";
++		__overlay__ {
++			audio_amplifier: audio-amplifier {
++				compatible = "simple-amplifier-switch";
++				sw-gpios = <&gpio 10 1>; /* GPIO10, GPIO_ACTIVE_LOW */
++				outputs-gpios = <&gpio 11 0>; /* GPIO11, GPIO_ACTIVE_HIGH */
++				// vdd-supply = <&uc_reg_5v0>;
++			};
++
++			ocp8178_backlight: backlight@0 {
++				compatible = "ocp8178-backlight";
++				backlight-control-gpios = <&gpio 9 0>; /* GPIO9 ACTIVE HIGH */
++				default-brightness = <5>;
++				// vdd-supply = <&uc_reg_5v0>;
++			};
++
++			battery: battery@0 {
++				compatible = "simple-battery";
++				constant-charge-current-max-microamp = <2100000>;
++				voltage-min-design-microvolt = <3300000>;
++				voltage-max-design-microvolt = <4200000>;
++			};
++
++			i2c_uconsole: i2c@0 {
++				reg = <3>;
++				compatible = "i2c-gpio";
++				gpios = <&gpio 0 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN) /* sda */
++					 &gpio 1 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN) /* scl */
++					>;
++				i2c-gpio,delay-us = <2>;        /* ~100 kHz */
++				#address-cells = <1>;
++				#size-cells = <0>;
++			};
++
++			/* TPS61178, the supply for 5V bus, including USB, backlight
++			 */
++			// uc_reg_5v0: uc-reg-5v0 {
++			// 	compatible = "fixed-regulator";
++			// 	regulator-name = "sys-5v0";
++			// 	regulator-boot-on;
++			// 	regulator-always-on; /* cannot be turned off anyway */
++			// 	vin-supply = <&usb_power_supply>;
++			// };
++		};
++	};
++};
++
++&leds {
++	/delete-node/ led-act;
++
++	/* This is the green LED under the power button,
++	 * However this is not usable without a hardware modification(move R117 to R116)
++	 */
++	// act_led: led-act {
++	//	linux,default-trigger = "default-on";
++	// 	gpios = <&axp_gpio 0 1>; /* gpio0 on pmu, low active */
++	// 	// function = "activity";
++	// };
++
++	/* This is the orange charging LED under the power button.
++	 * Requires a patch to the pinctrl-axp209 driver, because
++	 * charge led is not a gpio thus not supported.
++	 */
++	// chg_led: led-chg {
++	// 	linux,default-trigger = "axp20x-battery-charging-blink-full-solid";
++	// 	gpios = <&axp_gpio 99 1>; /* CHGLED on pmu, low active */
++	// };
++};
++
++/* PMU */
++&i2c_uconsole {
++
++	axp22x: pmic@34 {
++		interrupt-controller;
++		#interrupt-cells = <1>;
++		compatible = "x-powers,axp228", "x-powers,axp223", "x-powers,axp221";
++		reg = <0x34>; /* i2c address */
++		interrupt-parent = <&gpio>;
++		interrupts = <2 8>;  /* IRQ_TYPE_LEVEL_LOW */
++		irq-gpios = <&gpio 2 0>;
++
++		/* TODO: figure out the initial output states */
++		regulators {
++
++			x-powers,dcdc-freq = <3000>;
++
++			reg_dcdc1: dcdc1 {
++				regulator-name = "sys-3v3";
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			reg_dcdc3: dcdc3 {
++				regulator-name = "sys-1v8";
++				regulator-always-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++			};
++
++			/* TODO: switch this on demand? */
++			reg_aldo1: aldo1 {
++				regulator-name = "aud-3v3";
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			reg_aldo2: aldo2 {
++				regulator-name = "disp-3v3";
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			/* DLDO2-DLDO4 are connected in parallel.
++			 * They seem not necessary, BUT they are connected to the TPS2553's enable pin!
++			 * Disable them will shutdown the USB 5V line.
++			 */
++			reg_dldo2: dldo2 {
++				regulator-name = "vcc-3v3-ext-a";
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			reg_dldo3: dldo3 {
++				regulator-name = "vcc-3v3-ext-b";
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			reg_dldo4: dldo4 {
++				regulator-name = "vcc-3v3-ext-c";
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++			};
++		};
++
++		battery_power_supply: battery-power-supply {
++			compatible = "x-powers,axp221-battery-power-supply";
++			monitored-battery = <&battery>;
++		};
++
++		ac_power_supply: ac_power_supply {
++			compatible = "x-powers,axp221-ac-power-supply";
++		};
++
++		axp_adc: adc {
++			compatible = "x-powers,axp221-adc";
++			#io-channel-cells = <1>;
++		};
++
++		axp_gpio: gpio {
++			compatible = "x-powers,axp221-gpio";
++			gpio-controller;
++			#gpio-cells = <2>;
++			status = "disabled";
++
++			gpio0_out: gpio0-out-pin {
++				pins = "GPIO0";
++				function = "gpio_out";
++			};
++		};
++
++		/* IPSOUT, feed to on-board buck to get 5V output */
++		/* TODO: figure out how to configure it properly */
++		usb_power_supply: usb-power {
++			compatible = "x-powers,axp221-usb-power-supply";
++		};
++	};
++};
++
++&dsi1 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	port {
++		dsi_out_port: endpoint {
++			remote-endpoint = <&panel_dsi_port>;
++		};
++	};
++
++	panel_cwu50: panel@0 {
++		compatible = "clockwork,cwu50";
++		reg = <0>;
++		reset-gpio = <&gpio 8 1>; /* GPIO8 ACTIVE LOW */
++		backlight = <&ocp8178_backlight>;
++		rotation = <90>;
++		iovcc-supply = <&reg_dcdc3>;
++		vci-supply = <&reg_aldo2>;
++
++		port {
++			panel_dsi_port: endpoint {
++				remote-endpoint = <&dsi_out_port>;
++			};
++		};
++	};
++};
