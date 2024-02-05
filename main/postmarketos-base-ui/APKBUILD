@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
-pkgver=17
-pkgrel=1
+pkgver=18
+pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -24,6 +24,7 @@ subpackages="
 	$pkgname-bluez-obexd:_obexd
 	$pkgname-elogind
 	$pkgname-flatpak
+	$pkgname-networkmanager-usb-tethering:_usb_tethering
 	$pkgname-networkmanager
 	$pkgname-openrc-settingsd:_openrc_settingsd
 	$pkgname-pulseaudio
@@ -160,6 +161,15 @@ _obexd() {
 	mkdir -p "$subpkgdir"
 }
 
+_usb_tethering() {
+	install_if="$pkgname-networkmanager=$pkgver-r$pkgrel"
+	replaces="$pkgname-networkmanager"
+
+	amove usr/lib/NetworkManager/conf.d/50-tethering.conf
+	amove usr/lib/NetworkManager/dispatcher.d/50-tethering.sh
+	amove usr/lib/NetworkManager/system-connections/USB_Networking.nmconnection
+}
+
 networkmanager() {
 	depends="
 		busctl
@@ -174,11 +184,8 @@ networkmanager() {
 		networkmanager-dnsmasq"
 	amove usr/lib/NetworkManager/conf.d/50-hostname-mode.conf
 	amove usr/lib/NetworkManager/conf.d/50-random-mac.conf
-	amove usr/lib/NetworkManager/conf.d/50-tethering.conf
 	amove usr/lib/NetworkManager/conf.d/50-use-dnsmasq.conf
 	amove usr/lib/NetworkManager/dispatcher.d/50-dns-filter.sh
-	amove usr/lib/NetworkManager/dispatcher.d/50-tethering.sh
-	amove usr/lib/NetworkManager/system-connections/USB_Networking.nmconnection
 }
 
 _default_camera() {
