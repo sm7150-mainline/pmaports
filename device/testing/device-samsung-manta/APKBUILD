@@ -23,6 +23,7 @@ source="
 	100-wlan-mac.rules
 	wifi-macaddr.sh
 	networkmanager.conf
+	hwclock
 "
 
 build() {
@@ -44,6 +45,9 @@ package() {
 	mkdir -p "$pkgdir"/etc/modprobe.d
 	echo "options ds2482 active_pullup=0" \
 		> "$pkgdir"/etc/modprobe.d/ds2482.conf
+
+	install -Dm644 "$srcdir"/hwclock \
+		-t "$pkgdir"/etc/conf.d/
 }
 
 nonfree_firmware() {
@@ -62,4 +66,5 @@ e00c58936fa4340f8531538136ad028d002342a4399b68d26190b931831108007486257f9d8a48c3
 37a18d36e1e08ddcc605de73214dc02a9e7737f6a66b2e4be301fca816bbf3c2ba6b5ead1f12c745fd0fa019e2a8e959e4fc20386ad94ca7277d4c7d7f9fb703  100-wlan-mac.rules
 cfba48f87335ed8810004e02db165203149532ade7be206947f8195bbcc14d61bf3a898378566aca7295ba08784665f462442bf5e74d7f58b2cc62d996376317  wifi-macaddr.sh
 5c3a692f22a29fca792c114c6d94ff1bf0d6921f068f207a2894a8f99c73dcc319e7c803ed7adfe64eb3e60088f37e2a2730118b2ed57aa01b35415664085567  networkmanager.conf
+8a9756c66bf1eacd6a9717abf772a198123391deac7e32a520666dd6f72c4c5b09d1a4791437c8902f62cf4b49106ace195d57082972b1cb4c843c8e1b065875  hwclock
 "
