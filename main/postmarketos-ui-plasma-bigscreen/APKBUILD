@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-ui-plasma-bigscreen
-pkgver=0.2
-pkgrel=19
+pkgver=1
+pkgrel=0
 _commit_configs="a8bd93e279c222be6058ef46b065c11e88aa8400"
 pkgdesc="(Wayland) 10-feet variant of Plasma, made for big screen TVs"
 url="https://wiki.postmarketos.org/wiki/Plasma_Bigscreen"
@@ -16,17 +16,8 @@ depends="
 	dnsmasq
 	plasma-bigscreen
 	polkit-kde-agent-1
-	postmarketos-artwork-wallpapers
-	postmarketos-base-ui
-	postmarketos-base-ui-networkmanager
-	pulseaudio
+	postmarketos-base-ui-plasma
 	qt5-qtvirtualkeyboard
-	xdg-desktop-portal-kde
-	"
-# Required to launch
-depends="$depends
-	tinydm
-	tinydm-openrc
 	"
 _pmb_recommends="
 	aura-browser
@@ -35,7 +26,6 @@ _pmb_recommends="
 	plank-player
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
-subpackages="$pkgname-extras"
 source="$pkgname-$_commit_configs.tar.gz::https://invent.kde.org/plasma-bigscreen/bigscreen-image-settings/-/archive/$_commit_configs/bigscreen-image-settings-$_commit_configs.tar.gz
 	qtlogging.ini
 	nymphcast.desktop
@@ -51,15 +41,6 @@ package() {
 	install -dm755 "$pkgdir"/etc/skel
 	mv "$srcdir"/bigscreen-image-settings-"$_commit_configs"/etc/xdg/* "$pkgdir"/etc/xdg
 	mv "$srcdir"/bigscreen-image-settings-"$_commit_configs"/etc/skel/.config "$pkgdir"/etc/skel/
-}
-
-extras() {
-	pkgdesc="Meta package for additional Plasma Bigscreen apps"
-	_pmb_recommends="
-		mycroft-plasmoid
-		"
-
-	mkdir -p "$subpkgdir"
 }
 
 sha512sums="

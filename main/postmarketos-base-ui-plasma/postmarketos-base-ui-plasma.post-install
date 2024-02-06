@@ -1,0 +1,24 @@
+#!/bin/sh
+
+rc-update add bluetooth default
+rc-update add elogind default
+rc-update add hfd-service default
+rc-update add iio-sensor-proxy default
+rc-update add networkmanager default
+rc-update add modemmanager default
+rc-update add tinydm default
+rc-update add urfkill default
+
+
+# Migrate from the old ofono setup
+if rc-update del ofono default; then
+	rc-update del ofono-auto-enable default
+	rc-service stop ofono
+	rc-service stop ofono-auto-enable
+
+	rc-service start modemmanager
+fi
+
+tinydm-set-session -s /usr/share/wayland-sessions/plasma-mobile.desktop
+
+glib-compile-schemas /usr/share/glib-2.0/schemas
