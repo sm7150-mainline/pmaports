@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
 pkgver=17
-pkgrel=0
+pkgrel=1
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -23,6 +23,7 @@ subpackages="
 	$pkgname-bluez
 	$pkgname-bluez-obexd:_obexd
 	$pkgname-elogind
+	$pkgname-flatpak
 	$pkgname-networkmanager
 	$pkgname-openrc-settingsd:_openrc_settingsd
 	$pkgname-pulseaudio
@@ -215,6 +216,13 @@ iwd() {
 	provider_priority=90
 
 	amove usr/lib/NetworkManager/conf.d/50-iwd.conf
+}
+
+flatpak() {
+	install_if="$pkgname=$pkgver-r$pkgrel flatpak"
+	install="$subpkgname.post-install"
+
+	mkdir "$subpkgdir"
 }
 
 sha512sums="
