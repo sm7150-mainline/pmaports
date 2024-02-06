@@ -2,7 +2,7 @@
 pkgname=oem-amd
 pkgdesc="AMD device support"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -26,9 +26,9 @@ source="
 package() {
 	mkdir -p "$pkgdir"
 	install -Dm644 00-oem-amd.modules \
-		-t "$pkgdir"/usr/share/mkinitfs/modules
+		-t "$pkgdir"/usr/share/mkinitfs/modules-extra
 	install -Dm644 00-amdgpu-firmware.files \
-		-t "$pkgdir"/usr/share/mkinitfs/files
+		-t "$pkgdir"/usr/share/mkinitfs/files-extra
 }
 
 libva() {
