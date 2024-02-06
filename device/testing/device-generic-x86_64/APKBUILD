@@ -2,7 +2,7 @@
 pkgname=device-generic-x86_64
 pkgdesc="Generic x86_64 system, with EFI"
 pkgver=12
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
@@ -22,11 +22,9 @@ subpackages="
 	$pkgname-kernel-edge:kernel_edge
 	$pkgname-kernel-lts:kernel_lts
 	$pkgname-mesa
-	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-nonfree-firmware-amd:nonfree_firmware_amd
-	$pkgname-nonfree-firmware-intel:nonfree_firmware_intel
 "
 _pmb_recommends="
+	linux-firmware
 	oem-intel
 	oem-amd
 "
@@ -63,26 +61,6 @@ kernel_lts() {
 	replaces="device-tablet-x64uefi-kernel-lts device-tablet-x86uefi-kernel-lts"
 	depends="linux-lts"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-nonfree_firmware() {
-	pkgdesc="Firmware for x86_64 devices"
-
-	mkdir -p "$subpkgdir"
-}
-
-nonfree_firmware_amd() {
-	install_if="$pkgname-nonfree-firmware=$pkgver-r$pkgrel oem-amd"
-	depends="oem-amd-nonfree-firmware"
-
-	mkdir -p "$subpkgdir"
-}
-
-nonfree_firmware_intel() {
-	install_if="$pkgname-nonfree-firmware=$pkgver-r$pkgrel oem-intel"
-	depends="oem-intel-nonfree-firmware"
-
-	mkdir -p "$subpkgdir"
 }
 
 sha512sums="
