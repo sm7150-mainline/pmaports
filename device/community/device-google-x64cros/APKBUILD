@@ -4,7 +4,7 @@
 # Co-Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=device-google-x64cros
 pkgdesc="Google Chromebooks with x64 CPU"
-pkgver=4
+pkgver=5
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -22,6 +22,9 @@ install="$pkgname.post-install $pkgname.post-upgrade"
 subpackages="
 	$pkgname-kernel-lts:kernel_lts
 	$pkgname-kernel-edge:kernel_edge
+	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-nonfree-firmware-amd:nonfree_firmware_amd
+	$pkgname-nonfree-firmware-intel:nonfree_firmware_intel
 	"
 source="deviceinfo modules-initfs"
 _pmb_recommends="
@@ -47,6 +50,26 @@ kernel_lts() {
 	pkgdesc="Alpine LTS kernel"
 	depends="linux-lts"
 	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for x86_64 devices"
+
+	mkdir -p "$subpkgdir"
+}
+
+nonfree_firmware_amd() {
+	install_if="$pkgname-nonfree-firmware=$pkgver-r$pkgrel oem-amd"
+	depends="oem-amd-nonfree-firmware"
+
+	mkdir -p "$subpkgdir"
+}
+
+nonfree_firmware_intel() {
+	install_if="$pkgname-nonfree-firmware=$pkgver-r$pkgrel oem-intel"
+	depends="oem-intel-nonfree-firmware"
+
+	mkdir -p "$subpkgdir"
 }
 
 sha512sums="
