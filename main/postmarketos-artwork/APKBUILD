@@ -1,17 +1,16 @@
 # Maintainer: Oliver Smith <ollieparanoid@postmarketos.org>
 pkgname=postmarketos-artwork
-pkgver=4
+pkgver=5
 pkgrel=0
 pkgdesc="Meta package for the postmarketOS artwork"
 url="https://postmarketos.org/"
 arch="noarch"
 license="CC-BY-SA-4.0"
-_hash="9657eb69b2918e83bf0eb06170cc173b84727cb5"
+_hash="f28dd5fef287c970f50ca49bc44814ee1e3b229d"
 source="postmarketos-artwork-$_hash.tar.gz::https://gitlab.com/postmarketOS/artwork/-/archive/$_hash/artwork-$_hash.tar.gz"
 subpackages="
 	$pkgname-wallpapers
 	$pkgname-wallpapers-extra:wallpapers_extra
-	$pkgname-wallpapers-gnome:wallpapers_gnome
 	$pkgname-icons
 	$pkgname-sounds
 	"
@@ -24,11 +23,11 @@ package() {
 
 wallpapers() {
 	pkgdesc="Wallpapers for postmarketOS"
-	mkdir -p "$subpkgdir"/usr/share/wallpapers/
-	install -Dm644 "$builddir"/wallpapers/logo/pmos-grass-square.jpg \
-		"$subpkgdir"/usr/share/wallpapers/postmarketos.jpg
-	install -Dm644 "$builddir"/wallpapers/logo/pmos-grass.xml \
-		"$subpkgdir"/usr/share/gnome-background-properties/postmarketos-grass.xml
+	mkdir -p "$subpkgdir"/usr/share/wallpapers
+	cp -r "$builddir"/wallpapers/2024/meadow \
+		"$subpkgdir"/usr/share/wallpapers/postmarketos
+	install -Dm644 "$builddir"/wallpapers/gnome/pmos.xml \
+		"$subpkgdir"/usr/share/gnome-background-properties/postmarketos.xml
 }
 
 wallpapers_extra() {
@@ -46,16 +45,6 @@ wallpapers_extra() {
 		"$subpkgdir"/usr/share/wallpapers/pmos-grass.jpg
 	install -Dm644 "$builddir"/wallpapers/logo/pmos.jpg \
 		"$subpkgdir"/usr/share/wallpapers/pmos.jpg
-}
-
-wallpapers_gnome() {
-	pkgdesc="postmarketOS wallpapers for GNOME"
-	install -Dm644 "$builddir"/wallpapers/gnome/pmos-light.jpg \
-		"$subpkgdir"/usr/share/wallpapers/postmarketos-gnome-light.jpg
-	install -Dm644 "$builddir"/wallpapers/gnome/pmos-dark.jpg \
-		"$subpkgdir"/usr/share/wallpapers/postmarketos-gnome-dark.jpg
-	install -Dm644 "$builddir"/wallpapers/gnome/pmos.xml \
-		"$subpkgdir"/usr/share/gnome-background-properties/postmarketos-gnome.xml
 }
 
 icons() {
@@ -78,5 +67,5 @@ sounds() {
 }
 
 sha512sums="
-17cc39e6ed3e95d9e50c257d9fced448d10f872dc69e0913f2295b1ac679ac3d8d0d5a7aba7b4f99500adedbdc0565944f2d8201ec966568d0db1d16bfffbaa0  postmarketos-artwork-9657eb69b2918e83bf0eb06170cc173b84727cb5.tar.gz
+cef2326a28dbd597f3d679329aaac17031bf1fdc60f634bc25cf20b23e62028961c5f228570df824615b21616a18ab2fd290a770cfd4f3ca1d929ac552a34ea8  postmarketos-artwork-f28dd5fef287c970f50ca49bc44814ee1e3b229d.tar.gz
 "
