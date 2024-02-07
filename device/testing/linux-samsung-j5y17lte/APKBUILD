@@ -1,0 +1,85 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/j5y17lte_defconfig
+# Maintainer: andrisas <sebokandris2009@gmail.com>
+
+pkgname=linux-samsung-j5y17lte
+pkgver=3.18.91
+pkgrel=0
+pkgdesc="Samsung Galaxy J5 (2017) kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="samsung-j5y17lte"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	dtbtool-exynos
+	findutils
+	flex
+	openssl-dev
+	perl
+	xz
+	curl
+"
+
+# Source
+_commit="f4287836ad123f50c41e4369ee37d5c913f88108"
+_repository="Helios_7870"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.zip::https://github.com/ananjaser1211/$_repository/archive/$_commit.zip
+	$_config
+	gcc8-fix-put-user.patch
+	gcc10-extern_YYLOC_global_declaration.patch
+	fix-firmware-make.patch
+	place-cpu_setup-in-text.patch
+	fix-usb-gadget-random-mac.patch
+	create_flash_sysfs-return-enodev.patch
+	allow-building-without-make-mrproper.patch
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+
+	mkdir -p "$_outdir/firmware/"
+	cp firmware/gnss_firmware.bin "$_outdir/firmware/gnss_firmware.bin"
+
+	sed -i 's/exynos7870\.dtsi/\.\.\/exynos7870_Oneui.dtsi/g' arch/arm64/boot/dts/*
+
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+
+	# Master DTB (deviceinfo_bootimg_qcdt)
+	dtbTool-exynos -o "$_outdir/arch/$_carch/boot"/dt.img \
+		$(find "$_outdir/arch/$_carch/boot/dts/" -name *j5y17lte*.dtb)
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+	install -Dm644 "$_outdir/arch/$_carch/boot"/dt.img \
+		"$pkgdir"/boot/dt.img
+}
+
+sha512sums="
+bb9570ebab2df5625bd068ed64f3ff6e79b5843be25a0d5e6f0cdd4e7afa5f24bde24ef12d6516d9cc5bb6e8f423a0757506773ff7c839140bb28a35f35a3325  linux-samsung-j5y17lte-f4287836ad123f50c41e4369ee37d5c913f88108.zip
+0a53965d6e1ddcf2eafbd3d78f7e8c188e7f7e8e21ce3e6f76e982e045095dd0ab24de08112b2c2ff00f48a733c2a5d303b6b440cdf6bcc90d7d604f5ebcf822  config-samsung-j5y17lte.aarch64
+197d40a214ada87fcb2dfc0ae4911704b9a93354b75179cd6b4aadbb627a37ec262cf516921c84a8b1806809b70a7b440cdc8310a4a55fca5d2c0baa988e3967  gcc8-fix-put-user.patch
+2b48f1bf0e3f70703d2cdafc47d5e615cc7c56c70bec56b2e3297d3fa4a7a1321d649a8679614553dde8fe52ff1051dae38d5990e3744c9ca986d92187dcdbeb  gcc10-extern_YYLOC_global_declaration.patch
+66af05562023bebc8334db8236655960e306aa4e2ce216129a077a762bcf951b8c2c286e1c3f45c6478296769e3b6a70f88256e909a9c48f2539bfc056ecf312  fix-firmware-make.patch
+ef361f4729efeb6442bdd028798a3ba8f34901cbcbedc318ae0788e23e7c897897587cee82f334d2ec5d7954a73d409bd25f1742d53ba704dd2b672a5de80f26  place-cpu_setup-in-text.patch
+0d56ba508408dc31961ad688f7fd960b0008851fd5729088658095417781b99962740e0c64d162a26f8389e4b4dc88e291252e7935e896fc70bf73c23150caea  fix-usb-gadget-random-mac.patch
+45ac6b181474ade6c3056e390ee12791726995835191507ee4bf36a96b40bcd0718d8a5584fe2a9ced556f46737103e94a7b879355cac85b9008e5735fdee6a0  create_flash_sysfs-return-enodev.patch
+80fb92f7cf56d37a064032eb29cc3f579bab0078e9354ff9aeee9646d248e2cc7ce519d2c5d879d67370b34afba750e06995f0b320c4039679c3311ebd5c3f47  allow-building-without-make-mrproper.patch
+"

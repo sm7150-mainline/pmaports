@@ -1,0 +1,34 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: andrisas <sebokandris2009@gmail.com>
+
+pkgname=device-samsung-j5y17lte
+pkgdesc="Samsung Galaxy J5 (2017)"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-samsung-j5y17lte
+	mkbootimg
+	postmarketos-base
+	postmarketos-base-downstream
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+adf750c15f4697e38e4b7d879991e917591fe0f0d1bafd006e35e5fdd0198d47420aa1afc73c1c7b3e21f678745a876bab0e7f0c5268035e72bc627e5d9f031c  deviceinfo
+"
