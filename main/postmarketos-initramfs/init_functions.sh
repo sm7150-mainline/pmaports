@@ -25,7 +25,11 @@ setup_log() {
 	# Pipe logs to console if PMOS_NO_OUTPUT_REDIRECT is set
 	if [ -n "$log_to_console" ]; then
 		tail -f /pmOS_init.log > /dev/console &
-		return
+	fi
+
+	# Pipe logs to pmsg if PMOS_NO_OUTPUT_REDIRECT is set and /dev/pmsg0 is available
+	if [ -n "$log_to_console" ] && [ -e "/dev/pmsg0" ]; then
+		tail -f /pmOS_init.log > /dev/pmsg0 &
 	fi
 }
 
