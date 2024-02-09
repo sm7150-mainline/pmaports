@@ -2,7 +2,7 @@
 # Co-Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=firmware-pine64-rtl8723bt
 pkgver=0_git20200705
-pkgrel=0
+pkgrel=1
 _commit="8840b1052b4ee426f348cb35e4994c5cafc5fbbd"
 pkgdesc="Firmware for rtl8723bs and rtl8723cs"
 url="https://github.com/anarsoul/rtl8723bt-firmware/"
@@ -11,16 +11,19 @@ license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
 source="https://github.com/anarsoul/rtl8723bt-firmware/archive/$_commit/rtl8723bt-firmware-$_commit.tar.gz"
 subpackages="$pkgname-doc"
+makedepends="zstd"
 replaces="firmware-rtl8723bt"
 builddir="$srcdir/rtl8723bt-firmware-$_commit"
 
 package() {
-	make DESTDIR="$pkgdir" install
+	install -d "$pkgdir/lib/firmware/rtl_bt"
 
-	# Not sure why this gets installed. Weird.
-	rm "$pkgdir"/lib/firmware/Makefile
+	for f in rtl_bt/*; do
+		zstd --compress -19 "$f" -o "$pkgdir/lib/firmware/$f.zst"
+		chmod 0644 "$pkgdir/lib/firmware/$f.zst"
+	done
 
-	install -Dm644 LICENCE.rtlwifi_firmware.txt "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+	install -Dm644 LICENCE.rtlwifi_firmware.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
 
 sha512sums="46941d893c6ce132aad9689263b5a558675ff6e4480881ffa61d192b312e9a8deb45932f613106ce025d8f54eebceed6790b32e7fe8c25f42f105fe97ce8fc82  rtl8723bt-firmware-8840b1052b4ee426f348cb35e4994c5cafc5fbbd.tar.gz"
