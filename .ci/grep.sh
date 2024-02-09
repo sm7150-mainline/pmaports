@@ -62,14 +62,12 @@ if grep -qr $POSTMARKETOS_WALLPAPER_PATH \
 	--exclude-dir='device-pine64-pinetab' \
 	--exclude-dir='device-oneplus-kebab' \
 	--exclude-dir='device-xiaomi-willow' \
-	--exclude-dir='device-nokia-n900' \
 	-- device; then
 	echo "ERROR: Please don't include configuration files that set the default wallpaper in device-specific packages!"
 	grep --color=always -r $POSTMARKETOS_WALLPAPER_PATH \
 		--exclude-dir='device-pine64-pinetab' \
 		--exclude-dir='device-oneplus-kebab' \
 		--exclude-dir='device-xiaomi-willow' \
-		--exclude-dir='device-nokia-n900' \
 		-- device
 	exit_code=1
 fi
