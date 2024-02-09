@@ -1,0 +1,192 @@
+From 055ef10ccdd430973e1f05530cedcdd44cf744da Mon Sep 17 00:00:00 2001
+From: Hsin-Yi Wang <hsinyi@chromium.org>
+Date: Thu, 26 Oct 2023 12:09:16 -0700
+Subject: [PATCH] arm64: dts: mt8183: Add jacuzzi pico/pico6 board
+
+pico is also known as Acer Chromebook Spin 311.
+
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+[Angelo: Fixed blank lines at the end for pico.dts]
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ arch/arm64/boot/dts/mediatek/Makefile         |   2 +
+ .../mediatek/mt8183-kukui-jacuzzi-pico.dts    |  35 ++++++
+ .../mediatek/mt8183-kukui-jacuzzi-pico6.dts   | 110 ++++++++++++++++++
+ 3 files changed, 147 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico6.dts
+
+diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+index 1b85a8c12850..ed174dde97e1 100644
+--- a/arch/arm64/boot/dts/mediatek/Makefile
++++ b/arch/arm64/boot/dts/mediatek/Makefile
+@@ -34,6 +34,8 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-kappa.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-kenzo.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-makomo-sku0.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-makomo-sku1.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-pico.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-pico6.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku0.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku1.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kakadu.dtb
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico.dts
+new file mode 100644
+index 000000000000..8ce9568fee95
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico.dts
+@@ -0,0 +1,35 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-jacuzzi.dtsi"
++#include "mt8183-kukui-audio-ts3a227e-max98357a.dtsi"
++
++/ {
++	model = "Google pico board";
++	chassis-type = "convertible";
++	compatible = "google,pico-sku1", "google,pico", "mediatek,mt8183";
++};
++
++&i2c_tunnel {
++	google,remote-bus = <0>;
++};
++
++&i2c2 {
++	i2c-scl-internal-delay-ns = <25000>;
++
++	trackpad@2c {
++		compatible = "hid-over-i2c";
++		reg = <0x2c>;
++		hid-descr-addr = <0x20>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pins>;
++
++		interrupts-extended = <&pio 7 IRQ_TYPE_LEVEL_LOW>;
++
++		wakeup-source;
++	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico6.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico6.dts
+new file mode 100644
+index 000000000000..a2e74b829320
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-pico6.dts
+@@ -0,0 +1,110 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-jacuzzi.dtsi"
++#include "mt8183-kukui-audio-ts3a227e-max98357a.dtsi"
++
++/ {
++	model = "Google pico6 board";
++	chassis-type = "convertible";
++	compatible = "google,pico-sku2", "google,pico", "mediatek,mt8183";
++
++	bt_wakeup: bt-wakeup {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_pins_wakeup>;
++
++		wobt {
++			label = "Wake on BT";
++			gpios = <&pio 42 GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_WAKEUP>;
++			wakeup-source;
++		};
++	};
++};
++
++&i2c_tunnel {
++	google,remote-bus = <0>;
++};
++
++&i2c2 {
++	i2c-scl-internal-delay-ns = <25000>;
++
++	trackpad@2c {
++		compatible = "hid-over-i2c";
++		reg = <0x2c>;
++		hid-descr-addr = <0x20>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pins>;
++
++		interrupts-extended = <&pio 7 IRQ_TYPE_LEVEL_LOW>;
++
++		wakeup-source;
++	};
++};
++
++&wifi_wakeup {
++	wowlan {
++		gpios = <&pio 113 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&wifi_pwrseq {
++	post-power-on-delay-ms = <50>;
++
++	/* Toggle WIFI_ENABLE to reset the chip. */
++	reset-gpios = <&pio 8 GPIO_ACTIVE_LOW>;
++};
++
++&wifi_pins_pwrseq {
++	pins-wifi-enable {
++		pinmux = <PINMUX_GPIO8__FUNC_GPIO8>;
++	};
++};
++
++&mmc1_pins_default {
++	pins-cmd-dat {
++		drive-strength = <MTK_DRIVE_6mA>;
++	};
++	pins-clk {
++		drive-strength = <MTK_DRIVE_6mA>;
++	};
++};
++
++&mmc1_pins_uhs {
++	pins-clk {
++		drive-strength = <MTK_DRIVE_6mA>;
++	};
++};
++
++&mmc1 {
++	bt_reset: bt-reset {
++		compatible = "mediatek,mt7921s-bluetooth";
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_pins_reset>;
++		reset-gpios = <&pio 120 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&pio {
++	bt_pins_wakeup: bt-pins-wakeup {
++		piins-bt-wakeup {
++			pinmux = <PINMUX_GPIO42__FUNC_GPIO42>;
++			input-enable;
++		};
++	};
++
++	bt_pins_reset: bt-pins-reset {
++		pins-bt-reset {
++			pinmux = <PINMUX_GPIO120__FUNC_GPIO120>;
++			output-high;
++		};
++	};
++};
++
++/delete-node/ &bluetooth;
++/delete-node/ &bt_pins;
+-- 
+2.43.0
+

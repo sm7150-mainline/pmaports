@@ -1,0 +1,25 @@
+From 9a42e6ea802f31e439c92516cd959f0a0ade020d Mon Sep 17 00:00:00 2001
+From: Alicja Michalska <ahplka19@gmail.com>
+Date: Sun, 26 Nov 2023 14:38:06 +0100
+Subject: [PATCH] arm64: dts: mediatek: mt8183: Add missing syscon power domain
+
+Signed-off-by: Alicja Michalska <ahplka19@gmail.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 5169779d01df..2c5665e695d2 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -1749,6 +1749,7 @@ mfgcfg: syscon@13000000 {
+ 			compatible = "mediatek,mt8183-mfgcfg", "syscon";
+ 			reg = <0 0x13000000 0 0x1000>;
+ 			#clock-cells = <1>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_MFG_ASYNC>;
+ 		};
+ 
+ 		gpu: gpu@13040000 {
+-- 
+2.43.0
+

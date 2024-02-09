@@ -1,0 +1,36 @@
+From ddd99db269e9f0f1105363dd6f2eb2e9d487c0e2 Mon Sep 17 00:00:00 2001
+From: Alicja Michalska <ahplka19@gmail.com>
+Date: Mon, 27 Nov 2023 18:06:29 +0100
+Subject: [PATCH] arm64: dts: mediatek: mt8183: Drop VDEC_SYS register
+
+Seems like it's not needed anymore with new register organization.
+Attempt to load the module with it present causes probe to fail:
+
+[17.904193] mtk-vcodec-dec 16000000.vcodec: Adding to iommu group 0
+[17.904272] mtk-vcodec-dec 16000000.vcodec: Invalid register property
+size: 12
+[17.904278] mtk-vcodec-dec 16000000.vcodec: Failed to init dec resources
+[17.904306] mtk-vcodec-dec: probe of 16000000.vcodec failed with error
+-22
+
+Signed-off-by: Alicja Michalska <ahplka19@gmail.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 07ca7448adfd..bfcceb34bc40 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -2150,7 +2150,7 @@ vdecsys: syscon@16000000 {
+ 
+ 		vcodec_dec: vcodec@16000000 {
+ 			compatible = "mediatek,mt8183-vcodec-dec";
+-			reg = <0 0x16000000 0 0x1000>,		/* VDEC_SYS */
++			reg = /* <0 0x16000000 0 0x1000>,	VDEC_SYS - deprecated? */
+ 				 <0 0x16020000 0 0x1000>,		/* VDEC_MISC */
+ 				 <0 0x16021000 0 0x800>,		/* VDEC_VLD */
+ 				 <0 0x16021800 0 0x800>,		/* VDEC_TOP */
+-- 
+2.43.0
+

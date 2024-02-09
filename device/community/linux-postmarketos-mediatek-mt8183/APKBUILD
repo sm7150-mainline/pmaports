@@ -1,8 +1,8 @@
-# Maintainer: Jenneron <jenneron@protonmail.com>
-# Based on https://github.com/hexdump0815/linux-mainline-mediatek-mt81xx-kernel
+# Maintainer: WeirdTreeThing <bradyn127@protonmail.com>
+# Co-Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=linux-postmarketos-mediatek-mt8183
-pkgver=6.1.39
-pkgrel=3
+pkgver=6.6.16
+pkgrel=0
 pkgdesc="Mainline kernel for mediatek mt8183"
 arch="aarch64"
 _flavor="${pkgname#linux-}"
@@ -42,24 +42,20 @@ esac
 
 source="
 	https://cdn.kernel.org/pub/linux/kernel/v${_kernver%%.*}.x/linux-$_kernver.tar.xz
-	01-RESEND-v2-1-2-drm-panel-Add-inx-Himax8279d-MIPI-DSI-LCD-panel-driver.patch
-	03-v2-1-4-arm64-dts-mt8183-Add-katsu-board.patch
-	04-v2-2-4-arm64-dts-mt8183-Add-kukui-jacuzzi-makomo-board.patch
-	05-v2-3-4-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-katsu.patch
-	06-v2-4-4-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-jacuzzi-makomo.patch
-	07-1-2-arm64-dts-mt8183-Add-kukui-jacuzzi-cerise-board.patch
-	08-2-2-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-jacuzzi-cerise.patch
-	09-add-new-dtbs-to-makefile.patch
-	CHROMIUM-ARM64-dts-add-vdec-venc-h264-dtsi.patch
-	mt8183-cadmium-kukui.enable-ite.patch
-	mt8183-fix-audio-module-loading.patch
-	mt8183-fix-bluetooth.patch
-	mt8183-kukui-disable-unsupported-thermal-zones.patch
-	mt8183-kukui-jacuzzi-fennel14-rt1015p-sound.patch
+	arm64-dts-mediatek-mt8183-Add-missing-GPU-clocks.patch
+	arm64-dts-mediatek-mt8183-Add-missing-syscon-power-d.patch
+	arm64-dts-mediatek-mt8183-Add-video-encoder-decoder.patch
+	arm64-dts-mediatek-mt8183-Drop-VDEC_SYS-register.patch
+	arm64-dts-mediatek-mt8183-Add-register-names-and-sys.patch
+	arm64-dts-mt8183-Add-jacuzzi-makomo-board.patch
+	arm64-dts-mt8183-Add-jacuzzi-pico-pico6-board.patch
+	arm64-dts-mt8183-Add-kukui-katsu-board.patch
+	arm64-dts-mt8183-Add-kukui-jacuzzi-cerise-board.patch
 	mt8183-kukui-jacuzzi-fix-display-resume.patch
 	mt8183-kukui-jacuzzi-hack-dpms-resume.patch
-	mt81xx-fix-low-speed-usb-devices.patch
-	mt81xx-usb-02.patch
+	mt8183-fix-bluetooth.patch
+	Revert-ASoC-mediatek-mt8183-da7219-max98357-Map-miss.patch
+	mt8183-kukui-jacuzzi-fennel14-rt1015p-sound.patch
 	config-$_flavor.aarch64
 "
 builddir="$srcdir/linux-$_kernver"
@@ -92,24 +88,20 @@ package() {
 
 
 sha512sums="
-20d468ae89b57dda82d7c7b814c3d8b1b510e1623775b09a8a0b0a8a0431461e0a1d2df2bfa01f3102932c8eef91405546898b50ec3e6f30015098bb39722b41  linux-6.1.39.tar.xz
-06e901fd36d4c3a8b51673ed6682a51229856259a4a0c83e65ed10a234c24a4a8828e9f6ed3101713470a25db10af9d5bab29c480b7f5c87af6bd7e81d8c0fe7  01-RESEND-v2-1-2-drm-panel-Add-inx-Himax8279d-MIPI-DSI-LCD-panel-driver.patch
-4c7a89fd1e3e7b4589fe3c2addc7c4963cec7ebabf49413b1d6db92386b4b2ba7bf25c961aaa53fc344a4684871b4132806aa4b8c1a63e091651e548bab750ef  03-v2-1-4-arm64-dts-mt8183-Add-katsu-board.patch
-a0742fa788d13c836d9dc8827c55a14e804ce77234627f2689fd511b14e5fba17b00f5a8cebd9ae4fa4c644d87cc98d4f18eba385ec4f57bb6fe07d3aff057fd  04-v2-2-4-arm64-dts-mt8183-Add-kukui-jacuzzi-makomo-board.patch
-7d29cefe1e338868c6f31516dcff73ef1fdb5e50353ffd0874018bee1c9c116dea65b0bea6e9a5d31f416958ff025a685234e684557705f4675ad4710709e197  05-v2-3-4-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-katsu.patch
-53279b9019c4aa94488405a823c501734f536acc6f68c7d89f3f76fba04cde897c229ab59d22e97acd68f8ab9fc75ad39bb74fef777a1dbbdf1788bf19ae52c4  06-v2-4-4-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-jacuzzi-makomo.patch
-20be60004e19068e652010f18353f93a289b109a4b13cfa85184401a13f02417aea644e29accf5c21d6cf511044f2024e3872b211512d15e301ca34613ee0077  07-1-2-arm64-dts-mt8183-Add-kukui-jacuzzi-cerise-board.patch
-27e1e536f446dc278ce8a9dd9bd64e5ec6678589b2ca276be7bab5e0a80f119052e9109e6834357a57bbffe30fda48e03d24531f53ad0225f42ad075142f3a37  08-2-2-dt-bindings-arm64-dts-mediatek-Add-mt8183-kukui-jacuzzi-cerise.patch
-604fb37887786a2919e93648fb3fd002ce4b948b35a915931e3f2bf3f3a1451fad4f6e042cd0fd9aa7f11bba5864f1b95c9be9ab6aed57a63652c49a7a145a3e  09-add-new-dtbs-to-makefile.patch
-2553c147c7b9a387678e5c2508182417346b6acb94f9d22aec10f4aa3e66bb7d84b83ddc0c39f1f3e0dd2137e906891aef349de9da89ce63b3f43c4f42b5e933  CHROMIUM-ARM64-dts-add-vdec-venc-h264-dtsi.patch
-4216543acf0ffea0c91b2b7c112cd333be838414f2902cea9f07f5811b96ab5da0e09954086966359316fe0632ac0af65add154b9df0aa11d05962429954e362  mt8183-cadmium-kukui.enable-ite.patch
-b9a9e2f620d229ca8acf2df764d6406a304fd51f435929f78c4dfd7f52cd6f1f298f031bb6d7bb7fc8ea360dd8bbd4584bb298f9351100dfb20707de50076244  mt8183-fix-audio-module-loading.patch
-d74da1231181835bec82015da1b3f5b08a1fe9c3c35dd712e285891094d94d9427ceac75d32f74be3a635e17d93ad82b37adf97db8176efc91aed17535023fc2  mt8183-fix-bluetooth.patch
-a5e99ea30bbdde3a5f0f9745306c9f58876a60489c3cbeacd783cf7e47a013d47c9fb77e4a9dbbd34ec6307d40e64a3623e3cece2f254f734979987f5a22e700  mt8183-kukui-disable-unsupported-thermal-zones.patch
-9b8707de42635734031495da055c5860addeb656051540f1a14404b10aa8b501168d8b0e274b37bce989db3bc050e9beef722189556f6d782b92cc907731488d  mt8183-kukui-jacuzzi-fennel14-rt1015p-sound.patch
+3823a776f8e4aefdec75dce7c959adcb038ab0776d8d7e60fb79626d2d9410c0a334df71b1cd10499ed9ba82d7e50cec415c3f2b821b33f53171ca00b1a3b7f1  linux-6.6.16.tar.xz
+669a1bbf8707ec9294da83336673fbb55061a2eed0c6ddb2613da3ae4fa9b0e2bdbdd91ad166694173e3540ea934b2f3bf27d5f9659a6952de806765eed9b824  arm64-dts-mediatek-mt8183-Add-missing-GPU-clocks.patch
+027fee259454764e47ffee7100dba7cb9f0741a156ba3d1b47815a0beb6b4ea6cccba885f93b068923ff88047fa82a3d937d3808d0199f1de85cf553068a9ba7  arm64-dts-mediatek-mt8183-Add-missing-syscon-power-d.patch
+40246a8da036dc6c21592efd6625a4be22d6f524b067854f17f5671f5f3b134ed1c63a8c03a15a55e9b45b7d8d1a9b63833b86f38a6f5863e02cc8ddbf70fa57  arm64-dts-mediatek-mt8183-Add-video-encoder-decoder.patch
+aee85972804ab4a254f007805e25d30a82bb87e48144a05805ccefd49f8530f588e2c50b6550f302895a675003ffbe8e7986c2214d76763474b88804fe7f1519  arm64-dts-mediatek-mt8183-Drop-VDEC_SYS-register.patch
+567b13d7508fdf584a64bf3f9d71ba34c045c6e4610ef7f7024ed98f4e7ebbd78c0ee2d5dccc7a50e651e4a088c0621f5150d477520069965466d5db265160ab  arm64-dts-mediatek-mt8183-Add-register-names-and-sys.patch
+c0ac0f26bb515a68b89515a19113a14e2cd11c940f01649a2e4e9261f852be66af6a53683fc3d4f2ae7b1289fa9247111772f458ff96e51742b2b1efc7a73a11  arm64-dts-mt8183-Add-jacuzzi-makomo-board.patch
+5a1bdadc6cb12c1fb52c1ed8710e0d0c05e91b4559725fe7b26c41bc6fa375800cbb51e554401cdf419fbfdf6ab7f91f1efb5ad333db2e0e0466036f41eff519  arm64-dts-mt8183-Add-jacuzzi-pico-pico6-board.patch
+69f26a25a9a35eaf8f0c655e3f50a5ab19a5f727b1cdf49ad0c9cb89c69cd9517bd381a62e5197c1f00a7c2f03cd2411415f455e9fb5a2c8c1afa777e754398e  arm64-dts-mt8183-Add-kukui-katsu-board.patch
+a95ce4a71d249ef401ca04cf8faf85b9022114d35fef5a0ce18929f734a0ac80ed0332648cc9768625f3c26b3720679e1a20bf8ac564087bd4c64f49cd96cc45  arm64-dts-mt8183-Add-kukui-jacuzzi-cerise-board.patch
 519b6468bca78d0e315c826592ae40dddca9daeba7c2b451a20ca996494cca45721833b9138fefbb543f53e0b9257c78ec4fec54de2a160aa8df730daf3ac996  mt8183-kukui-jacuzzi-fix-display-resume.patch
 e9a128a8ddd98c6c8957ba45186afa2ea8ebeac83d4f2db3ff9ee8a5dd8027af90868c334a7b456bfe7dce793517f27ad63efa220bc933e3407f6362da6d7b2a  mt8183-kukui-jacuzzi-hack-dpms-resume.patch
-ca1eec5277c3cd8afc2e6079fd4ccfe2f3937cdc8296cafac1d61bb14ca7acdde6e97d561f5a80a919b01fbc06ec991767d3ea1ff4bc34c1d9033993f2689130  mt81xx-fix-low-speed-usb-devices.patch
-5db854d3cb1bad58e93eba86014deb1e2cf3b79a1a74561e22832dccf5cd79f6f0c42cc6210926e0dfc4ca9c939b666018cb2ce5612eb49ad84a8b285dc63e07  mt81xx-usb-02.patch
-629d4b58586dd1374b786c2ac4ac3ce4bd39f7f0b53f050c5087232aa93083504ebd5c79f41f6d89d7dcf988b9a1baaab0683654e817d5bd8e34f3a1f605d01b  config-postmarketos-mediatek-mt8183.aarch64
+d74da1231181835bec82015da1b3f5b08a1fe9c3c35dd712e285891094d94d9427ceac75d32f74be3a635e17d93ad82b37adf97db8176efc91aed17535023fc2  mt8183-fix-bluetooth.patch
+9e64ef057ecd9bb23b0b0e830007c50ea9c481f64f460d063e9f64735d70d5a4bcf87d9148aa5cc90963ccd5860fe4a9e6f25556a902332b95ef48537d6ee045  Revert-ASoC-mediatek-mt8183-da7219-max98357-Map-miss.patch
+9b8707de42635734031495da055c5860addeb656051540f1a14404b10aa8b501168d8b0e274b37bce989db3bc050e9beef722189556f6d782b92cc907731488d  mt8183-kukui-jacuzzi-fennel14-rt1015p-sound.patch
+0a384eaf25c652891bce2d8cf94ffa43340ee56482ba6c2d98a092eecc5e8af2ef872aefe15ad7e1c33f0488a9d5e57bef2a27560063bbb28e00f49f78ad51b9  config-postmarketos-mediatek-mt8183.aarch64
 "

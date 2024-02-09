@@ -1,0 +1,94 @@
+From 4f5d946ce43de73baed71589c057b9550e56bada Mon Sep 17 00:00:00 2001
+From: Hsin-Yi Wang <hsinyi@chromium.org>
+Date: Thu, 26 Oct 2023 12:09:14 -0700
+Subject: [PATCH] arm64: dts: mt8183: Add jacuzzi makomo board
+
+makomo is also known as Lenovo 100e Chromebook 2nd Gen MTK 2.
+
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ arch/arm64/boot/dts/mediatek/Makefile         |  2 ++
+ .../mt8183-kukui-jacuzzi-makomo-sku0.dts      | 24 +++++++++++++++++++
+ .../mt8183-kukui-jacuzzi-makomo-sku1.dts      | 24 +++++++++++++++++++
+ 3 files changed, 50 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku0.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku1.dts
+
+diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+index a13419e67e8e..1b85a8c12850 100644
+--- a/arch/arm64/boot/dts/mediatek/Makefile
++++ b/arch/arm64/boot/dts/mediatek/Makefile
+@@ -32,6 +32,8 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-fennel14-sku2.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-juniper-sku16.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-kappa.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-kenzo.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-makomo-sku0.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-makomo-sku1.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku0.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku1.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kakadu.dtb
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku0.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku0.dts
+new file mode 100644
+index 000000000000..4eb2a0d571af
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku0.dts
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-jacuzzi-fennel.dtsi"
++#include "mt8183-kukui-audio-da7219-rt1015p.dtsi"
++
++/ {
++	model = "Google makomo sku0 board";
++	chassis-type = "laptop";
++	compatible = "google,makomo-sku0", "google,makomo", "mediatek,mt8183";
++};
++
++&qca_wifi {
++	qcom,ath10k-calibration-variant = "GO_FENNEL14";
++};
++
++&mmc1_pins_uhs {
++	pins-clk {
++		drive-strength = <MTK_DRIVE_6mA>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku1.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku1.dts
+new file mode 100644
+index 000000000000..6a733361e8ae
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-makomo-sku1.dts
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-jacuzzi-fennel.dtsi"
++#include "mt8183-kukui-audio-ts3a227e-rt1015p.dtsi"
++
++/ {
++	model = "Google makomo sku1 board";
++	chassis-type = "laptop";
++	compatible = "google,makomo-sku1", "google,makomo", "mediatek,mt8183";
++};
++
++&qca_wifi {
++	qcom,ath10k-calibration-variant = "GO_FENNEL14";
++};
++
++&mmc1_pins_uhs {
++	pins-clk {
++		drive-strength = <MTK_DRIVE_6mA>;
++	};
++};
+-- 
+2.43.0
+

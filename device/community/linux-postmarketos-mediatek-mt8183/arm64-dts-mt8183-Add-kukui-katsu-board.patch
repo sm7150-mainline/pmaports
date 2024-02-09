@@ -1,0 +1,186 @@
+diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+index c99c3372a..b9166e8be 100644
+--- a/arch/arm64/boot/dts/mediatek/Makefile
++++ b/arch/arm64/boot/dts/mediatek/Makefile
+@@ -36,6 +36,8 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku0.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku1.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kakadu.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kakadu-sku22.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-katsu-sku32.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-katsu-sku38.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku16.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku272.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku288.dtb
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu-sku22.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu-sku22.dts
+index fcce8ea12..1ecf39458 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu-sku22.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu-sku22.dts
+@@ -14,6 +14,24 @@ / {
+ 		     "google,kakadu", "mediatek,mt8183";
+ };
+ 
++&i2c0 {
++	touchscreen: touchscreen@10 {
++		compatible = "hid-over-i2c";
++		reg = <0x10>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&open_touch>;
++
++		interrupts-extended = <&pio 155 IRQ_TYPE_EDGE_FALLING>;
++
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0001>;
++	};
++};
++
++&panel {
++	compatible = "boe,tv105wum-nw0";
++};
++
+ &sound {
+ 	compatible = "mediatek,mt8183_mt6358_ts3a227_rt1015p";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dts
+index ebfabba72..ba74109a4 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dts
+@@ -13,3 +13,21 @@ / {
+ 	compatible = "google,kakadu-rev3", "google,kakadu-rev2",
+ 			"google,kakadu", "mediatek,mt8183";
+ };
++
++&i2c0 {
++	touchscreen: touchscreen@10 {
++		compatible = "hid-over-i2c";
++		reg = <0x10>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&open_touch>;
++
++		interrupts-extended = <&pio 155 IRQ_TYPE_EDGE_FALLING>;
++
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0001>;
++	};
++};
++
++&panel {
++	compatible = "boe,tv105wum-nw0";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi
+index a11adeb29..ac211e8f9 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtsi
+@@ -63,19 +63,6 @@ &bluetooth {
+ 
+ &i2c0 {
+ 	status = "okay";
+-
+-	touchscreen: touchscreen@10 {
+-		compatible = "hid-over-i2c";
+-		reg = <0x10>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&open_touch>;
+-
+-		interrupt-parent = <&pio>;
+-		interrupts = <155 IRQ_TYPE_EDGE_FALLING>;
+-
+-		post-power-on-delay-ms = <10>;
+-		hid-descr-addr = <0x0001>;
+-	};
+ };
+ 
+ &mt6358_vcama2_reg {
+@@ -384,5 +371,4 @@ &qca_wifi {
+ 
+ &panel {
+ 	status = "okay";
+-	compatible = "boe,tv105wum-nw0";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-katsu-sku32.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-katsu-sku32.dts
+new file mode 100644
+index 000000000..05361008e
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-katsu-sku32.dts
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-kakadu.dtsi"
++#include "mt8183-kukui-audio-da7219-rt1015p.dtsi"
++
++/ {
++	model = "Google katsu board";
++	chassis-type = "tablet";
++	compatible = "google,katsu-sku32", "google,katsu", "mediatek,mt8183";
++};
++
++&i2c0 {
++	touchscreen1: touchscreen@5d {
++		compatible = "goodix,gt7375p";
++		reg = <0x5d>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&open_touch>;
++
++		interrupts-extended = <&pio 155 IRQ_TYPE_LEVEL_LOW>;
++
++		reset-gpios = <&pio 156 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&lcd_pp3300>;
++	};
++};
++
++&panel {
++	compatible = "starry,2081101qfh032011-53g";
++};
++
++&qca_wifi {
++	qcom,ath10k-calibration-variant = "GO_KATSU";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-katsu-sku38.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-katsu-sku38.dts
+new file mode 100644
+index 000000000..cf008ed82
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-katsu-sku38.dts
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-kakadu.dtsi"
++#include "mt8183-kukui-audio-rt1015p.dtsi"
++
++/ {
++	model = "Google katsu sku38 board";
++	chassis-type = "tablet";
++	compatible = "google,katsu-sku38", "google,katsu", "mediatek,mt8183";
++};
++
++&i2c0 {
++	touchscreen1: touchscreen@5d {
++		compatible = "goodix,gt7375p";
++		reg = <0x5d>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&open_touch>;
++
++		interrupts-extended = <&pio 155 IRQ_TYPE_LEVEL_LOW>;
++
++		reset-gpios = <&pio 156 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&lcd_pp3300>;
++	};
++};
++
++&panel {
++	compatible = "starry,2081101qfh032011-53g";
++};
++
++&qca_wifi {
++	qcom,ath10k-calibration-variant = "GO_KATSU";
++};
++
++&sound {
++	compatible = "mediatek,mt8183_mt6358_ts3a227_rt1015p";
++};
