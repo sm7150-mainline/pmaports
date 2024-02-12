@@ -1,0 +1,42 @@
+# Maintainer: Jenneron <jenneron@protonmail.com>
+pkgname=cros-keyboard-map
+pkgdesc="Keyboard mapping for Chrome OS devices"
+pkgver=0_git20240215
+pkgrel=0
+url="https://github.com/WeirdTreeThing/cros-keyboard-map"
+license="BSD-3-Clause"
+arch="aarch64 armv7 x86_64" # there are no cros devices of other arches
+depends="keyd python3"
+options="!check !archcheck !tracedeps"
+subpackages="$pkgname-openrc"
+_repo="WeirdTreeThing/cros-keyboard-map"
+_commit="b044528586c44f9b8fec9d58a6d533cf8e0e661c"
+source="
+	cros-keyboard-map-$_commit::https://raw.githubusercontent.com/$_repo/$_commit/cros-keyboard-map.py
+	$pkgname.initd
+	$pkgname.confd
+"
+
+package() {
+	# Script
+	install -Dm755 "$srcdir/cros-keyboard-map-$_commit" \
+		"$pkgdir"/usr/bin/pmos-generate-cros-keymap
+
+	# OpenRC service
+	install -Dm755 "$srcdir/$pkgname.initd" \
+		"$pkgdir/etc/init.d/$pkgname"
+	install -Dm644 "$srcdir"/$pkgname.confd \
+		"$pkgdir/etc/conf.d/$pkgname"
+
+	# We generate config in runtime with OpenRC service, thus make a symlink for
+	# keyd config to a file in /tmp that will be generated with the service
+	_dir="$pkgdir/etc/keyd"
+	mkdir -p "$_dir"
+	ln -s /tmp/cros-keymap/keyd.conf "$_dir"/default.conf
+}
+
+sha512sums="
+2a7ebb57f875682fdab07d0c82f64cc6bf7404c170a50782fdd51a1da77722cc95217a722bed473abc139074707c4d18a3384f04c51cd6c65c1d602ce2ec615e  cros-keyboard-map-b044528586c44f9b8fec9d58a6d533cf8e0e661c
+bcb3bfa30b3e670dca3c90168eb71d9eef4cad6b098dc878e8b572102f43f958ac5f9af603df393cabf4278ee4232714d626ada9d5ac22174ed7ceac17176c3d  cros-keyboard-map.initd
+81d435d611927bc69d49cf4ed7f1fe3df33f001aec27397a8683b827ba9f5d5b3bfa0a3ab2b58d07b275e49e0300c0d91b5a1930b023791e312e55569b329dcb  cros-keyboard-map.confd
+"
