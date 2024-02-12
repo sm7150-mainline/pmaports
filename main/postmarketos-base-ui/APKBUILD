@@ -1,7 +1,7 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=postmarketos-base-ui
 pkgver=18
-pkgrel=0
+pkgrel=1
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
 arch="noarch"
@@ -31,6 +31,7 @@ subpackages="
 	$pkgname-qt-tweaks:qt_tweaks
 	$pkgname-qt-wayland:qt_wayland
 	$pkgname-tinydm
+	$pkgname-tinydm-x11:tinydm_x11
 	$pkgname-wifi-iwd:iwd
 	$pkgname-wifi-wpa_supplicant:wpa_supplicant
 	$pkgname-x11
@@ -145,6 +146,13 @@ tinydm() {
 	amove etc/conf.d/tinydm
 	amove etc/tinydm.d/env-wayland.d/50-firefox-wayland.sh
 	amove etc/tinydm.d/env-wayland.d/50-sdl-wayland.sh
+}
+
+tinydm_x11() {
+	install_if="$pkgname-tinydm=$pkgver-r$pkgrel xorg-server"
+	depends="xinit"
+
+	mkdir "$subpkgdir"
 }
 
 pulseaudio() {
