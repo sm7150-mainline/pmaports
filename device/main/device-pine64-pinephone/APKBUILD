@@ -3,7 +3,7 @@
 # Co-Maintainer: Jan Jasper de Kroon <jajadekroon@gmail.com>
 pkgname=device-pine64-pinephone
 pkgver=0.47
-pkgrel=1
+pkgrel=2
 pkgdesc="PINE64 PinePhone"
 url="https://postmarketos.org"
 license="MIT"
@@ -71,6 +71,7 @@ source="
 # workaround to purge the -elogind subpackage that was previously
 # created/installed
 provides="$pkgname-elogind=$pkgver-r$pkgrel"
+_pmb_recommends="$pkgname-nonfree-firmware"
 
 build() {
 	devicepkg_build $startdir $pkgname
