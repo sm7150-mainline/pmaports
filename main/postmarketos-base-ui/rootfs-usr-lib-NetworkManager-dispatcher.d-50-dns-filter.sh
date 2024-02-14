@@ -18,6 +18,9 @@ jq=gojq
 
 action="${2:-}"
 
+logger -i -t "$log_tag" "FIX ME: **NOT** applying filtering due to https://gitlab.com/postmarketOS/pmaports/-/issues/2601"
+exit 0
+
 # Get the gateway for the given connection and IP protocol version
 # $1: D-Bus path to connection
 # $2: IP version, e.g. '4' or '6'
