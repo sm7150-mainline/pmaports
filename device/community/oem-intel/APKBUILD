@@ -2,23 +2,22 @@
 pkgname=oem-intel
 pkgdesc="Intel device support"
 pkgver=3
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 options="!check !archcheck"
-# linux-firmware-none prevents all of linux-firmware-* from being installed by
-# default
 depends="
 	alsa-ucm-conf
-	linux-firmware-none
+	intel-ucode
+	linux-firmware-i915
+	linux-firmware-intel
 	sof-firmware
 "
 subpackages="
 	$pkgname-libva
-	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-vulkan
-	"
+"
 source="00-oem-intel.modules"
 
 package() {
@@ -42,16 +41,6 @@ vulkan() {
 	mkdir "$subpkgdir"
 }
 
-nonfree_firmware() {
-	pkgdesc="Firmware for Intel devices"
-	depends="
-		intel-ucode
-		linux-firmware-i915
-		linux-firmware-intel
-	"
-
-	mkdir -p "$subpkgdir"
-}
 sha512sums="
 48b8c0454c8c80e7ad0ebd139c01790eed3fbd4265bf4ce64882d354b091ac7f63084eaf2b00d1244a7a692c73fa900193724577f9a8d753fa8b6743fe1c8990  00-oem-intel.modules
 "

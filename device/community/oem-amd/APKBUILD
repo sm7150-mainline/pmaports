@@ -2,22 +2,20 @@
 pkgname=oem-amd
 pkgdesc="AMD device support"
 pkgver=2
-pkgrel=1
+pkgrel=2
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 options="!check !archcheck"
-# linux-firmware-none prevents all of linux-firmware-* from being installed by
-# default
 depends="
 	alsa-ucm-conf
-	linux-firmware-none
+	amd-ucode
+	linux-firmware-amdgpu
 "
 subpackages="
 	$pkgname-libva
-	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-vulkan
-	"
+"
 source="
 	00-amdgpu-firmware.files
 	00-oem-amd.modules
@@ -45,16 +43,6 @@ vulkan() {
 	depends="mesa-vulkan-ati"
 
 	mkdir "$subpkgdir"
-}
-
-nonfree_firmware() {
-	pkgdesc="Firmware for AMD devices"
-	depends="
-		amd-ucode
-		linux-firmware-amdgpu
-	"
-
-	mkdir -p "$subpkgdir"
 }
 
 sha512sums="
