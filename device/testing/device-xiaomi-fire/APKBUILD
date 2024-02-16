@@ -1,0 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Eray Tutmaz <tarkanttmz261@gmail.com>
+pkgname=device-xiaomi-fire
+pkgdesc="Xiaomi Redmi 12"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	mkbootimg
+	postmarketos-base
+	linux-xiaomi-fire
+	msm-fb-refresher
+	postmarketos-base-downstream
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+6857f3cf8723ad8126923135b6349c4cbd82d5e1444a63707eb5d744e8439ebe54dec110ef342599efe47c2a87dc76c302c63a502b3af886acb37369354f157d  deviceinfo
+"
