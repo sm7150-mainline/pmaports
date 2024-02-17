@@ -34,7 +34,7 @@ _pkgsnap="${pkgver##*_git}"
 [ "$CHOST" != "$CTARGET" ] && _target="-$CTARGET_ARCH" || _target=""
 
 pkgname=gcc-x86
-pkgrel=0
+pkgrel=1
 pkgdesc="Stage2 cross-compiler for x86"
 url="https://gcc.gnu.org"
 arch="x86_64"
@@ -46,6 +46,7 @@ makedepends_host="linux-headers gmp-dev mpfr-dev mpc1-dev isl-dev zlib-dev musl-
 subpackages="g++-x86:gpp libstdc++-dev-x86:libcxx_dev"
 [ "$CHOST" = "$CTARGET" ] && subpackages="gcc-gdb gcc-doc$_target"
 replaces="libstdc++ binutils"
+options="!strip"
 
 : "${LANG_CXX:=true}"
 : "${LANG_D:=true}"
@@ -682,10 +683,6 @@ go() {
 	pkgdesc="GCC Go frontend (intended for bootstrapping community/go)"
 	depends="gcc=$_gccrel libgo=$_gccrel !go"
 	install="$pkgname-go.post-install"
-
-	# See https://lists.alpinelinux.org/~alpine/devel/%3C33KG0XO61I4IL.2Z7RTAZ5J3SY6%408pit.net%3E
-	provides="go-bootstrap"
-	provider_priority=1 # lowest, see community/go
 
 	mkdir -p "$subpkgdir"/$_gcclibexec \
 		"$subpkgdir"/usr/lib \
