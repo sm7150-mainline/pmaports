@@ -1,12 +1,14 @@
 pkgname=firmware-xiaomi-davinci
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware for Xiaomi Mi 9T / Redmi K20"
 subpackages="
 	$pkgname-adsp
 	$pkgname-cdsp
+	$pkgname-gpu
 	$pkgname-ipa
 	$pkgname-modem
+	$pkgname-sensors
 	$pkgname-venus
 	$pkgname-wlan
 	"
@@ -14,8 +16,18 @@ url="https://github.com/sm7150-mainline/firmware-xiaomi-davinci"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="19eacf36c271920ca475b0946a577e2ae893599c"
-source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz"
+_commit="38a655dc58f2ee1c327e96addb90fefb81e45169"
+source="
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	adsp.files
+	cdsp.files
+	gpu.files
+	ipa.files
+	modem.files
+	sensors.files
+	venus.files
+	wlan.files
+"
 builddir="$srcdir/$pkgname-$_commit"
 
 package() {
@@ -23,52 +35,81 @@ package() {
 	mkdir -p "$pkgdir"
 }
 
+# Helper method for installing firmware files from a text file
+install_files() {
+	cd "$builddir"
+
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$subpkgdir/$_i"
+	done < "$srcdir/$1"
+}
+
 adsp() {
 	pkgdesc="Xiaomi Mi 9T / Redmi K20 adsp firmware"
 
-	install -Dm644 "$builddir"/adsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	mkdir "$subpkgdir"
+	install_files "adsp.files"
 }
 
 cdsp() {
 	pkgdesc="Xiaomi Mi 9T / Redmi K20 cdsp firmware"
 
-	install -Dm644 "$builddir"/cdsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	mkdir "$subpkgdir"
+	install_files "cdsp.files"
+}
+
+gpu() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 gpu firmware"
+
+	mkdir "$subpkgdir"
+	install_files "gpu.files"
 }
 
 ipa() {
 	pkgdesc="Xiaomi Mi 9T / Redmi K20 ipa firmware"
 
-	install -Dm644 "$builddir"/ipa_fws.* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	mkdir "$subpkgdir"
+	install_files "ipa.files"
 }
 
 modem() {
 	pkgdesc="Xiaomi Mi 9T / Redmi K20 modem firmware"
 
-	# cp because of the modem_pr directory
-	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-	cp -r "$builddir"/modem* \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-	find "$subpkgdir/lib/firmware/qcom/sm7150/davinci" \
-		-type f -exec chmod 0644 {} \;
+	mkdir "$subpkgdir"
+	install_files "modem.files"
+}
+
+sensors() {
+	pkgdesc="Xiaomi Mi 9T / Redmi K20 sensors firmware"
+
+	mkdir "$subpkgdir"
+	install_files "sensors.files"
 }
 
 venus() {
 	pkgdesc="Xiaomi Mi 9T / Redmi K20 venus firmware"
 
-	install -Dm644 "$builddir"/venus.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	mkdir "$subpkgdir"
+	install_files "venus.files"
 }
 
 wlan() {
 	pkgdesc="Xiaomi Mi 9T / Redmi K20 wlan firmware"
 
-	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	mkdir "$subpkgdir"
+	install_files "wlan.files"
 }
 
 sha512sums="
-30d945cdc01dfaa5defdecf31e217ac043ceb607e4775ab7d219ea8fe5a0691421b7a6204089f56b00f69e48e64931ce224d674a8e648910e7af6d89d12ad456  firmware-xiaomi-davinci-19eacf36c271920ca475b0946a577e2ae893599c.tar.gz
+e1d8f0af4fa238756868a086d2db446c4ff9540c53e3866ef61a5ebe1b6e8253528a18be1995933e6fb1a22152fd7641956fcfeee8fc9e5c8341cef9a37ba7c5  firmware-xiaomi-davinci-38a655dc58f2ee1c327e96addb90fefb81e45169.tar.gz
+1357530874a25842d165ed836cf05d1fa06312b2ad7bc91b7d660fd1d1f189aba067acd1e750842197462a208aab33e4b64fbbcc70ec172fd8c052ca9596b689  adsp.files
+93ca71719ed58445cbc2c014dd6a50928be62b98cf81b2efe7e167fd5e56c6023198deaaa31e7411cb1360909aa677fda97c383a34e0d96d47492212ee12132d  cdsp.files
+ac1295587f380d85c08591d0c16de36bcb79f79eb86a573a44a4d19e95d929e5dce2233edf571318d898a24db9cbfe70d43c82e39a3f9661ce665551632dcc60  gpu.files
+e672e468f617688af4fead683e632e7f7b2474f5c1b42c4ba5a0c34cf38e606cc8f1572bee268405b5a0b1e4695c738b0260ad5bf0956119413669a4c2b06523  ipa.files
+6acceafc0b6dffc92286170d74c2531354b892d2c80b17301b9d326633586d96458f2557e0d762bfdba424ca4213880de4ba2b55cd4f9dc23c4059902296bd6c  modem.files
+8d16fd7ab4178329e62de8ca8478de95750116efd513b18dbdd96179dd7a7587049304158cc8773600080e536883849c3d41342f0f69ac2e2e7fb58cb8428560  sensors.files
+2b804c85e0af18f66e529b5908f7f2626ae2153c89eeb8174fee5fbdd8f6e7e3bd7081dea69ac164d9b2b21dbda3570a31545617ba7583c9b097c4c294872199  venus.files
+11481295216996a5264b4429e06f73fae2bf2055eb805d9054c29cbf4c5990fa78ef08d86cd3122d7c8b44271195552b1de244242b9ac23898a2ba013b5f3fc6  wlan.files
 "
