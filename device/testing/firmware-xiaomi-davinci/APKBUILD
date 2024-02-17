@@ -1,74 +1,23 @@
+# Maintainer: Jens Reidel <adrian@travitia.xyz>
+
 pkgname=firmware-xiaomi-davinci
-pkgver=1
+pkgver=2
 pkgrel=0
 pkgdesc="Firmware for Xiaomi Mi 9T / Redmi K20"
-subpackages="
-	$pkgname-adsp
-	$pkgname-cdsp
-	$pkgname-ipa
-	$pkgname-modem
-	$pkgname-venus
-	$pkgname-wlan
-	"
 url="https://github.com/sm7150-mainline/firmware-xiaomi-davinci"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="19eacf36c271920ca475b0946a577e2ae893599c"
+_commit="d2db810c4a040cc71a6c67d0500158ed29fee678"
 source="$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz"
 builddir="$srcdir/$pkgname-$_commit"
 
 package() {
-	# parent package is empty
 	mkdir -p "$pkgdir"
-}
 
-adsp() {
-	pkgdesc="Xiaomi Mi 9T / Redmi K20 adsp firmware"
-
-	install -Dm644 "$builddir"/adsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-}
-
-cdsp() {
-	pkgdesc="Xiaomi Mi 9T / Redmi K20 cdsp firmware"
-
-	install -Dm644 "$builddir"/cdsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-}
-
-ipa() {
-	pkgdesc="Xiaomi Mi 9T / Redmi K20 ipa firmware"
-
-	install -Dm644 "$builddir"/ipa_fws.* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-}
-
-modem() {
-	pkgdesc="Xiaomi Mi 9T / Redmi K20 modem firmware"
-
-	# cp because of the modem_pr directory
-	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-	cp -r "$builddir"/modem* \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-	find "$subpkgdir/lib/firmware/qcom/sm7150/davinci" \
-		-type f -exec chmod 0644 {} \;
-}
-
-venus() {
-	pkgdesc="Xiaomi Mi 9T / Redmi K20 venus firmware"
-
-	install -Dm644 "$builddir"/venus.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
-}
-
-wlan() {
-	pkgdesc="Xiaomi Mi 9T / Redmi K20 wlan firmware"
-
-	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/davinci"
+	find . -type f -exec install -Dm644 {} "$pkgdir"/{} \;
 }
 
 sha512sums="
-30d945cdc01dfaa5defdecf31e217ac043ceb607e4775ab7d219ea8fe5a0691421b7a6204089f56b00f69e48e64931ce224d674a8e648910e7af6d89d12ad456  firmware-xiaomi-davinci-19eacf36c271920ca475b0946a577e2ae893599c.tar.gz
+bdd2227424e7e9b1c33e7b07d71c0271b0a5f67fc4faf5114279e6c8203ee39cbba9253702bd2dbebd8d20ed159aa4ce26c01603d790441a91761061c6bd7ae8  firmware-xiaomi-davinci-d2db810c4a040cc71a6c67d0500158ed29fee678.tar.gz
 "
