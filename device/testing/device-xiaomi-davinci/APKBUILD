@@ -10,21 +10,21 @@ license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
+	firmware-xiaomi-davinci
 	linux-postmarketos-qcom-sm7150
 	make-dynpart-mappings
 	mkbootimg
 	postmarketos-base
 	soc-qcom-sm7150
+	soc-qcom-sm7150-libssc-180-degrees
 	soc-qcom-sm7150-unl0kr-quirk
 "
 makedepends="devicepkg-dev"
+replaces="hexagonrpcd-openrc"
 source="
 	deviceinfo
+	hexagonrpcd.confd
 	modules-initfs
-"
-
-subpackages="
-	$pkgname-nonfree-firmware:nonfree_firmware
 "
 
 build() {
@@ -33,23 +33,13 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-}
 
-nonfree_firmware() {
-	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
-	depends="
-		firmware-xiaomi-davinci-adsp
-		firmware-xiaomi-davinci-cdsp
-		firmware-xiaomi-davinci-ipa
-		firmware-xiaomi-davinci-modem
-		firmware-xiaomi-davinci-venus
-		firmware-xiaomi-davinci-wlan
-		soc-qcom-sm7150-nonfree-firmware
-		"
-	mkdir "$subpkgdir"
+	install -Dm644 "$srcdir"/hexagonrpcd.confd \
+		"$pkgdir"/etc/conf.d/hexagonrpcd-adsp-sensorspd
 }
 
 sha512sums="
 2350ec38791799ab0cd0ec12256669e421ad716870956c08885b14dac5bfd05b170314175671cb35bdb9f58a5737e35824be0007ccf0a1f7f671d033d1c948ee  deviceinfo
+4c76b02069f12b4bca5ed76174bcb9d32055df6a458a4c7f6147ebaac70acd9cbe33a0741d3cb631168c3e24ba9b8c81f1a810ca0aae40528ffa622a3e1c6ea2  hexagonrpcd.confd
 474485963fb4ff97982894be2e024de09e6b3e7b324aceebde0480200998cfa92d68415752d59802bb63aebf7f2a343415d281938f2e308e5066ba08f3d79606  modules-initfs
 "
