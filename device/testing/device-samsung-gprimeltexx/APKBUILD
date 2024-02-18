@@ -1,8 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
-
 pkgname=device-samsung-gprimeltexx
 pkgdesc="Samsung Galaxy Grand Prime (G530FZ)"
-pkgver=2
+pkgver=2.1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -14,12 +13,8 @@ makedepends="devicepkg-dev"
 source="
 	deviceinfo
 	modules-initfs
-	phoc.ini
 "
-subpackages="
-	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-phosh
-"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 _pmb_select="soc-qcom-msm8916-rproc"
 
 
@@ -37,14 +32,7 @@ nonfree_firmware() {
 	mkdir "$subpkgdir"
 }
 
-phosh() {
-	install_if="$pkgname postmarketos-ui-phosh"
-	install -Dm644 "$srcdir"/phoc.ini \
-		"$subpkgdir"/etc/phosh/phoc.ini
-}
-
 sha512sums="
 036e06b40e7bdc505caf2f395b1100d9fdc978176bf6297ca1a89b6aea7f75e7ef2a88a41c6c6634aa67d9c82a0235ac503583637f40266b12f87a81732d7400  deviceinfo
 02b6d383149ba2ec3a31b206767be7ead31d9f0e7ee5cab11047000c53ccad387a118cbddb06093bca5cae3e82f884c02194de47b8e7a9c76102ac46506bb111  modules-initfs
-dbc8422fc00c757963dd016f26dd45d8c05c8c46b7e60cd11dd154550e166568cfdcee60678ee3542d27c2f8c373b71a1c3ec33da0260509fe4133ecd06a27bc  phoc.ini
 "

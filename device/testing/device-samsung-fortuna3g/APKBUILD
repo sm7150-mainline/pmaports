@@ -1,8 +1,7 @@
 # Reference: <https://postmarketos.org/devicepkg>
-
 pkgname=device-samsung-fortuna3g
 pkgdesc="Samsung Galaxy Grand Prime 3G (G530H)"
-pkgver=2
+pkgver=2.1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -12,10 +11,7 @@ depends="postmarketos-base mkbootimg linux-postmarketos-qcom-msm8916
 	 soc-qcom-msm8916 soc-qcom-msm8916-rproc"
 makedepends="devicepkg-dev"
 source="deviceinfo modules-initfs"
-subpackages="
-	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-phosh
-"
+subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 _pmb_select="soc-qcom-msm8916-rproc"
 
 build() {
@@ -29,12 +25,6 @@ package() {
 nonfree_firmware() {
 	pkgdesc="GPU/WiFi/BT/Modem/Video firmware"
 	depends="firmware-qcom-adreno-a300 msm-firmware-loader firmware-samsung-fortuna3g-wcnss-nv"
-	mkdir "$subpkgdir"
-}
-
-phosh() {
-	install_if="$pkgname postmarketos-ui-phosh"
-	depends="device-samsung-gprimeltexx-phosh"
 	mkdir "$subpkgdir"
 }
 
