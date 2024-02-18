@@ -17,14 +17,6 @@ def device_dependency_check(apkbuild, path):
         (e.g. because it should be in a subpackage instead). """
 
     for depend in apkbuild["depends"]:
-        if depend == "linux-firmware-none":
-            continue
-        if (depend.startswith("firmware-") or
-                depend.startswith("linux-firmware")):
-            raise RuntimeError("Firmware package '" + depend + "' found in"
-                               " depends of " + path + ". These go into"
-                               " subpackages now, see"
-                               " <https://postmarketos.org/devicepkg>.")
         if depend == "mesa-dri-gallium":
             raise RuntimeError(f"{path}: mesa-dri-gallium shouldn't be in"
                                " depends anymore (see pmaports!3478)")
@@ -46,7 +38,7 @@ def test_aports_device(args):
             raise RuntimeError("Missing 'postmarketos-base' in depends of " +
                                path)
 
-        # Depends: Must not have firmware packages
+        # Depends: Must not have specific packages
         for depend in apkbuild["depends"]:
             device_dependency_check(apkbuild, path)
 
