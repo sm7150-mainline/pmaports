@@ -1,8 +1,8 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 # Co-Maintainer: Segfault <awarnecke002@hotmail.com>
 pkgname=linux-google-nyan
-pkgver=6.1.27
-pkgrel=1
+pkgver=6.6.17
+pkgrel=0
 pkgdesc="Mainline kernel fork for Google Nyan Chromebooks"
 arch="armv7"
 _carch="arm"
@@ -37,6 +37,9 @@ source="
 	$_config
 	0001-ARM-dts-tegra-nyan-add-mmc-aliases.patch
 	0002-ARM-tegra-nyan-fix-mic-jack-detection.patch
+	0003-Revert-spi-Reintroduce-spi_set_cs_timing.patch
+	0004-Revert-drm-tegra-Implement-fbdev-emulation-as-in-ker.patch
+	0005-Revert-drm-tegra-Initialize-fbdev-DRM-client.patch
 "
 builddir="$srcdir/linux-${_kernver//_/-}"
 
@@ -66,8 +69,11 @@ package() {
 }
 
 sha512sums="
-657c241c8e4d62dabf7f1789c342352f757655129b8b21d92d3a90859d24f5f05f33aa39491851f690f7d9b0ba9234c47907ae05e1cb32a8d00fcf11ff71c61b  linux-6.1.27.tar.xz
-af051de016dab75d91aad84bf02a0f877018330728b2afd50166da8c076c33fbb2d9ecc0b25fa787305713277e3a82560052db8947a32e75d1810327acebf817  config-google-nyan.armv7
-be21d145f39d334e37f8dd79b78474c072e54502ba5c9ae63163f0ce30ffaa3a3448b05d153205ba8af7a761952ecddb3ae1a5b348902b4ce5f4f72138937fdb  0001-ARM-dts-tegra-nyan-add-mmc-aliases.patch
-4ec3bc3bce229ba664ad98251dbcad9d224a3792d3149cc64b5a1eee0801f1a366b83447b55a02cb0915bd3ef63f42260dd55a286f68c727fcfc4d46bba4363a  0002-ARM-tegra-nyan-fix-mic-jack-detection.patch
+91a6ec0d1e371cad5703bc65016fd930a5da74ca4d862eecdab08846b455b42a6845531322af65d8805210d88dd74c327ca6de1166ed250aa546918e5412c470  linux-6.6.17.tar.xz
+729e7b32d9c51a37ee5e5bb0dafbfef6e2c9483f79e7f836ff8ec8d8bffda04cb987f5a1701c513b7193d445676027d58450518f4dc71a903c454c4641578b61  config-google-nyan.armv7
+4e46d412d6a342044ad348e19cb75b8b90d57fe345eaa341e1c960f73f0c1ef3dd09196eccc3c413e199ac366eb512770e96b60d6a3ad44ec80a930d732d0fd4  0001-ARM-dts-tegra-nyan-add-mmc-aliases.patch
+f62ce358aed7273320f0163fbaf7425b4800945ac3cdb6a57062b0087c5b2799131d0a48fa1580bff33a4ae33c1ee9ae2c5771887b8b460be2596c7605234a0f  0002-ARM-tegra-nyan-fix-mic-jack-detection.patch
+a43ecb9f410d2c3168ada6c4788174154627fe6568e9048def2b6ea827b0c7b676f148352e39f6985172bcb85b4d0f77376ec7f94ba33716671f99fe20923504  0003-Revert-spi-Reintroduce-spi_set_cs_timing.patch
+5bc98d414a3e02f62f3b3ccd32d6d27f8e6e0706efb4eef1496b616a47dda866411072a27da1eb713d249cf0c0934b519d0b68ac9b594b34edf49fc2e26945c8  0004-Revert-drm-tegra-Implement-fbdev-emulation-as-in-ker.patch
+010c9094706cbac87200dc940b52e8c8b2a53a44fed1b361e828d19f65ea98eda7b8840678349b9fba7ac72d15e2095ff8f674d2ffede7594f7b35d850635b58  0005-Revert-drm-tegra-Initialize-fbdev-DRM-client.patch
 "
