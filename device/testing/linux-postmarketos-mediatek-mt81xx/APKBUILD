@@ -1,7 +1,7 @@
 # Maintainer: Jenneron <jenneron@protonmail.com>
 pkgname=linux-postmarketos-mediatek-mt81xx
 pkgver=6.8_rc2_git20240206
-pkgrel=0
+pkgrel=1
 pkgdesc="Mediatek MT8186/8192/8195 kernel package"
 arch="aarch64"
 url="https://kernel.org"
@@ -36,6 +36,7 @@ _commit="6533e11145e397a80ed22a969a5db818cf041524"
 source="
 	$pkgname-$_commit.tar.gz::https://gitlab.collabora.com/google/$_repository/-/archive/$_commit/chromeos-kernel-$_commit.tar.gz
 	$_config
+	mt8195-tomato-r1-nvme-fix.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 
@@ -69,4 +70,5 @@ package() {
 sha512sums="
 9ce29b88cbec06c9449ca164a216ff242d74971ded033372f713b5bf4b598b30c9b26e9c2542cd803a5b545c7fe0f205d8d3c007333dcf1233a77afa70473990  linux-postmarketos-mediatek-mt81xx-6533e11145e397a80ed22a969a5db818cf041524.tar.gz
 57eb3551ea9f8f9493ee61c9f516059dfd5a643ef545781f663883490edeb2c1bbb352c20687f898495ed113fa736398512cf0eff1eb0adca441b0406a6414c2  config-postmarketos-mediatek-mt81xx.aarch64
+9811beaabf4c16547d6bbc53cd4ab2d202ddd360a6e036553ae9d12aeec5aa9c7f429cad41f907de6883ac437bb10d764a58900b453cbdba49fd075adaa3a976  mt8195-tomato-r1-nvme-fix.patch
 "
