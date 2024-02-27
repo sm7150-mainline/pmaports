@@ -6,7 +6,7 @@
 _flavor="postmarketos-qcom-sdm845"
 pkgname=linux-$_flavor
 pkgver=6.6.3
-pkgrel=3
+pkgrel=4
 pkgdesc="Mainline Kernel fork for SDM845 devices"
 arch="aarch64"
 _carch="arm64"
@@ -24,6 +24,8 @@ _tag="sdm845-6.6.3-r3"
 source="
 	linux-$_tag.tar.gz::https://gitlab.com/sdm845-mainline/linux/-/archive/$_tag/linux-$_tag.tar.gz
 	$_config
+	0001-arm64-dts-qcom-sdm845-xiaomi-polaris-Enable-ath10k-h.patch
+	0002-drm-panel-Enable-prepare_prev_first-flag-for-NT35596.patch
 "
 builddir="$srcdir/linux-$_tag"
 
@@ -73,4 +75,6 @@ package() {
 sha512sums="
 621ee00668c8739503042074615e95949e55124f48c488de83bcce733fa4b140576f26ab37d47a886136f8167832751036905a18dbb7455649b146bb3dfb22cf  linux-sdm845-6.6.3-r3.tar.gz
 9393e50336d1b8767c67ffd347000d0191a3fa8645d77b0f8ec222cad837f8f3b2201e6bd1360d62218f5246eaea93f7bf76a7b2a4e0954360fd30291f5bb3a6  config-postmarketos-qcom-sdm845.aarch64
+e0ae8b9da09cd2552244cfbcd6a63272c766d082306573a679497ab0bd30a44dfa0023503a7628b7ea87238a62da13704de5e2a57952310c7866b770e5c474ad  0001-arm64-dts-qcom-sdm845-xiaomi-polaris-Enable-ath10k-h.patch
+d7c857500348a1420ccd1a255c667704e54ee88f5c563bcb92885aaa5a9b5dc5a87d12ab782822de523d01c63b277ff60b57cc5307a0663bf42ad7b69da3d1c5  0002-drm-panel-Enable-prepare_prev_first-flag-for-NT35596.patch
 "

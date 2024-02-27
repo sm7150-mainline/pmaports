@@ -1,0 +1,28 @@
+From cc4d4b1e5a1c9d8592f10fdcb7f8c16c279460f7 Mon Sep 17 00:00:00 2001
+From: Icenowy Zheng <uwu@icenowy.me>
+Date: Tue, 27 Feb 2024 20:40:41 +0800
+Subject: [PATCH 2/2] drm: panel: Enable prepare_prev_first flag for NT35596s
+
+This panel needs DSI command sent in prepare() callback, thus set the
+prepare_prev_first flag to allow this.
+
+Signed-off-by: Icenowy Zheng <uwu@icenowy.me>
+---
+ drivers/gpu/drm/panel/panel-novatek-nt35596s.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35596s.c b/drivers/gpu/drm/panel/panel-novatek-nt35596s.c
+index b1c724ebf8f5e..e441409c68602 100644
+--- a/drivers/gpu/drm/panel/panel-novatek-nt35596s.c
++++ b/drivers/gpu/drm/panel/panel-novatek-nt35596s.c
+@@ -477,6 +477,7 @@ static int nt35596s_panel_add(struct nt35596s_panel *pinfo)
+ 				     "failed to get reset gpio from DT\n");
+ 
+ 	drm_panel_init(&pinfo->base, dev, &panel_funcs, DRM_MODE_CONNECTOR_DSI);
++	pinfo->base.prepare_prev_first = true;
+ 
+ 	drm_panel_add(&pinfo->base);
+ 
+-- 
+2.43.0
+
