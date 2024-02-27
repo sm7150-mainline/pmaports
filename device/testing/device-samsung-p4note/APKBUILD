@@ -1,8 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-samsung-p4note
 pkgdesc="Samsung Galaxy Note 10.1"
-pkgver=1.3
-pkgrel=3
+pkgver=1.4
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="armv7"
@@ -10,12 +10,16 @@ options="!check !archcheck"
 depends="
 	linux-postmarketos-exynos4
 	mkbootimg
+	alsa-ucm-conf
 	postmarketos-base
 	postmarketos-update-kernel
 "
 makedepends="devicepkg-dev"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
-source="deviceinfo"
+source="
+	deviceinfo
+	audio/HiFi.conf
+	audio/p4note.conf"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -23,6 +27,11 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/HiFi.conf \
+		-t "$pkgdir"/usr/share/alsa/ucm2/conf.d/p4note
+	install -Dm644 "$srcdir"/p4note.conf \
+		-t "$pkgdir"/usr/share/alsa/ucm2/conf.d/p4note
 }
 
 nonfree_firmware() {
@@ -37,4 +46,6 @@ nonfree_firmware() {
 
 sha512sums="
 b473bd6e9bf1ba3d75f4cfd55bf4acff2edba338a87f4367bfb3aa7be2a0b31ee07012ba506d00faf811ba71f6859f1c771e77ec034fc9e7f3811c739b2068cc  deviceinfo
+40c2d13a8e59749a646e4070a444098609f62679f19a975da3f53b1a0fc4ac4c417dd86ec271a339e6a19c1737b384b759661d8f9a167c7eedc4a3ffbaffd77f  HiFi.conf
+2c5011f7d5f25362e6249624796a6d9d36d858169538ab9c4ab1a79f37ece95f425a92b14849a65fd9281c5567753158871c6bf20a772f8dca6b2d6813ea2f03  p4note.conf
 "
