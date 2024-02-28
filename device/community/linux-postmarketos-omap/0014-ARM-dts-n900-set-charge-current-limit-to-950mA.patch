@@ -1,0 +1,33 @@
+From 5ecf87e2f723fddf7437427678156288537b3525 Mon Sep 17 00:00:00 2001
+From: Arthur Demchenkov <spinal.by@gmail.com>
+Date: Wed, 28 Feb 2024 10:20:56 +0200
+Subject: [PATCH] ARM: dts: n900: set charge current limit to 950mA
+
+The vendor kernel used 950mA as the default. The same value works fine on
+the mainline Linux kernel, and has been tested extensively under Maemo
+Leste [1] and postmarketOS, who have been using it for a number of years.
+
+[1] https://github.com/maemo-leste/n9xx-linux/commit/fbc4ce7a84e59215914a8981afe918002b191493
+
+Signed-off-by: Arthur Demchenkov <spinal.by@gmail.com>
+Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
+---
+ arch/arm/boot/dts/ti/omap/omap3-n900.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/ti/omap/omap3-n900.dts b/arch/arm/boot/dts/ti/omap/omap3-n900.dts
+index d33485341251..07c5b963af78 100644
+--- a/arch/arm/boot/dts/ti/omap/omap3-n900.dts
++++ b/arch/arm/boot/dts/ti/omap/omap3-n900.dts
+@@ -754,7 +754,7 @@ bq24150a: bq24150a@6b {
+ 		ti,current-limit = <100>;
+ 		ti,weak-battery-voltage = <3400>;
+ 		ti,battery-regulation-voltage = <4200>;
+-		ti,charge-current = <650>;
++		ti,charge-current = <950>;
+ 		ti,termination-current = <100>;
+ 		ti,resistor-sense = <68>;
+ 
+-- 
+2.43.0
+

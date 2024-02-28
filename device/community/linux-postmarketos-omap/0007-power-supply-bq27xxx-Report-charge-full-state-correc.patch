@@ -1,0 +1,50 @@
+From a65f118ddeb53a6bf09d2986bdf688dbb297cdb5 Mon Sep 17 00:00:00 2001
+From: "Sicelo A. Mhlongo" <absicsz@gmail.com>
+Date: Sat, 24 Feb 2024 21:53:04 +0200
+Subject: [PATCH] power: supply: bq27xxx: Report charge full state correctly
+
+When reporting the charging status, the existing code reports the battery
+as full only when the reported current flowing is exactly 0mA, which is
+unlikely in practice.
+
+Fix the reporting by giving priority to the battery's full state
+indication/flag.
+
+Tested on the Nokia N900 with bq27200 fuel gauge.
+
+Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
+---
+ drivers/power/supply/bq27xxx_battery.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/power/supply/bq27xxx_battery.c b/drivers/power/supply/bq27xxx_battery.c
+index 1c4a9d137744..810f6eb468ad 100644
+--- a/drivers/power/supply/bq27xxx_battery.c
++++ b/drivers/power/supply/bq27xxx_battery.c
+@@ -1816,17 +1816,14 @@ static int bq27xxx_battery_current_and_status(
+ 		val_curr->intval = curr;
+ 
+ 	if (val_status) {
+-		if (curr > 0) {
++		if (bq27xxx_battery_is_full(di, flags))
++			val_status->intval = POWER_SUPPLY_STATUS_FULL;
++		else if (curr > 0)
+ 			val_status->intval = POWER_SUPPLY_STATUS_CHARGING;
+-		} else if (curr < 0) {
++		else if (curr < 0)
+ 			val_status->intval = POWER_SUPPLY_STATUS_DISCHARGING;
+-		} else {
+-			if (bq27xxx_battery_is_full(di, flags))
+-				val_status->intval = POWER_SUPPLY_STATUS_FULL;
+-			else
+-				val_status->intval =
+-					POWER_SUPPLY_STATUS_NOT_CHARGING;
+-		}
++		else
++			val_status->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+ 	}
+ 
+ 	return 0;
+-- 
+2.43.0
+

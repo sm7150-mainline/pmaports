@@ -1,0 +1,47 @@
+From 6e9d3c99b8090a022224f216f299b531771a2f89 Mon Sep 17 00:00:00 2001
+From: "Sicelo A. Mhlongo" <absicsz@gmail.com>
+Date: Sat, 24 Feb 2024 23:06:24 +0200
+Subject: [PATCH] power: supply: bq2415x_charger: report online status
+
+Provide the Online property. This chip does not have specific flags to
+indicate the presence of an input voltage, but this is implied by all valid
+charging states. Fault states also only occur when VBUS is present, so set
+Online true for those as well.
+
+Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
+---
+ drivers/power/supply/bq2415x_charger.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/power/supply/bq2415x_charger.c b/drivers/power/supply/bq2415x_charger.c
+index 6a4798a62588..7b93ba20348a 100644
+--- a/drivers/power/supply/bq2415x_charger.c
++++ b/drivers/power/supply/bq2415x_charger.c
+@@ -991,6 +991,7 @@ static enum power_supply_property bq2415x_power_supply_props[] = {
+ 	/* TODO: maybe add more power supply properties */
+ 	POWER_SUPPLY_PROP_STATUS,
+ 	POWER_SUPPLY_PROP_MODEL_NAME,
++	POWER_SUPPLY_PROP_ONLINE,
+ };
+ 
+ static int bq2415x_power_supply_get_property(struct power_supply *psy,
+@@ -1017,6 +1018,16 @@ static int bq2415x_power_supply_get_property(struct power_supply *psy,
+ 	case POWER_SUPPLY_PROP_MODEL_NAME:
+ 		val->strval = bq->model;
+ 		break;
++	case POWER_SUPPLY_PROP_ONLINE:
++		/* VBUS is present for all charging and fault states,
++		 * except the 'Ready' state.
++		 */
++		ret = bq2415x_exec_command(bq, BQ2415X_CHARGE_STATUS);
++		if (ret < 0)
++			return ret;
++		else
++			val->intval = ret > 0;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+-- 
+2.43.0
+
