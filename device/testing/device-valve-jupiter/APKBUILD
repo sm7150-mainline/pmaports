@@ -1,15 +1,17 @@
 # Maintainer: Clayton Craft <clayton@craftyguy.net>
 pkgname=device-valve-jupiter
 pkgdesc="Valve Steam Deck"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="x86_64"
 options="!check !archcheck"
 depends="
-	linux-edge
-	linux-firmware-none
+	linux-firmware-cirrus
+	linux-firmware-rtl_bt
+	linux-firmware-rtw88
+	linux-valve-jupiter
 	oem-amd
 	postmarketos-base
 	systemd-boot
@@ -17,14 +19,11 @@ depends="
 makedepends="devicepkg-dev"
 subpackages="
 	$pkgname-gnome-mobile:gnome_mobile
-	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-vulkan
 	"
 source="
 	00-scaling-factor.gschema.override
 	deviceinfo
 	modules-initfs
-	initramfs.modules
 	"
 
 build() {
@@ -33,27 +32,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-
-	install -Dm644 "$srcdir"/initramfs.modules \
-		"$pkgdir"/usr/share/mkinitfs/modules/jupiter.modules
-}
-
-nonfree_firmware() {
-	pkgdesc="Firmware for the Steam Deck"
-	depends="
-		linux-firmware-cirrus
-		linux-firmware-rtl_bt
-		linux-firmware-rtw88
-		oem-amd-nonfree-firmware
-	"
-
-	mkdir -p "$subpkgdir"
-}
-
-vulkan() {
-	install_if="$pkgname=$pkgver-r$pkgrel vulkan-loader"
-	depends="mesa-vulkan-ati"
-	mkdir "$subpkgdir"
 }
 
 gnome_mobile() {
@@ -62,10 +40,8 @@ gnome_mobile() {
 		-t "$subpkgdir"/usr/share/glib-2.0/schemas/
 }
 
-
 sha512sums="
 f2b0e3bf013b87e13828f95d3db7327c7afee33a0703d764ea5b96f0f791a01af2f2685ab5b17db1729fe68e78fd0e39f3a9b2f53530aa493897066d87b43248  00-scaling-factor.gschema.override
-48835f168b84dc0e5afeb335075cde91b5e95111821f14e928c8235e91769cb94882dbee69f978f645898cd1d69556d671b74ace60275a79a3c0f704a8c1a0d8  deviceinfo
-766e375e6ef5c3660785eff015bd19c56ecef43eb26825a829c014ba9bea6dfa341f27828f1f1631d231738765d17b0e739c493a2043bdacc7917b6e9513cf40  modules-initfs
-43e5218da859222d54a6a32b618ada8ce14c5f7f1f8e7f0efffadd2df6a05051221ee612fd04d067f956935e4b9eb3321863a2ccd32abcf5fc878e6b0ee84aef  initramfs.modules
+4c1d05d76139b1c9c1e0cd5c99a9770963a33ccf248c0402fccf051694493af1b1da9761ca7d9f83c35e82a69d77e518bbdb5934ae1a6013d726d97eec0d57a3  deviceinfo
+69873bebeff960f7ec00f2004cee97f7edd9a9df25e78b3b90e1a01592fec03c75d3a77be291e45a1902c57fd6e23bdff327935ace5c282e8f7c7dfa22798c3f  modules-initfs
 "
