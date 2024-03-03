@@ -1,8 +1,8 @@
 # Reference: https://postmarketos.org/uipkg
 # Maintainer: Bart Ribbers <bribbers@disroot.org>
 pkgname=postmarketos-base-ui-plasma
-pkgver=1
-pkgrel=1
+pkgver=2
+pkgrel=0
 pkgdesc="Meta package for shared configuration for Plasma-based UIs"
 url="https://postmarketos.org"
 arch="noarch !armhf" # armhf is not supported
@@ -53,27 +53,14 @@ _pmb_recommends="
 	"
 install="$pkgname.post-install $pkgname.post-upgrade"
 source="
-	000-gschema.override
 	gtk-app-wayland.sh
-	kdeglobals
 	kdewallet.kwl
 	kdewallet.salt
-	kscreenlockerrc
-	kwinrc
 	qtlogging.ini
 	"
 options="!check pmb:gpu-accel"
 
 package() {
-	install -Dm644 \
-		"$srcdir"/kwinrc \
-		-t "$pkgdir"/etc/xdg/
-
-	install -Dm644 \
-		"$srcdir"/kdeglobals \
-		"$srcdir"/kscreenlockerrc \
-		-t "$pkgdir"/etc/xdg
-
 	install -Dm644 \
 		"$srcdir"/qtlogging.ini \
 		-t "$pkgdir"/etc/xdg/QtProject/
@@ -81,9 +68,6 @@ package() {
 	install -Dm755 \
 		"$srcdir"/gtk-app-wayland.sh \
 		-t "$pkgdir"/etc/profile.d/
-
-	install -Dm644 "$srcdir"/000-gschema.override \
-		"$pkgdir"/usr/share/glib-2.0/schemas/000-postmarketos.gschema.override
 
 	# TODO: remove once keyboard input bug is fixed
 	# https://bugs.kde.org/show_bug.cgi?id=435183
@@ -94,12 +78,8 @@ package() {
 
 
 sha512sums="
-591529f147f161f5e97c979a9ad4b9f3a65e6d3b87a7bdbd020ec928155cfe5fd561cae6582c4b2831b452fe9b0a03168731771b77020fb66e09f81552ba421e  000-gschema.override
 57793bb079c76ba3bdcfca7880aa887de11fe80e7a05557b78435e57feabab70fbaeedc42da3aec6f914c35bba8e8ee9918367516eb45ee247f63f694624f179  gtk-app-wayland.sh
-a1923ecd21ce3c5eacee18f7a64750072ef9cd4aea7b9a0092d23b8445d37d9e70a3ac873c0c50b748e32adc4c3b75169a6737f3aea06ef85bc1fc95a67bb3ce  kdeglobals
 923309f71ee0840ae49d610ab5c11260432f462709eee7148ee5a4703872b9926a3267b16b524162c1560e0798c63fe392a161a57be5c6000bbb1e3f0c947e25  kdewallet.kwl
 f3fdaaaf13e985166b86158d5a60098aa45195ea078a4cab7fbf12d3aa428000af3e46ec011dbdc38a4c00faeac5f9a3b5bc2765a6afdd0f1ee58616e31e7429  kdewallet.salt
-b3aa8ee26c01de103c0c0af23532bf232f7071fdd02c53bd787d78e5974faa5662fc5776ce9be417392214ae73334b0eb0d073fe24f616a0ce99081f30b9158c  kscreenlockerrc
-f483e351781ad879deb3bca81d023098b780f0f95129ec20aa263836f0482f720cd46fee3980b088afde4e6c89bbe126eb7fb673fab65744153a7568ca3c8720  kwinrc
 341f0b866c315f37868ef3e7137cce8b53a0e8e6164e5af71b3e8e2fa68321afbf0652d76124ef84bade1393f701748852ac939aef9daff7e272a0df827780eb  qtlogging.ini
 "
