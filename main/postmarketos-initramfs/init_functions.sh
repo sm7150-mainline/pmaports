@@ -815,7 +815,7 @@ create_logs_disk() {
 	local upload_file=""
 	echo "Creating logs disk"
 
-	fallocate -l 10M /tmp/logs.img
+	fallocate -l 32M /tmp/logs.img
 	# The log device used is assumed to be $loop_dev
 	losetup -f /tmp/logs.img
 	mkfs.vfat -n "PMOS_LOGS" "$loop_dev"
