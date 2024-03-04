@@ -1,0 +1,111 @@
+# Maintainer: Clayton Craft <clayton@craftyguy.net>
+pkgname=linux-valve-jupiter
+pkgver=6.8_rc7
+pkgrel=0
+pkgdesc="Valve Steam Deck kernel fork"
+arch="x86_64"
+_flavor="valve-jupiter"
+_carch="x86"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps
+	pmb:cross-native
+	pmb:kconfigcheck-community
+	pmb:kconfigcheck-uefi
+	"
+makedepends="
+	bash
+	bison
+	elfutils-dev
+	findutils
+	flex
+	linux-headers
+	openssl-dev
+	perl
+	postmarketos-installkernel
+"
+
+# Source
+_config="config-$_flavor.$arch"
+case $pkgver in
+	*.*.*)	_kernver=${pkgver%.0};;
+	*.*)	_kernver=$pkgver;;
+esac
+
+source="
+	https://git.kernel.org/torvalds/t/linux-${_kernver//_/-}.tar.gz
+	$_config
+
+	0001-ACPICA-Limit-error-message-flood-caused-by-firmware-.patch
+	0002-drivers-video-backlight-Disable-backlight-notificati.patch
+	0003-iio-light-ltrf216a-Return-floating-point-values.patch
+	0004-mfd-Add-MFD-core-driver-for-Steam-Deck.patch
+	0005-hwmon-Add-driver-for-Steam-Deck-s-EC-sensors.patch
+	0006-leds-steamdeck-Add-support-for-Steam-Deck-LED.patch
+	0007-extcon-Add-driver-for-Steam-Deck.patch
+	0008-hwmon-steamdeck-hwmon-Add-support-for-max-battery-le.patch
+	0009-mfd-steamdeck-Expose-controller-board-power-in-sysfs.patch
+	0010-x86-implement-tsc-directsync-for-systems-without-IA3.patch
+	0011-x86-touch-clocksource-watchdog-after-syncing-TSCs.patch
+	0012-x86-save-restore-TSC-counter-value-during-sleep-wake.patch
+	0013-x86-only-restore-TSC-if-we-have-IA32_TSC_ADJUST-or-d.patch
+	0014-x86-don-t-check-for-random-warps-if-using-direct-syn.patch
+	0015-x86-revert-extra-time-added-to-check-for-tsc-wraps.patch
+	0016-usb-dwc3-Hardcode-jupiter-ACPI-device-as-extcon-name.patch
+	0017-usb-dwc3-Bump-USB-gadget-wakeup-timeout.patch
+	0018-usb-dwc3-Drop-usb-role-swtich-from-dwc3_pci_mr_prope.patch
+	0019-usb-dwc3-Fix-linux-extcon-name.patch
+	0020-pinctrl-amd-Add-quirk-to-timeout-irq-pin-reconfigura.patch
+	0021-mmc-core-add-safe_trim_quirk-attribute.patch
+"
+builddir="$srcdir/linux-${_kernver//_/-}"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/$_config" .config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor"
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+	make install modules_install \
+		ARCH="$_carch" \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_MOD_STRIP=1
+	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
+}
+
+sha512sums="
+14dfe21da64bd625548f3439a878b46010c7c9c0569ca320dacc2219c297e2c1a8e3cb95c7c497b1177d3e4f6f6ea94b2a622cf75db86fd4a8edeccdfdeed42a  linux-6.8-rc7.tar.gz
+23e8144e337e1ec25ffdd90458e0f55760913ff3489bd4e019df9c5e39fdc80c87c23ee192aef52d3f7301b759a77b383e09fce75cf281149512fc8370fb6faf  config-valve-jupiter.x86_64
+fe6d4f0b8b86134b62a1f040ef7e8090702b1933b909a095217180160b4dd87d1d2cd7da41b1578f4577dd423e6dbca40d74f8f2d21c274074b19f612de3f343  0001-ACPICA-Limit-error-message-flood-caused-by-firmware-.patch
+ff6e833025d8df063d5de4db08376bc70892a5a07f98cfcec665e75e85862b4a583ad3685b056af9e623cd45458921d102c8fe94d2cad58385129e1f01308da1  0002-drivers-video-backlight-Disable-backlight-notificati.patch
+35fed97f0bae352f2cfb53fe301c24e893c5d04120fdcd8b1390582c489517f8f11d01f98cacbe3f4a51ee7156e8eab6197a1cdd96be3d70d5ad40d5e0992494  0003-iio-light-ltrf216a-Return-floating-point-values.patch
+538acf33701914f9fd894db4655390ebdbf4e7902e1f44adeb145e2d9c0e6e326e7331d5e5da55a0115c5b9079abb1358232424dd543b1ab8961da0a536d9b5b  0004-mfd-Add-MFD-core-driver-for-Steam-Deck.patch
+86a93d8872986e4ad67f6a83031286bcb2ba59939dceff4af720be0a960c011c59cf7857c9e0a6c2aff1b61c75f9a2245c8d9489693e6c36833ebd143d76734d  0005-hwmon-Add-driver-for-Steam-Deck-s-EC-sensors.patch
+985dc1f7cf67de127f1d270553f78783086f0e4cebd3e30ae4c577aed22c7b2ff99aa5dfd2d42c626c93b942ac657417f79c45308949862107c4e30169fed694  0006-leds-steamdeck-Add-support-for-Steam-Deck-LED.patch
+e0a753212d225552f1c87eabe37c0a64bd345314ac14d09361bc0f8046f4bf33c8d290b6d85b7d2ac8a6e1bbb9aa1d24403ca34068165d558bead33d375a4467  0007-extcon-Add-driver-for-Steam-Deck.patch
+2431d4bedc5a916a16cf597f7ca3518cc51bd4951b1789383bbdad59a031f1863508073e5afe9174be527b5398606aa189ad1a8e0833b29394c6e5e561b1cb09  0008-hwmon-steamdeck-hwmon-Add-support-for-max-battery-le.patch
+a2f387ebebe84f41a75b64f1cddf33fb56dbaf8388ae10d7f873f5b26eaa82055413d35cccebd1c9011342e722aa07dbf8537c47f34d05deb6296738a3553b7f  0009-mfd-steamdeck-Expose-controller-board-power-in-sysfs.patch
+057e188e9eb3a838ce3a1f43bc3ed712f936e37f022a3655691ea2b152e99c8d41c264e5ef11a7a27a020a57558d53afb72fb81cef9fb280a60e9d302fc50159  0010-x86-implement-tsc-directsync-for-systems-without-IA3.patch
+71164e34b08d4d364c1cc859debb109f65b736727e4d7c42644eb61edcb457b5fcbe71c5a3724fe15a12819a4838d3eb3010fcb91571074a2707ddc3f945f0a5  0011-x86-touch-clocksource-watchdog-after-syncing-TSCs.patch
+ad4b783bae034ba2e79b87854a552acda800f8e743d74f97ee594eaf8da3ec25729086fadbcfeeca06f05734b6be5382d784b6e8e1b0bd5041c3472da8b8a508  0012-x86-save-restore-TSC-counter-value-during-sleep-wake.patch
+7b57f48ab74645e2530371a99040e88b5aab7addbddfec900089100aec89e0f992a8b298819d99347e8306a9ff65f2d112de921772866fefde27483e7b236562  0013-x86-only-restore-TSC-if-we-have-IA32_TSC_ADJUST-or-d.patch
+1b1f88ddc32539a81c645de6fb1f13d2070df01570e5b29300a6ecf7b626a9e97c8581198c5b47cdc93c6dc1301c6737de9147919e3b9a134e9e6e0a39dd86d0  0014-x86-don-t-check-for-random-warps-if-using-direct-syn.patch
+e914ce3e2ac406a8c280bd88fdb6908161d6fbccccd0c2e6a2c2c3814917271230cb1f8fa2a3111f9057d8fd36bd18753b5306f4596889f27656415239c92f95  0015-x86-revert-extra-time-added-to-check-for-tsc-wraps.patch
+3e71e8a96934113b53b31e153addf498a8bc52e80fc874d66e34210945f0c8e85f201143f1303e51cf05a1b43109cbfb3da31c071ab7cf1cadd07a226c1b0861  0016-usb-dwc3-Hardcode-jupiter-ACPI-device-as-extcon-name.patch
+738a46214f80e3e5d9878f74e90c3532ddcff0706cc381662c643b1954fbc94fcb47bf3e79d8f892671002c4683a872bcd73bddbff89724c416631cb2da212b5  0017-usb-dwc3-Bump-USB-gadget-wakeup-timeout.patch
+fac38c82ddd1a099925452c0ac205f8b8cc02ab846c1c71f69d51aea79b52a985e3175371c2a854b4cf7569d0100e599b961dd6d919c96a0582fd640871c9c13  0018-usb-dwc3-Drop-usb-role-swtich-from-dwc3_pci_mr_prope.patch
+212567512f28b4400f82117d90a1e5fa03ab9ba59f3e70c58d5854a3a201751e70bce2437d19d706c2a495ec951dd77f599d2700f42fb87a820f15cfd3e2c50b  0019-usb-dwc3-Fix-linux-extcon-name.patch
+f37c466b18d97233511193d8512d311acd4bb4f95bbc9b08893ce2f2d80bfe75c92f0e5979e2577c2be560eaa3d7001cf2bae32b9c37730fdce9eaa402320745  0020-pinctrl-amd-Add-quirk-to-timeout-irq-pin-reconfigura.patch
+4c3454dcb3eac580edfcb34d85cfed2bfcc3df1a77c9d88344b5936ae1210b66c8c7eb778f3317085368c82348f7f6860591e367715ef879641d32ed4d266953  0021-mmc-core-add-safe_trim_quirk-attribute.patch
+"
