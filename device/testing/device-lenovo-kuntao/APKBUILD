@@ -1,0 +1,38 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-lenovo-kuntao
+pkgdesc="Lenovo P2"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-msm8953
+	lk2nd-msm8953
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="GPU/Wi-Fi/Bluetooth/Audio/Video/Modem firmware"
+	depends="msm-firmware-loader"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+d2be963b0e4a53630c99a60c823914564bec6f5c126d86e5ba27f04721bb509705681a6de1822eb63f3f60bcf002f4b8a88ec9c0cbf1563dc4ae26eb8455c81b  deviceinfo
+"
