@@ -4,20 +4,24 @@
 pkgname=soc-qcom-sm7150
 pkgdesc="Common package for Qualcomm SM7150 devices"
 pkgver=2
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
 depends="
+	$pkgname-ucm
 	swclock-offset
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-ucm
 	$pkgname-unl0kr-quirk:unl0kr_quirk
 "
 
+_ucm_commit="22c059d9caabcc7a434943827eafdd4d99a287e0"
 source="
+	$pkgname-$_ucm_commit.tar.gz::https://github.com/sm7150-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz
 	10-unl0kr.conf
 	30-initramfs-firmware.files
 	90-feedbackd-aw8695.rules
@@ -51,6 +55,15 @@ nonfree_firmware() {
 		"$subpkgdir"/usr/share/mkinitfs/files
 }
 
+ucm() {
+	provides="alsa-ucm-conf"
+	provider_priority=1
+
+	cd "$srcdir/alsa-ucm-conf-$_ucm_commit"
+	mkdir -p "$subpkgdir"/usr/share/alsa
+	cp -r ucm2 "$subpkgdir"/usr/share/alsa
+}
+
 unl0kr_quirk() {
 	# With fbdev emulation enabled, unl0kr needs to force refresh on some panels
 	install -Dm644 "$srcdir"/10-unl0kr.conf \
@@ -58,6 +71,7 @@ unl0kr_quirk() {
 }
 
 sha512sums="
+615ab48c857b9472b67790a0cf05931509cf12a4f40f419c5e272e7788d6ed6e2c9d8c2736330d16380dd5cffc53e48702fe98547bcb24f18245f90c7666fee2  soc-qcom-sm7150-22c059d9caabcc7a434943827eafdd4d99a287e0.tar.gz
 f700af3145b79d1ef9edfb22982899b25cabfb212f9620dcbd3a2e6f44b5ad591e0a66056c6fcd66c3fde89a2b5f551e8a8fe2e65cf0e2a48adec57c027d7825  10-unl0kr.conf
 389a4716a9f92871cb0ded771f27480a6657f26f6e5a6db7908e7cb26a36d5dcf60e3bfcbdb86c1a31d643016817798a5ca776e4cf564515336125a483cd07f5  30-initramfs-firmware.files
 2974ccc172bf1299daeb0bc746879b3a1db1fbc3a2b163a02a6554fed6ed9f733144bcf976cd2441c5664d496dcce3ae943f4314c653470dc07dda0de5ad632b  90-feedbackd-aw8695.rules
