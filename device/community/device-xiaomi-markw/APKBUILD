@@ -2,8 +2,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-xiaomi-markw
 pkgdesc="Xiaomi Redmi 4 Prime"
-pkgver=4
-pkgrel=1
+pkgver=5
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -16,7 +16,7 @@ depends="
 	soc-qcom-msm8953
 "
 makedepends="devicepkg-dev"
-source="deviceinfo modules-initfs modprobe.d_touchscreens-workaround.conf"
+source="deviceinfo modules-initfs"
 subpackages="$pkgname-nonfree-firmware:nonfree_firmware"
 
 build() {
@@ -24,7 +24,6 @@ build() {
 }
 
 package() {
-	install -D -m644 "$srcdir"/modprobe.d_touchscreens-workaround.conf "$pkgdir"/etc/modprobe.d/touchscreens-workaround.conf
 	devicepkg_package $startdir $pkgname
 }
 
@@ -41,6 +40,5 @@ nonfree_firmware() {
 
 sha512sums="
 0d393f07e551058781a67c096b1ad7f252c78e801a2da8752f893f4ea7c24f7aa65bc69f9c80c7be53e615269a7028eb151e7bc3fe79f0c260a4d28e97f10e7d  deviceinfo
-00f2a07de0aaedd3f3fee4aed6e1f591539cb56aa109c49d5b0a5de11c7f8c5d0a3cef8111b855d064bfe38901f3bbcddd9cf2c65ae811578d43319137f586ac  modules-initfs
-b6d005ac8be56b6eca402869fcf33f671f02000fb927af36ae9a860817c92a17329323408e94f4593d63e9f6a95881e270bc9dcd930ad4cf8312e1ac85ab4a20  modprobe.d_touchscreens-workaround.conf
+0cba88d7ede62dc7c47feefb27d10e58e4c93498bec97cd274a1d10c4f16dff06c5472ed555170e0392a57c9269cc50bf550523f41bf1ba6c600af533302574b  modules-initfs
 "
