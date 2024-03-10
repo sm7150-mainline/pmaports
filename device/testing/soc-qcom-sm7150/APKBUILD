@@ -3,7 +3,7 @@
 
 pkgname=soc-qcom-sm7150
 pkgdesc="Common package for Qualcomm SM7150 devices"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
@@ -17,9 +17,7 @@ subpackages="
 	$pkgname-unl0kr-quirk:unl0kr_quirk
 "
 
-_gpufw_commit="bad0fd43728e8e2efd92e4b13f270bb27aa68272"
 source="
-	$pkgname-$_gpufw_commit.tar.gz::https://github.com/sm7150-mainline/firmware-adreno-gpu/archive/$_gpufw_commit.tar.gz
 	10-unl0kr.conf
 	30-initramfs-firmware.files
 	90-feedbackd-aw8695.rules
@@ -49,10 +47,6 @@ nonfree_firmware() {
 	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
 
-	# We will get all other Adreno GPU FWs from linux-firmware-qcom
-	install -Dm644 "$srcdir/firmware-adreno-gpu-$_gpufw_commit"/a615_zap.mbn -t \
-		"$subpkgdir"/lib/firmware/qcom
-
 	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t \
 		"$subpkgdir"/usr/share/mkinitfs/files
 }
@@ -64,7 +58,6 @@ unl0kr_quirk() {
 }
 
 sha512sums="
-93a57ec896c35537587190e2da7c6e97025e8df90603b6bc5309d24404bf96cdf54187ebd53c6006d5772adf152a09e0e7c1b3481f5cfe48a0b6f1bfc8c0ac1a  soc-qcom-sm7150-bad0fd43728e8e2efd92e4b13f270bb27aa68272.tar.gz
 f700af3145b79d1ef9edfb22982899b25cabfb212f9620dcbd3a2e6f44b5ad591e0a66056c6fcd66c3fde89a2b5f551e8a8fe2e65cf0e2a48adec57c027d7825  10-unl0kr.conf
 389a4716a9f92871cb0ded771f27480a6657f26f6e5a6db7908e7cb26a36d5dcf60e3bfcbdb86c1a31d643016817798a5ca776e4cf564515336125a483cd07f5  30-initramfs-firmware.files
 2974ccc172bf1299daeb0bc746879b3a1db1fbc3a2b163a02a6554fed6ed9f733144bcf976cd2441c5664d496dcce3ae943f4314c653470dc07dda0de5ad632b  90-feedbackd-aw8695.rules
