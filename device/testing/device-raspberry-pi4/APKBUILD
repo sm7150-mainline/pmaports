@@ -1,8 +1,8 @@
 # Maintainer: Daniele Debernardi <drebrez@gmail.com>
 # Reference: <https://postmarketos.org/devicepkg>
 pkgname=device-raspberry-pi4
-pkgver=0.4
-pkgrel=6
+pkgver=0.5
+pkgrel=0
 pkgdesc="Raspberry Pi 4"
 url="https://postmarketos.org"
 license="MIT"
@@ -18,7 +18,6 @@ subpackages="
 source="
 	deviceinfo
 	modules-initfs
-	config.txt
 	usercfg.txt
 	cmdline.txt
 	95-vchiq-permissions.rules
@@ -31,7 +30,6 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
-	install -Dm644 "$srcdir"/config.txt "$pkgdir"/boot/config.txt
 	install -Dm644 "$srcdir"/usercfg.txt "$pkgdir"/boot/usercfg.txt
 	install -Dm644 "$srcdir"/cmdline.txt "$pkgdir"/boot/cmdline.txt
 	install -Dm644 "$srcdir"/95-vchiq-permissions.rules \
@@ -56,8 +54,7 @@ plasma_bigscreen() {
 sha512sums="
 5d998ec76512aa4e71daba4e5516433996340a931d027da70f02a9b15343cd1fd8af10375b3c3f99b003b95c6aeebdfb98aeebf998aceacc38373cca6f4c941c  deviceinfo
 e3515cf9f41807917eac1f7663e0131bd18783824facf15f2bb0381635bf6d9a0c334f3786b6fb76d01469de6449878c871f8b747f45e9e3cee77699905cf319  modules-initfs
-5dcc5fb223c4e0a2ffca7da92c8d9b87c230ac9f53d21d1e0d8f49fb3419b7f8d44a3116769bf20ab8a8f0595eee041970e1a0661a8a5feb60e94dc3307c75dc  config.txt
-18c5809f939260281637c1493009b724cfdc80efba8321fcad7bb4c252833eb75596326df06dcf8986693a501fa11d54680393ceccdec42e347fdd78d37417c9  usercfg.txt
+4562c2f6da8bc567806a1ae0c9195f552e659a3ce6419ea387072553b9ebcbb87f9ac7ea4e472c23a70b4aaf64e13d52de43de8094c37139bcf55baa6e1184cb  usercfg.txt
 ae3de0b8fec07d3a283dc3c06bf8678eec1e65c9faf0b7f4fdc9fb92751e324d1f8e2fb224dbbf561b7e5a6fb34769bfa1657858375f74b101a130d78e0737e2  cmdline.txt
 7e5505cb07d5b4a81bd28443d508336b5c547356538f1c06f91ed93ad0d7d456d4f74f1d24df5a2e08c17e74f0a66607352ac4874e967e9a91dfec9522d2d58d  95-vchiq-permissions.rules
 56d3ca295eeced3535d033a2a492774254a9bfefa6595ae12cf8146917af1521ad6e25440670657c39a7b1a66d61da298334d3019acf0dbf7568cfed01600414  enforce-platform.sh
