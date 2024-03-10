@@ -14,11 +14,15 @@ con_uuid="83bd1823-feca-4c2b-9205-4b83dc792e1f"
 
 usb_network_function="${deviceinfo_usb_network_function:-ncm.usb0}"
 usb_network_function_fallback="rndis.usb0"
-interface="$(
-	cat "/sys/kernel/config/usb_gadget/g1/functions/$usb_network_function/ifname" 2>/dev/null ||
-	cat "/sys/kernel/config/usb_gadget/g1/functions/$usb_network_function_fallback/ifname" 2>/dev/null ||
-	echo 'usb0'
-)"
+if [ -n "$(cat /sys/kernel/config/usb_gadget/g1/UDC)" ]; then
+	interface="$(
+		cat "/sys/kernel/config/usb_gadget/g1/functions/$usb_network_function/ifname" 2>/dev/null ||
+		cat "/sys/kernel/config/usb_gadget/g1/functions/$usb_network_function_fallback/ifname" 2>/dev/null ||
+		echo 'usb0'
+	)"
+else
+	interface='eth0'
+fi
 
 [ -e /etc/unudhcpd.conf ] && . /etc/unudhcpd.conf
 host_ip="${unudhcpd_host_ip:-172.16.42.1}"
