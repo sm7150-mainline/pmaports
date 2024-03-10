@@ -695,11 +695,15 @@ start_unudhcpd() {
 	# Get usb interface
 	usb_network_function="${deviceinfo_usb_network_function:-ncm.usb0}"
 	usb_network_function_fallback="rndis.usb0"
-	INTERFACE="$(
-		cat "/config/usb_gadget/g1/functions/$usb_network_function/ifname" 2>/dev/null ||
-		cat "/config/usb_gadget/g1/functions/$usb_network_function_fallback/ifname" 2>/dev/null ||
-		echo ''
-	)"
+	if [ -n "$(cat /config/usb_gadget/g1/UDC)" ]; then
+		INTERFACE="$(
+			cat "/config/usb_gadget/g1/functions/$usb_network_function/ifname" 2>/dev/null ||
+			cat "/config/usb_gadget/g1/functions/$usb_network_function_fallback/ifname" 2>/dev/null ||
+			echo ''
+		)"
+	else
+		INTERFACE=""
+	fi
 	if [ -n "$INTERFACE" ]; then
 		ifconfig "$INTERFACE" "$host_ip"
 	elif ifconfig rndis0 "$host_ip" 2>/dev/null; then
