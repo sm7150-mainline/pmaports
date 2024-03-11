@@ -1,0 +1,26 @@
+# Maintainer: Statzar <azurestatzar@gmail.com>
+
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-fog
+pkgdesc="Xiaomi Redmi 10C"
+pkgver=0.1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="linux-xiaomi-fog mkbootimg postmarketos-base"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+da242b2092a43b123b12175af6ab170efa3c530a609f2ac7f8baf631fe43afe8d3c743be06f7da6a2ff0d91598e5a003f5dc8c1447621159368db5bb443ca474  deviceinfo
+"
