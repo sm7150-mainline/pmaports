@@ -1,25 +1,38 @@
+# Maintainer: Danila Tikhonov <danila@jiaxyga.com>
+
 pkgname=firmware-xiaomi-surya
-pkgver=1.1
+pkgver=2
 pkgrel=1
 pkgdesc="Firmware for Xiaomi POCO X3 NFC"
 subpackages="
 	$pkgname-adsp
 	$pkgname-cdsp
+	$pkgname-gpu
 	$pkgname-initramfs
 	$pkgname-ipa
 	$pkgname-modem
+	$pkgname-sensors
 	$pkgname-touchscreen
-	$pkgname-wlan
 	$pkgname-venus
+	$pkgname-wlan
 	"
 url="https://github.com/sm7150-mainline/firmware-xiaomi-surya"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="3d76e775502966ac4aa9d6e563a71d7442152f1b"
+_commit="f73d8ba55b932228d5b4fa3809991468832da018"
 source="
 	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
 	30-touchscreen-firmware.files
+	adsp.files
+	cdsp.files
+	gpu.files
+	ipa.files
+	modem.files
+	sensors.files
+	touchscreen.files
+	venus.files
+	wlan.files
 "
 builddir="$srcdir/$pkgname-$_commit"
 
@@ -28,18 +41,36 @@ package() {
 	mkdir -p "$pkgdir"
 }
 
+# Helper method for installing firmware files from a text file
+install_files() {
+	cd "$builddir"
+
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$subpkgdir/$_i"
+	done < "$srcdir/$1"
+}
+
 adsp() {
 	pkgdesc="Xiaomi POCO X3 NFC adsp firmware"
 
-	install -Dm644 "$builddir"/adsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
+	mkdir "$subpkgdir"
+	install_files "adsp.files"
 }
 
 cdsp() {
 	pkgdesc="Xiaomi POCO X3 NFC cdsp firmware"
 
-	install -Dm644 "$builddir"/cdsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
+	mkdir "$subpkgdir"
+	install_files "cdsp.files"
+}
+
+gpu() {
+	pkgdesc="Xiaomi POCO X3 NFC gpu firmware"
+
+	mkdir "$subpkgdir"
+	install_files "gpu.files"
 }
 
 initramfs() {
@@ -52,43 +83,55 @@ initramfs() {
 ipa() {
 	pkgdesc="Xiaomi POCO X3 NFC ipa firmware"
 
-	install -Dm644 "$builddir"/ipa_fws.* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
+	mkdir "$subpkgdir"
+	install_files "ipa.files"
 }
 
 modem() {
 	pkgdesc="Xiaomi POCO X3 NFC modem firmware"
 
-	# cp because of the modem_pr directory
-	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/surya"
-	cp -r "$builddir"/modem* \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
-	find "$subpkgdir/lib/firmware/qcom/sm7150/surya" \
-		-type f -exec chmod 0644 {} \;
+	mkdir "$subpkgdir"
+	install_files "modem.files"
+}
+
+sensors() {
+	pkgdesc="Xiaomi POCO X3 NFC sensors firmware"
+
+	mkdir "$subpkgdir"
+	install_files "sensors.files"
 }
 
 touchscreen() {
 	pkgdesc="Xiaomi POCO X3 NFC touchscreen firmware"
 
-	install -Dm644 "$builddir"/novatek_ts_*_fw.bin -t \
-		"$subpkgdir/lib/firmware"
+	mkdir "$subpkgdir"
+	install_files "touchscreen.files"
 }
 
 venus() {
 	pkgdesc="Xiaomi POCO X3 NFC venus firmware"
 
-	install -Dm644 "$builddir"/venus.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
+	mkdir "$subpkgdir"
+	install_files "venus.files"
 }
 
 wlan() {
 	pkgdesc="Xiaomi POCO X3 NFC wlan firmware"
 
-	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
+	mkdir "$subpkgdir"
+	install_files "wlan.files"
 }
 
 sha512sums="
-769bcbabc12919f2fd8b9f6c4f23a236ba1835eb4cedef9072652321ee145995eff4f8b7b34a7875de9d26b9cdd9e7ccbcc1063cbc8eeb2b3ca3fbe3d0affad5  firmware-xiaomi-surya-3d76e775502966ac4aa9d6e563a71d7442152f1b.tar.gz
-da17c49b62a6320a868e34c5ebbbfdecbf80eed714e8a87daacfc5eb8a1d3dd171e13af0d1f7a8ccb6ebf0a6d859a1c3b8173bbe791ce78fadd7b6d1579ec472  30-touchscreen-firmware.files
+85d520622cf671f293d2cc53a7530af9c08fd26e2bb09f60738420d2b759805d8a6b3c11df9167583757d8403c60c020cbd96ebaab1e317573864202fa29dc0c  firmware-xiaomi-surya-f73d8ba55b932228d5b4fa3809991468832da018.tar.gz
+bfefaade4185e85f6d56eb5690baa769d8b5e7ccfaeb0090f157ae43fe7cc3fd96e0a8d41234db6becf20c79fd3104a90feeb790535fa3fa3bb887e0752a516a  30-touchscreen-firmware.files
+b6e744d78966affd3b18d3ee4ddb9150e289f89fa14993c3e1822e2f892800a40de529d745835ff9952e57e67e751c29d5b919a756864716028d86c2af99d131  adsp.files
+09a3320560740816227941543639b4b41508e94b7e8b25b1057c403d5c0a1fef8f33ff75d30e08a395bd39e8aab30fe8a2012314362a359d16554b072b9da1ae  cdsp.files
+0254addf6659ee903c8740414e79372c2b234b201272bc0ce5bf0cb2a47fcbcb9a051953b00954f84eb503957841ec95101891d32f4882d584d578e8634471eb  gpu.files
+ee9e22e07077ffeb06f5c83438e1f0c1ba39a87e5edf11f0f7986bda711b4144e8fa092c27d02b598067c031ac68168943b20b882540e6507f6a9eb5ad848942  ipa.files
+1fbf5f9c834653402f66f90535b3c8c88987c20e9fd4333ad4c159801506a2ab3831793a93a0eaaf92629f9008dc86c99cddb5af5bae153085a3fa96d5306a5f  modem.files
+20bc8376bcc5f8822a0daf9199f23e6640a8a2b85066e4bd8ba8a1c069e41468161e213142e6ac0a5764a934521a49436a4886e07864f42b64e88d6d75811f67  sensors.files
+c163c2ca8ffdedd23341b692e912e5f6caa8b9ea906fb14de2e57c5a8116428c4298e3b364a2c2caf7a87fd76b6e167205a21df8141ec55f8e1fda4911757379  touchscreen.files
+fe16050a5693628b1f599c62af25fe6834645f263bf4983180fc97ae957b03e3051342ce664b7d7b1f3a1d24fe91e1d60768a50b173c21ecb40a2967d5c8d939  venus.files
+f70111c2f8f88ddbaf1c42360f3a8de3826363e3842fddb774bf4bc5a003fb8d9a1a42909a5a35c2c98e40a31591aa5de0c4596c96beae91759a9d771ae01858  wlan.files
 "
