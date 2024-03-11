@@ -1,0 +1,31 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-pocketbook-614-plus
+pkgdesc="PocketBook 614 Plus"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-allwinner
+	u-boot-pocketbook-614-plus
+	postmarketos-base>=25-r1
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+sha512sums="
+d3111d23a9161825628cc7f8eb52ddd0e7665e89031500a5ab4f4ae9408fa23e76d3c34dbe18be4e48f356c77bc1d1deb1940a1cc38900ec15f5fc62dab627a9  deviceinfo
+bccead09b413637b2ef20bf6eed96e29998b85c40b6c3250ac5ecad1b7529e1ad54ea490cd4b29c457d30cd7fdc1e5b30811903c228b1df07145f18cb96739cf  modules-initfs
+"
