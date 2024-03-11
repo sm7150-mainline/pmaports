@@ -1,22 +1,15 @@
+# Maintainer: Danila Tikhonov <danila@jiaxyga.com>
+# Co-Maintainer: David Wronek <davidwronek@gmail.com>
+
 pkgname=firmware-xiaomi-surya
-pkgver=1.1
-pkgrel=1
+pkgver=2
+pkgrel=0
 pkgdesc="Firmware for Xiaomi POCO X3 NFC"
-subpackages="
-	$pkgname-adsp
-	$pkgname-cdsp
-	$pkgname-initramfs
-	$pkgname-ipa
-	$pkgname-modem
-	$pkgname-touchscreen
-	$pkgname-wlan
-	$pkgname-venus
-	"
 url="https://github.com/sm7150-mainline/firmware-xiaomi-surya"
 arch="aarch64"
 license="proprietary"
 options="!check !strip !archcheck !tracedeps pmb:cross-native"
-_commit="3d76e775502966ac4aa9d6e563a71d7442152f1b"
+_commit="d480e0cf4136c5c763bdc90d15ac94a1600d5aae"
 source="
 	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
 	30-touchscreen-firmware.files
@@ -24,71 +17,15 @@ source="
 builddir="$srcdir/$pkgname-$_commit"
 
 package() {
-	# parent package is empty
 	mkdir -p "$pkgdir"
-}
 
-adsp() {
-	pkgdesc="Xiaomi POCO X3 NFC adsp firmware"
-
-	install -Dm644 "$builddir"/adsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
-}
-
-cdsp() {
-	pkgdesc="Xiaomi POCO X3 NFC cdsp firmware"
-
-	install -Dm644 "$builddir"/cdsp* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
-}
-
-initramfs() {
-	pkgdesc="Xiaomi POCO X3 NFC firmware to be included in the initramfs"
+	find . -type f -exec install -Dm644 {} "$pkgdir"/{} \;
 
 	install -Dm644 "$srcdir/30-touchscreen-firmware.files" \
-		"$subpkgdir/usr/share/mkinitfs/files/30-touchscreen-firmware.files"
-}
-
-ipa() {
-	pkgdesc="Xiaomi POCO X3 NFC ipa firmware"
-
-	install -Dm644 "$builddir"/ipa_fws.* -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
-}
-
-modem() {
-	pkgdesc="Xiaomi POCO X3 NFC modem firmware"
-
-	# cp because of the modem_pr directory
-	mkdir -p "$subpkgdir/lib/firmware/qcom/sm7150/surya"
-	cp -r "$builddir"/modem* \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
-	find "$subpkgdir/lib/firmware/qcom/sm7150/surya" \
-		-type f -exec chmod 0644 {} \;
-}
-
-touchscreen() {
-	pkgdesc="Xiaomi POCO X3 NFC touchscreen firmware"
-
-	install -Dm644 "$builddir"/novatek_ts_*_fw.bin -t \
-		"$subpkgdir/lib/firmware"
-}
-
-venus() {
-	pkgdesc="Xiaomi POCO X3 NFC venus firmware"
-
-	install -Dm644 "$builddir"/venus.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
-}
-
-wlan() {
-	pkgdesc="Xiaomi POCO X3 NFC wlan firmware"
-
-	install -Dm644 "$builddir"/wlanmdsp.mbn -t \
-		"$subpkgdir/lib/firmware/qcom/sm7150/surya"
+		"$pkgdir/usr/share/mkinitfs/files/30-touchscreen-firmware.files"
 }
 
 sha512sums="
-769bcbabc12919f2fd8b9f6c4f23a236ba1835eb4cedef9072652321ee145995eff4f8b7b34a7875de9d26b9cdd9e7ccbcc1063cbc8eeb2b3ca3fbe3d0affad5  firmware-xiaomi-surya-3d76e775502966ac4aa9d6e563a71d7442152f1b.tar.gz
+592dd5084465da1a9527dd0e3372f65c057454bbe03344607d123c1b62c882b335c2408e0b376f9a7d7e1948420176279215d202522503ee34aebf85342271b0  firmware-xiaomi-surya-d480e0cf4136c5c763bdc90d15ac94a1600d5aae.tar.gz
 da17c49b62a6320a868e34c5ebbbfdecbf80eed714e8a87daacfc5eb8a1d3dd171e13af0d1f7a8ccb6ebf0a6d859a1c3b8173bbe791ce78fadd7b6d1579ec472  30-touchscreen-firmware.files
 "
