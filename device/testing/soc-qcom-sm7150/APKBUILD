@@ -4,7 +4,7 @@
 pkgname=soc-qcom-sm7150
 pkgdesc="Common package for Qualcomm SM7150 devices"
 pkgver=2
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
@@ -15,6 +15,7 @@ depends="
 "
 subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
+	$pkgname-libssc-180-degrees:libssc_180_degrees
 	$pkgname-ucm
 	$pkgname-unl0kr-quirk:unl0kr_quirk
 "
@@ -24,17 +25,18 @@ source="
 	$pkgname-$_ucm_commit.tar.gz::https://github.com/sm7150-mainline/alsa-ucm-conf/archive/$_ucm_commit.tar.gz
 	10-unl0kr.conf
 	30-initramfs-firmware.files
+	81-libssc-180-degrees.rules
 	90-feedbackd-aw8695.rules
 	90-feedbackd-pm6150.rules
 	soc-qcom-sm7150-nonfree-firmware.post-install
 "
 
 package() {
-	install -Dm644 "$srcdir"/90-feedbackd-aw8695.rules \
-		"$pkgdir"/usr/lib/udev/rules.d/90-feedbackd-aw8695.rules
+	install -Dm644 "$srcdir"/90-feedbackd-aw8695.rules -t \
+		"$pkgdir"/usr/lib/udev/rules.d
 
-	install -Dm644 "$srcdir"/90-feedbackd-pm6150.rules \
-		"$pkgdir"/usr/lib/udev/rules.d/90-feedbackd-pm6150.rules
+	install -Dm644 "$srcdir"/90-feedbackd-pm6150.rules -t \
+		"$pkgdir"/usr/lib/udev/rules.d
 }
 
 nonfree_firmware() {
@@ -52,8 +54,13 @@ nonfree_firmware() {
 	install="$subpkgname.post-install"
 	mkdir "$subpkgdir"
 
-	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t \
+	install -Dm644 "$srcdir"/30-initramfs-firmware.files -t \
 		"$subpkgdir"/usr/share/mkinitfs/files
+}
+
+libssc_180_degrees() {
+	install -Dm644 "$srcdir"/81-libssc-180-degrees.rules -t \
+		"$subpkgdir"/usr/lib/udev/rules.d
 }
 
 ucm() {
@@ -67,8 +74,8 @@ ucm() {
 
 unl0kr_quirk() {
 	# With fbdev emulation enabled, unl0kr needs to force refresh on some panels
-	install -Dm644 "$srcdir"/10-unl0kr.conf \
-		"$subpkgdir"/etc/unl0kr.conf.d/10-unl0kr.conf
+	install -Dm644 "$srcdir"/10-unl0kr.conf -t \
+		"$subpkgdir"/etc/unl0kr.conf.d
 }
 
 sha512sums="
