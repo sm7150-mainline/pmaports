@@ -18,11 +18,7 @@ subpackages="
 	$pkgname-nonfree-firmware:nonfree_firmware
 	$pkgname-x11
 "
-source="
-	deviceinfo
-	modules-initfs
-	grub.cfg
-"
+source="deviceinfo modules-initfs"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -46,8 +42,6 @@ build() {
 package() {
 	devicepkg_package $startdir $pkgname
 
-	install -D "$srcdir"/grub.cfg \
-		"$pkgdir"/boot/grub/grub.cfg
 	install -D "$srcdir"/bootarm.efi \
 		"$pkgdir"/boot/EFI/Boot/bootarm.efi
 }
@@ -65,7 +59,6 @@ x11() {
 }
 
 sha512sums="
-8ab7c1720255720fc81a7895ba4e5f5a03789132323e82047229e6f133f0270a29e766c0496ab620d41e3090e1ef6e77c346bd5a111ade3d59c3a630380409e6  deviceinfo
+e09166ac34399eb2201c906498ae0e3bd8f6abb5287695bf2eacbb47195eaff00d12fd0828f705f9c1a45162b6fe5dca1b282e2afd9c47183073331d7f4538a8  deviceinfo
 67ff4306270b7e6e292ddb48ac5fcb1472840d8eaa412f9cd989442fb20139ee3c844fd1ca5c5b923c7980403d945999a77fc6617127059e56e22bdc8dca2bf8  modules-initfs
-40b507176edce2d141ff707aecad6f8d9636b828084e84d0015886d5e371127285bc80398fc13c1b88a7740c5b4694d2011286138249c95d27db0d9df3ca102f  grub.cfg
 "
