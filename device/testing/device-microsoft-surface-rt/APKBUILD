@@ -23,7 +23,6 @@ source="
 	modules-initfs
 	grub.cfg
 	initfs-hook.sh
-	pointercal
 "
 
 build() {
@@ -48,9 +47,6 @@ build() {
 package() {
 	devicepkg_package $startdir $pkgname
 
-	install -Dm644 "$srcdir"/pointercal \
-		"$pkgdir"/etc/pointercal
-
 	install -D "$srcdir"/grub.cfg \
 		"$pkgdir"/boot/grub/grub.cfg
 	install -D "$srcdir"/bootarm.efi \
@@ -74,5 +70,4 @@ sha512sums="
 67ff4306270b7e6e292ddb48ac5fcb1472840d8eaa412f9cd989442fb20139ee3c844fd1ca5c5b923c7980403d945999a77fc6617127059e56e22bdc8dca2bf8  modules-initfs
 40b507176edce2d141ff707aecad6f8d9636b828084e84d0015886d5e371127285bc80398fc13c1b88a7740c5b4694d2011286138249c95d27db0d9df3ca102f  grub.cfg
 0c7640df35d29a5c2e168d1e54b73a90d903e51b16d67ad08c3ccb41972209086844357f82cf6a2b6de977ebfb7e1099da01db71dc0733e90662ba315f0cd1d0  initfs-hook.sh
-34f6eb789d4688985a262c519017e0712a90ca5acf89e6b3f39e33792a7982155261c6b4f0dbf41595b512da9dc7c9002adb69a550e80be349a374d086799916  pointercal
 "
