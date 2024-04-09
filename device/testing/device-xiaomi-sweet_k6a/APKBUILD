@@ -1,0 +1,57 @@
+# Maintainer: Edip Hzr <medip642@gmail.com>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-xiaomi-sweet_k6a
+pkgdesc="Xiaomi Redmi Note 12 Pro"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	postmarketos-update-kernel
+	soc-qcom-sm7150
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for Modem, WiFi, Touchscreen, etc."
+	depends="
+		firmware-xiaomi-sweet_k6a-adsp
+		firmware-xiaomi-sweet_k6a-cdsp
+		firmware-xiaomi-sweet_k6a-gpu
+		firmware-xiaomi-sweet_k6a-ipa
+		firmware-xiaomi-sweet_k6a-modem
+		firmware-xiaomi-sweet_k6a-sensors
+		firmware-xiaomi-sweet_k6a-venus
+		firmware-xiaomi-sweet_k6a-wlan
+		soc-qcom-sm7150-nonfree-firmware
+		"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+0ea06cb29efab4a0b4edf8be7d919ee42a075c165ca108b3669cc01e91836a55e276eaa275fe88f6ed737fd821a507c65c921e91eab0b3781dce3fa447c92e3f  deviceinfo
+9175da12db186df7a54b0b461e9159121c9a4c1175629c77ac10f12d83a5747cb7d1e6a5a327c8a3e791f6890d0b550393b2890289533f127aa83558a75f4709  modules-initfs
+"
