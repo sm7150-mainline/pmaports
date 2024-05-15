@@ -4,14 +4,13 @@
 
 pkgname=device-xiaomi-surya
 pkgdesc="Xiaomi POCO X3 NFC"
-pkgver=8
+pkgver=9
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
-	linux-postmarketos-qcom-sm7150
 	make-dynpart-mappings
 	mkbootimg
 	postmarketos-base
@@ -24,6 +23,8 @@ source="
 "
 
 subpackages="
+	$pkgname-kernel-huaxing:kernel_huaxing
+	$pkgname-kernel-tianma:kernel_tianma
 	$pkgname-nonfree-firmware:nonfree_firmware
 "
 
@@ -33,6 +34,18 @@ build() {
 
 package() {
 	devicepkg_package $startdir $pkgname
+}
+
+kernel_huaxing() {
+	pkgdesc="Huaxing Panel. To know which panel your device use and the status of the port, Visit the Xiaomi POCO X3 NFC wiki page: https://wiki.postmarketos.org/wiki/Xiaomi_POCO_X3_NFC_(xiaomi-surya)"
+	depends="linux-postmarketos-qcom-sm7150"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_tianma() {
+	pkgdesc="Tianma Panel. To know which panel your device use and the status of the port, Visit the Xiaomi POCO X3 NFC wiki page: https://wiki.postmarketos.org/wiki/Xiaomi_POCO_X3_NFC_(xiaomi-surya)"
+	depends="linux-postmarketos-qcom-sm7150"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
 }
 
 nonfree_firmware() {
@@ -55,6 +68,6 @@ nonfree_firmware() {
 }
 
 sha512sums="
-391e4b0a14d5321cbe59c0e6077cdadf0775bb7d08f3f4c9708499f2e44c6ac17180ead27d5029902a70f66249011c216102821e0c6cd5c8175d7439f4da9ee4  deviceinfo
-6d86b9211d4adf237ef2961f304655331287c186bba56b1af32185401b01b506949557ce6e70dc70e3c9997b4f5684c9f4cdfd11c79ccbc7a869147b6fb9bb53  modules-initfs
+09cca64d70ab5b9350d4ca645d8f868906b5a9e90d7fd75bf7b9769b7b9ba18f98526675af2cf01b6369c1f36abf8ce47aea9fde6195927bb7735b151cf51bba  deviceinfo
+bbf608bff748964e7154f9681a8b7a84a88c42035e9aa854d1b9a7d25f92b2f36bedb575ce411673f27f3e8c618034b55b8c1d083d2b07e445699f34edc55993  modules-initfs
 "
