@@ -1,0 +1,117 @@
+# Maintainer: Danila Tikhonov <danila@jiaxyga.com>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=firmware-google-sunfish
+pkgver=2
+pkgrel=0
+pkgdesc="Firmware for Google Pixel 4a"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-gpu
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-sensors
+	$pkgname-venus
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-google-sunfish"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="30840e8eb6b6a51e55c60afe88cba46b823fead9"
+source="
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	adsp.files
+	cdsp.files
+	gpu.files
+	ipa.files
+	modem.files
+	sensors.files
+	venus.files
+	wlan.files
+"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+# Helper method for installing firmware files from a text file
+install_files() {
+	cd "$builddir"
+
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$subpkgdir/$_i"
+	done < "$srcdir/$1"
+}
+
+adsp() {
+	pkgdesc="Google Pixel 4a adsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "adsp.files"
+}
+
+cdsp() {
+	pkgdesc="Google Pixel 4a cdsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "cdsp.files"
+}
+
+gpu() {
+	pkgdesc="Google Pixel 4a gpu firmware"
+
+	mkdir "$subpkgdir"
+	install_files "gpu.files"
+}
+
+ipa() {
+	pkgdesc="Google Pixel 4a ipa firmware"
+
+	mkdir "$subpkgdir"
+	install_files "ipa.files"
+}
+
+modem() {
+	pkgdesc="Google Pixel 4a modem firmware"
+
+	mkdir "$subpkgdir"
+	install_files "modem.files"
+}
+
+sensors() {
+	pkgdesc="Google Pixel 4a sensors firmware"
+
+	mkdir "$subpkgdir"
+	install_files "sensors.files"
+}
+
+venus() {
+	pkgdesc="Google Pixel 4a venus firmware"
+
+	mkdir "$subpkgdir"
+	install_files "venus.files"
+}
+
+wlan() {
+	pkgdesc="Google Pixel 4a wlan firmware"
+
+	mkdir "$subpkgdir"
+	install_files "wlan.files"
+}
+sha512sums="
+27fb28b23e02de892580f4d1a86ced7f55e64e9111943e2dd00640796e7b6cd7e81ef898e7c61809c40a52f1ddc5101e9cf49d35fc2f2a2bd210c58a17d14331  firmware-google-sunfish-30840e8eb6b6a51e55c60afe88cba46b823fead9.tar.gz
+2d28a1cb0dcfb83632e03455c0a210ae35fbacc153d1239d3938539f26e45a2dcf82573fffd7e23963c1e4c73cb40da79ac2aada667d8ff2645e50ea3717a82b  adsp.files
+a63b0ad22f64a6eff6591274740366cb52698c3bed5e797bebdbe6f613ef2a1fb18d86e6f0ae8ea1b34ecd5bb7d206cc5740b7379957d4ce00e3da2ee8196cfa  cdsp.files
+b9cf05f75de958e620b6fe0f45a29091cbe6fd2c2c1283e429ef0df6a81a870df2ab17c7e4a50fea937062907e96cef5111a2a11caa2a0c03e9f3d1fb9a91552  gpu.files
+fd6e3ded4ef5c6c06a8128d7b543adcbddc589f7fe276f03578303119f4343dd8efdc93014b2820783c68e37057e43a25063b10256abb22217f0a505dfeb6142  ipa.files
+40042f06ccc43c08b9103880b69006862cec2613be68a79bf9294dd6fd84fb86710c90ef6949e197cddf7b2b840514f95a7318c796231df69d50baef24f01b9c  modem.files
+2917732fa2939cda16735ba733262192600a60de853e993bd1928b35f6ee8b29fc7088d84fff6327a77b846bafaed9bb89a6f9f2bbbd648797ccb8c825446dab  sensors.files
+03436e4029f71f717afa45eb1d467b43475844518c1f297242dbc27032572ea3db3eba47b2a33f878d7503ef6e6b37b26450db7ecfec5d8e42b0dcb1b6e9de4e  venus.files
+6d47195dfd72be3af738bacfcb59ce7e626b56b6a16c49d0552dfacc0643fd8afde964bacafb0a27440ef8eb0a0a6c3f97ae3723323e5c4630f9d3be38b36ae7  wlan.files
+"
