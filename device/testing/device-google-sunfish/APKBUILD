@@ -1,0 +1,56 @@
+# Maintainer: Danila Tikhonov <danila@jiaxyga.com>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-google-sunfish
+pkgdesc="Google Pixel 4a"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	soc-qcom-sm7150
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+subpackages="
+	$pkgname-nonfree-firmware:nonfree_firmware
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+nonfree_firmware() {
+	pkgdesc="Firmware for Modem, WiFi, Touchscreen, etc."
+	depends="
+		firmware-google-sunfish-adsp
+		firmware-google-sunfish-cdsp
+		firmware-google-sunfish-gpu
+		firmware-google-sunfish-ipa
+		firmware-google-sunfish-modem
+		firmware-google-sunfish-sensors
+		firmware-google-sunfish-venus
+		firmware-google-sunfish-wlan
+		soc-qcom-sm7150-nonfree-firmware
+		"
+	mkdir "$subpkgdir"
+}
+
+sha512sums="
+81f9bdb48c23f90112e71704bae2c43cefc3314f573b91522ed36b66c8700fc733d039d1a6d5c87076707604391dca256422f3f73b306e93bef066e79e490e05  deviceinfo
+e70bae17df23dcaaaea0e2d3616556f04baa23f8ee1357785c0f539bf97282d8ddff53953e155b72689bb73beb38c2da3d08de2a61e866684edfa10a6593885d  modules-initfs
+"
