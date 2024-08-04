@@ -5,12 +5,22 @@
 pkgname=device-xiaomi-davinci
 pkgdesc="Xiaomi Mi 9T / Redmi K20"
 pkgver=1
-pkgrel=2
+pkgrel=3
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
+        firmware-xiaomi-davinci-adsp
+        firmware-xiaomi-davinci-cdsp
+        firmware-xiaomi-davinci-gpu
+        firmware-xiaomi-davinci-ipa
+        firmware-xiaomi-davinci-modem
+        firmware-xiaomi-davinci-sensors
+        firmware-xiaomi-davinci-venus
+        firmware-xiaomi-davinci-wlan
+	soc-qcom-sm7150-libssc-180-degrees
+	soc-qcom-sm7150-nonfree-firmware
 	linux-postmarketos-qcom-sm7150
 	make-dynpart-mappings
 	mkbootimg
@@ -24,33 +34,12 @@ source="
 	modules-initfs
 "
 
-subpackages="
-	$pkgname-nonfree-firmware:nonfree_firmware
-"
-
 build() {
 	devicepkg_build $startdir $pkgname
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
-}
-
-nonfree_firmware() {
-	pkgdesc="Firmware for GPU, Audio, Modem, WiFi, etc."
-	depends="
-		firmware-xiaomi-davinci-adsp
-		firmware-xiaomi-davinci-cdsp
-		firmware-xiaomi-davinci-gpu
-		firmware-xiaomi-davinci-ipa
-		firmware-xiaomi-davinci-modem
-		firmware-xiaomi-davinci-sensors
-		firmware-xiaomi-davinci-venus
-		firmware-xiaomi-davinci-wlan
-		soc-qcom-sm7150-libssc-180-degrees
-		soc-qcom-sm7150-nonfree-firmware
-		"
-	mkdir "$subpkgdir"
 }
 
 sha512sums="
