@@ -1,0 +1,115 @@
+pkgname=firmware-xiaomi-tucana
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for Xiaomi Mi Note 10"
+subpackages="
+	$pkgname-adsp
+	$pkgname-cdsp
+	$pkgname-gpu
+	$pkgname-ipa
+	$pkgname-modem
+	$pkgname-sensors
+	$pkgname-venus
+	$pkgname-wlan
+	"
+url="https://github.com/sm7150-mainline/firmware-xiaomi-tucana"
+arch="aarch64"
+license="proprietary"
+options="!check !strip !archcheck !tracedeps pmb:cross-native"
+_commit="b0bfa7f6b21ea150baaab27583d8af742cc32903"
+source="
+	$pkgname-$_commit.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	adsp.files
+	cdsp.files
+	gpu.files
+	ipa.files
+	modem.files
+	sensors.files
+	venus.files
+	wlan.files
+"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	# parent package is empty
+	mkdir -p "$pkgdir"
+}
+
+# Helper method for installing firmware files from a text file
+install_files() {
+	cd "$builddir"
+
+	while IFS="" read -r _i || [ -n "$_i" ]; do
+		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+		echo $_i
+		install -Dm644 $_i "$subpkgdir/$_i"
+	done < "$srcdir/$1"
+}
+
+adsp() {
+	pkgdesc="Xiaomi Mi Note 10 adsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "adsp.files"
+}
+
+cdsp() {
+	pkgdesc="Xiaomi Mi Note 10 cdsp firmware"
+
+	mkdir "$subpkgdir"
+	install_files "cdsp.files"
+}
+
+gpu() {
+	pkgdesc="Xiaomi Mi Note 10 gpu firmware"
+
+	mkdir "$subpkgdir"
+	install_files "gpu.files"
+}
+
+ipa() {
+	pkgdesc="Xiaomi Mi Note 10 ipa firmware"
+
+	mkdir "$subpkgdir"
+	install_files "ipa.files"
+}
+
+modem() {
+	pkgdesc="Xiaomi Mi Note 10 modem firmware"
+
+	mkdir "$subpkgdir"
+	install_files "modem.files"
+}
+
+sensors() {
+	pkgdesc="Xiaomi Mi Note 10 sensors firmware"
+
+	mkdir "$subpkgdir"
+	install_files "sensors.files"
+}
+
+venus() {
+	pkgdesc="Xiaomi Mi Note 10 venus firmware"
+
+	mkdir "$subpkgdir"
+	install_files "venus.files"
+}
+
+wlan() {
+	pkgdesc="Xiaomi Mi Note 10 wlan firmware"
+
+	mkdir "$subpkgdir"
+	install_files "wlan.files"
+}
+
+sha512sums="
+002e6943af0cb585a8e03bf96e6a9cee7b58c127214b9d6c487c6d15134853d593152643edfb39a571be97a924b17f4f530d218f60f6006f6d5fc1ac19e836d5  firmware-xiaomi-tucana-b0bfa7f6b21ea150baaab27583d8af742cc32903.tar.gz
+ad478fb802077a6eb3647a778292b85cda08d84fbb976b70127ecd2c1e19a0a600bbee872f6545f8bf8d28ac016e91c7d2762a6c1a51e89c6d0fc519df5601c7  adsp.files
+05924fc6ebea51a67ad132ba2d51d3012ea25f641a214c980feefa46904fa15c882cd5969e22dd7873321e4c173a017610ea03d1ecf4f1ecfa30dfc9877f2d1b  cdsp.files
+01c85f53f14e654dc5c032bbac99dfa26ac8a670f5d4442168e7973c27e0290dff00df4ece6beb70d3ac53f80287be29dad4f8ddf54828f9fa21c6455da59034  gpu.files
+8c8f973d4b8882ffca70ae6088a816f77e8721667a2dd63ecf39a865672838316dccaffb67020cd16368b899a64209a29742a8805f4f8399533c0e7dba66ee29  ipa.files
+078b0721c99f577d46668ada579566e59509b3ac1a293c7d6c86501afe01885efb6f9cf636cfbe3edaf80a32bab4261163357a8fc16fa26cdfa2fc29c4d6169b  modem.files
+1fd813a01195025c8bf644d550f014aeac3965231d855bbf231f60cdc5e6e6fc0845d4ed1d1f460e4ae957ae2093c08956cdd20ec014318af329652fc2823b8e  sensors.files
+5c17b2f9f17434ed3237104d454fc71654ebcb9a1e0dd2ed926076e1e113622e5848349013471a301bdf10771356e4d8937dbd706aa450014403b94bc23f371b  venus.files
+62cbdeed5fc88848901e6d6d6756e97e83ed3bf0970c13642306226aa3a15d32940008133b0c5d1585fb37190cae36c38722cad4940c138183808035c16bece1  wlan.files
+"
