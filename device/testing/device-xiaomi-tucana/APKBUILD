@@ -1,0 +1,43 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-xiaomi-tucana
+pkgdesc="Xiaomi Mi Note 10"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	firmware-xiaomi-tucana-adsp
+	firmware-xiaomi-tucana-cdsp
+	firmware-xiaomi-tucana-gpu
+	firmware-xiaomi-tucana-ipa
+	firmware-xiaomi-tucana-modem
+	firmware-xiaomi-tucana-sensors
+	firmware-xiaomi-tucana-venus
+	firmware-xiaomi-tucana-wlan
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	mkbootimg
+	postmarketos-base
+	soc-qcom-sm7150
+	soc-qcom-sm7150-nonfree-firmware
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	modules-initfs
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+5a7d8742471d5d2d54aed7788147f290e9e5b992ae0ce973b5e749d9d505b1a2b8ded9a7c8d236e298222f3371a3921ea3a66278ae566f56b77c076c65ad3e7e  deviceinfo
+649bf05e37617308be9c4ef360f6d71690771a541fd1c511dd61fb0543d9b299f3b6abf5b5560124a4ac873ec11e9d45dc286312b793fc441838c6171fb5c2bf  modules-initfs
+"
