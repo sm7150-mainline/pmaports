@@ -4,7 +4,7 @@
 pkgname=soc-qcom-sm7150
 pkgdesc="Common package for Qualcomm SM7150 devices"
 pkgver=2
-pkgrel=5
+pkgrel=6
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
@@ -28,11 +28,15 @@ source="
 	30-initramfs-firmware.files
 	81-libssc-180-degrees.rules
 	90-feedbackd-aw8695.rules
+	90-feedbackd-drv260x.rules
 	90-feedbackd-pm6150.rules
 "
 
 package() {
 	install -Dm644 "$srcdir"/90-feedbackd-aw8695.rules -t \
+		"$pkgdir"/usr/lib/udev/rules.d
+
+	install -Dm644 "$srcdir"/90-feedbackd-drv260x.rules -t \
 		"$pkgdir"/usr/lib/udev/rules.d
 
 	install -Dm644 "$srcdir"/90-feedbackd-pm6150.rules -t \
@@ -91,5 +95,6 @@ f700af3145b79d1ef9edfb22982899b25cabfb212f9620dcbd3a2e6f44b5ad591e0a66056c6fcd66
 73438ceec8ca76dec24a92718d456d17b01a23510ee0b0e6c1263e3f6c2ca82263a3e41298c0a8ebf3dd8439da354fc1c914fd475ad1cf5c669c200770df62fa  30-initramfs-firmware.files
 2c16ba75e0077b2b1eaefa4c73b287475505a1aeb291ec29316d41cc094277320f9d2aaabfd91eb1dc0f488ab2d61a94faef16e7afe0f1e226779113761b9a37  81-libssc-180-degrees.rules
 2974ccc172bf1299daeb0bc746879b3a1db1fbc3a2b163a02a6554fed6ed9f733144bcf976cd2441c5664d496dcce3ae943f4314c653470dc07dda0de5ad632b  90-feedbackd-aw8695.rules
+66ce9f37c0f1c9fabadec4fd4fe4d03a5a54df183a430a1cdaff24d6b22ce29be444ae07cfd17432f81f566b320567732a4b38715226fc349b4df2ceb8bca629  90-feedbackd-drv260x.rules
 90fca4a3291a2c84c0b20e41308c4698374ba896e9365ca80dbfd0c0c4f7dc08317f3dd865a3c7f6707c81b02f5bb24136d1172253d2e4fdd50039bbbf02a178  90-feedbackd-pm6150.rules
 "
