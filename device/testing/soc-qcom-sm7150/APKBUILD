@@ -3,20 +3,27 @@
 
 pkgname=soc-qcom-sm7150
 pkgdesc="Common package for Qualcomm SM7150 devices"
-pkgver=1
-pkgrel=1
+pkgver=2
+pkgrel=0
 url="https://postmarketos.org"
 license="BSD-3-Clause"
 arch="aarch64"
-options="!check !strip !archcheck !tracedeps pmb:cross-native"
+options="!check !strip !archcheck !tracedeps"
 depends="
 	alsa-ucm-conf-qcom-sm7150
+	bootmac
+	hexagonrpcd
+	linux-firmware-ath10k
+	linux-firmware-qca
+	linux-firmware-qcom
+	msm-modem
+	msm-modem-uim-selection
 	swclock-offset
+	tqftpserv
 "
 subpackages="
 	$pkgname-libssc-180-degrees:libssc_180_degrees
-	$pkgname-nonfree-firmware:nonfree_firmware
-	$pkgname-nonfree-firmware-openrc:nonfree_firmware_openrc
+	$pkgname-openrc
 	$pkgname-unl0kr-quirk:unl0kr_quirk
 "
 
@@ -29,6 +36,9 @@ source="
 "
 
 package() {
+	install -Dm644 "$srcdir"/30-initramfs-firmware.files -t \
+		"$pkgdir"/usr/share/mkinitfs/files
+
 	install -Dm644 "$srcdir"/90-feedbackd-aw8695.rules -t \
 		"$pkgdir"/usr/lib/udev/rules.d
 
@@ -41,24 +51,8 @@ libssc_180_degrees() {
 		"$subpkgdir"/usr/lib/udev/rules.d
 }
 
-nonfree_firmware() {
-	depends="
-		bootmac
-		hexagonrpcd
-		linux-firmware-ath10k
-		linux-firmware-qca
-		linux-firmware-qcom
-		tqftpserv
-		msm-modem
-		msm-modem-uim-selection"
-	mkdir "$subpkgdir"
-
-	install -Dm644 "$srcdir"/30-initramfs-firmware.files -t \
-		"$subpkgdir"/usr/share/mkinitfs/files
-}
-
-nonfree_firmware_openrc() {
-	install_if="$pkgname-nonfree-firmware=$pkgver-r$pkgrel openrc"
+openrc() {
+	install_if="$pkgname=$pkgver-r$pkgrel openrc"
 	install="$subpkgname.post-install"
 	depends="
 		hexagonrpcd-openrc
