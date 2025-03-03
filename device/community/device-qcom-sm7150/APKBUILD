@@ -1,0 +1,77 @@
+# Maintainer: Jens Reidel <adrian@travitia.xyz>
+# Reference: <https://postmarketos.org/devicepkg>
+
+pkgname=device-qcom-sm7150
+pkgdesc="Generic device package for Qualcomm SM7150 devices"
+pkgver=1
+pkgrel=2
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	alsa-ucm-conf-qcom-sm7150
+	bootmac
+	hexagonrpcd
+	linux-firmware-ath10k
+	linux-firmware-qca
+	linux-firmware-qcom
+	linux-postmarketos-qcom-sm7150
+	make-dynpart-mappings
+	msm-firmware-loader
+	msm-modem
+	msm-modem-uim-selection
+	postmarketos-base
+	swclock-offset
+	systemd-boot
+	tqftpserv
+	unl0kr-fbforcerefresh
+"
+makedepends="devicepkg-dev"
+subpackages="
+	$pkgname-openrc
+"
+
+source="
+	30-initramfs-firmware.files
+	90-feedbackd-aw8695.rules
+	90-feedbackd-pm6150.rules
+	deviceinfo
+	modules-initfs
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+
+	install -Dm644 "$srcdir"/30-initramfs-firmware.files -t \
+		"$pkgdir"/usr/share/mkinitfs/files
+
+	install -Dm644 "$srcdir"/90-feedbackd-aw8695.rules -t \
+		"$pkgdir"/usr/lib/udev/rules.d
+
+	install -Dm644 "$srcdir"/90-feedbackd-pm6150.rules -t \
+		"$pkgdir"/usr/lib/udev/rules.d
+}
+
+openrc() {
+	install_if="$pkgname=$pkgver-r$pkgrel openrc"
+	install="$subpkgname.post-install"
+	depends="
+		hexagonrpcd-openrc
+		tqftpserv-openrc
+		"
+
+	mkdir -p "$subpkgdir"
+}
+
+sha512sums="
+73438ceec8ca76dec24a92718d456d17b01a23510ee0b0e6c1263e3f6c2ca82263a3e41298c0a8ebf3dd8439da354fc1c914fd475ad1cf5c669c200770df62fa  30-initramfs-firmware.files
+2974ccc172bf1299daeb0bc746879b3a1db1fbc3a2b163a02a6554fed6ed9f733144bcf976cd2441c5664d496dcce3ae943f4314c653470dc07dda0de5ad632b  90-feedbackd-aw8695.rules
+90fca4a3291a2c84c0b20e41308c4698374ba896e9365ca80dbfd0c0c4f7dc08317f3dd865a3c7f6707c81b02f5bb24136d1172253d2e4fdd50039bbbf02a178  90-feedbackd-pm6150.rules
+bf67cc6690be071a5d60df705d99e1be6d505e6c52a5f4b43fa2071212751b494b3be36258ad56b96f762a11911c557eed6f1f0fd09f6150cf8e4fe9f420fb13  deviceinfo
+877035925cb470bf57f9fe9c3d195a595757e7e8352c631de453d39e669d4862848ee463e0b92563d08a975b85fbe5121cc06a344b3764dc4048448731b1ddf4  modules-initfs
+"
